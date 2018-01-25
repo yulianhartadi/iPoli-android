@@ -42,15 +42,15 @@
         app:layout_constraintStart_toStartOf="@+id/snooze" />
 
     <TextView
-        android:id="@+id/doneHint"
+        android:id="@+id/startHint"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginBottom="8dp"
         android:elevation="2dp"
-        android:text="Done"
+        android:text="Start"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="@+id/done"
-        app:layout_constraintStart_toStartOf="@+id/done" />
+        app:layout_constraintEnd_toEndOf="@+id/start"
+        app:layout_constraintStart_toStartOf="@+id/start" />
 
     <android.support.design.widget.FloatingActionButton
         android:id="@+id/dismiss"
@@ -79,12 +79,12 @@
         app:layout_constraintStart_toStartOf="parent" />
 
     <android.support.design.widget.FloatingActionButton
-        android:id="@+id/done"
+        android:id="@+id/start"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
         android:layout_marginEnd="8dp"
-        android:src="@drawable/ic_done_white_24dp"
+        android:src="@drawable/ic_play_arrow_white_32dp"
         app:backgroundTint="@color/md_green_500"
         app:fabSize="normal"
         app:layout_constraintBottom_toBottomOf="@+id/snooze"
@@ -195,7 +195,7 @@
         android:id="@+id/group"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        app:constraint_referenced_ids="time,message,name,done,snooze,dismiss,doneHint,snoozeHint,dismissHint" />
+        app:constraint_referenced_ids="time,message,name,start,snooze,dismiss,startHint,snoozeHint,dismissHint" />
 
 
 </android.support.constraint.ConstraintLayout>

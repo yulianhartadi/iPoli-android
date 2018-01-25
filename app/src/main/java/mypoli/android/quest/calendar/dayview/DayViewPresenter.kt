@@ -15,6 +15,7 @@ import mypoli.android.quest.calendar.dayview.view.*
 import mypoli.android.quest.calendar.dayview.view.DayViewState.StateType.*
 import mypoli.android.quest.usecase.*
 import mypoli.android.reminder.view.picker.ReminderViewModel
+import mypoli.android.timer.usecase.CompleteTimeRangeUseCase
 import org.threeten.bp.LocalDate
 import org.threeten.bp.LocalDateTime
 import org.threeten.bp.LocalTime
@@ -33,6 +34,7 @@ class DayViewPresenter(
     private val undoRemovedQuestUseCase: UndoRemovedQuestUseCase,
     private val completeQuestUseCase: CompleteQuestUseCase,
     private val undoCompletedQuestUseCase: UndoCompletedQuestUseCase,
+    private val completeTimeRangeUseCase: CompleteTimeRangeUseCase,
     coroutineContext: CoroutineContext
 ) : BaseMviPresenter<ViewStateRenderer<DayViewState>, DayViewState, DayViewIntent>(
     DayViewState(type = DayViewState.StateType.LOADING), coroutineContext
@@ -43,9 +45,10 @@ class DayViewPresenter(
 
             is LoadDataIntent -> {
                 launch {
-                    loadScheduleUseCase.execute(intent.currentDate).consumeEach {
-                        sendChannel.send(ScheduleLoadedIntent(it))
-                    }
+                    loadScheduleUseCase.listen(intent.currentDate)
+                        .consumeEach {
+                            sendChannel.send(ScheduleLoadedIntent(it))
+                        }
                 }
                 state.copy(type = LOADING)
             }
@@ -253,7 +256,11 @@ class DayViewPresenter(
             }
 
             is CompleteQuestIntent -> {
-                completeQuestUseCase.execute(intent.questId)
+                if (intent.isStarted) {
+                    completeTimeRangeUseCase.execute(CompleteTimeRangeUseCase.Params(intent.questId))
+                } else {
+                    completeQuestUseCase.execute(CompleteQuestUseCase.Params.WithQuestId(intent.questId))
+                }
                 state.copy(type = QUEST_COMPLETED)
             }
 
@@ -310,7 +317,18 @@ class DayViewPresenter(
 
     private fun savedQuestViewState(result: Result, state: DayViewState) =
         when (result) {
-            is Result.Invalid -> state.copy(type = EVENT_VALIDATION_ERROR)
+            is Result.Invalid -> {
+                when (result.error) {
+
+                    Result.ValidationError.EMPTY_NAME -> {
+                        state.copy(type = EVENT_VALIDATION_EMPTY_NAME)
+                    }
+
+                    Result.ValidationError.TIMER_RUNNING -> {
+                        state.copy(type = EVENT_VALIDATION_TIMER_RUNNING)
+                    }
+                }
+            }
             else -> state.copy(type = EVENT_UPDATED, reminder = null, scheduledDate = null)
         }
 
@@ -324,7 +342,8 @@ class DayViewPresenter(
                 it.icon?.let { AndroidIcon.valueOf(it.name) },
                 color,
                 color.color900,
-                it.isCompleted
+                it.isCompleted,
+                it.isStarted
             )
         }
 
@@ -349,7 +368,8 @@ class DayViewPresenter(
                 color,
                 color.color900,
                 reminder,
-                q.isCompleted
+                q.isCompleted,
+                q.isStarted
             )
         }
 }

@@ -8,14 +8,18 @@ import mypoli.android.R
  * on 9/26/17.
  */
 enum class AndroidColor(
+    @ColorRes val color100: Int,
     @ColorRes val color200: Int,
+    @ColorRes val color300: Int,
     @ColorRes val color500: Int,
     @ColorRes val color600: Int,
     @ColorRes val color700: Int,
     @ColorRes val color900: Int
 ) {
     RED(
+        R.color.md_red_100,
         R.color.md_red_200,
+        R.color.md_red_300,
         R.color.md_red_500,
         R.color.md_red_600,
         R.color.md_red_700,
@@ -23,7 +27,9 @@ enum class AndroidColor(
     ),
 
     GREEN(
+        R.color.md_green_100,
         R.color.md_green_200,
+        R.color.md_green_300,
         R.color.md_green_500,
         R.color.md_green_600,
         R.color.md_green_700,
@@ -31,7 +37,9 @@ enum class AndroidColor(
     ),
 
     BLUE(
+        R.color.md_blue_100,
         R.color.md_blue_200,
+        R.color.md_blue_300,
         R.color.md_blue_500,
         R.color.md_blue_600,
         R.color.md_blue_700,
@@ -39,7 +47,9 @@ enum class AndroidColor(
     ),
 
     PURPLE(
+        R.color.md_purple_100,
         R.color.md_purple_200,
+        R.color.md_purple_300,
         R.color.md_purple_500,
         R.color.md_purple_600,
         R.color.md_purple_700,
@@ -47,7 +57,9 @@ enum class AndroidColor(
     ),
 
     BROWN(
+        R.color.md_brown_100,
         R.color.md_brown_200,
+        R.color.md_brown_300,
         R.color.md_brown_500,
         R.color.md_brown_600,
         R.color.md_brown_700,
@@ -55,7 +67,9 @@ enum class AndroidColor(
     ),
 
     ORANGE(
+        R.color.md_orange_100,
         R.color.md_orange_200,
+        R.color.md_orange_300,
         R.color.md_orange_500,
         R.color.md_orange_600,
         R.color.md_orange_700,
@@ -63,7 +77,9 @@ enum class AndroidColor(
     ),
 
     PINK(
+        R.color.md_pink_100,
         R.color.md_pink_200,
+        R.color.md_pink_300,
         R.color.md_pink_500,
         R.color.md_pink_600,
         R.color.md_pink_700,
@@ -71,7 +87,9 @@ enum class AndroidColor(
     ),
 
     TEAL(
+        R.color.md_teal_100,
         R.color.md_teal_200,
+        R.color.md_teal_300,
         R.color.md_teal_500,
         R.color.md_teal_600,
         R.color.md_teal_700,
@@ -79,7 +97,9 @@ enum class AndroidColor(
     ),
 
     DEEP_ORANGE(
+        R.color.md_deep_orange_100,
         R.color.md_deep_orange_200,
+        R.color.md_deep_orange_300,
         R.color.md_deep_orange_500,
         R.color.md_deep_orange_600,
         R.color.md_deep_orange_700,
@@ -87,7 +107,9 @@ enum class AndroidColor(
     ),
 
     INDIGO(
+        R.color.md_indigo_100,
         R.color.md_indigo_200,
+        R.color.md_indigo_300,
         R.color.md_indigo_500,
         R.color.md_indigo_600,
         R.color.md_indigo_700,
@@ -95,7 +117,9 @@ enum class AndroidColor(
     ),
 
     BLUE_GREY(
+        R.color.md_blue_grey_100,
         R.color.md_blue_grey_200,
+        R.color.md_blue_grey_300,
         R.color.md_blue_grey_500,
         R.color.md_blue_grey_600,
         R.color.md_blue_grey_700,
@@ -103,7 +127,9 @@ enum class AndroidColor(
     ),
 
     LIME(
+        R.color.md_lime_100,
         R.color.md_lime_200,
+        R.color.md_lime_300,
         R.color.md_lime_600,
         R.color.md_lime_700,
         R.color.md_lime_800,

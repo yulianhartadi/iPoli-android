@@ -1,6 +1,6 @@
 package mypoli.android.timer
 
-import mypoli.android.common.datetime.Interval
+import mypoli.android.common.datetime.Duration
 import mypoli.android.common.datetime.Second
 import mypoli.android.common.mvi.Intent
 import mypoli.android.common.mvi.ViewState
@@ -17,27 +17,41 @@ sealed class TimerIntent : Intent {
     object Start : TimerIntent()
     object Stop : TimerIntent()
     object Tick : TimerIntent()
+    object CompletePomodoro : TimerIntent()
+    object ShowCountDownTimer : TimerIntent()
+    object ShowPomodoroTimer : TimerIntent()
+    object CompleteQuest : TimerIntent()
+    object AddPomodoro : TimerIntent()
+    object RemovePomodoro : TimerIntent()
 }
 
 data class TimerViewState(
     val type: StateType,
+    val quest: Quest? = null,
     val showTimerTypeSwitch: Boolean = false,
     val timerLabel: String = "",
-    val remainingTime: Interval<Second>? = null,
+    val remainingTime: Duration<Second>? = null,
     val timerType: TimerType = TimerType.COUNTDOWN,
     val questName: String = "",
     val timerProgress: Int = 0,
     val maxTimerProgress: Int = 0,
-    val pomodoroProgress: List<PomodoroProgress> = listOf()
+    val pomodoroProgress: List<PomodoroProgress> = listOf(),
+    val currentProgressIndicator: Int = 0,
+    val showCompletePomodoroButton: Boolean = false
 ) : ViewState {
 
     enum class StateType {
         LOADING,
+        RESUMED,
         SHOW_POMODORO,
         SHOW_COUNTDOWN,
         TIMER_STARTED,
+        TIMER_REPLACED,
         TIMER_STOPPED,
-        RUNNING
+        RUNNING,
+        POMODORO_ADDED,
+        POMODORO_REMOVED,
+        QUEST_COMPLETED
     }
 
     enum class TimerType {

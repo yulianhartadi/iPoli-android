@@ -78,7 +78,7 @@ class IconPickerDialogPresenter(
         when (intent) {
             is IconPickerIntent.LoadData -> {
                 launch {
-                    listenForPlayerChangesUseCase.execute(Unit).consumeEach {
+                    listenForPlayerChangesUseCase.listen(Unit).consumeEach {
                         sendChannel.send(IconPickerIntent.ChangePlayer(it))
                     }
                 }

@@ -22,3 +22,15 @@ fun Group.views() =
     referencedIds.map { id ->
         rootView.findViewById<View>(id)
     }
+
+fun Group.goneViews() {
+    this.visibility = View.GONE
+}
+
+fun Group.hideViews() {
+    this.visibility = View.INVISIBLE
+}
+
+fun Group.showViews() {
+    this.visibility = View.VISIBLE
+}

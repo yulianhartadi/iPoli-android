@@ -10,7 +10,7 @@ import mypoli.android.player.data.Avatar
 import mypoli.android.quest.ColorPack
 import mypoli.android.quest.Entity
 import mypoli.android.quest.IconPack
-import org.threeten.bp.LocalDateTime
+import org.threeten.bp.Instant
 
 data class Player(
     override val id: String = "",
@@ -21,7 +21,8 @@ data class Player(
     val experience: Long = Constants.DEFAULT_PLAYER_XP,
     val authProvider: AuthProvider,
     val avatar: Avatar = Avatar.IPOLI_CLASSIC,
-    val createdAt: LocalDateTime = LocalDateTime.now(),
+    override val createdAt: Instant = Instant.now(),
+    override val updatedAt: Instant = Instant.now(),
     val currentTheme: Theme = Constants.DEFAULT_THEME,
     val pet: Pet = Pet(
         name = Constants.DEFAULT_PET_NAME,
@@ -90,6 +91,19 @@ data class Player(
         inventory.hasColorPack(colorPack)
 
     fun hasChallenge(challenge: PredefinedChallenge) = inventory.hasChallenge(challenge)
+
+    val experienceProgressForLevel: Int
+        get() {
+            val thisLevelXP = ExperienceForLevelGenerator.forLevel(level).toInt()
+            return experience.toInt() - thisLevelXP
+        }
+
+    val experienceForNextLevel: Int
+        get() {
+            val thisLevelXP = ExperienceForLevelGenerator.forLevel(level).toInt()
+            val nextLevelXP = ExperienceForLevelGenerator.forLevel(level + 1).toInt()
+            return nextLevelXP - thisLevelXP
+        }
 }
 
 data class InventoryPet(

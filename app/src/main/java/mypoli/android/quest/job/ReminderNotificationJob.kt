@@ -1,10 +1,9 @@
-package mypoli.android
+package mypoli.android.quest.job
 
-import android.app.Notification
-import android.app.NotificationChannel
+import android.annotation.SuppressLint
 import android.app.NotificationManager
 import android.content.Context
-import android.os.Build
+import android.content.Intent
 import android.support.v4.app.NotificationCompat
 import android.widget.Toast
 import com.evernote.android.job.Job
@@ -13,9 +12,13 @@ import com.evernote.android.job.JobRequest
 import com.evernote.android.job.util.support.PersistableBundleCompat
 import kotlinx.coroutines.experimental.android.UI
 import kotlinx.coroutines.experimental.launch
+import mypoli.android.Constants
+import mypoli.android.MainActivity
+import mypoli.android.R
 import mypoli.android.common.datetime.Time
 import mypoli.android.common.di.Module
 import mypoli.android.common.view.asThemedWrapper
+import mypoli.android.myPoliApp
 import mypoli.android.quest.Quest
 import mypoli.android.reminder.view.ReminderNotificationPopup
 import mypoli.android.reminder.view.ReminderNotificationViewModel
@@ -31,26 +34,15 @@ import java.util.*
  */
 class ReminderNotificationJob : Job(), Injects<Module> {
 
+    @SuppressLint("NewApi")
     override fun onRunJob(params: Job.Params): Job.Result {
 
         val notificationManager =
             context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
-        val id = "myPoli"
-        val channelName = "myPoli"
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            val importance = NotificationManager.IMPORTANCE_HIGH
-            val channel = NotificationChannel(id, channelName, importance)
-            channel.description = "Reminder notification"
-            channel.enableLights(true)
-            channel.enableVibration(true)
-            channel.lockscreenVisibility = Notification.VISIBILITY_PUBLIC
-            notificationManager.createNotificationChannel(channel)
-        }
 
         val kap = Kapsule<Module>()
         val findQuestsToRemindUseCase by kap.required { findQuestToRemindUseCase }
         val snoozeQuestUseCase by kap.required { snoozeQuestUseCase }
-        val completeQuestUseCase by kap.required { completeQuestUseCase }
         val findPetUseCase by kap.required { findPetUseCase }
         kap.inject(myPoliApp.module(context))
 
@@ -89,10 +81,12 @@ class ReminderNotificationJob : Job(), Injects<Module> {
                             Toast.makeText(c, "Quest snoozed", Toast.LENGTH_SHORT).show()
                         }
 
-                        override fun onDone() {
+                        override fun onStart() {
                             notificationManager.cancel(notificationId)
-                            completeQuestUseCase.execute(it.id)
-                            Toast.makeText(c, "Quest completed", Toast.LENGTH_SHORT).show()
+                            val intent = Intent(c, MainActivity::class.java)
+                            intent.action = MainActivity.ACTION_SHOW_TIMER
+                            intent.putExtra(Constants.QUEST_ID_EXTRA_KEY, it.id)
+                            c.startActivity(intent)
                         }
                     }).show(c)
             }
@@ -113,7 +107,10 @@ class ReminderNotificationJob : Job(), Injects<Module> {
     }
 
     private fun createNotification(title: String, message: String) =
-        NotificationCompat.Builder(context, "myPoli")
+        NotificationCompat.Builder(
+            context,
+            Constants.NOTIFICATION_CHANNEL_ID
+        )
             .setSmallIcon(R.drawable.ic_notification_small)
             .setContentTitle(title)
             .setContentText(message)

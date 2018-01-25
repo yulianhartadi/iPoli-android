@@ -2,6 +2,7 @@ package mypoli.android
 
 import com.couchbase.lite.*
 import mypoli.android.player.persistence.model.CouchbasePlayer
+import mypoli.android.quest.data.persistence.CouchbaseQuest
 
 /**
  * Created by Polina Zhelyazkova <polina@ipoli.io>
@@ -50,6 +51,27 @@ class Migration(private val database: Database) {
             val inventory = doc.getDictionary("inventory")
             inventory.setArray("challenges", MutableArray())
             doc.setInt("schemaVersion", 3)
+            database.save(doc)
+            doc = database.getDocument(playerId).toMutable()
+        }
+
+        if (doc.getInt("schemaVersion") == 3) {
+            val questResultSet = Query.select(SelectResult.expression(Meta.id))
+                .from(DataSource.database(database))
+                .where(
+                    Expression.property("type")
+                        .equalTo(CouchbaseQuest.TYPE)
+                )
+                .execute()
+
+            val iterator = questResultSet.iterator()
+            while (iterator.hasNext()) {
+                val questId = iterator.next().getString("_id")
+                val questDoc = database.getDocument(questId).toMutable()
+                questDoc.setArray("timeRanges", MutableArray())
+                database.save(questDoc)
+            }
+            doc.setInt("schemaVersion", 4)
             database.save(doc)
         }
 

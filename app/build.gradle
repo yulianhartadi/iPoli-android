@@ -21,8 +21,8 @@ android {
         applicationId "mypoli.android"
         minSdkVersion 21
         targetSdkVersion 27
-        versionCode 11
-        versionName "Conquer Amazing Challenges"
+        versionCode 14
+        versionName "Focus Timer"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
 

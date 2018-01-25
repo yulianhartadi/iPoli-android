@@ -35,7 +35,7 @@ data class UndoRemoveEventIntent(val eventId: String) : DayViewIntent()
 data class ReminderPickedIntent(val reminder: ReminderViewModel?) : DayViewIntent()
 data class IconPickedIntent(val icon: Icon?) : DayViewIntent()
 data class ColorPickedIntent(val color: AndroidColor) : DayViewIntent()
-data class CompleteQuestIntent(val questId: String) : DayViewIntent()
+data class CompleteQuestIntent(val questId: String, val isStarted: Boolean) : DayViewIntent()
 data class UndoCompleteQuestIntent(val questId: String) : DayViewIntent()
 data class AddNewScheduledQuestIntent(val startTime: Time, val duration: Int) : DayViewIntent()
 data class StartEditScheduledQuestIntent(val questViewModel: DayViewController.QuestViewModel) :
@@ -81,7 +81,8 @@ data class DayViewState(
         COLOR_PICKED,
         EDIT_QUEST,
         EVENT_UPDATED,
-        EVENT_VALIDATION_ERROR,
+        EVENT_VALIDATION_EMPTY_NAME,
+        EVENT_VALIDATION_TIMER_RUNNING,
         NEW_EVENT_REMOVED,
         EVENT_REMOVED,
         UNDO_REMOVED_EVENT,

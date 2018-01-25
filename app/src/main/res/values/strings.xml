@@ -1096,6 +1096,9 @@
     <string name="no_quest_selected">Select some quests first</string>
     <string name="feedback_response">Thank you!</string>
     <string name="date">Date</string>
+    <string name="timer_replaced">All other timers are stopped. Have fun!</string>
+    <string name="validation_timer_running">Can\'t edit Quest with running timer</string>
+    <string name="timer_type">Pomodoro</string>
 
     <string-array name="player_titles">
         <item>Novice</item>

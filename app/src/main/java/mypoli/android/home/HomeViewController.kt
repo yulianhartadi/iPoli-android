@@ -28,6 +28,14 @@ import org.json.JSONObject
 class HomeViewController(args: Bundle? = null) :
     RestoreViewOnCreateController(args) {
 
+//    private var navigationItemSelected: MenuItem? = null
+
+//    override fun onNavigationItemSelected(item: MenuItem): Boolean {
+//        navigationItemSelected = item
+//        view?.drawerLayout?.closeDrawer(GravityCompat.START)
+//        return false
+//    }
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup,
@@ -58,6 +66,13 @@ class HomeViewController(args: Bundle? = null) :
                     .popChangeHandler(handler)
             )
         }
+//        RatePopup().show(view.context)
+
+//        DurationPickerDialogController().showDialog(childRouter, "hello")
+
+//        router.pushController(RouterTransaction.with(TimerViewController()))
+//        actionBarDrawerToggle.syncState()
+
 
     }
 

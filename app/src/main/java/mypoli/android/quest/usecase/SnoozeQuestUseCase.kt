@@ -1,7 +1,7 @@
 package mypoli.android.quest.usecase
 
 import mypoli.android.Constants
-import mypoli.android.ReminderScheduler
+import mypoli.android.quest.job.ReminderScheduler
 import mypoli.android.common.UseCase
 import mypoli.android.common.datetime.DateUtils
 import mypoli.android.common.datetime.Time

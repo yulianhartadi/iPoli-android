@@ -39,7 +39,7 @@ class PetMessagePresenter(
         when (intent) {
             is PetMessageIntent.LoadData -> {
                 launch {
-                    listenForPlayerChangesUseCase.execute(Unit).consumeEach {
+                    listenForPlayerChangesUseCase.listen(Unit).consumeEach {
                         sendChannel.send(PetMessageIntent.ChangePlayer(it))
                     }
                 }

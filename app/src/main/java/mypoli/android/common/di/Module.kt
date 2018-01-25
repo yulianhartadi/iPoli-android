@@ -8,8 +8,6 @@ import com.couchbase.lite.Database
 import com.couchbase.lite.DatabaseConfiguration
 import kotlinx.coroutines.experimental.CommonPool
 import kotlinx.coroutines.experimental.Job
-import mypoli.android.AndroidJobReminderScheduler
-import mypoli.android.ReminderScheduler
 import mypoli.android.challenge.PersonalizeChallengePresenter
 import mypoli.android.challenge.category.ChallengeCategoryListPresenter
 import mypoli.android.challenge.category.list.ChallengeListForCategoryPresenter
@@ -37,13 +35,16 @@ import mypoli.android.player.persistence.CouchbasePlayerRepository
 import mypoli.android.player.persistence.PlayerRepository
 import mypoli.android.player.usecase.*
 import mypoli.android.player.view.LevelUpPresenter
-import mypoli.android.quest.AndroidJobQuestCompleteScheduler
-import mypoli.android.quest.QuestCompleteScheduler
+import mypoli.android.quest.CompletedQuestPresenter
 import mypoli.android.quest.calendar.CalendarPresenter
 import mypoli.android.quest.calendar.addquest.AddQuestPresenter
 import mypoli.android.quest.calendar.dayview.DayViewPresenter
 import mypoli.android.quest.data.persistence.CouchbaseQuestRepository
 import mypoli.android.quest.data.persistence.QuestRepository
+import mypoli.android.quest.job.AndroidJobQuestCompleteScheduler
+import mypoli.android.quest.job.AndroidJobReminderScheduler
+import mypoli.android.quest.job.QuestCompleteScheduler
+import mypoli.android.quest.job.ReminderScheduler
 import mypoli.android.quest.usecase.*
 import mypoli.android.quest.view.QuestCompletePresenter
 import mypoli.android.rate.AndroidRatePopupScheduler
@@ -58,6 +59,9 @@ import mypoli.android.store.theme.usecase.BuyThemeUseCase
 import mypoli.android.store.theme.usecase.ChangeThemeUseCase
 import mypoli.android.store.usecase.PurchaseGemPackUseCase
 import mypoli.android.timer.TimerPresenter
+import mypoli.android.timer.job.AndroidJobTimerCompleteScheduler
+import mypoli.android.timer.job.TimerCompleteScheduler
+import mypoli.android.timer.usecase.*
 import space.traversal.kapsule.HasModules
 import space.traversal.kapsule.Injects
 import space.traversal.kapsule.required
@@ -92,6 +96,8 @@ interface AndroidModule {
     val database: Database
 
     val reminderScheduler: ReminderScheduler
+
+    val timerCompleteScheduler: TimerCompleteScheduler
 
     val questCompleteScheduler: QuestCompleteScheduler
 
@@ -135,6 +141,8 @@ class MainAndroidModule(private val context: Context) : AndroidModule {
 
     override val reminderScheduler get() = AndroidJobReminderScheduler()
 
+    override val timerCompleteScheduler get() = AndroidJobTimerCompleteScheduler()
+
     override val questCompleteScheduler get() = AndroidJobQuestCompleteScheduler()
 
     override val levelUpScheduler get() = AndroidLevelUpScheduler()
@@ -153,6 +161,15 @@ class MainAndroidModule(private val context: Context) : AndroidModule {
 
 class MainUseCaseModule : UseCaseModule, Injects<Module> {
 
+    override val findPlayerLevelUseCase
+        get() = FindPlayerLevelUseCase(playerRepository)
+
+    override val lowerPetStatsUseCase
+        get() = LowerPetStatsUseCase(
+            questRepository,
+            playerRepository
+        )
+
     private val questRepository by required { questRepository }
     private val playerRepository by required { playerRepository }
     private val reminderScheduler by required { reminderScheduler }
@@ -160,10 +177,20 @@ class MainUseCaseModule : UseCaseModule, Injects<Module> {
     private val levelUpScheduler by required { levelUpScheduler }
     private val levelDownScheduler by required { levelDownScheduler }
     private val rateDialogScheduler by required { ratePopupScheduler }
+    private val timerCompleteScheduler by required { timerCompleteScheduler }
     override val loadScheduleForDateUseCase
         get() = LoadScheduleForDateUseCase(questRepository)
-    override val saveQuestUseCase get() = SaveQuestUseCase(questRepository, reminderScheduler)
-    override val removeQuestUseCase get() = RemoveQuestUseCase(questRepository, reminderScheduler)
+    override val saveQuestUseCase
+        get() = SaveQuestUseCase(
+            questRepository,
+            reminderScheduler
+        )
+    override val removeQuestUseCase
+        get() = RemoveQuestUseCase(
+            questRepository,
+            timerCompleteScheduler,
+            reminderScheduler
+        )
     override val undoRemoveQuestUseCase get() = UndoRemovedQuestUseCase(questRepository)
     override val findQuestToRemindUseCase get() = FindQuestsToRemindUseCase(questRepository)
     override val snoozeQuestUseCase get() = SnoozeQuestUseCase(questRepository, reminderScheduler)
@@ -215,13 +242,32 @@ class MainUseCaseModule : UseCaseModule, Injects<Module> {
     override val buyChallengeUseCase get() = BuyChallengeUseCase(playerRepository)
     override val splitDurationForPomodoroTimerUseCase get() = SplitDurationForPomodoroTimerUseCase()
     override val listenForQuestChangeUseCase get() = ListenForQuestChangeUseCase(questRepository)
-
-    override val findPlayerLevelUseCase get() = FindPlayerLevelUseCase(playerRepository)
-
-    override val lowerPetStatsUseCase
-        get() = LowerPetStatsUseCase(
+    override val completeTimeRangeUseCase
+        get() = CompleteTimeRangeUseCase(
             questRepository,
-            playerRepository
+            splitDurationForPomodoroTimerUseCase,
+            completeQuestUseCase,
+            timerCompleteScheduler
+        )
+    override val cancelTimerUseCase
+        get() = CancelTimerUseCase(
+            questRepository
+        )
+    override val addPomodoroUseCase
+        get() = AddPomodoroUseCase(
+            questRepository,
+            splitDurationForPomodoroTimerUseCase
+        )
+    override val removePomodoroUseCase
+        get() = RemovePomodoroUseCase(
+            questRepository,
+            splitDurationForPomodoroTimerUseCase
+        )
+    override val addTimerToQuestUseCase: AddTimerToQuestUseCase
+        get() = AddTimerToQuestUseCase(
+            questRepository,
+            cancelTimerUseCase,
+            timerCompleteScheduler
         )
 }
 
@@ -259,6 +305,11 @@ interface UseCaseModule {
     val splitDurationForPomodoroTimerUseCase: SplitDurationForPomodoroTimerUseCase
     val findPlayerLevelUseCase: FindPlayerLevelUseCase
     val lowerPetStatsUseCase: LowerPetStatsUseCase
+    val completeTimeRangeUseCase: CompleteTimeRangeUseCase
+    val cancelTimerUseCase: CancelTimerUseCase
+    val addPomodoroUseCase: AddPomodoroUseCase
+    val removePomodoroUseCase: RemovePomodoroUseCase
+    val addTimerToQuestUseCase: AddTimerToQuestUseCase
 }
 
 interface PresenterModule {
@@ -281,10 +332,13 @@ interface PresenterModule {
     val levelUpPresenter: LevelUpPresenter
     val questCompletePresenter: QuestCompletePresenter
     val ratePresenter: RatePresenter
-
+    val completedQuestPresenter: CompletedQuestPresenter
 }
 
 class AndroidPresenterModule : PresenterModule, Injects<Module> {
+
+    private val questRepository by required { questRepository }
+    private val playerRepository by required { playerRepository }
     private val loadScheduleForDateUseCase by required { loadScheduleForDateUseCase }
     private val saveQuestUseCase by required { saveQuestUseCase }
     private val removeQuestUseCase by required { removeQuestUseCase }
@@ -315,6 +369,11 @@ class AndroidPresenterModule : PresenterModule, Injects<Module> {
     private val scheduleChallengeUseCase by required { scheduleChallengeUseCase }
     private val splitDurationForPomodoroTimerUseCase by required { splitDurationForPomodoroTimerUseCase }
     private val listenForQuestChangeUseCase by required { listenForQuestChangeUseCase }
+    private val completeTimeRangeUseCase by required { completeTimeRangeUseCase }
+    private val cancelQuestTimerUseCase by required { cancelTimerUseCase }
+    private val addPomodoroUseCase by required { addPomodoroUseCase }
+    private val removePomodoroUseCase by required { removePomodoroUseCase }
+    private val addTimerToQuestUseCase by required { addTimerToQuestUseCase }
     private val job by required { job }
     override val dayViewPresenter
         get() = DayViewPresenter(
@@ -324,6 +383,7 @@ class AndroidPresenterModule : PresenterModule, Injects<Module> {
             undoRemoveQuestUseCase,
             completeQuestUseCase,
             undoCompleteQuestUseCase,
+            completeTimeRangeUseCase,
             job
         )
     override val reminderPickerPresenter
@@ -403,6 +463,19 @@ class AndroidPresenterModule : PresenterModule, Injects<Module> {
         get() = TimerPresenter(
             splitDurationForPomodoroTimerUseCase,
             listenForQuestChangeUseCase,
+            addTimerToQuestUseCase,
+            completeTimeRangeUseCase,
+            cancelQuestTimerUseCase,
+            addPomodoroUseCase,
+            removePomodoroUseCase,
+            job
+        )
+
+    override val completedQuestPresenter: CompletedQuestPresenter
+        get() = CompletedQuestPresenter(
+            questRepository,
+            playerRepository,
+            splitDurationForPomodoroTimerUseCase,
             job
         )
 

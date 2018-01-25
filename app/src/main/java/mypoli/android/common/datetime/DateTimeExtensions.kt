@@ -50,5 +50,16 @@ fun LocalDateTime.toMillis(zoneId: ZoneId) = atZone(zoneId).toInstant().toEpochM
 
 fun LocalDateTime.toMillis() = atZone(ZoneId.systemDefault()).toInstant().toEpochMilli()
 
-fun Long.toLocalDateTime(): LocalDateTime =
-    LocalDateTime.ofInstant(Instant.ofEpochMilli(this), ZoneId.systemDefault())
+operator fun Instant.plus(other: Instant): Instant {
+    return Instant.ofEpochMilli(toEpochMilli() + other.toEpochMilli())
+}
+
+operator fun Instant.minus(other: Instant): Instant {
+    return Instant.ofEpochMilli(toEpochMilli() - other.toEpochMilli())
+}
+
+fun Instant.plusMinutes(minutes: Long): Instant = plus(minutes, ChronoUnit.MINUTES)
+
+val Instant.milliseconds get() = toEpochMilli().milliseconds
+
+val Long.instant: Instant get() = Instant.ofEpochMilli(this)

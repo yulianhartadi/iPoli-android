@@ -19,6 +19,7 @@ import mypoli.android.home.HomeViewController
 import mypoli.android.player.AuthProvider
 import mypoli.android.player.Player
 import mypoli.android.player.persistence.model.ProviderType
+import mypoli.android.timer.TimerViewController
 import space.traversal.kapsule.Injects
 import space.traversal.kapsule.inject
 import space.traversal.kapsule.required
@@ -76,7 +77,11 @@ class MainActivity : AppCompatActivity(), Injects<Module> {
             migrateIfNeeded()
         }
 
-        if (!router.hasRootController()) {
+        val startIntent = intent
+        if (startIntent != null && startIntent.action == ACTION_SHOW_TIMER) {
+            val questId = intent.getStringExtra(Constants.QUEST_ID_EXTRA_KEY)
+            router.setRoot(RouterTransaction.with(TimerViewController(questId)))
+        } else if (!router.hasRootController()) {
             router.setRoot(RouterTransaction.with(HomeViewController()))
 //            router.setRoot(RouterTransaction.with(TestViewController()))
 //            router.setRoot(RouterTransaction.with(ChallengeCategoryListViewController()))
@@ -121,22 +126,24 @@ class MainActivity : AppCompatActivity(), Injects<Module> {
         router.pushController(transaction)
     }
 
+    val rootRouter get() = router
+
     fun enterFullScreen() {
         window.decorView.systemUiVisibility = (
             View.SYSTEM_UI_FLAG_LAYOUT_STABLE
                 or View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
                 or View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
-                or View.SYSTEM_UI_FLAG_HIDE_NAVIGATION // hide nav bar
-                or View.SYSTEM_UI_FLAG_FULLSCREEN // hide status bar
-                or View.SYSTEM_UI_FLAG_IMMERSIVE
+                or View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
+                or View.SYSTEM_UI_FLAG_FULLSCREEN
+                or View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY
             )
     }
 
     fun exitFullScreen() {
-        window.decorView.systemUiVisibility = (
-            View.SYSTEM_UI_FLAG_LAYOUT_STABLE
-                or View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
-                or View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
-            )
+        window.decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_VISIBLE
+    }
+
+    companion object {
+        const val ACTION_SHOW_TIMER = "mypoli.android.intent.action.SHOW_TIMER"
     }
 }

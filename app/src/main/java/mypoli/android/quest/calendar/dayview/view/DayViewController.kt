@@ -34,6 +34,7 @@ import mypoli.android.common.datetime.isNotEqual
 import mypoli.android.common.datetime.startOfDayUTC
 import mypoli.android.common.mvi.MviViewController
 import mypoli.android.common.view.*
+import mypoli.android.quest.CompletedQuestViewController
 import mypoli.android.quest.Icon
 import mypoli.android.quest.calendar.CalendarViewController
 import mypoli.android.quest.calendar.dayview.DayViewPresenter
@@ -189,8 +190,12 @@ class DayViewController :
                 ViewUtils.hideKeyboard(calendarDayView)
             }
 
-            EVENT_VALIDATION_ERROR -> {
+            EVENT_VALIDATION_EMPTY_NAME -> {
                 calendarDayView.onEventValidationError()
+            }
+
+            EVENT_VALIDATION_TIMER_RUNNING -> {
+                showShortToast(R.string.validation_timer_running)
             }
 
             EVENT_REMOVED -> {
@@ -440,7 +445,8 @@ class DayViewController :
     }
 
     private fun showDatePicker(selectedDate: LocalDate) {
-        DatePickerDialog(view!!.context, R.style.Theme_myPoli_AlertDialog,
+        DatePickerDialog(
+            view!!.context, R.style.Theme_myPoli_AlertDialog,
             DatePickerDialog.OnDateSetListener { _, year, month, dayOfMonth ->
                 send(DayViewIntent.DatePicked(year, month + 1, dayOfMonth))
             }, selectedDate.year, selectedDate.month.value - 1, selectedDate.dayOfMonth
@@ -492,7 +498,8 @@ class DayViewController :
         val backgroundColor: AndroidColor,
         @ColorRes val textColor: Int,
         val reminder: ReminderViewModel?,
-        val isCompleted: Boolean
+        val isCompleted: Boolean,
+        val isStarted: Boolean
     ) : CalendarEvent
 
     inner class QuestScheduledEventsAdapter(
@@ -510,8 +517,13 @@ class DayViewController :
             val vm = getItem(position)
 
             view.setOnLongClickListener {
-                send(StartEditScheduledQuestIntent(vm))
-                calendarDayView.startEventRescheduling(vm)
+
+                if (vm.isStarted) {
+                    showShortToast(R.string.validation_timer_running)
+                } else {
+                    send(StartEditScheduledQuestIntent(vm))
+                    calendarDayView.startEventRescheduling(vm)
+                }
                 true
             }
 
@@ -540,7 +552,9 @@ class DayViewController :
                     view.questIcon.setImageDrawable(icon)
                 }
 
-                view.setOnClickListener(null)
+                view.setOnClickListener {
+                    showCompletedQuest(vm.id)
+                }
             } else {
 
                 view.questCategoryIndicator.setBackgroundResource(vm.backgroundColor.color900)
@@ -578,7 +592,7 @@ class DayViewController :
                         }
 
                         override fun onAnimationEnd(animation: Animator?) {
-                            send(CompleteQuestIntent(vm.id))
+                            send(CompleteQuestIntent(vm.id, vm.isStarted))
                         }
 
                     })
@@ -671,6 +685,10 @@ class DayViewController :
         private fun tintList(@ColorRes color: Int) = ContextCompat.getColorStateList(context, color)
     }
 
+    private fun showCompletedQuest(questId: String) {
+        pushWithRootRouter(RouterTransaction.with(CompletedQuestViewController(questId)))
+    }
+
     data class UnscheduledQuestViewModel(
         override val id: String,
         val name: String,
@@ -679,6 +697,7 @@ class DayViewController :
         val backgroundColor: AndroidColor,
         @ColorRes val textColor: Int,
         val isCompleted: Boolean,
+        val isStarted: Boolean,
         val reminder: ReminderViewModel? = null
     ) : UnscheduledEvent
 
@@ -694,8 +713,12 @@ class DayViewController :
             calendarDayView: CalendarDayView
         ) {
             itemView.setOnLongClickListener {
-                send(StartEditUnscheduledQuestIntent(event))
-                calendarDayView.startEventRescheduling(events[adapterPosition])
+                if (event.isStarted) {
+                    showShortToast(R.string.validation_timer_running)
+                } else {
+                    send(StartEditUnscheduledQuestIntent(event))
+                    calendarDayView.startEventRescheduling(events[adapterPosition])
+                }
                 true
             }
 
@@ -717,7 +740,9 @@ class DayViewController :
                     itemView.unscheduledQuestIcon.setImageDrawable(icon)
                 }
 
-                itemView.setOnClickListener(null)
+                itemView.setOnClickListener {
+                    showCompletedQuest(event.id)
+                }
 
             } else {
                 itemView.unscheduledQuestName.text = event.name
@@ -745,7 +770,7 @@ class DayViewController :
 
             itemView.unscheduledDone.setOnCheckedChangeListener { _, checked ->
                 if (checked) {
-                    send(CompleteQuestIntent(event.id))
+                    send(CompleteQuestIntent(event.id, event.isStarted))
                 } else {
                     send(UndoCompleteQuestIntent(event.id))
                 }
@@ -758,6 +783,10 @@ class DayViewController :
     }
 
     private fun showQuest(questId: String) {
-        pushWithRootRouter(RouterTransaction.with(TimerViewController(questId)))
+        pushWithRootRouter(
+            RouterTransaction.with(TimerViewController(questId)).tag(
+                TimerViewController.TAG
+            )
+        )
     }
 }

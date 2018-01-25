@@ -4,7 +4,10 @@ import com.couchbase.lite.*
 import com.couchbase.lite.Expression.property
 import com.couchbase.lite.Function
 import kotlinx.coroutines.experimental.channels.ReceiveChannel
-import mypoli.android.common.datetime.*
+import mypoli.android.common.datetime.DateUtils
+import mypoli.android.common.datetime.Time
+import mypoli.android.common.datetime.instant
+import mypoli.android.common.datetime.startOfDayUTC
 import mypoli.android.common.persistence.BaseCouchbaseRepository
 import mypoli.android.common.persistence.CouchbasePersistedModel
 import mypoli.android.common.persistence.Repository
@@ -25,6 +28,7 @@ interface QuestRepository : Repository<Quest> {
     fun findNextQuestsToRemind(afterTime: Long = DateUtils.nowUTC().time): List<Quest>
     fun findQuestsToRemind(time: Long): List<Quest>
     fun findCompletedForDate(date: LocalDate): List<Quest>
+    fun findStartedQuest(): Quest?
 }
 
 data class CouchbaseQuest(override val map: MutableMap<String, Any?> = mutableMapOf()) :
@@ -44,8 +48,7 @@ data class CouchbaseQuest(override val map: MutableMap<String, Any?> = mutableMa
     var scheduledDate: Long by map
     var completedAtDate: Long? by map
     var completedAtMinute: Long? by map
-    var actualStart: Long? by map
-    var pomodoroTimeRanges: List<MutableMap<String, Any?>> by map
+    var timeRanges: List<MutableMap<String, Any?>> by map
     override var createdAt: Long by map
     override var updatedAt: Long by map
     override var removedAt: Long? by map
@@ -148,6 +151,18 @@ class CouchbaseQuestRepository(database: Database, coroutineContext: CoroutineCo
         return toEntities(query.execute().iterator())
     }
 
+    override fun findStartedQuest(): Quest? {
+        val query = createQuery(
+            where = property("completedAtDate").isNullOrMissing
+                .and(ArrayFunction.length(property("timeRanges")).greaterThan(0)),
+            limit = 1
+        )
+        val result = query.execute().next()
+        return result?.let {
+            toEntityObject(it)
+        }
+    }
+
     override fun toEntityObject(dataMap: MutableMap<String, Any?>): Quest {
         val cq = CouchbaseQuest(dataMap.withDefault {
             null
@@ -188,14 +203,13 @@ class CouchbaseQuestRepository(database: Database, coroutineContext: CoroutineCo
                 val cr = CouchbaseReminder(it)
                 Reminder(cr.message, Time.of(cr.minute), DateUtils.fromMillis(cr.date))
             },
-            actualStart = cq.actualStart?.toLocalDateTime(),
-            pomodoroTimeRanges = cq.pomodoroTimeRanges.map {
+            timeRanges = cq.timeRanges.map {
                 val ctr = CouchbaseTimeRange(it)
                 TimeRange(
                     TimeRange.Type.valueOf(ctr.type),
                     ctr.duration,
-                    ctr.start?.toLocalDateTime(),
-                    ctr.end?.toLocalDateTime()
+                    ctr.start?.instant,
+                    ctr.end?.instant
                 )
             }
         )
@@ -234,8 +248,7 @@ class CouchbaseQuestRepository(database: Database, coroutineContext: CoroutineCo
         q.startMinute = entity.startTime?.toMinuteOfDay()?.toLong()
         q.completedAtDate = entity.completedAtDate?.startOfDayUTC()
         q.completedAtMinute = entity.completedAtTime?.toMinuteOfDay()?.toLong()
-        q.actualStart = entity.actualStart?.toMillis()
-        q.pomodoroTimeRanges = entity.pomodoroTimeRanges.map {
+        q.timeRanges = entity.timeRanges.map {
             createCouchbaseTimeRange(it).map
         }
         return q
@@ -245,8 +258,8 @@ class CouchbaseQuestRepository(database: Database, coroutineContext: CoroutineCo
         val cTimeRange = CouchbaseTimeRange()
         cTimeRange.type = timeRange.type.name
         cTimeRange.duration = timeRange.duration
-        cTimeRange.start = timeRange.start?.toMillis()
-        cTimeRange.end = timeRange.end?.toMillis()
+        cTimeRange.start = timeRange.start?.toEpochMilli()
+        cTimeRange.end = timeRange.end?.toEpochMilli()
         return cTimeRange
     }
 

@@ -1,7 +1,12 @@
 package mypoli.android
 
+import android.annotation.SuppressLint
 import android.app.Application
+import android.app.Notification
+import android.app.NotificationChannel
+import android.app.NotificationManager
 import android.content.Context
+import android.os.Build
 import android.util.Log
 import com.crashlytics.android.Crashlytics
 import com.evernote.android.job.JobManager
@@ -35,6 +40,7 @@ class myPoliApp : Application() {
             (context.applicationContext as myPoliApp).module
     }
 
+    @SuppressLint("NewApi")
     override fun onCreate() {
         super.onCreate()
 
@@ -97,5 +103,22 @@ class myPoliApp : Application() {
         ).transitive()
 
         instance = this
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            val notificationManager =
+                getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+            val importance = NotificationManager.IMPORTANCE_HIGH
+            val channel = NotificationChannel(
+                Constants.NOTIFICATION_CHANNEL_ID,
+                Constants.NOTIFICATION_CHANNEL_NAME,
+                importance
+            )
+            channel.description = "Reminder notifications"
+            channel.enableLights(true)
+            channel.enableVibration(true)
+            channel.lockscreenVisibility = Notification.VISIBILITY_PUBLIC
+            notificationManager.createNotificationChannel(channel)
+        }
+
+//        TinyDancer.create().show(this)
     }
 }
