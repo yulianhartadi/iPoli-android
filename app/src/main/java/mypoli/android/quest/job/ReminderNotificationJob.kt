@@ -3,6 +3,7 @@ package mypoli.android.quest.job
 import android.annotation.SuppressLint
 import android.app.NotificationManager
 import android.content.Context
+import android.content.Intent
 import android.support.v4.app.NotificationCompat
 import android.widget.Toast
 import com.evernote.android.job.Job
@@ -12,6 +13,7 @@ import com.evernote.android.job.util.support.PersistableBundleCompat
 import kotlinx.coroutines.experimental.android.UI
 import kotlinx.coroutines.experimental.launch
 import mypoli.android.Constants
+import mypoli.android.MainActivity
 import mypoli.android.R
 import mypoli.android.common.datetime.Time
 import mypoli.android.common.di.ControllerModule
@@ -19,7 +21,6 @@ import mypoli.android.common.di.SimpleModule
 import mypoli.android.common.view.asThemedWrapper
 import mypoli.android.myPoliApp
 import mypoli.android.quest.Quest
-import mypoli.android.quest.usecase.CompleteQuestUseCase.Params.WithQuestId
 import mypoli.android.reminder.view.ReminderNotificationPopup
 import mypoli.android.reminder.view.ReminderNotificationViewModel
 import org.threeten.bp.LocalDate
@@ -43,7 +44,6 @@ class ReminderNotificationJob : Job(), Injects<ControllerModule> {
         val kap = Kapsule<SimpleModule>()
         val findQuestsToRemindUseCase by kap.required { findQuestToRemindUseCase }
         val snoozeQuestUseCase by kap.required { snoozeQuestUseCase }
-        val completeQuestUseCase by kap.required { completeQuestUseCase }
         val findPetUseCase by kap.required { findPetUseCase }
         kap.inject(myPoliApp.simpleModule(context))
 
@@ -82,10 +82,12 @@ class ReminderNotificationJob : Job(), Injects<ControllerModule> {
                             Toast.makeText(c, "Quest snoozed", Toast.LENGTH_SHORT).show()
                         }
 
-                        override fun onDone() {
+                        override fun onStart() {
                             notificationManager.cancel(notificationId)
-                            completeQuestUseCase.execute(WithQuestId(it.id))
-                            Toast.makeText(c, "Quest completed", Toast.LENGTH_SHORT).show()
+                            val intent = Intent(c, MainActivity::class.java)
+                            intent.action = MainActivity.ACTION_SHOW_TIMER
+                            intent.putExtra(Constants.QUEST_ID_EXTRA_KEY, it.id)
+                            c.startActivity(intent)
                         }
                     }).show(c)
             }

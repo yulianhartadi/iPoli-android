@@ -14,6 +14,7 @@ import android.view.animation.AnticipateInterpolator
 import kotlinx.android.synthetic.main.view_reminder.view.*
 import mypoli.android.R
 import mypoli.android.common.view.MviPopup
+import mypoli.android.common.view.views
 import mypoli.android.pet.AndroidPetAvatar
 import mypoli.android.pet.Pet
 
@@ -38,7 +39,7 @@ class ReminderNotificationPopup(
     interface OnClickListener {
         fun onDismiss()
         fun onSnooze()
-        fun onDone()
+        fun onStart()
     }
 
     private lateinit var overlayView: ViewGroup
@@ -86,9 +87,9 @@ class ReminderNotificationPopup(
                 hide()
             }
 
-            done.setOnClickListener {
-                done.isClickable = false
-                listener.onDone()
+            start.setOnClickListener {
+                start.isClickable = false
+                listener.onStart()
                 hide()
             }
         }
@@ -154,13 +155,8 @@ class ReminderNotificationPopup(
         val duration = view.resources.getInteger(android.R.integer.config_mediumAnimTime).toLong()
         backgroundAnim.duration = duration
 
-        val views = listOf<View>(
-            view.dismiss, view.snooze, view.done,
-            view.dismissHint, view.snoozeHint, view.doneHint,
-            view.name, view.message, view.startTimeMessage
-        )
         val animators =
-            views.map { ObjectAnimator.ofFloat(it, "alpha", 0f, 1f).setDuration(duration * 4 / 5) }
+            view.group.views().map { ObjectAnimator.ofFloat(it, "alpha", 0f, 1f).setDuration(duration * 4 / 5) }
                 .toMutableList() as MutableList<Animator>
         animators.add(backgroundAnim)
 
@@ -193,12 +189,7 @@ class ReminderNotificationPopup(
             }
         })
 
-        val views = listOf<View>(
-            view.dismiss, view.snooze, view.done,
-            view.dismissHint, view.snoozeHint, view.doneHint,
-            view.name, view.message, view.startTimeMessage
-        )
-        val animators = views.map {
+        val animators = view.group.views().map {
             ObjectAnimator.ofFloat(it, "alpha", 1f, 0f).setDuration((duration / 1.5).toLong())
         }
             .toMutableList() as MutableList<Animator>
