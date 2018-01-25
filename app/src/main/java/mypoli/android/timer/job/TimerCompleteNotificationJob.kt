@@ -184,8 +184,7 @@ class AndroidJobTimerCompleteScheduler : TimerCompleteScheduler {
         bundle.putString("questId", questId)
         JobRequest.Builder(TimerCompleteNotificationJob.TAG)
             .setExtras(bundle)
-//            .setExact(after.millisValue)
-            .setExact(1000)
+            .setExact(after.millisValue)
             .build()
             .schedule()
     }
