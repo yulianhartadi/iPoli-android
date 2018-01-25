@@ -33,7 +33,7 @@ class PetStorePresenter(
                     }
                 }
                 state.copy(
-                    type = DATA_LOADED
+                    type = DATA_CHANGED
                 )
             }
 

@@ -29,7 +29,6 @@ import mypoli.android.store.GemStoreViewController
  * on 12/4/17.
  */
 class PetStoreViewController(args: Bundle? = null) :
-//    MviViewController<PetStoreViewState, PetStoreViewController, PetStorePresenter, PetStoreIntent>(
     ReduxViewController<PetStoreAction, PetStoreViewState, PetStoreReduxPresenter>(
         args
     ) {
@@ -51,13 +50,15 @@ class PetStoreViewController(args: Bundle? = null) :
 
         view.petPager.clipToPadding = false
         view.petPager.pageMargin = ViewUtils.dpToPx(16f, view.context).toInt()
+
+        view.petPager.adapter = PetPagerAdapter()
+
         return view
     }
 
     override fun onAttach(view: View) {
         showBackButton()
         super.onAttach(view)
-//        send(LoadData)
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
@@ -70,11 +71,8 @@ class PetStoreViewController(args: Bundle? = null) :
 
     override fun render(state: PetStoreViewState, view: View) {
         when (state.type) {
-            DATA_LOADED -> {
-                view.petPager.adapter = PetPagerAdapter(listOf())
-            }
 
-            PLAYER_CHANGED -> {
+            DATA_CHANGED -> {
                 view.playerGems.text = state.playerGems.toString()
                 (view.petPager.adapter as PetPagerAdapter).updateAll(state.petViewModels)
             }
@@ -86,6 +84,9 @@ class PetStoreViewController(args: Bundle? = null) :
 
             SHOW_GEM_STORE -> {
                 showGemStore()
+            }
+
+            else -> {
             }
         }
     }
@@ -103,7 +104,7 @@ class PetStoreViewController(args: Bundle? = null) :
         )
     }
 
-    inner class PetPagerAdapter(private var viewModels: List<PetStoreReduxPresenter.PetViewModel>) :
+    inner class PetPagerAdapter(private var viewModels: List<PetStoreReduxPresenter.PetViewModel> = listOf()) :
         PagerAdapter() {
 
         override fun instantiateItem(container: ViewGroup, position: Int): Any {
