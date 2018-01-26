@@ -7,12 +7,12 @@ import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import com.bluelinelabs.conductor.RestoreViewOnCreateController
 import com.mikepenz.iconics.IconicsDrawable
 import kotlinx.android.synthetic.main.controller_agenda.view.*
 import kotlinx.android.synthetic.main.item_agenda_quest.view.*
 import mypoli.android.R
 import mypoli.android.common.datetime.Time
+import mypoli.android.common.redux.android.ReduxViewController
 import mypoli.android.common.view.AndroidColor
 import mypoli.android.common.view.AndroidIcon
 import mypoli.android.common.view.EndlessRecyclerViewScrollListener
@@ -24,7 +24,11 @@ import timber.log.Timber
  * Created by Polina Zhelyazkova <polina@ipoli.io>
  * on 1/26/18.
  */
-class AgendaViewController : RestoreViewOnCreateController() {
+class AgendaViewController(args: Bundle? = null) :
+    ReduxViewController<AgendaAction, AgendaViewState, AgendaPresenter>(args) {
+
+    override val presenter get() = AgendaPresenter()
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup,
@@ -190,10 +194,20 @@ class AgendaViewController : RestoreViewOnCreateController() {
             )
         )
         view.agendaList.scrollToPosition(5)
-        view.agendaList.addOnScrollListener(EndlessRecyclerViewScrollListener(layoutManager, {side ->
-            Timber.d("AAA Scroll $side")
-        }, 3))
+        view.agendaList.addOnScrollListener(
+            EndlessRecyclerViewScrollListener(
+                layoutManager,
+                { side ->
+                    Timber.d("AAA Scroll $side")
+                },
+                3
+            )
+        )
         return view
+    }
+
+    override fun render(state: AgendaViewState, view: View) {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 
     interface AgendaViewModel
@@ -221,11 +235,17 @@ class AgendaViewController : RestoreViewOnCreateController() {
             val itemView = holder.itemView
 
             val type = getItemViewType(position)
-            when(type) {
+            when (type) {
                 ItemType.QUEST.ordinal -> bindQuestViewModel(itemView, vm as QuestViewModel)
                 ItemType.DATE.ordinal -> bindDateViewModel(itemView, vm as DateViewModel)
-                ItemType.MONTH_DIVIDER.ordinal -> bindMonthDividerViewModel(itemView, vm as MonthDividerViewModel)
-                ItemType.EMPTY_DAYS.ordinal -> bindEmptyDaysViewModel(itemView, vm as EmptyDaysViewModel)
+                ItemType.MONTH_DIVIDER.ordinal -> bindMonthDividerViewModel(
+                    itemView,
+                    vm as MonthDividerViewModel
+                )
+                ItemType.EMPTY_DAYS.ordinal -> bindEmptyDaysViewModel(
+                    itemView,
+                    vm as EmptyDaysViewModel
+                )
             }
         }
 
