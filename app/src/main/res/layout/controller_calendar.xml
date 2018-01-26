@@ -72,12 +72,19 @@
         android:elevation="3dp"
         android:progressDrawable="@drawable/experience_progress_bar" />
 
-    <mypoli.android.quest.calendar.dayview.view.widget.LockableViewPager
-        android:id="@+id/pager"
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:elevation="2dp"
-        app:layout_behavior="@string/appbar_scrolling_view_behavior" />
+        android:id="@+id/contentContainer"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior">
+
+        <mypoli.android.quest.calendar.dayview.view.widget.LockableViewPager
+            android:id="@+id/pager"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:elevation="2dp" />
+    </LinearLayout>
 
     <android.support.design.widget.FloatingActionButton
         android:id="@+id/addQuest"

@@ -14,8 +14,10 @@ import android.view.animation.AccelerateDecelerateInterpolator
 import com.bluelinelabs.conductor.Controller
 import com.bluelinelabs.conductor.Router
 import com.bluelinelabs.conductor.RouterTransaction
+import com.bluelinelabs.conductor.changehandler.FadeChangeHandler
 import com.bluelinelabs.conductor.support.RouterPagerAdapter
 import kotlinx.android.synthetic.main.controller_calendar.view.*
+import kotlinx.android.synthetic.main.controller_home.view.*
 import kotlinx.android.synthetic.main.view_calendar_toolbar.view.*
 import mypoli.android.R
 import mypoli.android.common.ViewUtils
@@ -80,7 +82,16 @@ class CalendarViewController(args: Bundle? = null) :
         when (item.itemId) {
 
             R.id.actionAgenda -> {
-                router.setRoot(RouterTransaction.with(AgendaViewController()))
+                val handler = FadeChangeHandler()
+                val childRouter = getChildRouter(view!!.contentContainer, null)
+                if (!childRouter.hasRootController()) {
+                    childRouter.setRoot(
+                        RouterTransaction.with(AgendaViewController())
+                            .pushChangeHandler(handler)
+                            .popChangeHandler(handler)
+                    )
+                }
+                item.setIcon(R.drawable.ic_event_white_24dp)
                 true
             }
             else -> super.onOptionsItemSelected(item)
