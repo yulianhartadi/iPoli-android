@@ -6,5 +6,6 @@ package mypoli.android.common.persistence
  */
 
 interface CouchbasePersistedModel : PersistedModel {
+    val map: Map<String, Any?>
     var type: String
 }
