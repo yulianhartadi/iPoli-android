@@ -9,9 +9,7 @@ import android.os.Bundle
 import android.support.design.widget.FloatingActionButton
 import android.support.v4.view.PagerAdapter
 import android.support.v4.view.ViewPager
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
+import android.view.*
 import android.view.animation.AccelerateDecelerateInterpolator
 import com.bluelinelabs.conductor.Controller
 import com.bluelinelabs.conductor.Router
@@ -24,6 +22,7 @@ import mypoli.android.common.ViewUtils
 import mypoli.android.common.redux.android.ReduxViewController
 import mypoli.android.common.view.*
 import mypoli.android.common.view.changehandler.CircularRevealChangeHandler
+import mypoli.android.quest.agenda.AgendaViewController
 import mypoli.android.quest.calendar.CalendarViewState.DatePickerState.*
 import mypoli.android.quest.calendar.CalendarViewState.StateType.*
 import mypoli.android.quest.calendar.addquest.AddQuestViewController
@@ -60,6 +59,7 @@ class CalendarViewController(args: Bundle? = null) :
         container: ViewGroup,
         savedViewState: Bundle?
     ): View {
+        setHasOptionsMenu(true)
         val view = inflater.inflate(R.layout.controller_calendar, container, false)
 
         initAddQuest(view)
@@ -70,6 +70,22 @@ class CalendarViewController(args: Bundle? = null) :
 
         return view
     }
+
+    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+        super.onCreateOptionsMenu(menu, inflater)
+        inflater.inflate(R.menu.calendar_menu, menu)
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem) =
+        when (item.itemId) {
+
+            R.id.actionAgenda -> {
+                router.setRoot(RouterTransaction.with(AgendaViewController()))
+                true
+            }
+            else -> super.onOptionsItemSelected(item)
+        }
+
 
     private fun initAddQuest(view: View) {
         view.addContainerBackground.setOnClickListener {
