@@ -12,10 +12,6 @@ import kotlin.coroutines.experimental.CoroutineContext
 interface MiddleWare<in S : State> {
     fun execute(state: S, dispatcher: Dispatcher, action: Action): Result
 
-    fun canHandle(action: Action): Boolean {
-        return true
-    }
-
     sealed class Result {
         object Continue : Result()
         object Stop : Result()
@@ -44,15 +40,6 @@ class CompositeMiddleware<in S : State>(private val middleware: List<MiddleWare<
         }
 
         return Continue
-    }
-
-    override fun canHandle(action: Action): Boolean {
-        for (m in middleware) {
-            if (m.canHandle(action)) {
-                return true
-            }
-        }
-        return false
     }
 }
 

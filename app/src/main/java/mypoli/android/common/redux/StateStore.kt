@@ -68,10 +68,6 @@ class StateStore<out S : State>(
     private val middleWare = CompositeMiddleware<S>(middleware)
 
     override fun <A : Action> dispatch(action: A) {
-        if (!middleWare.canHandle(action)) {
-            changeState(action)
-            return
-        }
         val res = middleWare.execute(state, this, action)
         if (res == Continue) changeState(action)
     }

@@ -89,29 +89,5 @@ object StateStoreSpek : Spek({
             stateChangeCount.`should be equal to`(1)
         }
 
-
-
-        it("should not execute middleware with state it can't handle") {
-
-            var executeMiddleCount = 0
-
-            class NoHandleMiddleware : SimpleMiddleware<TestState> {
-
-                override fun onExecute(
-                    state: TestState,
-                    dispatcher: Dispatcher,
-                    action: Action
-                ) {
-                    executeMiddleCount++
-                }
-
-                override fun canHandle(action: Action) = false
-            }
-
-            val store = StateStore<TestState>(testReducer, listOf(NoHandleMiddleware()))
-            store.dispatch(TestAction())
-            executeMiddleCount.`should be equal to`(0)
-        }
-
     }
 })

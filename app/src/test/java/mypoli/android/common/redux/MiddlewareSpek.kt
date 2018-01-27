@@ -1,12 +1,9 @@
 package mypoli.android.common.redux
 
 import kotlinx.coroutines.experimental.runBlocking
-import mypoli.android.common.AppState
 import mypoli.android.common.redux.MiddleWare.Result.Continue
 import mypoli.android.common.redux.MiddleWare.Result.Stop
 import org.amshove.kluent.`should be equal to`
-import org.amshove.kluent.`should be false`
-import org.amshove.kluent.`should be true`
 import org.amshove.kluent.`should be`
 import org.jetbrains.spek.api.Spek
 import org.jetbrains.spek.api.dsl.describe
@@ -94,52 +91,6 @@ object MiddlewareSpek : Spek({
             val result = executeMiddleware(m)
             executeCount.`should be equal to`(0)
             result.`should be`(Stop)
-        }
-
-        it("should be able to handle action if one middleware can") {
-            val m = CompositeMiddleware(
-                listOf(
-                    object : MiddleWare<AppState> {
-                        override fun execute(
-                            state: AppState,
-                            dispatcher: Dispatcher,
-                            action: Action
-                        ) = Continue
-
-                        override fun canHandle(action: Action) = false
-                    },
-                    StopMiddleware()
-                )
-            )
-
-            m.canHandle(TestAction()).`should be true`()
-        }
-
-        it("should be not be able to handle action if no middleware can") {
-            val m = CompositeMiddleware(
-                listOf(
-                    object : MiddleWare<AppState> {
-                        override fun execute(
-                            state: AppState,
-                            dispatcher: Dispatcher,
-                            action: Action
-                        ) = Continue
-
-                        override fun canHandle(action: Action) = false
-                    },
-                    object : MiddleWare<AppState> {
-                        override fun execute(
-                            state: AppState,
-                            dispatcher: Dispatcher,
-                            action: Action
-                        ) = Continue
-
-                        override fun canHandle(action: Action) = false
-                    }
-                )
-            )
-
-            m.canHandle(TestAction()).`should be false`()
         }
     }
 
