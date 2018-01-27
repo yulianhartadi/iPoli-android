@@ -21,9 +21,10 @@
 
     <View
         android:id="@+id/completeLine"
-        android:layout_width="50dp"
+        android:layout_width="1dp"
         android:layout_height="2dp"
         android:background="@color/md_dark_text_54"
+        android:visibility="gone"
         app:layout_constraintBottom_toTopOf="@+id/questStartTime"
         app:layout_constraintStart_toStartOf="@+id/questName"
         app:layout_constraintTop_toTopOf="@+id/questName"

@@ -1,6 +1,7 @@
 package mypoli.android.quest.agenda
 
 import android.content.res.ColorStateList
+import android.graphics.Rect
 import android.os.Bundle
 import android.support.constraint.ConstraintLayout
 import android.support.v4.view.GestureDetectorCompat
@@ -13,10 +14,7 @@ import kotlinx.android.synthetic.main.item_agenda_quest.view.*
 import mypoli.android.R
 import mypoli.android.common.datetime.Time
 import mypoli.android.common.redux.android.ReduxViewController
-import mypoli.android.common.view.AndroidColor
-import mypoli.android.common.view.AndroidIcon
-import mypoli.android.common.view.EndlessRecyclerViewScrollListener
-import mypoli.android.common.view.colorRes
+import mypoli.android.common.view.*
 import org.threeten.bp.LocalDate
 import timber.log.Timber
 
@@ -248,40 +246,31 @@ class AgendaViewController(args: Bundle? = null) :
         RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
         override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
-            val vm = viewModels[position]
+            val vm = viewModels[holder.adapterPosition]
             val itemView = holder.itemView
 
-            val type = getItemViewType(position)
+            itemView.completeLine.visibility = View.GONE
+
+            val type = ItemType.values()[getItemViewType(position)]
             when (type) {
-                ItemType.QUEST.ordinal -> bindQuestViewModel(itemView, vm as QuestViewModel)
-                ItemType.DATE.ordinal -> bindDateViewModel(itemView, vm as DateViewModel)
-                ItemType.MONTH_DIVIDER.ordinal -> bindMonthDividerViewModel(
+                ItemType.QUEST -> bindQuestViewModel(itemView, vm as QuestViewModel)
+                ItemType.DATE -> bindDateViewModel(itemView, vm as DateViewModel)
+                ItemType.MONTH_DIVIDER -> bindMonthDividerViewModel(
                     itemView,
                     vm as MonthDividerViewModel
                 )
-                ItemType.EMPTY_DAYS.ordinal -> bindEmptyDaysViewModel(
+                ItemType.EMPTY_DAYS -> bindEmptyDaysViewModel(
                     itemView,
                     vm as EmptyDaysViewModel
                 )
             }
 
+            var startScrollEv: MotionEvent? = null
+
             val gestureDetector =
-                GestureDetectorCompat(itemView.context, object : GestureDetector.OnGestureListener {
+                GestureDetectorCompat(itemView.context, object :
+                    GestureDetector.SimpleOnGestureListener() {
 
-                    override fun onShowPress(e: MotionEvent?) {
-
-                    }
-
-                    override fun onSingleTapUp(e: MotionEvent?) = false
-
-                    override fun onDown(e: MotionEvent?) = true
-
-                    override fun onFling(
-                        e1: MotionEvent,
-                        e2: MotionEvent,
-                        velocityX: Float,
-                        velocityY: Float
-                    ) = true
 
                     override fun onScroll(
                         e1: MotionEvent,
@@ -289,24 +278,63 @@ class AgendaViewController(args: Bundle? = null) :
                         distanceX: Float,
                         distanceY: Float
                     ): Boolean {
-                        Timber.d("AAA scroll $distanceX")
-                        val lp = itemView.completeLine.layoutParams as ConstraintLayout.LayoutParams
-                        lp.width = (e2.rawX - itemView.questName.x).toInt()
-                        itemView.completeLine.layoutParams = lp
-//                        itemView.completeLine.minimumWidth = (e2.rawY - e1.rawY).toInt()
+
+                        if (distanceX > 0) {
+                            return true
+                        }
+
+                        if (startScrollEv == null) {
+                            startScrollEv = e1
+                        }
+
+                        itemView.completeLine.visible = true
+
+                        strikethroughQuestName(itemView, (e2.rawX - itemView.questName.x).toInt())
+
                         return true
                     }
-
-                    override fun onLongPress(e: MotionEvent?) {
-
-                    }
                 })
+
             gestureDetector.setIsLongpressEnabled(true)
-            itemView.setOnTouchListener { v, event ->
+            itemView.setOnTouchListener { _, event ->
+
+                if (event.action == MotionEvent.ACTION_UP) {
+
+                    if (startScrollEv != null) {
+                        val totalWidth = itemView.width.toFloat()
+
+                        val totalDistanceX = event.rawX - startScrollEv!!.rawX
+
+                        if (event.rawX > totalWidth / 2 && startScrollEv!!.rawX < totalWidth / 2 && totalDistanceX > totalWidth / 3) {
+                            strikethroughQuestName(itemView)
+                            onCompleteItem(itemView, vm)
+                        } else {
+                            itemView.completeLine.visibility = View.GONE
+                        }
+                        startScrollEv = null
+                    }
+                }
                 gestureDetector.onTouchEvent(event)
             }
+        }
 
+        private fun strikethroughQuestName(itemView: View, to: Int? = null) {
+            val textView = itemView.questName
+            val textBounds = Rect()
+            textView.paint.getTextBounds(
+                textView.text.toString(),
+                0,
+                textView.text.length,
+                textBounds
+            )
 
+            val lp = itemView.completeLine.layoutParams as ConstraintLayout.LayoutParams
+            lp.width = to?.let { Math.min(textBounds.right, it) } ?: textBounds.right
+            itemView.completeLine.layoutParams = lp
+        }
+
+        private fun onCompleteItem(itemView: View, vm: AgendaViewController.AgendaViewModel) {
+            Timber.d("AAA complete item")
         }
 
         private fun bindEmptyDaysViewModel(
