@@ -11,7 +11,6 @@ import org.amshove.kluent.`should be`
 import org.jetbrains.spek.api.Spek
 import org.jetbrains.spek.api.dsl.describe
 import org.jetbrains.spek.api.dsl.it
-import kotlin.coroutines.experimental.EmptyCoroutineContext
 
 /**
  * Created by Venelin Valkov <venelin@ipoli.io>
@@ -144,41 +143,32 @@ object MiddlewareSpek : Spek({
         }
     }
 
-    describe("AsyncActionHandlerMiddleware") {
+    describe("SagaMiddleware") {
 
         var asyncExecutes = 0
 
-        class TestAsyncAction : AsyncAction {
-            override suspend fun execute(dispatcher: Dispatcher) {
+        class TestSaga : Saga {
+            override suspend fun execute(action: Action, dispatcher: Dispatcher) {
                 asyncExecutes++
             }
+
+            override fun canHandle(action: Action) = action is TestAction
+
         }
 
         beforeEachTest {
             asyncExecutes = 0
         }
 
-        it("should execute async action") {
+        it("should execute saga") {
 
             runBlocking {
                 executeMiddleware(
-                    AsyncActionHandlerMiddleware<TestState>(coroutineContext),
-                    TestAsyncAction()
+                    SagaMiddleware<TestState>(coroutineContext, handlers = listOf(TestSaga())),
+                    TestAction()
                 )
             }
             asyncExecutes.`should be equal to`(1)
-        }
-
-        it("should stop at this middleware") {
-            val m = CompositeMiddleware(
-                listOf(
-                    AsyncActionHandlerMiddleware<TestState>(EmptyCoroutineContext),
-                    CountExecutionsMiddleware()
-                )
-            )
-            val result = executeMiddleware(m, action = TestAsyncAction())
-            executeCount.`should be equal to`(0)
-            result.`should be`(Stop)
         }
     }
 

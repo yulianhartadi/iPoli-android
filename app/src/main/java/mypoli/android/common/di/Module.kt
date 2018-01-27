@@ -13,9 +13,8 @@ import mypoli.android.challenge.category.ChallengeCategoryListPresenter
 import mypoli.android.challenge.category.list.ChallengeListForCategoryPresenter
 import mypoli.android.challenge.usecase.BuyChallengeUseCase
 import mypoli.android.challenge.usecase.ScheduleChallengeUseCase
-import mypoli.android.common.AppReducer
-import mypoli.android.common.AppState
-import mypoli.android.common.middleware.LoadDataMiddleware
+import mypoli.android.common.*
+import mypoli.android.common.redux.SagaMiddleware
 import mypoli.android.common.redux.StateStore
 import mypoli.android.common.text.CalendarFormatter
 import mypoli.android.common.view.ColorPickerPresenter
@@ -120,7 +119,17 @@ class AndroidStateStoreModule(private val context: Context) : StateStoreModule, 
     override val stateStore by required {
         StateStore<AppState>(
             AppReducer,
-            listOf(LoadDataMiddleware(context, job + CommonPool))
+            listOf(
+                SagaMiddleware<AppState>(
+                    job + CommonPool,
+                    handlers = listOf(
+                        LoadAllDataSaga(),
+                        BuyPredefinedChallengeSaga(),
+                        ChangePetSaga(),
+                        BuyPetSaga()
+                    )
+                )
+            )
         )
     }
 

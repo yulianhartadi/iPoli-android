@@ -3,21 +3,13 @@ package mypoli.android.challenge.category.list
 import mypoli.android.challenge.category.list.ChallengeListForCategoryViewController.ChallengeViewModel
 import mypoli.android.challenge.data.Challenge
 import mypoli.android.challenge.data.PredefinedChallenge
-import mypoli.android.challenge.usecase.BuyChallengeUseCase
 import mypoli.android.common.AppState
 import mypoli.android.common.AppStateReducer
-import mypoli.android.common.di.Module
 import mypoli.android.common.mvi.Intent
 import mypoli.android.common.mvi.ViewState
 import mypoli.android.common.redux.Action
-import mypoli.android.common.redux.AsyncAction
-import mypoli.android.common.redux.Dispatcher
 import mypoli.android.common.redux.State
-import mypoli.android.myPoliApp
 import mypoli.android.player.Player
-import space.traversal.kapsule.Injects
-import space.traversal.kapsule.inject
-import space.traversal.kapsule.required
 
 /**
  * Created by Venelin Valkov <venelin@mypoli.fun>
@@ -47,26 +39,7 @@ data class ChallengeListForCategoryState(
 }
 
 sealed class ChallengeListForCategoryAction : Action {
-    data class BuyChallenge(val challenge: PredefinedChallenge) : ChallengeListForCategoryAction(),
-        AsyncAction, Injects<Module> {
-
-        private val buyChallengeUseCase by required { buyChallengeUseCase }
-
-        override suspend fun execute(dispatcher: Dispatcher) {
-            inject(myPoliApp.module(myPoliApp.instance))
-            val result = buyChallengeUseCase.execute(BuyChallengeUseCase.Params(challenge))
-            when (result) {
-                is BuyChallengeUseCase.Result.ChallengeBought -> {
-                    dispatcher.dispatch(ChallengeBought(challenge))
-                }
-
-                is BuyChallengeUseCase.Result.TooExpensive -> {
-                    dispatcher.dispatch(ChallengeTooExpensive(challenge))
-                }
-            }
-        }
-
-    }
+    data class BuyChallenge(val challenge: PredefinedChallenge) : ChallengeListForCategoryAction()
 
     data class ChallengeBought(val challenge: PredefinedChallenge) :
         ChallengeListForCategoryAction()

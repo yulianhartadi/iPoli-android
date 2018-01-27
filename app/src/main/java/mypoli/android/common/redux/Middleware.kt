@@ -56,20 +56,21 @@ class CompositeMiddleware<in S : State>(private val middleware: List<MiddleWare<
     }
 }
 
-class AsyncActionHandlerMiddleware<in S : State>(
-    private val coroutineContext: CoroutineContext
+class SagaMiddleware<in S : State>(
+    private val coroutineContext: CoroutineContext,
+    private val handlers: List<Saga> = listOf()
 ) : MiddleWare<S> {
 
     override fun execute(state: S, dispatcher: Dispatcher, action: Action): MiddleWare.Result {
-        if (action is AsyncAction) {
-            launch(coroutineContext) {
-                action.execute(dispatcher)
+
+        handlers
+            .filter { it.canHandle(action) }
+            .forEach {
+                launch(coroutineContext) {
+                    it.execute(action, dispatcher)
+                }
             }
-
-            return Stop
-        }
         return Continue
-
     }
 }
 

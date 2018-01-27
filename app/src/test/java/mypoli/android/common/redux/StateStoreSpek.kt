@@ -31,7 +31,7 @@ object StateStoreSpek : Spek({
             executeCount = 0
         }
 
-        val testReducer = object : Reducer<TestState, Action> {
+        val testReducer = object : Reducer<TestState, TestState> {
             override fun reduce(state: TestState, action: Action): TestState {
                 executeCount++
                 return state

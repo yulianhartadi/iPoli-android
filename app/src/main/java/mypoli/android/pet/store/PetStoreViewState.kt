@@ -3,20 +3,12 @@ package mypoli.android.pet.store
 import mypoli.android.common.AppState
 import mypoli.android.common.AppStateReducer
 import mypoli.android.common.DataLoadedAction
-import mypoli.android.common.di.Module
 import mypoli.android.common.mvi.Intent
 import mypoli.android.common.mvi.ViewState
 import mypoli.android.common.redux.Action
-import mypoli.android.common.redux.AsyncAction
-import mypoli.android.common.redux.Dispatcher
 import mypoli.android.common.redux.State
-import mypoli.android.myPoliApp
 import mypoli.android.pet.PetAvatar
-import mypoli.android.pet.usecase.BuyPetUseCase
 import mypoli.android.player.Player
-import space.traversal.kapsule.Injects
-import space.traversal.kapsule.inject
-import space.traversal.kapsule.required
 
 /**
  * Created by Polina Zhelyazkova <polina@mypoli.fun>
@@ -31,36 +23,11 @@ sealed class PetStoreIntent : Intent {
 }
 
 sealed class PetStoreAction : Action {
-    data class BuyPet(val pet: PetAvatar) : PetStoreAction(), AsyncAction, Injects<Module> {
-
-        private val buyPetUseCase by required { buyPetUseCase }
-
-        override suspend fun execute(dispatcher: Dispatcher) {
-            inject(myPoliApp.module(myPoliApp.instance))
-            val result = buyPetUseCase.execute(pet)
-            when (result) {
-                is BuyPetUseCase.Result.PetBought -> {
-                    dispatcher.dispatch(PetStoreAction.PetBought)
-                }
-                is BuyPetUseCase.Result.TooExpensive -> {
-                    dispatcher.dispatch(PetStoreAction.PetTooExpensive)
-                }
-            }
-        }
-    }
+    data class BuyPet(val pet: PetAvatar) : PetStoreAction()
 
     data class UnlockPet(val pet: PetAvatar) : PetStoreAction()
 
-    data class ChangePet(val pet: PetAvatar) : PetStoreAction(), AsyncAction, Injects<Module> {
-
-        private val changePetUseCase by required { changePetUseCase }
-
-        override suspend fun execute(dispatcher: Dispatcher) {
-            inject(myPoliApp.module(myPoliApp.instance))
-            changePetUseCase.execute(pet)
-        }
-
-    }
+    data class ChangePet(val pet: PetAvatar) : PetStoreAction()
 
     object PetBought : PetStoreAction()
 

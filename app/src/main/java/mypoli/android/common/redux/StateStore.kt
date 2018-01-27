@@ -9,8 +9,11 @@ import mypoli.android.common.redux.MiddleWare.Result.Continue
 
 interface Action
 
-interface AsyncAction : Action {
-    suspend fun execute(dispatcher: Dispatcher)
+interface Saga {
+
+    suspend fun execute(action: Action, dispatcher: Dispatcher)
+
+    fun canHandle(action: Action): Boolean
 }
 
 interface State
