@@ -45,12 +45,12 @@ class CompositeMiddleware<in S : State>(private val middleware: List<MiddleWare<
 
 class SagaMiddleware<in S : State>(
     private val coroutineContext: CoroutineContext,
-    private val handlers: List<Saga> = listOf()
+    private val sagas: List<Saga> = listOf()
 ) : MiddleWare<S> {
 
     override fun execute(state: S, dispatcher: Dispatcher, action: Action): MiddleWare.Result {
 
-        handlers
+        sagas
             .filter { it.canHandle(action) }
             .forEach {
                 launch(coroutineContext) {
@@ -59,18 +59,4 @@ class SagaMiddleware<in S : State>(
             }
         return Continue
     }
-}
-
-abstract class AsyncMiddleware<in S : State>(
-    private val coroutineContext: CoroutineContext
-) : MiddleWare<S> {
-
-    override fun execute(state: S, dispatcher: Dispatcher, action: Action): MiddleWare.Result {
-        launch(coroutineContext) {
-            onExecute(state, dispatcher, action)
-        }
-        return Continue
-    }
-
-    abstract suspend fun onExecute(state: State, dispatcher: Dispatcher, action: Action)
 }
