@@ -5,10 +5,14 @@ import mypoli.android.challenge.data.Challenge
 import mypoli.android.challenge.data.PredefinedChallenge
 import mypoli.android.challenge.usecase.BuyChallengeUseCase
 import mypoli.android.common.AppState
+import mypoli.android.common.AppStateReducer
 import mypoli.android.common.di.Module
 import mypoli.android.common.mvi.Intent
 import mypoli.android.common.mvi.ViewState
-import mypoli.android.common.redux.*
+import mypoli.android.common.redux.Action
+import mypoli.android.common.redux.AsyncAction
+import mypoli.android.common.redux.Dispatcher
+import mypoli.android.common.redux.State
 import mypoli.android.myPoliApp
 import mypoli.android.player.Player
 import space.traversal.kapsule.Injects
@@ -32,7 +36,7 @@ data class ChallengeListForCategoryState(
     val category: Challenge.Category?,
     val playerGems: Int?,
     val challenges: List<Challenge>
-) : PartialState {
+) : State {
     enum class StateType {
         LOADING,
         PLAYER_CHANGED,
@@ -73,10 +77,11 @@ sealed class ChallengeListForCategoryAction : Action {
 }
 
 object ChallengeListForCategoryReducer :
-    PartialReducer<AppState, ChallengeListForCategoryState, ChallengeListForCategoryAction> {
+    AppStateReducer<ChallengeListForCategoryState> {
+
     override fun reduce(
         state: AppState,
-        action: ChallengeListForCategoryAction
+        action: Action
     ) =
         state.challengeListForCategoryState.also {
             when (action) {

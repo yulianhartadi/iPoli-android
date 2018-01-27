@@ -17,7 +17,6 @@ import com.bluelinelabs.conductor.RouterTransaction
 import com.bluelinelabs.conductor.changehandler.FadeChangeHandler
 import com.bluelinelabs.conductor.support.RouterPagerAdapter
 import kotlinx.android.synthetic.main.controller_calendar.view.*
-import kotlinx.android.synthetic.main.controller_home.view.*
 import kotlinx.android.synthetic.main.view_calendar_toolbar.view.*
 import mypoli.android.R
 import mypoli.android.common.ViewUtils
@@ -296,9 +295,15 @@ class CalendarViewController(args: Bundle? = null) :
             INITIAL -> {
                 removeDayViewPagerAdapter(view)
                 createDayViewPagerAdapter(state, view)
+                levelProgress.visible = true
+                levelProgress.max = state.maxProgress
+                levelProgress.progress = state.progress
+                calendarToolbar.playerLevel.text =
+                    resources!!.getString(R.string.player_level, state.level)
+                calendarToolbar.playerGems.text = state.coins.toString()
             }
 
-            PLAYER_LOADED -> {
+            DATA_CHANGED -> {
                 levelProgress.visible = true
                 levelProgress.max = state.maxProgress
                 levelProgress.progress = state.progress

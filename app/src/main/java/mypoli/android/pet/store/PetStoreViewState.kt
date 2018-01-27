@@ -1,10 +1,15 @@
 package mypoli.android.pet.store
 
 import mypoli.android.common.AppState
+import mypoli.android.common.AppStateReducer
+import mypoli.android.common.DataLoadedAction
 import mypoli.android.common.di.Module
 import mypoli.android.common.mvi.Intent
 import mypoli.android.common.mvi.ViewState
-import mypoli.android.common.redux.*
+import mypoli.android.common.redux.Action
+import mypoli.android.common.redux.AsyncAction
+import mypoli.android.common.redux.Dispatcher
+import mypoli.android.common.redux.State
 import mypoli.android.myPoliApp
 import mypoli.android.pet.PetAvatar
 import mypoli.android.pet.usecase.BuyPetUseCase
@@ -57,14 +62,12 @@ sealed class PetStoreAction : Action {
 
     }
 
-    object Refresh : PetStoreAction()
-
     object PetBought : PetStoreAction()
 
     object PetTooExpensive : PetStoreAction()
 }
 
-data class PetStoreState(val type: StateType, val pets: List<PetModel>) : PartialState {
+data class PetStoreState(val type: StateType, val pets: List<PetModel>) : State {
     data class PetModel(
         val avatar: PetAvatar,
         val isBought: Boolean,
@@ -82,25 +85,17 @@ data class PetStoreState(val type: StateType, val pets: List<PetModel>) : Partia
     }
 }
 
-object PetStoreReducer : PartialReducer<AppState, PetStoreState, PetStoreAction> {
+object PetStoreReducer : AppStateReducer<PetStoreState> {
 
-    override fun reduce(state: AppState, action: PetStoreAction): PetStoreState {
+    override fun reduce(state: AppState, action: Action): PetStoreState {
         val petStoreState = state.petStoreState
         return when (action) {
-
-            PetStoreAction.Refresh -> {
-                val appDataState = state.appDataState
-                if (appDataState.player == null) {
-                    petStoreState.copy(
-                        type = PetStoreState.StateType.LOADING,
-                        pets = listOf()
-                    )
-                } else {
-                    petStoreState.copy(
-                        type = PetStoreState.StateType.DATA_CHANGED,
-                        pets = createPetModels(appDataState.player)
-                    )
-                }
+            is DataLoadedAction.PlayerChanged -> {
+                val player = action.player
+                petStoreState.copy(
+                    type = PetStoreState.StateType.DATA_CHANGED,
+                    pets = createPetModels(player)
+                )
             }
 
             is PetStoreAction.BuyPet -> {
@@ -131,6 +126,7 @@ object PetStoreReducer : PartialReducer<AppState, PetStoreState, PetStoreAction>
                     type = PetStoreState.StateType.LOADING
                 )
             }
+            else -> petStoreState
         }
     }
 

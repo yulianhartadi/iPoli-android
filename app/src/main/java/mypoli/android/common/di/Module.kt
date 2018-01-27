@@ -36,7 +36,6 @@ import mypoli.android.player.persistence.PlayerRepository
 import mypoli.android.player.usecase.*
 import mypoli.android.player.view.LevelUpPresenter
 import mypoli.android.quest.CompletedQuestPresenter
-import mypoli.android.quest.calendar.CalendarPresenter
 import mypoli.android.quest.calendar.addquest.AddQuestPresenter
 import mypoli.android.quest.calendar.dayview.DayViewPresenter
 import mypoli.android.quest.data.persistence.CouchbaseQuestRepository
@@ -313,7 +312,6 @@ interface UseCaseModule {
 }
 
 interface PresenterModule {
-    val calendarPresenter: CalendarPresenter
     val dayViewPresenter: DayViewPresenter
     val reminderPickerPresenter: ReminderPickerDialogPresenter
     val addQuestPresenter: AddQuestPresenter
@@ -391,12 +389,6 @@ class AndroidPresenterModule : PresenterModule, Injects<Module> {
             reminderTimeFormatter,
             timeUnitFormatter,
             findPetUseCase,
-            job
-        )
-    override val calendarPresenter
-        get() = CalendarPresenter(
-            listenForPlayerChangesUseCase,
-            calendarFormatter,
             job
         )
     override val addQuestPresenter get() = AddQuestPresenter(saveQuestUseCase, job)

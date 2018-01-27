@@ -15,20 +15,11 @@ interface AsyncAction : Action {
 
 interface State
 
-interface PartialState
+interface Reducer<in I : State, out O : State> {
 
-interface Reducer<S : State, in A : Action> {
+    fun reduce(state: I, action: Action): O
 
-    fun reduce(state: S, action: A): S
-
-    fun defaultState(): S
-}
-
-interface PartialReducer<in S : State, out P : PartialState, in A : Action> {
-
-    fun reduce(state: S, action: A): P
-
-    fun defaultState(): P
+    fun defaultState(): O
 }
 
 interface Dispatcher {
@@ -36,7 +27,7 @@ interface Dispatcher {
 }
 
 class StateStore<out S : State>(
-    private val reducer: Reducer<S, Action>,
+    private val reducer: Reducer<S, S>,
     middleware: List<MiddleWare<S>> = listOf()
 ) : Dispatcher {
 

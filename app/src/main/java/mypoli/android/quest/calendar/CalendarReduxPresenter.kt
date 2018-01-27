@@ -30,7 +30,11 @@ class CalendarReduxPresenter : AndroidStatePresenter<AppState, CalendarViewState
             adapterPosition = calendarState.adapterPosition,
             dateText = dateText,
             dayText = dayText,
-            monthText = monthFormatter.format(calendarState.currentMonth)
+            monthText = monthFormatter.format(calendarState.currentMonth),
+            progress = calendarState.progress,
+            maxProgress = calendarState.maxProgress,
+            level = calendarState.level,
+            coins = calendarState.coins
         )
     }
 

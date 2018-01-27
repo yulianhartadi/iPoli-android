@@ -11,7 +11,6 @@ import mypoli.android.common.redux.AsyncMiddleware
 import mypoli.android.common.redux.Dispatcher
 import mypoli.android.common.redux.State
 import mypoli.android.myPoliApp
-import mypoli.android.pet.store.PetStoreAction
 import space.traversal.kapsule.Injects
 import space.traversal.kapsule.inject
 import space.traversal.kapsule.required
@@ -33,8 +32,7 @@ class LoadDataMiddleware(private val context: Context, coroutineContext: Corouti
         when (a) {
             LoadDataAction.All -> {
                 playerRepository.listen().consumeEach {
-                    dispatcher.dispatch(DataLoadedAction.PlayerLoaded(it!!))
-                    dispatcher.dispatch(PetStoreAction.Refresh)
+                    dispatcher.dispatch(DataLoadedAction.PlayerChanged(it!!))
                 }
             }
         }

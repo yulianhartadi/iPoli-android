@@ -32,61 +32,61 @@ class PetStorePresenter : AndroidStatePresenter<AppState, PetStoreViewState> {
                 when {
                     it.isCurrent -> {
                         PetViewModel(
-                            it.avatar,
-                            avatar.petName,
-                            avatar.image,
-                            it.avatar.gemPrice.toString(),
-                            avatar.description,
-                            null,
-                            avatar.moodImage[PetMood.HAPPY]!!,
-                            false,
-                            true,
-                            null
+                            avatar = it.avatar,
+                            name = avatar.petName,
+                            image = avatar.image,
+                            price = it.avatar.gemPrice.toString(),
+                            description = avatar.description,
+                            actionText = null,
+                            moodImage = avatar.moodImage[PetMood.HAPPY]!!,
+                            showAction = false,
+                            showIsCurrent = true,
+                            action = null
                         )
                     }
 
                     it.isBought -> {
                         PetViewModel(
-                            it.avatar,
-                            avatar.petName,
-                            avatar.image,
-                            it.avatar.gemPrice.toString(),
-                            avatar.description,
-                            R.string.store_pet_in_inventory,
-                            avatar.moodImage[PetMood.GOOD]!!,
-                            true,
-                            false,
-                            PetViewModel.Action.CHANGE
+                            avatar = it.avatar,
+                            name = avatar.petName,
+                            image = avatar.image,
+                            price = it.avatar.gemPrice.toString(),
+                            description = avatar.description,
+                            actionText = R.string.store_pet_in_inventory,
+                            moodImage = avatar.moodImage[PetMood.GOOD]!!,
+                            showAction = true,
+                            showIsCurrent = false,
+                            action = PetViewModel.Action.CHANGE
                         )
                     }
 
                     it.isLocked -> {
                         PetViewModel(
-                            it.avatar,
-                            avatar.petName,
-                            avatar.image,
-                            it.avatar.gemPrice.toString(),
-                            avatar.description,
-                            R.string.unlock,
-                            avatar.moodImage[PetMood.GOOD]!!,
-                            true,
-                            false,
-                            PetViewModel.Action.UNLOCK
+                            avatar = it.avatar,
+                            name = avatar.petName,
+                            image = avatar.image,
+                            price = it.avatar.gemPrice.toString(),
+                            description = avatar.description,
+                            actionText = R.string.unlock,
+                            moodImage = avatar.moodImage[PetMood.GOOD]!!,
+                            showAction = true,
+                            showIsCurrent = false,
+                            action = PetViewModel.Action.UNLOCK
                         )
                     }
 
                     else -> {
                         PetViewModel(
-                            it.avatar,
-                            avatar.petName,
-                            avatar.image,
-                            it.avatar.gemPrice.toString(),
-                            avatar.description,
-                            R.string.store_buy_pet,
-                            avatar.moodImage[PetMood.GOOD]!!,
-                            true,
-                            false,
-                            PetViewModel.Action.BUY
+                            avatar = it.avatar,
+                            name = avatar.petName,
+                            image = avatar.image,
+                            price = it.avatar.gemPrice.toString(),
+                            description = avatar.description,
+                            actionText = R.string.store_buy_pet,
+                            moodImage = avatar.moodImage[PetMood.GOOD]!!,
+                            showAction = true,
+                            showIsCurrent = false,
+                            action = PetViewModel.Action.BUY
                         )
                     }
                 }

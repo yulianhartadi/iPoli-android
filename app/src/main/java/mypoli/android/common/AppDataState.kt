@@ -1,7 +1,6 @@
 package mypoli.android.common
 
 import mypoli.android.common.redux.Action
-import mypoli.android.common.redux.Reducer
 import mypoli.android.common.redux.State
 import mypoli.android.player.Player
 
@@ -11,20 +10,24 @@ import mypoli.android.player.Player
  */
 
 sealed class DataLoadedAction : Action {
-    data class PlayerLoaded(val player: Player) : DataLoadedAction()
+    data class PlayerChanged(val player: Player) : DataLoadedAction()
 }
 
 data class AppDataState(
     val player: Player?
 ) : State
 
-object AppDataReducer : Reducer<AppDataState, DataLoadedAction> {
-    override fun reduce(state: AppDataState, action: DataLoadedAction) =
+object AppDataReducer : AppStateReducer<AppDataState> {
+
+    override fun reduce(state: AppState, action: Action) =
         when (action) {
-            is DataLoadedAction.PlayerLoaded -> {
-                state.copy(
+            is DataLoadedAction.PlayerChanged -> {
+                state.appDataState.copy(
                     player = action.player
                 )
+            }
+            else -> {
+                state.appDataState
             }
         }
 

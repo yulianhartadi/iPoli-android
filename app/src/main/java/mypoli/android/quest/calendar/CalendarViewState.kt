@@ -1,9 +1,11 @@
 package mypoli.android.quest.calendar
 
+import mypoli.android.common.AppState
+import mypoli.android.common.AppStateReducer
+import mypoli.android.common.DataLoadedAction
 import mypoli.android.common.mvi.Intent
 import mypoli.android.common.mvi.ViewState
 import mypoli.android.common.redux.Action
-import mypoli.android.common.redux.Reducer
 import mypoli.android.common.redux.State
 import mypoli.android.player.Player
 import mypoli.android.quest.calendar.CalendarViewState.StateType.INITIAL
@@ -42,16 +44,47 @@ data class CalendarState(
     val currentMonth: YearMonth,
     val datePickerState: CalendarViewState.DatePickerState,
     val adapterPosition: Int,
-    val adapterMidPosition: Int
+    val adapterMidPosition: Int,
+    val progress: Int,
+    val maxProgress: Int,
+    val level: Int,
+    val coins: Int
 ) : State {
     enum class StateType {
-        INITIAL, CALENDAR_DATE_CHANGED, SWIPE_DATE_CHANGED, DATE_PICKER_CHANGED, MONTH_CHANGED
+        INITIAL, CALENDAR_DATE_CHANGED, SWIPE_DATE_CHANGED, DATE_PICKER_CHANGED, MONTH_CHANGED,
+        LEVEL_CHANGED, XP_AND_COINS_CHANGED, DATA_CHANGED
     }
 }
 
-object CalendarReducer : Reducer<CalendarState, CalendarAction> {
+object CalendarReducer : AppStateReducer<CalendarState> {
 
-    override fun reduce(state: CalendarState, action: CalendarAction) =
+    override fun reduce(state: AppState, action: Action) =
+        when (action) {
+            is DataLoadedAction.PlayerChanged -> reducePlayerChanged(state.calendarState, action)
+            is CalendarAction -> reduceCalendarAction(state.calendarState, action)
+            else -> state.calendarState
+        }
+
+    private fun reducePlayerChanged(
+        state: CalendarState,
+        action: DataLoadedAction.PlayerChanged
+    ): CalendarState {
+        val player = action.player
+        val type = when {
+            state.level == 0 -> CalendarState.StateType.DATA_CHANGED
+            state.level != player.level -> CalendarState.StateType.LEVEL_CHANGED
+            else -> CalendarState.StateType.XP_AND_COINS_CHANGED
+        }
+        return state.copy(
+            type = type,
+            level = player.level,
+            progress = player.experienceProgressForLevel,
+            coins = player.coins,
+            maxProgress = player.experienceForNextLevel
+        )
+    }
+
+    private fun reduceCalendarAction(state: CalendarState, action: CalendarAction) =
         when (action) {
             CalendarAction.ExpandWeekToolbar -> {
                 when (state.datePickerState) {
@@ -105,6 +138,7 @@ object CalendarReducer : Reducer<CalendarState, CalendarAction> {
             }
         }
 
+
     override fun defaultState() =
         CalendarState(
             type = CalendarState.StateType.INITIAL,
@@ -112,7 +146,11 @@ object CalendarReducer : Reducer<CalendarState, CalendarAction> {
             currentMonth = YearMonth.now(),
             datePickerState = CalendarViewState.DatePickerState.INVISIBLE,
             adapterPosition = -1,
-            adapterMidPosition = MID_POSITION
+            adapterMidPosition = MID_POSITION,
+            progress = 0,
+            maxProgress = 0,
+            level = 0,
+            coins = 0
         )
 
 
@@ -136,7 +174,7 @@ data class CalendarViewState(
     enum class StateType {
         LOADING, INITIAL, CALENDAR_DATE_CHANGED, SWIPE_DATE_CHANGED, DEFAULT, DATE_PICKER_CHANGED,
         MONTH_CHANGED,
-        LEVEL_CHANGED, XP_AND_COINS_CHANGED, PLAYER_LOADED
+        LEVEL_CHANGED, XP_AND_COINS_CHANGED, DATA_CHANGED
     }
 
     enum class DatePickerState {
