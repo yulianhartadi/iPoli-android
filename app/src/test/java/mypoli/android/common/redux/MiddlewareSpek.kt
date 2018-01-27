@@ -98,13 +98,12 @@ object MiddlewareSpek : Spek({
 
         var asyncExecutes = 0
 
-        class TestSaga : Saga {
-            override suspend fun execute(action: Action, dispatcher: Dispatcher) {
-                asyncExecutes++
-            }
-
+        class TestSaga : Saga<TestState> {
             override fun canHandle(action: Action) = action is TestAction
 
+            override suspend fun execute(action: Action, state: TestState, dispatcher: Dispatcher) {
+                asyncExecutes++
+            }
         }
 
         beforeEachTest {
@@ -120,6 +119,25 @@ object MiddlewareSpek : Spek({
                 )
             }
             asyncExecutes.`should be equal to`(1)
+        }
+
+        it("should not execute saga") {
+
+            class NoExecuteSaga : Saga<TestState> {
+                override fun canHandle(action: Action) = false
+
+                override suspend fun execute(action: Action, state: TestState, dispatcher: Dispatcher) {
+                    asyncExecutes++
+                }
+            }
+
+            runBlocking {
+                executeMiddleware(
+                    SagaMiddleware<TestState>(coroutineContext, sagas = listOf(NoExecuteSaga())),
+                    TestAction()
+                )
+            }
+            asyncExecutes.`should be equal to`(0)
         }
     }
 
