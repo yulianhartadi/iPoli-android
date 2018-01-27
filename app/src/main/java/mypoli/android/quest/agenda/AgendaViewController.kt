@@ -2,11 +2,11 @@ package mypoli.android.quest.agenda
 
 import android.content.res.ColorStateList
 import android.os.Bundle
+import android.support.constraint.ConstraintLayout
+import android.support.v4.view.GestureDetectorCompat
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
+import android.view.*
 import com.mikepenz.iconics.IconicsDrawable
 import kotlinx.android.synthetic.main.controller_agenda.view.*
 import kotlinx.android.synthetic.main.item_agenda_quest.view.*
@@ -27,7 +27,9 @@ import timber.log.Timber
 class AgendaViewController(args: Bundle? = null) :
     ReduxViewController<AgendaAction, AgendaViewState, AgendaPresenter>(args) {
 
+
     override val presenter get() = AgendaPresenter()
+
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -42,19 +44,19 @@ class AgendaViewController(args: Bundle? = null) :
         view.agendaList.adapter = AgendaAdapter(
             listOf(
                 QuestViewModel(
-                    "Run",
+                    "Study for Machine Learning class",
                     Time.Companion.at(10, 30),
                     AndroidColor.BLUE,
                     AndroidIcon.ACADEMIC
                 ),
                 QuestViewModel(
-                    "Walk",
+                    "Ride Bike to Work",
                     Time.Companion.at(20, 30),
                     AndroidColor.DEEP_ORANGE,
                     AndroidIcon.BIKE
                 ),
                 QuestViewModel(
-                    "Dance",
+                    "Catch the bus to London",
                     Time.Companion.at(8, 30),
                     AndroidColor.GREEN,
                     AndroidIcon.BUS
@@ -203,11 +205,26 @@ class AgendaViewController(args: Bundle? = null) :
                 3
             )
         )
+
+//        val touchHelper =
+//            ItemTouchHelper(object : ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.END) {
+//                override fun onMove(
+//                    recyclerView: RecyclerView?,
+//                    viewHolder: RecyclerView.ViewHolder?,
+//                    target: RecyclerView.ViewHolder?
+//                ) = false
+//
+//                override fun onSwiped(viewHolder: RecyclerView.ViewHolder?, direction: Int) {
+//                }
+//
+//            })
+//
+//        touchHelper.attachToRecyclerView(view.agendaList)
+
         return view
     }
 
     override fun render(state: AgendaViewState, view: View) {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 
     interface AgendaViewModel
@@ -247,6 +264,49 @@ class AgendaViewController(args: Bundle? = null) :
                     vm as EmptyDaysViewModel
                 )
             }
+
+            val gestureDetector =
+                GestureDetectorCompat(itemView.context, object : GestureDetector.OnGestureListener {
+
+                    override fun onShowPress(e: MotionEvent?) {
+
+                    }
+
+                    override fun onSingleTapUp(e: MotionEvent?) = false
+
+                    override fun onDown(e: MotionEvent?) = true
+
+                    override fun onFling(
+                        e1: MotionEvent,
+                        e2: MotionEvent,
+                        velocityX: Float,
+                        velocityY: Float
+                    ) = true
+
+                    override fun onScroll(
+                        e1: MotionEvent,
+                        e2: MotionEvent,
+                        distanceX: Float,
+                        distanceY: Float
+                    ): Boolean {
+                        Timber.d("AAA scroll $distanceX")
+                        val lp = itemView.completeLine.layoutParams as ConstraintLayout.LayoutParams
+                        lp.width = (e2.rawX - itemView.questName.x).toInt()
+                        itemView.completeLine.layoutParams = lp
+//                        itemView.completeLine.minimumWidth = (e2.rawY - e1.rawY).toInt()
+                        return true
+                    }
+
+                    override fun onLongPress(e: MotionEvent?) {
+
+                    }
+                })
+            gestureDetector.setIsLongpressEnabled(true)
+            itemView.setOnTouchListener { v, event ->
+                gestureDetector.onTouchEvent(event)
+            }
+
+
         }
 
         private fun bindEmptyDaysViewModel(

@@ -3,6 +3,7 @@ package mypoli.android.quest.agenda
 import android.content.Context
 import mypoli.android.common.AppState
 import mypoli.android.common.redux.android.AndroidStatePresenter
+import org.threeten.bp.LocalDate
 
 /**
  * Created by Venelin Valkov <venelin@mypoli.fun>
@@ -10,7 +11,7 @@ import mypoli.android.common.redux.android.AndroidStatePresenter
  */
 class AgendaPresenter : AndroidStatePresenter<AppState, AgendaViewState> {
     override fun present(state: AppState, context: Context): AgendaViewState {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        return AgendaViewState(LocalDate.now())
     }
 
 }
