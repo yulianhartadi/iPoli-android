@@ -10,7 +10,7 @@ import org.threeten.bp.format.DateTimeFormatter
  * Created by Venelin Valkov <venelin@ipoli.io>
  * on 01/22/2018.
  */
-class CalendarReduxPresenter : AndroidStatePresenter<AppState, CalendarViewState> {
+class CalendarPresenter : AndroidStatePresenter<AppState, CalendarViewState> {
 
     override fun present(state: AppState, context: Context): CalendarViewState {
 

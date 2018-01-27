@@ -36,9 +36,9 @@ import sun.bob.mcalendarview.listeners.OnMonthScrollListener
 import sun.bob.mcalendarview.vo.DateData
 
 class CalendarViewController(args: Bundle? = null) :
-    ReduxViewController<CalendarAction, CalendarViewState, CalendarReduxPresenter>(args) {
+    ReduxViewController<CalendarAction, CalendarViewState, CalendarPresenter>(args) {
 
-    override val presenter get() = CalendarReduxPresenter()
+    override val presenter get() = CalendarPresenter()
 
     private lateinit var calendarToolbar: ViewGroup
 

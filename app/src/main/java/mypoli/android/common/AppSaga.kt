@@ -1,6 +1,8 @@
 package mypoli.android.common
 
+import android.content.Context
 import kotlinx.coroutines.experimental.channels.consumeEach
+import kotlinx.coroutines.experimental.launch
 import mypoli.android.challenge.category.list.ChallengeListForCategoryAction
 import mypoli.android.challenge.usecase.BuyChallengeUseCase
 import mypoli.android.common.di.Module
@@ -10,6 +12,7 @@ import mypoli.android.common.redux.Saga
 import mypoli.android.myPoliApp
 import mypoli.android.pet.store.PetStoreAction
 import mypoli.android.pet.usecase.BuyPetUseCase
+import org.threeten.bp.LocalDate
 import space.traversal.kapsule.Injects
 import space.traversal.kapsule.inject
 import space.traversal.kapsule.required
@@ -18,11 +21,11 @@ import space.traversal.kapsule.required
  * Created by Venelin Valkov <venelin@mypoli.fun>
  * on 01/27/2018.
  */
-class BuyPredefinedChallengeSaga : Saga, Injects<Module> {
+class BuyPredefinedChallengeSaga : Saga<AppState>, Injects<Module> {
 
     private val buyChallengeUseCase by required { buyChallengeUseCase }
 
-    override suspend fun execute(action: Action, dispatcher: Dispatcher) {
+    override suspend fun execute(action: Action, state: AppState, dispatcher: Dispatcher) {
         inject(myPoliApp.module(myPoliApp.instance))
         val challenge = (action as ChallengeListForCategoryAction.BuyChallenge).challenge
         val result = buyChallengeUseCase.execute(BuyChallengeUseCase.Params(challenge))
@@ -44,11 +47,11 @@ class BuyPredefinedChallengeSaga : Saga, Injects<Module> {
     override fun canHandle(action: Action) = action is ChallengeListForCategoryAction.BuyChallenge
 }
 
-class ChangePetSaga : Saga, Injects<Module> {
+class ChangePetSaga : Saga<AppState>, Injects<Module> {
 
     private val changePetUseCase by required { changePetUseCase }
 
-    override suspend fun execute(action: Action, dispatcher: Dispatcher) {
+    override suspend fun execute(action: Action, state: AppState, dispatcher: Dispatcher) {
         inject(myPoliApp.module(myPoliApp.instance))
         changePetUseCase.execute((action as PetStoreAction.ChangePet).pet)
     }
@@ -57,10 +60,10 @@ class ChangePetSaga : Saga, Injects<Module> {
 
 }
 
-class BuyPetSaga : Saga, Injects<Module> {
+class BuyPetSaga : Saga<AppState>, Injects<Module> {
     private val buyPetUseCase by required { buyPetUseCase }
 
-    override suspend fun execute(action: Action, dispatcher: Dispatcher) {
+    override suspend fun execute(action: Action, state: AppState, dispatcher: Dispatcher) {
         inject(myPoliApp.module(myPoliApp.instance))
         val result = buyPetUseCase.execute((action as PetStoreAction.BuyPet).pet)
         when (result) {
@@ -76,17 +79,29 @@ class BuyPetSaga : Saga, Injects<Module> {
     override fun canHandle(action: Action) = action is PetStoreAction.BuyPet
 }
 
-class LoadAllDataSaga : Saga, Injects<Module> {
+class LoadAllDataSaga(private val context: Context) : Saga<AppState>, Injects<Module> {
 
     private val playerRepository by required { playerRepository }
+    private val questRepository by required { questRepository }
 
-    override suspend fun execute(action: Action, dispatcher: Dispatcher) {
+    override suspend fun execute(action: Action, state: AppState, dispatcher: Dispatcher) {
         inject(myPoliApp.module(myPoliApp.instance))
-        playerRepository.listen().consumeEach {
-            dispatcher.dispatch(DataLoadedAction.PlayerChanged(it!!))
+
+
+        launch {
+            questRepository.listenForDate(LocalDate.now()).consumeEach {
+                dispatcher.dispatch(DataLoadedAction.TodayQuestsChanged(it))
+            }
         }
+
+        launch {
+            playerRepository.listen().consumeEach {
+                dispatcher.dispatch(DataLoadedAction.PlayerChanged(it!!))
+            }
+        }
+
     }
 
-    override fun canHandle(action: Action) = action is LoadDataAction.All
+    override fun canHandle(action: Action) = action == LoadDataAction.All
 
 }

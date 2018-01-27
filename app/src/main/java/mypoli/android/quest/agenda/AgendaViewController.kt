@@ -3,18 +3,21 @@ package mypoli.android.quest.agenda
 import android.content.res.ColorStateList
 import android.graphics.Rect
 import android.os.Bundle
+import android.support.annotation.ColorRes
 import android.support.constraint.ConstraintLayout
 import android.support.v4.view.GestureDetectorCompat
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
 import android.view.*
 import com.mikepenz.iconics.IconicsDrawable
+import com.mikepenz.iconics.typeface.IIcon
 import kotlinx.android.synthetic.main.controller_agenda.view.*
 import kotlinx.android.synthetic.main.item_agenda_quest.view.*
 import mypoli.android.R
-import mypoli.android.common.datetime.Time
 import mypoli.android.common.redux.android.ReduxViewController
-import mypoli.android.common.view.*
+import mypoli.android.common.view.EndlessRecyclerViewScrollListener
+import mypoli.android.common.view.colorRes
+import mypoli.android.common.view.visible
 import org.threeten.bp.LocalDate
 import timber.log.Timber
 
@@ -37,163 +40,9 @@ class AgendaViewController(args: Bundle? = null) :
         val view = inflater.inflate(R.layout.controller_agenda, container, false)
         val layoutManager =
             LinearLayoutManager(container.context, LinearLayoutManager.VERTICAL, false)
-        view.agendaList.layoutManager =
-            layoutManager
-        view.agendaList.adapter = AgendaAdapter(
-            listOf(
-                QuestViewModel(
-                    "Study for Machine Learning class",
-                    Time.Companion.at(10, 30),
-                    AndroidColor.BLUE,
-                    AndroidIcon.ACADEMIC
-                ),
-                QuestViewModel(
-                    "Ride Bike to Work",
-                    Time.Companion.at(20, 30),
-                    AndroidColor.DEEP_ORANGE,
-                    AndroidIcon.BIKE
-                ),
-                QuestViewModel(
-                    "Catch the bus to London",
-                    Time.Companion.at(8, 30),
-                    AndroidColor.GREEN,
-                    AndroidIcon.BUS
-                ),
-                QuestViewModel(
-                    "Walk",
-                    Time.Companion.at(20, 30),
-                    AndroidColor.DEEP_ORANGE,
-                    AndroidIcon.BIKE
-                ),
-                QuestViewModel(
-                    "Dance",
-                    Time.Companion.at(8, 30),
-                    AndroidColor.GREEN,
-                    AndroidIcon.BUS
-                ),
-                QuestViewModel(
-                    "Walk",
-                    Time.Companion.at(20, 30),
-                    AndroidColor.DEEP_ORANGE,
-                    AndroidIcon.BIKE
-                ),
-                QuestViewModel(
-                    "Dance",
-                    Time.Companion.at(8, 30),
-                    AndroidColor.GREEN,
-                    AndroidIcon.BUS
-                ),
-                QuestViewModel(
-                    "Walk",
-                    Time.Companion.at(20, 30),
-                    AndroidColor.DEEP_ORANGE,
-                    AndroidIcon.BIKE
-                ),
-                QuestViewModel(
-                    "Dance",
-                    Time.Companion.at(8, 30),
-                    AndroidColor.GREEN,
-                    AndroidIcon.BUS
-                ),
-                QuestViewModel(
-                    "Walk",
-                    Time.Companion.at(20, 30),
-                    AndroidColor.DEEP_ORANGE,
-                    AndroidIcon.BIKE
-                ),
-                QuestViewModel(
-                    "Dance",
-                    Time.Companion.at(8, 30),
-                    AndroidColor.GREEN,
-                    AndroidIcon.BUS
-                ),
-                QuestViewModel(
-                    "Walk",
-                    Time.Companion.at(20, 30),
-                    AndroidColor.DEEP_ORANGE,
-                    AndroidIcon.BIKE
-                ),
-                QuestViewModel(
-                    "Dance",
-                    Time.Companion.at(8, 30),
-                    AndroidColor.GREEN,
-                    AndroidIcon.BUS
-                ),
-                QuestViewModel(
-                    "Walk",
-                    Time.Companion.at(20, 30),
-                    AndroidColor.DEEP_ORANGE,
-                    AndroidIcon.BIKE
-                ),
-                QuestViewModel(
-                    "Dance",
-                    Time.Companion.at(8, 30),
-                    AndroidColor.GREEN,
-                    AndroidIcon.BUS
-                ),
-                QuestViewModel(
-                    "Walk",
-                    Time.Companion.at(20, 30),
-                    AndroidColor.DEEP_ORANGE,
-                    AndroidIcon.BIKE
-                ),
-                QuestViewModel(
-                    "Dance",
-                    Time.Companion.at(8, 30),
-                    AndroidColor.GREEN,
-                    AndroidIcon.BUS
-                ),
-                QuestViewModel(
-                    "Walk",
-                    Time.Companion.at(20, 30),
-                    AndroidColor.DEEP_ORANGE,
-                    AndroidIcon.BIKE
-                ),
-                QuestViewModel(
-                    "Dance",
-                    Time.Companion.at(8, 30),
-                    AndroidColor.GREEN,
-                    AndroidIcon.BUS
-                ),
-                QuestViewModel(
-                    "Walk",
-                    Time.Companion.at(20, 30),
-                    AndroidColor.DEEP_ORANGE,
-                    AndroidIcon.BIKE
-                ),
-                QuestViewModel(
-                    "Dance",
-                    Time.Companion.at(8, 30),
-                    AndroidColor.GREEN,
-                    AndroidIcon.BUS
-                ),
-                QuestViewModel(
-                    "Walk",
-                    Time.Companion.at(20, 30),
-                    AndroidColor.DEEP_ORANGE,
-                    AndroidIcon.BIKE
-                ),
-                QuestViewModel(
-                    "Dance",
-                    Time.Companion.at(8, 30),
-                    AndroidColor.GREEN,
-                    AndroidIcon.BUS
-                ),
-                QuestViewModel(
-                    "Walk",
-                    Time.Companion.at(20, 30),
-                    AndroidColor.DEEP_ORANGE,
-                    AndroidIcon.BIKE
-                ),
-                QuestViewModel(
-                    "Dance",
-                    Time.Companion.at(8, 30),
-                    AndroidColor.GREEN,
-                    AndroidIcon.BUS
-                )
-            )
-        )
-        view.agendaList.scrollToPosition(5)
+        view.agendaList.layoutManager = layoutManager
+        view.agendaList.adapter = AgendaAdapter()
+//        view.agendaList.scrollToPosition(5)
         view.agendaList.addOnScrollListener(
             EndlessRecyclerViewScrollListener(
                 layoutManager,
@@ -204,34 +53,24 @@ class AgendaViewController(args: Bundle? = null) :
             )
         )
 
-//        val touchHelper =
-//            ItemTouchHelper(object : ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.END) {
-//                override fun onMove(
-//                    recyclerView: RecyclerView?,
-//                    viewHolder: RecyclerView.ViewHolder?,
-//                    target: RecyclerView.ViewHolder?
-//                ) = false
-//
-//                override fun onSwiped(viewHolder: RecyclerView.ViewHolder?, direction: Int) {
-//                }
-//
-//            })
-//
-//        touchHelper.attachToRecyclerView(view.agendaList)
-
         return view
     }
 
     override fun render(state: AgendaViewState, view: View) {
+        when (state.type) {
+            AgendaState.StateType.DATA_CHANGED -> {
+                (view.agendaList.adapter as AgendaAdapter).updateAll(state.quests)
+            }
+        }
     }
 
     interface AgendaViewModel
 
     data class QuestViewModel(
         val name: String,
-        val startTime: Time,
-        val color: AndroidColor,
-        val icon: AndroidIcon
+        val startTime: String,
+        @ColorRes val color: Int,
+        val icon: IIcon
     ) : AgendaViewModel
 
     data class DateViewModel(val date: LocalDate) : AgendaViewModel
@@ -364,14 +203,14 @@ class AgendaViewController(args: Bundle? = null) :
         ) {
             view.questName.text = vm.name
             view.questIcon.backgroundTintList =
-                ColorStateList.valueOf(colorRes(vm.color.color500))
+                ColorStateList.valueOf(colorRes(vm.color))
             view.questIcon.setImageDrawable(
                 IconicsDrawable(view.context)
-                    .icon(vm.icon.icon)
+                    .icon(vm.icon)
                     .colorRes(R.color.md_white)
                     .sizeDp(24)
             )
-            view.questStartTime.text = vm.startTime.toString()
+            view.questStartTime.text = vm.startTime
         }
 
         override fun getItemCount() = viewModels.size

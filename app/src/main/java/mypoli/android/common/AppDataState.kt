@@ -3,6 +3,8 @@ package mypoli.android.common
 import mypoli.android.common.redux.Action
 import mypoli.android.common.redux.State
 import mypoli.android.player.Player
+import mypoli.android.quest.Quest
+import org.threeten.bp.LocalDate
 
 /**
  * Created by Venelin Valkov <venelin@mypoli.fun>
@@ -11,10 +13,13 @@ import mypoli.android.player.Player
 
 sealed class DataLoadedAction : Action {
     data class PlayerChanged(val player: Player) : DataLoadedAction()
+    data class TodayQuestsChanged(val quests: List<Quest>) : DataLoadedAction()
 }
 
 data class AppDataState(
-    val player: Player?
+    val today: LocalDate,
+    val player: Player?,
+    val todayQuests: List<Quest>
 ) : State
 
 object AppDataReducer : AppStateReducer<AppDataState> {
@@ -26,6 +31,11 @@ object AppDataReducer : AppStateReducer<AppDataState> {
                     player = action.player
                 )
             }
+            is DataLoadedAction.TodayQuestsChanged -> {
+                state.appDataState.copy(
+                    todayQuests = action.quests
+                )
+            }
             else -> {
                 state.appDataState
             }
@@ -33,7 +43,9 @@ object AppDataReducer : AppStateReducer<AppDataState> {
 
     override fun defaultState(): AppDataState {
         return AppDataState(
-            null
+            today = LocalDate.now(),
+            player = null,
+            todayQuests = listOf()
         )
     }
 

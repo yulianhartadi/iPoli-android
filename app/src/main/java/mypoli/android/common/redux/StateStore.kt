@@ -1,5 +1,6 @@
 package mypoli.android.common.redux
 
+import android.support.annotation.MainThread
 import mypoli.android.common.redux.MiddleWare.Result.Continue
 
 /**
@@ -9,9 +10,9 @@ import mypoli.android.common.redux.MiddleWare.Result.Continue
 
 interface Action
 
-interface Saga {
+interface Saga<in S : State> {
 
-    suspend fun execute(action: Action, dispatcher: Dispatcher)
+    suspend fun execute(action: Action, state: S, dispatcher: Dispatcher)
 
     fun canHandle(action: Action): Boolean
 }
@@ -53,6 +54,7 @@ class StateStore<out S : State>(
             if (old != new) onStateChanged(new)
         }
 
+        @MainThread
         fun onStateChanged(newState: T)
     }
 

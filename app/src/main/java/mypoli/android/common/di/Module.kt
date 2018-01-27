@@ -123,7 +123,7 @@ class AndroidStateStoreModule(private val context: Context) : StateStoreModule, 
                 SagaMiddleware<AppState>(
                     job + CommonPool,
                     sagas = listOf(
-                        LoadAllDataSaga(),
+                        LoadAllDataSaga(context),
                         BuyPredefinedChallengeSaga(),
                         ChangePetSaga(),
                         BuyPetSaga()

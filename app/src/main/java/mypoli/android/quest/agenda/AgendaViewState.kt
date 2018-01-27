@@ -14,6 +14,14 @@ sealed class AgendaAction : Action {
 
 }
 
-data class AgendaState(val topDate: LocalDate) : State
+data class AgendaState(val type: StateType, val topDate: LocalDate) : State {
+    enum class StateType {
+        DATA_CHANGED
+    }
+}
 
-data class AgendaViewState(val topDate: LocalDate) : ViewState
+data class AgendaViewState(
+    val type: AgendaState.StateType,
+    val topDate: LocalDate,
+    val quests: List<AgendaViewController.QuestViewModel>
+) : ViewState

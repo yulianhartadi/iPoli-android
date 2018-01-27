@@ -45,7 +45,7 @@ class CompositeMiddleware<in S : State>(private val middleware: List<MiddleWare<
 
 class SagaMiddleware<in S : State>(
     private val coroutineContext: CoroutineContext,
-    private val sagas: List<Saga> = listOf()
+    private val sagas: List<Saga<S>> = listOf()
 ) : MiddleWare<S> {
 
     override fun execute(state: S, dispatcher: Dispatcher, action: Action): MiddleWare.Result {
@@ -54,7 +54,7 @@ class SagaMiddleware<in S : State>(
             .filter { it.canHandle(action) }
             .forEach {
                 launch(coroutineContext) {
-                    it.execute(action, dispatcher)
+                    it.execute(action, state, dispatcher)
                 }
             }
         return Continue

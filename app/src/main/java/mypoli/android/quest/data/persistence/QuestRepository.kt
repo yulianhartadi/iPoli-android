@@ -224,7 +224,7 @@ class CouchbaseQuestRepository(database: Database, coroutineContext: CoroutineCo
         q.icon = entity.icon?.name
         q.duration = entity.duration
         q.type = CouchbaseQuest.TYPE
-        q.scheduledDate = DateUtils.toMillis(entity.scheduledDate)
+        q.scheduledDate = entity.scheduledDate.startOfDayUTC()
         q.reminder = entity.reminder?.let {
             createCouchbaseReminder(it).map
         }

@@ -1,8 +1,12 @@
 package mypoli.android.quest.agenda
 
 import android.content.Context
+import com.mikepenz.ionicons_typeface_library.Ionicons
 import mypoli.android.common.AppState
 import mypoli.android.common.redux.android.AndroidStatePresenter
+import mypoli.android.common.view.AndroidColor
+import mypoli.android.common.view.AndroidIcon
+import mypoli.android.quest.Quest
 import org.threeten.bp.LocalDate
 
 /**
@@ -11,7 +15,23 @@ import org.threeten.bp.LocalDate
  */
 class AgendaPresenter : AndroidStatePresenter<AppState, AgendaViewState> {
     override fun present(state: AppState, context: Context): AgendaViewState {
-        return AgendaViewState(LocalDate.now())
+
+        val todayQuests = state.appDataState.todayQuests
+
+        return AgendaViewState(
+            AgendaState.StateType.DATA_CHANGED,
+            LocalDate.now(),
+            todayQuests.map { toQuestViewModel(it) }
+        )
+    }
+
+    private fun toQuestViewModel(quest: Quest): AgendaViewController.QuestViewModel {
+        return AgendaViewController.QuestViewModel(
+            quest.name,
+            "10 - 12:30",
+            AndroidColor.valueOf(quest.color.name).color500,
+            quest.icon?.let { AndroidIcon.valueOf(it.name).icon } ?: Ionicons.Icon.ion_android_done
+        )
     }
 
 }
