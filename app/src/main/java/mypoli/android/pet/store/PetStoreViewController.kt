@@ -46,7 +46,6 @@ class PetStoreViewController(args: Bundle? = null) :
         setToolbar(view.toolbar)
 
         view.toolbarTitle.setText(R.string.pet_store)
-        view.playerGems.setOnClickListener { showCurrencyConverter() }
 
         view.petPager.clipToPadding = false
         view.petPager.pageMargin = ViewUtils.dpToPx(16f, view.context).toInt()
@@ -73,7 +72,6 @@ class PetStoreViewController(args: Bundle? = null) :
         when (state.type) {
 
             DATA_CHANGED -> {
-                view.playerGems.text = state.playerGems.toString()
                 (view.petPager.adapter as PetPagerAdapter).updateAll(state.petViewModels)
             }
 

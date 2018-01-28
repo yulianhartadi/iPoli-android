@@ -4,6 +4,7 @@ import kotlinx.coroutines.experimental.channels.consumeEach
 import kotlinx.coroutines.experimental.launch
 import mypoli.android.challenge.category.list.ChallengeListForCategoryAction
 import mypoli.android.challenge.usecase.BuyChallengeUseCase
+import mypoli.android.common.DataLoadedAction.*
 import mypoli.android.common.di.Module
 import mypoli.android.common.redux.Action
 import mypoli.android.common.redux.Dispatcher
@@ -88,7 +89,7 @@ class LoadAllDataSaga : Saga<AppState>, Injects<Module> {
 
         launch {
             playerRepository.listen().consumeEach {
-                dispatcher.dispatch(DataLoadedAction.PlayerChanged(it!!))
+                dispatcher.dispatch(PlayerChanged(it!!))
             }
         }
 
@@ -98,13 +99,13 @@ class LoadAllDataSaga : Saga<AppState>, Injects<Module> {
                 appDataState.scheduleStart,
                 appDataState.scheduleEnd
             ).consumeEach {
-                dispatcher.dispatch(DataLoadedAction.ScheduledQuestsChanged(it))
+                dispatcher.dispatch(ScheduledQuestsChanged(it))
             }
         }
 
         launch {
             questRepository.listenForScheduledAt(LocalDate.now()).consumeEach {
-                dispatcher.dispatch(DataLoadedAction.TodayQuestsChanged(it))
+                dispatcher.dispatch(TodayQuestsChanged(it))
             }
         }
 

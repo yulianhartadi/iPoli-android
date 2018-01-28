@@ -27,7 +27,6 @@ data class GemStoreViewState(
     enum class StateType {
         LOADING,
         DATA_LOADED,
-        SHOW_CURRENCY_CONVERTER,
         PLAYER_CHANGED,
         GEM_PACKS_LOADED,
         DOG_UNLOCKED,

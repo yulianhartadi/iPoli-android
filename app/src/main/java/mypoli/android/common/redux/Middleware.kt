@@ -44,8 +44,8 @@ class CompositeMiddleware<in S : State>(private val middleware: List<MiddleWare<
 }
 
 class SagaMiddleware<in S : State>(
-    private val coroutineContext: CoroutineContext,
-    private val sagas: List<Saga<S>> = listOf()
+    private val sagas: List<Saga<S>> = listOf(),
+    private val coroutineContext: CoroutineContext
 ) : MiddleWare<S> {
 
     override fun execute(state: S, dispatcher: Dispatcher, action: Action): MiddleWare.Result {

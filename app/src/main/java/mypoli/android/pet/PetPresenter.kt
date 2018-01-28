@@ -153,12 +153,6 @@ class PetPresenter(
                 }
             }
 
-            is PetIntent.ShowCurrencyConverter -> {
-                state.copy(
-                    type = SHOW_CURRENCY_CONVERTER
-                )
-            }
-
             is PetIntent.ShowItemList ->
                 changeItemTypeState(state, PetItemType.BODY_ARMOR, ITEM_LIST_SHOWN)
 

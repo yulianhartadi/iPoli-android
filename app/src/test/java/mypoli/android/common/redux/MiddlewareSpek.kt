@@ -114,7 +114,10 @@ object MiddlewareSpek : Spek({
 
             runBlocking {
                 executeMiddleware(
-                    SagaMiddleware<TestState>(coroutineContext, sagas = listOf(TestSaga())),
+                    SagaMiddleware<TestState>(
+                        sagas = listOf(TestSaga()),
+                        coroutineContext = coroutineContext
+                    ),
                     TestAction()
                 )
             }
@@ -133,7 +136,10 @@ object MiddlewareSpek : Spek({
 
             runBlocking {
                 executeMiddleware(
-                    SagaMiddleware<TestState>(coroutineContext, sagas = listOf(NoExecuteSaga())),
+                    SagaMiddleware<TestState>(
+                        sagas = listOf(NoExecuteSaga()),
+                        coroutineContext = coroutineContext
+                    ),
                     TestAction()
                 )
             }

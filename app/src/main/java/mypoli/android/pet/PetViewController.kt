@@ -34,6 +34,7 @@ import mypoli.android.common.mvi.MviViewController
 import mypoli.android.common.view.*
 import mypoli.android.pet.PetViewState.StateType.*
 import mypoli.android.pet.store.PetStoreViewController
+import mypoli.android.player.inventory.GemInventoryViewController
 import space.traversal.kapsule.required
 
 
@@ -81,14 +82,9 @@ class PetViewController(args: Bundle? = null) :
         initList(view.itemList)
         initList(view.foodList)
 
-//        inventoryToolbar = addToolbarView(R.layout.view_inventory_toolbar) as ViewGroup
-
+        setChildController(view.playerGems, GemInventoryViewController())
 
         setToolbar(view.toolbar)
-
-        view.playerGems.setOnClickListener {
-            send(PetIntent.ShowCurrencyConverter)
-        }
 
         return view
     }
@@ -149,8 +145,6 @@ class PetViewController(args: Bundle? = null) :
                     }
                 }
 
-                view.playerGems.text = state.playerGems.toString()
-
                 view.itemList.adapter = PetItemAdapter(state.itemViewModels)
                 view.foodList.adapter = PetFoodAdapter(state.foodViewModels)
             }
@@ -192,8 +186,6 @@ class PetViewController(args: Bundle? = null) :
 
             PET_CHANGED -> {
 
-                view.playerGems.text = state.playerGems.toString()
-
                 (view.foodList.adapter as PetFoodAdapter).updateAll(state.foodViewModels)
                 (view.itemList.adapter as PetItemAdapter).updateAll(state.itemViewModels)
 
@@ -221,10 +213,6 @@ class PetViewController(args: Bundle? = null) :
 
             PET_REVIVED -> {
                 setMenusVisibility(view, true)
-            }
-
-            SHOW_CURRENCY_CONVERTER -> {
-                CurrencyConverterDialogController().showDialog(router, "currency-converter")
             }
 
             ITEM_LIST_SHOWN -> {

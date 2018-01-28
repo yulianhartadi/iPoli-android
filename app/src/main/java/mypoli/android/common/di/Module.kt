@@ -121,13 +121,13 @@ class AndroidStateStoreModule : StateStoreModule, Injects<Module> {
             AppReducer,
             listOf(
                 SagaMiddleware<AppState>(
-                    job + CommonPool,
                     sagas = listOf(
                         LoadAllDataSaga(),
                         BuyPredefinedChallengeSaga(),
                         ChangePetSaga(),
                         BuyPetSaga()
-                    )
+                    ),
+                    coroutineContext = job + CommonPool
                 )
             )
         )

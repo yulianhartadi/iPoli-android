@@ -25,6 +25,7 @@ import mypoli.android.challenge.data.Challenge
 import mypoli.android.challenge.data.PredefinedChallenge
 import mypoli.android.common.mvi.MviViewController
 import mypoli.android.common.view.*
+import mypoli.android.player.inventory.GemInventoryViewController
 import space.traversal.kapsule.required
 
 /**
@@ -64,9 +65,7 @@ class ChallengeListForCategoryViewController :
             LinearLayoutManager(container.context, LinearLayoutManager.VERTICAL, false)
         view.challengeList.adapter = ChallengeAdapter()
 
-        view.playerGems.setOnClickListener {
-            showCurrencyConverter()
-        }
+        setChildController(view.playerGems, GemInventoryViewController())
 
         return view
     }
@@ -96,7 +95,6 @@ class ChallengeListForCategoryViewController :
     override fun render(state: ChallengeListForCategoryViewState, view: View) {
         when (state.type) {
             PLAYER_CHANGED -> {
-                view.playerGems.text = "${state.playerGems}"
                 (view.challengeList.adapter as ChallengeAdapter).updateAll(state.viewModels)
             }
 

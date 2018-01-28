@@ -5,6 +5,7 @@ import android.support.v4.content.ContextCompat
 import android.support.v7.widget.Toolbar
 import android.util.TypedValue
 import android.view.View
+import android.view.ViewGroup
 import android.widget.Toast
 import com.bluelinelabs.conductor.Controller
 import com.bluelinelabs.conductor.RouterTransaction
@@ -87,4 +88,12 @@ fun Controller.enterFullScreen() {
 
 fun Controller.exitFullScreen() {
     (activity as MainActivity).exitFullScreen()
+}
+
+fun Controller.setChildController(view: ViewGroup, controller: Controller) {
+    val childRouter = getChildRouter(view)
+
+    if (!childRouter.hasRootController()) {
+        childRouter.setRoot(RouterTransaction.with(controller))
+    }
 }

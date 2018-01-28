@@ -10,7 +10,6 @@ import mypoli.android.player.Player
  * on 11/24/17.
  */
 sealed class PetIntent : Intent {
-    object ShowCurrencyConverter : PetIntent()
     object ShowItemList : PetIntent()
     object HideItemList : PetIntent()
     data class CompareItem(val newItem: PetItem) : PetIntent()
@@ -66,7 +65,7 @@ data class PetViewState(
     enum class StateType {
         LOADING, DATA_LOADED, FOOD_LIST_SHOWN, FOOD_LIST_HIDDEN, PET_FED,
         FOOD_TOO_EXPENSIVE, PET_CHANGED, RENAME_PET, PET_RENAMED,
-        PET_REVIVED, REVIVE_TOO_EXPENSIVE, SHOW_CURRENCY_CONVERTER,
+        PET_REVIVED, REVIVE_TOO_EXPENSIVE,
         ITEM_LIST_SHOWN, ITEM_LIST_HIDDEN, COMPARE_ITEMS, CHANGE_ITEM_CATEGORY,
         ITEM_TOO_EXPENSIVE, ITEM_BOUGHT, ITEM_EQUIPPED, ITEM_TAKEN_OFF
     }
