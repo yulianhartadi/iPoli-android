@@ -26,10 +26,17 @@ class AgendaPresenter : AndroidStatePresenter<AppState, AgendaViewState> {
     private fun toQuestViewModel(quest: Quest): AgendaViewController.QuestViewModel {
         return AgendaViewController.QuestViewModel(
             quest.name,
-            "10 - 12:30",
+            formatStartTime(quest),
             AndroidColor.valueOf(quest.color.name).color500,
             quest.icon?.let { AndroidIcon.valueOf(it.name).icon } ?: Ionicons.Icon.ion_android_done
         )
+    }
+
+    private fun formatStartTime(quest: Quest): String {
+        val start = quest.actualStartTime ?: return "Unscheduled"
+        val end = start.plus(quest.actualDuration.asMinutes.intValue)
+        return "$start - $end"
+
     }
 
 }
