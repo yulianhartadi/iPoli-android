@@ -114,16 +114,16 @@ interface StateStoreModule {
     val stateStore: StateStore<AppState>
 }
 
-class AndroidStateStoreModule(private val context: Context) : StateStoreModule, Injects<Module> {
+class AndroidStateStoreModule : StateStoreModule, Injects<Module> {
 
     override val stateStore by required {
-        StateStore<AppState>(
+        StateStore(
             AppReducer,
             listOf(
                 SagaMiddleware<AppState>(
                     job + CommonPool,
                     sagas = listOf(
-                        LoadAllDataSaga(context),
+                        LoadAllDataSaga(),
                         BuyPredefinedChallengeSaga(),
                         ChangePetSaga(),
                         BuyPetSaga()
@@ -356,15 +356,12 @@ class AndroidPresenterModule : PresenterModule, Injects<Module> {
     private val buyChallengeUseCase by required { buyChallengeUseCase }
     private val revivePetUseCase by required { revivePetUseCase }
     private val feedPetUseCase by required { feedPetUseCase }
-    private val buyPetUseCase by required { buyPetUseCase }
-    private val changePetUseCase by required { changePetUseCase }
     private val findPetUseCase by required { findPetUseCase }
     private val renamePetUseCase by required { renamePetUseCase }
     private val changeThemeUseCase by required { changeThemeUseCase }
     private val buyThemeUseCase by required { buyThemeUseCase }
     private val reminderTimeFormatter by required { reminderTimeFormatter }
     private val timeUnitFormatter by required { timeUnitFormatter }
-    private val calendarFormatter by required { calendarFormatter }
     private val buyIconPackUseCase by required { buyIconPackUseCase }
     private val buyColorPackUseCase by required { buyColorPackUseCase }
     private val convertCoinsToGemsUseCase by required { convertCoinsToGemsUseCase }

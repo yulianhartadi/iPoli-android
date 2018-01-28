@@ -15,7 +15,7 @@ data class Schedule(val date: LocalDate, val scheduled: List<Quest>, val unsched
 class LoadScheduleForDateUseCase(private val questRepository: QuestRepository) :
     StreamingUseCase<LocalDate, Schedule> {
     override fun execute(parameters: LocalDate) =
-        questRepository.listenForDate(parameters).map {
+        questRepository.listenForScheduledAt(parameters).map {
             val (scheduled, unscheduled) = it.partition { it.isScheduled }
             Schedule(parameters, scheduled, unscheduled.sortedBy { it.isCompleted })
         }

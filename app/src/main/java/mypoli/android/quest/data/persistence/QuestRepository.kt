@@ -24,7 +24,8 @@ interface QuestRepository : Repository<Quest> {
         endDate: LocalDate
     ): ReceiveChannel<List<Quest>>
 
-    fun listenForDate(date: LocalDate): ReceiveChannel<List<Quest>>
+    fun listenForScheduledAt(date: LocalDate): ReceiveChannel<List<Quest>>
+
     fun findNextQuestsToRemind(afterTime: Long = DateUtils.nowUTC().time): List<Quest>
     fun findQuestsToRemind(time: Long): List<Quest>
     fun findCompletedForDate(date: LocalDate): List<Quest>
@@ -91,7 +92,7 @@ class CouchbaseQuestRepository(database: Database, coroutineContext: CoroutineCo
                 .between(startDate.startOfDayUTC(), endDate.startOfDayUTC())
         )
 
-    override fun listenForDate(date: LocalDate) =
+    override fun listenForScheduledAt(date: LocalDate) =
         listenForChanges(
             where = property(
                 "scheduledDate"

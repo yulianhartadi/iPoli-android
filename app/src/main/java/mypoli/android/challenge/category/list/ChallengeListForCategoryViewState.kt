@@ -56,7 +56,7 @@ object ChallengeListForCategoryReducer :
         state: AppState,
         action: Action
     ) =
-        state.challengeListForCategoryState.also {
+        state.challengeListForCategoryState.let {
             when (action) {
                 is ChallengeListForCategoryAction.BuyChallenge -> {
                     it.copy(
@@ -75,6 +75,7 @@ object ChallengeListForCategoryReducer :
                         type = ChallengeListForCategoryState.StateType.CHALLENGE_TOO_EXPENSIVE
                     )
                 }
+                else -> it
             }
         }
 

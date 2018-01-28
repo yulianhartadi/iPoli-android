@@ -5,6 +5,7 @@ import org.threeten.bp.*
 import org.threeten.bp.format.TextStyle
 import org.threeten.bp.temporal.TemporalAdjusters.firstDayOfMonth
 import org.threeten.bp.temporal.TemporalAdjusters.lastDayOfMonth
+import org.threeten.bp.temporal.WeekFields
 import java.util.*
 
 /**
@@ -133,23 +134,9 @@ object DateUtils {
         }
     }
 
-    fun fromUserZoneToLocalDate(date: Date): LocalDate {
-        return Instant.ofEpochMilli(date.time).atZone(ZoneId.systemDefault()).toLocalDate()
-    }
+    val firstDayOfWeek: DayOfWeek
+        get() = WeekFields.of(Locale.getDefault()).firstDayOfWeek
 
-    fun toDaysOfWeek(daysOfWeek: Set<Int>): Set<DayOfWeek> {
-        val result = HashSet<DayOfWeek>()
-        for (day in daysOfWeek) {
-            result.add(DayOfWeek.of(day))
-        }
-        return result
-    }
-
-    fun toIntegers(daysOfWeek: Set<DayOfWeek>): Set<Int> {
-        val result = HashSet<Int>()
-        for (day in daysOfWeek) {
-            result.add(day.value)
-        }
-        return result
-    }
+    val lastDayOfWeek: DayOfWeek
+        get() = firstDayOfWeek.plus(6)
 }

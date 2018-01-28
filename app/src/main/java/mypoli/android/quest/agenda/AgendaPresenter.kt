@@ -15,13 +15,11 @@ import org.threeten.bp.LocalDate
  */
 class AgendaPresenter : AndroidStatePresenter<AppState, AgendaViewState> {
     override fun present(state: AppState, context: Context): AgendaViewState {
-
-        val todayQuests = state.appDataState.todayQuests
-
+        val scheduledQuests = state.appDataState.scheduledQuests
         return AgendaViewState(
             AgendaState.StateType.DATA_CHANGED,
             LocalDate.now(),
-            todayQuests.map { toQuestViewModel(it) }
+            scheduledQuests.values.map { it.map { toQuestViewModel(it) } }.flatten()
         )
     }
 

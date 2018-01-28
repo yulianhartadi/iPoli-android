@@ -1,6 +1,5 @@
 package mypoli.android.common
 
-import android.content.Context
 import kotlinx.coroutines.experimental.channels.consumeEach
 import kotlinx.coroutines.experimental.launch
 import mypoli.android.challenge.category.list.ChallengeListForCategoryAction
@@ -79,7 +78,7 @@ class BuyPetSaga : Saga<AppState>, Injects<Module> {
     override fun canHandle(action: Action) = action is PetStoreAction.BuyPet
 }
 
-class LoadAllDataSaga(private val context: Context) : Saga<AppState>, Injects<Module> {
+class LoadAllDataSaga : Saga<AppState>, Injects<Module> {
 
     private val playerRepository by required { playerRepository }
     private val questRepository by required { questRepository }
@@ -87,16 +86,25 @@ class LoadAllDataSaga(private val context: Context) : Saga<AppState>, Injects<Mo
     override suspend fun execute(action: Action, state: AppState, dispatcher: Dispatcher) {
         inject(myPoliApp.module(myPoliApp.instance))
 
-
         launch {
-            questRepository.listenForDate(LocalDate.now()).consumeEach {
-                dispatcher.dispatch(DataLoadedAction.TodayQuestsChanged(it))
+            playerRepository.listen().consumeEach {
+                dispatcher.dispatch(DataLoadedAction.PlayerChanged(it!!))
+            }
+        }
+
+        val appDataState = state.appDataState
+        launch {
+            questRepository.listenForScheduledBetween(
+                appDataState.scheduleStart,
+                appDataState.scheduleEnd
+            ).consumeEach {
+                dispatcher.dispatch(DataLoadedAction.ScheduledQuestsChanged(it))
             }
         }
 
         launch {
-            playerRepository.listen().consumeEach {
-                dispatcher.dispatch(DataLoadedAction.PlayerChanged(it!!))
+            questRepository.listenForScheduledAt(LocalDate.now()).consumeEach {
+                dispatcher.dispatch(DataLoadedAction.TodayQuestsChanged(it))
             }
         }
 
