@@ -73,12 +73,12 @@ class AgendaViewController(args: Bundle? = null) :
         val icon: IIcon
     ) : AgendaViewModel
 
-    data class DateViewModel(val date: LocalDate) : AgendaViewModel
+    data class DateHeaderViewModel(val date: LocalDate) : AgendaViewModel
     data class MonthDividerViewModel(val image: Int) : AgendaViewModel
-    data class EmptyDaysViewModel(val label: String) : AgendaViewModel
+    data class WeekHeaderViewModel(val label: String) : AgendaViewModel
 
     enum class ItemType {
-        QUEST, DATE, MONTH_DIVIDER, EMPTY_DAYS
+        QUEST, DATE_HEADER, MONTH_DIVIDER, WEEK_HEADER
     }
 
     inner class AgendaAdapter(private var viewModels: List<AgendaViewModel> = listOf()) :
@@ -93,14 +93,14 @@ class AgendaViewController(args: Bundle? = null) :
             val type = ItemType.values()[getItemViewType(position)]
             when (type) {
                 ItemType.QUEST -> bindQuestViewModel(itemView, vm as QuestViewModel)
-                ItemType.DATE -> bindDateViewModel(itemView, vm as DateViewModel)
+                ItemType.DATE_HEADER -> bindDateHeaderViewModel(itemView, vm as DateHeaderViewModel)
                 ItemType.MONTH_DIVIDER -> bindMonthDividerViewModel(
                     itemView,
                     vm as MonthDividerViewModel
                 )
-                ItemType.EMPTY_DAYS -> bindEmptyDaysViewModel(
+                ItemType.WEEK_HEADER -> bindWeekHeaderViewModel(
                     itemView,
-                    vm as EmptyDaysViewModel
+                    vm as WeekHeaderViewModel
                 )
             }
 
@@ -176,9 +176,9 @@ class AgendaViewController(args: Bundle? = null) :
             Timber.d("AAA complete item")
         }
 
-        private fun bindEmptyDaysViewModel(
+        private fun bindWeekHeaderViewModel(
             view: View,
-            viewModel: EmptyDaysViewModel
+            viewModel: WeekHeaderViewModel
         ) {
 
         }
@@ -190,9 +190,9 @@ class AgendaViewController(args: Bundle? = null) :
 
         }
 
-        private fun bindDateViewModel(
+        private fun bindDateHeaderViewModel(
             view: View,
-            viewModel: DateViewModel
+            viewMode: DateHeaderViewModel
         ) {
 
         }
@@ -224,23 +224,23 @@ class AgendaViewController(args: Bundle? = null) :
                         false
                     )
                 )
-                ItemType.DATE.ordinal -> DateViewHolder(
+                ItemType.DATE_HEADER.ordinal -> DateHeaderViewHolder(
                     LayoutInflater.from(parent.context).inflate(
-                        R.layout.item_agenda_quest,
+                        R.layout.item_agenda_date_header,
                         parent,
                         false
                     )
                 )
                 ItemType.MONTH_DIVIDER.ordinal -> MonthDividerViewHolder(
                     LayoutInflater.from(parent.context).inflate(
-                        R.layout.item_agenda_quest,
+                        R.layout.item_agenda_month_divider,
                         parent,
                         false
                     )
                 )
-                ItemType.EMPTY_DAYS.ordinal -> EmptyDaysViewHolder(
+                ItemType.WEEK_HEADER.ordinal -> WeekHeaderViewHolder(
                     LayoutInflater.from(parent.context).inflate(
-                        R.layout.item_agenda_quest,
+                        R.layout.item_agenda_week_header,
                         parent,
                         false
                     )
@@ -249,16 +249,16 @@ class AgendaViewController(args: Bundle? = null) :
             }
 
         inner class QuestViewHolder(view: View) : RecyclerView.ViewHolder(view)
-        inner class DateViewHolder(view: View) : RecyclerView.ViewHolder(view)
+        inner class DateHeaderViewHolder(view: View) : RecyclerView.ViewHolder(view)
         inner class MonthDividerViewHolder(view: View) : RecyclerView.ViewHolder(view)
-        inner class EmptyDaysViewHolder(view: View) : RecyclerView.ViewHolder(view)
+        inner class WeekHeaderViewHolder(view: View) : RecyclerView.ViewHolder(view)
 
         override fun getItemViewType(position: Int) =
             when (viewModels[position]) {
                 is QuestViewModel -> ItemType.QUEST.ordinal
-                is DateViewModel -> ItemType.DATE.ordinal
+                is DateHeaderViewModel -> ItemType.DATE_HEADER.ordinal
                 is MonthDividerViewModel -> ItemType.MONTH_DIVIDER.ordinal
-                is EmptyDaysViewModel -> ItemType.EMPTY_DAYS.ordinal
+                is WeekHeaderViewModel -> ItemType.WEEK_HEADER.ordinal
                 else -> super.getItemViewType(position)
 
             }
