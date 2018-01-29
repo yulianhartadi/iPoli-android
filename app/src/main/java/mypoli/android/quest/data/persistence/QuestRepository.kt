@@ -4,10 +4,7 @@ import com.couchbase.lite.*
 import com.couchbase.lite.Expression.property
 import com.couchbase.lite.Function
 import kotlinx.coroutines.experimental.channels.ReceiveChannel
-import mypoli.android.common.datetime.DateUtils
-import mypoli.android.common.datetime.Time
-import mypoli.android.common.datetime.instant
-import mypoli.android.common.datetime.startOfDayUTC
+import mypoli.android.common.datetime.*
 import mypoli.android.common.persistence.BaseCouchbaseRepository
 import mypoli.android.common.persistence.CouchbasePersistedModel
 import mypoli.android.common.persistence.Repository
@@ -30,6 +27,8 @@ interface QuestRepository : Repository<Quest> {
     fun findQuestsToRemind(time: Long): List<Quest>
     fun findCompletedForDate(date: LocalDate): List<Quest>
     fun findStartedQuest(): Quest?
+    fun findLastScheduledDate(currentDate: LocalDate, maxQuests: Int): Map<LocalDate, Int>
+    fun findFirstScheduledDate(currentDate: LocalDate, maxQuests: Int): Map<LocalDate, Int>
 }
 
 data class CouchbaseQuest(override val map: MutableMap<String, Any?> = mutableMapOf()) :
@@ -162,6 +161,100 @@ class CouchbaseQuestRepository(database: Database, coroutineContext: CoroutineCo
         return result?.let {
             toEntityObject(it)
         }
+    }
+
+    override fun findLastScheduledDate(
+        currentDate: LocalDate,
+        maxQuests: Int
+    ): Map<LocalDate, Int> {
+
+        val endDateQuery = createQuery(
+            select = select(SelectResult.property("scheduledDate")),
+            where = property("scheduledDate").greaterThan(currentDate.startOfDayUTC()),
+            limit = maxQuests,
+            orderBy = Ordering.property("scheduledDate").ascending()
+        )
+
+        val endDateIterator = endDateQuery.execute().iterator()
+
+        if (!endDateIterator.hasNext()) {
+            return mapOf()
+        }
+
+        val endDateRes = endDateIterator.asSequence().last()
+
+        val endDate = endDateRes.getLong("scheduledDate")
+
+        val questsCount = Function.count(Meta.id)
+
+        val query = createQuery(
+            select = select(
+                SelectResult.expression(questsCount).`as`("cnt"),
+                SelectResult.property("scheduledDate")
+            ),
+            where = property("scheduledDate").greaterThan(currentDate.startOfDayUTC()).and(
+                property(
+                    "scheduledDate"
+                ).lessThanOrEqualTo(endDate)
+            ),
+            limit = maxQuests,
+            groupBy = GroupClause(property("scheduledDate"))
+        )
+
+        return extractDateToQuestCount(query)
+    }
+
+    override fun findFirstScheduledDate(
+        currentDate: LocalDate,
+        maxQuests: Int
+    ): Map<LocalDate, Int> {
+
+        val startDateQuery = createQuery(
+            select = select(SelectResult.property("scheduledDate")),
+            where = property("scheduledDate").lessThan(currentDate.startOfDayUTC()),
+            limit = maxQuests,
+            orderBy = Ordering.property("scheduledDate").descending()
+        )
+
+        val startDateIterator = startDateQuery.execute().iterator()
+
+        if (!startDateIterator.hasNext()) {
+            return mapOf()
+        }
+
+        val startDateRes = startDateIterator.asSequence().last()
+
+        val startDate = startDateRes.getLong("scheduledDate")
+
+        val questsCount = Function.count(Meta.id)
+
+        val query = createQuery(
+            select = select(
+                SelectResult.expression(questsCount).`as`("cnt"),
+                SelectResult.property("scheduledDate")
+            ),
+            where = property("scheduledDate").greaterThanOrEqualTo(startDate).and(
+                property(
+                    "scheduledDate"
+                ).lessThan(currentDate.startOfDayUTC())
+            ),
+            limit = maxQuests,
+            groupBy = GroupClause(property("scheduledDate"))
+        )
+
+        return extractDateToQuestCount(query)
+    }
+
+    private fun extractDateToQuestCount(query: Query): MutableMap<LocalDate, Int> {
+        val queryIterator = query.execute().iterator()
+
+        val result = mutableMapOf<LocalDate, Int>()
+
+        queryIterator.forEach {
+            result[it.getLong("scheduledDate").startOfDayUtc] = it.getInt("cnt")
+        }
+
+        return result
     }
 
     override fun toEntityObject(dataMap: MutableMap<String, Any?>): Quest {

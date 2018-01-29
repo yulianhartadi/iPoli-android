@@ -63,3 +63,5 @@ fun Instant.plusMinutes(minutes: Long): Instant = plus(minutes, ChronoUnit.MINUT
 val Instant.milliseconds get() = toEpochMilli().milliseconds
 
 val Long.instant: Instant get() = Instant.ofEpochMilli(this)
+
+val Long.startOfDayUtc: LocalDate get() = DateUtils.fromMillis(this)
