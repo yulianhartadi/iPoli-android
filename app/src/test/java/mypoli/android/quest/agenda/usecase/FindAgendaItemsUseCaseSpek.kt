@@ -2,11 +2,11 @@ package mypoli.android.quest.agenda.usecase
 
 import mypoli.android.TestUtil
 import mypoli.android.quest.data.persistence.QuestRepository
-import org.amshove.kluent.*
+import org.amshove.kluent.shouldThrow
 import org.jetbrains.spek.api.Spek
 import org.jetbrains.spek.api.dsl.describe
 import org.jetbrains.spek.api.dsl.it
-import org.threeten.bp.DayOfWeek
+import org.jetbrains.spek.api.dsl.xit
 import org.threeten.bp.LocalDate
 
 /**
@@ -21,48 +21,42 @@ class FindAgendaItemsUseCaseSpek : Spek({
             params: FindAgendaItemsUseCase.Params,
             questRepository: QuestRepository = TestUtil.questRepoMock()
         ) =
-            FindAgendaItemsUseCase(questRepository).execute(
-                FindAgendaItemsUseCase.Params(
-                    params.date,
-                    params.itemCount,
-                    params.findBefore,
-                    DayOfWeek.MONDAY
-                )
-            )
+            FindAgendaItemsUseCase(questRepository).execute(params)
 
-        it("should require non negative item count") {
+        val today = LocalDate.now()
+
+        it("should require positive items for before") {
             val exec =
-                { executeUseCase(FindAgendaItemsUseCase.Params(LocalDate.now(), -1, false)) }
+                { executeUseCase(FindAgendaItemsUseCase.Params.Before(today, 0)) }
             exec shouldThrow IllegalArgumentException::class
         }
 
-        it("should return empty list when no items are requested") {
-            val result = executeUseCase(FindAgendaItemsUseCase.Params(LocalDate.now(), 0, false))
-            result.agendaItems.`should be empty`()
+        it("should require positive items for after") {
+            val exec =
+                { executeUseCase(FindAgendaItemsUseCase.Params.After(today, 0)) }
+            exec shouldThrow IllegalArgumentException::class
         }
 
-        it("should give empty week item when at start of week") {
-            val start = LocalDate.of(2018, 1, 8)
-            val result =
-                executeUseCase(FindAgendaItemsUseCase.Params(start, 1, false))
-            result.agendaItems.size.`should be equal to`(1)
-            val agendaItem = result.agendaItems.first()
-            agendaItem.`should be instance of`(FindAgendaItemsUseCase.AgendaItem.Week::class)
-            val weekItem = agendaItem as FindAgendaItemsUseCase.AgendaItem.Week
-            weekItem.start.`should equal`(start)
-            weekItem.end.`should equal`(start.with(DayOfWeek.SUNDAY))
+        it("should require positive items for all") {
+            val exec =
+                { executeUseCase(FindAgendaItemsUseCase.Params.All(today, 0, 1)) }
+            exec shouldThrow IllegalArgumentException::class
         }
 
-        it("should give empty week item when at mid of week") {
-            val start = LocalDate.of(2018, 1, 10)
-            val result =
-                executeUseCase(FindAgendaItemsUseCase.Params(start, 1, false))
-            result.agendaItems.size.`should be equal to`(1)
-            val agendaItem = result.agendaItems.first()
-            agendaItem.`should be instance of`(FindAgendaItemsUseCase.AgendaItem.Week::class)
-            val weekItem = agendaItem as FindAgendaItemsUseCase.AgendaItem.Week
-            weekItem.start.`should equal`(start.with(DayOfWeek.MONDAY))
-            weekItem.end.`should equal`(start.with(DayOfWeek.SUNDAY))
+//        it("should return large range when no quests are present") {
+//            val result =
+//                executeUseCase(
+//                    FindAgendaItemsUseCase.Params(
+//                        date = LocalDate.of(2018, 1, 11),
+//                        itemsBefore = 1,
+//                        itemsAfter = 0
+//                    )
+//                )
+//
+//        }
+
+        xit("should return after including today") {
+
         }
     }
 })
