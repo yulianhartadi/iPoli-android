@@ -11,6 +11,8 @@ import mypoli.android.common.view.AndroidIcon
 import mypoli.android.quest.Quest
 import mypoli.android.quest.agenda.usecase.CreateAgendaItemsUseCase
 import org.threeten.bp.format.DateTimeFormatter
+import org.threeten.bp.format.TextStyle
+import java.util.*
 
 /**
  * Created by Venelin Valkov <venelin@mypoli.fun>
@@ -44,9 +46,10 @@ class AgendaPresenter : AndroidStatePresenter<AppState, AgendaViewState> {
                 )
             }
             is CreateAgendaItemsUseCase.AgendaItem.Date -> {
-                AgendaViewController.DateHeaderViewModel(
-                    DateFormatter.format(context, agendaItem.date)
-                )
+                val date = agendaItem.date
+                val dayOfMonth = date.dayOfMonth
+                val dayOfWeek = date.dayOfWeek.getDisplayName(TextStyle.SHORT, Locale.getDefault())
+                AgendaViewController.DateHeaderViewModel("$dayOfMonth $dayOfWeek")
             }
             is CreateAgendaItemsUseCase.AgendaItem.Week -> {
                 AgendaViewController.WeekHeaderViewModel(
