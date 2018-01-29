@@ -55,13 +55,6 @@ class FindAgendaDatesUseCase(private val questRepository: QuestRepository) :
         data class All(val date: LocalDate, val itemsBefore: Int, val itemsAfter: Int) : Params()
     }
 
-//    sealed class AgendaItem {
-//        data class QuestItem(val quest: Quest) : AgendaItem()
-//        data class Date(val date: LocalDate) : AgendaItem()
-//        data class Week(val start: LocalDate, val end: LocalDate) : AgendaItem()
-//        data class Month(val month: YearMonth) : AgendaItem()
-//    }
-
     sealed class Result {
         data class Before(val date: LocalDate?) : Result()
         data class After(val date: LocalDate?) : Result()
