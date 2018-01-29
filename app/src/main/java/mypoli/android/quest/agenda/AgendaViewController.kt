@@ -3,11 +3,13 @@ package mypoli.android.quest.agenda
 import android.content.res.ColorStateList
 import android.os.Bundle
 import android.support.annotation.ColorRes
+import android.support.annotation.DrawableRes
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.TextView
 import com.mikepenz.iconics.IconicsDrawable
 import com.mikepenz.iconics.typeface.IIcon
 import kotlinx.android.synthetic.main.controller_agenda.view.*
@@ -16,7 +18,6 @@ import mypoli.android.R
 import mypoli.android.common.redux.android.ReduxViewController
 import mypoli.android.common.view.EndlessRecyclerViewScrollListener
 import mypoli.android.common.view.colorRes
-import org.threeten.bp.LocalDate
 import timber.log.Timber
 
 /**
@@ -57,7 +58,7 @@ class AgendaViewController(args: Bundle? = null) :
     override fun render(state: AgendaViewState, view: View) {
         when (state.type) {
             AgendaState.StateType.DATA_CHANGED -> {
-                (view.agendaList.adapter as AgendaAdapter).updateAll(state.quests)
+                (view.agendaList.adapter as AgendaAdapter).updateAll(state.agendaItems)
             }
         }
     }
@@ -71,9 +72,12 @@ class AgendaViewController(args: Bundle? = null) :
         val icon: IIcon
     ) : AgendaViewModel
 
-    data class DateHeaderViewModel(val date: LocalDate) : AgendaViewModel
-    data class MonthDividerViewModel(val image: Int) : AgendaViewModel
-    data class WeekHeaderViewModel(val label: String) : AgendaViewModel
+    data class DateHeaderViewModel(val text: String) : AgendaViewModel
+    data class MonthDividerViewModel(
+        @DrawableRes val image: Int, val text: String
+    ) : AgendaViewModel
+
+    data class WeekHeaderViewModel(val text: String) : AgendaViewModel
 
     enum class ItemType {
         QUEST, DATE_HEADER, MONTH_DIVIDER, WEEK_HEADER
@@ -85,8 +89,6 @@ class AgendaViewController(args: Bundle? = null) :
         override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
             val vm = viewModels[holder.adapterPosition]
             val itemView = holder.itemView
-
-            itemView.completeLine.visibility = View.GONE
 
             val type = ItemType.values()[getItemViewType(position)]
             when (type) {
@@ -107,21 +109,21 @@ class AgendaViewController(args: Bundle? = null) :
             view: View,
             viewModel: WeekHeaderViewModel
         ) {
-
+            (view as TextView).text = viewModel.text
         }
 
         private fun bindMonthDividerViewModel(
             view: View,
             viewModel: MonthDividerViewModel
         ) {
-
+            (view as TextView).text = viewModel.text
         }
 
         private fun bindDateHeaderViewModel(
             view: View,
-            viewMode: DateHeaderViewModel
+            viewModel: DateHeaderViewModel
         ) {
-
+            (view as TextView).text = viewModel.text
         }
 
         private fun bindQuestViewModel(
@@ -190,7 +192,7 @@ class AgendaViewController(args: Bundle? = null) :
 
             }
 
-        fun updateAll(viewModels: List<QuestViewModel>) {
+        fun updateAll(viewModels: List<AgendaViewModel>) {
             this.viewModels = viewModels
             notifyDataSetChanged()
         }

@@ -12,31 +12,62 @@ import org.threeten.bp.YearMonth
  * on 01/29/2018.
  */
 class CreateAgendaItemsUseCase :
-    UseCase<CreateAgendaItemsUseCase.Params, CreateAgendaItemsUseCase.Result> {
+    UseCase<CreateAgendaItemsUseCase.Params, List<CreateAgendaItemsUseCase.AgendaItem>> {
 
-    override fun execute(parameters: Params): Result {
+    override fun execute(parameters: Params): List<CreateAgendaItemsUseCase.AgendaItem> {
 
+        val scheduledQuests = parameters.scheduledQuests.groupBy { it.scheduledDate }
+
+        val beforeItems =
+            createItems(
+                parameters.date.minusDays(1),
+                scheduledQuests,
+                parameters.itemsBefore,
+                { it.minusDays(1) },
+                parameters.firstDayOfWeek
+            )
+        val afterItems =
+            createItems(
+                parameters.date,
+                scheduledQuests,
+                parameters.itemsAfter,
+                { it.plusDays(1) },
+                parameters.firstDayOfWeek
+            )
+        return beforeItems + afterItems
+    }
+
+    private fun createItems(
+        startDate: LocalDate,
+        scheduledQuests: Map<LocalDate, List<Quest>>,
+        itemsToFill: Int,
+        nextDate: (LocalDate) -> LocalDate,
+        firstDayOfWeek: DayOfWeek
+    ): MutableList<AgendaItem> {
         val items = mutableListOf<AgendaItem>()
-
-        var currentDate = parameters.date
-
-        val scheduledQuests = parameters.scheduledQuests
-
-        while (items.size < parameters.itemsAfter) {
+        var currentDate = startDate
+        while (items.size < itemsToFill) {
 
             if (currentDate.dayOfMonth == 1) {
-                items.add(AgendaItem.Month(YearMonth.of(currentDate.year, currentDate.monthValue)))
+                items.add(
+                    AgendaItem.Month(
+                        YearMonth.of(
+                            currentDate.year,
+                            currentDate.monthValue
+                        )
+                    )
+                )
             }
 
-            if (items.size >= parameters.itemsAfter) {
+            if (items.size >= itemsToFill) {
                 break
             }
 
-            if (currentDate.dayOfWeek == parameters.firstDayOfWeek) {
+            if (currentDate.dayOfWeek == firstDayOfWeek) {
                 items.add(AgendaItem.Week(currentDate, currentDate.plusDays(6)))
             }
 
-            if (items.size >= parameters.itemsAfter) {
+            if (items.size >= itemsToFill) {
                 break
             }
 
@@ -46,7 +77,7 @@ class CreateAgendaItemsUseCase :
                 val dateQuests = scheduledQuests[currentDate]!!
                 for (q in dateQuests) {
 
-                    if (items.size >= parameters.itemsAfter) {
+                    if (items.size >= itemsToFill) {
                         break
                     }
 
@@ -54,21 +85,19 @@ class CreateAgendaItemsUseCase :
                 }
             }
 
-            currentDate = currentDate.plusDays(1)
+            currentDate = nextDate(currentDate)
         }
 
-        return Result(items)
+        return items
     }
 
     data class Params(
         val date: LocalDate,
-        val scheduledQuests: Map<LocalDate, List<Quest>>,
+        val scheduledQuests: List<Quest>,
         val itemsAfter: Int,
         val itemsBefore: Int,
         val firstDayOfWeek: DayOfWeek = DateUtils.firstDayOfWeek
     )
-
-    data class Result(val agendaItems: List<AgendaItem>)
 
     sealed class AgendaItem {
         data class QuestItem(val quest: Quest) : AgendaItem()

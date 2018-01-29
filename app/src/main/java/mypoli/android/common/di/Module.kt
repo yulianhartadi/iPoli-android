@@ -35,6 +35,8 @@ import mypoli.android.player.persistence.PlayerRepository
 import mypoli.android.player.usecase.*
 import mypoli.android.player.view.LevelUpPresenter
 import mypoli.android.quest.CompletedQuestPresenter
+import mypoli.android.quest.agenda.usecase.CreateAgendaItemsUseCase
+import mypoli.android.quest.agenda.usecase.FindAgendaDatesUseCase
 import mypoli.android.quest.calendar.addquest.AddQuestPresenter
 import mypoli.android.quest.calendar.dayview.DayViewPresenter
 import mypoli.android.quest.data.persistence.CouchbaseQuestRepository
@@ -168,16 +170,6 @@ class MainAndroidModule(private val context: Context) : AndroidModule {
 }
 
 class MainUseCaseModule : UseCaseModule, Injects<Module> {
-
-    override val findPlayerLevelUseCase
-        get() = FindPlayerLevelUseCase(playerRepository)
-
-    override val lowerPetStatsUseCase
-        get() = LowerPetStatsUseCase(
-            questRepository,
-            playerRepository
-        )
-
     private val questRepository by required { questRepository }
     private val playerRepository by required { playerRepository }
     private val reminderScheduler by required { reminderScheduler }
@@ -186,6 +178,7 @@ class MainUseCaseModule : UseCaseModule, Injects<Module> {
     private val levelDownScheduler by required { levelDownScheduler }
     private val rateDialogScheduler by required { ratePopupScheduler }
     private val timerCompleteScheduler by required { timerCompleteScheduler }
+
     override val loadScheduleForDateUseCase
         get() = LoadScheduleForDateUseCase(questRepository)
     override val saveQuestUseCase
@@ -277,6 +270,18 @@ class MainUseCaseModule : UseCaseModule, Injects<Module> {
             cancelTimerUseCase,
             timerCompleteScheduler
         )
+
+    override val findAgendaDatesUseCase get() = FindAgendaDatesUseCase(questRepository)
+    override val createAgendaItemsUseCase get() = CreateAgendaItemsUseCase()
+
+    override val findPlayerLevelUseCase
+        get() = FindPlayerLevelUseCase(playerRepository)
+
+    override val lowerPetStatsUseCase
+        get() = LowerPetStatsUseCase(
+            questRepository,
+            playerRepository
+        )
 }
 
 interface UseCaseModule {
@@ -318,6 +323,8 @@ interface UseCaseModule {
     val addPomodoroUseCase: AddPomodoroUseCase
     val removePomodoroUseCase: RemovePomodoroUseCase
     val addTimerToQuestUseCase: AddTimerToQuestUseCase
+    val findAgendaDatesUseCase: FindAgendaDatesUseCase
+    val createAgendaItemsUseCase: CreateAgendaItemsUseCase
 }
 
 interface PresenterModule {

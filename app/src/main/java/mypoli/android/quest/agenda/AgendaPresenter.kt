@@ -2,12 +2,15 @@ package mypoli.android.quest.agenda
 
 import android.content.Context
 import com.mikepenz.ionicons_typeface_library.Ionicons
+import mypoli.android.R
 import mypoli.android.common.AppState
 import mypoli.android.common.redux.android.AndroidStatePresenter
+import mypoli.android.common.text.DateFormatter
 import mypoli.android.common.view.AndroidColor
 import mypoli.android.common.view.AndroidIcon
 import mypoli.android.quest.Quest
-import org.threeten.bp.LocalDate
+import mypoli.android.quest.agenda.usecase.CreateAgendaItemsUseCase
+import org.threeten.bp.format.DateTimeFormatter
 
 /**
  * Created by Venelin Valkov <venelin@mypoli.fun>
@@ -15,21 +18,50 @@ import org.threeten.bp.LocalDate
  */
 class AgendaPresenter : AndroidStatePresenter<AppState, AgendaViewState> {
     override fun present(state: AppState, context: Context): AgendaViewState {
-        val scheduledQuests = state.appDataState.scheduledQuests
+
         return AgendaViewState(
             AgendaState.StateType.DATA_CHANGED,
-            LocalDate.now(),
-            scheduledQuests.values.map { it.map { toQuestViewModel(it) } }.flatten()
+            state.agendaState.agendaItems.map {
+                toAgendaViewModel(it, context)
+            }
         )
     }
 
-    private fun toQuestViewModel(quest: Quest): AgendaViewController.QuestViewModel {
-        return AgendaViewController.QuestViewModel(
-            quest.name,
-            formatStartTime(quest),
-            AndroidColor.valueOf(quest.color.name).color500,
-            quest.icon?.let { AndroidIcon.valueOf(it.name).icon } ?: Ionicons.Icon.ion_android_done
-        )
+    private fun toAgendaViewModel(
+        agendaItem: CreateAgendaItemsUseCase.AgendaItem,
+        context: Context
+    ): AgendaViewController.AgendaViewModel {
+
+        return when (agendaItem) {
+            is CreateAgendaItemsUseCase.AgendaItem.QuestItem -> {
+                val quest = agendaItem.quest
+                AgendaViewController.QuestViewModel(
+                    quest.name,
+                    formatStartTime(quest),
+                    AndroidColor.valueOf(quest.color.name).color500,
+                    quest.icon?.let { AndroidIcon.valueOf(it.name).icon }
+                        ?: Ionicons.Icon.ion_android_done
+                )
+            }
+            is CreateAgendaItemsUseCase.AgendaItem.Date -> {
+                AgendaViewController.DateHeaderViewModel(
+                    DateFormatter.format(context, agendaItem.date)
+                )
+            }
+            is CreateAgendaItemsUseCase.AgendaItem.Week -> {
+                AgendaViewController.WeekHeaderViewModel(
+                    "${DateFormatter.format(context, agendaItem.start)} - ${DateFormatter.format(context, agendaItem.end)}"
+                )
+            }
+            is CreateAgendaItemsUseCase.AgendaItem.Month -> {
+                AgendaViewController.MonthDividerViewModel(
+                    R.drawable.challenge_category_build_skill_image, agendaItem.month.format(
+                        DateTimeFormatter.ofPattern("MMMM yyyy")
+                    )
+                )
+            }
+        }
+
     }
 
     private fun formatStartTime(quest: Quest): String {

@@ -12,6 +12,8 @@ import mypoli.android.common.redux.Saga
 import mypoli.android.myPoliApp
 import mypoli.android.pet.store.PetStoreAction
 import mypoli.android.pet.usecase.BuyPetUseCase
+import mypoli.android.quest.agenda.usecase.CreateAgendaItemsUseCase
+import mypoli.android.quest.agenda.usecase.FindAgendaDatesUseCase
 import org.threeten.bp.LocalDate
 import space.traversal.kapsule.Injects
 import space.traversal.kapsule.inject
@@ -84,6 +86,9 @@ class LoadAllDataSaga : Saga<AppState>, Injects<Module> {
     private val playerRepository by required { playerRepository }
     private val questRepository by required { questRepository }
 
+    private val findAgendaDatesUseCase by required { findAgendaDatesUseCase }
+    private val createAgendaItemsUseCase by required { createAgendaItemsUseCase }
+
     override suspend fun execute(action: Action, state: AppState, dispatcher: Dispatcher) {
         inject(myPoliApp.module(myPoliApp.instance))
 
@@ -93,18 +98,41 @@ class LoadAllDataSaga : Saga<AppState>, Injects<Module> {
             }
         }
 
-        val appDataState = state.appDataState
+        val today = LocalDate.now()
+
+        val result = findAgendaDatesUseCase.execute(
+            FindAgendaDatesUseCase.Params.All(
+                today,
+                10,
+                25
+            )
+        ) as FindAgendaDatesUseCase.Result.All
+
+        val start = result.start ?: today.minusMonths(3)
+        val end = result.end ?: today.plusMonths(3)
+
         launch {
             questRepository.listenForScheduledBetween(
-                appDataState.scheduleStart,
-                appDataState.scheduleEnd
+                start,
+                end
             ).consumeEach {
-                dispatcher.dispatch(ScheduledQuestsChanged(it))
+                dispatcher.dispatch(
+                    AgendaItemsChanged(
+                        start, end, createAgendaItemsUseCase.execute(
+                            CreateAgendaItemsUseCase.Params(
+                                today,
+                                it,
+                                25,
+                                10
+                            )
+                        )
+                    )
+                )
             }
         }
 
         launch {
-            questRepository.listenForScheduledAt(LocalDate.now()).consumeEach {
+            questRepository.listenForScheduledAt(today).consumeEach {
                 dispatcher.dispatch(TodayQuestsChanged(it))
             }
         }
