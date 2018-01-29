@@ -1,14 +1,13 @@
 package mypoli.android.quest.agenda
 
 import android.content.res.ColorStateList
-import android.graphics.Rect
 import android.os.Bundle
 import android.support.annotation.ColorRes
-import android.support.constraint.ConstraintLayout
-import android.support.v4.view.GestureDetectorCompat
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
-import android.view.*
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
 import com.mikepenz.iconics.IconicsDrawable
 import com.mikepenz.iconics.typeface.IIcon
 import kotlinx.android.synthetic.main.controller_agenda.view.*
@@ -17,7 +16,6 @@ import mypoli.android.R
 import mypoli.android.common.redux.android.ReduxViewController
 import mypoli.android.common.view.EndlessRecyclerViewScrollListener
 import mypoli.android.common.view.colorRes
-import mypoli.android.common.view.visible
 import org.threeten.bp.LocalDate
 import timber.log.Timber
 
@@ -103,77 +101,6 @@ class AgendaViewController(args: Bundle? = null) :
                     vm as WeekHeaderViewModel
                 )
             }
-
-            var startScrollEv: MotionEvent? = null
-
-            val gestureDetector =
-                GestureDetectorCompat(itemView.context, object :
-                    GestureDetector.SimpleOnGestureListener() {
-
-
-                    override fun onScroll(
-                        e1: MotionEvent,
-                        e2: MotionEvent,
-                        distanceX: Float,
-                        distanceY: Float
-                    ): Boolean {
-
-                        if (distanceX > 0) {
-                            return true
-                        }
-
-                        if (startScrollEv == null) {
-                            startScrollEv = e1
-                        }
-
-                        itemView.completeLine.visible = true
-
-                        strikethroughQuestName(itemView, (e2.rawX - itemView.questName.x).toInt())
-
-                        return true
-                    }
-                })
-
-            gestureDetector.setIsLongpressEnabled(true)
-            itemView.setOnTouchListener { _, event ->
-
-                if (event.action == MotionEvent.ACTION_UP) {
-
-                    if (startScrollEv != null) {
-                        val totalWidth = itemView.width.toFloat()
-
-                        val totalDistanceX = event.rawX - startScrollEv!!.rawX
-
-                        if (event.rawX > totalWidth / 2 && startScrollEv!!.rawX < totalWidth / 2 && totalDistanceX > totalWidth / 3) {
-                            strikethroughQuestName(itemView)
-                            onCompleteItem(itemView, vm)
-                        } else {
-                            itemView.completeLine.visibility = View.GONE
-                        }
-                        startScrollEv = null
-                    }
-                }
-                gestureDetector.onTouchEvent(event)
-            }
-        }
-
-        private fun strikethroughQuestName(itemView: View, to: Int? = null) {
-            val textView = itemView.questName
-            val textBounds = Rect()
-            textView.paint.getTextBounds(
-                textView.text.toString(),
-                0,
-                textView.text.length,
-                textBounds
-            )
-
-            val lp = itemView.completeLine.layoutParams as ConstraintLayout.LayoutParams
-            lp.width = to?.let { Math.min(textBounds.right, it) } ?: textBounds.right
-            itemView.completeLine.layoutParams = lp
-        }
-
-        private fun onCompleteItem(itemView: View, vm: AgendaViewController.AgendaViewModel) {
-            Timber.d("AAA complete item")
         }
 
         private fun bindWeekHeaderViewModel(
