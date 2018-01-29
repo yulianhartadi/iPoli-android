@@ -1,12 +1,13 @@
 package mypoli.android.quest.agenda.usecase
 
 import mypoli.android.TestUtil
+import mypoli.android.quest.agenda.usecase.FindAgendaDatesUseCase.Params.*
 import mypoli.android.quest.data.persistence.QuestRepository
+import org.amshove.kluent.`should be null`
 import org.amshove.kluent.shouldThrow
 import org.jetbrains.spek.api.Spek
 import org.jetbrains.spek.api.dsl.describe
 import org.jetbrains.spek.api.dsl.it
-import org.jetbrains.spek.api.dsl.xit
 import org.threeten.bp.LocalDate
 
 /**
@@ -15,48 +16,58 @@ import org.threeten.bp.LocalDate
  */
 class FindAgendaItemsUseCaseSpek : Spek({
 
-    describe("FindAgendaItemsUseCase") {
+    describe("FindAgendaDatesUseCase") {
 
         fun executeUseCase(
-            params: FindAgendaItemsUseCase.Params,
+            params: FindAgendaDatesUseCase.Params,
             questRepository: QuestRepository = TestUtil.questRepoMock()
         ) =
-            FindAgendaItemsUseCase(questRepository).execute(params)
+            FindAgendaDatesUseCase(questRepository).execute(params)
 
         val today = LocalDate.now()
 
         it("should require positive items for before") {
             val exec =
-                { executeUseCase(FindAgendaItemsUseCase.Params.Before(today, 0)) }
+                { executeUseCase(Before(today, 0)) }
             exec shouldThrow IllegalArgumentException::class
         }
 
         it("should require positive items for after") {
             val exec =
-                { executeUseCase(FindAgendaItemsUseCase.Params.After(today, 0)) }
+                { executeUseCase(After(today, 0)) }
             exec shouldThrow IllegalArgumentException::class
         }
 
         it("should require positive items for all") {
             val exec =
-                { executeUseCase(FindAgendaItemsUseCase.Params.All(today, 0, 1)) }
+                { executeUseCase(All(today, 0, 1)) }
             exec shouldThrow IllegalArgumentException::class
         }
 
-//        it("should return large range when no quests are present") {
-//            val result =
-//                executeUseCase(
-//                    FindAgendaItemsUseCase.Params(
-//                        date = LocalDate.of(2018, 1, 11),
-//                        itemsBefore = 1,
-//                        itemsAfter = 0
-//                    )
-//                )
-//
-//        }
+        it("should give no after date when no quests are present") {
+            val date = LocalDate.of(2018, 1, 11)
+            val result =
+                executeUseCase(
+                    After(
+                        date,
+                        10
+                    )
+                )
+            val res = (result as FindAgendaDatesUseCase.Result.After)
+            res.date.`should be null`()
+        }
 
-        xit("should return after including today") {
-
+        it("should give no before date when no quests are present") {
+            val date = LocalDate.of(2018, 1, 11)
+            val result =
+                executeUseCase(
+                    Before(
+                        date,
+                        10
+                    )
+                )
+            val res = (result as FindAgendaDatesUseCase.Result.Before)
+            res.date.`should be null`()
         }
     }
 })

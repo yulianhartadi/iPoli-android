@@ -27,8 +27,8 @@ interface QuestRepository : Repository<Quest> {
     fun findQuestsToRemind(time: Long): List<Quest>
     fun findCompletedForDate(date: LocalDate): List<Quest>
     fun findStartedQuest(): Quest?
-    fun findLastScheduledDate(currentDate: LocalDate, maxQuests: Int): Map<LocalDate, Int>
-    fun findFirstScheduledDate(currentDate: LocalDate, maxQuests: Int): Map<LocalDate, Int>
+    fun findLastScheduledDate(currentDate: LocalDate, maxQuests: Int): LocalDate?
+    fun findFirstScheduledDate(currentDate: LocalDate, maxQuests: Int): LocalDate?
 }
 
 data class CouchbaseQuest(override val map: MutableMap<String, Any?> = mutableMapOf()) :
@@ -166,7 +166,7 @@ class CouchbaseQuestRepository(database: Database, coroutineContext: CoroutineCo
     override fun findLastScheduledDate(
         currentDate: LocalDate,
         maxQuests: Int
-    ): Map<LocalDate, Int> {
+    ): LocalDate? {
 
         val endDateQuery = createQuery(
             select = select(SelectResult.property("scheduledDate")),
@@ -178,36 +178,18 @@ class CouchbaseQuestRepository(database: Database, coroutineContext: CoroutineCo
         val endDateIterator = endDateQuery.execute().iterator()
 
         if (!endDateIterator.hasNext()) {
-            return mapOf()
+            return null
         }
 
         val endDateRes = endDateIterator.asSequence().last()
 
-        val endDate = endDateRes.getLong("scheduledDate")
-
-        val questsCount = Function.count(Meta.id)
-
-        val query = createQuery(
-            select = select(
-                SelectResult.expression(questsCount).`as`("cnt"),
-                SelectResult.property("scheduledDate")
-            ),
-            where = property("scheduledDate").greaterThan(currentDate.startOfDayUTC()).and(
-                property(
-                    "scheduledDate"
-                ).lessThanOrEqualTo(endDate)
-            ),
-            limit = maxQuests,
-            groupBy = GroupClause(property("scheduledDate"))
-        )
-
-        return extractDateToQuestCount(query)
+        return endDateRes.getLong("scheduledDate").startOfDayUtc
     }
 
     override fun findFirstScheduledDate(
         currentDate: LocalDate,
         maxQuests: Int
-    ): Map<LocalDate, Int> {
+    ): LocalDate? {
 
         val startDateQuery = createQuery(
             select = select(SelectResult.property("scheduledDate")),
@@ -219,30 +201,12 @@ class CouchbaseQuestRepository(database: Database, coroutineContext: CoroutineCo
         val startDateIterator = startDateQuery.execute().iterator()
 
         if (!startDateIterator.hasNext()) {
-            return mapOf()
+            return null
         }
 
         val startDateRes = startDateIterator.asSequence().last()
 
-        val startDate = startDateRes.getLong("scheduledDate")
-
-        val questsCount = Function.count(Meta.id)
-
-        val query = createQuery(
-            select = select(
-                SelectResult.expression(questsCount).`as`("cnt"),
-                SelectResult.property("scheduledDate")
-            ),
-            where = property("scheduledDate").greaterThanOrEqualTo(startDate).and(
-                property(
-                    "scheduledDate"
-                ).lessThan(currentDate.startOfDayUTC())
-            ),
-            limit = maxQuests,
-            groupBy = GroupClause(property("scheduledDate"))
-        )
-
-        return extractDateToQuestCount(query)
+        return startDateRes.getLong("scheduledDate").startOfDayUtc
     }
 
     private fun extractDateToQuestCount(query: Query): MutableMap<LocalDate, Int> {
