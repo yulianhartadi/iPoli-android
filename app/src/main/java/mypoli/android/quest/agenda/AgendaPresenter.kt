@@ -10,6 +10,7 @@ import mypoli.android.common.view.AndroidColor
 import mypoli.android.common.view.AndroidIcon
 import mypoli.android.quest.Quest
 import mypoli.android.quest.agenda.usecase.CreateAgendaItemsUseCase
+import org.threeten.bp.Month
 import org.threeten.bp.format.DateTimeFormatter
 import org.threeten.bp.format.TextStyle
 import java.util.*
@@ -63,7 +64,8 @@ class AgendaPresenter : AndroidStatePresenter<AppState, AgendaViewState> {
             }
             is CreateAgendaItemsUseCase.AgendaItem.Month -> {
                 AgendaViewController.MonthDividerViewModel(
-                    R.drawable.challenge_category_build_skill_image, agendaItem.month.format(
+                    monthToImage[agendaItem.month.month]!!,
+                    agendaItem.month.format(
                         DateTimeFormatter.ofPattern("MMMM yyyy")
                     )
                 )
@@ -76,7 +78,22 @@ class AgendaPresenter : AndroidStatePresenter<AppState, AgendaViewState> {
         val start = quest.actualStartTime ?: return "Unscheduled"
         val end = start.plus(quest.actualDuration.asMinutes.intValue)
         return "$start - $end"
-
     }
+
+    private val monthToImage = mapOf<Month, Int>(
+        Month.JANUARY to R.drawable.agenda_january,
+        Month.FEBRUARY to R.drawable.agenda_february,
+        Month.MARCH to R.drawable.agenda_march,
+        Month.APRIL to R.drawable.agenda_april,
+        Month.MAY to R.drawable.agenda_may,
+        Month.JUNE to R.drawable.agenda_june,
+        Month.JULY to R.drawable.agenda_july,
+        Month.AUGUST to R.drawable.agenda_august,
+        Month.SEPTEMBER to R.drawable.agenda_september,
+        Month.OCTOBER to R.drawable.agenda_october,
+        Month.NOVEMBER to R.drawable.agenda_november,
+        Month.DECEMBER to R.drawable.agenda_december
+
+    )
 
 }

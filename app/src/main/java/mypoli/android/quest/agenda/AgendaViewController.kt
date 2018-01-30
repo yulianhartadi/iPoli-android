@@ -13,6 +13,7 @@ import android.widget.TextView
 import com.mikepenz.iconics.IconicsDrawable
 import com.mikepenz.iconics.typeface.IIcon
 import kotlinx.android.synthetic.main.controller_agenda.view.*
+import kotlinx.android.synthetic.main.item_agenda_month_divider.view.*
 import kotlinx.android.synthetic.main.item_agenda_quest.view.*
 import mypoli.android.R
 import mypoli.android.common.ViewUtils
@@ -136,7 +137,8 @@ class AgendaViewController(args: Bundle? = null) :
             view: View,
             viewModel: MonthDividerViewModel
         ) {
-            (view as TextView).text = viewModel.text
+            view.dateLabel.text = viewModel.text
+            view.monthImage.setImageResource(viewModel.image)
         }
 
         private fun bindDateHeaderViewModel(
