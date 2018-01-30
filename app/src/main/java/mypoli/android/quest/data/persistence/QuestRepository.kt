@@ -88,7 +88,8 @@ class CouchbaseQuestRepository(database: Database, coroutineContext: CoroutineCo
     override fun listenForScheduledBetween(startDate: LocalDate, endDate: LocalDate) =
         listenForChanges(
             where = property("scheduledDate")
-                .between(startDate.startOfDayUTC(), endDate.startOfDayUTC())
+                .between(startDate.startOfDayUTC(), endDate.startOfDayUTC()),
+            orderBy = Ordering.expression(property("startMinute"))
         )
 
     override fun listenForScheduledAt(date: LocalDate) =
