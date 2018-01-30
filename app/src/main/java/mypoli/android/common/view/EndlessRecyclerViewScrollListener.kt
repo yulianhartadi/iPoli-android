@@ -2,6 +2,7 @@ package mypoli.android.common.view
 
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
+import timber.log.Timber
 
 
 /**
@@ -20,8 +21,15 @@ class EndlessRecyclerViewScrollListener(
         val lastVisibleItemPosition = layoutManager.findLastVisibleItemPosition()
         val firstVisibleItemPosition = layoutManager.findFirstVisibleItemPosition()
 
-        if (lastVisibleItemPosition + visibleThreshold > totalItemCount) loadDataCallback(Side.BOTTOM, firstVisibleItemPosition)
-        else if (firstVisibleItemPosition - visibleThreshold < 0) loadDataCallback(Side.TOP, firstVisibleItemPosition)
+
+        if (lastVisibleItemPosition + visibleThreshold > totalItemCount) loadDataCallback(
+            Side.BOTTOM,
+            firstVisibleItemPosition
+        )
+        else if (firstVisibleItemPosition - visibleThreshold < 0) {
+            Timber.d("AAA firstVisibleItemPosition $firstVisibleItemPosition")
+            loadDataCallback(Side.TOP, firstVisibleItemPosition)
+        }
     }
 
     enum class Side { TOP, BOTTOM }

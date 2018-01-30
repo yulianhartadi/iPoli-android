@@ -73,8 +73,8 @@ object AgendaReducer : AppStateReducer<AgendaState> {
         listOf()
     )
 
-    const val ITEMS_BEFORE_COUNT = 20
-    const val ITEMS_AFTER_COUNT = 25
+    const val ITEMS_BEFORE_COUNT = 30
+    const val ITEMS_AFTER_COUNT = 50
 }
 
 data class AgendaViewState(

@@ -4,6 +4,7 @@ import android.content.res.ColorStateList
 import android.os.Bundle
 import android.support.annotation.ColorRes
 import android.support.annotation.DrawableRes
+import android.support.v7.util.DiffUtil
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
@@ -50,17 +51,22 @@ class AgendaViewController(args: Bundle? = null) :
         when (state.type) {
             AgendaState.StateType.DATA_CHANGED -> {
                 ViewUtils.goneViews(view.topLoader, view.bottomLoader)
-                (view.agendaList.adapter as AgendaAdapter).updateAll(state.agendaItems)
+                val agendaList = view.agendaList
+                (agendaList.adapter as AgendaAdapter).updateAll(state.agendaItems)
                 if (state.scrollToPosition >= 0) {
-                    view.agendaList.scrollToPosition(state.scrollToPosition)
+                    Timber.d("AAA scrolltoposition ")
+                    agendaList.scrollToPosition(state.scrollToPosition)
                 }
+                Timber.d("AAA change ")
+                agendaList.post {
+                    Timber.d("AAA add listener ")
 
-                view.agendaList.post {
-                    view.agendaList.addOnScrollListener(
+                    agendaList.addOnScrollListener(
                         EndlessRecyclerViewScrollListener(
-                            view.agendaList.layoutManager as LinearLayoutManager,
+                            agendaList.layoutManager as LinearLayoutManager,
                             { side, position ->
-                                view.agendaList.clearOnScrollListeners()
+                                Timber.d("AAA remove listener ")
+                                agendaList.clearOnScrollListeners()
                                 Timber.d("AAAA scroll $side $position")
                                 if (side == EndlessRecyclerViewScrollListener.Side.TOP) {
                                     dispatch(AgendaAction.LoadBefore(position))
@@ -68,7 +74,7 @@ class AgendaViewController(args: Bundle? = null) :
                                     dispatch(AgendaAction.LoadAfter(position))
                                 }
                             },
-                            10
+                            20
                         )
                     )
                 }
@@ -104,7 +110,7 @@ class AgendaViewController(args: Bundle? = null) :
         QUEST, DATE_HEADER, MONTH_DIVIDER, WEEK_HEADER
     }
 
-    inner class AgendaAdapter(private var viewModels: List<AgendaViewModel> = listOf()) :
+    inner class AgendaAdapter(private var viewModels: MutableList<AgendaViewModel> = mutableListOf()) :
         RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
         override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
@@ -215,10 +221,33 @@ class AgendaViewController(args: Bundle? = null) :
             }
 
         fun updateAll(viewModels: List<AgendaViewModel>) {
-            this.viewModels = viewModels
-            notifyDataSetChanged()
+            val diffCallback = AgendaViewModelDiffUtilCallback(this.viewModels, viewModels)
+            val diffResult = DiffUtil.calculateDiff(diffCallback)
+
+            this.viewModels.clear()
+            this.viewModels.addAll(viewModels)
+            diffResult.dispatchUpdatesTo(this)
         }
     }
 
+
+    class AgendaViewModelDiffUtilCallback(
+        private val oldList: List<AgendaViewModel>,
+        private val newList: List<AgendaViewModel>
+    ) : DiffUtil.Callback() {
+
+        override fun areItemsTheSame(oldItemPosition: Int, newItemPosition: Int) =
+            oldList[oldItemPosition] == newList[newItemPosition]
+
+        override fun getOldListSize() =
+            oldList.size
+
+        override fun getNewListSize() =
+            newList.size
+
+        override fun areContentsTheSame(oldItemPosition: Int, newItemPosition: Int) =
+            oldList[oldItemPosition] == newList[newItemPosition]
+
+    }
 
 }
