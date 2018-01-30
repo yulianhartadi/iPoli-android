@@ -48,11 +48,7 @@ class CreateAgendaItemsUseCase :
         var currentDate = startDate
         while (items.size < itemsToFill) {
 
-            val dateItems = mutableListOf<AgendaItem>()
-
-            addWeekItem(currentDate, firstDayOfWeek, dateItems)
-            addMonthItem(currentDate, dateItems)
-            addDateAndQuestItems(scheduledQuests, currentDate, dateItems)
+            val dateItems = createItemsForDate(currentDate, firstDayOfWeek, scheduledQuests)
 
             val newDate = nextDate(currentDate)
 
@@ -65,7 +61,19 @@ class CreateAgendaItemsUseCase :
         return items
     }
 
-    private fun addDateAndQuestItems(
+    private fun createItemsForDate(
+        currentDate: LocalDate,
+        firstDayOfWeek: DayOfWeek,
+        scheduledQuests: Map<LocalDate, List<Quest>>
+    ): MutableList<AgendaItem> {
+        val dateItems = mutableListOf<AgendaItem>()
+        createWeekItem(currentDate, firstDayOfWeek, dateItems)
+        createMonthItem(currentDate, dateItems)
+        createDateAndQuestItems(scheduledQuests, currentDate, dateItems)
+        return dateItems
+    }
+
+    private fun createDateAndQuestItems(
         scheduledQuests: Map<LocalDate, List<Quest>>,
         currentDate: LocalDate,
         dateItems: MutableList<AgendaItem>
@@ -76,7 +84,7 @@ class CreateAgendaItemsUseCase :
         }
     }
 
-    private fun addMonthItem(
+    private fun createMonthItem(
         currentDate: LocalDate,
         dateItems: MutableList<AgendaItem>
     ) {
@@ -92,7 +100,7 @@ class CreateAgendaItemsUseCase :
         }
     }
 
-    private fun addWeekItem(
+    private fun createWeekItem(
         currentDate: LocalDate,
         firstDayOfWeek: DayOfWeek,
         dateItems: MutableList<AgendaItem>
