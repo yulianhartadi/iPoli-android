@@ -29,7 +29,7 @@
         android:ellipsize="end"
         android:maxLines="2"
         android:textAppearance="@style/TextAppearance.AppCompat.Title"
-        android:textColor="@color/md_dark_text_87"
+        android:textColor="@color/md_dark_text_54"
         app:layout_constraintBottom_toTopOf="@+id/questStartTime"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@+id/questIcon"
@@ -39,8 +39,8 @@
 
     <ImageView
         android:id="@+id/questIcon"
-        android:layout_width="48dp"
-        android:layout_height="48dp"
+        android:layout_width="42dp"
+        android:layout_height="42dp"
         android:layout_marginBottom="8dp"
         android:layout_marginStart="16dp"
         android:layout_marginTop="8dp"

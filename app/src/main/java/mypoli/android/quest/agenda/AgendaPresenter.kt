@@ -48,7 +48,7 @@ class AgendaPresenter : AndroidStatePresenter<AppState, AgendaViewState> {
             is CreateAgendaItemsUseCase.AgendaItem.Date -> {
                 val date = agendaItem.date
                 val dayOfMonth = date.dayOfMonth
-                val dayOfWeek = date.dayOfWeek.getDisplayName(TextStyle.SHORT, Locale.getDefault())
+                val dayOfWeek = date.dayOfWeek.getDisplayName(TextStyle.SHORT, Locale.getDefault()).toUpperCase()
                 AgendaViewController.DateHeaderViewModel("$dayOfMonth $dayOfWeek")
             }
             is CreateAgendaItemsUseCase.AgendaItem.Week -> {

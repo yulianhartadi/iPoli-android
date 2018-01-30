@@ -1,5 +1,6 @@
 package mypoli.android.common
 
+import kotlinx.coroutines.experimental.channels.ReceiveChannel
 import kotlinx.coroutines.experimental.channels.consumeEach
 import kotlinx.coroutines.experimental.launch
 import mypoli.android.challenge.category.list.ChallengeListForCategoryAction
@@ -12,6 +13,7 @@ import mypoli.android.common.redux.Saga
 import mypoli.android.myPoliApp
 import mypoli.android.pet.store.PetStoreAction
 import mypoli.android.pet.usecase.BuyPetUseCase
+import mypoli.android.quest.Quest
 import mypoli.android.quest.agenda.usecase.CreateAgendaItemsUseCase
 import mypoli.android.quest.agenda.usecase.FindAgendaDatesUseCase
 import org.threeten.bp.LocalDate
@@ -83,6 +85,8 @@ class BuyPetSaga : Saga<AppState>, Injects<Module> {
 
 class LoadAllDataSaga : Saga<AppState>, Injects<Module> {
 
+    private var scheduledQuestsChannel: ReceiveChannel<List<Quest>>? = null
+
     private val playerRepository by required { playerRepository }
     private val questRepository by required { questRepository }
 
@@ -112,10 +116,11 @@ class LoadAllDataSaga : Saga<AppState>, Injects<Module> {
         val end = result.end ?: today.plusMonths(3)
 
         launch {
-            questRepository.listenForScheduledBetween(
+            scheduledQuestsChannel = questRepository.listenForScheduledBetween(
                 start,
                 end
-            ).consumeEach {
+            )
+            scheduledQuestsChannel!!.consumeEach {
                 dispatcher.dispatch(
                     AgendaItemsChanged(
                         start, end, createAgendaItemsUseCase.execute(
