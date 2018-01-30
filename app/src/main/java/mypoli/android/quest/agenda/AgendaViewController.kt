@@ -41,29 +41,33 @@ class AgendaViewController(args: Bundle? = null) :
             LinearLayoutManager(container.context, LinearLayoutManager.VERTICAL, false)
         view.agendaList.layoutManager = layoutManager
         view.agendaList.adapter = AgendaAdapter()
-//        view.agendaList.scrollToPosition(5)
-        view.agendaList.addOnScrollListener(
-            EndlessRecyclerViewScrollListener(
-                layoutManager,
-                { side, position ->
-                    //get curr visible date
-                    if (side == EndlessRecyclerViewScrollListener.Side.TOP) {
-
-//                        dispatch(AgendaAction.LoadBefore(LocalD))
-                    }
-                        Timber.d("AAA Scroll $side position $position")
-                },
-                3
-            )
-        )
-
         return view
     }
+
+    private lateinit var scrollListener: EndlessRecyclerViewScrollListener
 
     override fun render(state: AgendaViewState, view: View) {
         when (state.type) {
             AgendaState.StateType.DATA_CHANGED -> {
                 (view.agendaList.adapter as AgendaAdapter).updateAll(state.agendaItems)
+                if(state.scrollToPosition >= 0) {
+                    view.agendaList.scrollToPosition(state.scrollToPosition)
+                }
+                scrollListener = EndlessRecyclerViewScrollListener(
+                    view.agendaList.layoutManager as LinearLayoutManager,
+                    { side, position ->
+                        view.agendaList.removeOnScrollListener(scrollListener)
+                        if (side == EndlessRecyclerViewScrollListener.Side.TOP) {
+                            dispatch(AgendaAction.LoadBefore(position))
+                        } else {
+                            dispatch(AgendaAction.LoadAfter(position))
+                        }
+                        Timber.d("AAA Scroll $side position $position")
+                    },
+                    3
+                )
+                view.agendaList.addOnScrollListener(scrollListener)
+
             }
         }
     }
@@ -201,7 +205,6 @@ class AgendaViewController(args: Bundle? = null) :
             this.viewModels = viewModels
             notifyDataSetChanged()
         }
-
     }
 
 

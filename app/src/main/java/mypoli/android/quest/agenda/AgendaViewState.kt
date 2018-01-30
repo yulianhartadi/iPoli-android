@@ -15,19 +15,22 @@ import org.threeten.bp.LocalDate
  */
 
 sealed class AgendaAction : Action {
-    data class LoadBefore(val date: LocalDate) : AgendaAction()
-    data class LoadAfter(val date: LocalDate) : AgendaAction()
+    data class LoadBefore(val visiblePosition: Int) : AgendaAction()
+    data class LoadAfter(val visiblePosition: Int) : AgendaAction()
 }
 
 data class AgendaState(
     val type: StateType,
     val startDate: LocalDate,
     val endDate: LocalDate,
-    val agendaItems: List<CreateAgendaItemsUseCase.AgendaItem>
+    val agendaItems: List<CreateAgendaItemsUseCase.AgendaItem>,
+    val scrollToPosition: Int = -1
 ) : State {
     enum class StateType {
         LOADING,
-        DATA_CHANGED
+        DATA_CHANGED,
+        SHOW_TOP_LOADER,
+        SHOW_BOTTOM_LOADER
     }
 }
 
@@ -36,11 +39,25 @@ object AgendaReducer : AppStateReducer<AgendaState> {
         state.agendaState.let {
             when (action) {
                 is DataLoadedAction.AgendaItemsChanged -> {
+                    val scrollToPosition = if(state.agendaState.agendaItems.isEmpty()) {
+                        ITEMS_BEFORE_COUNT
+                    } else -1
                     it.copy(
                         type = AgendaState.StateType.DATA_CHANGED,
                         startDate = action.start,
                         endDate = action.end,
-                        agendaItems = action.agendaItems
+                        agendaItems = action.agendaItems,
+                        scrollToPosition = scrollToPosition
+                    )
+                }
+                is AgendaAction.LoadBefore -> {
+                    it.copy(
+                        type = AgendaState.StateType.SHOW_TOP_LOADER
+                    )
+                }
+                is AgendaAction.LoadAfter -> {
+                    it.copy(
+                        type = AgendaState.StateType.SHOW_BOTTOM_LOADER
                     )
                 }
                 else -> it
@@ -53,9 +70,13 @@ object AgendaReducer : AppStateReducer<AgendaState> {
         LocalDate.now(),
         listOf()
     )
+
+    const val ITEMS_BEFORE_COUNT = 10
+    const val ITEMS_AFTER_COUNT = 25
 }
 
 data class AgendaViewState(
     val type: AgendaState.StateType,
-    val agendaItems: List<AgendaViewController.AgendaViewModel>
+    val agendaItems: List<AgendaViewController.AgendaViewModel>,
+    val scrollToPosition: Int = -1
 ) : ViewState

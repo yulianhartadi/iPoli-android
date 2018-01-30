@@ -113,8 +113,8 @@ class CreateAgendaItemsUseCase :
     data class Params(
         val date: LocalDate,
         val scheduledQuests: List<Quest>,
-        val itemsAfter: Int,
         val itemsBefore: Int,
+        val itemsAfter: Int,
         val firstDayOfWeek: DayOfWeek = DateUtils.firstDayOfWeek
     )
 

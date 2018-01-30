@@ -25,7 +25,8 @@ class AgendaPresenter : AndroidStatePresenter<AppState, AgendaViewState> {
             AgendaState.StateType.DATA_CHANGED,
             state.agendaState.agendaItems.map {
                 toAgendaViewModel(it, context)
-            }
+            },
+            scrollToPosition = state.agendaState.scrollToPosition
         )
     }
 
