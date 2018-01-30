@@ -45,8 +45,13 @@ class AgendaViewController(args: Bundle? = null) :
         view.agendaList.addOnScrollListener(
             EndlessRecyclerViewScrollListener(
                 layoutManager,
-                { side ->
-                    Timber.d("AAA Scroll $side")
+                { side, position ->
+                    //get curr visible date
+                    if (side == EndlessRecyclerViewScrollListener.Side.TOP) {
+
+//                        dispatch(AgendaAction.LoadBefore(LocalD))
+                    }
+                        Timber.d("AAA Scroll $side position $position")
                 },
                 3
             )

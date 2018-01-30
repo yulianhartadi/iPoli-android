@@ -10,7 +10,7 @@ import android.support.v7.widget.RecyclerView
  */
 class EndlessRecyclerViewScrollListener(
     private val layoutManager: LinearLayoutManager,
-    private val loadDataCallback: (Side) -> Unit,
+    private val loadDataCallback: (Side, Int) -> Unit,
     private val visibleThreshold: Int = 5
 ) : RecyclerView.OnScrollListener() {
 
@@ -20,8 +20,8 @@ class EndlessRecyclerViewScrollListener(
         val lastVisibleItemPosition = layoutManager.findLastVisibleItemPosition()
         val firstVisibleItemPosition = layoutManager.findFirstVisibleItemPosition()
 
-        if (lastVisibleItemPosition + visibleThreshold > totalItemCount) loadDataCallback(Side.BOTTOM)
-        else if (firstVisibleItemPosition - visibleThreshold < 0) loadDataCallback(Side.TOP)
+        if (lastVisibleItemPosition + visibleThreshold > totalItemCount) loadDataCallback(Side.BOTTOM, firstVisibleItemPosition)
+        else if (firstVisibleItemPosition - visibleThreshold < 0) loadDataCallback(Side.TOP, firstVisibleItemPosition)
     }
 
     enum class Side { TOP, BOTTOM }

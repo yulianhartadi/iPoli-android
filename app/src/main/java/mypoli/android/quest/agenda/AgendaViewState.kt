@@ -15,7 +15,8 @@ import org.threeten.bp.LocalDate
  */
 
 sealed class AgendaAction : Action {
-
+    data class LoadBefore(val date: LocalDate) : AgendaAction()
+    data class LoadAfter(val date: LocalDate) : AgendaAction()
 }
 
 data class AgendaState(
