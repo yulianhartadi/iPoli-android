@@ -8,6 +8,7 @@ import mypoli.android.common.redux.Action
 import mypoli.android.common.redux.State
 import mypoli.android.quest.agenda.usecase.CreateAgendaItemsUseCase
 import org.threeten.bp.LocalDate
+import timber.log.Timber
 
 /**
  * Created by Venelin Valkov <venelin@mypoli.fun>
@@ -51,6 +52,7 @@ object AgendaReducer : AppStateReducer<AgendaState> {
                     )
                 }
                 is AgendaAction.LoadBefore -> {
+                    Timber.d("AAAA action")
                     it.copy(
                         type = AgendaState.StateType.SHOW_TOP_LOADER
                     )
@@ -71,7 +73,7 @@ object AgendaReducer : AppStateReducer<AgendaState> {
         listOf()
     )
 
-    const val ITEMS_BEFORE_COUNT = 10
+    const val ITEMS_BEFORE_COUNT = 20
     const val ITEMS_AFTER_COUNT = 25
 }
 

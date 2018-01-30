@@ -157,6 +157,7 @@ class LoadAllDataSaga : Saga<AppState>, Injects<Module> {
 
 
         launch {
+            scheduledQuestsChannel?.cancel()
             scheduledQuestsChannel = questRepository.listenForScheduledBetween(
                 start,
                 end

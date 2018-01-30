@@ -15,6 +15,7 @@ import com.mikepenz.iconics.typeface.IIcon
 import kotlinx.android.synthetic.main.controller_agenda.view.*
 import kotlinx.android.synthetic.main.item_agenda_quest.view.*
 import mypoli.android.R
+import mypoli.android.common.ViewUtils
 import mypoli.android.common.redux.android.ReduxViewController
 import mypoli.android.common.view.EndlessRecyclerViewScrollListener
 import mypoli.android.common.view.colorRes
@@ -44,30 +45,39 @@ class AgendaViewController(args: Bundle? = null) :
         return view
     }
 
-    private lateinit var scrollListener: EndlessRecyclerViewScrollListener
-
     override fun render(state: AgendaViewState, view: View) {
         when (state.type) {
             AgendaState.StateType.DATA_CHANGED -> {
+                ViewUtils.goneViews(view.topLoader, view.bottomLoader)
                 (view.agendaList.adapter as AgendaAdapter).updateAll(state.agendaItems)
-                if(state.scrollToPosition >= 0) {
+                if (state.scrollToPosition >= 0) {
                     view.agendaList.scrollToPosition(state.scrollToPosition)
                 }
-                scrollListener = EndlessRecyclerViewScrollListener(
-                    view.agendaList.layoutManager as LinearLayoutManager,
-                    { side, position ->
-                        view.agendaList.removeOnScrollListener(scrollListener)
-                        if (side == EndlessRecyclerViewScrollListener.Side.TOP) {
-                            dispatch(AgendaAction.LoadBefore(position))
-                        } else {
-                            dispatch(AgendaAction.LoadAfter(position))
-                        }
-                        Timber.d("AAA Scroll $side position $position")
-                    },
-                    3
-                )
-                view.agendaList.addOnScrollListener(scrollListener)
 
+                view.agendaList.addOnScrollListener(
+                    EndlessRecyclerViewScrollListener(
+                        view.agendaList.layoutManager as LinearLayoutManager,
+                        { side, position ->
+                            view.agendaList.clearOnScrollListeners()
+                            Timber.d("AAAA scroll $side $position")
+                            if (side == EndlessRecyclerViewScrollListener.Side.TOP) {
+                                dispatch(AgendaAction.LoadBefore(position))
+                            } else {
+                                dispatch(AgendaAction.LoadAfter(position))
+                            }
+                        },
+                        10
+                    )
+                )
+
+            }
+
+            AgendaState.StateType.SHOW_TOP_LOADER -> {
+                ViewUtils.showViews(view.topLoader)
+            }
+
+            AgendaState.StateType.SHOW_BOTTOM_LOADER -> {
+                ViewUtils.showViews(view.bottomLoader)
             }
         }
     }

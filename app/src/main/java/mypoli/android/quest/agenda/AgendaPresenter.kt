@@ -22,7 +22,7 @@ class AgendaPresenter : AndroidStatePresenter<AppState, AgendaViewState> {
     override fun present(state: AppState, context: Context): AgendaViewState {
 
         return AgendaViewState(
-            AgendaState.StateType.DATA_CHANGED,
+            state.agendaState.type,
             state.agendaState.agendaItems.map {
                 toAgendaViewModel(it, context)
             },
@@ -49,12 +49,16 @@ class AgendaPresenter : AndroidStatePresenter<AppState, AgendaViewState> {
             is CreateAgendaItemsUseCase.AgendaItem.Date -> {
                 val date = agendaItem.date
                 val dayOfMonth = date.dayOfMonth
-                val dayOfWeek = date.dayOfWeek.getDisplayName(TextStyle.SHORT, Locale.getDefault()).toUpperCase()
+                val dayOfWeek = date.dayOfWeek.getDisplayName(TextStyle.SHORT, Locale.getDefault())
+                    .toUpperCase()
                 AgendaViewController.DateHeaderViewModel("$dayOfMonth $dayOfWeek")
             }
             is CreateAgendaItemsUseCase.AgendaItem.Week -> {
                 AgendaViewController.WeekHeaderViewModel(
-                    "${DateFormatter.format(context, agendaItem.start)} - ${DateFormatter.format(context, agendaItem.end)}"
+                    "${DateFormatter.format(context, agendaItem.start)} - ${DateFormatter.format(
+                        context,
+                        agendaItem.end
+                    )}"
                 )
             }
             is CreateAgendaItemsUseCase.AgendaItem.Month -> {
