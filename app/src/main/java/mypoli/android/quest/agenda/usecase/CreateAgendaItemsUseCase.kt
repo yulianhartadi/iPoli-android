@@ -19,34 +19,79 @@ class CreateAgendaItemsUseCase :
         val scheduledQuests = parameters.scheduledQuests.groupBy { it.scheduledDate }
 
         val beforeItems =
-            createItems(
+            createBeforeItems(
                 parameters.date.minusDays(1),
                 scheduledQuests,
                 parameters.itemsBefore,
-                { it.minusDays(1) },
                 parameters.firstDayOfWeek
             )
         val afterItems =
-            createItems(
+            createAfterItems(
                 parameters.date,
                 scheduledQuests,
                 parameters.itemsAfter,
-                { it.plusDays(1) },
                 parameters.firstDayOfWeek
             )
         return beforeItems + afterItems
     }
 
-    private fun createItems(
+    private fun createBeforeItems(
         startDate: LocalDate,
         scheduledQuests: Map<LocalDate, List<Quest>>,
         itemsToFill: Int,
-        nextDate: (LocalDate) -> LocalDate,
         firstDayOfWeek: DayOfWeek
     ): MutableList<AgendaItem> {
         val items = mutableListOf<AgendaItem>()
         var currentDate = startDate
         while (items.size < itemsToFill) {
+
+            if (scheduledQuests.containsKey(currentDate)) {
+                scheduledQuests[currentDate]!!.reversed()
+                    .forEach { q -> items.add(0, AgendaItem.QuestItem(q)) }
+                items.add(0, AgendaItem.Date(currentDate))
+            }
+
+            if (items.size >= itemsToFill) break
+
+            if (currentDate.dayOfMonth == 1) {
+                items.add(
+                    0,
+                    AgendaItem.Month(
+                        YearMonth.of(
+                            currentDate.year,
+                            currentDate.monthValue
+                        )
+                    )
+                )
+            }
+
+            if (items.size >= itemsToFill) break
+
+            if (currentDate.dayOfWeek == firstDayOfWeek) {
+                items.add(0, AgendaItem.Week(currentDate, currentDate.plusDays(6)))
+            }
+
+            currentDate = currentDate.minusDays(1)
+        }
+
+        return items
+    }
+
+    private fun createAfterItems(
+        startDate: LocalDate,
+        scheduledQuests: Map<LocalDate, List<Quest>>,
+        itemsToFill: Int,
+        firstDayOfWeek: DayOfWeek
+    ): MutableList<AgendaItem> {
+        val items = mutableListOf<AgendaItem>()
+        var currentDate = startDate
+        while (items.size < itemsToFill) {
+
+            if (currentDate.dayOfWeek == firstDayOfWeek) {
+                items.add(AgendaItem.Week(currentDate, currentDate.plusDays(6)))
+            }
+
+            if (items.size >= itemsToFill) break
 
             if (currentDate.dayOfMonth == 1) {
                 items.add(
@@ -59,33 +104,14 @@ class CreateAgendaItemsUseCase :
                 )
             }
 
-            if (items.size >= itemsToFill) {
-                break
-            }
-
-            if (currentDate.dayOfWeek == firstDayOfWeek) {
-                items.add(AgendaItem.Week(currentDate, currentDate.plusDays(6)))
-            }
-
-            if (items.size >= itemsToFill) {
-                break
-            }
+            if (items.size >= itemsToFill) break
 
             if (scheduledQuests.containsKey(currentDate)) {
                 items.add(AgendaItem.Date(currentDate))
-
-                val dateQuests = scheduledQuests[currentDate]!!
-                for (q in dateQuests) {
-
-                    if (items.size >= itemsToFill) {
-                        break
-                    }
-
-                    items.add(AgendaItem.QuestItem(q))
-                }
+                scheduledQuests[currentDate]!!.forEach { q -> items.add(AgendaItem.QuestItem(q)) }
             }
 
-            currentDate = nextDate(currentDate)
+            currentDate = currentDate.plusDays(1)
         }
 
         return items
