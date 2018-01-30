@@ -22,10 +22,14 @@ import java.util.*
 class AgendaPresenter : AndroidStatePresenter<AppState, AgendaViewState> {
     override fun present(state: AppState, context: Context): AgendaViewState {
 
+        val agendaItems = state.agendaState.agendaItems
         return AgendaViewState(
             state.agendaState.type,
-            state.agendaState.agendaItems.map {
-                toAgendaViewModel(it, context)
+            agendaItems.mapIndexed { index, item ->
+                toAgendaViewModel(
+                    item,
+                    if (agendaItems.lastIndex >= index + 1) agendaItems[index + 1] else null
+                )
             },
             scrollToPosition = state.agendaState.scrollToPosition
         )
@@ -33,18 +37,21 @@ class AgendaPresenter : AndroidStatePresenter<AppState, AgendaViewState> {
 
     private fun toAgendaViewModel(
         agendaItem: CreateAgendaItemsUseCase.AgendaItem,
-        context: Context
+        nextAgendaItem: CreateAgendaItemsUseCase.AgendaItem? = null
     ): AgendaViewController.AgendaViewModel {
 
         return when (agendaItem) {
             is CreateAgendaItemsUseCase.AgendaItem.QuestItem -> {
                 val quest = agendaItem.quest
+                val showDivider =
+                    !(nextAgendaItem == null || nextAgendaItem !is CreateAgendaItemsUseCase.AgendaItem.QuestItem)
                 AgendaViewController.QuestViewModel(
                     quest.name,
                     formatStartTime(quest),
                     AndroidColor.valueOf(quest.color.name).color500,
                     quest.icon?.let { AndroidIcon.valueOf(it.name).icon }
-                        ?: Ionicons.Icon.ion_android_done
+                        ?: Ionicons.Icon.ion_android_done,
+                    showDivider
                 )
             }
             is CreateAgendaItemsUseCase.AgendaItem.Date -> {

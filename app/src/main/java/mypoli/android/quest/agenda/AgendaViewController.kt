@@ -21,6 +21,7 @@ import mypoli.android.common.redux.android.ReduxViewController
 import mypoli.android.common.view.AutoUpdatableAdapter
 import mypoli.android.common.view.EndlessRecyclerViewScrollListener
 import mypoli.android.common.view.colorRes
+import mypoli.android.common.view.visible
 
 /**
  * Created by Polina Zhelyazkova <polina@ipoli.io>
@@ -90,7 +91,8 @@ class AgendaViewController(args: Bundle? = null) :
         val name: String,
         val startTime: String,
         @ColorRes val color: Int,
-        val icon: IIcon
+        val icon: IIcon,
+        val showDivider: Boolean = true
     ) : AgendaViewModel
 
     data class DateHeaderViewModel(val text: String) : AgendaViewModel
@@ -162,6 +164,7 @@ class AgendaViewController(args: Bundle? = null) :
                     .sizeDp(24)
             )
             view.questStartTime.text = vm.startTime
+            view.divider.visible = vm.showDivider
         }
 
         override fun getItemCount() = viewModels.size
