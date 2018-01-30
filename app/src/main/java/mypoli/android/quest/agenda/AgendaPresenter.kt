@@ -50,7 +50,7 @@ class AgendaPresenter : AndroidStatePresenter<AppState, AgendaViewState> {
                     formatStartTime(quest),
                     AndroidColor.valueOf(quest.color.name).color500,
                     quest.icon?.let { AndroidIcon.valueOf(it.name).icon }
-                        ?: Ionicons.Icon.ion_android_done,
+                        ?: Ionicons.Icon.ion_android_clipboard,
                     showDivider
                 )
             }
