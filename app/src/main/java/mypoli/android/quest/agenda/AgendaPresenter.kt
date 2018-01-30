@@ -55,12 +55,17 @@ class AgendaPresenter : AndroidStatePresenter<AppState, AgendaViewState> {
                 AgendaViewController.DateHeaderViewModel("$dayOfMonth $dayOfWeek")
             }
             is CreateAgendaItemsUseCase.AgendaItem.Week -> {
-                AgendaViewController.WeekHeaderViewModel(
-                    "${DateFormatter.format(context, agendaItem.start)} - ${DateFormatter.format(
-                        context,
-                        agendaItem.end
+                val start = agendaItem.start
+                val end = agendaItem.end
+                val label = if (start.month != end.month) {
+                    "${DateFormatter.formatWithoutYearSimple(start)} - ${DateFormatter.formatWithoutYearSimple(
+                        end
                     )}"
-                )
+                } else {
+                    "${start.dayOfMonth} - ${DateFormatter.formatWithoutYearSimple(end)}"
+                }
+
+                AgendaViewController.WeekHeaderViewModel(label)
             }
             is CreateAgendaItemsUseCase.AgendaItem.Month -> {
                 AgendaViewController.MonthDividerViewModel(
