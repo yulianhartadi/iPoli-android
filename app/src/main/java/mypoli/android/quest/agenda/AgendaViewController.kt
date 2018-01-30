@@ -4,7 +4,6 @@ import android.content.res.ColorStateList
 import android.os.Bundle
 import android.support.annotation.ColorRes
 import android.support.annotation.DrawableRes
-import android.support.v7.util.DiffUtil
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
@@ -19,6 +18,7 @@ import kotlinx.android.synthetic.main.item_agenda_quest.view.*
 import mypoli.android.R
 import mypoli.android.common.ViewUtils
 import mypoli.android.common.redux.android.ReduxViewController
+import mypoli.android.common.view.AutoUpdatableAdapter
 import mypoli.android.common.view.EndlessRecyclerViewScrollListener
 import mypoli.android.common.view.colorRes
 
@@ -105,7 +105,7 @@ class AgendaViewController(args: Bundle? = null) :
     }
 
     inner class AgendaAdapter(private var viewModels: MutableList<AgendaViewModel> = mutableListOf()) :
-        RecyclerView.Adapter<RecyclerView.ViewHolder>() {
+        RecyclerView.Adapter<RecyclerView.ViewHolder>(), AutoUpdatableAdapter {
 
         override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
             val vm = viewModels[holder.adapterPosition]
@@ -215,33 +215,12 @@ class AgendaViewController(args: Bundle? = null) :
             }
 
         fun updateAll(viewModels: List<AgendaViewModel>) {
-            val diffCallback = AgendaViewModelDiffUtilCallback(this.viewModels, viewModels)
-            val diffResult = DiffUtil.calculateDiff(diffCallback)
-
-            this.viewModels.clear()
-            this.viewModels.addAll(viewModels)
-            diffResult.dispatchUpdatesTo(this)
+            val oldViewModels = this.viewModels
+            val newViewModels = viewModels.toMutableList()
+            this.viewModels = newViewModels
+            autoNotify(oldViewModels, newViewModels, { vm1, vm2 ->
+                vm1 == vm2
+            })
         }
     }
-
-
-    class AgendaViewModelDiffUtilCallback(
-        private val oldList: List<AgendaViewModel>,
-        private val newList: List<AgendaViewModel>
-    ) : DiffUtil.Callback() {
-
-        override fun areItemsTheSame(oldItemPosition: Int, newItemPosition: Int) =
-            oldList[oldItemPosition] == newList[newItemPosition]
-
-        override fun getOldListSize() =
-            oldList.size
-
-        override fun getNewListSize() =
-            newList.size
-
-        override fun areContentsTheSame(oldItemPosition: Int, newItemPosition: Int) =
-            oldList[oldItemPosition] == newList[newItemPosition]
-
-    }
-
 }

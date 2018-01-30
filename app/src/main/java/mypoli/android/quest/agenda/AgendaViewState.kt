@@ -8,7 +8,6 @@ import mypoli.android.common.redux.Action
 import mypoli.android.common.redux.State
 import mypoli.android.quest.agenda.usecase.CreateAgendaItemsUseCase
 import org.threeten.bp.LocalDate
-import timber.log.Timber
 
 /**
  * Created by Venelin Valkov <venelin@mypoli.fun>
