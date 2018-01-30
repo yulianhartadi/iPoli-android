@@ -52,7 +52,6 @@ object AgendaReducer : AppStateReducer<AgendaState> {
                     )
                 }
                 is AgendaAction.LoadBefore -> {
-                    Timber.d("AAAA action")
                     it.copy(
                         type = AgendaState.StateType.SHOW_TOP_LOADER
                     )

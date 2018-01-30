@@ -21,7 +21,6 @@ import mypoli.android.common.ViewUtils
 import mypoli.android.common.redux.android.ReduxViewController
 import mypoli.android.common.view.EndlessRecyclerViewScrollListener
 import mypoli.android.common.view.colorRes
-import timber.log.Timber
 
 /**
  * Created by Polina Zhelyazkova <polina@ipoli.io>
@@ -54,20 +53,15 @@ class AgendaViewController(args: Bundle? = null) :
                 val agendaList = view.agendaList
                 (agendaList.adapter as AgendaAdapter).updateAll(state.agendaItems)
                 if (state.scrollToPosition >= 0) {
-                    Timber.d("AAA scrolltoposition ")
                     agendaList.scrollToPosition(state.scrollToPosition)
                 }
-                Timber.d("AAA change ")
                 agendaList.post {
-                    Timber.d("AAA add listener ")
 
                     agendaList.addOnScrollListener(
                         EndlessRecyclerViewScrollListener(
                             agendaList.layoutManager as LinearLayoutManager,
                             { side, position ->
-                                Timber.d("AAA remove listener ")
                                 agendaList.clearOnScrollListeners()
-                                Timber.d("AAAA scroll $side $position")
                                 if (side == EndlessRecyclerViewScrollListener.Side.TOP) {
                                     dispatch(AgendaAction.LoadBefore(position))
                                 } else {
