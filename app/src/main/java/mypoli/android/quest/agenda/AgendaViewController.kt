@@ -54,22 +54,23 @@ class AgendaViewController(args: Bundle? = null) :
                     view.agendaList.scrollToPosition(state.scrollToPosition)
                 }
 
-                view.agendaList.addOnScrollListener(
-                    EndlessRecyclerViewScrollListener(
-                        view.agendaList.layoutManager as LinearLayoutManager,
-                        { side, position ->
-                            view.agendaList.clearOnScrollListeners()
-                            Timber.d("AAAA scroll $side $position")
-                            if (side == EndlessRecyclerViewScrollListener.Side.TOP) {
-                                dispatch(AgendaAction.LoadBefore(position))
-                            } else {
-                                dispatch(AgendaAction.LoadAfter(position))
-                            }
-                        },
-                        10
+                view.agendaList.post {
+                    view.agendaList.addOnScrollListener(
+                        EndlessRecyclerViewScrollListener(
+                            view.agendaList.layoutManager as LinearLayoutManager,
+                            { side, position ->
+                                view.agendaList.clearOnScrollListeners()
+                                Timber.d("AAAA scroll $side $position")
+                                if (side == EndlessRecyclerViewScrollListener.Side.TOP) {
+                                    dispatch(AgendaAction.LoadBefore(position))
+                                } else {
+                                    dispatch(AgendaAction.LoadAfter(position))
+                                }
+                            },
+                            10
+                        )
                     )
-                )
-
+                }
             }
 
             AgendaState.StateType.SHOW_TOP_LOADER -> {
