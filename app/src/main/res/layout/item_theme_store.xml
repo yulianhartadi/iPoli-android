@@ -38,7 +38,7 @@
             app:layout_constraintEnd_toEndOf="@+id/themeCalendar"
             app:srcCompat="@drawable/ic_add_white_24dp" />
 
-        <mypoli.android.quest.calendar.dayview.view.widget.CalendarDayView
+        <mypoli.android.quest.schedule.calendar.dayview.view.widget.CalendarDayView
             android:id="@+id/themeCalendar"
             android:layout_width="0dp"
             android:layout_height="0dp"

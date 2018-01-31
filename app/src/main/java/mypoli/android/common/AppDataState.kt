@@ -4,7 +4,7 @@ import mypoli.android.common.redux.Action
 import mypoli.android.common.redux.State
 import mypoli.android.player.Player
 import mypoli.android.quest.Quest
-import mypoli.android.quest.agenda.usecase.CreateAgendaItemsUseCase
+import mypoli.android.quest.schedule.agenda.usecase.CreateAgendaItemsUseCase
 import org.threeten.bp.LocalDate
 
 /**

@@ -14,10 +14,10 @@ import mypoli.android.myPoliApp
 import mypoli.android.pet.store.PetStoreAction
 import mypoli.android.pet.usecase.BuyPetUseCase
 import mypoli.android.quest.Quest
-import mypoli.android.quest.agenda.AgendaAction
-import mypoli.android.quest.agenda.AgendaReducer
-import mypoli.android.quest.agenda.usecase.CreateAgendaItemsUseCase
-import mypoli.android.quest.agenda.usecase.FindAgendaDatesUseCase
+import mypoli.android.quest.schedule.agenda.AgendaAction
+import mypoli.android.quest.schedule.agenda.AgendaReducer
+import mypoli.android.quest.schedule.agenda.usecase.CreateAgendaItemsUseCase
+import mypoli.android.quest.schedule.agenda.usecase.FindAgendaDatesUseCase
 import org.threeten.bp.LocalDate
 import space.traversal.kapsule.Injects
 import space.traversal.kapsule.inject

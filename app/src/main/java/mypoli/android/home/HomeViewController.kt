@@ -17,7 +17,7 @@ import mypoli.android.common.view.FeedbackDialogController
 import mypoli.android.common.view.setToolbar
 import mypoli.android.common.view.showShortToast
 import mypoli.android.pet.PetViewController
-import mypoli.android.quest.calendar.CalendarViewController
+import mypoli.android.quest.schedule.ScheduleViewController
 import mypoli.android.store.theme.ThemeStoreViewController
 import org.json.JSONObject
 
@@ -57,7 +57,7 @@ class HomeViewController(args: Bundle? = null) :
         if (!childRouter.hasRootController()) {
             childRouter.setRoot(
 //                RouterTransaction.with(PetViewController())
-                RouterTransaction.with(CalendarViewController())
+                RouterTransaction.with(ScheduleViewController())
 //                RouterTransaction.with(TimerViewController())
 //                RouterTransaction.with(ChallengeCategoryListViewController())
 //                RouterTransaction.with(PersonalizeChallengeViewController())

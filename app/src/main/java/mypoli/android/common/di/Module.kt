@@ -35,10 +35,10 @@ import mypoli.android.player.persistence.PlayerRepository
 import mypoli.android.player.usecase.*
 import mypoli.android.player.view.LevelUpPresenter
 import mypoli.android.quest.CompletedQuestPresenter
-import mypoli.android.quest.agenda.usecase.CreateAgendaItemsUseCase
-import mypoli.android.quest.agenda.usecase.FindAgendaDatesUseCase
-import mypoli.android.quest.calendar.addquest.AddQuestPresenter
-import mypoli.android.quest.calendar.dayview.DayViewPresenter
+import mypoli.android.quest.schedule.agenda.usecase.CreateAgendaItemsUseCase
+import mypoli.android.quest.schedule.agenda.usecase.FindAgendaDatesUseCase
+import mypoli.android.quest.schedule.addquest.AddQuestPresenter
+import mypoli.android.quest.schedule.calendar.dayview.DayViewPresenter
 import mypoli.android.quest.data.persistence.CouchbaseQuestRepository
 import mypoli.android.quest.data.persistence.QuestRepository
 import mypoli.android.quest.job.AndroidJobQuestCompleteScheduler

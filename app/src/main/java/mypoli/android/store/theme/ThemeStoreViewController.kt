@@ -20,7 +20,7 @@ import mypoli.android.common.mvi.MviViewController
 import mypoli.android.common.view.*
 import mypoli.android.player.Theme
 import mypoli.android.player.inventory.GemInventoryViewController
-import mypoli.android.quest.calendar.dayview.view.widget.CalendarDayView
+import mypoli.android.quest.schedule.calendar.dayview.view.widget.CalendarDayView
 import mypoli.android.store.theme.ThemeStoreViewState.StateType.*
 import space.traversal.kapsule.required
 
