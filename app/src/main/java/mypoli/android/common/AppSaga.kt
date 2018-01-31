@@ -120,27 +120,16 @@ class UndoCompletedQuestSaga : Saga<AppState>, Injects<Module> {
     override fun canHandle(action: Action) = action is AgendaAction.UndoCompleteQuest
 }
 
-class LoadAllDataSaga : Saga<AppState>, Injects<Module> {
-
-    private var scheduledQuestsChannel: ReceiveChannel<List<Quest>>? = null
-
-    private val playerRepository by required { playerRepository }
-    private val questRepository by required { questRepository }
+class AgendaSaga : Saga<AppState>, Injects<Module> {
 
     private val findAgendaDatesUseCase by required { findAgendaDatesUseCase }
     private val createAgendaItemsUseCase by required { createAgendaItemsUseCase }
+    private val questRepository by required { questRepository }
+
+    private var scheduledQuestsChannel: ReceiveChannel<List<Quest>>? = null
 
     override suspend fun execute(action: Action, state: AppState, dispatcher: Dispatcher) {
         inject(myPoliApp.module(myPoliApp.instance))
-
-        if (action == LoadDataAction.All) {
-            launch {
-                playerRepository.listen().consumeEach {
-                    dispatcher.dispatch(PlayerChanged(it!!))
-                }
-            }
-        }
-
 
         var agendaDate = LocalDate.now()
         var start = agendaDate.minusMonths(3)
@@ -177,7 +166,8 @@ class LoadAllDataSaga : Saga<AppState>, Injects<Module> {
                     end = it
                 }
             }
-            else -> {
+            is LoadDataAction.All -> {
+                agendaDate = state.appDataState.today
                 val result = findAgendaDatesUseCase.execute(
                     FindAgendaDatesUseCase.Params.All(
                         agendaDate,
@@ -189,7 +179,6 @@ class LoadAllDataSaga : Saga<AppState>, Injects<Module> {
                 end = result.end ?: agendaDate.plusMonths(3)
             }
         }
-
 
         launch {
             scheduledQuestsChannel?.cancel()
@@ -212,9 +201,34 @@ class LoadAllDataSaga : Saga<AppState>, Injects<Module> {
                 )
             }
         }
+    }
+
+    override fun canHandle(action: Action) =
+        action == LoadDataAction.All
+            || action is AgendaAction.LoadBefore
+            || action is AgendaAction.LoadAfter
+
+
+}
+
+class LoadAllDataSaga : Saga<AppState>, Injects<Module> {
+
+    private val playerRepository by required { playerRepository }
+    private val questRepository by required { questRepository }
+
+    override suspend fun execute(action: Action, state: AppState, dispatcher: Dispatcher) {
+        inject(myPoliApp.module(myPoliApp.instance))
+
+        if (action == LoadDataAction.All) {
+            launch {
+                playerRepository.listen().consumeEach {
+                    dispatcher.dispatch(PlayerChanged(it!!))
+                }
+            }
+        }
 
         launch {
-            questRepository.listenForScheduledAt(agendaDate).consumeEach {
+            questRepository.listenForScheduledAt(state.appDataState.today).consumeEach {
                 dispatcher.dispatch(TodayQuestsChanged(it))
             }
         }

@@ -482,6 +482,7 @@ class AndroidStateStoreModule : StateStoreModule, Injects<Module> {
                 SagaMiddleware<AppState>(
                     sagas = listOf(
                         LoadAllDataSaga(),
+                        AgendaSaga(),
                         CompleteQuestSaga(),
                         UndoCompletedQuestSaga(),
                         BuyPredefinedChallengeSaga(),
