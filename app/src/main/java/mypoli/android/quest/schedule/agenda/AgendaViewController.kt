@@ -7,6 +7,8 @@ import android.support.annotation.DrawableRes
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
 import android.support.v7.widget.helper.ItemTouchHelper
+import android.text.SpannableString
+import android.text.style.StrikethroughSpan
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -113,6 +115,7 @@ class AgendaViewController(args: Bundle? = null) :
         val startTime: String,
         @ColorRes val color: Int,
         val icon: IIcon,
+        val isCompleted: Boolean,
         val showDivider: Boolean = true
     ) : AgendaViewModel
 
@@ -175,7 +178,15 @@ class AgendaViewController(args: Bundle? = null) :
             view: View,
             vm: QuestViewModel
         ) {
-            view.questName.text = vm.name
+            val name = if (vm.isCompleted) {
+                val span = SpannableString(vm.name)
+                span.setSpan(StrikethroughSpan(), 0, vm.name.length, 0)
+                span
+            } else {
+                vm.name
+            }
+            view.questName.text = name
+
             view.questIcon.backgroundTintList =
                 ColorStateList.valueOf(colorRes(vm.color))
             view.questIcon.setImageDrawable(

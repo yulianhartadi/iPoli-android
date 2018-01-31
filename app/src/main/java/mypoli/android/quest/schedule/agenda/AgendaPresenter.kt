@@ -45,13 +45,19 @@ class AgendaPresenter : AndroidStatePresenter<AppState, AgendaViewState> {
                 val quest = agendaItem.quest
                 val showDivider =
                     !(nextAgendaItem == null || nextAgendaItem !is CreateAgendaItemsUseCase.AgendaItem.QuestItem)
+                val color = if (quest.isCompleted)
+                    R.color.md_grey_500
+                else
+                    AndroidColor.valueOf(quest.color.name).color500
+
                 AgendaViewController.QuestViewModel(
-                    quest.name,
-                    formatStartTime(quest),
-                    AndroidColor.valueOf(quest.color.name).color500,
-                    quest.icon?.let { AndroidIcon.valueOf(it.name).icon }
+                    name = quest.name,
+                    startTime = formatStartTime(quest),
+                    color = color,
+                    icon = quest.icon?.let { AndroidIcon.valueOf(it.name).icon }
                         ?: Ionicons.Icon.ion_android_clipboard,
-                    showDivider
+                    isCompleted = quest.isCompleted,
+                    showDivider = showDivider
                 )
             }
             is CreateAgendaItemsUseCase.AgendaItem.Date -> {
