@@ -13,6 +13,7 @@ import com.bluelinelabs.conductor.support.RouterPagerAdapter
 import kotlinx.android.synthetic.main.controller_calendar.view.*
 import mypoli.android.R
 import mypoli.android.common.redux.android.ReduxViewController
+import mypoli.android.quest.schedule.ScheduleViewController
 import mypoli.android.quest.schedule.calendar.CalendarState.StateType.*
 import mypoli.android.quest.schedule.calendar.dayview.view.DayViewController
 import org.threeten.bp.LocalDate
@@ -114,6 +115,16 @@ class CalendarViewController(args: Bundle? = null) :
         companion object {
             const val MAX_VISIBLE_DAYS = 100
         }
+    }
+
+    fun onStartEdit() {
+        view!!.pager.isLocked = true
+        (parentController as ScheduleViewController).onStartEdit()
+    }
+
+    fun onStopEdit() {
+        view!!.pager.isLocked = false
+        (parentController as ScheduleViewController).onStopEdit()
     }
 
 

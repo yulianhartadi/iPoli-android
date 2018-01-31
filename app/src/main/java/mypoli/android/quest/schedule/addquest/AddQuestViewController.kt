@@ -232,6 +232,7 @@ class AddQuestViewController(args: Bundle? = null) :
     }
 
     override fun onDetach(view: View) {
+        view.questName.setOnEditTextImeBackListener(null)
         super.onDetach(view)
         router.popController(this)
     }

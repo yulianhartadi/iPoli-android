@@ -36,7 +36,7 @@ import mypoli.android.common.mvi.MviViewController
 import mypoli.android.common.view.*
 import mypoli.android.quest.CompletedQuestViewController
 import mypoli.android.quest.Icon
-import mypoli.android.quest.schedule.ScheduleViewController
+import mypoli.android.quest.schedule.calendar.CalendarViewController
 import mypoli.android.quest.schedule.calendar.dayview.DayViewPresenter
 import mypoli.android.quest.schedule.calendar.dayview.view.DayViewState.StateType.*
 import mypoli.android.quest.schedule.calendar.dayview.view.widget.*
@@ -147,7 +147,7 @@ class DayViewController :
                 datePickedListener = { showDatePicker(state.scheduledDate ?: state.currentDate) }
 
                 startActionMode()
-                (parentController as ScheduleViewController).onStartEdit()
+                (parentController as CalendarViewController).onStartEdit()
                 val dragView = view.dragContainer
                 dragView.dragStartTime.visibility = View.VISIBLE
                 dragView.dragEndTime.visibility = View.VISIBLE
@@ -162,7 +162,7 @@ class DayViewController :
                 datePickedListener = { showDatePicker(state.scheduledDate ?: state.currentDate) }
 
                 startActionMode()
-                (parentController as ScheduleViewController).onStartEdit()
+                (parentController as CalendarViewController).onStartEdit()
                 val dragView = view.dragContainer
                 dragView.dragStartTime.visibility = View.VISIBLE
                 dragView.dragEndTime.visibility = View.VISIBLE
@@ -177,7 +177,7 @@ class DayViewController :
                 datePickedListener = { showDatePicker(state.scheduledDate ?: state.currentDate) }
 
                 startActionMode()
-                (parentController as ScheduleViewController).onStartEdit()
+                (parentController as CalendarViewController).onStartEdit()
                 val dragView = view.dragContainer
                 dragView.dragStartTime.visibility = View.GONE
                 dragView.dragEndTime.visibility = View.GONE
@@ -438,7 +438,7 @@ class DayViewController :
 
             override fun onDestroyActionMode(p0: ActionMode?) {
                 cancelEdit()
-                (parentController as ScheduleViewController).onStopEdit()
+                (parentController as CalendarViewController).onStopEdit()
                 actionMode = null
             }
         })
@@ -483,7 +483,7 @@ class DayViewController :
     }
 
     private fun onStopEditMode() {
-        (parentController as ScheduleViewController).onStopEdit()
+        (parentController as CalendarViewController).onStopEdit()
         actionMode?.finish()
     }
 

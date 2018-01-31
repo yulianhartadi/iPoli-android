@@ -12,7 +12,6 @@ import android.view.*
 import android.view.animation.AccelerateDecelerateInterpolator
 import com.bluelinelabs.conductor.RouterTransaction
 import com.bluelinelabs.conductor.changehandler.FadeChangeHandler
-import kotlinx.android.synthetic.main.controller_calendar.view.*
 import kotlinx.android.synthetic.main.controller_schedule.view.*
 import kotlinx.android.synthetic.main.view_calendar_toolbar.view.*
 import mypoli.android.R
@@ -402,14 +401,11 @@ class ScheduleViewController(args: Bundle? = null) :
         super.onDestroy()
     }
 
-
     fun onStartEdit() {
         view!!.addQuest.visible = false
-        view!!.pager.isLocked = true
     }
 
     fun onStopEdit() {
         view!!.addQuest.visible = true
-        view!!.pager.isLocked = false
     }
 }
