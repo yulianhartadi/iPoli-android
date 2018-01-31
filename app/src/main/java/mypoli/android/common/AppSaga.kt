@@ -14,10 +14,12 @@ import mypoli.android.myPoliApp
 import mypoli.android.pet.store.PetStoreAction
 import mypoli.android.pet.usecase.BuyPetUseCase
 import mypoli.android.quest.Quest
+import mypoli.android.quest.schedule.ScheduleAction
 import mypoli.android.quest.schedule.agenda.AgendaAction
 import mypoli.android.quest.schedule.agenda.AgendaReducer
 import mypoli.android.quest.schedule.agenda.usecase.CreateAgendaItemsUseCase
 import mypoli.android.quest.schedule.agenda.usecase.FindAgendaDatesUseCase
+import mypoli.android.quest.schedule.calendar.CalendarAction
 import mypoli.android.quest.usecase.CompleteQuestUseCase.Params.WithQuest
 import org.threeten.bp.LocalDate
 import space.traversal.kapsule.Injects
@@ -168,15 +170,27 @@ class AgendaSaga : Saga<AppState>, Injects<Module> {
             }
             is LoadDataAction.All -> {
                 agendaDate = state.appDataState.today
-                val result = findAgendaDatesUseCase.execute(
-                    FindAgendaDatesUseCase.Params.All(
-                        agendaDate,
-                        AgendaReducer.ITEMS_BEFORE_COUNT,
-                        AgendaReducer.ITEMS_AFTER_COUNT
-                    )
-                ) as FindAgendaDatesUseCase.Result.All
-                start = result.start ?: agendaDate.minusMonths(3)
-                end = result.end ?: agendaDate.plusMonths(3)
+                val pair = findAllAgendaDates(agendaDate)
+                start = pair.first
+                end = pair.second
+            }
+            is ScheduleAction.ScheduleChangeDate -> {
+                agendaDate = LocalDate.of(action.year, action.month, action.day)
+                val pair = findAllAgendaDates(agendaDate)
+                start = pair.first
+                end = pair.second
+            }
+            is CalendarAction.SwipeChangeDate -> {
+                val currentPos = state.calendarState.adapterPosition
+                val newPos = action.adapterPosition
+                val curDate = state.scheduleState.currentDate
+                agendaDate = if (newPos < currentPos)
+                    curDate.minusDays(1)
+                else
+                    curDate.plusDays(1)
+                val pair = findAllAgendaDates(agendaDate)
+                start = pair.first
+                end = pair.second
             }
         }
 
@@ -203,10 +217,27 @@ class AgendaSaga : Saga<AppState>, Injects<Module> {
         }
     }
 
+    private fun findAllAgendaDates(
+        agendaDate: LocalDate
+    ): Pair<LocalDate, LocalDate> {
+        val result = findAgendaDatesUseCase.execute(
+            FindAgendaDatesUseCase.Params.All(
+                agendaDate,
+                AgendaReducer.ITEMS_BEFORE_COUNT,
+                AgendaReducer.ITEMS_AFTER_COUNT
+            )
+        ) as FindAgendaDatesUseCase.Result.All
+        val start = result.start ?: agendaDate.minusMonths(3)
+        val end = result.end ?: agendaDate.plusMonths(3)
+        return Pair(start, end)
+    }
+
     override fun canHandle(action: Action) =
         action == LoadDataAction.All
             || action is AgendaAction.LoadBefore
             || action is AgendaAction.LoadAfter
+            || action is ScheduleAction.ScheduleChangeDate
+            || action is CalendarAction.SwipeChangeDate
 
 
 }
