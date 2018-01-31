@@ -13,6 +13,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
+import com.bluelinelabs.conductor.RouterTransaction
 import com.mikepenz.iconics.IconicsDrawable
 import com.mikepenz.iconics.typeface.IIcon
 import kotlinx.android.synthetic.main.controller_agenda.view.*
@@ -21,11 +22,10 @@ import kotlinx.android.synthetic.main.item_agenda_quest.view.*
 import mypoli.android.R
 import mypoli.android.common.ViewUtils
 import mypoli.android.common.redux.android.ReduxViewController
-import mypoli.android.common.view.AutoUpdatableAdapter
-import mypoli.android.common.view.EndlessRecyclerViewScrollListener
-import mypoli.android.common.view.colorRes
-import mypoli.android.common.view.visible
+import mypoli.android.common.view.*
+import mypoli.android.quest.CompletedQuestViewController
 import mypoli.android.quest.schedule.agenda.widget.SwipeToCompleteCallback
+import mypoli.android.timer.TimerViewController
 
 /**
  * Created by Polina Zhelyazkova <polina@ipoli.io>
@@ -118,9 +118,22 @@ class AgendaViewController(args: Bundle? = null) :
         }
     }
 
+    private fun showCompletedQuest(questId: String) {
+        pushWithRootRouter(RouterTransaction.with(CompletedQuestViewController(questId)))
+    }
+
+    private fun showQuest(questId: String) {
+        pushWithRootRouter(
+            RouterTransaction.with(TimerViewController(questId)).tag(
+                TimerViewController.TAG
+            )
+        )
+    }
+
     interface AgendaViewModel
 
     data class QuestViewModel(
+        val id: String,
         val name: String,
         val startTime: String,
         @ColorRes val color: Int,
@@ -170,6 +183,7 @@ class AgendaViewController(args: Bundle? = null) :
             view: View,
             viewModel: WeekHeaderViewModel
         ) {
+            view.setOnClickListener(null)
             (view as TextView).text = viewModel.text
         }
 
@@ -177,6 +191,7 @@ class AgendaViewController(args: Bundle? = null) :
             view: View,
             viewModel: MonthDividerViewModel
         ) {
+            view.setOnClickListener(null)
             view.dateLabel.text = viewModel.text
             view.monthImage.setImageResource(viewModel.image)
         }
@@ -185,6 +200,7 @@ class AgendaViewController(args: Bundle? = null) :
             view: View,
             viewModel: DateHeaderViewModel
         ) {
+            view.setOnClickListener(null)
             (view as TextView).text = viewModel.text
         }
 
@@ -192,6 +208,11 @@ class AgendaViewController(args: Bundle? = null) :
             view: View,
             vm: QuestViewModel
         ) {
+
+            view.setOnClickListener {
+                showCompletedQuest(vm.id)
+            }
+
             val span = SpannableString(vm.name)
             span.setSpan(StrikethroughSpan(), 0, vm.name.length, 0)
 
@@ -203,6 +224,9 @@ class AgendaViewController(args: Bundle? = null) :
             view: View,
             vm: QuestViewModel
         ) {
+            view.setOnClickListener {
+                showQuest(vm.id)
+            }
             view.questName.text = vm.name
             bindQuest(view, vm)
         }

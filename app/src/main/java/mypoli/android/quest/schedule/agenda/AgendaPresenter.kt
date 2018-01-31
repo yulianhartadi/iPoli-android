@@ -51,6 +51,7 @@ class AgendaPresenter : AndroidStatePresenter<AppState, AgendaViewState> {
                     AndroidColor.valueOf(quest.color.name).color500
 
                 AgendaViewController.QuestViewModel(
+                    id = quest.id,
                     name = quest.name,
                     startTime = formatStartTime(quest),
                     color = color,
