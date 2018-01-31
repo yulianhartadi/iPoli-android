@@ -325,14 +325,15 @@ class ScheduleViewController(args: Bundle? = null) :
                         CalendarViewController()
                     else
                         AgendaViewController()
+                childRouter.popCurrentController()
                 childRouter.setRoot(
                     RouterTransaction.with(newController)
                         .pushChangeHandler(handler)
                         .popChangeHandler(handler)
                 )
-                activity?.invalidateOptionsMenu()
                 viewModeIcon = state.viewModeIcon
                 viewModeTitle = state.viewModeTitle
+                activity?.invalidateOptionsMenu()
             }
         }
     }
@@ -386,14 +387,19 @@ class ScheduleViewController(args: Bundle? = null) :
     }
 
     private fun markSelectedDate(view: View, currentDate: LocalDate) {
+        CellConfig.weekAnchorPointDate =
+            DateData(currentDate.year, currentDate.monthValue, currentDate.dayOfMonth)
         view.datePicker.markedDates.removeAdd()
-        view.datePicker.markDate(
-            DateData(
-                currentDate.year,
-                currentDate.monthValue,
-                currentDate.dayOfMonth
-            )
+
+        val dateData = DateData(
+            currentDate.year,
+            currentDate.monthValue,
+            currentDate.dayOfMonth
         )
+        view.datePicker.markDate(
+            dateData
+        )
+//        view.datePicker.travelTo(dateData)
     }
 
     override fun onDestroy() {

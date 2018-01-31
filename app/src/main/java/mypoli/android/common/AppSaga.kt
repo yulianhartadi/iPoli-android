@@ -93,7 +93,7 @@ class CompleteQuestSaga : Saga<AppState>, Injects<Module> {
     override suspend fun execute(action: Action, state: AppState, dispatcher: Dispatcher) {
         inject(myPoliApp.module(myPoliApp.instance))
         if (action is AgendaAction.CompleteQuest) {
-            val adapterPos = action.adapterPosition
+            val adapterPos = action.itemPosition
             val questItem =
                 state.agendaState.agendaItems[adapterPos] as CreateAgendaItemsUseCase.AgendaItem.QuestItem
             completeQuestUseCase.execute(WithQuest(questItem.quest))
@@ -110,7 +110,7 @@ class UndoCompletedQuestSaga : Saga<AppState>, Injects<Module> {
     override suspend fun execute(action: Action, state: AppState, dispatcher: Dispatcher) {
         inject(myPoliApp.module(myPoliApp.instance))
         if (action is AgendaAction.UndoCompleteQuest) {
-            val adapterPos = action.adapterPosition
+            val adapterPos = action.itemPosition
             val questItem =
                 state.agendaState.agendaItems[adapterPos] as CreateAgendaItemsUseCase.AgendaItem.QuestItem
             undoCompletedQuestUseCase.execute(questItem.quest.id)
@@ -150,9 +150,9 @@ class LoadAllDataSaga : Saga<AppState>, Injects<Module> {
 
         when (action) {
             is AgendaAction.LoadBefore -> {
-                val position = action.visiblePosition
+                val position = action.itemPosition
                 val agendaItem = agendaItems[position]
-                agendaDate = findAgendaItemDate(agendaItem)
+                agendaDate = agendaItem.startDate()
                 val result = findAgendaDatesUseCase.execute(
                     FindAgendaDatesUseCase.Params.Before(
                         agendaDate,
@@ -163,16 +163,16 @@ class LoadAllDataSaga : Saga<AppState>, Injects<Module> {
                     start = it
                 }
                 end =
-                    findAgendaItemDate(agendaItems[position + AgendaReducer.ITEMS_AFTER_COUNT - 1])
+                    agendaItems[position + AgendaReducer.ITEMS_AFTER_COUNT - 1].startDate()
             }
             is AgendaAction.LoadAfter -> {
-                val position = action.visiblePosition
+                val position = action.itemPosition
                 val agendaItem = agendaItems[position]
-                agendaDate = findAgendaItemDate(agendaItem)
+                agendaDate = agendaItem.startDate()
                 val result = findAgendaDatesUseCase.execute(
                     FindAgendaDatesUseCase.Params.After(agendaDate, AgendaReducer.ITEMS_AFTER_COUNT)
                 )
-                start = findAgendaItemDate(agendaItems[position - AgendaReducer.ITEMS_BEFORE_COUNT])
+                start = agendaItems[position - AgendaReducer.ITEMS_BEFORE_COUNT].startDate()
                 (result as FindAgendaDatesUseCase.Result.After).date?.let {
                     end = it
                 }
@@ -220,15 +220,6 @@ class LoadAllDataSaga : Saga<AppState>, Injects<Module> {
         }
 
     }
-
-    private fun findAgendaItemDate(agendaItem: CreateAgendaItemsUseCase.AgendaItem) =
-        when (agendaItem) {
-            is CreateAgendaItemsUseCase.AgendaItem.QuestItem -> agendaItem.quest.scheduledDate
-            is CreateAgendaItemsUseCase.AgendaItem.Date -> agendaItem.date
-            is CreateAgendaItemsUseCase.AgendaItem.Week -> agendaItem.start
-            is CreateAgendaItemsUseCase.AgendaItem.Month ->
-                LocalDate.of(agendaItem.month.year, agendaItem.month.month, 1)
-        }
 
     override fun canHandle(action: Action) =
         action == LoadDataAction.All

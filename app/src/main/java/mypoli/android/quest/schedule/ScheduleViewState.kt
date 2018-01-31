@@ -10,6 +10,7 @@ import mypoli.android.common.redux.State
 import mypoli.android.player.Player
 import mypoli.android.quest.schedule.ScheduleState.ViewMode.AGENDA
 import mypoli.android.quest.schedule.ScheduleState.ViewMode.CALENDAR
+import mypoli.android.quest.schedule.agenda.AgendaAction
 import mypoli.android.quest.schedule.calendar.CalendarAction
 import org.threeten.bp.LocalDate
 import org.threeten.bp.YearMonth
@@ -34,7 +35,7 @@ sealed class ScheduleAction : Action {
     object ExpandToolbar : ScheduleAction()
     object ExpandWeekToolbar : ScheduleAction()
 
-    //    data class SwipeChangeDate(val adapterPosition: Int) : ScheduleAction()
+    //    data class SwipeChangeDate(val itemPosition: Int) : ScheduleAction()
     data class ScheduleChangeDate(val year: Int, val month: Int, val day: Int) : ScheduleAction()
 
     data class ChangeMonth(val year: Int, val month: Int) : ScheduleAction()
@@ -54,7 +55,7 @@ data class ScheduleState(
     val coins: Int
 ) : State {
     enum class StateType {
-        LOADING,
+        LOADING, IDLE,
         INITIAL, CALENDAR_DATE_CHANGED, SWIPE_DATE_CHANGED, DATE_PICKER_CHANGED, MONTH_CHANGED,
         LEVEL_CHANGED, XP_AND_COINS_CHANGED, DATA_CHANGED,
         VIEW_MODE_CHANGED
@@ -68,29 +69,48 @@ data class ScheduleState(
 object ScheduleReducer : AppStateReducer<ScheduleState> {
 
     override fun reduce(state: AppState, action: Action) =
-        when (action) {
-            is DataLoadedAction.PlayerChanged -> reducePlayerChanged(
-                state.scheduleState,
-                action
-            )
-            is ScheduleAction -> reduceCalendarAction(
-                state.scheduleState,
-                action
-            )
-            is CalendarAction.SwipeChangeDate -> {
-                val currentPos = state.calendarState.adapterPosition
-                val newPos = action.adapterPosition
-                val curDate = state.scheduleState.currentDate
-                val newDate = if (newPos < currentPos)
-                    curDate.minusDays(1)
-                else
-                    curDate.plusDays(1)
-
-                state.scheduleState.copy(
-                    currentDate = newDate
+        state.scheduleState.let {
+            when (action) {
+                is DataLoadedAction.PlayerChanged -> reducePlayerChanged(
+                    it,
+                    action
                 )
+                is ScheduleAction -> reduceCalendarAction(
+                    it,
+                    action
+                )
+                is CalendarAction.SwipeChangeDate -> {
+                    val currentPos = state.calendarState.adapterPosition
+                    val newPos = action.adapterPosition
+                    val curDate = it.currentDate
+                    val newDate = if (newPos < currentPos)
+                        curDate.minusDays(1)
+                    else
+                        curDate.plusDays(1)
+
+                    it.copy(
+                        currentDate = newDate
+                    )
+                }
+                is AgendaAction.FirstVisibleItemChanged -> {
+
+                    val itemPos = action.itemPosition
+                    val startDate = state.agendaState.agendaItems[itemPos].startDate()
+
+                    if (it.currentDate.isEqual(startDate)) {
+                        it.copy(
+                            type = ScheduleState.StateType.IDLE
+                        )
+                    } else {
+                        it.copy(
+                            type = ScheduleState.StateType.CALENDAR_DATE_CHANGED,
+                            currentDate = startDate
+                        )
+                    }
+
+                }
+                else -> it
             }
-            else -> state.scheduleState
         }
 
     private fun reducePlayerChanged(
@@ -192,12 +212,6 @@ data class ScheduleViewState(
     val viewModeIcon: Int,
     val viewModeTitle: String
 ) : ViewState {
-//
-//    enum class StateType {
-//        LOADING, INITIAL, CALENDAR_DATE_CHANGED, SWIPE_DATE_CHANGED, DEFAULT, DATE_PICKER_CHANGED,
-//        MONTH_CHANGED,
-//        LEVEL_CHANGED, XP_AND_COINS_CHANGED, DATA_CHANGED
-//    }
 
     enum class DatePickerState {
         INVISIBLE, SHOW_WEEK, SHOW_MONTH

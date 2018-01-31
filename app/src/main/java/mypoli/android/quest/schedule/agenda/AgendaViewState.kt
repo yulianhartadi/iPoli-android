@@ -15,10 +15,11 @@ import org.threeten.bp.LocalDate
  */
 
 sealed class AgendaAction : Action {
-    data class LoadBefore(val visiblePosition: Int) : AgendaAction()
-    data class LoadAfter(val visiblePosition: Int) : AgendaAction()
-    data class CompleteQuest(val adapterPosition: Int) : AgendaAction()
-    data class UndoCompleteQuest(val adapterPosition: Int) : AgendaAction()
+    data class LoadBefore(val itemPosition: Int) : AgendaAction()
+    data class LoadAfter(val itemPosition: Int) : AgendaAction()
+    data class CompleteQuest(val itemPosition: Int) : AgendaAction()
+    data class UndoCompleteQuest(val itemPosition: Int) : AgendaAction()
+    data class FirstVisibleItemChanged(val itemPosition: Int) : AgendaAction()
 }
 
 data class AgendaState(

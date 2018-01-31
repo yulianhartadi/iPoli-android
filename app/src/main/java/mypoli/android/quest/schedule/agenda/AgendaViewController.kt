@@ -89,23 +89,33 @@ class AgendaViewController(args: Bundle? = null) :
                 if (state.scrollToPosition >= 0) {
                     agendaList.scrollToPosition(state.scrollToPosition)
                 }
-                agendaList.post {
+//                agendaList.post {
 
-                    agendaList.addOnScrollListener(
-                        EndlessRecyclerViewScrollListener(
-                            agendaList.layoutManager as LinearLayoutManager,
-                            { side, position ->
-                                agendaList.clearOnScrollListeners()
-                                if (side == EndlessRecyclerViewScrollListener.Side.TOP) {
-                                    dispatch(AgendaAction.LoadBefore(position))
-                                } else {
-                                    dispatch(AgendaAction.LoadAfter(position))
-                                }
-                            },
-                            20
-                        )
+                agendaList.addOnScrollListener(ChangeItemScrollListener(
+                    agendaList.layoutManager as LinearLayoutManager,
+                    { pos ->
+                        dispatch(AgendaAction.FirstVisibleItemChanged(pos))
+                    }
+                ))
+
+                agendaList.addOnScrollListener(
+                    EndlessRecyclerViewScrollListener(
+                        agendaList.layoutManager as LinearLayoutManager,
+                        { side, position ->
+                            agendaList.clearOnScrollListeners()
+                            if (side == EndlessRecyclerViewScrollListener.Side.TOP) {
+                                dispatch(AgendaAction.LoadBefore(position))
+                            } else {
+                                dispatch(AgendaAction.LoadAfter(position))
+                            }
+                        },
+                        20
                     )
-                }
+                )
+
+
+
+//                }
             }
 
             AgendaState.StateType.SHOW_TOP_LOADER -> {

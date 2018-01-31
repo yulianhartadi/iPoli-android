@@ -119,9 +119,24 @@ class CreateAgendaItemsUseCase :
     )
 
     sealed class AgendaItem {
-        data class QuestItem(val quest: Quest) : AgendaItem()
-        data class Date(val date: LocalDate) : AgendaItem()
-        data class Week(val start: LocalDate, val end: LocalDate) : AgendaItem()
-        data class Month(val month: YearMonth) : AgendaItem()
+
+        data class QuestItem(val quest: Quest) : AgendaItem() {
+            override fun startDate() = quest.scheduledDate
+        }
+
+        data class Date(val date: LocalDate) : AgendaItem() {
+            override fun startDate() = date
+        }
+
+        data class Week(val start: LocalDate, val end: LocalDate) : AgendaItem() {
+            override fun startDate() = start
+        }
+
+        data class Month(val month: YearMonth) : AgendaItem() {
+            override fun startDate() = LocalDate.of(month.year, month.month, 1)
+        }
+
+
+        abstract fun startDate(): LocalDate
     }
 }
