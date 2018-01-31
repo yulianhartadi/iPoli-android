@@ -27,7 +27,7 @@ data class AgendaState(
     val startDate: LocalDate,
     val endDate: LocalDate,
     val agendaItems: List<CreateAgendaItemsUseCase.AgendaItem>,
-    val scrollToPosition: Int = -1
+    val scrollToPosition: Int?
 ) : State {
     enum class StateType {
         LOADING,
@@ -42,15 +42,12 @@ object AgendaReducer : AppStateReducer<AgendaState> {
         state.agendaState.let {
             when (action) {
                 is DataLoadedAction.AgendaItemsChanged -> {
-                    val scrollToPosition = if (state.agendaState.agendaItems.isEmpty()) {
-                        ITEMS_BEFORE_COUNT
-                    } else -1
                     it.copy(
                         type = AgendaState.StateType.DATA_CHANGED,
                         startDate = action.start,
                         endDate = action.end,
                         agendaItems = action.agendaItems,
-                        scrollToPosition = scrollToPosition
+                        scrollToPosition = ITEMS_BEFORE_COUNT
                     )
                 }
                 is AgendaAction.LoadBefore -> {
@@ -68,10 +65,11 @@ object AgendaReducer : AppStateReducer<AgendaState> {
         }
 
     override fun defaultState() = AgendaState(
-        AgendaState.StateType.LOADING,
-        LocalDate.now(),
-        LocalDate.now(),
-        listOf()
+        type = AgendaState.StateType.LOADING,
+        startDate = LocalDate.now(),
+        endDate = LocalDate.now(),
+        agendaItems = listOf(),
+        scrollToPosition = null
     )
 
     const val ITEMS_BEFORE_COUNT = 30
@@ -81,5 +79,5 @@ object AgendaReducer : AppStateReducer<AgendaState> {
 data class AgendaViewState(
     val type: AgendaState.StateType,
     val agendaItems: List<AgendaViewController.AgendaViewModel>,
-    val scrollToPosition: Int = -1
+    val scrollToPosition: Int?
 ) : ViewState

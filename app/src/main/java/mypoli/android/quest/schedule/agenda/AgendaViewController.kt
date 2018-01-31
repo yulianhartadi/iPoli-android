@@ -86,10 +86,10 @@ class AgendaViewController(args: Bundle? = null) :
                 ViewUtils.goneViews(view.topLoader, view.bottomLoader)
                 val agendaList = view.agendaList
                 (agendaList.adapter as AgendaAdapter).updateAll(state.agendaItems)
-                if (state.scrollToPosition >= 0) {
-                    agendaList.scrollToPosition(state.scrollToPosition)
+
+                state.scrollToPosition?.let {
+                    agendaList.scrollToPosition(it)
                 }
-//                agendaList.post {
 
 //                agendaList.addOnScrollListener(ChangeItemScrollListener(
 //                    agendaList.layoutManager as LinearLayoutManager,
