@@ -25,8 +25,6 @@ interface AutoUpdatableAdapter {
 
             override fun getNewListSize() = newList.size
         })
-//        this.viewModels.clear()
-//            this.viewModels.addAll(viewModels)
         diff.dispatchUpdatesTo(this)
     }
 }

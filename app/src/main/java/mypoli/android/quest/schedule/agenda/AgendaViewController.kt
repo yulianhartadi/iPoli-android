@@ -6,6 +6,7 @@ import android.support.annotation.ColorRes
 import android.support.annotation.DrawableRes
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
+import android.support.v7.widget.helper.ItemTouchHelper
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -22,6 +23,7 @@ import mypoli.android.common.view.AutoUpdatableAdapter
 import mypoli.android.common.view.EndlessRecyclerViewScrollListener
 import mypoli.android.common.view.colorRes
 import mypoli.android.common.view.visible
+import mypoli.android.quest.schedule.agenda.widget.SwipeToCompleteCallback
 
 /**
  * Created by Polina Zhelyazkova <polina@ipoli.io>
@@ -43,7 +45,26 @@ class AgendaViewController(args: Bundle? = null) :
         val layoutManager =
             LinearLayoutManager(container.context, LinearLayoutManager.VERTICAL, false)
         view.agendaList.layoutManager = layoutManager
-        view.agendaList.adapter = AgendaAdapter()
+        val adapter = AgendaAdapter()
+        view.agendaList.adapter = adapter
+
+        val swipeHandler = object : SwipeToCompleteCallback(
+            view.context,
+            R.drawable.ic_done_white_24dp,
+            R.color.md_green_500
+        ) {
+            override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
+                dispatch(AgendaAction.CompleteQuest(viewHolder.adapterPosition))
+            }
+
+            override fun canSwipe(
+                recyclerView: RecyclerView?,
+                viewHolder: RecyclerView.ViewHolder?
+            ) = viewHolder is AgendaAdapter.QuestViewHolder
+        }
+        val itemTouchHelper = ItemTouchHelper(swipeHandler)
+        itemTouchHelper.attachToRecyclerView(view.agendaList)
+
         return view
     }
 

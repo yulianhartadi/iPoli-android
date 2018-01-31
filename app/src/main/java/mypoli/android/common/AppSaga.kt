@@ -18,6 +18,7 @@ import mypoli.android.quest.schedule.agenda.AgendaAction
 import mypoli.android.quest.schedule.agenda.AgendaReducer
 import mypoli.android.quest.schedule.agenda.usecase.CreateAgendaItemsUseCase
 import mypoli.android.quest.schedule.agenda.usecase.FindAgendaDatesUseCase
+import mypoli.android.quest.usecase.CompleteQuestUseCase.Params.WithQuest
 import org.threeten.bp.LocalDate
 import space.traversal.kapsule.Injects
 import space.traversal.kapsule.inject
@@ -83,6 +84,24 @@ class BuyPetSaga : Saga<AppState>, Injects<Module> {
     }
 
     override fun canHandle(action: Action) = action is PetStoreAction.BuyPet
+}
+
+class CompleteQuestSaga : Saga<AppState>, Injects<Module> {
+
+    private val completeQuestUseCase by required { completeQuestUseCase }
+
+    override suspend fun execute(action: Action, state: AppState, dispatcher: Dispatcher) {
+        inject(myPoliApp.module(myPoliApp.instance))
+        if (action is AgendaAction.CompleteQuest) {
+            val adapterPos = action.adapterPosition
+            val questItem =
+                state.agendaState.agendaItems[adapterPos] as CreateAgendaItemsUseCase.AgendaItem.QuestItem
+            completeQuestUseCase.execute(WithQuest(questItem.quest))
+        }
+    }
+
+    override fun canHandle(action: Action) = action is AgendaAction.CompleteQuest
+
 }
 
 class LoadAllDataSaga : Saga<AppState>, Injects<Module> {

@@ -125,6 +125,7 @@ class AndroidStateStoreModule : StateStoreModule, Injects<Module> {
                 SagaMiddleware<AppState>(
                     sagas = listOf(
                         LoadAllDataSaga(),
+                        CompleteQuestSaga(),
                         BuyPredefinedChallengeSaga(),
                         ChangePetSaga(),
                         BuyPetSaga()

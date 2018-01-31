@@ -17,6 +17,7 @@ import org.threeten.bp.LocalDate
 sealed class AgendaAction : Action {
     data class LoadBefore(val visiblePosition: Int) : AgendaAction()
     data class LoadAfter(val visiblePosition: Int) : AgendaAction()
+    data class CompleteQuest(val adapterPosition: Int) : AgendaAction()
 }
 
 data class AgendaState(
@@ -39,7 +40,7 @@ object AgendaReducer : AppStateReducer<AgendaState> {
         state.agendaState.let {
             when (action) {
                 is DataLoadedAction.AgendaItemsChanged -> {
-                    val scrollToPosition = if(state.agendaState.agendaItems.isEmpty()) {
+                    val scrollToPosition = if (state.agendaState.agendaItems.isEmpty()) {
                         ITEMS_BEFORE_COUNT
                     } else -1
                     it.copy(
