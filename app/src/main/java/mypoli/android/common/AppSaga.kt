@@ -101,7 +101,23 @@ class CompleteQuestSaga : Saga<AppState>, Injects<Module> {
     }
 
     override fun canHandle(action: Action) = action is AgendaAction.CompleteQuest
+}
 
+class UndoCompletedQuestSaga : Saga<AppState>, Injects<Module> {
+
+    private val undoCompletedQuestUseCase by required { undoCompletedQuestUseCase }
+
+    override suspend fun execute(action: Action, state: AppState, dispatcher: Dispatcher) {
+        inject(myPoliApp.module(myPoliApp.instance))
+        if (action is AgendaAction.UndoCompleteQuest) {
+            val adapterPos = action.adapterPosition
+            val questItem =
+                state.agendaState.agendaItems[adapterPos] as CreateAgendaItemsUseCase.AgendaItem.QuestItem
+            undoCompletedQuestUseCase.execute(questItem.quest.id)
+        }
+    }
+
+    override fun canHandle(action: Action) = action is AgendaAction.UndoCompleteQuest
 }
 
 class LoadAllDataSaga : Saga<AppState>, Injects<Module> {

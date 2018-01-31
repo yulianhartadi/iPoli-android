@@ -53,16 +53,26 @@ class AgendaViewController(args: Bundle? = null) :
         val swipeHandler = object : SwipeToCompleteCallback(
             view.context,
             R.drawable.ic_done_white_24dp,
-            R.color.md_green_500
+            R.color.md_green_500,
+            R.drawable.ic_close_white_24dp,
+            R.color.md_amber_500
         ) {
             override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
-                dispatch(AgendaAction.CompleteQuest(viewHolder.adapterPosition))
+                if (direction == ItemTouchHelper.END) {
+                    dispatch(AgendaAction.CompleteQuest(viewHolder.adapterPosition))
+                } else if (direction == ItemTouchHelper.START) {
+                    dispatch(AgendaAction.UndoCompleteQuest(viewHolder.adapterPosition))
+                }
             }
 
-            override fun canSwipe(
+            override fun getSwipeDirs(
                 recyclerView: RecyclerView?,
                 viewHolder: RecyclerView.ViewHolder?
-            ) = viewHolder is AgendaAdapter.QuestViewHolder
+            ) = when (viewHolder) {
+                is AgendaAdapter.QuestViewHolder -> ItemTouchHelper.END
+                is AgendaAdapter.CompletedQuestViewHolder -> ItemTouchHelper.START
+                else -> 0
+            }
         }
         val itemTouchHelper = ItemTouchHelper(swipeHandler)
         itemTouchHelper.attachToRecyclerView(view.agendaList)
@@ -127,7 +137,7 @@ class AgendaViewController(args: Bundle? = null) :
     data class WeekHeaderViewModel(val text: String) : AgendaViewModel
 
     enum class ItemType {
-        QUEST, DATE_HEADER, MONTH_DIVIDER, WEEK_HEADER
+        QUEST, COMPLETED_QUEST, DATE_HEADER, MONTH_DIVIDER, WEEK_HEADER
     }
 
     inner class AgendaAdapter(private var viewModels: MutableList<AgendaViewModel> = mutableListOf()) :
@@ -140,6 +150,10 @@ class AgendaViewController(args: Bundle? = null) :
             val type = ItemType.values()[getItemViewType(position)]
             when (type) {
                 ItemType.QUEST -> bindQuestViewModel(itemView, vm as QuestViewModel)
+                ItemType.COMPLETED_QUEST -> bindCompleteQuestViewModel(
+                    itemView,
+                    vm as QuestViewModel
+                )
                 ItemType.DATE_HEADER -> bindDateHeaderViewModel(itemView, vm as DateHeaderViewModel)
                 ItemType.MONTH_DIVIDER -> bindMonthDividerViewModel(
                     itemView,
@@ -174,19 +188,29 @@ class AgendaViewController(args: Bundle? = null) :
             (view as TextView).text = viewModel.text
         }
 
+        private fun bindCompleteQuestViewModel(
+            view: View,
+            vm: QuestViewModel
+        ) {
+            val span = SpannableString(vm.name)
+            span.setSpan(StrikethroughSpan(), 0, vm.name.length, 0)
+
+            view.questName.text = span
+            bindQuest(view, vm)
+        }
+
         private fun bindQuestViewModel(
             view: View,
             vm: QuestViewModel
         ) {
-            val name = if (vm.isCompleted) {
-                val span = SpannableString(vm.name)
-                span.setSpan(StrikethroughSpan(), 0, vm.name.length, 0)
-                span
-            } else {
-                vm.name
-            }
-            view.questName.text = name
+            view.questName.text = vm.name
+            bindQuest(view, vm)
+        }
 
+        private fun bindQuest(
+            view: View,
+            vm: QuestViewModel
+        ) {
             view.questIcon.backgroundTintList =
                 ColorStateList.valueOf(colorRes(vm.color))
             view.questIcon.setImageDrawable(
@@ -204,6 +228,13 @@ class AgendaViewController(args: Bundle? = null) :
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int) =
             when (viewType) {
                 ItemType.QUEST.ordinal -> QuestViewHolder(
+                    LayoutInflater.from(parent.context).inflate(
+                        R.layout.item_agenda_quest,
+                        parent,
+                        false
+                    )
+                )
+                ItemType.COMPLETED_QUEST.ordinal -> CompletedQuestViewHolder(
                     LayoutInflater.from(parent.context).inflate(
                         R.layout.item_agenda_quest,
                         parent,
@@ -235,13 +266,17 @@ class AgendaViewController(args: Bundle? = null) :
             }
 
         inner class QuestViewHolder(view: View) : RecyclerView.ViewHolder(view)
+        inner class CompletedQuestViewHolder(view: View) : RecyclerView.ViewHolder(view)
         inner class DateHeaderViewHolder(view: View) : RecyclerView.ViewHolder(view)
         inner class MonthDividerViewHolder(view: View) : RecyclerView.ViewHolder(view)
         inner class WeekHeaderViewHolder(view: View) : RecyclerView.ViewHolder(view)
 
         override fun getItemViewType(position: Int) =
             when (viewModels[position]) {
-                is QuestViewModel -> ItemType.QUEST.ordinal
+                is QuestViewModel -> if ((viewModels[position] as QuestViewModel).isCompleted)
+                    ItemType.COMPLETED_QUEST.ordinal
+                else
+                    ItemType.QUEST.ordinal
                 is DateHeaderViewModel -> ItemType.DATE_HEADER.ordinal
                 is MonthDividerViewModel -> ItemType.MONTH_DIVIDER.ordinal
                 is WeekHeaderViewModel -> ItemType.WEEK_HEADER.ordinal

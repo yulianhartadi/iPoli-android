@@ -17,35 +17,26 @@ import android.view.View
 abstract class SwipeToCompleteCallback(
     context: Context,
     @DrawableRes completeIcon: Int,
-    @ColorRes swipeBackgroundColor: Int
+    @ColorRes completeBackground: Int,
+    @DrawableRes undoCompletedIcon: Int,
+    @ColorRes undoCompletedBackground: Int
 ) :
     ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.END) {
 
-    private val swipeIcon = ContextCompat.getDrawable(context, completeIcon)!!
-    private val intrinsicWidth = swipeIcon.intrinsicWidth
-    private val intrinsicHeight = swipeIcon.intrinsicHeight
+    private val completeSwipeIcon = ContextCompat.getDrawable(context, completeIcon)!!
+    private val completeBackgroundColor = ContextCompat.getColor(context, completeBackground)
+    private val undoCompletedSwipeIcon = ContextCompat.getDrawable(context, undoCompletedIcon)!!
+    private val undoCompletedBackgroundColor =
+        ContextCompat.getColor(context, undoCompletedBackground)
+    private val intrinsicWidth = completeSwipeIcon.intrinsicWidth
+    private val intrinsicHeight = completeSwipeIcon.intrinsicHeight
     private val background = ColorDrawable()
-    private val backgroundColor = ContextCompat.getColor(context, swipeBackgroundColor)
 
     override fun onMove(
         recyclerView: RecyclerView?,
         viewHolder: RecyclerView.ViewHolder?,
         target: RecyclerView.ViewHolder?
     ) = false
-
-    override fun getSwipeDirs(
-        recyclerView: RecyclerView?,
-        viewHolder: RecyclerView.ViewHolder?
-    ): Int {
-        return if (canSwipe(recyclerView, viewHolder)) {
-            super.getSwipeDirs(recyclerView, viewHolder)
-        } else 0
-    }
-
-    abstract fun canSwipe(
-        recyclerView: RecyclerView?,
-        viewHolder: RecyclerView.ViewHolder?
-    ): Boolean
 
     override fun onChildDraw(
         c: Canvas?,
@@ -56,17 +47,53 @@ abstract class SwipeToCompleteCallback(
         actionState: Int,
         isCurrentlyActive: Boolean
     ) {
-        drawBackground(viewHolder.itemView, dX, c)
-        drawIcon(viewHolder.itemView, c)
+
+        if (dX > 0) {
+            drawCompleteBackground(viewHolder.itemView, dX, c)
+            drawCompleteIcon(viewHolder.itemView, c)
+        } else {
+            drawUndoCompleteBackground(viewHolder.itemView, dX, c)
+            drawUndoCompleteIcon(viewHolder.itemView, c)
+        }
         super.onChildDraw(c, recyclerView, viewHolder, dX, dY, actionState, isCurrentlyActive)
     }
 
-    private fun drawBackground(
+    private fun drawUndoCompleteIcon(itemView: View, c: Canvas?) {
+
+        val itemHeight = itemView.bottom - itemView.top
+
+        val deleteIconTop = itemView.top + (itemHeight - intrinsicHeight) / 2
+        val deleteIconMargin = (itemHeight - intrinsicHeight) / 2
+        val deleteIconLeft = itemView.right - deleteIconMargin - intrinsicWidth
+        val deleteIconRight = itemView.right - deleteIconMargin
+        val deleteIconBottom = deleteIconTop + intrinsicHeight
+
+        undoCompletedSwipeIcon.setBounds(
+            deleteIconLeft,
+            deleteIconTop,
+            deleteIconRight,
+            deleteIconBottom
+        )
+        undoCompletedSwipeIcon.draw(c)
+    }
+
+    private fun drawUndoCompleteBackground(itemView: View, dX: Float, c: Canvas?) {
+        background.color = undoCompletedBackgroundColor
+        background.setBounds(
+            itemView.right + dX.toInt(),
+            itemView.top,
+            itemView.right,
+            itemView.bottom
+        )
+        background.draw(c)
+    }
+
+    private fun drawCompleteBackground(
         itemView: View,
         dX: Float,
         c: Canvas?
     ) {
-        background.color = backgroundColor
+        background.color = completeBackgroundColor
         background.setBounds(
             itemView.left,
             itemView.top,
@@ -76,7 +103,7 @@ abstract class SwipeToCompleteCallback(
         background.draw(c)
     }
 
-    private fun drawIcon(
+    private fun drawCompleteIcon(
         itemView: View,
         c: Canvas?
     ) {
@@ -89,7 +116,7 @@ abstract class SwipeToCompleteCallback(
         val right = itemView.left + margin
         val bottom = top + intrinsicHeight
 
-        swipeIcon.setBounds(left, top, right, bottom)
-        swipeIcon.draw(c)
+        completeSwipeIcon.setBounds(left, top, right, bottom)
+        completeSwipeIcon.draw(c)
     }
 }

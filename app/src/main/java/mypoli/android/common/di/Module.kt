@@ -35,16 +35,16 @@ import mypoli.android.player.persistence.PlayerRepository
 import mypoli.android.player.usecase.*
 import mypoli.android.player.view.LevelUpPresenter
 import mypoli.android.quest.CompletedQuestPresenter
-import mypoli.android.quest.schedule.agenda.usecase.CreateAgendaItemsUseCase
-import mypoli.android.quest.schedule.agenda.usecase.FindAgendaDatesUseCase
-import mypoli.android.quest.schedule.addquest.AddQuestPresenter
-import mypoli.android.quest.schedule.calendar.dayview.DayViewPresenter
 import mypoli.android.quest.data.persistence.CouchbaseQuestRepository
 import mypoli.android.quest.data.persistence.QuestRepository
 import mypoli.android.quest.job.AndroidJobQuestCompleteScheduler
 import mypoli.android.quest.job.AndroidJobReminderScheduler
 import mypoli.android.quest.job.QuestCompleteScheduler
 import mypoli.android.quest.job.ReminderScheduler
+import mypoli.android.quest.schedule.addquest.AddQuestPresenter
+import mypoli.android.quest.schedule.agenda.usecase.CreateAgendaItemsUseCase
+import mypoli.android.quest.schedule.agenda.usecase.FindAgendaDatesUseCase
+import mypoli.android.quest.schedule.calendar.dayview.DayViewPresenter
 import mypoli.android.quest.usecase.*
 import mypoli.android.quest.view.QuestCompletePresenter
 import mypoli.android.rate.AndroidRatePopupScheduler
@@ -110,32 +110,6 @@ interface AndroidModule {
     val ratePopupScheduler: RatePopupScheduler
 
     val job: Job
-}
-
-interface StateStoreModule {
-    val stateStore: StateStore<AppState>
-}
-
-class AndroidStateStoreModule : StateStoreModule, Injects<Module> {
-
-    override val stateStore by required {
-        StateStore(
-            AppReducer,
-            listOf(
-                SagaMiddleware<AppState>(
-                    sagas = listOf(
-                        LoadAllDataSaga(),
-                        CompleteQuestSaga(),
-                        BuyPredefinedChallengeSaga(),
-                        ChangePetSaga(),
-                        BuyPetSaga()
-                    ),
-                    coroutineContext = job + CommonPool
-                )
-            )
-        )
-    }
-
 }
 
 class MainAndroidModule(private val context: Context) : AndroidModule {
@@ -493,6 +467,32 @@ class AndroidPresenterModule : PresenterModule, Injects<Module> {
             job
         )
     override val ratePresenter get() = RatePresenter(listenForPlayerChangesUseCase, job)
+}
+
+interface StateStoreModule {
+    val stateStore: StateStore<AppState>
+}
+
+class AndroidStateStoreModule : StateStoreModule, Injects<Module> {
+
+    override val stateStore by required {
+        StateStore(
+            AppReducer,
+            listOf(
+                SagaMiddleware<AppState>(
+                    sagas = listOf(
+                        LoadAllDataSaga(),
+                        CompleteQuestSaga(),
+                        UndoCompletedQuestSaga(),
+                        BuyPredefinedChallengeSaga(),
+                        ChangePetSaga(),
+                        BuyPetSaga()
+                    ),
+                    coroutineContext = job + CommonPool
+                )
+            )
+        )
+    }
 }
 
 class Module(

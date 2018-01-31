@@ -18,6 +18,7 @@ sealed class AgendaAction : Action {
     data class LoadBefore(val visiblePosition: Int) : AgendaAction()
     data class LoadAfter(val visiblePosition: Int) : AgendaAction()
     data class CompleteQuest(val adapterPosition: Int) : AgendaAction()
+    data class UndoCompleteQuest(val adapterPosition: Int) : AgendaAction()
 }
 
 data class AgendaState(
