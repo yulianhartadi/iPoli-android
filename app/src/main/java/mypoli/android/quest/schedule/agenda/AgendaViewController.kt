@@ -91,12 +91,12 @@ class AgendaViewController(args: Bundle? = null) :
                 }
 //                agendaList.post {
 
-                agendaList.addOnScrollListener(ChangeItemScrollListener(
-                    agendaList.layoutManager as LinearLayoutManager,
-                    { pos ->
-                        dispatch(AgendaAction.FirstVisibleItemChanged(pos))
-                    }
-                ))
+//                agendaList.addOnScrollListener(ChangeItemScrollListener(
+//                    agendaList.layoutManager as LinearLayoutManager,
+//                    { pos ->
+//                        dispatch(AgendaAction.FirstVisibleItemChanged(pos))
+//                    }
+//                ))
 
                 agendaList.addOnScrollListener(
                     EndlessRecyclerViewScrollListener(
@@ -112,10 +112,6 @@ class AgendaViewController(args: Bundle? = null) :
                         20
                     )
                 )
-
-
-
-//                }
             }
 
             AgendaState.StateType.SHOW_TOP_LOADER -> {

@@ -5,7 +5,8 @@ import kotlinx.coroutines.experimental.channels.consumeEach
 import kotlinx.coroutines.experimental.launch
 import mypoli.android.challenge.category.list.ChallengeListForCategoryAction
 import mypoli.android.challenge.usecase.BuyChallengeUseCase
-import mypoli.android.common.DataLoadedAction.*
+import mypoli.android.common.DataLoadedAction.PlayerChanged
+import mypoli.android.common.DataLoadedAction.TodayQuestsChanged
 import mypoli.android.common.di.Module
 import mypoli.android.common.redux.Action
 import mypoli.android.common.redux.Dispatcher
@@ -133,67 +134,79 @@ class AgendaSaga : Saga<AppState>, Injects<Module> {
     override suspend fun execute(action: Action, state: AppState, dispatcher: Dispatcher) {
         inject(myPoliApp.module(myPoliApp.instance))
 
-        var agendaDate = LocalDate.now()
-        var start = agendaDate.minusMonths(3)
-        var end = agendaDate.plusMonths(3)
-
         val agendaItems = state.agendaState.agendaItems
 
         when (action) {
             is AgendaAction.LoadBefore -> {
                 val position = action.itemPosition
                 val agendaItem = agendaItems[position]
-                agendaDate = agendaItem.startDate()
+                val agendaDate = agendaItem.startDate()
                 val result = findAgendaDatesUseCase.execute(
                     FindAgendaDatesUseCase.Params.Before(
                         agendaDate,
                         AgendaReducer.ITEMS_BEFORE_COUNT
                     )
                 )
+                var start = agendaDate.minusMonths(3)
                 (result as FindAgendaDatesUseCase.Result.Before).date?.let {
                     start = it
                 }
-                end =
+                val end =
                     agendaItems[position + AgendaReducer.ITEMS_AFTER_COUNT - 1].startDate()
+                listenForAgendaItems(start, end, dispatcher, agendaDate)
             }
             is AgendaAction.LoadAfter -> {
                 val position = action.itemPosition
                 val agendaItem = agendaItems[position]
-                agendaDate = agendaItem.startDate()
+                val agendaDate = agendaItem.startDate()
                 val result = findAgendaDatesUseCase.execute(
                     FindAgendaDatesUseCase.Params.After(agendaDate, AgendaReducer.ITEMS_AFTER_COUNT)
                 )
-                start = agendaItems[position - AgendaReducer.ITEMS_BEFORE_COUNT].startDate()
+                val start = agendaItems[position - AgendaReducer.ITEMS_BEFORE_COUNT].startDate()
+                var end = agendaDate.plusMonths(3)
                 (result as FindAgendaDatesUseCase.Result.After).date?.let {
                     end = it
                 }
+
+                listenForAgendaItems(start, end, dispatcher, agendaDate)
             }
             is LoadDataAction.All -> {
-                agendaDate = state.appDataState.today
+                val agendaDate = state.appDataState.today
                 val pair = findAllAgendaDates(agendaDate)
-                start = pair.first
-                end = pair.second
+                val start = pair.first
+                val end = pair.second
+
+                listenForAgendaItems(start, end, dispatcher, agendaDate)
             }
             is ScheduleAction.ScheduleChangeDate -> {
-                agendaDate = LocalDate.of(action.year, action.month, action.day)
+                val agendaDate = LocalDate.of(action.year, action.month, action.day)
                 val pair = findAllAgendaDates(agendaDate)
-                start = pair.first
-                end = pair.second
+                val start = pair.first
+                val end = pair.second
+                listenForAgendaItems(start, end, dispatcher, agendaDate)
             }
             is CalendarAction.SwipeChangeDate -> {
                 val currentPos = state.calendarState.adapterPosition
                 val newPos = action.adapterPosition
                 val curDate = state.scheduleState.currentDate
-                agendaDate = if (newPos < currentPos)
+                val agendaDate = if (newPos < currentPos)
                     curDate.minusDays(1)
                 else
                     curDate.plusDays(1)
                 val pair = findAllAgendaDates(agendaDate)
-                start = pair.first
-                end = pair.second
+                val start = pair.first
+                val end = pair.second
+                listenForAgendaItems(start, end, dispatcher, agendaDate)
             }
         }
+    }
 
+    private fun listenForAgendaItems(
+        start: LocalDate,
+        end: LocalDate,
+        dispatcher: Dispatcher,
+        agendaDate: LocalDate
+    ) {
         launch {
             scheduledQuestsChannel?.cancel()
             scheduledQuestsChannel = questRepository.listenForScheduledBetween(
@@ -201,16 +214,17 @@ class AgendaSaga : Saga<AppState>, Injects<Module> {
                 end
             )
             scheduledQuestsChannel!!.consumeEach {
+                val agendaItems = createAgendaItemsUseCase.execute(
+                    CreateAgendaItemsUseCase.Params(
+                        agendaDate,
+                        it,
+                        AgendaReducer.ITEMS_BEFORE_COUNT,
+                        AgendaReducer.ITEMS_AFTER_COUNT
+                    )
+                )
                 dispatcher.dispatch(
-                    AgendaItemsChanged(
-                        start, end, createAgendaItemsUseCase.execute(
-                            CreateAgendaItemsUseCase.Params(
-                                agendaDate,
-                                it,
-                                AgendaReducer.ITEMS_BEFORE_COUNT,
-                                AgendaReducer.ITEMS_AFTER_COUNT
-                            )
-                        )
+                    DataLoadedAction.AgendaItemsChanged(
+                        start, end, agendaItems
                     )
                 )
             }
