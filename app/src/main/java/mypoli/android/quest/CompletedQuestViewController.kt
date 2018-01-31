@@ -5,6 +5,7 @@ import android.content.res.ColorStateList
 import android.graphics.Color
 import android.os.Bundle
 import android.support.annotation.ColorInt
+import android.support.v4.view.ViewCompat
 import android.view.LayoutInflater
 import android.view.MenuItem
 import android.view.View
@@ -12,7 +13,7 @@ import android.view.ViewGroup
 import android.widget.ProgressBar
 import com.mikepenz.iconics.IconicsDrawable
 import kotlinx.android.synthetic.main.controller_completed_quest.view.*
-import kotlinx.android.synthetic.main.view_default_toolbar.view.*
+import mypoli.android.MainActivity
 import mypoli.android.R
 import mypoli.android.common.datetime.Duration
 import mypoli.android.common.datetime.Minute
@@ -24,6 +25,7 @@ import mypoli.android.quest.CompletedQuestViewState.StateType.DATA_LOADED
 import mypoli.android.quest.CompletedQuestViewState.Timer
 import mypoli.android.timer.TimerViewController
 import space.traversal.kapsule.required
+
 
 /**
  * Created by Polina Zhelyazkova <polina@ipoli.io>
@@ -58,7 +60,24 @@ class CompletedQuestViewController :
         val view = inflater.inflate(R.layout.controller_completed_quest, container, false)
 
         setToolbar(view.toolbar)
-        toolbarTitle = "Completed Quest"
+//        toolbarTitle = "Completed Quest"
+
+        view.collapsingToolbarContainer.isTitleEnabled = false
+
+        val ab = (activity!! as MainActivity).supportActionBar!!
+
+        ab.setHomeAsUpIndicator(R.drawable.ic_close_white_24dp)
+
+        view.appbar.addOnOffsetChangedListener({ appBarLayout, verticalOffset ->
+
+            if (view.collapsingToolbarContainer.getHeight() + verticalOffset < 2 * ViewCompat.getMinimumHeight(
+                    view.collapsingToolbarContainer
+                )) {
+                ab.setDisplayShowTitleEnabled(true)
+            } else {
+                ab.setDisplayShowTitleEnabled(false)
+            }
+        })
 
         return view
     }
@@ -82,6 +101,19 @@ class CompletedQuestViewController :
         when (state.type) {
             DATA_LOADED -> {
 
+                val color = state.color!!
+
+                view.questName1.text = state.name
+
+                view.qProgress.secondaryProgressTintList =
+                    ColorStateList.valueOf(colorRes(color.color100))
+
+                view.qProgress.progressTintList =
+                    ColorStateList.valueOf(colorRes(color.color300))
+
+                view.qProgress.backgroundTintList =
+                    ColorStateList.valueOf(colorRes(color.color500))
+
                 view.questName.text = state.name
 
                 state.icon?.let {
@@ -95,7 +127,7 @@ class CompletedQuestViewController :
                         null
                     )
                 }
-                val color = state.color!!
+
                 view.questName.setBackgroundResource(color.color500)
 
                 view.questDate.text = DateFormatter.format(view.context, state.completeAt)
