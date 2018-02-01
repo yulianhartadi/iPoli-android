@@ -9,7 +9,6 @@ import mypoli.android.common.redux.Action
 import mypoli.android.common.redux.State
 import mypoli.android.quest.schedule.agenda.usecase.CreateAgendaItemsUseCase
 import org.threeten.bp.LocalDate
-import timber.log.Timber
 
 /**
  * Created by Venelin Valkov <venelin@mypoli.fun>
@@ -49,7 +48,6 @@ object AgendaReducer : AppStateReducer<AgendaState> {
                         if (agendaState.userScrollPosition != null) {
                             val userDate =
                                 agendaState.agendaItems[agendaState.userScrollPosition].startDate()
-                            Timber.d("AAA userDate $userDate")
                             findItemPositionToScrollTo(userDate, action.agendaItems)
                         } else null
 
