@@ -257,7 +257,6 @@ class AgendaSaga : Saga<AppState>, Injects<Module> {
             || action is ScheduleAction.ScheduleChangeDate
             || action is CalendarAction.SwipeChangeDate
 
-
 }
 
 class LoadAllDataSaga : Saga<AppState>, Injects<Module> {
