@@ -19,11 +19,6 @@ class Migration(private val database: Database) {
         val playerId = resultSet.next().getString("_id")
         var doc = database.getDocument(playerId).toMutable()
 
-//        doc.getDictionary("inventory").keys.forEach {
-//            Timber.d("AAA ${it} ${doc.getDictionary("inventory").getArray(it).count()}")
-//        }
-//        Timber.d("AAAA ${doc.getDictionary("inventory")}")
-
         if (!doc.contains("schemaVersion")) {
             doc.setInt("schemaVersion", 1)
             doc.setInt("gems", 0)

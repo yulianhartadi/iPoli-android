@@ -968,11 +968,6 @@ class CalendarDayView : FrameLayout, StateChangeListener {
                 topDragView.setTopPosition(state.topDragIndicatorPosition!!)
                 bottomDragView.setTopPosition(state.bottomDragIndicatorPosition!!)
             }
-
-//
-//            State.Type.VIEW -> {
-//                goneViews(editModeBackground, topDragView, bottomDragView)
-//            }
         }
     }
 

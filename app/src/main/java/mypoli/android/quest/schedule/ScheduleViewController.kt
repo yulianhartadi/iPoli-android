@@ -30,7 +30,6 @@ import sun.bob.mcalendarview.MarkStyle
 import sun.bob.mcalendarview.listeners.OnDateClickListener
 import sun.bob.mcalendarview.listeners.OnMonthScrollListener
 import sun.bob.mcalendarview.vo.DateData
-import timber.log.Timber
 
 class ScheduleViewController(args: Bundle? = null) :
     ReduxViewController<ScheduleAction, ScheduleViewState, SchedulePresenter>(args) {
@@ -54,16 +53,19 @@ class ScheduleViewController(args: Bundle? = null) :
 
         initAddQuest(view)
 
-        calendarToolbar = addToolbarView(R.layout.view_calendar_toolbar) as ViewGroup
-
-        initDayPicker(view, calendarToolbar)
-
         val childRouter = getChildRouter(view.contentContainer, null)
         if (!childRouter.hasRootController()) {
             childRouter.setRoot(RouterTransaction.with(CalendarViewController()))
         }
 
         return view
+    }
+
+    override fun onAttach(view: View) {
+        super.onAttach(view)
+        calendarToolbar = addToolbarView(R.layout.view_calendar_toolbar) as ViewGroup
+
+        initDayPicker(view, calendarToolbar)
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
@@ -370,22 +372,17 @@ class ScheduleViewController(args: Bundle? = null) :
     }
 
     private fun showWeekDatePicker(view: View, currentDate: LocalDate) {
-        Timber.d("AAAA show week date picker")
         calendarToolbar.calendarIndicator.animate().rotation(180f).duration = shortAnimTime
         CellConfig.Month2WeekPos = CellConfig.middlePosition
         CellConfig.ifMonth = false
         CellConfig.weekAnchorPointDate =
             DateData(currentDate.year, currentDate.monthValue, currentDate.dayOfMonth)
         view.datePicker.shrink()
-//        val layoutParams = view.pager.layoutParams as ViewGroup.MarginLayoutParams
-//        layoutParams.topMargin = ViewUtils.dpToPx(-14f, view.context).toInt()
-//        view.pager.layoutParams = layoutParams
         view.datePickerContainer.visibility = View.VISIBLE
         view.expander.setImageResource(R.drawable.ic_arrow_drop_down_white_24dp)
     }
 
     private fun showMonthDatePicker(view: View) {
-        Timber.d("AAAA show month date picker")
         CellConfig.ifMonth = true
         CellConfig.Week2MonthPos = CellConfig.middlePosition
         view.datePicker.expand()
@@ -395,10 +392,6 @@ class ScheduleViewController(args: Bundle? = null) :
     private fun hideDatePicker(view: View, currentDate: LocalDate) {
         calendarToolbar.calendarIndicator.animate().rotation(0f).duration = shortAnimTime
         view.datePickerContainer.visibility = View.GONE
-//        val layoutParams = view.pager.layoutParams as ViewGroup.MarginLayoutParams
-//        layoutParams.topMargin = 0
-//        view.pager.layoutParams = layoutParams
-
         CellConfig.Month2WeekPos = CellConfig.middlePosition
         CellConfig.ifMonth = false
         CellConfig.weekAnchorPointDate =

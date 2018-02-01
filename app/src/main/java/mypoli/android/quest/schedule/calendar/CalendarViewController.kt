@@ -44,10 +44,7 @@ class CalendarViewController(args: Bundle? = null) :
         inflater: LayoutInflater,
         container: ViewGroup,
         savedViewState: Bundle?
-    ): View {
-        val view = inflater.inflate(R.layout.controller_calendar, container, false)
-        return view
-    }
+    ): View = inflater.inflate(R.layout.controller_calendar, container, false)
 
     override fun render(state: CalendarViewState, view: View) {
         when (state.type) {
