@@ -47,7 +47,7 @@ object CalendarReducer : AppStateReducer<CalendarState> {
     override fun defaultState(): CalendarState {
         return CalendarState(
             type = CalendarState.StateType.INITIAL,
-            adapterPosition = -1,
+            adapterPosition = MID_POSITION,
             adapterMidPosition = MID_POSITION
         )
     }
