@@ -89,6 +89,7 @@ object ScheduleReducer : AppStateReducer<ScheduleState> {
                         curDate.plusDays(1)
 
                     it.copy(
+                        type = ScheduleState.StateType.SWIPE_DATE_CHANGED,
                         currentDate = newDate
                     )
                 }

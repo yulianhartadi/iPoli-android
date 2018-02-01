@@ -350,6 +350,7 @@ class ScheduleViewController(args: Bundle? = null) :
                         CalendarViewController()
                     else
                         AgendaViewController()
+
                 childRouter.popCurrentController()
                 childRouter.setRoot(
                     RouterTransaction.with(newController)

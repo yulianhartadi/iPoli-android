@@ -65,6 +65,7 @@ abstract class ReduxViewController<in A : Action, VS : ViewState, out P : Androi
 
     override fun onStateChanged(newState: VS) {
         launch(UI) {
+
             render(newState, view!!)
         }
     }
