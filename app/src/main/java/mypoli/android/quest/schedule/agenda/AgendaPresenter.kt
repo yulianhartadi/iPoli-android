@@ -103,7 +103,7 @@ class AgendaPresenter : AndroidStatePresenter<AppState, AgendaViewState> {
     }
 
     private fun formatStartTime(quest: Quest): String {
-        val start = quest.actualStartTime ?: return "Unscheduled"
+        val start = quest.startTime ?: return "Unscheduled"
         val end = start.plus(quest.actualDuration.asMinutes.intValue)
         return "$start - $end"
     }
