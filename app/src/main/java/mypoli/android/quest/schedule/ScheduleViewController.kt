@@ -218,13 +218,17 @@ class ScheduleViewController(args: Bundle? = null) :
         view.datePicker.setMarkedStyle(MarkStyle.BACKGROUND, attr(R.attr.colorAccent))
 
         val currentDate = LocalDate.now()
-        view.datePicker.markDate(
-            DateData(
-                currentDate.year,
-                currentDate.monthValue,
-                currentDate.dayOfMonth
-            )
+
+        val dateData = DateData(
+            currentDate.year,
+            currentDate.monthValue,
+            currentDate.dayOfMonth
         )
+
+        CellConfig.m2wPointDate = dateData
+        CellConfig.w2mPointDate = dateData
+
+        view.datePicker.markDate(dateData)
 
         calendarToolbar.dispatchOnClick(ScheduleAction.ExpandToolbar)
         view.expander.dispatchOnClick(ScheduleAction.ExpandWeekToolbar)
