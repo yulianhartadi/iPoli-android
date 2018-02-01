@@ -26,6 +26,7 @@ import mypoli.android.common.view.*
 import mypoli.android.quest.CompletedQuestViewController
 import mypoli.android.quest.schedule.agenda.widget.SwipeToCompleteCallback
 import mypoli.android.timer.TimerViewController
+import timber.log.Timber
 
 /**
  * Created by Polina Zhelyazkova <polina@ipoli.io>
@@ -80,25 +81,18 @@ class AgendaViewController(args: Bundle? = null) :
         return view
     }
 
+    lateinit var scrollToPositionListener: RecyclerView.OnScrollListener
+
     override fun render(state: AgendaViewState, view: View) {
         when (state.type) {
             AgendaState.StateType.DATA_CHANGED -> {
                 ViewUtils.goneViews(view.topLoader, view.bottomLoader)
                 val agendaList = view.agendaList
+                agendaList.clearOnScrollListeners()
+
                 (agendaList.adapter as AgendaAdapter).updateAll(state.agendaItems)
 
-                state.scrollToPosition?.let {
-                    agendaList.scrollToPosition(it)
-                }
-
-//                agendaList.addOnScrollListener(ChangeItemScrollListener(
-//                    agendaList.layoutManager as LinearLayoutManager,
-//                    { pos ->
-//                        dispatch(AgendaAction.FirstVisibleItemChanged(pos))
-//                    }
-//                ))
-
-                agendaList.addOnScrollListener(
+                val endlessRecyclerViewScrollListener =
                     EndlessRecyclerViewScrollListener(
                         agendaList.layoutManager as LinearLayoutManager,
                         { side, position ->
@@ -111,7 +105,31 @@ class AgendaViewController(args: Bundle? = null) :
                         },
                         20
                     )
-                )
+
+                    scrollToPositionListener = object : RecyclerView.OnScrollListener() {
+                        override fun onScrolled(recyclerView: RecyclerView?, dx: Int, dy: Int) {
+                            Timber.d("AAAA scroll end ${(agendaList.layoutManager as LinearLayoutManager).findFirstVisibleItemPosition()}")
+                            agendaList.addOnScrollListener(endlessRecyclerViewScrollListener)
+                            agendaList.removeOnScrollListener(scrollToPositionListener)
+                        }
+                    }
+                    Timber.d("AAA scroll to ${state.scrollToPosition}")
+                    if (state.scrollToPosition != null) {
+                        agendaList.addOnScrollListener(scrollToPositionListener)
+                        (agendaList.layoutManager as LinearLayoutManager).scrollToPositionWithOffset(state.scrollToPosition, 0)
+                    } else {
+                        agendaList.addOnScrollListener(endlessRecyclerViewScrollListener)
+                    }
+
+
+//                agendaList.addOnScrollListener(ChangeItemScrollListener(
+//                    agendaList.layoutManager as LinearLayoutManager,
+//                    { pos ->
+//                        dispatch(AgendaAction.FirstVisibleItemChanged(pos))
+//                    }
+//                ))
+
+//                }
             }
 
             AgendaState.StateType.SHOW_TOP_LOADER -> {
