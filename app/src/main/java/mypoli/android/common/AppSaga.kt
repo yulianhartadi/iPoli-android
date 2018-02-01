@@ -153,7 +153,7 @@ class AgendaSaga : Saga<AppState>, Injects<Module> {
                 }
                 val end =
                     agendaItems[position + AgendaReducer.ITEMS_AFTER_COUNT - 1].startDate()
-                listenForAgendaItems(start, end, dispatcher, agendaDate)
+                listenForAgendaItems(start, end, dispatcher, agendaDate, false)
             }
             is AgendaAction.LoadAfter -> {
                 val position = action.itemPosition
@@ -168,7 +168,7 @@ class AgendaSaga : Saga<AppState>, Injects<Module> {
                     end = it
                 }
 
-                listenForAgendaItems(start, end, dispatcher, agendaDate)
+                listenForAgendaItems(start, end, dispatcher, agendaDate, false)
             }
             is LoadDataAction.All -> {
                 val agendaDate = state.appDataState.today
@@ -176,14 +176,14 @@ class AgendaSaga : Saga<AppState>, Injects<Module> {
                 val start = pair.first
                 val end = pair.second
 
-                listenForAgendaItems(start, end, dispatcher, agendaDate)
+                listenForAgendaItems(start, end, dispatcher, agendaDate, true)
             }
             is ScheduleAction.ScheduleChangeDate -> {
                 val agendaDate = LocalDate.of(action.year, action.month, action.day)
                 val pair = findAllAgendaDates(agendaDate)
                 val start = pair.first
                 val end = pair.second
-                listenForAgendaItems(start, end, dispatcher, agendaDate)
+                listenForAgendaItems(start, end, dispatcher, agendaDate, true)
             }
             is CalendarAction.SwipeChangeDate -> {
                 val currentPos = state.calendarState.adapterPosition
@@ -196,7 +196,7 @@ class AgendaSaga : Saga<AppState>, Injects<Module> {
                 val pair = findAllAgendaDates(agendaDate)
                 val start = pair.first
                 val end = pair.second
-                listenForAgendaItems(start, end, dispatcher, agendaDate)
+                listenForAgendaItems(start, end, dispatcher, agendaDate, true)
             }
         }
     }
@@ -205,7 +205,8 @@ class AgendaSaga : Saga<AppState>, Injects<Module> {
         start: LocalDate,
         end: LocalDate,
         dispatcher: Dispatcher,
-        agendaDate: LocalDate
+        agendaDate: LocalDate,
+        changeCurrentAgendaItem: Boolean
     ) {
         launch {
             scheduledQuestsChannel?.cancel()
@@ -224,7 +225,10 @@ class AgendaSaga : Saga<AppState>, Injects<Module> {
                 )
                 dispatcher.dispatch(
                     DataLoadedAction.AgendaItemsChanged(
-                        start, end, agendaItems
+                        start = start,
+                        end = end,
+                        agendaItems = agendaItems,
+                        currentAgendaItemDate = if (changeCurrentAgendaItem) agendaDate else null
                     )
                 )
             }
@@ -282,6 +286,4 @@ class LoadAllDataSaga : Saga<AppState>, Injects<Module> {
 
     override fun canHandle(action: Action) =
         action == LoadDataAction.All
-            || action is AgendaAction.LoadBefore
-            || action is AgendaAction.LoadAfter
 }

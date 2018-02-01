@@ -3,6 +3,7 @@ package mypoli.android.quest.schedule.agenda
 import mypoli.android.common.AppState
 import mypoli.android.common.AppStateReducer
 import mypoli.android.common.DataLoadedAction
+import mypoli.android.common.datetime.isBetween
 import mypoli.android.common.mvi.ViewState
 import mypoli.android.common.redux.Action
 import mypoli.android.common.redux.State
@@ -42,12 +43,13 @@ object AgendaReducer : AppStateReducer<AgendaState> {
         state.agendaState.let {
             when (action) {
                 is DataLoadedAction.AgendaItemsChanged -> {
+
                     it.copy(
                         type = AgendaState.StateType.DATA_CHANGED,
                         startDate = action.start,
                         endDate = action.end,
                         agendaItems = action.agendaItems,
-                        scrollToPosition = ITEMS_BEFORE_COUNT
+                        scrollToPosition = findItemPositionToScrollTo(action)
                     )
                 }
                 is AgendaAction.LoadBefore -> {
@@ -63,6 +65,26 @@ object AgendaReducer : AppStateReducer<AgendaState> {
                 else -> it
             }
         }
+
+    private fun findItemPositionToScrollTo(
+        action: DataLoadedAction.AgendaItemsChanged
+    ) = action.currentAgendaItemDate?.let {
+        val currentAgendaItemDate = it
+        val index = action.agendaItems.indexOfLast {
+            when (it) {
+                is CreateAgendaItemsUseCase.AgendaItem.Date ->
+                    it.startDate() == currentAgendaItemDate
+                is CreateAgendaItemsUseCase.AgendaItem.Week ->
+                    currentAgendaItemDate.isBetween(
+                        it.start,
+                        it.end
+                    )
+                else -> false
+            }
+        }
+        if (index < 0) null
+        else index
+    }
 
     override fun defaultState() = AgendaState(
         type = AgendaState.StateType.LOADING,

@@ -18,7 +18,8 @@ sealed class DataLoadedAction : Action {
     data class AgendaItemsChanged(
         val start: LocalDate,
         val end: LocalDate,
-        val agendaItems: List<CreateAgendaItemsUseCase.AgendaItem>
+        val agendaItems: List<CreateAgendaItemsUseCase.AgendaItem>,
+        val currentAgendaItemDate: LocalDate?
     ) : DataLoadedAction()
 }
 
