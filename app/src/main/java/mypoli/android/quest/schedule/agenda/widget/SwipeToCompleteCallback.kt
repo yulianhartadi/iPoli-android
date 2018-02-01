@@ -47,7 +47,6 @@ abstract class SwipeToCompleteCallback(
         actionState: Int,
         isCurrentlyActive: Boolean
     ) {
-
         if (dX > 0) {
             drawCompleteBackground(viewHolder.itemView, dX, c)
             drawCompleteIcon(viewHolder.itemView, c)
@@ -107,7 +106,6 @@ abstract class SwipeToCompleteCallback(
         itemView: View,
         c: Canvas?
     ) {
-
         val itemHeight = itemView.bottom - itemView.top
 
         val margin = (itemHeight - intrinsicHeight) / 2
