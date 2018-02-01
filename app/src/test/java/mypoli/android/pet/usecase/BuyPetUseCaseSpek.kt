@@ -15,7 +15,7 @@ import org.jetbrains.spek.api.dsl.it
  * Created by Venelin Valkov <venelin@ipoli.io>
  * on 12/6/17.
  */
-class BuyPetUseCaseSpek : Spek({
+object BuyPetUseCaseSpek : Spek({
     describe("BuyPetUseCase") {
         fun executeUseCase(player: Player, pet: PetAvatar) =
             BuyPetUseCase(TestUtil.playerRepoMock(player)).execute(pet)

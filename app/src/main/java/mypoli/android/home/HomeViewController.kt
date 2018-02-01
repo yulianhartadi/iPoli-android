@@ -12,12 +12,12 @@ import com.bluelinelabs.conductor.changehandler.FadeChangeHandler
 import kotlinx.android.synthetic.main.controller_home.view.*
 import mypoli.android.Constants
 import mypoli.android.R
-import mypoli.android.challenge.ChallengeCategoryListViewController
+import mypoli.android.challenge.category.ChallengeCategoryListViewController
 import mypoli.android.common.view.FeedbackDialogController
 import mypoli.android.common.view.setToolbar
 import mypoli.android.common.view.showShortToast
 import mypoli.android.pet.PetViewController
-import mypoli.android.quest.calendar.CalendarViewController
+import mypoli.android.quest.schedule.ScheduleViewController
 import mypoli.android.store.theme.ThemeStoreViewController
 import org.json.JSONObject
 
@@ -52,33 +52,12 @@ class HomeViewController(args: Bundle? = null) :
     override fun onAttach(view: View) {
         super.onAttach(view)
 
-
-//        val actionBar = activity.supportActionBar
-//        actionBar?.setDisplayHomeAsUpEnabled(true)
-
-//        view.navigationView.setNavigationItemSelectedListener(this)
-
-//        val actionBarDrawerToggle = object : ActionBarDrawerToggle(activity, view.drawerLayout, view.toolbar, R.string.drawer_open, R.string.drawer_close) {
-
-//            override fun onDrawerOpened(drawerView: View) {
-//                navigationItemSelected = null
-//            }
-//
-//            override fun onDrawerClosed(drawerView: View) {
-//                if (navigationItemSelected == null) {
-//                    return
-//                }
-//                onItemSelectedFromDrawer()
-//            }
-//        }
-//
-//        view.drawerLayout.addDrawerListener(actionBarDrawerToggle)
         val handler = FadeChangeHandler()
         val childRouter = getChildRouter(view.controllerContainer, null)
         if (!childRouter.hasRootController()) {
             childRouter.setRoot(
 //                RouterTransaction.with(PetViewController())
-                RouterTransaction.with(CalendarViewController())
+                RouterTransaction.with(ScheduleViewController())
 //                RouterTransaction.with(TimerViewController())
 //                RouterTransaction.with(ChallengeCategoryListViewController())
 //                RouterTransaction.with(PersonalizeChallengeViewController())
@@ -96,21 +75,6 @@ class HomeViewController(args: Bundle? = null) :
 
 
     }
-
-//    private fun onItemSelectedFromDrawer() {
-//        when (navigationItemSelected?.itemId) {
-//            R.id.store -> Navigator(router).showStore()
-//        }
-
-//    }
-
-//    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-//        if (item.itemId == android.R.id.home) {
-//            view?.drawerLayout?.openDrawer(GravityCompat.START)
-//            return true
-//        }
-//        return super.onOptionsItemSelected(item)
-//    }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         super.onCreateOptionsMenu(menu, inflater)

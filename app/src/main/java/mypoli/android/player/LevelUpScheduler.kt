@@ -5,7 +5,7 @@ import com.evernote.android.job.JobRequest
 import com.evernote.android.job.util.support.PersistableBundleCompat
 import kotlinx.coroutines.experimental.android.UI
 import kotlinx.coroutines.experimental.launch
-import mypoli.android.common.di.ControllerModule
+import mypoli.android.common.di.Module
 import mypoli.android.common.view.asThemedWrapper
 import mypoli.android.player.view.LevelUpPopup
 import space.traversal.kapsule.Injects
@@ -14,7 +14,7 @@ import space.traversal.kapsule.Injects
  * Created by Venelin Valkov <venelin@mypoli.fun>
  * on 11/15/17.
  */
-class LevelUpJob : Job(), Injects<ControllerModule> {
+class LevelUpJob : Job(), Injects<Module> {
 
     override fun onRunJob(params: Params): Result {
 

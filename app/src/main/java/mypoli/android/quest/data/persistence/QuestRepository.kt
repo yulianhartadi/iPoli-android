@@ -4,10 +4,7 @@ import com.couchbase.lite.*
 import com.couchbase.lite.Expression.property
 import com.couchbase.lite.Function
 import kotlinx.coroutines.experimental.channels.ReceiveChannel
-import mypoli.android.common.datetime.DateUtils
-import mypoli.android.common.datetime.Time
-import mypoli.android.common.datetime.instant
-import mypoli.android.common.datetime.startOfDayUTC
+import mypoli.android.common.datetime.*
 import mypoli.android.common.persistence.BaseCouchbaseRepository
 import mypoli.android.common.persistence.CouchbasePersistedModel
 import mypoli.android.common.persistence.Repository
@@ -24,11 +21,14 @@ interface QuestRepository : Repository<Quest> {
         endDate: LocalDate
     ): ReceiveChannel<List<Quest>>
 
-    fun listenForDate(date: LocalDate): ReceiveChannel<List<Quest>>
+    fun listenForScheduledAt(date: LocalDate): ReceiveChannel<List<Quest>>
+
     fun findNextQuestsToRemind(afterTime: Long = DateUtils.nowUTC().time): List<Quest>
     fun findQuestsToRemind(time: Long): List<Quest>
     fun findCompletedForDate(date: LocalDate): List<Quest>
     fun findStartedQuest(): Quest?
+    fun findLastScheduledDate(currentDate: LocalDate, maxQuests: Int): LocalDate?
+    fun findFirstScheduledDate(currentDate: LocalDate, maxQuests: Int): LocalDate?
 }
 
 data class CouchbaseQuest(override val map: MutableMap<String, Any?> = mutableMapOf()) :
@@ -88,10 +88,11 @@ class CouchbaseQuestRepository(database: Database, coroutineContext: CoroutineCo
     override fun listenForScheduledBetween(startDate: LocalDate, endDate: LocalDate) =
         listenForChanges(
             where = property("scheduledDate")
-                .between(startDate.startOfDayUTC(), endDate.startOfDayUTC())
+                .between(startDate.startOfDayUTC(), endDate.startOfDayUTC()),
+            orderBy = Ordering.expression(property("startMinute"))
         )
 
-    override fun listenForDate(date: LocalDate) =
+    override fun listenForScheduledAt(date: LocalDate) =
         listenForChanges(
             where = property(
                 "scheduledDate"
@@ -163,6 +164,64 @@ class CouchbaseQuestRepository(database: Database, coroutineContext: CoroutineCo
         }
     }
 
+    override fun findLastScheduledDate(
+        currentDate: LocalDate,
+        maxQuests: Int
+    ): LocalDate? {
+
+        val endDateQuery = createQuery(
+            select = select(SelectResult.property("scheduledDate")),
+            where = property("scheduledDate").greaterThan(currentDate.startOfDayUTC()),
+            limit = maxQuests,
+            orderBy = Ordering.property("scheduledDate").ascending()
+        )
+
+        val endDateIterator = endDateQuery.execute().iterator()
+
+        if (!endDateIterator.hasNext()) {
+            return null
+        }
+
+        val endDateRes = endDateIterator.asSequence().last()
+
+        return endDateRes.getLong("scheduledDate").startOfDayUtc
+    }
+
+    override fun findFirstScheduledDate(
+        currentDate: LocalDate,
+        maxQuests: Int
+    ): LocalDate? {
+
+        val startDateQuery = createQuery(
+            select = select(SelectResult.property("scheduledDate")),
+            where = property("scheduledDate").lessThan(currentDate.startOfDayUTC()),
+            limit = maxQuests,
+            orderBy = Ordering.property("scheduledDate").descending()
+        )
+
+        val startDateIterator = startDateQuery.execute().iterator()
+
+        if (!startDateIterator.hasNext()) {
+            return null
+        }
+
+        val startDateRes = startDateIterator.asSequence().last()
+
+        return startDateRes.getLong("scheduledDate").startOfDayUtc
+    }
+
+    private fun extractDateToQuestCount(query: Query): MutableMap<LocalDate, Int> {
+        val queryIterator = query.execute().iterator()
+
+        val result = mutableMapOf<LocalDate, Int>()
+
+        queryIterator.forEach {
+            result[it.getLong("scheduledDate").startOfDayUtc] = it.getInt("cnt")
+        }
+
+        return result
+    }
+
     override fun toEntityObject(dataMap: MutableMap<String, Any?>): Quest {
         val cq = CouchbaseQuest(dataMap.withDefault {
             null
@@ -224,7 +283,7 @@ class CouchbaseQuestRepository(database: Database, coroutineContext: CoroutineCo
         q.icon = entity.icon?.name
         q.duration = entity.duration
         q.type = CouchbaseQuest.TYPE
-        q.scheduledDate = DateUtils.toMillis(entity.scheduledDate)
+        q.scheduledDate = entity.scheduledDate.startOfDayUTC()
         q.reminder = entity.reminder?.let {
             createCouchbaseReminder(it).map
         }

@@ -85,7 +85,7 @@ dependencies {
     implementation 'sun.bob:mcalendarview:1.1.0'
     implementation "space.traversal.kapsule:kapsule-core:0.3"
 
-    implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-android:0.21.2'
+    implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-android:0.22.1'
     implementation 'com.couchbase.lite:couchbase-lite-android:2.0.0-DB021'
     implementation 'com.evernote:android-job:1.2.2'
     implementation 'com.amplitude:android-sdk:2.16.0'

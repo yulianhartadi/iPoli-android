@@ -4,17 +4,18 @@ import android.content.Context
 import android.content.SharedPreferences
 import android.preference.PreferenceManager
 import android.view.LayoutInflater
-import com.bluelinelabs.conductor.Router
 import com.couchbase.lite.Database
 import com.couchbase.lite.DatabaseConfiguration
 import kotlinx.coroutines.experimental.CommonPool
 import kotlinx.coroutines.experimental.Job
-import mypoli.android.challenge.ChallengeCategoryListPresenter
-import mypoli.android.challenge.ChallengeListForCategoryPresenter
 import mypoli.android.challenge.PersonalizeChallengePresenter
+import mypoli.android.challenge.category.ChallengeCategoryListPresenter
+import mypoli.android.challenge.category.list.ChallengeListForCategoryPresenter
 import mypoli.android.challenge.usecase.BuyChallengeUseCase
 import mypoli.android.challenge.usecase.ScheduleChallengeUseCase
-import mypoli.android.common.navigation.Navigator
+import mypoli.android.common.*
+import mypoli.android.common.redux.SagaMiddleware
+import mypoli.android.common.redux.StateStore
 import mypoli.android.common.text.CalendarFormatter
 import mypoli.android.common.view.ColorPickerPresenter
 import mypoli.android.common.view.CurrencyConverterPresenter
@@ -24,7 +25,6 @@ import mypoli.android.pet.AndroidJobLowerPetStatsScheduler
 import mypoli.android.pet.LowerPetStatsScheduler
 import mypoli.android.pet.PetDialogPresenter
 import mypoli.android.pet.PetPresenter
-import mypoli.android.pet.store.PetStorePresenter
 import mypoli.android.pet.usecase.*
 import mypoli.android.player.AndroidLevelDownScheduler
 import mypoli.android.player.AndroidLevelUpScheduler
@@ -35,15 +35,16 @@ import mypoli.android.player.persistence.PlayerRepository
 import mypoli.android.player.usecase.*
 import mypoli.android.player.view.LevelUpPresenter
 import mypoli.android.quest.CompletedQuestPresenter
-import mypoli.android.quest.calendar.CalendarPresenter
-import mypoli.android.quest.calendar.addquest.AddQuestPresenter
-import mypoli.android.quest.calendar.dayview.DayViewPresenter
 import mypoli.android.quest.data.persistence.CouchbaseQuestRepository
 import mypoli.android.quest.data.persistence.QuestRepository
 import mypoli.android.quest.job.AndroidJobQuestCompleteScheduler
 import mypoli.android.quest.job.AndroidJobReminderScheduler
 import mypoli.android.quest.job.QuestCompleteScheduler
 import mypoli.android.quest.job.ReminderScheduler
+import mypoli.android.quest.schedule.addquest.AddQuestPresenter
+import mypoli.android.quest.schedule.agenda.usecase.CreateAgendaItemsUseCase
+import mypoli.android.quest.schedule.agenda.usecase.FindAgendaDatesUseCase
+import mypoli.android.quest.schedule.calendar.dayview.DayViewPresenter
 import mypoli.android.quest.usecase.*
 import mypoli.android.quest.view.QuestCompletePresenter
 import mypoli.android.rate.AndroidRatePopupScheduler
@@ -74,14 +75,7 @@ interface RepositoryModule {
     val playerRepository: PlayerRepository
 }
 
-class CouchbaseRepositoryModule : RepositoryModule, Injects<ControllerModule> {
-    private val database by required { database }
-    private val job by required { job }
-    override val questRepository get() = CouchbaseQuestRepository(database, job + CommonPool)
-    override val playerRepository get() = CouchbasePlayerRepository(database, job + CommonPool)
-}
-
-class CouchbaseJobRepositoryModule : RepositoryModule, Injects<SimpleModule> {
+class CouchbaseRepositoryModule : RepositoryModule, Injects<Module> {
     private val database by required { database }
     private val job by required { job }
     override val questRepository get() = CouchbaseQuestRepository(database, job + CommonPool)
@@ -118,14 +112,6 @@ interface AndroidModule {
     val job: Job
 }
 
-interface NavigationModule {
-    val navigator: Navigator
-}
-
-class AndroidNavigationModule(private val router: Router?) : NavigationModule {
-    override val navigator get() = Navigator(router)
-}
-
 class MainAndroidModule(private val context: Context) : AndroidModule {
     override val layoutInflater: LayoutInflater get() = LayoutInflater.from(context)
 
@@ -158,7 +144,7 @@ class MainAndroidModule(private val context: Context) : AndroidModule {
     override val job get() = Job()
 }
 
-class MainUseCaseModule : UseCaseModule, Injects<ControllerModule> {
+class MainUseCaseModule : UseCaseModule, Injects<Module> {
     private val questRepository by required { questRepository }
     private val playerRepository by required { playerRepository }
     private val reminderScheduler by required { reminderScheduler }
@@ -167,6 +153,7 @@ class MainUseCaseModule : UseCaseModule, Injects<ControllerModule> {
     private val levelDownScheduler by required { levelDownScheduler }
     private val rateDialogScheduler by required { ratePopupScheduler }
     private val timerCompleteScheduler by required { timerCompleteScheduler }
+
     override val loadScheduleForDateUseCase
         get() = LoadScheduleForDateUseCase(questRepository)
     override val saveQuestUseCase
@@ -258,62 +245,17 @@ class MainUseCaseModule : UseCaseModule, Injects<ControllerModule> {
             cancelTimerUseCase,
             timerCompleteScheduler
         )
-}
 
-interface PopupUseCaseModule {
-    val findQuestToRemindUseCase: FindQuestsToRemindUseCase
-    val snoozeQuestUseCase: SnoozeQuestUseCase
-    val completeQuestUseCase: CompleteQuestUseCase
-    val findPlayerLevelUseCase: FindPlayerLevelUseCase
-    val rewardPlayerUseCase: RewardPlayerUseCase
-    val lowerPetStatsUseCase: LowerPetStatsUseCase
-    val findPetUseCase: FindPetUseCase
-    val listenForPlayerChangesUseCase: ListenForPlayerChangesUseCase
-    val completeTimeRangeUseCase: CompleteTimeRangeUseCase
-    val splitDurationForPomodoroTimerUseCase: SplitDurationForPomodoroTimerUseCase
-}
+    override val findAgendaDatesUseCase get() = FindAgendaDatesUseCase(questRepository)
+    override val createAgendaItemsUseCase get() = CreateAgendaItemsUseCase()
 
-class AndroidPopupUseCaseModule : PopupUseCaseModule, Injects<SimpleModule> {
-    private val questRepository by required { questRepository }
-    private val playerRepository by required { playerRepository }
-    private val reminderScheduler by required { reminderScheduler }
-    private val questCompleteScheduler by required { questCompleteScheduler }
-    private val levelUpScheduler by required { levelUpScheduler }
-    private val rateDialogScheduler by required { ratePopupScheduler }
-    private val timerCompleteScheduler by required { timerCompleteScheduler }
+    override val findPlayerLevelUseCase
+        get() = FindPlayerLevelUseCase(playerRepository)
 
-    override val findQuestToRemindUseCase get() = FindQuestsToRemindUseCase(questRepository)
-    override val snoozeQuestUseCase get() = SnoozeQuestUseCase(questRepository, reminderScheduler)
-    override val completeQuestUseCase
-        get() = CompleteQuestUseCase(
-            questRepository,
-            playerRepository,
-            reminderScheduler,
-            questCompleteScheduler,
-            rateDialogScheduler,
-            rewardPlayerUseCase
-        )
-    override val findPlayerLevelUseCase get() = FindPlayerLevelUseCase(playerRepository)
-    override val rewardPlayerUseCase get() = RewardPlayerUseCase(playerRepository, levelUpScheduler)
     override val lowerPetStatsUseCase
         get() = LowerPetStatsUseCase(
             questRepository,
             playerRepository
-        )
-    override val findPetUseCase get() = FindPetUseCase(playerRepository)
-    override val listenForPlayerChangesUseCase
-        get() = ListenForPlayerChangesUseCase(
-            playerRepository
-        )
-
-    override val splitDurationForPomodoroTimerUseCase get() = SplitDurationForPomodoroTimerUseCase()
-
-    override val completeTimeRangeUseCase
-        get() = CompleteTimeRangeUseCase(
-            questRepository,
-            splitDurationForPomodoroTimerUseCase,
-            completeQuestUseCase,
-            timerCompleteScheduler
         )
 }
 
@@ -349,20 +291,22 @@ interface UseCaseModule {
     val scheduleChallengeUseCase: ScheduleChallengeUseCase
     val buyChallengeUseCase: BuyChallengeUseCase
     val splitDurationForPomodoroTimerUseCase: SplitDurationForPomodoroTimerUseCase
+    val findPlayerLevelUseCase: FindPlayerLevelUseCase
+    val lowerPetStatsUseCase: LowerPetStatsUseCase
     val completeTimeRangeUseCase: CompleteTimeRangeUseCase
     val cancelTimerUseCase: CancelTimerUseCase
     val addPomodoroUseCase: AddPomodoroUseCase
     val removePomodoroUseCase: RemovePomodoroUseCase
     val addTimerToQuestUseCase: AddTimerToQuestUseCase
+    val findAgendaDatesUseCase: FindAgendaDatesUseCase
+    val createAgendaItemsUseCase: CreateAgendaItemsUseCase
 }
 
 interface PresenterModule {
-    val calendarPresenter: CalendarPresenter
     val dayViewPresenter: DayViewPresenter
     val reminderPickerPresenter: ReminderPickerDialogPresenter
     val addQuestPresenter: AddQuestPresenter
     val petPresenter: PetPresenter
-    val petStorePresenter: PetStorePresenter
     val petDialogPresenter: PetDialogPresenter
     val themeStorePresenter: ThemeStorePresenter
     val colorPickerPresenter: ColorPickerPresenter
@@ -373,10 +317,14 @@ interface PresenterModule {
     val challengeListForCategoryPresenter: ChallengeListForCategoryPresenter
     val personalizeChallengePresenter: PersonalizeChallengePresenter
     val timerPresenter: TimerPresenter
+    val petMessagePresenter: PetMessagePresenter
+    val levelUpPresenter: LevelUpPresenter
+    val questCompletePresenter: QuestCompletePresenter
+    val ratePresenter: RatePresenter
     val completedQuestPresenter: CompletedQuestPresenter
 }
 
-class AndroidPresenterModule : PresenterModule, Injects<ControllerModule> {
+class AndroidPresenterModule : PresenterModule, Injects<Module> {
 
     private val questRepository by required { questRepository }
     private val playerRepository by required { playerRepository }
@@ -390,15 +338,12 @@ class AndroidPresenterModule : PresenterModule, Injects<ControllerModule> {
     private val buyChallengeUseCase by required { buyChallengeUseCase }
     private val revivePetUseCase by required { revivePetUseCase }
     private val feedPetUseCase by required { feedPetUseCase }
-    private val buyPetUseCase by required { buyPetUseCase }
-    private val changePetUseCase by required { changePetUseCase }
     private val findPetUseCase by required { findPetUseCase }
     private val renamePetUseCase by required { renamePetUseCase }
     private val changeThemeUseCase by required { changeThemeUseCase }
     private val buyThemeUseCase by required { buyThemeUseCase }
     private val reminderTimeFormatter by required { reminderTimeFormatter }
     private val timeUnitFormatter by required { timeUnitFormatter }
-    private val calendarFormatter by required { calendarFormatter }
     private val buyIconPackUseCase by required { buyIconPackUseCase }
     private val buyColorPackUseCase by required { buyColorPackUseCase }
     private val convertCoinsToGemsUseCase by required { convertCoinsToGemsUseCase }
@@ -434,12 +379,6 @@ class AndroidPresenterModule : PresenterModule, Injects<ControllerModule> {
             findPetUseCase,
             job
         )
-    override val calendarPresenter
-        get() = CalendarPresenter(
-            listenForPlayerChangesUseCase,
-            calendarFormatter,
-            job
-        )
     override val addQuestPresenter get() = AddQuestPresenter(saveQuestUseCase, job)
     override val petPresenter
         get() = PetPresenter(
@@ -451,13 +390,6 @@ class AndroidPresenterModule : PresenterModule, Injects<ControllerModule> {
             buyPetItemUseCase,
             equipPetItemUseCase,
             takeOffPetItemUseCase,
-            job
-        )
-    override val petStorePresenter
-        get() = PetStorePresenter(
-            listenForPlayerChangesUseCase,
-            buyPetUseCase,
-            changePetUseCase,
             job
         )
     override val petDialogPresenter get() = PetDialogPresenter(findPetUseCase, job)
@@ -492,7 +424,10 @@ class AndroidPresenterModule : PresenterModule, Injects<ControllerModule> {
             listenForPlayerChangesUseCase,
             job
         )
-    override val challengeCategoryListPresenter get() = ChallengeCategoryListPresenter(job)
+    override val challengeCategoryListPresenter
+        get() = ChallengeCategoryListPresenter(
+            job
+        )
     override val challengeListForCategoryPresenter
         get() = ChallengeListForCategoryPresenter(
             listenForPlayerChangesUseCase,
@@ -515,6 +450,7 @@ class AndroidPresenterModule : PresenterModule, Injects<ControllerModule> {
             removePomodoroUseCase,
             job
         )
+
     override val completedQuestPresenter: CompletedQuestPresenter
         get() = CompletedQuestPresenter(
             questRepository,
@@ -522,18 +458,6 @@ class AndroidPresenterModule : PresenterModule, Injects<ControllerModule> {
             splitDurationForPomodoroTimerUseCase,
             job
         )
-}
-
-interface PopupPresenterModule {
-    val petMessagePresenter: PetMessagePresenter
-    val levelUpPresenter: LevelUpPresenter
-    val questCompletePresenter: QuestCompletePresenter
-    val ratePresenter: RatePresenter
-}
-
-class AndroidPopupPresenterModule : PopupPresenterModule, Injects<SimpleModule> {
-    private val listenForPlayerChangesUseCase by required { listenForPlayerChangesUseCase }
-    private val job by required { job }
 
     override val petMessagePresenter get() = PetMessagePresenter(listenForPlayerChangesUseCase, job)
     override val levelUpPresenter get() = LevelUpPresenter(listenForPlayerChangesUseCase, job)
@@ -545,33 +469,52 @@ class AndroidPopupPresenterModule : PopupPresenterModule, Injects<SimpleModule> 
     override val ratePresenter get() = RatePresenter(listenForPlayerChangesUseCase, job)
 }
 
-class ControllerModule(
+interface StateStoreModule {
+    val stateStore: StateStore<AppState>
+}
+
+class AndroidStateStoreModule : StateStoreModule, Injects<Module> {
+
+    override val stateStore by required {
+        StateStore(
+            AppReducer,
+            listOf(
+                SagaMiddleware<AppState>(
+                    sagas = listOf(
+                        LoadAllDataSaga(),
+                        AgendaSaga(),
+                        CompleteQuestSaga(),
+                        UndoCompletedQuestSaga(),
+                        BuyPredefinedChallengeSaga(),
+                        ChangePetSaga(),
+                        BuyPetSaga()
+                    ),
+                    coroutineContext = job + CommonPool
+                )
+            )
+        )
+    }
+}
+
+class Module(
     androidModule: AndroidModule,
-    navigationModule: NavigationModule,
     repositoryModule: RepositoryModule,
     useCaseModule: UseCaseModule,
-    presenterModule: PresenterModule
+    presenterModule: PresenterModule,
+    stateStoreModule: StateStoreModule
 ) :
     AndroidModule by androidModule,
-    NavigationModule by navigationModule,
     RepositoryModule by repositoryModule,
     UseCaseModule by useCaseModule,
     PresenterModule by presenterModule,
+    StateStoreModule by stateStoreModule,
     HasModules {
     override val modules =
-        setOf(androidModule, navigationModule, repositoryModule, useCaseModule, presenterModule)
-}
-
-class SimpleModule(
-    androidModule: AndroidModule,
-    repositoryModule: RepositoryModule,
-    useCaseModule: PopupUseCaseModule,
-    presenterModule: PopupPresenterModule
-) :
-    AndroidModule by androidModule,
-    RepositoryModule by repositoryModule,
-    PopupUseCaseModule by useCaseModule,
-    PopupPresenterModule by presenterModule,
-    HasModules {
-    override val modules = setOf(androidModule, repositoryModule, useCaseModule, presenterModule)
+        setOf(
+            androidModule,
+            repositoryModule,
+            useCaseModule,
+            presenterModule,
+            stateStoreModule
+        )
 }

@@ -17,7 +17,7 @@ import java.util.*
 object DateFormatter {
     private val DEFAULT_EMPTY_VALUE = "Don't know"
     private val DEFAULT_DATE_FORMAT = SimpleDateFormat("dd MMM yy", Locale.getDefault())
-    private val DATE_NO_YEAR_FORMAT = SimpleDateFormat("dd MMM", Locale.getDefault())
+    private val DATE_NO_YEAR_FORMAT = SimpleDateFormat("d MMM", Locale.getDefault())
 
     fun format(context: Context, date: LocalDate?): String {
         if (date == null) {

@@ -16,8 +16,7 @@ import mypoli.android.Constants
 import mypoli.android.MainActivity
 import mypoli.android.R
 import mypoli.android.common.datetime.Time
-import mypoli.android.common.di.ControllerModule
-import mypoli.android.common.di.SimpleModule
+import mypoli.android.common.di.Module
 import mypoli.android.common.view.asThemedWrapper
 import mypoli.android.myPoliApp
 import mypoli.android.quest.Quest
@@ -33,7 +32,7 @@ import java.util.*
  * Created by Venelin Valkov <venelin@mypoli.fun>
  * on 10/26/17.
  */
-class ReminderNotificationJob : Job(), Injects<ControllerModule> {
+class ReminderNotificationJob : Job(), Injects<Module> {
 
     @SuppressLint("NewApi")
     override fun onRunJob(params: Job.Params): Job.Result {
@@ -41,11 +40,11 @@ class ReminderNotificationJob : Job(), Injects<ControllerModule> {
         val notificationManager =
             context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
 
-        val kap = Kapsule<SimpleModule>()
+        val kap = Kapsule<Module>()
         val findQuestsToRemindUseCase by kap.required { findQuestToRemindUseCase }
         val snoozeQuestUseCase by kap.required { snoozeQuestUseCase }
         val findPetUseCase by kap.required { findPetUseCase }
-        kap.inject(myPoliApp.simpleModule(context))
+        kap.inject(myPoliApp.module(context))
 
         val c = context.asThemedWrapper()
         val quests = findQuestsToRemindUseCase.execute(params.extras.getLong("start", -1))

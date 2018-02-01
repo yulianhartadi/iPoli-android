@@ -14,8 +14,10 @@ import kotlinx.android.synthetic.main.view_inventory_toolbar.view.*
 import mypoli.android.BillingConstants
 import mypoli.android.R
 import mypoli.android.common.mvi.MviViewController
+import mypoli.android.common.view.setChildController
 import mypoli.android.common.view.setToolbar
 import mypoli.android.common.view.showBackButton
+import mypoli.android.player.inventory.GemInventoryViewController
 import mypoli.android.store.GemStoreViewState.StateType.*
 import mypoli.android.store.purchase.AndroidInAppPurchaseManager
 import mypoli.android.store.purchase.GemPackType
@@ -54,6 +56,8 @@ class GemStoreViewController(args: Bundle? = null) :
             override fun getPublicKey() =
                 BillingConstants.appPublicKey
         })
+
+        setChildController(view.playerGems, GemInventoryViewController())
 
         checkout = Checkout.forActivity(activity!!, billing)
         checkout.start()
@@ -94,7 +98,6 @@ class GemStoreViewController(args: Bundle? = null) :
     override fun render(state: GemStoreViewState, view: View) {
         when (state.type) {
             PLAYER_CHANGED -> {
-                view.playerGems.text = state.playerGems.toString()
                 if (state.isGiftPurchased) {
                     showMostPopular(view)
                 }

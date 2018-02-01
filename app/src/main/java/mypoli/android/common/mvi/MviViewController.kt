@@ -8,7 +8,7 @@ import com.bluelinelabs.conductor.Controller
 import com.bluelinelabs.conductor.RestoreViewOnCreateController
 import kotlinx.coroutines.experimental.channels.SendChannel
 import kotlinx.coroutines.experimental.launch
-import mypoli.android.common.di.ControllerModule
+import mypoli.android.common.di.Module
 import mypoli.android.myPoliApp
 import space.traversal.kapsule.Injects
 import space.traversal.kapsule.inject
@@ -23,7 +23,7 @@ interface Intent
 
 abstract class MviViewController<in VS : ViewState, in V : ViewStateRenderer<VS>, out P : MviPresenter<V, VS, I>, in I : Intent>
 protected constructor(args: Bundle? = null) : RestoreViewOnCreateController(args),
-    ViewStateRenderer<VS>, Injects<ControllerModule> {
+    ViewStateRenderer<VS>, Injects<Module> {
 
     private lateinit var intentChannel: SendChannel<I>
 
@@ -89,7 +89,7 @@ protected constructor(args: Bundle? = null) : RestoreViewOnCreateController(args
     }
 
     override fun onContextAvailable(context: Context) {
-        inject(myPoliApp.controllerModule(context, router))
+        inject(myPoliApp.module(context))
     }
 
     @MainThread

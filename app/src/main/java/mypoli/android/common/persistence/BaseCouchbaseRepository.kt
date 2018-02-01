@@ -50,7 +50,7 @@ abstract class BaseCouchbaseRepository<E, out T>(
     ) =
         sendLiveResults(createQuery(select, where, limit, orderBy))
 
-    data class GroupClause(val groupBy: Expression, val having: Expression)
+    data class GroupClause(val groupBy: Expression, val having: Expression? = null)
 
     protected fun createQuery(
         select: From? = null,
@@ -69,6 +69,29 @@ abstract class BaseCouchbaseRepository<E, out T>(
 
         when {
             groupBy != null -> {
+
+                if (groupBy.having == null) {
+
+                    val group = q.groupBy(groupBy.groupBy)
+
+                    if (orderBy != null) {
+                        val order = group.orderBy(orderBy)
+
+                        if (limit != null) {
+                            return order.limit(limit)
+                        }
+
+                        return order
+
+                    }
+
+                    if (limit != null) {
+                        return group.limit(limit)
+                    }
+
+                    return group
+                }
+
                 val group = q.groupBy(groupBy.groupBy).having(groupBy.having)
 
                 if (orderBy != null) {

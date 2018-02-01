@@ -6,7 +6,7 @@ import com.evernote.android.job.util.support.PersistableBundleCompat
 import kotlinx.coroutines.experimental.android.UI
 import kotlinx.coroutines.experimental.launch
 import mypoli.android.common.Reward
-import mypoli.android.common.di.ControllerModule
+import mypoli.android.common.di.Module
 import mypoli.android.common.view.asThemedWrapper
 import mypoli.android.pet.Food
 import mypoli.android.quest.Quest
@@ -18,7 +18,7 @@ import space.traversal.kapsule.Injects
  * on 11/15/17.
  */
 
-class QuestCompleteJob : Job(), Injects<ControllerModule> {
+class QuestCompleteJob : Job(), Injects<Module> {
     override fun onRunJob(params: Params): Result {
         val experience = params.extras.getInt("experience", 0)
         val coins = params.extras.getInt("coins", 0)

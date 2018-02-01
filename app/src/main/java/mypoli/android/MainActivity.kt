@@ -12,7 +12,8 @@ import com.amplitude.api.Amplitude
 import com.bluelinelabs.conductor.Conductor
 import com.bluelinelabs.conductor.Router
 import com.bluelinelabs.conductor.RouterTransaction
-import mypoli.android.common.di.ControllerModule
+import mypoli.android.common.LoadDataAction
+import mypoli.android.common.di.Module
 import mypoli.android.common.view.playerTheme
 import mypoli.android.home.HomeViewController
 import mypoli.android.player.AuthProvider
@@ -27,7 +28,7 @@ import space.traversal.kapsule.required
  * Created by Venelin Valkov <venelin@mypoli.fun>
  * on 7/6/17.
  */
-class MainActivity : AppCompatActivity(), Injects<ControllerModule> {
+class MainActivity : AppCompatActivity(), Injects<Module> {
 
     lateinit var router: Router
 
@@ -35,6 +36,7 @@ class MainActivity : AppCompatActivity(), Injects<ControllerModule> {
 
     private val playerRepository by required { playerRepository }
     private val petStatsChangeScheduler by required { lowerPetStatsScheduler }
+    private val stateStore by required { stateStore }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -62,7 +64,7 @@ class MainActivity : AppCompatActivity(), Injects<ControllerModule> {
         router =
             Conductor.attachRouter(this, findViewById(R.id.controllerContainer), savedInstanceState)
         router.setPopsLastView(true)
-        inject(myPoliApp.controllerModule(this, router))
+        inject(myPoliApp.module(this))
 
         if (!playerRepository.hasPlayer()) {
             val player = Player(
@@ -81,10 +83,12 @@ class MainActivity : AppCompatActivity(), Injects<ControllerModule> {
             router.setRoot(RouterTransaction.with(TimerViewController(questId)))
         } else if (!router.hasRootController()) {
             router.setRoot(RouterTransaction.with(HomeViewController()))
+//            router.setRoot(RouterTransaction.with(TestViewController()))
 //            router.setRoot(RouterTransaction.with(ChallengeCategoryListViewController()))
 //            router.setRoot(RouterTransaction.with(PersonalizeChallengeViewController()))
         }
 
+        stateStore.dispatch(LoadDataAction.All)
     }
 
     private fun migrateIfNeeded() {

@@ -5,8 +5,7 @@ import com.evernote.android.job.JobRequest
 import com.evernote.android.job.util.support.PersistableBundleCompat
 import mypoli.android.Constants
 import mypoli.android.common.datetime.Time
-import mypoli.android.common.di.ControllerModule
-import mypoli.android.common.di.SimpleModule
+import mypoli.android.common.di.Module
 import mypoli.android.myPoliApp
 import space.traversal.kapsule.Injects
 import space.traversal.kapsule.Kapsule
@@ -17,13 +16,13 @@ import java.util.concurrent.TimeUnit
  * on 11/30/17.
  */
 
-class LowerPetStatsJob : Job(), Injects<ControllerModule> {
+class LowerPetStatsJob : Job(), Injects<Module> {
 
     override fun onRunJob(params: Params): Result {
-        val kap = Kapsule<SimpleModule>()
+        val kap = Kapsule<Module>()
         val changePetStatsUseCase by kap.required { lowerPetStatsUseCase }
         val lowerPetStatsScheduler by kap.required { lowerPetStatsScheduler }
-        kap.inject(myPoliApp.simpleModule(context))
+        kap.inject(myPoliApp.module(context))
 
         val time = Time.of(params.extras.getInt("lowerStatsTime", 0))
         changePetStatsUseCase.execute(time)

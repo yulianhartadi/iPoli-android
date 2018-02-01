@@ -19,7 +19,8 @@ import mypoli.android.common.ViewUtils
 import mypoli.android.common.mvi.MviViewController
 import mypoli.android.common.view.*
 import mypoli.android.player.Theme
-import mypoli.android.quest.calendar.dayview.view.widget.CalendarDayView
+import mypoli.android.player.inventory.GemInventoryViewController
+import mypoli.android.quest.schedule.calendar.dayview.view.widget.CalendarDayView
 import mypoli.android.store.theme.ThemeStoreViewState.StateType.*
 import space.traversal.kapsule.required
 
@@ -49,7 +50,7 @@ class ThemeStoreViewController(args: Bundle? = null) :
 
         view.toolbarTitle.setText(R.string.themes)
 
-        view.playerGems.sendOnClick(ShowCurrencyConverter)
+        setChildController(view.playerGems, GemInventoryViewController())
 
         view.themePager.clipToPadding = false
         view.themePager.pageMargin = ViewUtils.dpToPx(16f, view.context).toInt()
@@ -83,7 +84,6 @@ class ThemeStoreViewController(args: Bundle? = null) :
             }
 
             PLAYER_CHANGED -> {
-                view.playerGems.text = state.playerGems.toString()
                 (view.themePager.adapter as ThemePagerAdapter).updateAll(state.viewModels)
             }
 
@@ -106,10 +106,6 @@ class ThemeStoreViewController(args: Bundle? = null) :
             THEME_TOO_EXPENSIVE -> {
                 CurrencyConverterDialogController().showDialog(router, "currency-converter")
                 Toast.makeText(view.context, "Theme too expensive", Toast.LENGTH_SHORT).show()
-            }
-
-            SHOW_CURRENCY_CONVERTER -> {
-                CurrencyConverterDialogController().showDialog(router, "currency-converter")
             }
         }
     }

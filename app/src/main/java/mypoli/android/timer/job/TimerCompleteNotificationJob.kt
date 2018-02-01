@@ -16,8 +16,7 @@ import mypoli.android.MainActivity
 import mypoli.android.R
 import mypoli.android.common.datetime.Duration
 import mypoli.android.common.datetime.Second
-import mypoli.android.common.di.ControllerModule
-import mypoli.android.common.di.SimpleModule
+import mypoli.android.common.di.Module
 import mypoli.android.myPoliApp
 import mypoli.android.pet.AndroidPetAvatar
 import mypoli.android.quest.TimeRange
@@ -31,7 +30,7 @@ import java.util.*
  * Created by Venelin Valkov <venelin@ipoli.io>
  * on 01/22/2018.
  */
-class TimerCompleteNotificationJob : Job(), Injects<ControllerModule> {
+class TimerCompleteNotificationJob : Job(), Injects<Module> {
 
     @SuppressLint("NewApi")
     override fun onRunJob(params: Job.Params): Job.Result {
@@ -39,10 +38,10 @@ class TimerCompleteNotificationJob : Job(), Injects<ControllerModule> {
         val notificationManager =
             context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
 
-        val kap = Kapsule<SimpleModule>()
+        val kap = Kapsule<Module>()
         val questRepository by kap.required { questRepository }
         val findPetUseCase by kap.required { findPetUseCase }
-        kap.inject(myPoliApp.simpleModule(context))
+        kap.inject(myPoliApp.module(context))
 
         val questId = params.extras.getString("questId", "")
         require(questId.isNotEmpty())
