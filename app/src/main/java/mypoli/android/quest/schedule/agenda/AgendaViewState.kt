@@ -9,6 +9,7 @@ import mypoli.android.common.redux.Action
 import mypoli.android.common.redux.State
 import mypoli.android.quest.schedule.agenda.usecase.CreateAgendaItemsUseCase
 import org.threeten.bp.LocalDate
+import timber.log.Timber
 
 /**
  * Created by Venelin Valkov <venelin@mypoli.fun>
@@ -25,61 +26,72 @@ sealed class AgendaAction : Action {
 
 data class AgendaState(
     val type: StateType,
-    val startDate: LocalDate,
-    val endDate: LocalDate,
     val agendaItems: List<CreateAgendaItemsUseCase.AgendaItem>,
     val scrollToPosition: Int?,
-    val userScrollPosition: Int?,
-    val shouldScroll: Boolean
+    val userScrollPosition: Int?
 ) : State {
     enum class StateType {
         LOADING,
         DATA_CHANGED,
         SHOW_TOP_LOADER,
-        SHOW_BOTTOM_LOADER
+        SHOW_BOTTOM_LOADER,
+        IDLE
     }
 }
 
 object AgendaReducer : AppStateReducer<AgendaState> {
-    override fun reduce(state: AppState, action: Action) =
-        state.agendaState.let {
+    override fun reduce(state: AppState, action: Action): AgendaState {
+        val agendaState = state.agendaState
+        return agendaState.let {
             when (action) {
                 is DataLoadedAction.AgendaItemsChanged -> {
-
-                    val shouldScroll = action.currentAgendaItemDate == null
+                    val userScrolledToPosition =
+                        if (agendaState.userScrollPosition != null) {
+                            val userDate =
+                                agendaState.agendaItems[agendaState.userScrollPosition].startDate()
+                            Timber.d("AAA userDate $userDate")
+                            findItemPositionToScrollTo(userDate, action.agendaItems)
+                        } else null
 
                     it.copy(
                         type = AgendaState.StateType.DATA_CHANGED,
-                        startDate = action.start,
-                        endDate = action.end,
                         agendaItems = action.agendaItems,
-                        scrollToPosition = findItemPositionToScrollTo(action),
-                        shouldScroll = shouldScroll
+                        scrollToPosition = findItemPositionToScrollTo(
+                            action.currentAgendaItemDate,
+                            action.agendaItems
+                        ),
+                        userScrollPosition = userScrolledToPosition
                     )
                 }
                 is AgendaAction.LoadBefore -> {
                     it.copy(
                         type = AgendaState.StateType.SHOW_TOP_LOADER,
-                        userScrollPosition = action.itemPosition,
-                        shouldScroll = true
+                        userScrollPosition = action.itemPosition
                     )
                 }
                 is AgendaAction.LoadAfter -> {
                     it.copy(
                         type = AgendaState.StateType.SHOW_BOTTOM_LOADER,
-                        userScrollPosition = action.itemPosition,
-                        shouldScroll = true
+                        userScrollPosition = action.itemPosition
+                    )
+                }
+                is AgendaAction.FirstVisibleItemChanged -> {
+                    it.copy(
+                        type = AgendaState.StateType.IDLE,
+                        userScrollPosition = action.itemPosition
                     )
                 }
                 else -> it
             }
         }
+    }
 
     private fun findItemPositionToScrollTo(
-        action: DataLoadedAction.AgendaItemsChanged
-    ) = action.currentAgendaItemDate?.let {
+        date: LocalDate?,
+        agendaItems: List<CreateAgendaItemsUseCase.AgendaItem>
+    ) = date?.let {
         val currentAgendaItemDate = it
-        val index = action.agendaItems.indexOfLast {
+        val index = agendaItems.indexOfLast {
             when (it) {
                 is CreateAgendaItemsUseCase.AgendaItem.Date ->
                     it.startDate() == currentAgendaItemDate
@@ -97,16 +109,13 @@ object AgendaReducer : AppStateReducer<AgendaState> {
 
     override fun defaultState() = AgendaState(
         type = AgendaState.StateType.LOADING,
-        startDate = LocalDate.now(),
-        endDate = LocalDate.now(),
         agendaItems = listOf(),
         scrollToPosition = null,
-        userScrollPosition = null,
-        shouldScroll = false
+        userScrollPosition = null
     )
 
-    const val ITEMS_BEFORE_COUNT = 30
-    const val ITEMS_AFTER_COUNT = 50
+    const val ITEMS_BEFORE_COUNT = 25
+    const val ITEMS_AFTER_COUNT = 35
 }
 
 data class AgendaViewState(
@@ -114,5 +123,5 @@ data class AgendaViewState(
     val agendaItems: List<AgendaViewController.AgendaViewModel>,
     val userScrollPosition: Int?,
     val scrollToPosition: Int?,
-    val shouldScroll: Boolean
+    val shouldScrollToUserPosition: Boolean
 ) : ViewState

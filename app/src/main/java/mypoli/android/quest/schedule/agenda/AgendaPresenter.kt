@@ -33,7 +33,14 @@ class AgendaPresenter : AndroidStatePresenter<AppState, AgendaViewState> {
             },
             userScrollPosition = agendaState.userScrollPosition,
             scrollToPosition = agendaState.scrollToPosition,
-            shouldScroll = agendaState.shouldScroll
+            shouldScrollToUserPosition = false
+        )
+    }
+
+    override fun presentInitial(state: AgendaViewState): AgendaViewState {
+        return state.copy(
+            type = AgendaState.StateType.DATA_CHANGED,
+            shouldScrollToUserPosition = true
         )
     }
 

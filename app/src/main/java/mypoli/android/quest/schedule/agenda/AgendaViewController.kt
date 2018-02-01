@@ -121,7 +121,7 @@ class AgendaViewController(args: Bundle? = null) :
                         dispatch(AgendaAction.LoadAfter(position))
                     }
                 },
-                20
+                15
             )
         val changeItemScrollListener = ChangeItemScrollListener(
             agendaList.layoutManager as LinearLayoutManager,
@@ -139,35 +139,22 @@ class AgendaViewController(args: Bundle? = null) :
             }
         }
 
-
         if (state.scrollToPosition != null) {
             agendaList.addOnScrollListener(scrollToPositionListener)
             (agendaList.layoutManager as LinearLayoutManager).scrollToPositionWithOffset(
                 state.scrollToPosition,
                 0
             )
-        } else if (state.shouldScroll && state.userScrollPosition != null) {
-//            agendaList.addOnScrollListener(scrollToPositionListener)
-//            (agendaList.layoutManager as LinearLayoutManager).scrollToPositionWithOffset(
-//                state.userScrollPosition,
-//                0
-//            )
+        } else if (state.shouldScrollToUserPosition && state.userScrollPosition != null) {
+            agendaList.addOnScrollListener(scrollToPositionListener)
+            (agendaList.layoutManager as LinearLayoutManager).scrollToPositionWithOffset(
+                state.userScrollPosition,
+                0
+            )
         } else {
             agendaList.addOnScrollListener(endlessRecyclerViewScrollListener)
             agendaList.addOnScrollListener(changeItemScrollListener)
         }
-
-//        if (state.scrollToPosition != null) {
-
-//            agendaList.addOnScrollListener(scrollToPositionListener)
-//            (agendaList.layoutManager as LinearLayoutManager).scrollToPositionWithOffset(
-//                state.scrollToPosition,
-//                0
-//            )
-//        } else {
-//
-//
-//        }
     }
 
     private fun showCompletedQuest(questId: String) {
