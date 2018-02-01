@@ -19,4 +19,10 @@ class CalendarPresenter : AndroidStatePresenter<AppState, CalendarViewState> {
         )
     }
 
+    override fun presentInitial(state: CalendarViewState): CalendarViewState {
+        return state.copy(
+            type = CalendarState.StateType.INITIAL
+        )
+    }
+
 }

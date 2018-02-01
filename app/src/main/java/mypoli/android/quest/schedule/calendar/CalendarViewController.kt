@@ -47,6 +47,7 @@ class CalendarViewController(args: Bundle? = null) :
     ): View = inflater.inflate(R.layout.controller_calendar, container, false)
 
     override fun render(state: CalendarViewState, view: View) {
+
         when (state.type) {
             INITIAL -> {
                 removeDayViewPagerAdapter(view)
