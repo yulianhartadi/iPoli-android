@@ -10,7 +10,6 @@ repositories {
     maven { url 'https://maven.fabric.io/public' }
     mavenCentral()
     maven { url 'https://maven.google.com' }
-    
 }
 
 android {
@@ -21,8 +20,8 @@ android {
         applicationId "mypoli.android"
         minSdkVersion 21
         targetSdkVersion 27
-        versionCode 15
-        versionName "Focus Timer"
+        versionCode 16
+        versionName "Smooth Agenda"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
 
