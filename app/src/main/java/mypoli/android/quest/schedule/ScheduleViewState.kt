@@ -3,11 +3,9 @@ package mypoli.android.quest.schedule
 import mypoli.android.common.AppState
 import mypoli.android.common.AppStateReducer
 import mypoli.android.common.DataLoadedAction
-import mypoli.android.common.mvi.Intent
 import mypoli.android.common.mvi.ViewState
 import mypoli.android.common.redux.Action
 import mypoli.android.common.redux.State
-import mypoli.android.player.Player
 import mypoli.android.quest.schedule.ScheduleState.ViewMode.AGENDA
 import mypoli.android.quest.schedule.ScheduleState.ViewMode.CALENDAR
 import mypoli.android.quest.schedule.agenda.AgendaAction
@@ -20,22 +18,10 @@ import org.threeten.bp.YearMonth
  * on 10/21/17.
  */
 
-sealed class CalendarIntent : Intent {
-    data class LoadData(val currentDate: LocalDate) : CalendarIntent()
-    data class SwipeChangeDate(val position: Int) : CalendarIntent()
-    data class CalendarChangeDate(val year: Int, val month: Int, val day: Int) : CalendarIntent()
-    data class ChangeMonth(val year: Int, val month: Int) : CalendarIntent()
-    object ExpandToolbar : CalendarIntent()
-    object ExpandToolbarWeek : CalendarIntent()
-    data class ChangePlayer(val player: Player) : CalendarIntent()
-}
-
-
 sealed class ScheduleAction : Action {
     object ExpandToolbar : ScheduleAction()
     object ExpandWeekToolbar : ScheduleAction()
 
-    //    data class SwipeChangeDate(val itemPosition: Int) : ScheduleAction()
     data class ScheduleChangeDate(val year: Int, val month: Int, val day: Int) : ScheduleAction()
 
     data class ChangeMonth(val year: Int, val month: Int) : ScheduleAction()
