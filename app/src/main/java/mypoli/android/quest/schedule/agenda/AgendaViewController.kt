@@ -36,7 +36,7 @@ class AgendaViewController(args: Bundle? = null) :
 
 
     override val presenter get() = AgendaPresenter()
-
+    private lateinit var scrollToPositionListener: RecyclerView.OnScrollListener
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -80,9 +80,13 @@ class AgendaViewController(args: Bundle? = null) :
         return view
     }
 
-    lateinit var scrollToPositionListener: RecyclerView.OnScrollListener
+    override fun onDetach(view: View) {
+        view.agendaList.clearOnScrollListeners()
+        super.onDetach(view)
+    }
 
     override fun render(state: AgendaViewState, view: View) {
+
         when (state.type) {
             AgendaState.StateType.DATA_CHANGED -> {
                 ViewUtils.goneViews(view.topLoader, view.bottomLoader)
@@ -134,16 +138,36 @@ class AgendaViewController(args: Bundle? = null) :
                 agendaList.removeOnScrollListener(scrollToPositionListener)
             }
         }
+
+
         if (state.scrollToPosition != null) {
             agendaList.addOnScrollListener(scrollToPositionListener)
             (agendaList.layoutManager as LinearLayoutManager).scrollToPositionWithOffset(
                 state.scrollToPosition,
                 0
             )
+        } else if (state.shouldScroll && state.userScrollPosition != null) {
+//            agendaList.addOnScrollListener(scrollToPositionListener)
+//            (agendaList.layoutManager as LinearLayoutManager).scrollToPositionWithOffset(
+//                state.userScrollPosition,
+//                0
+//            )
         } else {
             agendaList.addOnScrollListener(endlessRecyclerViewScrollListener)
             agendaList.addOnScrollListener(changeItemScrollListener)
         }
+
+//        if (state.scrollToPosition != null) {
+
+//            agendaList.addOnScrollListener(scrollToPositionListener)
+//            (agendaList.layoutManager as LinearLayoutManager).scrollToPositionWithOffset(
+//                state.scrollToPosition,
+//                0
+//            )
+//        } else {
+//
+//
+//        }
     }
 
     private fun showCompletedQuest(questId: String) {

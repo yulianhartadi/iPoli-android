@@ -28,7 +28,9 @@ data class AgendaState(
     val startDate: LocalDate,
     val endDate: LocalDate,
     val agendaItems: List<CreateAgendaItemsUseCase.AgendaItem>,
-    val scrollToPosition: Int?
+    val scrollToPosition: Int?,
+    val userScrollPosition: Int?,
+    val shouldScroll: Boolean
 ) : State {
     enum class StateType {
         LOADING,
@@ -44,22 +46,29 @@ object AgendaReducer : AppStateReducer<AgendaState> {
             when (action) {
                 is DataLoadedAction.AgendaItemsChanged -> {
 
+                    val shouldScroll = action.currentAgendaItemDate == null
+
                     it.copy(
                         type = AgendaState.StateType.DATA_CHANGED,
                         startDate = action.start,
                         endDate = action.end,
                         agendaItems = action.agendaItems,
-                        scrollToPosition = findItemPositionToScrollTo(action)
+                        scrollToPosition = findItemPositionToScrollTo(action),
+                        shouldScroll = shouldScroll
                     )
                 }
                 is AgendaAction.LoadBefore -> {
                     it.copy(
-                        type = AgendaState.StateType.SHOW_TOP_LOADER
+                        type = AgendaState.StateType.SHOW_TOP_LOADER,
+                        userScrollPosition = action.itemPosition,
+                        shouldScroll = true
                     )
                 }
                 is AgendaAction.LoadAfter -> {
                     it.copy(
-                        type = AgendaState.StateType.SHOW_BOTTOM_LOADER
+                        type = AgendaState.StateType.SHOW_BOTTOM_LOADER,
+                        userScrollPosition = action.itemPosition,
+                        shouldScroll = true
                     )
                 }
                 else -> it
@@ -91,7 +100,9 @@ object AgendaReducer : AppStateReducer<AgendaState> {
         startDate = LocalDate.now(),
         endDate = LocalDate.now(),
         agendaItems = listOf(),
-        scrollToPosition = null
+        scrollToPosition = null,
+        userScrollPosition = null,
+        shouldScroll = false
     )
 
     const val ITEMS_BEFORE_COUNT = 30
@@ -101,5 +112,7 @@ object AgendaReducer : AppStateReducer<AgendaState> {
 data class AgendaViewState(
     val type: AgendaState.StateType,
     val agendaItems: List<AgendaViewController.AgendaViewModel>,
-    val scrollToPosition: Int?
+    val userScrollPosition: Int?,
+    val scrollToPosition: Int?,
+    val shouldScroll: Boolean
 ) : ViewState

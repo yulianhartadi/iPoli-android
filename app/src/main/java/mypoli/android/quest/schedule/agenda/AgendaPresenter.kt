@@ -21,17 +21,19 @@ import java.util.*
  */
 class AgendaPresenter : AndroidStatePresenter<AppState, AgendaViewState> {
     override fun present(state: AppState, context: Context): AgendaViewState {
-
-        val agendaItems = state.agendaState.agendaItems
+        val agendaState = state.agendaState
+        val agendaItems = agendaState.agendaItems
         return AgendaViewState(
-            state.agendaState.type,
+            agendaState.type,
             agendaItems.mapIndexed { index, item ->
                 toAgendaViewModel(
                     item,
                     if (agendaItems.lastIndex >= index + 1) agendaItems[index + 1] else null
                 )
             },
-            scrollToPosition = state.agendaState.scrollToPosition
+            userScrollPosition = agendaState.userScrollPosition,
+            scrollToPosition = agendaState.scrollToPosition,
+            shouldScroll = agendaState.shouldScroll
         )
     }
 
