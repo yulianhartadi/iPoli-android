@@ -227,7 +227,7 @@ class CouchbaseQuestRepository(database: Database, coroutineContext: CoroutineCo
             null
         })
 
-        val plannedDate = DateUtils.fromMillis(cq.scheduledDate)
+        val plannedDate = cq.scheduledDate.startOfDayUtc
         val plannedTime = cq.startMinute?.let { Time.of(it.toInt()) }
 
         return Quest(
@@ -250,17 +250,14 @@ class CouchbaseQuestRepository(database: Database, coroutineContext: CoroutineCo
                     cr.type == CouchbaseBounty.Type.FOOD.name -> Quest.Bounty.Food(Food.valueOf(cr.name!!))
                     else -> null
                 }
-
             },
-            completedAtDate = cq.completedAtDate?.let {
-                DateUtils.fromMillis(it)
-            },
+            completedAtDate = cq.completedAtDate?.startOfDayUtc,
             completedAtTime = cq.completedAtMinute?.let {
                 Time.of(it.toInt())
             },
             reminder = cq.reminder?.let {
                 val cr = CouchbaseReminder(it)
-                Reminder(cr.message, Time.of(cr.minute), DateUtils.fromMillis(cr.date))
+                Reminder(cr.message, Time.of(cr.minute), cr.date.startOfDayUtc)
             },
             timeRanges = cq.timeRanges.map {
                 val ctr = CouchbaseTimeRange(it)

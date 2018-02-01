@@ -53,10 +53,7 @@ class ScheduleViewController(args: Bundle? = null) :
 
         initAddQuest(view)
 
-        val childRouter = getChildRouter(view.contentContainer, null)
-        if (!childRouter.hasRootController()) {
-            childRouter.setRoot(RouterTransaction.with(CalendarViewController()))
-        }
+        setChildController(view.contentContainer, CalendarViewController())
 
         return view
     }

@@ -3,7 +3,6 @@ package mypoli.android.pet.store
 import mypoli.android.common.AppState
 import mypoli.android.common.AppStateReducer
 import mypoli.android.common.DataLoadedAction
-import mypoli.android.common.mvi.Intent
 import mypoli.android.common.mvi.ViewState
 import mypoli.android.common.redux.Action
 import mypoli.android.common.redux.State
@@ -14,14 +13,6 @@ import mypoli.android.player.Player
  * Created by Polina Zhelyazkova <polina@mypoli.fun>
  * on 12/4/17.
  */
-sealed class PetStoreIntent : Intent {
-    object LoadData : PetStoreIntent()
-    data class ChangePlayer(val player: Player) : PetStoreIntent()
-    data class BuyPet(val pet: PetAvatar) : PetStoreIntent()
-    data class UnlockPet(val pet: PetAvatar) : PetStoreIntent()
-    data class ChangePet(val pet: PetAvatar) : PetStoreIntent()
-}
-
 sealed class PetStoreAction : Action {
     data class BuyPet(val pet: PetAvatar) : PetStoreAction()
 
