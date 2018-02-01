@@ -26,7 +26,6 @@ import mypoli.android.common.view.*
 import mypoli.android.quest.CompletedQuestViewController
 import mypoli.android.quest.schedule.agenda.widget.SwipeToCompleteCallback
 import mypoli.android.timer.TimerViewController
-import timber.log.Timber
 
 /**
  * Created by Polina Zhelyazkova <polina@ipoli.io>
@@ -89,47 +88,8 @@ class AgendaViewController(args: Bundle? = null) :
                 ViewUtils.goneViews(view.topLoader, view.bottomLoader)
                 val agendaList = view.agendaList
                 agendaList.clearOnScrollListeners()
-
                 (agendaList.adapter as AgendaAdapter).updateAll(state.agendaItems)
-
-                val endlessRecyclerViewScrollListener =
-                    EndlessRecyclerViewScrollListener(
-                        agendaList.layoutManager as LinearLayoutManager,
-                        { side, position ->
-                            agendaList.clearOnScrollListeners()
-                            if (side == EndlessRecyclerViewScrollListener.Side.TOP) {
-                                dispatch(AgendaAction.LoadBefore(position))
-                            } else {
-                                dispatch(AgendaAction.LoadAfter(position))
-                            }
-                        },
-                        20
-                    )
-
-                    scrollToPositionListener = object : RecyclerView.OnScrollListener() {
-                        override fun onScrolled(recyclerView: RecyclerView?, dx: Int, dy: Int) {
-                            Timber.d("AAAA scroll end ${(agendaList.layoutManager as LinearLayoutManager).findFirstVisibleItemPosition()}")
-                            agendaList.addOnScrollListener(endlessRecyclerViewScrollListener)
-                            agendaList.removeOnScrollListener(scrollToPositionListener)
-                        }
-                    }
-                    Timber.d("AAA scroll to ${state.scrollToPosition}")
-                    if (state.scrollToPosition != null) {
-                        agendaList.addOnScrollListener(scrollToPositionListener)
-                        (agendaList.layoutManager as LinearLayoutManager).scrollToPositionWithOffset(state.scrollToPosition, 0)
-                    } else {
-                        agendaList.addOnScrollListener(endlessRecyclerViewScrollListener)
-                    }
-
-
-//                agendaList.addOnScrollListener(ChangeItemScrollListener(
-//                    agendaList.layoutManager as LinearLayoutManager,
-//                    { pos ->
-//                        dispatch(AgendaAction.FirstVisibleItemChanged(pos))
-//                    }
-//                ))
-
-//                }
+                addScrollListeners(agendaList, state)
             }
 
             AgendaState.StateType.SHOW_TOP_LOADER -> {
@@ -139,6 +99,50 @@ class AgendaViewController(args: Bundle? = null) :
             AgendaState.StateType.SHOW_BOTTOM_LOADER -> {
                 ViewUtils.showViews(view.bottomLoader)
             }
+        }
+    }
+
+    private fun addScrollListeners(
+        agendaList: RecyclerView,
+        state: AgendaViewState
+    ) {
+        val endlessRecyclerViewScrollListener =
+            EndlessRecyclerViewScrollListener(
+                agendaList.layoutManager as LinearLayoutManager,
+                { side, position ->
+                    agendaList.clearOnScrollListeners()
+                    if (side == EndlessRecyclerViewScrollListener.Side.TOP) {
+                        dispatch(AgendaAction.LoadBefore(position))
+                    } else {
+                        dispatch(AgendaAction.LoadAfter(position))
+                    }
+                },
+                20
+            )
+        val changeItemScrollListener = ChangeItemScrollListener(
+            agendaList.layoutManager as LinearLayoutManager,
+            { pos ->
+                dispatch(AgendaAction.FirstVisibleItemChanged(pos))
+            }
+        )
+
+
+        scrollToPositionListener = object : RecyclerView.OnScrollListener() {
+            override fun onScrolled(recyclerView: RecyclerView?, dx: Int, dy: Int) {
+                agendaList.addOnScrollListener(endlessRecyclerViewScrollListener)
+                agendaList.addOnScrollListener(changeItemScrollListener)
+                agendaList.removeOnScrollListener(scrollToPositionListener)
+            }
+        }
+        if (state.scrollToPosition != null) {
+            agendaList.addOnScrollListener(scrollToPositionListener)
+            (agendaList.layoutManager as LinearLayoutManager).scrollToPositionWithOffset(
+                state.scrollToPosition,
+                0
+            )
+        } else {
+            agendaList.addOnScrollListener(endlessRecyclerViewScrollListener)
+            agendaList.addOnScrollListener(changeItemScrollListener)
         }
     }
 
