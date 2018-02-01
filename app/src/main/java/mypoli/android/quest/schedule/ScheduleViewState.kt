@@ -58,7 +58,7 @@ data class ScheduleState(
         LOADING, IDLE,
         INITIAL, CALENDAR_DATE_CHANGED, SWIPE_DATE_CHANGED, DATE_PICKER_CHANGED, MONTH_CHANGED,
         LEVEL_CHANGED, XP_AND_COINS_CHANGED, DATA_CHANGED,
-        VIEW_MODE_CHANGED
+        VIEW_MODE_CHANGED, DATE_AUTO_CHANGED
     }
 
     enum class ViewMode {
@@ -103,8 +103,9 @@ object ScheduleReducer : AppStateReducer<ScheduleState> {
                         )
                     } else {
                         it.copy(
-                            type = ScheduleState.StateType.CALENDAR_DATE_CHANGED,
-                            currentDate = startDate
+                            type = ScheduleState.StateType.DATE_AUTO_CHANGED,
+                            currentDate = startDate,
+                            currentMonth = YearMonth.of(startDate.year, startDate.month)
                         )
                     }
 
@@ -163,7 +164,8 @@ object ScheduleReducer : AppStateReducer<ScheduleState> {
             is ScheduleAction.ScheduleChangeDate -> {
                 state.copy(
                     type = ScheduleState.StateType.CALENDAR_DATE_CHANGED,
-                    currentDate = LocalDate.of(action.year, action.month, action.day)
+                    currentDate = LocalDate.of(action.year, action.month, action.day),
+                    currentMonth = YearMonth.of(action.year, action.month)
                 )
             }
 
