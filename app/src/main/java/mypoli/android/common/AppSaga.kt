@@ -208,6 +208,8 @@ class AgendaSaga : Saga<AppState>, Injects<Module> {
         agendaDate: LocalDate,
         changeCurrentAgendaItem: Boolean
     ) {
+
+        var isFirstData = true
         launch {
             scheduledQuestsChannel?.cancel()
             scheduledQuestsChannel = questRepository.listenForScheduledBetween(
@@ -228,9 +230,10 @@ class AgendaSaga : Saga<AppState>, Injects<Module> {
                         start = start,
                         end = end,
                         agendaItems = agendaItems,
-                        currentAgendaItemDate = if (changeCurrentAgendaItem) agendaDate else null
+                        currentAgendaItemDate = if (changeCurrentAgendaItem && isFirstData) agendaDate else null
                     )
                 )
+                isFirstData = false
             }
         }
     }
