@@ -20,8 +20,8 @@ android {
         applicationId "mypoli.android"
         minSdkVersion 21
         targetSdkVersion 27
-        versionCode 16
-        versionName "Smooth Agenda"
+        versionCode 17
+        versionName "Sweet Agenda"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
 
