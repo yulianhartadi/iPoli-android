@@ -138,7 +138,7 @@ class AgendaViewController(args: Bundle? = null) :
                 agendaList.removeOnScrollListener(scrollToPositionListener)
             }
         }
-        
+
         if (state.scrollToPosition != null) {
             agendaList.addOnScrollListener(scrollToPositionListener)
             (agendaList.layoutManager as LinearLayoutManager).scrollToPositionWithOffset(

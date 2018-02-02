@@ -38,7 +38,7 @@ class GemInventoryViewController(args: Bundle? = null) :
     ): View {
         val view = inflater.inflate(R.layout.controller_gem_inventory, container, false)
         view.setOnClickListener {
-            CurrencyConverterDialogController().showDialog(router, "currency-converter")
+            CurrencyConverterDialogController().showDialog(parentController!!.router, "currency-converter")
         }
         return view
     }
