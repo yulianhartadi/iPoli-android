@@ -26,7 +26,6 @@ import mypoli.android.common.view.*
 import mypoli.android.quest.CompletedQuestViewController
 import mypoli.android.quest.schedule.agenda.widget.SwipeToCompleteCallback
 import mypoli.android.timer.TimerViewController
-import timber.log.Timber
 
 /**
  * Created by Polina Zhelyazkova <polina@ipoli.io>
@@ -139,11 +138,7 @@ class AgendaViewController(args: Bundle? = null) :
                 agendaList.removeOnScrollListener(scrollToPositionListener)
             }
         }
-
-        Timber.d("AAA scrollToPosition ${state.scrollToPosition}")
-        Timber.d("AAA shouldScrollToUserPosition ${state.shouldScrollToUserPosition}")
-        Timber.d("AAA userScrollPosition ${state.userScrollPosition}")
-
+        
         if (state.scrollToPosition != null) {
             agendaList.addOnScrollListener(scrollToPositionListener)
             (agendaList.layoutManager as LinearLayoutManager).scrollToPositionWithOffset(
