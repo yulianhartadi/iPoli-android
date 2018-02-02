@@ -57,7 +57,10 @@ class GemStoreViewController(args: Bundle? = null) :
                 BillingConstants.appPublicKey
         })
 
-        setChildController(view.playerGems, GemInventoryViewController())
+        setChildController(
+            view.playerGems,
+            GemInventoryViewController(showCurrencyConverter = false)
+        )
 
         checkout = Checkout.forActivity(activity!!, billing)
         checkout.start()

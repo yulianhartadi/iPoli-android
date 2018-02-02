@@ -26,10 +26,18 @@ class GemInventoryPresenter : AndroidStatePresenter<AppState, GemInventoryViewSt
 
 data class GemInventoryViewState(val gems: String) : ViewState
 
-class GemInventoryViewController(args: Bundle? = null) :
-    ReduxViewController<Action, GemInventoryViewState, GemInventoryPresenter>(args) {
+class GemInventoryViewController :
+    ReduxViewController<Action, GemInventoryViewState, GemInventoryPresenter> {
+
+    private var showCurrencyConverter: Boolean = true
 
     override val presenter get() = GemInventoryPresenter()
+
+    constructor(args: Bundle? = null) : super(args)
+
+    constructor(showCurrencyConverter: Boolean) : super() {
+        this.showCurrencyConverter = showCurrencyConverter
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -37,8 +45,15 @@ class GemInventoryViewController(args: Bundle? = null) :
         savedViewState: Bundle?
     ): View {
         val view = inflater.inflate(R.layout.controller_gem_inventory, container, false)
-        view.setOnClickListener {
-            CurrencyConverterDialogController().showDialog(parentController!!.router, "currency-converter")
+        if (showCurrencyConverter) {
+            view.setOnClickListener {
+                CurrencyConverterDialogController().showDialog(
+                    parentController!!.router,
+                    "currency-converter"
+                )
+            }
+        } else {
+            view.setOnClickListener(null)
         }
         return view
     }
