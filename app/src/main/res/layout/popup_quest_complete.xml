@@ -1,99 +1,81 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="@drawable/popup_background"
-    android:elevation="24dp">
+    android:background="@drawable/pet_message_background">
 
     <ImageView
         android:id="@+id/pet"
         android:layout_width="42dp"
         android:layout_height="42dp"
-        android:layout_marginStart="24dp"
-        android:layout_marginTop="24dp"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        android:layout_alignParentStart="true"
+        android:layout_centerVertical="true"
+        android:layout_marginBottom="8dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="8dp"
+        android:adjustViewBounds="true" />
 
     <TextView
-        android:id="@+id/title"
-        android:layout_width="0dp"
+        android:id="@+id/message"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginEnd="24dp"
+        android:layout_centerVertical="true"
         android:layout_marginStart="16dp"
-        android:textAppearance="@style/TextAppearance.AppCompat.Title"
-        app:layout_constraintBottom_toBottomOf="@+id/pet"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/pet"
-        app:layout_constraintTop_toTopOf="@+id/pet" />
+        android:layout_toEndOf="@id/pet"
+        android:textAppearance="@style/TextAppearance.AppCompat.Subhead"
+        android:textColor="@color/md_light_text_87" />
 
     <TextView
         android:id="@+id/earnedXP"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginEnd="8dp"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="8dp"
+        android:layout_centerVertical="true"
+        android:layout_marginEnd="16dp"
+        android:layout_toStartOf="@+id/earnedCoins"
         android:drawablePadding="4dp"
         android:drawableStart="@drawable/ic_star_yellow_24dp"
+        android:text="0"
         android:textAppearance="@style/TextAppearance.AppCompat.Subhead"
+        android:textColor="@color/md_light_text_87"
         android:visibility="invisible"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toEndOf="@+id/pet"
-        app:layout_constraintTop_toBottomOf="@+id/pet"
         tools:text="+64XP" />
 
     <TextView
         android:id="@+id/earnedCoins"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="24dp"
-        android:layout_marginEnd="8dp"
-        android:layout_marginTop="16dp"
-        android:drawablePadding="4dp"
+        android:layout_alignParentEnd="true"
+        android:layout_centerVertical="true"
+        android:layout_marginEnd="16dp"
+        android:drawablePadding="8dp"
         android:drawableStart="@drawable/ic_life_coin_24dp"
+        android:text="0"
         android:textAppearance="@style/TextAppearance.AppCompat.Subhead"
+        android:textColor="@color/md_light_text_87"
         android:visibility="invisible"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toStartOf="@+id/earnedXP"
-        app:layout_constraintTop_toBottomOf="@+id/earnedXP"
-        app:layout_constraintVertical_bias="0.0"
         tools:text="+12 coins" />
 
     <ImageView
         android:id="@+id/bounty"
         android:layout_width="wrap_content"
-        android:layout_height="56dp"
-        android:layout_marginEnd="8dp"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="32dp"
+        android:layout_height="42dp"
+        android:layout_centerInParent="true"
         android:adjustViewBounds="true"
         android:scaleType="fitCenter"
         android:src="@drawable/food_fruit_1"
-        android:visibility="gone"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/earnedCoins" />
+        android:visibility="gone" />
 
     <TextView
         android:id="@+id/bountyQuantity"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="24dp"
-        android:layout_marginEnd="8dp"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="8dp"
+        android:layout_centerVertical="true"
+        android:layout_toStartOf="@+id/bounty"
         android:alpha="0"
         android:text="+1"
         android:textAppearance="@style/TextAppearance.AppCompat.Subhead"
+        android:textColor="@color/md_light_text_87"
         android:visibility="gone"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/bounty"
         tools:text="+1" />
-</android.support.constraint.ConstraintLayout>
+</RelativeLayout>

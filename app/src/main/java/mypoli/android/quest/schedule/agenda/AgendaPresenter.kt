@@ -81,11 +81,11 @@ class AgendaPresenter : AndroidStatePresenter<AppState, AgendaViewState> {
                 val start = agendaItem.start
                 val end = agendaItem.end
                 val label = if (start.month != end.month) {
-                    "${DateFormatter.formatWithoutYearSimple(start)} - ${DateFormatter.formatWithoutYearSimple(
+                    "${DateFormatter.formatDayWithWeek(start)} - ${DateFormatter.formatDayWithWeek(
                         end
                     )}"
                 } else {
-                    "${start.dayOfMonth} - ${DateFormatter.formatWithoutYearSimple(end)}"
+                    "${start.dayOfMonth} - ${DateFormatter.formatDayWithWeek(end)}"
                 }
 
                 AgendaViewController.WeekHeaderViewModel(label)

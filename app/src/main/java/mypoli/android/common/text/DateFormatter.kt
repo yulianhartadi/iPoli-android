@@ -5,6 +5,7 @@ import mypoli.android.R
 import mypoli.android.common.datetime.DateUtils
 import org.threeten.bp.DayOfWeek
 import org.threeten.bp.LocalDate
+import org.threeten.bp.format.DateTimeFormatter
 import org.threeten.bp.format.TextStyle
 import java.text.SimpleDateFormat
 import java.util.*
@@ -17,7 +18,7 @@ import java.util.*
 object DateFormatter {
     private val DEFAULT_EMPTY_VALUE = "Don't know"
     private val DEFAULT_DATE_FORMAT = SimpleDateFormat("dd MMM yy", Locale.getDefault())
-    private val DATE_NO_YEAR_FORMAT = SimpleDateFormat("d MMM", Locale.getDefault())
+    private val DAY_WEEK_FORMATTER = DateTimeFormatter.ofPattern("d MMM")
 
     fun format(context: Context, date: LocalDate?): String {
         if (date == null) {
@@ -55,14 +56,8 @@ object DateFormatter {
                 return date.dayOfWeek.getDisplayName(TextStyle.FULL, Locale.getDefault())
             }
         }
-        return DATE_NO_YEAR_FORMAT.format(DateUtils.toStartOfDay(date))
+        return DAY_WEEK_FORMATTER.format(date)
     }
 
-    fun formatWithoutYear(context: Context, date: LocalDate, currentDate: LocalDate): String {
-        return formatWithoutYear(context, date, DEFAULT_EMPTY_VALUE, currentDate)
-    }
-
-    fun formatWithoutYearSimple(date: LocalDate): String {
-        return DATE_NO_YEAR_FORMAT.format(DateUtils.toStartOfDay(date))
-    }
+    fun formatDayWithWeek(date: LocalDate): String = DAY_WEEK_FORMATTER.format(date)
 }

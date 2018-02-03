@@ -23,6 +23,11 @@ abstract class SwipeToCompleteCallback(
 ) :
     ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.END) {
 
+    companion object {
+        const val ALPHA_FULL = 1.0f
+        const val ALPHA_MAGNIFICATION = .8f
+    }
+
     private val completeSwipeIcon = ContextCompat.getDrawable(context, completeIcon)!!
     private val completeBackgroundColor = ContextCompat.getColor(context, completeBackground)
     private val undoCompletedSwipeIcon = ContextCompat.getDrawable(context, undoCompletedIcon)!!
@@ -47,6 +52,8 @@ abstract class SwipeToCompleteCallback(
         actionState: Int,
         isCurrentlyActive: Boolean
     ) {
+
+        val alpha = ALPHA_FULL - (Math.abs(dX) / viewHolder.itemView.width.toFloat()) * ALPHA_MAGNIFICATION
         if (dX > 0) {
             drawCompleteBackground(viewHolder.itemView, dX, c)
             drawCompleteIcon(viewHolder.itemView, c)
@@ -54,6 +61,8 @@ abstract class SwipeToCompleteCallback(
             drawUndoCompleteBackground(viewHolder.itemView, dX, c)
             drawUndoCompleteIcon(viewHolder.itemView, c)
         }
+        viewHolder.itemView.alpha = alpha
+
         super.onChildDraw(c, recyclerView, viewHolder, dX, dY, actionState, isCurrentlyActive)
     }
 

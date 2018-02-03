@@ -9,6 +9,7 @@ import android.graphics.PixelFormat
 import android.os.Build
 import android.os.Handler
 import android.os.Looper
+import android.support.annotation.DrawableRes
 import android.support.annotation.MainThread
 import android.util.AttributeSet
 import android.util.DisplayMetrics
@@ -53,8 +54,12 @@ class PopupBackgroundLayout : RelativeLayout {
     }
 }
 
-abstract class MviPopup<VS : ViewState, in V : ViewStateRenderer<VS>, out P : MviPresenter<V, VS, I>, in I : Intent>
-    (private val isAutoHide: Boolean = false, private val position: Position = Position.CENTER) :
+abstract class MviPopup<in VS : ViewState, in V : ViewStateRenderer<VS>, out P : MviPresenter<V, VS, I>, in I : Intent>
+    (
+    private val isAutoHide: Boolean = false,
+    private val position: Position = Position.CENTER,
+    @DrawableRes private val overlayBackground: Int? = R.color.md_dark_text_12
+) :
     ViewStateRenderer<VS>, Injects<Module> {
 
     enum class Position {
@@ -89,24 +94,33 @@ abstract class MviPopup<VS : ViewState, in V : ViewStateRenderer<VS>, out P : Mv
             ViewGroup.LayoutParams.MATCH_PARENT,
             ViewGroup.LayoutParams.MATCH_PARENT
         )
-        overlayView.setBackgroundResource(R.color.md_dark_text_12)
+
+        overlayBackground?.let {
+            overlayView.setBackgroundResource(it)
+        }
 
         val contentLp = RelativeLayout.LayoutParams(
             RelativeLayout.LayoutParams.MATCH_PARENT,
             RelativeLayout.LayoutParams.WRAP_CONTENT
         )
-        contentLp.marginStart = ViewUtils.dpToPx(32f, context).toInt()
-        contentLp.marginEnd = ViewUtils.dpToPx(32f, context).toInt()
         when (position) {
-            Position.CENTER -> contentLp.addRule(
-                RelativeLayout.CENTER_IN_PARENT,
-                RelativeLayout.TRUE
-            )
+            Position.CENTER -> {
+                contentLp.marginStart = ViewUtils.dpToPx(32f, context).toInt()
+                contentLp.marginEnd = ViewUtils.dpToPx(32f, context).toInt()
+                contentLp.addRule(
+                    RelativeLayout.CENTER_IN_PARENT,
+                    RelativeLayout.TRUE
+                )
+            }
             Position.TOP -> {
+                contentLp.marginStart = ViewUtils.dpToPx(16f, context).toInt()
+                contentLp.marginEnd = ViewUtils.dpToPx(16f, context).toInt()
                 contentLp.addRule(RelativeLayout.ALIGN_PARENT_TOP, RelativeLayout.TRUE)
                 contentLp.topMargin = ViewUtils.dpToPx(24f, context).toInt()
             }
             else -> {
+                contentLp.marginStart = ViewUtils.dpToPx(16f, context).toInt()
+                contentLp.marginEnd = ViewUtils.dpToPx(16f, context).toInt()
                 contentLp.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM, RelativeLayout.TRUE)
                 contentLp.bottomMargin = ViewUtils.dpToPx(24f, context).toInt()
             }
@@ -247,8 +261,8 @@ abstract class MviPopup<VS : ViewState, in V : ViewStateRenderer<VS>, out P : Mv
     }
 
     internal object WindowOverlayCompat {
-        private val ANDROID_OREO = 26
-        private val TYPE_APPLICATION_OVERLAY = 2038
+        private const val ANDROID_OREO = 26
+        private const val TYPE_APPLICATION_OVERLAY = 2038
 
         val TYPE_SYSTEM_ERROR =
             if (Build.VERSION.SDK_INT < ANDROID_OREO) WindowManager.LayoutParams.TYPE_SYSTEM_ERROR else TYPE_APPLICATION_OVERLAY

@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="quest_complete_message">
+        <item>Well done</item>
+        <item>Doing great</item>
+        <item>Awesome</item>
+        <item>I am proud of you</item>
+        <item>Sweet</item>
+        <item>You are a natural</item>
+        <item>Looking good</item>
+        <item>You rock</item>
+        <item>Bravo</item>
+        <item>Good job</item>
+        <item>Thank you!</item>
+        <item>Above and beyond</item>
+        <item>You still have it</item>
+        <item>You make it look easy</item>
+        <item>Subtle</item>
+        <item>Right on</item>
+        <item>Nicely done</item>
+        <item>I like that</item>
+        <item>Keep it up!</item>
+        <item>Not bad</item>
+        <item>That’s the way</item>
+        <item>Good for you!</item>
+        <item>I’m impressed</item>
+        <item>I knew you could do it</item>
+        <item>What neat work</item>
+        <item>Way to go</item>
+        <item>You’re doing fine</item>
+        <item>You’re doing it</item>
+        <item>That’s A work</item>
+    </string-array>
+</resources>

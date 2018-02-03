@@ -1,13 +1,8 @@
 package mypoli.android.quest.view
 
 import android.animation.*
-import android.support.transition.AutoTransition
-import android.support.transition.Transition
-import android.support.transition.TransitionListenerAdapter
-import android.support.transition.TransitionManager
 import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup
 import android.view.animation.OvershootInterpolator
 import kotlinx.android.synthetic.main.popup_quest_complete.view.*
 import kotlinx.coroutines.experimental.channels.consumeEach
@@ -26,6 +21,7 @@ import mypoli.android.pet.PetAvatar
 import mypoli.android.player.Player
 import mypoli.android.player.usecase.ListenForPlayerChangesUseCase
 import space.traversal.kapsule.required
+import java.util.*
 import kotlin.coroutines.experimental.CoroutineContext
 
 data class QuestCompleteViewState(
@@ -76,7 +72,9 @@ class QuestCompletePopup(
     private val earnedCoins: Int,
     private val bounty: Food? = null
 ) : MviPopup<QuestCompleteViewState, ViewStateRenderer<QuestCompleteViewState>, QuestCompletePresenter, QuestCompleteIntent>(
-    isAutoHide = true
+    position = MviPopup.Position.BOTTOM,
+    isAutoHide = true,
+    overlayBackground = null
 ) {
 
     private val presenter by required { questCompletePresenter }
@@ -102,9 +100,10 @@ class QuestCompletePopup(
     }
 
     private fun startTypingAnimation(contentView: View, state: QuestCompleteViewState) {
-        val title = contentView.title
-
-        val typewriterAnim = TypewriterTextAnimator.of(title, "Quest Complete")
+        val title = contentView.message
+        val messages = contentView.resources.getStringArray(R.array.quest_complete_message)
+        val message = messages[Random().nextInt(messages.size)]
+        val typewriterAnim = TypewriterTextAnimator.of(title, message)
         typewriterAnim.addListener(object : AnimatorListenerAdapter() {
             override fun onAnimationEnd(animation: Animator) {
                 startEarnedRewardAnimation(contentView, state)
@@ -117,25 +116,35 @@ class QuestCompletePopup(
         val earnedXP = contentView.earnedXP
         val earnedCoins = contentView.earnedCoins
 
-        earnedXP.visible = true
-        earnedCoins.visible = true
-
         val xpAnim = ValueAnimator.ofInt(0, state.xp!!)
+        xpAnim.addListener(object : AnimatorListenerAdapter() {
+            override fun onAnimationStart(animation: Animator?) {
+                earnedXP.visible = true
+            }
+        })
         xpAnim.addUpdateListener {
-            earnedXP.text = "+ ${it.animatedValue} XP"
+            earnedXP.text = "${it.animatedValue}"
         }
 
         val coinsAnim = ValueAnimator.ofInt(0, state.coins!!)
+
+        coinsAnim.addListener(object : AnimatorListenerAdapter() {
+            override fun onAnimationStart(animation: Animator?) {
+                earnedCoins.visible = true
+            }
+        })
+
         coinsAnim.addUpdateListener {
-            earnedCoins.text = "+ ${it.animatedValue} Life Coins"
+            earnedCoins.text = "${it.animatedValue}"
         }
 
         val anim = AnimatorSet()
         anim.duration = 300
-        anim.playTogether(xpAnim, coinsAnim)
+        anim.playSequentially(xpAnim, coinsAnim)
 
         anim.addListener(object : AnimatorListenerAdapter() {
             override fun onAnimationEnd(animation: Animator) {
+
                 if (state.bounty != null) playRewardAnimation(contentView)
                 else autoHideAfter(700)
             }
@@ -145,40 +154,43 @@ class QuestCompletePopup(
     }
 
     private fun playRewardAnimation(contentView: View) {
-        val transition = AutoTransition()
-        transition.addListener(object : TransitionListenerAdapter() {
 
-            override fun onTransitionEnd(transition: Transition) {
-                val xAnim = ObjectAnimator.ofFloat(contentView.bounty, "scaleX", 0f, 1f)
-                val yAnim = ObjectAnimator.ofFloat(contentView.bounty, "scaleY", 0f, 1f)
-                val set = AnimatorSet()
-                set.interpolator = OvershootInterpolator()
-                set.playTogether(xAnim, yAnim)
-                set.addListener(object : AnimatorListenerAdapter() {
+        val alphaSet = AnimatorSet()
+        alphaSet.playTogether(
+            ObjectAnimator.ofFloat(contentView.earnedCoins, "alpha", 1f, 0f),
+            ObjectAnimator.ofFloat(contentView.earnedXP, "alpha", 1f, 0f),
+            ObjectAnimator.ofFloat(contentView.message, "alpha", 1f, 0f)
+        )
+        alphaSet.startDelay = 500
 
-                    override fun onAnimationStart(animation: Animator?) {
-                        contentView.bounty.visible = true
-                        contentView.bountyQuantity.visible = true
-                    }
-
-                    override fun onAnimationEnd(animation: Animator?) {
-                        val fadeAnim =
-                            ObjectAnimator.ofFloat(contentView.bountyQuantity, "alpha", 0f, 1f)
-                        fadeAnim.addListener(object : AnimatorListenerAdapter() {
-                            override fun onAnimationEnd(animation: Animator?) {
-                                autoHideAfter(700)
-                            }
-                        })
-                        fadeAnim.start()
-                    }
-                })
-                set.start()
+        alphaSet.addListener(object : AnimatorListenerAdapter() {
+            override fun onAnimationEnd(animation: Animator?) {
+                playBountyAnimation(contentView)
             }
         })
 
+        alphaSet.start()
+    }
 
-        TransitionManager.beginDelayedTransition(contentView as ViewGroup, transition)
-        contentView.bounty.visible = false
-        contentView.bountyQuantity.visible = false
+    private fun playBountyAnimation(contentView: View) {
+        val qAnim = ObjectAnimator.ofFloat(contentView.bountyQuantity, "alpha", 0f, 1f)
+        val xAnim = ObjectAnimator.ofFloat(contentView.bounty, "scaleX", 0f, 1f)
+        val yAnim = ObjectAnimator.ofFloat(contentView.bounty, "scaleY", 0f, 1f)
+        val bountyAnim = AnimatorSet()
+        bountyAnim.interpolator = OvershootInterpolator()
+        bountyAnim.playTogether(qAnim, xAnim, yAnim)
+
+        bountyAnim.addListener(object : AnimatorListenerAdapter() {
+
+            override fun onAnimationStart(animation: Animator?) {
+                contentView.bounty.visible = true
+                contentView.bountyQuantity.visible = true
+            }
+
+            override fun onAnimationEnd(animation: Animator?) {
+                autoHideAfter(700)
+            }
+        })
+        bountyAnim.start()
     }
 }
