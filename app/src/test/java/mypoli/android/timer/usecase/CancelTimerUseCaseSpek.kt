@@ -7,6 +7,7 @@ import com.nhaarman.mockito_kotlin.mock
 import mypoli.android.common.datetime.Time
 import mypoli.android.quest.*
 import mypoli.android.quest.data.persistence.QuestRepository
+import mypoli.android.timer.job.TimerCompleteScheduler
 import mypoli.android.timer.pomodoros
 import org.amshove.kluent.`should be false`
 import org.jetbrains.spek.api.Spek
@@ -32,7 +33,7 @@ class CancelTimerUseCaseSpek : Spek({
                     invocation.getArgument(0)
                 }
             }
-            return CancelTimerUseCase(questRepoMock)
+            return CancelTimerUseCase(questRepoMock, mock<TimerCompleteScheduler>())
                 .execute(CancelTimerUseCase.Params(quest.id))
         }
 
