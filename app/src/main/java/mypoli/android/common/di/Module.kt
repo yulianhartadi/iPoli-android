@@ -139,7 +139,7 @@ class MainAndroidModule(private val context: Context) : AndroidModule {
     override val ratePopupScheduler get() = AndroidRatePopupScheduler()
 
     override val database: Database
-        get() = Database("myPoli", DatabaseConfiguration(context.applicationContext))
+        get() = Database("myPoli", DatabaseConfiguration.Builder(context).build())
 
     override val job get() = Job()
 }

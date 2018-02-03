@@ -1,10 +1,6 @@
 package mypoli.android.common.persistence
 
 import com.couchbase.lite.*
-import com.couchbase.lite.internal.query.LiveQuery
-import com.couchbase.lite.internal.query.QueryChangeListenerToken
-import com.couchbase.lite.query.QueryChange
-import com.couchbase.lite.query.QueryChangeListener
 import kotlinx.coroutines.experimental.channels.Channel
 import kotlinx.coroutines.experimental.channels.SendChannel
 import kotlinx.coroutines.experimental.launch
@@ -26,7 +22,7 @@ abstract class BaseCouchbaseRepository<E, out T>(
 
     override fun listenById(id: String) =
         listenForChange(
-            where = Meta.id.equalTo(id)
+            where = Meta.id.equalTo(Expression.value(id))
         )
 
     override fun listen() =
@@ -59,7 +55,7 @@ abstract class BaseCouchbaseRepository<E, out T>(
         orderBy: Ordering? = null,
         groupBy: GroupClause? = null
     ): Query {
-        val typeWhere = Expression.property("type").equalTo(modelType)
+        val typeWhere = Expression.property("type").equalTo(Expression.value(modelType))
             .and(Expression.property("removedAt").isNullOrMissing)
         val w = if (where == null) typeWhere else typeWhere.and(where)
 
@@ -78,7 +74,7 @@ abstract class BaseCouchbaseRepository<E, out T>(
                         val order = group.orderBy(orderBy)
 
                         if (limit != null) {
-                            return order.limit(limit)
+                            return order.limit(Expression.value(limit))
                         }
 
                         return order
@@ -86,7 +82,7 @@ abstract class BaseCouchbaseRepository<E, out T>(
                     }
 
                     if (limit != null) {
-                        return group.limit(limit)
+                        return group.limit(Expression.value(limit))
                     }
 
                     return group
@@ -98,14 +94,14 @@ abstract class BaseCouchbaseRepository<E, out T>(
                     val order = group.orderBy(orderBy)
 
                     if (limit != null) {
-                        return order.limit(limit)
+                        return order.limit(Expression.value(limit))
                     }
 
                     return order
                 }
 
                 if (limit != null) {
-                    return group.limit(limit)
+                    return group.limit(Expression.value(limit))
                 }
 
                 return group
@@ -114,12 +110,12 @@ abstract class BaseCouchbaseRepository<E, out T>(
                 val order = q.orderBy(orderBy)
 
                 if (limit != null) {
-                    return order.limit(limit)
+                    return order.limit(Expression.value(limit))
                 }
 
                 return order
             }
-            limit != null -> return q.limit(limit)
+            limit != null -> return q.limit(Expression.value(limit))
             else -> return q
         }
     }
@@ -137,7 +133,7 @@ abstract class BaseCouchbaseRepository<E, out T>(
         }
 
     protected fun toEntities(changes: QueryChange): List<E> =
-        toEntities(changes.rows.iterator())
+        toEntities(changes.results.iterator())
 
     protected fun toEntities(iterator: MutableIterator<Result>): List<E> {
         val list = mutableListOf<E>()
@@ -162,20 +158,20 @@ abstract class BaseCouchbaseRepository<E, out T>(
         channel: SendChannel<E>,
         handler: (changes: QueryChange) -> Unit
     ) {
-        val liveQuery = LiveQuery(query)
+//        val liveQuery = LiveQuery(query)
 
-        var listenerToken: QueryChangeListenerToken? = null
+        var listenerToken: ListenerToken? = null
 
         val changeListener = QueryChangeListener { changes ->
             if (channel.isClosedForSend) {
-                liveQuery.removeChangeListener(listenerToken)
-                liveQuery.stop()
+                query.removeChangeListener(listenerToken)
+//                query.stop()
             } else {
                 handler(changes)
             }
         }
 
-        listenerToken = liveQuery.addChangeListener(changeListener)
+        listenerToken = query.addChangeListener(changeListener)
     }
 
     private fun runQuery(
@@ -245,7 +241,7 @@ abstract class BaseCouchbaseRepository<E, out T>(
         val rowMap = row.toMap()
         @Suppress("UNCHECKED_CAST")
         val map = rowMap["myPoli"] as MutableMap<String, Any?>
-        map.put("id", rowMap["_id"])
+        map.put("id", rowMap["id"])
         return toEntityObject(map)
     }
 

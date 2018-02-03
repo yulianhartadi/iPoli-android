@@ -28,8 +28,8 @@ class CouchbasePlayerRepository(database: Database, coroutineContext: CoroutineC
     override fun findSchemaVersion(): Int? {
         val resultSet = Query.select(SelectResult.expression(Expression.property("schemaVersion")))
             .from(DataSource.database(database))
-            .where(Expression.property("type").equalTo(CouchbasePlayer.TYPE))
-            .limit(1).execute()
+            .where(Expression.property("type").equalTo(Expression.value(CouchbasePlayer.TYPE)))
+            .limit(Expression.value(1)).execute()
 
         return resultSet.next()?.getInt("schemaVersion")
     }
@@ -37,8 +37,8 @@ class CouchbasePlayerRepository(database: Database, coroutineContext: CoroutineC
     override fun hasPlayer(): Boolean {
         val resultSet = Query.select(SelectResult.expression(Meta.id))
             .from(DataSource.database(database))
-            .where(Expression.property("type").equalTo(CouchbasePlayer.TYPE))
-            .limit(1).execute()
+            .where(Expression.property("type").equalTo(Expression.value(CouchbasePlayer.TYPE)))
+            .limit(Expression.value(1)).execute()
         return resultSet.next() != null
     }
 

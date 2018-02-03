@@ -88,7 +88,10 @@ class CouchbaseQuestRepository(database: Database, coroutineContext: CoroutineCo
     override fun listenForScheduledBetween(startDate: LocalDate, endDate: LocalDate) =
         listenForChanges(
             where = property("scheduledDate")
-                .between(startDate.startOfDayUTC(), endDate.startOfDayUTC()),
+                .between(
+                    Expression.value(startDate.startOfDayUTC()),
+                    Expression.value(endDate.startOfDayUTC())
+                ),
             orderBy = Ordering.expression(property("startMinute"))
         )
 
@@ -96,7 +99,7 @@ class CouchbaseQuestRepository(database: Database, coroutineContext: CoroutineCo
         listenForChanges(
             where = property(
                 "scheduledDate"
-            ).equalTo(date.startOfDayUTC())
+            ).equalTo(Expression.value(date.startOfDayUTC()))
         )
 
     override fun findNextQuestsToRemind(afterTime: Long): List<Quest> {
@@ -115,12 +118,12 @@ class CouchbaseQuestRepository(database: Database, coroutineContext: CoroutineCo
                 SelectResult.expression(minDate),
                 SelectResult.expression(minMinute)
             ),
-            where = property("reminder.date").greaterThanOrEqualTo(remindDate)
-                .and(property("reminder.minute").greaterThan(time.toMinuteOfDay()))
-                .and(property("type").equalTo(modelType))
+            where = property("reminder.date").greaterThanOrEqualTo(Expression.value(remindDate))
+                .and(property("reminder.minute").greaterThan(Expression.value(time.toMinuteOfDay())))
+                .and(property("type").equalTo(Expression.value(modelType)))
                 .and(property("completedAtDate").isNullOrMissing),
             groupBy = GroupClause(
-                groupBy = property("_id"),
+                groupBy = property("id"),
                 having = property("reminder.minute").equalTo(minMinute).and(
                     property("reminder.date").equalTo(minDate)
                 )
@@ -135,9 +138,9 @@ class CouchbaseQuestRepository(database: Database, coroutineContext: CoroutineCo
         val e = Instant.ofEpochMilli(time).atZone(ZoneId.systemDefault())
         val remindTime = Time.at(e.hour, e.minute)
         val query = createQuery(
-            where = property("reminder.date").equalTo(remindDate)
-                .and(property("reminder.minute").equalTo(remindTime.toMinuteOfDay()))
-                .and(property("type").equalTo(modelType))
+            where = property("reminder.date").equalTo(Expression.value(remindDate))
+                .and(property("reminder.minute").equalTo(Expression.value(remindTime.toMinuteOfDay())))
+                .and(property("type").equalTo(Expression.value(modelType)))
                 .and(property("completedAtDate").isNullOrMissing)
         )
         return toEntities(query.execute().iterator())
@@ -147,7 +150,10 @@ class CouchbaseQuestRepository(database: Database, coroutineContext: CoroutineCo
     override fun findCompletedForDate(date: LocalDate): List<Quest> {
         val query = createQuery(
             where = property("completedAtDate")
-                .between(date.startOfDayUTC(), date.startOfDayUTC())
+                .between(
+                    Expression.value(date.startOfDayUTC()),
+                    Expression.value(date.startOfDayUTC())
+                )
         )
         return toEntities(query.execute().iterator())
     }
@@ -155,7 +161,7 @@ class CouchbaseQuestRepository(database: Database, coroutineContext: CoroutineCo
     override fun findStartedQuest(): Quest? {
         val query = createQuery(
             where = property("completedAtDate").isNullOrMissing
-                .and(ArrayFunction.length(property("timeRanges")).greaterThan(0)),
+                .and(ArrayFunction.length(property("timeRanges")).greaterThan(Expression.value(0))),
             limit = 1
         )
         val result = query.execute().next()
@@ -171,7 +177,7 @@ class CouchbaseQuestRepository(database: Database, coroutineContext: CoroutineCo
 
         val endDateQuery = createQuery(
             select = select(SelectResult.property("scheduledDate")),
-            where = property("scheduledDate").greaterThan(currentDate.startOfDayUTC()),
+            where = property("scheduledDate").greaterThan(Expression.value(currentDate.startOfDayUTC())),
             limit = maxQuests,
             orderBy = Ordering.property("scheduledDate").ascending()
         )
@@ -194,7 +200,7 @@ class CouchbaseQuestRepository(database: Database, coroutineContext: CoroutineCo
 
         val startDateQuery = createQuery(
             select = select(SelectResult.property("scheduledDate")),
-            where = property("scheduledDate").lessThan(currentDate.startOfDayUTC()),
+            where = property("scheduledDate").lessThan(Expression.value(currentDate.startOfDayUTC())),
             limit = maxQuests,
             orderBy = Ordering.property("scheduledDate").descending()
         )

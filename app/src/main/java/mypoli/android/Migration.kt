@@ -13,10 +13,10 @@ class Migration(private val database: Database) {
     fun run() {
         val resultSet = Query.select(SelectResult.expression(Meta.id))
             .from(DataSource.database(database))
-            .where(Expression.property("type").equalTo(CouchbasePlayer.TYPE))
-            .limit(1).execute()
+            .where(Expression.property("type").equalTo(Expression.value(CouchbasePlayer.TYPE)))
+            .limit(Expression.value(1)).execute()
 
-        val playerId = resultSet.next().getString("_id")
+        val playerId = resultSet.next().getString("id")
         var doc = database.getDocument(playerId).toMutable()
 
         if (!doc.contains("schemaVersion")) {
@@ -55,13 +55,13 @@ class Migration(private val database: Database) {
                 .from(DataSource.database(database))
                 .where(
                     Expression.property("type")
-                        .equalTo(CouchbaseQuest.TYPE)
+                        .equalTo(Expression.value(CouchbaseQuest.TYPE))
                 )
                 .execute()
 
             val iterator = questResultSet.iterator()
             while (iterator.hasNext()) {
-                val questId = iterator.next().getString("_id")
+                val questId = iterator.next().getString("id")
                 val questDoc = database.getDocument(questId).toMutable()
                 questDoc.setArray("timeRanges", MutableArray())
                 database.save(questDoc)
