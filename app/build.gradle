@@ -20,8 +20,8 @@ android {
         applicationId "mypoli.android"
         minSdkVersion 21
         targetSdkVersion 27
-        versionCode 19
-        versionName "Fancy complete"
+        versionCode 20
+        versionName "Happy thoughts"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
 
