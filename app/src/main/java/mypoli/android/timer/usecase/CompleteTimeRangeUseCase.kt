@@ -27,6 +27,8 @@ class CompleteTimeRangeUseCase(
         val quest = questRepository.findById(parameters.questId)
         requireNotNull(quest)
 
+        timerCompleteScheduler.cancelAll()
+
         val time = parameters.time
 
         if (quest!!.hasCountDownTimer) {

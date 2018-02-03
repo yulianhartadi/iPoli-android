@@ -227,7 +227,8 @@ class MainUseCaseModule : UseCaseModule, Injects<Module> {
         )
     override val cancelTimerUseCase
         get() = CancelTimerUseCase(
-            questRepository
+            questRepository,
+            timerCompleteScheduler
         )
     override val addPomodoroUseCase
         get() = AddPomodoroUseCase(
