@@ -158,14 +158,12 @@ abstract class BaseCouchbaseRepository<E, out T>(
         channel: SendChannel<E>,
         handler: (changes: QueryChange) -> Unit
     ) {
-//        val liveQuery = LiveQuery(query)
 
         var listenerToken: ListenerToken? = null
 
         val changeListener = QueryChangeListener { changes ->
             if (channel.isClosedForSend) {
                 query.removeChangeListener(listenerToken)
-//                query.stop()
             } else {
                 handler(changes)
             }
