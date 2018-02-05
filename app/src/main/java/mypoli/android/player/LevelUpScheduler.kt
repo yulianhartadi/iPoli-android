@@ -48,7 +48,7 @@ class AndroidLevelUpScheduler : LevelUpScheduler {
 
         JobRequest.Builder(LevelUpJob.TAG)
             .setExtras(params)
-            .setExact(1000)
+            .startNow()
             .build()
             .schedule()
     }
