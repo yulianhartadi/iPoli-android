@@ -20,8 +20,8 @@ android {
         applicationId "mypoli.android"
         minSdkVersion 21
         targetSdkVersion 27
-        versionCode 21
-        versionName "Magic Sync"
+        versionCode 22
+        versionName "Magic Cloud Sync"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
 
