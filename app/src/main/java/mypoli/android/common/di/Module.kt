@@ -6,6 +6,7 @@ import android.preference.PreferenceManager
 import android.view.LayoutInflater
 import com.couchbase.lite.Database
 import com.couchbase.lite.DatabaseConfiguration
+import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.experimental.CommonPool
 import kotlinx.coroutines.experimental.Job
 import mypoli.android.challenge.PersonalizeChallengePresenter
@@ -30,12 +31,13 @@ import mypoli.android.player.AndroidLevelDownScheduler
 import mypoli.android.player.AndroidLevelUpScheduler
 import mypoli.android.player.LevelDownScheduler
 import mypoli.android.player.LevelUpScheduler
-import mypoli.android.player.persistence.CouchbasePlayerRepository
+import mypoli.android.player.auth.saga.AuthSideEffect
+import mypoli.android.player.persistence.FirestorePlayerRepository
 import mypoli.android.player.persistence.PlayerRepository
 import mypoli.android.player.usecase.*
 import mypoli.android.player.view.LevelUpPresenter
 import mypoli.android.quest.CompletedQuestPresenter
-import mypoli.android.quest.data.persistence.CouchbaseQuestRepository
+import mypoli.android.quest.data.persistence.FirestoreQuestRepository
 import mypoli.android.quest.data.persistence.QuestRepository
 import mypoli.android.quest.job.AndroidJobQuestCompleteScheduler
 import mypoli.android.quest.job.AndroidJobReminderScheduler
@@ -75,11 +77,24 @@ interface RepositoryModule {
     val playerRepository: PlayerRepository
 }
 
-class CouchbaseRepositoryModule : RepositoryModule, Injects<Module> {
-    private val database by required { database }
-    private val job by required { job }
-    override val questRepository get() = CouchbaseQuestRepository(database, job + CommonPool)
-    override val playerRepository get() = CouchbasePlayerRepository(database, job + CommonPool)
+class FirestoreRepositoryModule : RepositoryModule, Injects<Module> {
+
+    override val questRepository by required {
+        FirestoreQuestRepository(
+            firestoreDatabase,
+            job + CommonPool,
+            sharedPreferences
+        )
+    }
+
+    override val playerRepository
+        by required {
+            FirestorePlayerRepository(
+                firestoreDatabase,
+                job + CommonPool,
+                sharedPreferences
+            )
+        }
 }
 
 interface AndroidModule {
@@ -94,6 +109,8 @@ interface AndroidModule {
     val calendarFormatter: CalendarFormatter
 
     val database: Database
+
+    val firestoreDatabase: FirebaseFirestore
 
     val reminderScheduler: ReminderScheduler
 
@@ -112,7 +129,10 @@ interface AndroidModule {
     val job: Job
 }
 
-class MainAndroidModule(private val context: Context) : AndroidModule {
+class MainAndroidModule(
+    private val context: Context,
+    firestoreDb: FirebaseFirestore
+) : AndroidModule {
     override val layoutInflater: LayoutInflater get() = LayoutInflater.from(context)
 
     override val sharedPreferences: SharedPreferences
@@ -137,6 +157,8 @@ class MainAndroidModule(private val context: Context) : AndroidModule {
     override val lowerPetStatsScheduler get() = AndroidJobLowerPetStatsScheduler()
 
     override val ratePopupScheduler get() = AndroidRatePopupScheduler()
+
+    override val firestoreDatabase = firestoreDb
 
     override val database: Database
         get() = Database("myPoli", DatabaseConfiguration.Builder(context).build())
@@ -481,14 +503,15 @@ class AndroidStateStoreModule : StateStoreModule, Injects<Module> {
             AppReducer,
             listOf(
                 SagaMiddleware<AppState>(
-                    sagas = listOf(
-                        LoadAllDataSaga(),
-                        AgendaSaga(),
-                        CompleteQuestSaga(),
-                        UndoCompletedQuestSaga(),
-                        BuyPredefinedChallengeSaga(),
-                        ChangePetSaga(),
-                        BuyPetSaga()
+                    sideEffects = listOf(
+                        LoadAllDataSideEffect(),
+                        AuthSideEffect(),
+                        AgendaSideEffect(),
+                        CompleteQuestSideEffect(),
+                        UndoCompletedQuestSideEffect(),
+                        BuyPredefinedChallengeSideEffect(),
+                        ChangePetSideEffect(),
+                        BuyPetSideEffect()
                     ),
                     coroutineContext = job + CommonPool
                 )

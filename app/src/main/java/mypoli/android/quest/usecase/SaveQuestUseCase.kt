@@ -2,7 +2,6 @@ package mypoli.android.quest.usecase
 
 import mypoli.android.common.UseCase
 import mypoli.android.common.Validator.Companion.validate
-import mypoli.android.common.datetime.DateUtils
 import mypoli.android.common.datetime.Time
 import mypoli.android.quest.*
 import mypoli.android.quest.data.persistence.QuestRepository
@@ -87,9 +86,9 @@ class SaveQuestUseCase(
 
         questRepository.save(quest)
 
-        val quests = questRepository.findNextQuestsToRemind(DateUtils.nowUTC().time)
-        if (quests.isNotEmpty()) {
-            reminderScheduler.schedule(quests.first().reminder!!.toMillis())
+        val reminderTime = questRepository.findNextReminderTime()
+        reminderTime?.let {
+            reminderScheduler.schedule(it)
         }
         return Added(quest)
     }

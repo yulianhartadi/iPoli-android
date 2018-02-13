@@ -6,13 +6,14 @@ import android.net.Uri
 import android.os.Bundle
 import android.view.*
 import com.amplitude.api.Amplitude
-import com.bluelinelabs.conductor.RestoreViewOnCreateController
 import com.bluelinelabs.conductor.RouterTransaction
 import com.bluelinelabs.conductor.changehandler.FadeChangeHandler
 import kotlinx.android.synthetic.main.controller_home.view.*
 import mypoli.android.Constants
 import mypoli.android.R
+import mypoli.android.auth.AuthViewController
 import mypoli.android.challenge.category.ChallengeCategoryListViewController
+import mypoli.android.common.redux.android.ReduxViewController
 import mypoli.android.common.view.FeedbackDialogController
 import mypoli.android.common.view.setToolbar
 import mypoli.android.common.view.showShortToast
@@ -26,7 +27,16 @@ import org.json.JSONObject
  * on 8/19/17.
  */
 class HomeViewController(args: Bundle? = null) :
-    RestoreViewOnCreateController(args) {
+    ReduxViewController<HomeAction, HomeViewState, HomePresenter>(args) {
+
+    override val presenter = HomePresenter()
+
+    private var showSignIn = true
+
+    override fun render(state: HomeViewState, view: View) {
+        showSignIn = state.showSignIn
+        activity?.invalidateOptionsMenu()
+    }
 
 //    private var navigationItemSelected: MenuItem? = null
 
@@ -51,34 +61,30 @@ class HomeViewController(args: Bundle? = null) :
 
     override fun onAttach(view: View) {
         super.onAttach(view)
-
         val handler = FadeChangeHandler()
         val childRouter = getChildRouter(view.controllerContainer, null)
         if (!childRouter.hasRootController()) {
             childRouter.setRoot(
-//                RouterTransaction.with(PetViewController())
                 RouterTransaction.with(ScheduleViewController())
-//                RouterTransaction.with(TimerViewController())
-//                RouterTransaction.with(ChallengeCategoryListViewController())
-//                RouterTransaction.with(PersonalizeChallengeViewController())
-//                RouterTransaction.with(ThemeStoreViewController())
+//                RouterTransaction.with(AuthViewController())
                     .pushChangeHandler(handler)
                     .popChangeHandler(handler)
             )
         }
-//        RatePopup().show(view.context)
-
-//        DurationPickerDialogController().showDialog(childRouter, "hello")
 
 //        router.pushController(RouterTransaction.with(TimerViewController()))
 //        actionBarDrawerToggle.syncState()
-
 
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         super.onCreateOptionsMenu(menu, inflater)
         inflater.inflate(R.menu.home_menu, menu)
+    }
+
+    override fun onPrepareOptionsMenu(menu: Menu) {
+        menu.findItem(R.id.actionSignIn).isVisible = showSignIn
+        super.onPrepareOptionsMenu(menu)
     }
 
     override fun onOptionsItemSelected(item: MenuItem) =
@@ -101,8 +107,22 @@ class HomeViewController(args: Bundle? = null) :
                 showChallenges()
                 true
             }
+            R.id.actionSignIn -> {
+                showAuth()
+                true
+            }
+
             else -> super.onOptionsItemSelected(item)
         }
+
+    private fun showAuth() {
+        val handler = FadeChangeHandler()
+        router.pushController(
+            RouterTransaction.with(AuthViewController())
+                .pushChangeHandler(handler)
+                .popChangeHandler(handler)
+        )
+    }
 
 
     private fun showPet() {

@@ -20,8 +20,10 @@ object TestUtil {
         level = 1,
         coins = 10,
         gems = 0,
+        username = "",
+        displayName = "",
         experience = 10,
-        authProvider = AuthProvider(),
+        authProvider = AuthProvider.Guest(""),
         pet = Pet(
             "",
             avatar = PetAvatar.ELEPHANT,

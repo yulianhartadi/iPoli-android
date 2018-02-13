@@ -1,19 +1,20 @@
 package mypoli.android.common
 
+import kotlinx.coroutines.experimental.android.UI
 import kotlinx.coroutines.experimental.channels.ReceiveChannel
 import kotlinx.coroutines.experimental.channels.consumeEach
 import kotlinx.coroutines.experimental.launch
 import mypoli.android.challenge.category.list.ChallengeListForCategoryAction
 import mypoli.android.challenge.usecase.BuyChallengeUseCase
 import mypoli.android.common.DataLoadedAction.PlayerChanged
-import mypoli.android.common.DataLoadedAction.TodayQuestsChanged
 import mypoli.android.common.di.Module
 import mypoli.android.common.redux.Action
 import mypoli.android.common.redux.Dispatcher
-import mypoli.android.common.redux.Saga
+import mypoli.android.common.redux.SideEffect
 import mypoli.android.myPoliApp
 import mypoli.android.pet.store.PetStoreAction
 import mypoli.android.pet.usecase.BuyPetUseCase
+import mypoli.android.player.Player
 import mypoli.android.quest.Quest
 import mypoli.android.quest.schedule.ScheduleAction
 import mypoli.android.quest.schedule.agenda.AgendaAction
@@ -31,7 +32,21 @@ import space.traversal.kapsule.required
  * Created by Venelin Valkov <venelin@mypoli.fun>
  * on 01/27/2018.
  */
-class BuyPredefinedChallengeSaga : Saga<AppState>, Injects<Module> {
+
+interface AppSideEffect : SideEffect<AppState>, Injects<Module> {
+    override suspend fun execute(action: Action, state: AppState, dispatcher: Dispatcher) {
+        inject(myPoliApp.module(myPoliApp.instance))
+        doExecute(action, state, dispatcher)
+    }
+
+    suspend fun doExecute(
+        action: Action,
+        state: AppState,
+        dispatcher: Dispatcher
+    )
+}
+
+class BuyPredefinedChallengeSideEffect : SideEffect<AppState>, Injects<Module> {
 
     private val buyChallengeUseCase by required { buyChallengeUseCase }
 
@@ -57,7 +72,7 @@ class BuyPredefinedChallengeSaga : Saga<AppState>, Injects<Module> {
     override fun canHandle(action: Action) = action is ChallengeListForCategoryAction.BuyChallenge
 }
 
-class ChangePetSaga : Saga<AppState>, Injects<Module> {
+class ChangePetSideEffect : SideEffect<AppState>, Injects<Module> {
 
     private val changePetUseCase by required { changePetUseCase }
 
@@ -70,7 +85,7 @@ class ChangePetSaga : Saga<AppState>, Injects<Module> {
 
 }
 
-class BuyPetSaga : Saga<AppState>, Injects<Module> {
+class BuyPetSideEffect : SideEffect<AppState>, Injects<Module> {
     private val buyPetUseCase by required { buyPetUseCase }
 
     override suspend fun execute(action: Action, state: AppState, dispatcher: Dispatcher) {
@@ -89,7 +104,7 @@ class BuyPetSaga : Saga<AppState>, Injects<Module> {
     override fun canHandle(action: Action) = action is PetStoreAction.BuyPet
 }
 
-class CompleteQuestSaga : Saga<AppState>, Injects<Module> {
+class CompleteQuestSideEffect : SideEffect<AppState>, Injects<Module> {
 
     private val completeQuestUseCase by required { completeQuestUseCase }
 
@@ -106,7 +121,7 @@ class CompleteQuestSaga : Saga<AppState>, Injects<Module> {
     override fun canHandle(action: Action) = action is AgendaAction.CompleteQuest
 }
 
-class UndoCompletedQuestSaga : Saga<AppState>, Injects<Module> {
+class UndoCompletedQuestSideEffect : SideEffect<AppState>, Injects<Module> {
 
     private val undoCompletedQuestUseCase by required { undoCompletedQuestUseCase }
 
@@ -123,7 +138,7 @@ class UndoCompletedQuestSaga : Saga<AppState>, Injects<Module> {
     override fun canHandle(action: Action) = action is AgendaAction.UndoCompleteQuest
 }
 
-class AgendaSaga : Saga<AppState>, Injects<Module> {
+class AgendaSideEffect : SideEffect<AppState>, Injects<Module> {
 
     private val findAgendaDatesUseCase by required { findAgendaDatesUseCase }
     private val createAgendaItemsUseCase by required { createAgendaItemsUseCase }
@@ -210,7 +225,7 @@ class AgendaSaga : Saga<AppState>, Injects<Module> {
     ) {
 
         var isFirstData = true
-        launch {
+        launch(UI) {
             scheduledQuestsChannel?.cancel()
             scheduledQuestsChannel = questRepository.listenForScheduledBetween(
                 start,
@@ -262,30 +277,59 @@ class AgendaSaga : Saga<AppState>, Injects<Module> {
 
 }
 
-class LoadAllDataSaga : Saga<AppState>, Injects<Module> {
+class LoadAllDataSideEffect : SideEffect<AppState>, Injects<Module> {
 
     private val playerRepository by required { playerRepository }
     private val questRepository by required { questRepository }
 
+    private var playerChannel: ReceiveChannel<Player?>? = null
+    private var scheduledQuestsChannel: ReceiveChannel<List<Quest>>? = null
+
     override suspend fun execute(action: Action, state: AppState, dispatcher: Dispatcher) {
         inject(myPoliApp.module(myPoliApp.instance))
 
-        if (action == LoadDataAction.All) {
-            launch {
-                playerRepository.listen().consumeEach {
-                    dispatcher.dispatch(PlayerChanged(it!!))
-                }
-            }
+        if (action is LoadDataAction.ChangePlayer) {
+            playerChannel?.cancel()
+            scheduledQuestsChannel?.cancel()
+            playerChannel = null
+            scheduledQuestsChannel = null
+            playerRepository.purge(action.oldPlayerId)
+            listenForPlayer(dispatcher)
+            listenForQuests(state, dispatcher)
         }
 
-        launch {
-            questRepository.listenForScheduledAt(state.appDataState.today).consumeEach {
-                dispatcher.dispatch(TodayQuestsChanged(it))
-            }
+        if (action == LoadDataAction.All) {
+            listenForPlayer(dispatcher)
+            listenForQuests(state, dispatcher)
         }
 
     }
 
+    private fun listenForQuests(
+        state: AppState,
+        dispatcher: Dispatcher
+    ) {
+        launch(UI) {
+            scheduledQuestsChannel?.cancel()
+            scheduledQuestsChannel =
+                questRepository.listenForScheduledAt(state.appDataState.today)
+            scheduledQuestsChannel!!.consumeEach {
+                dispatcher.dispatch(DataLoadedAction.TodayQuestsChanged(it))
+            }
+        }
+    }
+
+    private fun listenForPlayer(dispatcher: Dispatcher) {
+        launch(UI) {
+            playerChannel?.cancel()
+            playerChannel = playerRepository.listen()
+            playerChannel!!.consumeEach {
+                dispatcher.dispatch(PlayerChanged(it!!))
+            }
+        }
+    }
+
     override fun canHandle(action: Action) =
         action == LoadDataAction.All
+            || action is LoadDataAction.ChangePlayer
 }

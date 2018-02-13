@@ -10,7 +10,7 @@ import mypoli.android.common.redux.MiddleWare.Result.Continue
 
 interface Action
 
-interface Saga<in S : State> {
+interface SideEffect<in S : State> {
 
     suspend fun execute(action: Action, state: S, dispatcher: Dispatcher)
 
@@ -48,7 +48,7 @@ class StateStore<out S : State>(
 
         val transformer: StateTransformer<S, T>
 
-        fun changeIfNew(oldState: S, newState: S) {
+        fun changeState(oldState: S, newState: S) {
             val old = transformer.transform(oldState)
             val new = transformer.transform(newState)
             if (old != new) onStateChanged(new)
@@ -83,7 +83,7 @@ class StateStore<out S : State>(
 
     private fun notifyStateChanged(oldState: S, newState: S) {
         stateChangeSubscribers.forEach {
-            it.changeIfNew(oldState, newState)
+            it.changeState(oldState, newState)
         }
     }
 

@@ -83,7 +83,7 @@ interface Constants {
 
         val KEY_SHOULD_SHOW_TUTORIAL = "SHOULD_SHOW_TUTORIAL"
 
-        val IPOLI_EMAIL = "hi@mypoli.fun"
+        val MYPOLI_EMAIL = "hi@mypoli.fun"
 
         val API_RESOURCE_SOURCE = "ipoli-android"
         val DEFAULT_PLAYER_XP: Long = 20
@@ -167,7 +167,7 @@ interface Constants {
         val PREDEFINED_CHALLENGE_INDEX = "predefined_challenge_index"
         val RANDOM_SEED = 42 // duh!
         val MAX_TIMES_A_DAY_COUNT = 8
-        val SCHEMA_VERSION = 4
+        val SCHEMA_VERSION = 5
 
         val MAX_PENALTY_COEFFICIENT = 0.5
         val NO_QUESTS_PENALTY_COEFFICIENT = 0.3
@@ -210,6 +210,9 @@ interface Constants {
 
         const val NOTIFICATION_CHANNEL_ID = "myPoli"
         const val NOTIFICATION_CHANNEL_NAME = "myPoli"
+
+        const val USERNAME_MIN_LENGTH = 3
+        const val USERNAME_MAX_LENGTH = 20
 
         val LEVEL_UP_REWARDS = listOf<String>(
             "https://media2.giphy.com/media/l0MYt5jPR6QX5pnqM/giphy.gif",

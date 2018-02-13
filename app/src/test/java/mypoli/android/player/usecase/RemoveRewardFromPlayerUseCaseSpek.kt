@@ -3,13 +3,12 @@ package mypoli.android.player.usecase
 import com.nhaarman.mockito_kotlin.doReturn
 import com.nhaarman.mockito_kotlin.mock
 import com.nhaarman.mockito_kotlin.reset
+import mypoli.android.TestUtil
 import mypoli.android.common.SimpleReward
 import mypoli.android.pet.Pet
 import mypoli.android.pet.PetAvatar
-import mypoli.android.player.AuthProvider
 import mypoli.android.player.ExperienceForLevelGenerator
 import mypoli.android.player.LevelDownScheduler
-import mypoli.android.player.Player
 import mypoli.android.player.persistence.PlayerRepository
 import mypoli.android.quest.Quest
 import org.amshove.kluent.*
@@ -30,11 +29,10 @@ class RemoveRewardFromPlayerUseCaseSpek : Spek({
             moodPoints = Pet.AWESOME_MIN_MOOD_POINTS - 1
         )
 
-        val player = Player(
+        val player = TestUtil.player().copy(
             level = 2,
             coins = 10,
             experience = ExperienceForLevelGenerator.forLevel(2),
-            authProvider = AuthProvider(),
             pet = pet
         )
 

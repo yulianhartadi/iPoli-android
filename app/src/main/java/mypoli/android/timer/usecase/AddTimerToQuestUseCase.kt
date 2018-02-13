@@ -24,7 +24,10 @@ class AddTimerToQuestUseCase(
         val quest = questRepository.findById(parameters.questId)
         requireNotNull(quest)
 
-        val startedQuest = questRepository.findStartedQuest()
+        val startedQuests = questRepository.findStartedQuests()
+        require(startedQuests.size <= 1)
+        val startedQuest = startedQuests.firstOrNull()
+
         if (startedQuest != null) {
             cancelTimerUseCase.execute(CancelTimerUseCase.Params(startedQuest.id))
         }

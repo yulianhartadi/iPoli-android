@@ -47,8 +47,8 @@ class FeedbackDialogController : BaseDialogController {
     override fun onCreateContentView(inflater: LayoutInflater, savedViewState: Bundle?): View =
         inflater.inflate(R.layout.dialog_feedback, null)
 
-    override fun onHeaderViewCreated(headerView: View) {
-        headerView.dialogHeaderTitle.setText(R.string.rate_dialog_feedback_title)
+    override fun onHeaderViewCreated(headerView: View?) {
+        headerView!!.dialogHeaderTitle.setText(R.string.rate_dialog_feedback_title)
         headerView.dialogHeaderIcon.setImageResource(R.drawable.logo)
     }
 }

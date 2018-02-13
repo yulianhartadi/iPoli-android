@@ -58,7 +58,6 @@
     <string name="save">SAVE</string>
     <string name="title_fragment_repeating_quests">Repeating Quests</string>
     <string name="share">Share</string>
-    <string name="facebook_app_id">1609232436065758</string>
     <string name="invite_friends">Invite Friends</string>
     <string name="cannot_edit_completed_quests">Completed quests cannot be edited</string>
     <string name="fragment_overview_title">Your Journey Ahead</string>
@@ -251,6 +250,7 @@
     <string name="reward_earned">%s earned! Enjoy!</string>
     <string name="pet_store">Pets</string>
     <string name="no_internet_to_buy_coins">If you want some coins, you should enable your internet!</string>
+    <string name="sign_in_no_connection">I need Internet to get you in</string>
     <string name="something_went_wrong">Something went wrong, please try again later!</string>
     <string name="work_days_picker_title">Which days do you work?</string>
     <string name="work_hours_dialog_title">When do you work?</string>
@@ -326,10 +326,10 @@
     <string name="select_quests">Choose quests</string>
     <string name="title_edit_repeating_quest">Edit repeating quest</string>
     <string name="use_24_hour_format">Use 24-hour format</string>
-    <string name="sign_in_button">SIGN IN</string>
+    <string name="sign_in_button">Sign in</string>
     <string name="continue_as_guest">Continue as Guest*</string>
     <string name="sign_in_slogan">Join more than 20,000 heroes!</string>
-    <string name="guest_sign_up_warning">* When using Guest login your data is NOT guaranteed to be safely stored. Also, synchronization between your devices will not work! Use other sign up options if you want cloud-based, multi-device synchronization!</string>
+    <string name="guest_sign_up_warning">* When using Guest login your data is NOT guaranteed to be safely stored. Use other sign up options for cloud-based, multi-device synchronization!</string>
     <string name="sign_in_internet">myPoli needs internet to sign you in!</string>
     <string name="sign_in_loading_dialog_title">Letting you in</string>
     <string name="sign_in_loading_dialog_message">I hope that this will be quick and painless</string>
@@ -858,7 +858,7 @@
     <string name="username_is_empty">Come on, you need username</string>
     <string name="username_picker_title">Choose your username</string>
     <string name="username_wrong_format">Use only english letters, digits and underscore</string>
-    <string name="username_wrong_length">Use between %1$d and %2$d character</string>
+    <string name="username_wrong_length">Use between %1$d and %2$d characters</string>
     <string name="enable_internet_to_do_action">You need internet to do this</string>
     <string name="sign_in_to_view_profile">Please, sign in to view your profile</string>
     <string name="profile_default_bio">This player likes to keep things mysterious</string>
@@ -1124,4 +1124,17 @@
         <item>Weekly</item>
         <item>Monthly</item>
     </string-array>
+
+    <string name="facebook_application_id" translatable="false">1826884640679057</string>
+    <string name="facebook_login_protocol_scheme" translatable="false">fb1826884640679057</string>
+
+    <string name="facebook_app_id">1826884640679057</string>
+    <string name="fb_login_protocol_scheme">fb1826884640679057</string>
+    <string name="login_no_existing_user_error">There is no user with this account</string>
+    <string name="login_anonymous_no_existing_user_error">Please, register account</string>
+    <string name="loading">Loading...</string>
+    <string name="please_wait">Please wait ...</string>
+    <string name="login_error_contact_us_message">Something went really wrong</string>
+    <string name="help_me_login">Help me login</string>
+    <string name="welcome_back_hero">Welcome back, Hero!</string>
 </resources>

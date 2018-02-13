@@ -36,7 +36,7 @@
             app:layout_constraintRight_toRightOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/avatarPicture" />
 
-        <mehdi.sakout.fancybuttons.FancyButton
+        <Button
             android:id="@+id/avatarPrice"
             style="@style/Widget.AppCompat.Button.Colored"
             android:layout_width="match_parent"
@@ -47,11 +47,7 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintLeft_toLeftOf="parent"
-            app:layout_constraintRight_toRightOf="parent"
-            fancy:fb_defaultColor="@color/colorAccent"
-            fancy:fb_focusColor="@color/colorAccentDark"
-            fancy:fb_iconResource="@drawable/ic_life_coin_24dp"
-            fancy:fb_textSize="14sp" />
+            app:layout_constraintRight_toRightOf="parent" />
 
         <ImageView
             android:id="@+id/avatarPicture"

@@ -16,13 +16,17 @@ import mypoli.android.Constants
 import mypoli.android.MainActivity
 import mypoli.android.R
 import mypoli.android.common.datetime.Time
+import mypoli.android.common.datetime.toMillis
 import mypoli.android.common.di.Module
 import mypoli.android.common.view.asThemedWrapper
 import mypoli.android.myPoliApp
 import mypoli.android.quest.Quest
 import mypoli.android.reminder.view.ReminderNotificationPopup
 import mypoli.android.reminder.view.ReminderNotificationViewModel
+import org.threeten.bp.Instant
 import org.threeten.bp.LocalDate
+import org.threeten.bp.LocalDateTime
+import org.threeten.bp.ZoneId
 import org.threeten.bp.temporal.ChronoUnit
 import space.traversal.kapsule.Injects
 import space.traversal.kapsule.Kapsule
@@ -47,7 +51,15 @@ class ReminderNotificationJob : Job(), Injects<Module> {
         kap.inject(myPoliApp.module(context))
 
         val c = context.asThemedWrapper()
-        val quests = findQuestsToRemindUseCase.execute(params.extras.getLong("start", -1))
+        val remindAt = params.extras.getLong("remindAtUTC", -1)
+
+        require(remindAt >= 0)
+
+        val remindDateTime = LocalDateTime.ofInstant(
+            Instant.ofEpochMilli(remindAt),
+            ZoneId.systemDefault()
+        )
+        val quests = findQuestsToRemindUseCase.execute(remindDateTime)
         val pet = findPetUseCase.execute(Unit)
 
         launch(UI) {
@@ -142,18 +154,18 @@ class ReminderNotificationJob : Job(), Injects<Module> {
 }
 
 interface ReminderScheduler {
-    fun schedule(atTime: Long)
+    fun schedule(remindAt: LocalDateTime)
 }
 
 class AndroidJobReminderScheduler : ReminderScheduler {
-    override fun schedule(atTime: Long) {
+    override fun schedule(remindAt: LocalDateTime) {
         JobManager.instance().cancelAllForTag(ReminderNotificationJob.TAG)
 
         val bundle = PersistableBundleCompat()
-        bundle.putLong("start", atTime)
+        bundle.putLong("remindAtUTC", remindAt.toMillis())
         JobRequest.Builder(ReminderNotificationJob.TAG)
             .setExtras(bundle)
-            .setExact(atTime - System.currentTimeMillis())
+            .setExact(remindAt.toMillis() - System.currentTimeMillis())
             .build()
             .schedule()
     }

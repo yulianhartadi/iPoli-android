@@ -16,6 +16,7 @@ import mypoli.android.myPoliApp
 import space.traversal.kapsule.Injects
 import space.traversal.kapsule.inject
 import space.traversal.kapsule.required
+import timber.log.Timber
 
 /**
  * Created by Venelin Valkov <venelin@mypoli.fun>
@@ -65,7 +66,7 @@ abstract class ReduxViewController<in A : Action, VS : ViewState, out P : Androi
 
     override fun onStateChanged(newState: VS) {
         launch(UI) {
-
+            Timber.d("AAA render $this")
             render(newState, view!!)
         }
     }

@@ -5,7 +5,6 @@ package mypoli.android.common.persistence
  * on 8/20/17.
  */
 
-interface CouchbasePersistedModel : PersistedModel {
+interface FirestoreModel : PersistedModel {
     val map: Map<String, Any?>
-    var type: String
 }

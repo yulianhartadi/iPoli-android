@@ -1,5 +1,7 @@
 package mypoli.android.common
 
+import mypoli.android.auth.AuthReducer
+import mypoli.android.auth.AuthState
 import mypoli.android.challenge.category.list.ChallengeListForCategoryReducer
 import mypoli.android.challenge.category.list.ChallengeListForCategoryState
 import mypoli.android.common.redux.Action
@@ -23,6 +25,7 @@ interface AppStateReducer<out S : State> : Reducer<AppState, S>
 
 sealed class LoadDataAction : Action {
     object All : LoadDataAction()
+    data class ChangePlayer(val oldPlayerId : String) : LoadDataAction()
 }
 
 data class AppState(
@@ -31,7 +34,8 @@ data class AppState(
     val calendarState: CalendarState,
     val agendaState: AgendaState,
     val petStoreState: PetStoreState,
-    val challengeListForCategoryState: ChallengeListForCategoryState
+    val challengeListForCategoryState: ChallengeListForCategoryState,
+    val authState: AuthState
 ) : State
 
 object AppReducer : Reducer<AppState, AppState> {
@@ -41,7 +45,8 @@ object AppReducer : Reducer<AppState, AppState> {
         scheduleState = ScheduleReducer.reduce(state, action),
         calendarState = CalendarReducer.reduce(state, action),
         agendaState = AgendaReducer.reduce(state, action),
-        petStoreState = PetStoreReducer.reduce(state, action)
+        petStoreState = PetStoreReducer.reduce(state, action),
+        authState = AuthReducer.reduce(state, action)
     )
 
     override fun defaultState() =
@@ -51,6 +56,7 @@ object AppReducer : Reducer<AppState, AppState> {
             calendarState = CalendarReducer.defaultState(),
             agendaState = AgendaReducer.defaultState(),
             petStoreState = PetStoreReducer.defaultState(),
-            challengeListForCategoryState = ChallengeListForCategoryReducer.defaultState()
+            challengeListForCategoryState = ChallengeListForCategoryReducer.defaultState(),
+            authState = AuthReducer.defaultState()
         )
 }

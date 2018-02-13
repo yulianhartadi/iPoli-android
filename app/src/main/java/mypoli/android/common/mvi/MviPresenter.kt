@@ -57,11 +57,16 @@ abstract class BaseMviPresenter<in V : ViewStateRenderer<VS>, VS : ViewState, I 
 
                 channel.consumeEach { intent ->
                     try {
-                        val oldState = state
-                        state = reduceState(intent, state)
+                        launch(CommonPool) {
+                            val oldState = state
+                            state = reduceState(intent, state)
+                            longIntentChange(oldState, intent, state)
 
-                        longIntentChange(oldState, intent, state)
-                        view.render(state)
+                            launch(UI) {
+                                view.render(state)
+                            }
+                        }
+
                     } catch (e: Throwable) {
                         Timber.e(e, "From presenter ${this@BaseMviPresenter}")
                         Crashlytics.logException(

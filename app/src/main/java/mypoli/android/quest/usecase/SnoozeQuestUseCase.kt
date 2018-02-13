@@ -1,11 +1,10 @@
 package mypoli.android.quest.usecase
 
 import mypoli.android.Constants
-import mypoli.android.quest.job.ReminderScheduler
 import mypoli.android.common.UseCase
-import mypoli.android.common.datetime.DateUtils
 import mypoli.android.common.datetime.Time
 import mypoli.android.quest.data.persistence.QuestRepository
+import mypoli.android.quest.job.ReminderScheduler
 import org.threeten.bp.LocalDate
 
 /**
@@ -40,9 +39,11 @@ class SnoozeQuestUseCase(
     }
 
     private fun scheduleNextReminder() {
-        val quests = questRepository.findNextQuestsToRemind(DateUtils.nowUTC().time)
-        require(quests.isNotEmpty())
-        reminderScheduler.schedule(quests.first().reminder!!.toMillis())
+        val reminderTime = questRepository.findNextReminderTime()
+        requireNotNull(reminderTime)
+        reminderTime?.let {
+            reminderScheduler.schedule(it)
+        }
     }
 
     private fun calculateNewDateTime(date: LocalDate, time: Time): Pair<LocalDate, Time> {

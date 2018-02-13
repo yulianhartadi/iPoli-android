@@ -1,5 +1,6 @@
 package mypoli.android.player
 
+import android.net.Uri
 import mypoli.android.Constants
 import mypoli.android.challenge.data.PredefinedChallenge
 import mypoli.android.pet.Food
@@ -15,6 +16,8 @@ import org.threeten.bp.Instant
 data class Player(
     override val id: String = "",
     val schemaVersion: Int = Constants.SCHEMA_VERSION,
+    val username: String,
+    val displayName: String,
     val level: Int = 1,
     val coins: Int = Constants.DEFAULT_PLAYER_COINS,
     val gems: Int = Constants.DEFAULT_PLAYER_GEMS,
@@ -104,6 +107,9 @@ data class Player(
             val nextLevelXP = ExperienceForLevelGenerator.forLevel(level + 1).toInt()
             return nextLevelXP - thisLevelXP
         }
+
+    fun isLoggedIn() =
+        authProvider is AuthProvider.Google || authProvider is AuthProvider.Facebook
 }
 
 data class InventoryPet(
@@ -219,12 +225,22 @@ data class Inventory(
     }
 }
 
-data class AuthProvider(
-    val id: String = "",
-    val provider: String = "",
-    val firstName: String = "",
-    val lastName: String = "",
-    val username: String = "",
-    val email: String = "",
-    val image: String = ""
-)
+sealed class AuthProvider {
+    data class Facebook(
+        val userId: String,
+        val displayName: String,
+        val email: String,
+        val imageUrl: Uri
+    ) : AuthProvider()
+
+    data class Google(
+        val userId: String,
+        val displayName: String,
+        val email: String,
+        val imageUrl: Uri
+    ) : AuthProvider()
+
+    data class Guest(
+        val userId: String
+    ) : AuthProvider()
+}

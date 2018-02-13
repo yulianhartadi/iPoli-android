@@ -8,12 +8,18 @@ import mypoli.android.quest.Entity
  * on 8/18/17.
  */
 interface Repository<T> where T : Entity {
-    fun listenById(id: String): ReceiveChannel<T?>
-    fun listenForAll(): ReceiveChannel<List<T>>
+    fun save(entity: T): T
+}
+
+interface EntityRepository<T> : Repository<T> where T : Entity {
     fun listen(): ReceiveChannel<T?>
     fun find(): T?
+}
+
+interface CollectionRepository<T> : Repository<T> where T : Entity {
     fun findById(id: String): T?
-    fun save(entity: T): T
+    fun listenById(id: String): ReceiveChannel<T?>
+    fun listenForAll(): ReceiveChannel<List<T>>
     fun remove(entity: T)
     fun remove(id: String)
     fun undoRemove(id: String)

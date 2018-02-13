@@ -1,21 +1,19 @@
 package mypoli.android.quest.data.persistence
 
-import com.couchbase.lite.*
-import com.couchbase.lite.Expression.property
-import com.couchbase.lite.Function
+import android.content.SharedPreferences
+import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.Query
 import kotlinx.coroutines.experimental.channels.ReceiveChannel
 import mypoli.android.common.datetime.*
-import mypoli.android.common.persistence.BaseCouchbaseRepository
-import mypoli.android.common.persistence.CouchbasePersistedModel
-import mypoli.android.common.persistence.Repository
+import mypoli.android.common.persistence.BaseCollectionFirestoreRepository
+import mypoli.android.common.persistence.CollectionRepository
+import mypoli.android.common.persistence.FirestoreModel
 import mypoli.android.pet.Food
 import mypoli.android.quest.*
-import org.threeten.bp.Instant
-import org.threeten.bp.LocalDate
-import org.threeten.bp.ZoneId
+import org.threeten.bp.*
 import kotlin.coroutines.experimental.CoroutineContext
 
-interface QuestRepository : Repository<Quest> {
+interface QuestRepository : CollectionRepository<Quest> {
     fun listenForScheduledBetween(
         startDate: LocalDate,
         endDate: LocalDate
@@ -23,17 +21,16 @@ interface QuestRepository : Repository<Quest> {
 
     fun listenForScheduledAt(date: LocalDate): ReceiveChannel<List<Quest>>
 
-    fun findNextQuestsToRemind(afterTime: Long = DateUtils.nowUTC().time): List<Quest>
-    fun findQuestsToRemind(time: Long): List<Quest>
+    fun findNextReminderTime(afterTime: ZonedDateTime = ZonedDateTime.now(ZoneId.systemDefault())): LocalDateTime?
+    fun findQuestsToRemind(remindTime: LocalDateTime): List<Quest>
     fun findCompletedForDate(date: LocalDate): List<Quest>
-    fun findStartedQuest(): Quest?
+    fun findStartedQuests(): List<Quest>
     fun findLastScheduledDate(currentDate: LocalDate, maxQuests: Int): LocalDate?
     fun findFirstScheduledDate(currentDate: LocalDate, maxQuests: Int): LocalDate?
 }
 
-data class CouchbaseQuest(override val map: MutableMap<String, Any?> = mutableMapOf()) :
-    CouchbasePersistedModel {
-    override var type: String by map
+data class DbQuest(override val map: MutableMap<String, Any?> = mutableMapOf()) :
+    FirestoreModel {
     override var id: String by map
     var name: String by map
     var color: String by map
@@ -49,22 +46,19 @@ data class CouchbaseQuest(override val map: MutableMap<String, Any?> = mutableMa
     var completedAtDate: Long? by map
     var completedAtMinute: Long? by map
     var timeRanges: List<MutableMap<String, Any?>> by map
+    var timeRangeCount: Int by map
     override var createdAt: Long by map
     override var updatedAt: Long by map
     override var removedAt: Long? by map
-
-    companion object {
-        const val TYPE = "Quest"
-    }
 }
 
-data class CouchbaseReminder(val map: MutableMap<String, Any?> = mutableMapOf()) {
+data class DbReminder(val map: MutableMap<String, Any?> = mutableMapOf()) {
     var message: String by map
     var minute: Int by map
     var date: Long by map
 }
 
-data class CouchbaseBounty(val map: MutableMap<String, Any?> = mutableMapOf()) {
+data class DbBounty(val map: MutableMap<String, Any?> = mutableMapOf()) {
     var type: String by map
     var name: String? by map
 
@@ -73,163 +67,191 @@ data class CouchbaseBounty(val map: MutableMap<String, Any?> = mutableMapOf()) {
     }
 }
 
-data class CouchbaseTimeRange(val map: MutableMap<String, Any?> = mutableMapOf()) {
+data class DbTimeRange(val map: MutableMap<String, Any?> = mutableMapOf()) {
     var type: String by map
     var duration: Int by map
     var start: Long? by map
     var end: Long? by map
 }
 
-class CouchbaseQuestRepository(database: Database, coroutineContext: CoroutineContext) :
-    BaseCouchbaseRepository<Quest, CouchbaseQuest>(database, coroutineContext), QuestRepository {
+class FirestoreQuestRepository(
+    database: FirebaseFirestore,
+    coroutineContext: CoroutineContext,
+    sharedPreferences: SharedPreferences
+) : BaseCollectionFirestoreRepository<Quest, DbQuest>(
+    database,
+    coroutineContext,
+    sharedPreferences
+), QuestRepository {
 
-    override val modelType = CouchbaseQuest.TYPE
+    override fun listenForScheduledBetween(
+        startDate: LocalDate,
+        endDate: LocalDate
+    ): ReceiveChannel<List<Quest>> {
 
-    override fun listenForScheduledBetween(startDate: LocalDate, endDate: LocalDate) =
-        listenForChanges(
-            where = property("scheduledDate")
-                .between(
-                    Expression.value(startDate.startOfDayUTC()),
-                    Expression.value(endDate.startOfDayUTC())
-                ),
-            orderBy = Ordering.expression(property("startMinute"))
-        )
-
-    override fun listenForScheduledAt(date: LocalDate) =
-        listenForChanges(
-            where = property(
-                "scheduledDate"
-            ).equalTo(Expression.value(date.startOfDayUTC()))
-        )
-
-    override fun findNextQuestsToRemind(afterTime: Long): List<Quest> {
-
-        val remindDate = DateUtils.fromMillis(afterTime).startOfDayUTC()
-
-        val e = Instant.ofEpochMilli(afterTime).atZone(ZoneId.systemDefault())
-        val time = Time.at(e.hour, e.minute)
-        val minDate = Function.min(property("reminder.date"))
-        val minMinute = Function.min(property("reminder.minute"))
-
-        val query = createQuery(
-            select = select(
-                SelectResult.all(),
-                SelectResult.expression(Meta.id),
-                SelectResult.expression(minDate),
-                SelectResult.expression(minMinute)
-            ),
-            where = property("reminder.date").greaterThanOrEqualTo(Expression.value(remindDate))
-                .and(property("reminder.minute").greaterThan(Expression.value(time.toMinuteOfDay())))
-                .and(property("type").equalTo(Expression.value(modelType)))
-                .and(property("completedAtDate").isNullOrMissing),
-            groupBy = GroupClause(
-                groupBy = property("id"),
-                having = property("reminder.minute").equalTo(minMinute).and(
-                    property("reminder.date").equalTo(minDate)
-                )
-            ),
-            orderBy = Ordering.expression(property("reminder.minute"))
-        )
-        return toEntities(query.execute().iterator())
+        val query = collectionReference
+            .whereGreaterThanOrEqualTo("scheduledDate", startDate.startOfDayUTC())
+            .whereLessThanOrEqualTo("scheduledDate", endDate.startOfDayUTC())
+            .orderBy("scheduledDate")
+            .orderBy("startMinute")
+        return listenForChanges(query)
     }
 
-    override fun findQuestsToRemind(time: Long): List<Quest> {
-        val remindDate = DateUtils.fromMillis(time).startOfDayUTC()
-        val e = Instant.ofEpochMilli(time).atZone(ZoneId.systemDefault())
-        val remindTime = Time.at(e.hour, e.minute)
-        val query = createQuery(
-            where = property("reminder.date").equalTo(Expression.value(remindDate))
-                .and(property("reminder.minute").equalTo(Expression.value(remindTime.toMinuteOfDay())))
-                .and(property("type").equalTo(Expression.value(modelType)))
-                .and(property("completedAtDate").isNullOrMissing)
-        )
-        return toEntities(query.execute().iterator())
+    override fun listenForScheduledAt(date: LocalDate): ReceiveChannel<List<Quest>> {
+        val query = collectionReference
+            .whereEqualTo("scheduledDate", date.startOfDayUTC())
+        return listenForChanges(query)
+    }
 
+    override fun findNextReminderTime(afterTime: ZonedDateTime): LocalDateTime? {
+
+        val currentDateMillis = afterTime.toLocalDate().startOfDayUTC()
+
+        val millisOfDay = afterTime.toLocalTime().toSecondOfDay().seconds.millisValue
+
+        val query =
+            remindersReference
+                .orderBy("date")
+                .orderBy("millisOfDay")
+                .startAt(
+                    currentDateMillis,
+                    millisOfDay + 1
+                )
+                .limit(1)
+
+        val documents = query.documents
+        if (documents.isEmpty()) {
+            return null
+        }
+
+        val reminder = documents[0]
+
+        val remindDate = (reminder.get("date") as Long).startOfDayUtc
+        val remindMillis = reminder.get("millisOfDay") as Long
+        return LocalDateTime.of(
+            remindDate,
+            LocalTime.ofSecondOfDay(remindMillis.milliseconds.asSeconds.longValue)
+        )
+    }
+
+    override fun findQuestsToRemind(remindTime: LocalDateTime): List<Quest> {
+        val query = remindersReference
+            .whereEqualTo("date", remindTime.toLocalDate().startOfDayUTC())
+            .whereEqualTo(
+                "millisOfDay", remindTime.toLocalTime().toSecondOfDay().seconds.millisValue
+            )
+        val documents = query.documents
+        if (documents.isEmpty()) {
+            return listOf()
+        }
+        val questIds = documents.map {
+            it["questId"]
+        }
+
+        var questRef: Query = collectionReference
+        questIds.forEach {
+            questRef = questRef.whereEqualTo("id", it)
+        }
+        return questRef.entities
+    }
+
+    override fun findStartedQuests(): List<Quest> {
+        val query = collectionReference
+            .whereEqualTo("completedAtDate", null)
+            .whereGreaterThan("timeRangeCount", 0)
+        return query.entities
     }
 
     override fun findCompletedForDate(date: LocalDate): List<Quest> {
-        val query = createQuery(
-            where = property("completedAtDate")
-                .between(
-                    Expression.value(date.startOfDayUTC()),
-                    Expression.value(date.startOfDayUTC())
-                )
-        )
-        return toEntities(query.execute().iterator())
+        val query = collectionReference
+            .whereGreaterThanOrEqualTo("completedAtDate", date.startOfDayUTC())
+            .whereLessThanOrEqualTo("completedAtDate", date.startOfDayUTC())
+        return query.entities
     }
 
-    override fun findStartedQuest(): Quest? {
-        val query = createQuery(
-            where = property("completedAtDate").isNullOrMissing
-                .and(ArrayFunction.length(property("timeRanges")).greaterThan(Expression.value(0))),
-            limit = 1
-        )
-        val result = query.execute().next()
-        return result?.let {
-            toEntityObject(it)
-        }
-    }
+    override fun findLastScheduledDate(currentDate: LocalDate, maxQuests: Int): LocalDate? {
+        val endDateQuery = collectionReference
+            .whereGreaterThan("scheduledDate", currentDate.startOfDayUTC())
+            .limit(maxQuests.toLong())
+            .orderBy("scheduledDate", Query.Direction.ASCENDING)
+        val endDateQuests = endDateQuery.entities
 
-    override fun findLastScheduledDate(
-        currentDate: LocalDate,
-        maxQuests: Int
-    ): LocalDate? {
-
-        val endDateQuery = createQuery(
-            select = select(SelectResult.property("scheduledDate")),
-            where = property("scheduledDate").greaterThan(Expression.value(currentDate.startOfDayUTC())),
-            limit = maxQuests,
-            orderBy = Ordering.property("scheduledDate").ascending()
-        )
-
-        val endDateIterator = endDateQuery.execute().iterator()
-
-        if (!endDateIterator.hasNext()) {
+        if (endDateQuests.isEmpty()) {
             return null
         }
 
-        val endDateRes = endDateIterator.asSequence().last()
-
-        return endDateRes.getLong("scheduledDate").startOfDayUtc
+        return endDateQuests.last().scheduledDate
     }
 
-    override fun findFirstScheduledDate(
-        currentDate: LocalDate,
-        maxQuests: Int
-    ): LocalDate? {
+    override fun findFirstScheduledDate(currentDate: LocalDate, maxQuests: Int): LocalDate? {
+        val startDateQuery = collectionReference
+            .whereLessThan("scheduledDate", currentDate.startOfDayUTC())
+            .limit(maxQuests.toLong())
+            .orderBy("scheduledDate", Query.Direction.DESCENDING)
+        val startDateQuests = startDateQuery.entities
 
-        val startDateQuery = createQuery(
-            select = select(SelectResult.property("scheduledDate")),
-            where = property("scheduledDate").lessThan(Expression.value(currentDate.startOfDayUTC())),
-            limit = maxQuests,
-            orderBy = Ordering.property("scheduledDate").descending()
-        )
-
-        val startDateIterator = startDateQuery.execute().iterator()
-
-        if (!startDateIterator.hasNext()) {
+        if (startDateQuests.isEmpty()) {
             return null
         }
 
-        val startDateRes = startDateIterator.asSequence().last()
-
-        return startDateRes.getLong("scheduledDate").startOfDayUtc
+        return startDateQuests.last().scheduledDate
     }
 
-    private fun extractDateToQuestCount(query: Query): MutableMap<LocalDate, Int> {
-        val queryIterator = query.execute().iterator()
+    override val collectionReference
+        get() = database.collection("players").document(playerId).collection("quests")
 
-        val result = mutableMapOf<LocalDate, Int>()
+    private val remindersReference
+        get() = database.collection("players").document(playerId).collection("reminders")
 
-        queryIterator.forEach {
-            result[it.getLong("scheduledDate").startOfDayUtc] = it.getInt("cnt")
+    override fun save(entity: Quest): Quest {
+        val quest = super.save(entity)
+        quest.reminder?.let {
+            saveReminders(quest.id, listOf(it))
         }
+        return quest
+    }
 
-        return result
+    private fun saveReminders(questId: String, reminders: List<Reminder>) {
+        deleteReminders(questId)
+        addReminders(reminders, questId)
+    }
+
+    private fun addReminders(
+        reminders: List<Reminder>,
+        questId: String
+    ) {
+        reminders.forEach {
+            val r = mapOf(
+                "questId" to questId,
+                "date" to it.remindDate.startOfDayUTC(),
+                "millisOfDay" to it.remindTime.toMillisOfDay()
+            )
+            remindersReference.add(r)
+        }
+    }
+
+    private fun deleteReminders(questId: String) {
+        val query = remindersReference.whereEqualTo("questId", questId)
+        query.documents.forEach {
+            remindersReference.document(it.id).delete()
+        }
+    }
+
+    override fun remove(id: String) {
+        super.remove(id)
+        deleteReminders(id)
+    }
+
+    override fun undoRemove(id: String) {
+        super.undoRemove(id)
+        val quest = findById(id)!!
+        quest.reminder?.let {
+            addReminders(listOf(it), id)
+        }
     }
 
     override fun toEntityObject(dataMap: MutableMap<String, Any?>): Quest {
-        val cq = CouchbaseQuest(dataMap.withDefault {
+        val cq = DbQuest(dataMap.withDefault {
             null
         })
 
@@ -250,10 +272,10 @@ class CouchbaseQuestRepository(database: Database, coroutineContext: CoroutineCo
             experience = cq.experience?.toInt(),
             coins = cq.coins?.toInt(),
             bounty = cq.bounty?.let {
-                val cr = CouchbaseBounty(it)
+                val cr = DbBounty(it)
                 when {
-                    cr.type == CouchbaseBounty.Type.NONE.name -> Quest.Bounty.None
-                    cr.type == CouchbaseBounty.Type.FOOD.name -> Quest.Bounty.Food(Food.valueOf(cr.name!!))
+                    cr.type == DbBounty.Type.NONE.name -> Quest.Bounty.None
+                    cr.type == DbBounty.Type.FOOD.name -> Quest.Bounty.Food(Food.valueOf(cr.name!!))
                     else -> null
                 }
             },
@@ -262,11 +284,11 @@ class CouchbaseQuestRepository(database: Database, coroutineContext: CoroutineCo
                 Time.of(it.toInt())
             },
             reminder = cq.reminder?.let {
-                val cr = CouchbaseReminder(it)
+                val cr = DbReminder(it)
                 Reminder(cr.message, Time.of(cr.minute), cr.date.startOfDayUtc)
             },
             timeRanges = cq.timeRanges.map {
-                val ctr = CouchbaseTimeRange(it)
+                val ctr = DbTimeRange(it)
                 TimeRange(
                     TimeRange.Type.valueOf(ctr.type),
                     ctr.duration,
@@ -277,28 +299,26 @@ class CouchbaseQuestRepository(database: Database, coroutineContext: CoroutineCo
         )
     }
 
-    override fun toCouchbaseObject(entity: Quest): CouchbaseQuest {
-        val q = CouchbaseQuest()
+    override fun toDatabaseObject(entity: Quest): DbQuest {
+        val q = DbQuest()
         q.id = entity.id
         q.name = entity.name
         q.category = entity.category.name
         q.color = entity.color.name
         q.icon = entity.icon?.name
         q.duration = entity.duration
-        q.type = CouchbaseQuest.TYPE
         q.scheduledDate = entity.scheduledDate.startOfDayUTC()
         q.reminder = entity.reminder?.let {
-            createCouchbaseReminder(it).map
+            createDbReminder(it).map
         }
         q.experience = entity.experience?.toLong()
         q.coins = entity.coins?.toLong()
         q.bounty = entity.bounty?.let {
-            val cr = CouchbaseBounty()
+            val cr = DbBounty()
 
             cr.type = when (it) {
-                is Quest.Bounty.None -> CouchbaseBounty.Type.NONE.name
-                is Quest.Bounty.Food -> CouchbaseBounty.Type.FOOD.name
-                else -> throw IllegalArgumentException("Unexpected bounty type: ${it}")
+                Quest.Bounty.None -> DbBounty.Type.NONE.name
+                is Quest.Bounty.Food -> DbBounty.Type.FOOD.name
             }
 
             if (it is Quest.Bounty.Food) {
@@ -311,13 +331,14 @@ class CouchbaseQuestRepository(database: Database, coroutineContext: CoroutineCo
         q.completedAtDate = entity.completedAtDate?.startOfDayUTC()
         q.completedAtMinute = entity.completedAtTime?.toMinuteOfDay()?.toLong()
         q.timeRanges = entity.timeRanges.map {
-            createCouchbaseTimeRange(it).map
+            createDbTimeRange(it).map
         }
+        q.timeRangeCount = q.timeRanges.size
         return q
     }
 
-    private fun createCouchbaseTimeRange(timeRange: TimeRange): CouchbaseTimeRange {
-        val cTimeRange = CouchbaseTimeRange()
+    private fun createDbTimeRange(timeRange: TimeRange): DbTimeRange {
+        val cTimeRange = DbTimeRange()
         cTimeRange.type = timeRange.type.name
         cTimeRange.duration = timeRange.duration
         cTimeRange.start = timeRange.start?.toEpochMilli()
@@ -325,11 +346,12 @@ class CouchbaseQuestRepository(database: Database, coroutineContext: CoroutineCo
         return cTimeRange
     }
 
-    private fun createCouchbaseReminder(reminder: Reminder): CouchbaseReminder {
-        val cr = CouchbaseReminder()
+    private fun createDbReminder(reminder: Reminder): DbReminder {
+        val cr = DbReminder()
         cr.message = reminder.message
         cr.date = reminder.remindDate.startOfDayUTC()
         cr.minute = reminder.remindTime.toMinuteOfDay()
         return cr
     }
+
 }

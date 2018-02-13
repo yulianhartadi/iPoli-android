@@ -23,10 +23,9 @@ class RemoveQuestUseCase(
             timerCompleteScheduler.cancelAll()
         }
         questRepository.remove(parameters)
-        val quests = questRepository.findNextQuestsToRemind()
-        if (quests.isNotEmpty()) {
-            val reminder = quests[0].reminder!!
-            reminderScheduler.schedule(reminder.toMillis())
+        val reminderTime = questRepository.findNextReminderTime()
+        reminderTime?.let {
+            reminderScheduler.schedule(it)
         }
     }
 }

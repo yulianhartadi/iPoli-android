@@ -98,7 +98,7 @@ object MiddlewareSpek : Spek({
 
         var asyncExecutes = 0
 
-        class TestSaga : Saga<TestState> {
+        class TestSideEffect : SideEffect<TestState> {
             override fun canHandle(action: Action) = action is TestAction
 
             override suspend fun execute(action: Action, state: TestState, dispatcher: Dispatcher) {
@@ -115,7 +115,7 @@ object MiddlewareSpek : Spek({
             runBlocking {
                 executeMiddleware(
                     SagaMiddleware<TestState>(
-                        sagas = listOf(TestSaga()),
+                        sideEffects = listOf(TestSideEffect()),
                         coroutineContext = coroutineContext
                     ),
                     TestAction()
@@ -126,7 +126,7 @@ object MiddlewareSpek : Spek({
 
         it("should not execute saga") {
 
-            class NoExecuteSaga : Saga<TestState> {
+            class NoExecuteSideEffect : SideEffect<TestState> {
                 override fun canHandle(action: Action) = false
 
                 override suspend fun execute(action: Action, state: TestState, dispatcher: Dispatcher) {
@@ -137,7 +137,7 @@ object MiddlewareSpek : Spek({
             runBlocking {
                 executeMiddleware(
                     SagaMiddleware<TestState>(
-                        sagas = listOf(NoExecuteSaga()),
+                        sideEffects = listOf(NoExecuteSideEffect()),
                         coroutineContext = coroutineContext
                     ),
                     TestAction()

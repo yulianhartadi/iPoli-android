@@ -54,7 +54,10 @@ abstract class BaseDialogController : RestoreViewOnCreateController {
 
         val dialogBuilder = AlertDialog.Builder(activity!!)
             .setView(contentView)
-            .setCustomTitle(headerView)
+
+        headerView?.let {
+            dialogBuilder.setCustomTitle(headerView)
+        }
         dialog = onCreateDialog(dialogBuilder, contentView, savedViewState)
 
         dialog.ownerActivity = activity!!
@@ -68,11 +71,11 @@ abstract class BaseDialogController : RestoreViewOnCreateController {
         return View(activity)
     }
 
-    protected open fun createHeaderView(inflater: LayoutInflater): View {
+    protected open fun createHeaderView(inflater: LayoutInflater): View? {
         return inflater.inflate(R.layout.view_dialog_header, null)
     }
 
-    protected open fun onHeaderViewCreated(headerView: View) {
+    protected open fun onHeaderViewCreated(headerView: View?) {
 
     }
 

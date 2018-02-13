@@ -35,7 +35,7 @@ class AddTimerToQuestUseCaseSpek : Spek({
                 on { save(any()) } doAnswer { invocation ->
                     invocation.getArgument(0)
                 }
-                on { findStartedQuest() } doReturn startedQuest
+                on { findStartedQuests() } doReturn listOf(startedQuest!!)
             }
             return AddTimerToQuestUseCase(questRepoMock, mock(), mock())
                 .execute(AddTimerToQuestUseCase.Params(quest.id, isPomodoro, time))

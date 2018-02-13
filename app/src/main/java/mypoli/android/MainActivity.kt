@@ -8,17 +8,20 @@ import android.provider.Settings
 import android.support.v7.app.AppCompatActivity
 import android.util.Log
 import android.view.View
+import android.widget.Toast
 import com.amplitude.api.Amplitude
 import com.bluelinelabs.conductor.Conductor
 import com.bluelinelabs.conductor.Router
 import com.bluelinelabs.conductor.RouterTransaction
+import kotlinx.coroutines.experimental.CommonPool
+import kotlinx.coroutines.experimental.android.UI
+import kotlinx.coroutines.experimental.launch
+import mypoli.android.auth.AuthViewController
 import mypoli.android.common.LoadDataAction
+import mypoli.android.common.LoaderDialogController
 import mypoli.android.common.di.Module
 import mypoli.android.common.view.playerTheme
 import mypoli.android.home.HomeViewController
-import mypoli.android.player.AuthProvider
-import mypoli.android.player.Player
-import mypoli.android.player.persistence.model.ProviderType
 import mypoli.android.timer.TimerViewController
 import space.traversal.kapsule.Injects
 import space.traversal.kapsule.inject
@@ -66,36 +69,51 @@ class MainActivity : AppCompatActivity(), Injects<Module> {
         router.setPopsLastView(true)
         inject(myPoliApp.module(this))
 
-        if (!playerRepository.hasPlayer()) {
-            val player = Player(
-                authProvider = AuthProvider(provider = ProviderType.ANONYMOUS.name),
-                schemaVersion = Constants.SCHEMA_VERSION
-            )
-            playerRepository.save(player)
-            petStatsChangeScheduler.schedule()
+        if (database.count > 0) {
+            startApp()
+        } else if (!playerRepository.hasPlayer()) {
+            router.setRoot(RouterTransaction.with(AuthViewController()))
+            return
         } else {
-            migrateIfNeeded()
+            startApp()
         }
 
-        val startIntent = intent
-        if (startIntent != null && startIntent.action == ACTION_SHOW_TIMER) {
-            val questId = intent.getStringExtra(Constants.QUEST_ID_EXTRA_KEY)
-            router.setRoot(RouterTransaction.with(TimerViewController(questId)))
-        } else if (!router.hasRootController()) {
-            router.setRoot(RouterTransaction.with(HomeViewController()))
-//            router.setRoot(RouterTransaction.with(TestViewController()))
-//            router.setRoot(RouterTransaction.with(ChallengeCategoryListViewController()))
-//            router.setRoot(RouterTransaction.with(PersonalizeChallengeViewController()))
-        }
 
-        stateStore.dispatch(LoadDataAction.All)
     }
 
-    private fun migrateIfNeeded() {
-        val playerSchema = playerRepository.findSchemaVersion()
-        if (playerSchema == null || playerSchema != Constants.SCHEMA_VERSION) {
-            Migration(database).run()
+    private fun startApp() {
+
+        try {
+            var loader: LoaderDialogController? = null
+            launch(CommonPool) {
+                Migration().run({
+                    launch(UI) {
+                        loader = LoaderDialogController()
+                        loader!!.showDialog(router, "loader")
+                    }
+                })
+                launch(UI) {
+                    loader?.dismissDialog()
+                    stateStore.dispatch(LoadDataAction.All)
+                    petStatsChangeScheduler.schedule()
+                    val startIntent = intent
+                    if (startIntent != null && startIntent.action == ACTION_SHOW_TIMER) {
+                        val questId = intent.getStringExtra(Constants.QUEST_ID_EXTRA_KEY)
+                        router.setRoot(RouterTransaction.with(TimerViewController(questId)))
+                    } else if (!router.hasRootController()) {
+                        router.setRoot(RouterTransaction.with(HomeViewController()))
+                    }
+                }
+
+            }
+        } catch (e: Exception) {
+            Toast.makeText(
+                this@MainActivity,
+                R.string.sign_in_no_connection,
+                Toast.LENGTH_LONG
+            ).show()
         }
+
     }
 
     private fun incrementAppRun() {

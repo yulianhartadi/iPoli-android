@@ -36,9 +36,6 @@ class CompleteQuestUseCaseSpek : Spek({
         fun createQuestRepository(quest: Quest): QuestRepository = mock {
             on { findById(any()) } doReturn
                 quest
-
-            on { findNextQuestsToRemind(any()) } doReturn
-                listOf(quest)
         }
 
         val player = TestUtil.player()

@@ -55,9 +55,9 @@ open class CompleteQuestUseCase(
 
         questRepository.save(newQuest)
 
-        val quests = questRepository.findNextQuestsToRemind()
-        if (quests.isNotEmpty()) {
-            reminderScheduler.schedule(quests.first().reminder!!.toMillis())
+        val remindTime = questRepository.findNextReminderTime()
+        remindTime?.let {
+            reminderScheduler.schedule(it)
         }
 
         val reward = SimpleReward(
