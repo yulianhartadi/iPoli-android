@@ -1,11 +1,15 @@
 package mypoli.android.repeatingquest.list
 
+import android.content.res.ColorStateList
 import android.os.Bundle
+import android.support.annotation.ColorRes
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import com.mikepenz.iconics.IconicsDrawable
+import com.mikepenz.iconics.typeface.IIcon
 import kotlinx.android.synthetic.main.controller_repeating_quest_list.view.*
 import kotlinx.android.synthetic.main.item_repeating_quest.view.*
 import kotlinx.android.synthetic.main.view_inventory_toolbar.view.*
@@ -13,6 +17,7 @@ import mypoli.android.R
 import mypoli.android.common.redux.android.ReduxViewController
 import mypoli.android.common.view.AndroidColor
 import mypoli.android.common.view.AndroidIcon
+import mypoli.android.common.view.colorRes
 import mypoli.android.common.view.setChildController
 import mypoli.android.player.inventory.GemInventoryViewController
 
@@ -42,25 +47,25 @@ class RepeatingQuestListViewController(args: Bundle? = null) :
             listOf(
                 RepeatingQuestViewModel(
                     "Workout",
-                    AndroidIcon.BUS,
-                    AndroidColor.GREEN,
-                    "Today",
+                    AndroidIcon.BUS.icon,
+                    AndroidColor.GREEN.color500,
+                    "Next: Today",
                     2,
                     3
                 ),
                 RepeatingQuestViewModel(
                     "Run",
-                    AndroidIcon.BIKE,
-                    AndroidColor.BLUE,
-                    "Tomorrow",
+                    AndroidIcon.BIKE.icon,
+                    AndroidColor.BLUE.color500,
+                    "Next: Tomorrow",
                     1,
                     5
                 ),
                 RepeatingQuestViewModel(
                     "Cook",
-                    AndroidIcon.ACADEMIC,
-                    AndroidColor.DEEP_ORANGE,
-                    "Today",
+                    AndroidIcon.ACADEMIC.icon,
+                    AndroidColor.DEEP_ORANGE.color500,
+                    "Next: Today",
                     4,
                     10
                 )
@@ -76,8 +81,8 @@ class RepeatingQuestListViewController(args: Bundle? = null) :
 
     data class RepeatingQuestViewModel(
         val name: String,
-        val icon: AndroidIcon?,
-        val color: AndroidColor,
+        val icon: IIcon,
+        @ColorRes val color: Int,
         val next: String,
         val completedCount: Int,
         val allCount: Int
@@ -93,6 +98,23 @@ class RepeatingQuestListViewController(args: Bundle? = null) :
             val vm = viewModels[position]
             val view = holder.itemView
             view.rqName.text = vm.name
+
+            view.rqIcon.backgroundTintList =
+                ColorStateList.valueOf(colorRes(vm.color))
+            view.rqIcon.setImageDrawable(
+                IconicsDrawable(view.context)
+                    .icon(vm.icon)
+                    .colorRes(R.color.md_white)
+                    .sizeDp(24)
+            )
+            view.rqNext.text = vm.next
+            view.rqProgressBar.setOnTouchListener { _, _ ->
+                true
+            }
+            view.rqProgressBar.max = vm.allCount
+            view.rqProgressBar.progress = vm.completedCount
+            view.rqProgress.text = "${vm.completedCount}/${vm.allCount}"
+
         }
 
         override fun onCreateViewHolder(
