@@ -97,7 +97,7 @@ dependencies {
     implementation 'org.solovyev.android:checkout:1.2.1'
 
     implementation 'com.github.bumptech.glide:glide:4.6.1'
-    annotationProcessor 'com.github.bumptech.glide:compiler:4.6.1'
+    kapt 'com.github.bumptech.glide:compiler:4.6.1'
 
 //    debugImplementation "com.github.brianPlummer:tinydancer:0.1.1"
 //    implementation "com.github.brianPlummer:tinydancer-noop:0.1.1"
@@ -134,7 +134,7 @@ dependencies {
         exclude group: "org.jetbrains.kotlin"
     }
     testImplementation 'com.nhaarman:mockito-kotlin-kt1.1:1.5.0'
-    testCompile 'org.amshove.kluent:kluent:1.34'
+    testImplementation 'org.amshove.kluent:kluent:1.34'
     testImplementation 'org.amshove.kluent:kluent-android:1.34'
     testImplementation "org.jetbrains.kotlin:kotlin-reflect:$kotlin_version"
 }
