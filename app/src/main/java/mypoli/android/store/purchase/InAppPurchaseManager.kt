@@ -1,6 +1,8 @@
 package mypoli.android.store.purchase
 
 import android.content.res.Resources
+import kotlinx.coroutines.experimental.android.UI
+import kotlinx.coroutines.experimental.launch
 import mypoli.android.R
 import org.solovyev.android.checkout.*
 import java.util.*
@@ -60,39 +62,41 @@ class AndroidInAppPurchaseManager(
 
         val skus = GEM_PACK_TYPE_TO_SKU.values.toList()
 
-        checkout.loadInventory(
-            Inventory.Request.create()
-                .loadAllPurchases()
-                .loadSkus(ProductTypes.IN_APP, skus)
-        ) { products ->
-            val appProducts = products.get(ProductTypes.IN_APP)
+        launch(UI) {
+            checkout.loadInventory(
+                Inventory.Request.create()
+                    .loadAllPurchases()
+                    .loadSkus(ProductTypes.IN_APP, skus)
+            ) { products ->
+                val appProducts = products.get(ProductTypes.IN_APP)
 
-            val gemPacks = GEM_PACK_TYPE_TO_SKU.map { (k, v) ->
-                val sku = appProducts.getSku(v)!!
-                val gems = GEM_PACK_TYPE_TO_GEMS[k]!!
+                val gemPacks = GEM_PACK_TYPE_TO_SKU.map { (k, v) ->
+                    val sku = appProducts.getSku(v)!!
+                    val gems = GEM_PACK_TYPE_TO_GEMS[k]!!
 
-                val titleRes = when (k) {
-                    GemPackType.BASIC -> R.string.gem_pack_basic_title
-                    GemPackType.SMART -> R.string.gem_pack_smart_title
-                    GemPackType.PLATINUM -> R.string.gem_pack_platinum_title
+                    val titleRes = when (k) {
+                        GemPackType.BASIC -> R.string.gem_pack_basic_title
+                        GemPackType.SMART -> R.string.gem_pack_smart_title
+                        GemPackType.PLATINUM -> R.string.gem_pack_platinum_title
+                    }
+
+                    val shortTitleRes = when (k) {
+                        GemPackType.BASIC -> R.string.gem_pack_basic_title_short
+                        GemPackType.SMART -> R.string.gem_pack_smart_title_short
+                        GemPackType.PLATINUM -> R.string.gem_pack_platinum_title_short
+                    }
+
+                    GemPack(
+                        resources.getString(titleRes),
+                        resources.getString(shortTitleRes),
+                        sku.price,
+                        gems,
+                        k
+                    )
                 }
 
-                val shortTitleRes = when (k) {
-                    GemPackType.BASIC -> R.string.gem_pack_basic_title_short
-                    GemPackType.SMART -> R.string.gem_pack_smart_title_short
-                    GemPackType.PLATINUM -> R.string.gem_pack_platinum_title_short
-                }
-
-                GemPack(
-                    resources.getString(titleRes),
-                    resources.getString(shortTitleRes),
-                    sku.price,
-                    gems,
-                    k
-                )
+                cb(gemPacks)
             }
-
-            cb(gemPacks)
         }
     }
 
@@ -102,6 +106,16 @@ class AndroidInAppPurchaseManager(
     ) {
         val payload = UUID.randomUUID().toString()
 
+        launch(UI) {
+            doPurchase(gemPack, payload, purchaseListener)
+        }
+    }
+
+    private fun doPurchase(
+        gemPack: GemPackType,
+        payload: String,
+        purchaseListener: InAppPurchaseManager.PurchaseListener
+    ) {
         checkout.whenReady(object : Checkout.EmptyListener() {
             override fun onReady(requests: BillingRequests) {
                 requests.purchase(
@@ -112,19 +126,27 @@ class AndroidInAppPurchaseManager(
                         PURCHASE_REQUEST_CODE,
                         object : RequestListener<Purchase> {
                             override fun onSuccess(purchase: Purchase) {
+
                                 requests.consume(purchase.token, object : RequestListener<Any> {
+
                                     override fun onError(response: Int, e: Exception) {
-                                        purchaseListener.onError()
+                                        launch {
+                                            purchaseListener.onError()
+                                        }
                                     }
 
                                     override fun onSuccess(result: Any) {
-                                        purchaseListener.onPurchased()
+                                        launch {
+                                            purchaseListener.onPurchased()
+                                        }
                                     }
                                 })
                             }
 
                             override fun onError(response: Int, e: Exception) {
-                                purchaseListener.onError()
+                                launch {
+                                    purchaseListener.onError()
+                                }
                             }
                         })
                 )
