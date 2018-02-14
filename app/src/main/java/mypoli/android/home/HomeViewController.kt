@@ -18,7 +18,7 @@ import mypoli.android.common.view.FeedbackDialogController
 import mypoli.android.common.view.setToolbar
 import mypoli.android.common.view.showShortToast
 import mypoli.android.pet.PetViewController
-import mypoli.android.quest.schedule.ScheduleViewController
+import mypoli.android.repeatingquest.list.RepeatingQuestListViewController
 import mypoli.android.store.theme.ThemeStoreViewController
 import org.json.JSONObject
 
@@ -65,8 +65,8 @@ class HomeViewController(args: Bundle? = null) :
         val childRouter = getChildRouter(view.controllerContainer, null)
         if (!childRouter.hasRootController()) {
             childRouter.setRoot(
-                RouterTransaction.with(ScheduleViewController())
-//                RouterTransaction.with(AuthViewController())
+//                RouterTransaction.with(ScheduleViewController())
+                RouterTransaction.with(RepeatingQuestListViewController())
                     .pushChangeHandler(handler)
                     .popChangeHandler(handler)
             )

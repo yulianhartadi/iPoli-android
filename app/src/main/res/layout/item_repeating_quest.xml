@@ -1,99 +1,20 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:id="@+id/content_layout"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="88dp"
-    android:background="?android:attr/selectableItemBackground"
-    android:clickable="true"
-    android:focusable="true">
-
-    <LinearLayout
-        android:id="@+id/quest_category_container"
-        android:layout_width="40dp"
-        android:layout_height="40dp"
-        android:layout_alignParentStart="true"
-        android:layout_centerVertical="true"
-        android:layout_marginStart="16dp">
-
-        <ImageView
-            android:id="@+id/categoryImage"
-            android:layout_width="24dp"
-            android:layout_height="24dp"
-            android:layout_gravity="center"
-            android:scaleType="fitXY" />
-
-    </LinearLayout>
-
-    <LinearLayout
-        android:id="@+id/quest_details_container"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_alignParentStart="true"
-        android:layout_centerVertical="true"
-        android:layout_marginStart="72dp"
-        android:layout_toStartOf="@+id/repeating_quest_more_menu_container"
-        android:orientation="vertical">
-
-        <TextView
-            android:id="@+id/name"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:ellipsize="end"
-            android:maxLines="1"
-            android:textColor="@color/md_dark_text_87"
-            android:textSize="16sp" />
-
-        <LinearLayout
-            android:id="@+id/quest_repeating_quest_indicators_container"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal">
-
-            <LinearLayout
-                android:id="@+id/progressContainer"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center_vertical"
-                android:layout_marginEnd="6dp"
-                android:orientation="horizontal" />
-
-            <TextView
-                android:id="@+id/progress"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center_vertical"
-                android:textColor="@color/md_dark_text_54" />
-        </LinearLayout>
-
-        <TextView
-            android:id="@+id/nextScheduledDate"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
-
-    </LinearLayout>
+    android:layout_height="72dp">
 
 
-    <com.lnikkila.extendedtouchview.ExtendedTouchView
-        android:id="@+id/repeating_quest_more_menu_container"
+    <TextView
+        android:id="@+id/rqName"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentEnd="true"
-        android:layout_centerVertical="true"
-        android:layout_marginEnd="16dp"
-        android:layout_marginStart="16dp"
-        app:touchHeight="@dimen/extended_touch_height"
-        app:touchWidth="@dimen/extended_touch_width">
-
-        <ImageButton
-            android:id="@+id/moreMenu"
-            android:layout_width="24dp"
-            android:layout_height="24dp"
-            android:background="?android:attr/selectableItemBackground"
-            android:clickable="true"
-            android:scaleType="fitXY"
-            android:src="@drawable/ic_more_vert_black_24dp" />
-    </com.lnikkila.extendedtouchview.ExtendedTouchView>
-
-
-</RelativeLayout>
+        android:layout_marginBottom="8dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:text="TextView"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+</android.support.constraint.ConstraintLayout>
