@@ -15,6 +15,8 @@ import mypoli.android.quest.schedule.agenda.AgendaReducer
 import mypoli.android.quest.schedule.agenda.AgendaState
 import mypoli.android.quest.schedule.calendar.CalendarReducer
 import mypoli.android.quest.schedule.calendar.CalendarState
+import mypoli.android.repeatingquest.list.RepeatingQuestListReducer
+import mypoli.android.repeatingquest.list.RepeatingQuestListState
 
 /**
  * Created by Venelin Valkov <venelin@ipoli.io>
@@ -35,7 +37,8 @@ data class AppState(
     val agendaState: AgendaState,
     val petStoreState: PetStoreState,
     val challengeListForCategoryState: ChallengeListForCategoryState,
-    val authState: AuthState
+    val authState: AuthState,
+    val repeatingQuestListState: RepeatingQuestListState
 ) : State
 
 object AppReducer : Reducer<AppState, AppState> {
@@ -46,7 +49,8 @@ object AppReducer : Reducer<AppState, AppState> {
         calendarState = CalendarReducer.reduce(state, action),
         agendaState = AgendaReducer.reduce(state, action),
         petStoreState = PetStoreReducer.reduce(state, action),
-        authState = AuthReducer.reduce(state, action)
+        authState = AuthReducer.reduce(state, action),
+        repeatingQuestListState = RepeatingQuestListReducer.reduce(state, action)
     )
 
     override fun defaultState() =
@@ -57,6 +61,7 @@ object AppReducer : Reducer<AppState, AppState> {
             agendaState = AgendaReducer.defaultState(),
             petStoreState = PetStoreReducer.defaultState(),
             challengeListForCategoryState = ChallengeListForCategoryReducer.defaultState(),
-            authState = AuthReducer.defaultState()
+            authState = AuthReducer.defaultState(),
+            repeatingQuestListState = RepeatingQuestListReducer.defaultState()
         )
 }
