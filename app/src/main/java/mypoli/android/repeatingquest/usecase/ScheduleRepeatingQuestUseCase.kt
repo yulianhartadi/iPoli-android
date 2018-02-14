@@ -14,6 +14,11 @@ class ScheduleRepeatingQuestUseCase(private val questRepository: QuestRepository
     UseCase<ScheduleRepeatingQuestUseCase.Params, List<Quest>> {
 
     override fun execute(parameters: Params): List<Quest> {
+
+        val (rq, start, end) = parameters
+
+        require(end.isAfter(start))
+
         return listOf()
     }
 

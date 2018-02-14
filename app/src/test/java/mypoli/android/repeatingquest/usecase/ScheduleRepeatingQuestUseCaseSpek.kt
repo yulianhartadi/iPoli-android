@@ -3,8 +3,10 @@ package mypoli.android.repeatingquest.usecase
 import mypoli.android.TestUtil
 import mypoli.android.quest.data.persistence.QuestRepository
 import mypoli.android.repeatingquest.entity.RepeatingQuest
+import org.amshove.kluent.shouldThrow
 import org.jetbrains.spek.api.Spek
 import org.jetbrains.spek.api.dsl.describe
+import org.jetbrains.spek.api.dsl.it
 import org.threeten.bp.LocalDate
 
 /**
@@ -27,6 +29,12 @@ class ScheduleRepeatingQuestUseCaseSpek : Spek({
                     end = end
                 )
             )
+
+        it("should require end after start") {
+            val exec =
+                { executeUseCase(RepeatingQuest(name = "Test"), LocalDate.now(), LocalDate.now()) }
+            exec shouldThrow IllegalArgumentException::class
+        }
 
         describe("repeating daily") {}
 
