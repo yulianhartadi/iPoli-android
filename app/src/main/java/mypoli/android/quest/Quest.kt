@@ -107,9 +107,10 @@ data class Quest(
     val icon: Icon? = null,
     val category: Category,
     val startTime: Time? = null,
-    val scheduledDate: LocalDate,
     val duration: Int,
     val reminder: Reminder? = null,
+    val scheduledDate: LocalDate,
+    val originalScheduledDate: LocalDate = scheduledDate,
     val timeRanges: List<TimeRange> = listOf(),
     override val createdAt: Instant = Instant.now(),
     override val updatedAt: Instant = Instant.now(),
@@ -118,7 +119,8 @@ data class Quest(
     val completedAt: Instant? = null,
     val experience: Int? = null,
     val coins: Int? = null,
-    val bounty: Bounty? = null
+    val bounty: Bounty? = null,
+    val isRemoved: Boolean = false
 ) : Entity {
 
     sealed class Bounty {

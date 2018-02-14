@@ -1,6 +1,7 @@
 package mypoli.android.repeatingquest.entity
 
-import mypoli.android.quest.Entity
+import mypoli.android.common.datetime.Time
+import mypoli.android.quest.*
 import org.threeten.bp.Instant
 
 /**
@@ -15,6 +16,13 @@ sealed class RepeatingPattern {
 data class RepeatingQuest(
     override val id: String = "",
     val name: String,
+    val color: Color,
+    val icon: Icon? = null,
+    val category: Category,
+    val startTime: Time? = null,
+    val duration: Int,
+    val reminder: Reminder? = null,
+    val repeatingPattern: RepeatingPattern,
     override val createdAt: Instant = Instant.now(),
     override val updatedAt: Instant = Instant.now()
 ) : Entity

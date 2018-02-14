@@ -20,6 +20,11 @@ interface QuestRepository : CollectionRepository<Quest> {
     ): ReceiveChannel<List<Quest>>
 
     fun listenForScheduledAt(date: LocalDate): ReceiveChannel<List<Quest>>
+    fun findForRepeatingQuestBetween(
+        repeatingQuestId: String,
+        start: LocalDate,
+        end: LocalDate
+    ): List<Quest>
 
     fun findNextReminderTime(afterTime: ZonedDateTime = ZonedDateTime.now(ZoneId.systemDefault())): LocalDateTime?
     fun findQuestsToRemind(remindTime: LocalDateTime): List<Quest>
@@ -95,6 +100,14 @@ class FirestoreQuestRepository(
             .orderBy("scheduledDate")
             .orderBy("startMinute")
         return listenForChanges(query)
+    }
+
+    override fun findForRepeatingQuestBetween(
+        repeatingQuestId: String,
+        start: LocalDate,
+        end: LocalDate
+    ): List<Quest> {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 
     override fun listenForScheduledAt(date: LocalDate): ReceiveChannel<List<Quest>> {

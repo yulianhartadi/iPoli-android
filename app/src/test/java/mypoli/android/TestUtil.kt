@@ -9,7 +9,14 @@ import mypoli.android.pet.PetAvatar
 import mypoli.android.player.AuthProvider
 import mypoli.android.player.Player
 import mypoli.android.player.persistence.PlayerRepository
+import mypoli.android.quest.Category
+import mypoli.android.quest.Color
+import mypoli.android.quest.Quest
 import mypoli.android.quest.data.persistence.QuestRepository
+import mypoli.android.repeatingquest.entity.RepeatingPattern
+import mypoli.android.repeatingquest.entity.RepeatingQuest
+import org.threeten.bp.DayOfWeek
+import org.threeten.bp.LocalDate
 
 /**
  * Created by Venelin Valkov <venelin@ipoli.io>
@@ -44,4 +51,23 @@ object TestUtil {
             invocation.getArgument(0)
         }
     }
+
+    val quest = Quest(
+        name = "Test",
+        color = Color.BLUE,
+        category = Category("test", Color.BLUE),
+        duration = 60,
+        scheduledDate = LocalDate.now()
+    )
+
+    val repeatingQuest = RepeatingQuest(
+        name = "Test",
+        repeatingPattern = RepeatingPattern.Daily,
+        color = Color.BLUE,
+        category = Category("test", Color.BLUE),
+        duration = 60
+    )
+
+    val firstDateOfWeek: LocalDate = LocalDate.now().with(DayOfWeek.MONDAY)
+    val lastDateOfWeek: LocalDate = LocalDate.now().with(DayOfWeek.SUNDAY)
 }
