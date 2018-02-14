@@ -22,6 +22,10 @@ class ScheduleRepeatingQuestUseCase(private val questRepository: QuestRepository
         return listOf()
     }
 
+    /**
+     * @start inclusive
+     * @end exlusive
+     */
     data class Params(
         val repeatingQuest: RepeatingQuest,
         val start: LocalDate,
