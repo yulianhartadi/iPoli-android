@@ -52,7 +52,7 @@ class FindQuestsForRepeatingQuest(private val questRepository: QuestRepository) 
 
     /**
      * @start inclusive
-     * @end exclusive
+     * @end inclusive
      */
     data class Params(
         val repeatingQuest: RepeatingQuest,
