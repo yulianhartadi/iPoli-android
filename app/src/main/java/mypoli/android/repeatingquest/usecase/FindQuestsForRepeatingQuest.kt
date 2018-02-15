@@ -7,6 +7,7 @@ import mypoli.android.quest.Quest
 import mypoli.android.quest.data.persistence.QuestRepository
 import mypoli.android.repeatingquest.entity.RepeatingPattern
 import mypoli.android.repeatingquest.entity.RepeatingQuest
+import org.threeten.bp.DayOfWeek
 import org.threeten.bp.LocalDate
 
 /**
@@ -32,30 +33,33 @@ class FindQuestsForRepeatingQuest(private val questRepository: QuestRepository) 
         val start = if (parameters.start.isBefore(rq.start)) rq.start else parameters.start
         val end = if (rq.end != null && rq.end.isBefore(parameters.end)) rq.end else parameters.end
 
+        val scheduleDates = when (rq.repeatingPattern) {
 
-        val repeatingPattern = rq.repeatingPattern
-        val scheduleDates =
-            when (repeatingPattern) {
-                is RepeatingPattern.Yearly -> yearlyDatesToScheduleInPeriod(
-                    repeatingPattern,
-                    start,
-                    end
-                )
+            RepeatingPattern.Daily -> start.datesUntil(end).toSet()
 
-                RepeatingPattern.Daily -> start.datesUntil(end).toSet()
+            is RepeatingPattern.Weekly -> weeklyDatesToScheduleInPeriod(
+                rq.repeatingPattern,
+                start,
+                end
+            )
 
-                is RepeatingPattern.Weekly -> weeklyDatesToScheduleInPeriod(
-                    repeatingPattern,
-                    start,
-                    end
-                )
+            is RepeatingPattern.Monthly -> monthlyDatesToScheduleInPeriod(
+                rq.repeatingPattern,
+                start,
+                end
+            )
 
-                is RepeatingPattern.Monthly -> monthlyDatesToScheduleInPeriod(
-                    repeatingPattern,
-                    start,
-                    end
-                )
+            is RepeatingPattern.Yearly -> yearlyDatesToScheduleInPeriod(
+                rq.repeatingPattern,
+                start,
+                end
+            )
+
+            is RepeatingPattern.Flexible.Weekly -> {
+                flexibleWeekly(rq.repeatingPattern, start, end, parameters.lastDayOfWeek)
             }
+
+        }
 
 
         if (scheduleDates.isEmpty()) {
@@ -73,19 +77,88 @@ class FindQuestsForRepeatingQuest(private val questRepository: QuestRepository) 
             if (schedule.containsKey(it)) {
                 schedule[it]!!
             } else {
-
-                Quest(
-                    name = rq.name,
-                    color = rq.color,
-                    icon = rq.icon,
-                    category = rq.category,
-                    startTime = rq.startTime,
-                    duration = rq.duration,
-                    scheduledDate = it,
-                    reminder = rq.reminder
-                )
+                createQuest(rq, it)
             }
         }
+    }
+
+    private fun flexibleWeekly(
+        pattern: RepeatingPattern.Flexible.Weekly,
+        start: LocalDate,
+        end: LocalDate,
+        lastDayOfWeek: DayOfWeek
+    ): List<LocalDate> {
+
+        val preferredDays = pattern.preferredDays
+        val timesPerWeek = pattern.timesPerWeek
+        require(timesPerWeek != preferredDays.size)
+        require(timesPerWeek >= 1)
+        require(timesPerWeek <= 7)
+
+        val periods = findWeeklyPeriods(start, end, lastDayOfWeek)
+
+        val result = mutableListOf<LocalDate>()
+
+
+
+        for (p in periods) {
+
+            if (preferredDays.isNotEmpty()) {
+                val weekDays = preferredDays.shuffled().take(timesPerWeek)
+
+                val periodStart = p.start
+
+                result.addAll(weekDays.map { periodStart.with(it) })
+            } else {
+                val daysOfWeek = DayOfWeek.values().toList()
+
+                val weekDays = daysOfWeek.shuffled().take(timesPerWeek)
+
+                val periodStart = p.start
+
+                result.addAll(weekDays.map { periodStart.with(it) })
+
+            }
+        }
+
+        return result
+    }
+
+    data class Period(val start: LocalDate, val end: LocalDate)
+
+    private fun findWeeklyPeriods(
+        start: LocalDate,
+        end: LocalDate,
+        lastDayOfWeek: DayOfWeek
+    ): List<Period> {
+
+        val periods = mutableListOf<Period>()
+
+        var periodStart = start
+        val dayAfterEnd = end.plusDays(1)
+        while (periodStart.isBefore(dayAfterEnd)) {
+            val periodEnd = periodStart.with(lastDayOfWeek)
+            periods.add(Period(periodStart, if (periodEnd.isAfter(end)) end else periodEnd))
+            periodStart = periodEnd.plusDays(1)
+        }
+
+        return periods
+    }
+
+    private fun createQuest(
+        rq: RepeatingQuest,
+        it: LocalDate
+    ): Quest {
+        return Quest(
+            name = rq.name,
+            color = rq.color,
+            icon = rq.icon,
+            category = rq.category,
+            startTime = rq.startTime,
+            duration = rq.duration,
+            scheduledDate = it,
+            reminder = rq.reminder
+        )
     }
 
     private fun monthlyDatesToScheduleInPeriod(
@@ -164,6 +237,8 @@ class FindQuestsForRepeatingQuest(private val questRepository: QuestRepository) 
     data class Params(
         val repeatingQuest: RepeatingQuest,
         val start: LocalDate,
-        val end: LocalDate
+        val end: LocalDate,
+        val firstDayOfWeek: DayOfWeek,
+        val lastDayOfWeek: DayOfWeek
     )
 }

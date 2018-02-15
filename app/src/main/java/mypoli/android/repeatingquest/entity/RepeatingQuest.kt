@@ -14,11 +14,15 @@ import org.threeten.bp.LocalDate
 sealed class RepeatingPattern {
     object Daily : RepeatingPattern()
     data class Yearly(val dayOfMonth: Int, val month: Int) : RepeatingPattern()
-    data class Weekly(val daysOfWeek: Set<DayOfWeek>, val flexibleCount: Int = 0) :
+    data class Weekly(val daysOfWeek: Set<DayOfWeek>) :
         RepeatingPattern()
 
-    data class Monthly(val daysOfMonth: Set<Int>, val flexibleCount: Int = 0) :
+    data class Monthly(val daysOfMonth: Set<Int>) :
         RepeatingPattern()
+
+    sealed class Flexible : RepeatingPattern() {
+        data class Weekly(val timesPerWeek: Int, val preferredDays: Set<DayOfWeek>) : Flexible()
+    }
 }
 
 data class RepeatingQuest(

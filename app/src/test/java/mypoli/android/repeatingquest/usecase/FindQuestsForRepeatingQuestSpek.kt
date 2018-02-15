@@ -11,6 +11,7 @@ import mypoli.android.quest.data.persistence.QuestRepository
 import mypoli.android.repeatingquest.entity.RepeatingPattern
 import mypoli.android.repeatingquest.entity.RepeatingQuest
 import org.amshove.kluent.`should be empty`
+import org.amshove.kluent.`should be in`
 import org.amshove.kluent.`should be`
 import org.amshove.kluent.shouldThrow
 import org.jetbrains.spek.api.Spek
@@ -36,7 +37,9 @@ class FindQuestsForRepeatingQuestSpek : Spek({
                 FindQuestsForRepeatingQuest.Params(
                     repeatingQuest = quest,
                     start = start,
-                    end = end
+                    end = end,
+                    firstDayOfWeek = DayOfWeek.MONDAY,
+                    lastDayOfWeek = DayOfWeek.SUNDAY
                 )
             )
 
@@ -200,6 +203,7 @@ class FindQuestsForRepeatingQuestSpek : Spek({
         describe("repeating weekly") {
 
             describe("fixed") {
+
                 it("should schedule for every week day in pattern") {
 
                     val repo = mockQuestsForRepeatingQuest(listOf())
@@ -252,10 +256,100 @@ class FindQuestsForRepeatingQuestSpek : Spek({
                     quests.filter { it.id.isEmpty() }.size.`should be`(2)
                 }
             }
+
+            describe("flexible") {
+
+                fun createQuest(
+                    timesPerWeek: Int,
+                    preferredDays: Set<DayOfWeek> = setOf()
+                ): RepeatingQuest {
+                    return TestUtil.repeatingQuest.copy(
+                        repeatingPattern = RepeatingPattern.Flexible.Weekly(
+                            timesPerWeek = timesPerWeek,
+                            preferredDays = preferredDays
+                        )
+                    )
+                }
+
+                it("should not allow 1 time per week with 1 preferred day") {
+
+
+                    val exec = {
+
+                        executeUseCase(
+                            createQuest(
+                                timesPerWeek = 1,
+                                preferredDays = setOf(DayOfWeek.MONDAY)
+                            ),
+                            firstDateOfWeek,
+                            lastDateOfWeek
+                        )
+                    }
+                    exec shouldThrow IllegalArgumentException::class
+                }
+
+                it("should not allow to repeat less than once per week") {
+                    val exec = {
+                        executeUseCase(
+                            createQuest(
+                                timesPerWeek = 0,
+                                preferredDays = setOf(DayOfWeek.MONDAY)
+                            ),
+                            firstDateOfWeek,
+                            lastDateOfWeek
+                        )
+                    }
+                    exec shouldThrow IllegalArgumentException::class
+                }
+
+                it("should not allow to repeat more than 7 times per week") {
+                    val exec = {
+                        executeUseCase(
+                            createQuest(
+                                timesPerWeek = 8,
+                                preferredDays = setOf(DayOfWeek.MONDAY)
+                            ),
+                            firstDateOfWeek,
+                            lastDateOfWeek
+                        )
+                    }
+                    exec shouldThrow IllegalArgumentException::class
+                }
+
+                it("should schedule 1 quest without preferred days") {
+                    val quests = executeUseCase(
+                        createQuest(
+                            timesPerWeek = 1
+                        ),
+                        firstDateOfWeek,
+                        lastDateOfWeek
+                    )
+
+                    quests.size.`should be`(1)
+                }
+
+                it("should schedule 1 quest with 2 preferred days") {
+                    val preferredDays = setOf(DayOfWeek.FRIDAY, DayOfWeek.SATURDAY)
+                    val quests = executeUseCase(
+                        createQuest(
+                            timesPerWeek = 1,
+                            preferredDays = preferredDays
+                        ),
+                        firstDateOfWeek,
+                        lastDateOfWeek
+                    )
+
+                    quests.size.`should be`(1)
+                    val scheduledDate = quests.first().scheduledDate
+                    scheduledDate.dayOfWeek.`should be in`(preferredDays)
+                }
+            }
         }
 
         describe("repeating monthly") {
+
             describe("fixed") {
+
                 it("should schedule for every month day in pattern when days present in month") {
 
                     val repo = mockQuestsForRepeatingQuest(listOf())
