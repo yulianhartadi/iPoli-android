@@ -21,7 +21,7 @@ import org.threeten.bp.LocalDate
  * Created by Venelin Valkov <venelin@mypoli.fun>
  * on 02/14/2018.
  */
-class ScheduleRepeatingQuestUseCaseSpek : Spek({
+class FindQuestsForRepeatingQuestSpek : Spek({
 
     describe("FindQuestsForRepeatingQuest") {
         fun executeUseCase(
@@ -90,6 +90,7 @@ class ScheduleRepeatingQuestUseCaseSpek : Spek({
                 )
                 quests.size.`should be`(7)
                 quests.first().id.`should be`(questId)
+                quests.filter { it.id.isEmpty() }.size.`should be`(6)
             }
 
             it("should find only stored quests") {
