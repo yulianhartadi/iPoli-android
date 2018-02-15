@@ -11,6 +11,7 @@ import org.threeten.bp.Instant
 
 sealed class RepeatingPattern {
     object Daily : RepeatingPattern()
+    data class Yearly(val dayOfMonth: Int, val month: Int) : RepeatingPattern()
 }
 
 data class RepeatingQuest(

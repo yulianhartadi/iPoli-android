@@ -8,6 +8,7 @@ import mypoli.android.TestUtil.firstDateOfWeek
 import mypoli.android.TestUtil.lastDateOfWeek
 import mypoli.android.quest.Quest
 import mypoli.android.quest.data.persistence.QuestRepository
+import mypoli.android.repeatingquest.entity.RepeatingPattern
 import mypoli.android.repeatingquest.entity.RepeatingQuest
 import org.amshove.kluent.`should be empty`
 import org.amshove.kluent.`should be`
@@ -149,6 +150,49 @@ class FindQuestsForRepeatingQuestSpek : Spek({
 
         describe("repeating yearly") {
 
+            it("should not schedule for date outside range") {
+                val repo = mockQuestsForRepeatingQuest(
+                    listOf(
+                        TestUtil.quest.copy(
+                            id = questId,
+                            originalScheduledDate = firstDateOfWeek
+                        )
+                    )
+                )
+
+                val quests = executeUseCase(
+                    quest = TestUtil.repeatingQuest.copy(
+                        repeatingPattern = RepeatingPattern.Yearly(
+                            firstDateOfWeek.dayOfMonth,
+                            firstDateOfWeek.monthValue
+                        )
+                    ),
+                    start = firstDateOfWeek.plusDays(1),
+                    end = lastDateOfWeek,
+                    questRepo = repo
+                )
+                quests.`should be empty`()
+            }
+
+            it("should create when no quest is scheduled") {
+                val repo = mockQuestsForRepeatingQuest(
+                    listOf()
+                )
+
+                val quests = executeUseCase(
+                    quest = TestUtil.repeatingQuest.copy(
+                        repeatingPattern = RepeatingPattern.Yearly(
+                            firstDateOfWeek.dayOfMonth,
+                            firstDateOfWeek.monthValue
+                        )
+                    ),
+                    start = firstDateOfWeek,
+                    end = lastDateOfWeek,
+                    questRepo = repo
+                )
+                quests.size.`should be`(1)
+                quests.first().id.`should be empty`()
+            }
         }
     }
 })
