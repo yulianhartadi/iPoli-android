@@ -22,21 +22,33 @@ class FindQuestsForRepeatingQuest(private val questRepository: QuestRepository) 
 
         require(end.isAfter(start))
 
-        val scheduleDates = if (rq.repeatingPattern is RepeatingPattern.Yearly) {
-            yearlyDatesToScheduleInPeriod(rq.repeatingPattern, start, end)
-        } else {
-            start.datesUntil(end).toSet()
+        val repeatingPattern = rq.repeatingPattern
+        val scheduleDates =
+            when (repeatingPattern) {
+                is RepeatingPattern.Yearly -> yearlyDatesToScheduleInPeriod(
+                    repeatingPattern,
+                    start,
+                    end
+                )
+
+                RepeatingPattern.Daily -> start.datesUntil(end).toSet()
+
+                is RepeatingPattern.Weekly -> weeklyDatesToScheduleInPeriod(
+                    repeatingPattern,
+                    start,
+                    end
+                )
+            }
+
+
+        if (scheduleDates.isEmpty()) {
+            return listOf()
         }
 
-
         val scheduledQuests = questRepository.findForRepeatingQuestBetween(rq.id, start, end)
-
         val (removed, existing) = scheduledQuests.partition { it.isRemoved }
-
         val schedule = existing.associateBy({ it.originalScheduledDate }, { it })
-
         val removedDates = removed.map { it.originalScheduledDate }
-
         val resultDates = scheduleDates.minus(removedDates)
 
         return resultDates.map {
@@ -59,6 +71,24 @@ class FindQuestsForRepeatingQuest(private val questRepository: QuestRepository) 
         }
     }
 
+    private fun weeklyDatesToScheduleInPeriod(
+        repeatingPattern: RepeatingPattern.Weekly,
+        start: LocalDate,
+        end: LocalDate
+    ): List<LocalDate> {
+
+        var date = start
+        val dates = mutableListOf<LocalDate>()
+        while (date <= end) {
+            if (date.dayOfWeek in repeatingPattern.daysOfWeek) {
+                dates.add(date)
+            }
+            date = date.plusDays(1)
+        }
+        return dates
+
+    }
+
     private fun yearlyDatesToScheduleInPeriod(
         repeatingPattern: RepeatingPattern.Yearly,
         start: LocalDate,
@@ -75,7 +105,7 @@ class FindQuestsForRepeatingQuest(private val questRepository: QuestRepository) 
 
         var startPeriodDate = start
         val dates = mutableListOf<LocalDate>()
-        while (startPeriodDate < end) {
+        while (startPeriodDate <= end) {
             val lastDayOfYear = LocalDate.of(startPeriodDate.year, 12, 31)
             val date = LocalDate.of(
                 startPeriodDate.year,

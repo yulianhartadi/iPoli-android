@@ -16,7 +16,6 @@ import org.amshove.kluent.shouldThrow
 import org.jetbrains.spek.api.Spek
 import org.jetbrains.spek.api.dsl.describe
 import org.jetbrains.spek.api.dsl.it
-import org.jetbrains.spek.api.dsl.xit
 import org.threeten.bp.DayOfWeek
 import org.threeten.bp.LocalDate
 
@@ -143,28 +142,59 @@ class FindQuestsForRepeatingQuestSpek : Spek({
         }
 
         describe("repeating weekly") {
-            xit("should schedule for every week day in pattern") {
 
-                val repo = mockQuestsForRepeatingQuest(
-                    listOf()
-                )
+            describe("fixed") {
+                it("should schedule for every week day in pattern") {
 
-                val quests = executeUseCase(
-                    quest = TestUtil.repeatingQuest.copy(
-                        repeatingPattern = RepeatingPattern.Weekly(
-                            setOf(
-                                DayOfWeek.MONDAY,
-                                DayOfWeek.WEDNESDAY,
-                                DayOfWeek.FRIDAY
+                    val repo = mockQuestsForRepeatingQuest(listOf())
+
+                    val quests = executeUseCase(
+                        quest = TestUtil.repeatingQuest.copy(
+                            repeatingPattern = RepeatingPattern.Weekly(
+                                setOf(
+                                    DayOfWeek.MONDAY,
+                                    DayOfWeek.WEDNESDAY,
+                                    DayOfWeek.FRIDAY
+                                )
+                            )
+                        ),
+                        start = firstDateOfWeek,
+                        end = lastDateOfWeek.plusDays(3),
+                        questRepo = repo
+                    )
+                    quests.size.`should be`(5)
+                    quests.filter { it.id.isEmpty() }.size.`should be`(5)
+                }
+
+                it("should not schedule for moved stored quest") {
+
+                    val repo = mockQuestsForRepeatingQuest(
+                        listOf(
+                            TestUtil.quest.copy(
+                                id = questId,
+                                originalScheduledDate = firstDateOfWeek,
+                                scheduledDate = firstDateOfWeek.plusDays(1)
                             )
                         )
-                    ),
-                    start = firstDateOfWeek,
-                    end = lastDateOfWeek,
-                    questRepo = repo
-                )
-                quests.size.`should be`(3)
-                quests.filter { it.id.isEmpty() }.size.`should be`(3)
+                    )
+
+                    val quests = executeUseCase(
+                        quest = TestUtil.repeatingQuest.copy(
+                            repeatingPattern = RepeatingPattern.Weekly(
+                                setOf(
+                                    DayOfWeek.MONDAY,
+                                    DayOfWeek.WEDNESDAY,
+                                    DayOfWeek.FRIDAY
+                                )
+                            )
+                        ),
+                        start = firstDateOfWeek,
+                        end = lastDateOfWeek,
+                        questRepo = repo
+                    )
+                    quests.size.`should be`(3)
+                    quests.filter { it.id.isEmpty() }.size.`should be`(2)
+                }
             }
         }
 
@@ -199,9 +229,7 @@ class FindQuestsForRepeatingQuestSpek : Spek({
             }
 
             it("should create when no quest is scheduled") {
-                val repo = mockQuestsForRepeatingQuest(
-                    listOf()
-                )
+                val repo = mockQuestsForRepeatingQuest(listOf())
 
                 val quests = executeUseCase(
                     quest = TestUtil.repeatingQuest.copy(
@@ -272,9 +300,7 @@ class FindQuestsForRepeatingQuestSpek : Spek({
             it("should schedule quests for 3 years") {
                 val start = firstDateOfWeek
                 val end = firstDateOfWeek.plusYears(3)
-                val repo = mockQuestsForRepeatingQuest(
-                    listOf()
-                )
+                val repo = mockQuestsForRepeatingQuest(listOf())
 
                 val quests = executeUseCase(
                     quest = TestUtil.repeatingQuest.copy(
