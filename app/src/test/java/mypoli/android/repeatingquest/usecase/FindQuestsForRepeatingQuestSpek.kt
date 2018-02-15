@@ -16,6 +16,8 @@ import org.amshove.kluent.shouldThrow
 import org.jetbrains.spek.api.Spek
 import org.jetbrains.spek.api.dsl.describe
 import org.jetbrains.spek.api.dsl.it
+import org.jetbrains.spek.api.dsl.xit
+import org.threeten.bp.DayOfWeek
 import org.threeten.bp.LocalDate
 
 /**
@@ -141,7 +143,29 @@ class FindQuestsForRepeatingQuestSpek : Spek({
         }
 
         describe("repeating weekly") {
+            xit("should schedule for every week day in pattern") {
 
+                val repo = mockQuestsForRepeatingQuest(
+                    listOf()
+                )
+
+                val quests = executeUseCase(
+                    quest = TestUtil.repeatingQuest.copy(
+                        repeatingPattern = RepeatingPattern.Weekly(
+                            setOf(
+                                DayOfWeek.MONDAY,
+                                DayOfWeek.WEDNESDAY,
+                                DayOfWeek.FRIDAY
+                            )
+                        )
+                    ),
+                    start = firstDateOfWeek,
+                    end = lastDateOfWeek,
+                    questRepo = repo
+                )
+                quests.size.`should be`(3)
+                quests.filter { it.id.isEmpty() }.size.`should be`(3)
+            }
         }
 
         describe("repeating monthly") {

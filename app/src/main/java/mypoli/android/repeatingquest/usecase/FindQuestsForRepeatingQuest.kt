@@ -22,34 +22,10 @@ class FindQuestsForRepeatingQuest(private val questRepository: QuestRepository) 
 
         require(end.isAfter(start))
 
-        if (rq.repeatingPattern is RepeatingPattern.Yearly) {
-            val dates = yearlyDatesToScheduleInPeriod(rq.repeatingPattern, start, end)
-            if (dates.isEmpty()) {
-                return listOf()
-            }
-            val scheduledQuests = questRepository.findForRepeatingQuestBetween(rq.id, start, end)
-            val (removed, existing) = scheduledQuests.partition { it.isRemoved }
-            val removedDates = removed.map { it.originalScheduledDate }
-            val schedule = existing.associateBy({ it.originalScheduledDate }, { it })
-
-            return dates.minus(removedDates).map {
-
-                if (schedule.containsKey(it)) {
-                    schedule[it]!!
-                } else {
-
-                    Quest(
-                        name = rq.name,
-                        color = rq.color,
-                        icon = rq.icon,
-                        category = rq.category,
-                        startTime = rq.startTime,
-                        duration = rq.duration,
-                        scheduledDate = it,
-                        reminder = rq.reminder
-                    )
-                }
-            }
+        val scheduleDates = if (rq.repeatingPattern is RepeatingPattern.Yearly) {
+            yearlyDatesToScheduleInPeriod(rq.repeatingPattern, start, end)
+        } else {
+            start.datesUntil(end).toSet()
         }
 
 
@@ -61,9 +37,9 @@ class FindQuestsForRepeatingQuest(private val questRepository: QuestRepository) 
 
         val removedDates = removed.map { it.originalScheduledDate }
 
-        val scheduleDates = start.datesUntil(end).toSet().minus(removedDates)
+        val resultDates = scheduleDates.minus(removedDates)
 
-        return scheduleDates.map {
+        return resultDates.map {
 
             if (schedule.containsKey(it)) {
                 schedule[it]!!
