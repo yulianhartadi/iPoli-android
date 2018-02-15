@@ -52,6 +52,9 @@ object TestUtil {
         }
     }
 
+    val firstDateOfWeek: LocalDate = LocalDate.now().with(DayOfWeek.MONDAY)
+    val lastDateOfWeek: LocalDate = LocalDate.now().with(DayOfWeek.SUNDAY)
+
     val quest = Quest(
         name = "Test",
         color = Color.BLUE,
@@ -65,9 +68,7 @@ object TestUtil {
         repeatingPattern = RepeatingPattern.Daily,
         color = Color.BLUE,
         category = Category("test", Color.BLUE),
-        duration = 60
+        duration = 60,
+        start = firstDateOfWeek
     )
-
-    val firstDateOfWeek: LocalDate = LocalDate.now().with(DayOfWeek.MONDAY)
-    val lastDateOfWeek: LocalDate = LocalDate.now().with(DayOfWeek.SUNDAY)
 }

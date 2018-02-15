@@ -139,6 +139,39 @@ class FindQuestsForRepeatingQuestSpek : Spek({
                 quests.filter { it.scheduledDate.isEqual(firstDateOfWeek) }
                     .`should be empty`()
             }
+
+            it("should not schedule for dates after repeating quest end") {
+
+                val repo = mockQuestsForRepeatingQuest(listOf())
+
+                val quests = executeUseCase(
+                    quest = TestUtil.repeatingQuest.copy(
+                        start = firstDateOfWeek,
+                        end = firstDateOfWeek.plusDays(3)
+                    ),
+                    start = firstDateOfWeek,
+                    end = lastDateOfWeek,
+                    questRepo = repo
+                )
+                quests.size.`should be`(4)
+            }
+
+            it("should not schedule for dates before repeating quest start") {
+
+                val repo = mockQuestsForRepeatingQuest(listOf())
+
+                val quests = executeUseCase(
+                    quest = TestUtil.repeatingQuest.copy(
+                        start = firstDateOfWeek.plusDays(1),
+                        end = lastDateOfWeek
+                    ),
+                    start = firstDateOfWeek,
+                    end = lastDateOfWeek,
+                    questRepo = repo
+                )
+                quests.size.`should be`(6)
+            }
+
         }
 
         describe("repeating weekly") {

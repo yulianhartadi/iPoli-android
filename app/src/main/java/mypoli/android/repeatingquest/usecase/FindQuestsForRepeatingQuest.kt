@@ -17,8 +17,9 @@ class FindQuestsForRepeatingQuest(private val questRepository: QuestRepository) 
     UseCase<FindQuestsForRepeatingQuest.Params, List<Quest>> {
 
     override fun execute(parameters: Params): List<Quest> {
-
-        val (rq, start, end) = parameters
+        val rq = parameters.repeatingQuest
+        val start = if (parameters.start.isBefore(rq.start)) rq.start else parameters.start
+        val end = if (rq.end != null && rq.end.isBefore(parameters.end)) rq.end else parameters.end
 
         require(end.isAfter(start))
 
@@ -79,7 +80,7 @@ class FindQuestsForRepeatingQuest(private val questRepository: QuestRepository) 
 
         var date = start
         val dates = mutableListOf<LocalDate>()
-        while (date <= end) {
+        while (date.isBefore(end.plusDays(1))) {
             if (date.dayOfWeek in repeatingPattern.daysOfWeek) {
                 dates.add(date)
             }
