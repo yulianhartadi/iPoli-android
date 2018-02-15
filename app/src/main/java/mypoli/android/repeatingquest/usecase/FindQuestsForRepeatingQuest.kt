@@ -39,6 +39,12 @@ class FindQuestsForRepeatingQuest(private val questRepository: QuestRepository) 
                     start,
                     end
                 )
+
+                is RepeatingPattern.Monthly -> monthlyDatesToScheduleInPeriod(
+                    repeatingPattern,
+                    start,
+                    end
+                )
             }
 
 
@@ -70,6 +76,24 @@ class FindQuestsForRepeatingQuest(private val questRepository: QuestRepository) 
                 )
             }
         }
+    }
+
+    private fun monthlyDatesToScheduleInPeriod(
+        repeatingPattern: RepeatingPattern.Monthly,
+        start: LocalDate,
+        end: LocalDate
+    ): List<LocalDate> {
+
+        var date = start
+        val dates = mutableListOf<LocalDate>()
+        while (date.isBefore(end.plusDays(1))) {
+            if (date.dayOfMonth in repeatingPattern.daysOfMonth) {
+                dates.add(date)
+            }
+            date = date.plusDays(1)
+        }
+        return dates
+
     }
 
     private fun weeklyDatesToScheduleInPeriod(

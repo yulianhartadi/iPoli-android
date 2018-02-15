@@ -232,6 +232,60 @@ class FindQuestsForRepeatingQuestSpek : Spek({
         }
 
         describe("repeating monthly") {
+            describe("fixed") {
+                it("should schedule for every month day in pattern when days present in month") {
+
+                    val repo = mockQuestsForRepeatingQuest(listOf())
+
+                    val start = LocalDate.of(2000, 2, 1)
+                    val end = LocalDate.of(2000, 3, 15)
+
+
+                    val quests = executeUseCase(
+                        quest = TestUtil.repeatingQuest.copy(
+                            start = start,
+                            repeatingPattern = RepeatingPattern.Monthly(
+                                setOf(1, 10, 29, 31)
+                            )
+                        ),
+                        start = start,
+                        end = end,
+                        questRepo = repo
+                    )
+                    quests.size.`should be`(5)
+                    quests.filter { it.id.isEmpty() }.size.`should be`(5)
+                }
+
+                it("should not schedule for stored quests") {
+
+                    val start = LocalDate.of(2000, 2, 1)
+                    val end = LocalDate.of(2000, 3, 15)
+
+                    val repo = mockQuestsForRepeatingQuest(
+                        listOf(
+                            TestUtil.quest.copy(
+                                id = questId,
+                                originalScheduledDate = start
+                            )
+                        )
+                    )
+
+
+                    val quests = executeUseCase(
+                        quest = TestUtil.repeatingQuest.copy(
+                            start = start,
+                            repeatingPattern = RepeatingPattern.Monthly(
+                                setOf(1, 10, 29, 31)
+                            )
+                        ),
+                        start = start,
+                        end = end,
+                        questRepo = repo
+                    )
+                    quests.size.`should be`(5)
+                    quests.filter { it.id.isEmpty() }.size.`should be`(4)
+                }
+            }
 
         }
 

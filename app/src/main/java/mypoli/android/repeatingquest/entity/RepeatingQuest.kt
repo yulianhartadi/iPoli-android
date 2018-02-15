@@ -16,6 +16,9 @@ sealed class RepeatingPattern {
     data class Yearly(val dayOfMonth: Int, val month: Int) : RepeatingPattern()
     data class Weekly(val daysOfWeek: Set<DayOfWeek>, val flexibleCount: Int = 0) :
         RepeatingPattern()
+
+    data class Monthly(val daysOfMonth: Set<Int>, val flexibleCount: Int = 0) :
+        RepeatingPattern()
 }
 
 data class RepeatingQuest(
