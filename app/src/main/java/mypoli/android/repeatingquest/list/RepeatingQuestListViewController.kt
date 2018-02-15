@@ -114,6 +114,8 @@ class RepeatingQuestListViewController(args: Bundle? = null) :
             view.rqProgressBar.max = vm.allCount
             view.rqProgressBar.progress = vm.completedCount
             view.rqProgress.text = "${vm.completedCount}/${vm.allCount}"
+            view.rqProgressBar.progressTintList = ColorStateList.valueOf(colorRes(vm.color))
+            view.rqProgressBar.tickMarkTintList = ColorStateList.valueOf(colorRes(vm.color))
 
         }
 
