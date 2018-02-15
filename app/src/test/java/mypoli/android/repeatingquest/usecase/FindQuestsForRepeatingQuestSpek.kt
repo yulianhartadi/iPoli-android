@@ -193,6 +193,110 @@ class FindQuestsForRepeatingQuestSpek : Spek({
                 quests.size.`should be`(1)
                 quests.first().id.`should be empty`()
             }
+
+            it("should return scheduled quest") {
+                val repo = mockQuestsForRepeatingQuest(
+                    listOf(
+                        TestUtil.quest.copy(
+                            id = questId,
+                            originalScheduledDate = firstDateOfWeek
+                        )
+                    )
+                )
+
+                val quests = executeUseCase(
+                    quest = TestUtil.repeatingQuest.copy(
+                        repeatingPattern = RepeatingPattern.Yearly(
+                            firstDateOfWeek.dayOfMonth,
+                            firstDateOfWeek.monthValue
+                        )
+                    ),
+                    start = firstDateOfWeek,
+                    end = lastDateOfWeek,
+                    questRepo = repo
+                )
+                quests.size.`should be`(1)
+                quests.first().id.`should be`(questId)
+            }
+
+            it("should not schedule for dates with deleted quest") {
+
+                val repo = mockQuestsForRepeatingQuest(
+                    listOf(
+                        TestUtil.quest.copy(
+                            id = questId,
+                            originalScheduledDate = firstDateOfWeek,
+                            isRemoved = true
+                        )
+                    )
+                )
+
+                val quests = executeUseCase(
+                    quest = TestUtil.repeatingQuest.copy(
+                        repeatingPattern = RepeatingPattern.Yearly(
+                            firstDateOfWeek.dayOfMonth,
+                            firstDateOfWeek.monthValue
+                        )
+                    ),
+                    start = firstDateOfWeek,
+                    end = lastDateOfWeek,
+                    questRepo = repo
+                )
+                quests.`should be empty`()
+            }
+
+            it("should schedule quests for 3 years") {
+                val start = firstDateOfWeek
+                val end = firstDateOfWeek.plusYears(3)
+                val repo = mockQuestsForRepeatingQuest(
+                    listOf()
+                )
+
+                val quests = executeUseCase(
+                    quest = TestUtil.repeatingQuest.copy(
+                        repeatingPattern = RepeatingPattern.Yearly(
+                            firstDateOfWeek.plusDays(1).dayOfMonth,
+                            firstDateOfWeek.plusDays(1).monthValue
+                        )
+                    ),
+                    start = start,
+                    end = end,
+                    questRepo = repo
+                )
+                quests.size.`should be`(3)
+                quests.filter { it.id.isEmpty() }.size.`should be`(3)
+            }
+
+            it("should schedule 1 quest and use 2 stored quests for 3 years") {
+                val start = firstDateOfWeek
+                val end = firstDateOfWeek.plusYears(3)
+                val repo = mockQuestsForRepeatingQuest(
+                    listOf(
+                        TestUtil.quest.copy(
+                            id = "1",
+                            originalScheduledDate = firstDateOfWeek.plusDays(1)
+                        ),
+                        TestUtil.quest.copy(
+                            id = "2",
+                            originalScheduledDate = firstDateOfWeek.plusDays(1).plusYears(2)
+                        )
+                    )
+                )
+
+                val quests = executeUseCase(
+                    quest = TestUtil.repeatingQuest.copy(
+                        repeatingPattern = RepeatingPattern.Yearly(
+                            firstDateOfWeek.plusDays(1).dayOfMonth,
+                            firstDateOfWeek.plusDays(1).monthValue
+                        )
+                    ),
+                    start = start,
+                    end = end,
+                    questRepo = repo
+                )
+                quests.size.`should be`(3)
+                quests.filter { it.id.isEmpty() }.size.`should be`(1)
+            }
         }
     }
 })

@@ -29,9 +29,10 @@ class FindQuestsForRepeatingQuest(private val questRepository: QuestRepository) 
             }
             val scheduledQuests = questRepository.findForRepeatingQuestBetween(rq.id, start, end)
             val (removed, existing) = scheduledQuests.partition { it.isRemoved }
+            val removedDates = removed.map { it.originalScheduledDate }
             val schedule = existing.associateBy({ it.originalScheduledDate }, { it })
 
-            return dates.map {
+            return dates.minus(removedDates).map {
 
                 if (schedule.containsKey(it)) {
                     schedule[it]!!
