@@ -18,10 +18,20 @@ class FindQuestsForRepeatingQuest(private val questRepository: QuestRepository) 
 
     override fun execute(parameters: Params): List<Quest> {
         val rq = parameters.repeatingQuest
+
+        require(parameters.end.isAfter(parameters.start))
+
+        if (parameters.end.isBefore(rq.start)) {
+            return listOf()
+        }
+
+        if (rq.end != null && parameters.start.isAfter(rq.end)) {
+            return listOf()
+        }
+
         val start = if (parameters.start.isBefore(rq.start)) rq.start else parameters.start
         val end = if (rq.end != null && rq.end.isBefore(parameters.end)) rq.end else parameters.end
 
-        require(end.isAfter(start))
 
         val repeatingPattern = rq.repeatingPattern
         val scheduleDates =

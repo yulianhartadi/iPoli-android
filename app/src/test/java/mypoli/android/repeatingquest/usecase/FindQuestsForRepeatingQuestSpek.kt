@@ -61,6 +61,29 @@ class FindQuestsForRepeatingQuestSpek : Spek({
             exec shouldThrow IllegalArgumentException::class
         }
 
+        it("should not schedule anything before quest start") {
+            val quests = executeUseCase(
+                quest = TestUtil.repeatingQuest.copy(start = lastDateOfWeek.plusDays(1)),
+                start = firstDateOfWeek,
+                end = lastDateOfWeek
+            )
+
+            quests.`should be empty`()
+        }
+
+        it("should not schedule anything after quest end") {
+            val quests = executeUseCase(
+                quest = TestUtil.repeatingQuest.copy(
+                    start = firstDateOfWeek.minusDays(2),
+                    end = firstDateOfWeek.minusDays(1)
+                ),
+                start = firstDateOfWeek,
+                end = lastDateOfWeek
+            )
+
+            quests.`should be empty`()
+        }
+
         describe("repeating daily") {
 
             it("should schedule for every day at start of week when no quests are scheduled") {
