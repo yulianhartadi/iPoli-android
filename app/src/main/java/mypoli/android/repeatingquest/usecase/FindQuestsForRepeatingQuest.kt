@@ -70,7 +70,7 @@ class FindQuestsForRepeatingQuest(private val questRepository: QuestRepository) 
         val (removed, existing) = scheduledQuests.partition { it.isRemoved }
         val schedule = existing.associateBy({ it.originalScheduledDate }, { it })
         val removedDates = removed.map { it.originalScheduledDate }
-        val resultDates = scheduleDates.minus(removedDates)
+        val resultDates = scheduleDates - removedDates
 
         return resultDates.map {
 
@@ -100,24 +100,31 @@ class FindQuestsForRepeatingQuest(private val questRepository: QuestRepository) 
         val result = mutableListOf<LocalDate>()
 
 
-
+        val daysOfWeek = DayOfWeek.values().toList()
         for (p in periods) {
-
             if (preferredDays.isNotEmpty()) {
                 val weekDays = preferredDays.shuffled().take(timesPerWeek)
+                val remainingWeekDays =
+                    (daysOfWeek - weekDays).shuffled().take(timesPerWeek - weekDays.size)
 
                 val periodStart = p.start
+                val scheduledWeekDays = weekDays + remainingWeekDays
+                scheduledWeekDays.forEach {
+                    val d = periodStart.with(it)
+                    if (d.isBetween(periodStart, p.end)) {
+                        result.add(d)
+                    }
+                }
 
-                result.addAll(weekDays.map { periodStart.with(it) })
             } else {
-                val daysOfWeek = DayOfWeek.values().toList()
-
                 val weekDays = daysOfWeek.shuffled().take(timesPerWeek)
-
                 val periodStart = p.start
-
-                result.addAll(weekDays.map { periodStart.with(it) })
-
+                weekDays.forEach {
+                    val d = periodStart.with(it)
+                    if (d.isBetween(periodStart, p.end)) {
+                        result.add(d)
+                    }
+                }
             }
         }
 
