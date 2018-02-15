@@ -4,12 +4,17 @@ import android.content.Intent
 import android.content.Intent.ACTION_VIEW
 import android.net.Uri
 import android.os.Bundle
+import android.support.design.widget.NavigationView
+import android.support.v4.view.GravityCompat
+import android.support.v4.widget.DrawerLayout
+import android.support.v7.app.ActionBarDrawerToggle
 import android.view.*
 import com.amplitude.api.Amplitude
 import com.bluelinelabs.conductor.RouterTransaction
 import com.bluelinelabs.conductor.changehandler.FadeChangeHandler
 import kotlinx.android.synthetic.main.controller_home.view.*
 import mypoli.android.Constants
+import mypoli.android.MainActivity
 import mypoli.android.R
 import mypoli.android.auth.AuthViewController
 import mypoli.android.challenge.category.ChallengeCategoryListViewController
@@ -22,12 +27,19 @@ import mypoli.android.quest.schedule.ScheduleViewController
 import mypoli.android.store.theme.ThemeStoreViewController
 import org.json.JSONObject
 
+
 /**
  * Created by Venelin Valkov <venelin@mypoli.fun>
  * on 8/19/17.
  */
 class HomeViewController(args: Bundle? = null) :
-    ReduxViewController<HomeAction, HomeViewState, HomePresenter>(args) {
+    ReduxViewController<HomeAction, HomeViewState, HomePresenter>(args),
+    NavigationView.OnNavigationItemSelectedListener {
+
+
+    private lateinit var actionBarDrawerToggle: ActionBarDrawerToggle
+    private lateinit var drawerLayout: DrawerLayout
+    private var navigationItemSelected: MenuItem? = null
 
     override val presenter = HomePresenter()
 
@@ -56,7 +68,46 @@ class HomeViewController(args: Bundle? = null) :
         val contentView = inflater.inflate(R.layout.controller_home, container, false)
         setToolbar(contentView.toolbar)
 
+        contentView.navigationView.setNavigationItemSelectedListener(this)
+
+        actionBarDrawerToggle = object :
+            ActionBarDrawerToggle(
+                activity,
+                contentView.drawerLayout,
+                R.string.drawer_open,
+                R.string.drawer_close
+            ) {
+
+            override fun onDrawerOpened(drawerView: View) {
+                navigationItemSelected = null
+            }
+
+            override fun onDrawerClosed(drawerView: View) {
+                if (navigationItemSelected == null) {
+                    return
+                }
+                onItemSelectedFromDrawer()
+            }
+        }
+
+        contentView.drawerLayout.addDrawerListener(actionBarDrawerToggle)
+        drawerLayout = contentView.drawerLayout
+
+        val actionBar = (activity as MainActivity).supportActionBar
+        actionBar?.setDisplayHomeAsUpEnabled(true)
+        actionBarDrawerToggle.syncState()
+
         return contentView
+    }
+
+    private fun onItemSelectedFromDrawer() {
+
+    }
+
+    override fun onNavigationItemSelected(item: MenuItem): Boolean {
+        navigationItemSelected = item;
+        drawerLayout.closeDrawer(GravityCompat.START)
+        return false;
     }
 
     override fun onAttach(view: View) {
@@ -89,6 +140,11 @@ class HomeViewController(args: Bundle? = null) :
 
     override fun onOptionsItemSelected(item: MenuItem) =
         when (item.itemId) {
+
+            android.R.id.home -> {
+                drawerLayout.openDrawer(GravityCompat.START)
+                true
+            }
 
             R.id.actionPet -> {
                 showPet()

@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="225dp"
+    android:background="?attr/colorAccent">
+
+    <RelativeLayout
+        android:id="@+id/relativeLayout"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="8dp"
+        android:layout_marginTop="32dp"
+        app:layout_constraintBottom_toTopOf="@+id/player_experience"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <LinearLayout
+            android:id="@+id/avatar_container"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <de.hdodenhof.circleimageview.CircleImageView
+                android:id="@+id/player_avatar"
+                android:layout_width="76dp"
+                android:layout_height="76dp"
+                android:layout_gravity="center_vertical"
+                android:layout_marginEnd="16dp"
+                android:layout_marginStart="16dp"
+                app:civ_border_color="#FF000000"
+                app:civ_fill_color="@color/md_white" />
+
+            <TextView
+                android:id="@+id/player_level"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="16dp"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="8dp"
+                android:textColor="@color/md_white"
+                android:textSize="14sp"
+                android:textStyle="bold" />
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="16dp"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="8dp">
+
+                <TextView
+                    android:id="@+id/player_coins"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:drawablePadding="4dp"
+                    android:drawableStart="@drawable/ic_life_coin_24dp"
+                    android:gravity="center_vertical"
+                    android:textColor="@color/md_white"
+                    android:textSize="14sp" />
+
+                <TextView
+                    android:id="@+id/player_current_xp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="4dp"
+                    android:textColor="@color/md_white"
+                    android:textSize="14sp" />
+
+            </LinearLayout>
+        </LinearLayout>
+
+        <de.hdodenhof.circleimageview.CircleImageView
+            android:id="@+id/player_achievements"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:layout_marginEnd="8dp"
+            android:layout_toStartOf="@+id/pet_container"
+            android:src="@drawable/ic_achievement_badge"
+            app:civ_border_color="#FF000000"
+            app:civ_fill_color="@color/md_white" />
+
+        <RelativeLayout
+            android:id="@+id/pet_container"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentTop="true"
+            android:layout_marginEnd="16dp">
+
+            <de.hdodenhof.circleimageview.CircleImageView
+                android:id="@+id/pet_picture"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_alignParentStart="true"
+                android:layout_alignParentTop="true"
+                app:civ_border_color="#FF000000"
+                app:civ_fill_color="@color/md_white" />
+
+            <ImageView
+                android:id="@+id/pet_state"
+                android:layout_width="12dp"
+                android:layout_height="12dp"
+                android:layout_alignParentBottom="true"
+                android:layout_alignParentEnd="true"
+                android:layout_marginEnd="2dp"
+                android:background="@drawable/ic_context_indicator"
+                android:scaleType="fitXY" />
+
+        </RelativeLayout>
+
+        <Button
+            android:id="@+id/sign_in"
+            style="@style/Widget.AppCompat.Button.Colored"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignBottom="@+id/avatar_container"
+            android:layout_alignParentEnd="true"
+            android:layout_marginEnd="16dp"
+            android:text="@string/sign_in_button"
+            android:visibility="gone" />
+    </RelativeLayout>
+
+    <ProgressBar
+        android:id="@+id/player_experience"
+        style="@style/Widget.AppCompat.ProgressBar.Horizontal"
+        android:layout_width="0dp"
+        android:layout_height="4dp"
+        android:max="100"
+        android:progress="0"
+        android:progressDrawable="@drawable/experience_progress_bar"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent" />
+</android.support.constraint.ConstraintLayout>

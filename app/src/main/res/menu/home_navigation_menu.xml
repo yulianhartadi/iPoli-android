@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <group
+        android:id="@+id/drawer_main_group"
+        android:checkableBehavior="single">
+        <item
+            android:id="@+id/home"
+            android:checked="true"
+            android:icon="@drawable/ic_event_white_24dp"
+            android:title="@string/calendar" />
+
+        <item
+            android:id="@+id/overview"
+            android:checked="false"
+            android:icon="@drawable/ic_favorite_outline_white_24dp"
+            android:title="@string/overview" />
+
+        <item
+            android:id="@+id/inbox"
+            android:checked="false"
+            android:icon="@drawable/ic_inbox_white_24dp"
+            android:title="@string/inbox" />
+
+        <item
+            android:id="@+id/challenges"
+            android:checked="false"
+            android:icon="@drawable/ic_sword_white_24dp"
+            android:title="@string/challenges" />
+
+        <item
+            android:id="@+id/repeating_quests"
+            android:checked="false"
+            android:icon="@drawable/ic_repeat_white_24dp"
+            android:title="@string/repeating_quests" />
+
+        <item
+            android:id="@+id/growth"
+            android:checked="false"
+            android:icon="@drawable/ic_growth_white_24dp"
+            android:title="@string/growth" />
+
+        <item
+            android:id="@+id/rewards"
+            android:checked="false"
+            android:icon="@drawable/ic_gift_white_24dp"
+            android:title="@string/rewards" />
+
+        <item
+            android:id="@+id/feed"
+            android:checked="false"
+            android:icon="@drawable/ic_summit_black_24dp"
+            android:title="@string/achievement_feed" />
+    </group>
+
+    <group
+        android:id="@+id/third_group"
+        android:checkableBehavior="single">
+        <item
+            android:id="@+id/store"
+            android:checkable="false"
+            android:checked="false"
+            android:icon="@drawable/ic_shopping_basket_black_24dp"
+            android:title="Store" />
+        <item
+            android:id="@+id/invite_friends"
+            android:checkable="false"
+            android:checked="false"
+            android:icon="@drawable/ic_invite_black_24dp"
+            android:title="@string/invite_friends" />
+        <item
+            android:id="@+id/settings"
+            android:checkable="false"
+            android:checked="false"
+            android:icon="@drawable/ic_settings_black_24dp"
+            android:title="@string/settings" />
+        <item
+            android:id="@+id/feedback"
+            android:checkable="false"
+            android:checked="false"
+            android:icon="@drawable/ic_comment_white_24dp"
+            android:title="@string/feedback" />
+        <item
+            android:id="@+id/contact_us"
+            android:checkable="false"
+            android:checked="false"
+            android:icon="@drawable/ic_email_white_24dp"
+            android:title="@string/contact_us" />
+    </group>
+</menu>
