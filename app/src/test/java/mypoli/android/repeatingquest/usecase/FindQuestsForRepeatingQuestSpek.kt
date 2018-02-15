@@ -10,10 +10,7 @@ import mypoli.android.quest.Quest
 import mypoli.android.quest.data.persistence.QuestRepository
 import mypoli.android.repeatingquest.entity.RepeatingPattern
 import mypoli.android.repeatingquest.entity.RepeatingQuest
-import org.amshove.kluent.`should be empty`
-import org.amshove.kluent.`should be in`
-import org.amshove.kluent.`should be`
-import org.amshove.kluent.shouldThrow
+import org.amshove.kluent.*
 import org.jetbrains.spek.api.Spek
 import org.jetbrains.spek.api.dsl.describe
 import org.jetbrains.spek.api.dsl.it
@@ -342,6 +339,79 @@ class FindQuestsForRepeatingQuestSpek : Spek({
                     quests.size.`should be`(1)
                     val scheduledDate = quests.first().scheduledDate
                     scheduledDate.dayOfWeek.`should be in`(preferredDays)
+                }
+
+                it("should schedule 2 quest with 1 preferred day") {
+                    val preferredDays = setOf(DayOfWeek.FRIDAY)
+                    val quests = executeUseCase(
+                        createQuest(
+                            timesPerWeek = 2,
+                            preferredDays = preferredDays
+                        ),
+                        firstDateOfWeek,
+                        lastDateOfWeek
+                    )
+
+                    quests.size.`should be`(2)
+                    val scheduledDates = quests.map { it.scheduledDate }
+                    scheduledDates.filter { it.dayOfWeek == DayOfWeek.FRIDAY }.size.`should be`(1)
+                }
+
+                it("should schedule 3 quest with 4 preferred day") {
+                    val preferredDays = setOf(
+                        DayOfWeek.MONDAY,
+                        DayOfWeek.TUESDAY,
+                        DayOfWeek.THURSDAY,
+                        DayOfWeek.FRIDAY
+                    )
+                    val quests = executeUseCase(
+                        createQuest(
+                            timesPerWeek = 3,
+                            preferredDays = preferredDays
+                        ),
+                        firstDateOfWeek.with(DayOfWeek.WEDNESDAY),
+                        lastDateOfWeek
+                    )
+
+                    quests.size.`should be in range`(1, 2)
+                    val possibleWeekDays = setOf(
+                        DayOfWeek.THURSDAY,
+                        DayOfWeek.FRIDAY
+                    )
+                    if (quests.size == 1) {
+                        quests.first().scheduledDate.dayOfWeek.`should be in`(
+                            possibleWeekDays
+                        )
+                    } else {
+                        quests.map { it.scheduledDate.dayOfWeek }.`should contain all`(
+                            possibleWeekDays
+                        )
+                    }
+                }
+
+                it("should schedule 6 quest for 2 days") {
+                    val quests = executeUseCase(
+                        createQuest(
+                            timesPerWeek = 5
+                        ),
+                        firstDateOfWeek.with(DayOfWeek.SATURDAY),
+                        lastDateOfWeek
+                    )
+
+                    quests.size.`should be in range`(1, 2)
+                    val possibleWeekDays = setOf(
+                        DayOfWeek.SATURDAY,
+                        DayOfWeek.SUNDAY
+                    )
+                    if (quests.size == 1) {
+                        quests.first().scheduledDate.dayOfWeek.`should be`(
+                            possibleWeekDays
+                        )
+                    } else {
+                        quests.map { it.scheduledDate.dayOfWeek }.`should contain all`(
+                            possibleWeekDays
+                        )
+                    }
                 }
             }
         }
