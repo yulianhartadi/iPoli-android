@@ -9,6 +9,7 @@ import mypoli.android.repeatingquest.entity.RepeatingPattern
 import mypoli.android.repeatingquest.entity.RepeatingQuest
 import org.threeten.bp.DayOfWeek
 import org.threeten.bp.LocalDate
+import org.threeten.bp.temporal.TemporalAdjusters.lastDayOfMonth
 
 /**
  * Created by Venelin Valkov <venelin@mypoli.fun>
@@ -100,7 +101,30 @@ class FindQuestsForRepeatingQuest(private val questRepository: QuestRepository) 
         require(timerPerMonth >= 1)
         require(timerPerMonth <= 31)
 
-        return listOf()
+        val periods = findMonthlyPeriods(start, end)
+        val result = mutableListOf<LocalDate>()
+
+        for (p in periods) {
+            val daysOfMonth =
+                (1..p.start.lengthOfMonth()).map { it }.shuffled().take(timerPerMonth)
+
+            val days = if (preferredDays.isNotEmpty()) {
+                val scheduledMonthDays = preferredDays.shuffled().take(timerPerMonth)
+                val remainingMonthDays =
+                    (daysOfMonth - scheduledMonthDays).shuffled().take(timerPerMonth - scheduledMonthDays.size)
+                scheduledMonthDays + remainingMonthDays
+            } else {
+                daysOfMonth.shuffled().take(timerPerMonth)
+            }
+
+            result.addAll(
+                days
+                    .map { p.start.withDayOfMonth(it) }
+                    .filter { it.isBetween(p.start, p.end) }
+            )
+        }
+
+        return result
     }
 
     private fun flexibleWeeklyToScheduleInPeriod(
@@ -120,33 +144,21 @@ class FindQuestsForRepeatingQuest(private val questRepository: QuestRepository) 
 
         val result = mutableListOf<LocalDate>()
 
-
         val daysOfWeek = DayOfWeek.values().toList()
         for (p in periods) {
-            if (preferredDays.isNotEmpty()) {
-                val weekDays = preferredDays.shuffled().take(timesPerWeek)
+            val days = if (preferredDays.isNotEmpty()) {
+                val scheduledWeekDays = preferredDays.shuffled().take(timesPerWeek)
                 val remainingWeekDays =
-                    (daysOfWeek - weekDays).shuffled().take(timesPerWeek - weekDays.size)
-
-                val periodStart = p.start
-                val scheduledWeekDays = weekDays + remainingWeekDays
-                scheduledWeekDays.forEach {
-                    val d = periodStart.with(it)
-                    if (d.isBetween(periodStart, p.end)) {
-                        result.add(d)
-                    }
-                }
-
+                    (daysOfWeek - scheduledWeekDays).shuffled().take(timesPerWeek - scheduledWeekDays.size)
+                scheduledWeekDays + remainingWeekDays
             } else {
-                val weekDays = daysOfWeek.shuffled().take(timesPerWeek)
-                val periodStart = p.start
-                weekDays.forEach {
-                    val d = periodStart.with(it)
-                    if (d.isBetween(periodStart, p.end)) {
-                        result.add(d)
-                    }
-                }
+                daysOfWeek.shuffled().take(timesPerWeek)
             }
+            result.addAll(
+                days
+                    .map { p.start.with(it) }
+                    .filter { it.isBetween(p.start, p.end) }
+            )
         }
 
         return result
@@ -166,6 +178,24 @@ class FindQuestsForRepeatingQuest(private val questRepository: QuestRepository) 
         val dayAfterEnd = end.plusDays(1)
         while (periodStart.isBefore(dayAfterEnd)) {
             val periodEnd = periodStart.with(lastDayOfWeek)
+            periods.add(Period(periodStart, if (periodEnd.isAfter(end)) end else periodEnd))
+            periodStart = periodEnd.plusDays(1)
+        }
+
+        return periods
+    }
+
+    private fun findMonthlyPeriods(
+        start: LocalDate,
+        end: LocalDate
+    ): List<Period> {
+        val periods = mutableListOf<Period>()
+
+        var periodStart = start
+        val dayAfterEnd = end.plusDays(1)
+        while (periodStart.isBefore(dayAfterEnd)) {
+
+            val periodEnd = periodStart.with(lastDayOfMonth())
             periods.add(Period(periodStart, if (periodEnd.isAfter(end)) end else periodEnd))
             periodStart = periodEnd.plusDays(1)
         }
