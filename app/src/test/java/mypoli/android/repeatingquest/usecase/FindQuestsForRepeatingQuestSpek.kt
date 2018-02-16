@@ -572,7 +572,6 @@ class FindQuestsForRepeatingQuestSpek : Spek({
                         )
                     )
 
-
                     val quests = executeUseCase(
                         quest = TestUtil.repeatingQuest.copy(
                             start = start,
@@ -779,6 +778,69 @@ class FindQuestsForRepeatingQuestSpek : Spek({
                         val second = quests[1].scheduledDate
                         first.monthValue.`should not be equal to`(second.monthValue)
                     }
+                }
+
+                it("should add 1 scheduled period") {
+                    val rq = executeUseCaseWithRepeatingQuestResult(
+                        createQuest(
+                            timesPerMonth = 1,
+                            scheduledPeriods = mapOf()
+                        ),
+                        firstJanuary,
+                        lastJanuary
+                    )
+
+                    val scheduledPeriods =
+                        (rq.repeatingPattern as RepeatingPattern.Flexible.Monthly).scheduledPeriods
+                    scheduledPeriods.size.`should be`(1)
+                    scheduledPeriods.keys.first().`should be`(firstJanuary)
+                    scheduledPeriods[firstJanuary]!!.size.`should be`(1)
+
+                }
+
+                it("should add 2 scheduled periods") {
+                    val rq = executeUseCaseWithRepeatingQuestResult(
+                        createQuest(
+                            timesPerMonth = 3,
+                            scheduledPeriods = mapOf()
+                        ),
+                        firstJanuary.plusDays(7),
+                        lastFebruary.minusDays(7)
+                    )
+
+                    val scheduledPeriods =
+                        (rq.repeatingPattern as RepeatingPattern.Flexible.Monthly).scheduledPeriods
+                    scheduledPeriods.size.`should be`(2)
+                    scheduledPeriods.keys.`should contain all`(
+                        listOf(
+                            firstJanuary,
+                            firstFebruary
+                        )
+                    )
+                }
+
+                it("should add 1 scheduled periods and not override the other") {
+                    val scheduledPeriodDates = listOf(
+                        firstFebruary,
+                        firstFebruary.plusDays(1),
+                        firstFebruary.plusDays(2)
+                    )
+
+                    val rq = executeUseCaseWithRepeatingQuestResult(
+                        createQuest(
+                            timesPerMonth = 3,
+                            scheduledPeriods = mapOf(
+                                firstFebruary to scheduledPeriodDates
+                            )
+                        ),
+                        firstJanuary.plusDays(7),
+                        lastFebruary.minusDays(7)
+                    )
+
+                    val scheduledPeriods =
+                        (rq.repeatingPattern as RepeatingPattern.Flexible.Monthly).scheduledPeriods
+                    scheduledPeriods.size.`should be`(2)
+                    scheduledPeriods[firstFebruary]!!.`should contain all`(scheduledPeriodDates)
                 }
             }
         }
