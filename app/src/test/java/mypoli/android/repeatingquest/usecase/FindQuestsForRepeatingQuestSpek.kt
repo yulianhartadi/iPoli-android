@@ -27,7 +27,8 @@ import org.threeten.bp.temporal.TemporalAdjusters
 class FindQuestsForRepeatingQuestSpek : Spek({
 
     describe("FindQuestsForRepeatingQuest") {
-        fun executeUseCase(
+
+        fun doExecuteUseCase(
             quest: RepeatingQuest,
             start: LocalDate,
             end: LocalDate,
@@ -42,7 +43,25 @@ class FindQuestsForRepeatingQuestSpek : Spek({
                     firstDayOfWeek = DayOfWeek.MONDAY,
                     lastDayOfWeek = DayOfWeek.SUNDAY
                 )
-            ).quests
+            )
+
+
+        fun executeUseCaseWithRepeatingQuestResult(
+            quest: RepeatingQuest,
+            start: LocalDate,
+            end: LocalDate,
+            questRepo: QuestRepository = TestUtil.questRepoMock(),
+            rqRepo: RepeatingQuestRepository = TestUtil.repeatingQuestRepoMock()
+        ) = doExecuteUseCase(quest, start, end, questRepo, rqRepo).repeatingQuest
+
+        fun executeUseCase(
+            quest: RepeatingQuest,
+            start: LocalDate,
+            end: LocalDate,
+            questRepo: QuestRepository = TestUtil.questRepoMock(),
+            rqRepo: RepeatingQuestRepository = TestUtil.repeatingQuestRepoMock()
+        ) = doExecuteUseCase(quest, start, end, questRepo, rqRepo).quests
+
 
         fun mockQuestsForRepeatingQuest(quests: List<Quest> = listOf()) =
             mock<QuestRepository> {
@@ -449,29 +468,20 @@ class FindQuestsForRepeatingQuestSpek : Spek({
                     }
                 }
 
-//                it("should add 1 scheduled period") {
-//                    val quests = executeUseCase(
-//                        createQuest(
-//                            timesPerWeek = 1
-//                        ),
-//                        firstDateOfWeek,
-//                        lastDateOfWeek
-//                    )
-//
-//                    quests.size.`should be in range`(1, 2)
-//                    if (quests.size == 1) {
-//                        quests.first().scheduledDate.dayOfWeek.`should be in`(
-//                            possibleWeekDays
-//                        )
-//                    } else {
-//                        quests.map { it.scheduledDate.dayOfWeek }.`should contain all`(
-//                            possibleWeekDays
-//                        )
-//                        val first = quests.first().scheduledDate
-//                        val second = quests[1].scheduledDate
-//                        first.dayOfWeek.`should not be`(second.dayOfWeek)
-//                    }
-//                }
+                it("should add 1 scheduled period") {
+                    val rq = executeUseCaseWithRepeatingQuestResult(
+                        createQuest(
+                            timesPerWeek = 1,
+                            scheduledPeriods = mapOf()
+                        ),
+                        firstDateOfWeek,
+                        lastDateOfWeek
+                    )
+
+                    val pattern = rq.repeatingPattern as RepeatingPattern.Flexible.Weekly
+                    pattern.scheduledPeriods.size.`should be`(1)
+                    pattern.scheduledPeriods.keys.first().`should be`(firstDateOfWeek)
+                }
             }
         }
 
@@ -714,7 +724,7 @@ class FindQuestsForRepeatingQuestSpek : Spek({
                         scheduledDate.dayOfMonth.`should be in`(possibleMonthDays)
                         scheduledDate.month.`should be`(Month.FEBRUARY)
                     } else {
-                        quests.map { it.scheduledDate.dayOfMonth }.`should contain all`(
+                        quests.map { it.scheduledDate.dayOfMonth }.`should be in`(
                             possibleMonthDays
                         )
                         val first = quests.first().scheduledDate
