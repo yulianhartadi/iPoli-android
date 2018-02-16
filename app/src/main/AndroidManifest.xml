@@ -31,8 +31,25 @@
             </intent-filter>
         </activity>
 
+
         <receiver
-            android:name=".quest.receiver.CompleteTimeRangeReceiver"
+            android:name=".quest.widget.agenda.AgendaWidgetProvider"
+            android:label="@string/widget_journey_name">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/agenda_widget_info" />
+        </receiver>
+
+        <service
+            android:name=".quest.widget.agenda.AgendaWidgetService"
+            android:permission="android.permission.BIND_REMOTEVIEWS" />
+
+        <receiver
+            android:name=".quest.receiver.CompleteQuestReceiver"
             android:exported="false" />
 
         <meta-data
