@@ -16,6 +16,7 @@ import org.jetbrains.spek.api.dsl.describe
 import org.jetbrains.spek.api.dsl.it
 import org.threeten.bp.DayOfWeek
 import org.threeten.bp.LocalDate
+import org.threeten.bp.Month
 import org.threeten.bp.temporal.TemporalAdjusters
 
 /**
@@ -390,7 +391,7 @@ class FindQuestsForRepeatingQuestSpek : Spek({
                     }
                 }
 
-                it("should schedule 5 quest for 2 days") {
+                it("should schedule 5 quests for 2 days") {
                     val quests = executeUseCase(
                         createQuest(
                             timesPerWeek = 5
@@ -412,6 +413,35 @@ class FindQuestsForRepeatingQuestSpek : Spek({
                         quests.map { it.scheduledDate.dayOfWeek }.`should contain all`(
                             possibleWeekDays
                         )
+                    }
+                }
+
+                it("should schedule quests in different weeks") {
+                    val possibleWeekDays = setOf(
+                        DayOfWeek.WEDNESDAY,
+                        DayOfWeek.FRIDAY
+                    )
+                    val quests = executeUseCase(
+                        createQuest(
+                            timesPerWeek = 1,
+                            preferredDays = possibleWeekDays
+                        ),
+                        firstDateOfWeek.with(DayOfWeek.THURSDAY),
+                        lastDateOfWeek.plusDays(1).with(DayOfWeek.SATURDAY)
+                    )
+
+                    quests.size.`should be in range`(1, 2)
+                    if (quests.size == 1) {
+                        quests.first().scheduledDate.dayOfWeek.`should be in`(
+                            possibleWeekDays
+                        )
+                    } else {
+                        quests.map { it.scheduledDate.dayOfWeek }.`should contain all`(
+                            possibleWeekDays
+                        )
+                        val first = quests.first().scheduledDate
+                        val second = quests[1].scheduledDate
+                        first.dayOfWeek.`should not be`(second.dayOfWeek)
                     }
                 }
             }
@@ -605,7 +635,7 @@ class FindQuestsForRepeatingQuestSpek : Spek({
                     }
                 }
 
-                it("should schedule 30 quest for 2 days") {
+                it("should schedule 30 quests for 2 days") {
                     val quests = executeUseCase(
                         createQuest(
                             timesPerMonth = 30
@@ -615,15 +645,53 @@ class FindQuestsForRepeatingQuestSpek : Spek({
                     )
 
                     quests.size.`should be in range`(1, 2)
-                    val possibleWeekDays = setOf(30, 31)
+                    val possibleMonthDays = setOf(30, 31)
                     if (quests.size == 1) {
                         quests.first().scheduledDate.dayOfMonth.`should be in`(
-                            possibleWeekDays
+                            possibleMonthDays
                         )
                     } else {
                         quests.map { it.scheduledDate.dayOfMonth }.`should contain all`(
-                            possibleWeekDays
+                            possibleMonthDays
                         )
+                    }
+                }
+
+                it("should schedule 30 quests in February") {
+                    val quests = executeUseCase(
+                        createQuest(
+                            timesPerMonth = 30
+                        ),
+                        firstFebruary,
+                        lastFebruary
+                    )
+
+                    quests.size.`should be`(firstFebruary.lengthOfMonth())
+                }
+
+                it("should schedule quests in different months") {
+                    val possibleMonthDays = setOf(10, 20)
+                    val quests = executeUseCase(
+                        createQuest(
+                            timesPerMonth = 1,
+                            preferredDays = possibleMonthDays
+                        ),
+                        firstJanuary.plusDays(15),
+                        firstFebruary.plusDays(25)
+                    )
+
+                    quests.size.`should be in range`(1, 2)
+                    if (quests.size == 1) {
+                        val scheduledDate = quests.first().scheduledDate
+                        scheduledDate.dayOfMonth.`should be in`(possibleMonthDays)
+                        scheduledDate.month.`should be`(Month.FEBRUARY)
+                    } else {
+                        quests.map { it.scheduledDate.dayOfMonth }.`should contain all`(
+                            possibleMonthDays
+                        )
+                        val first = quests.first().scheduledDate
+                        val second = quests[1].scheduledDate
+                        first.monthValue.`should not be equal to`(second.monthValue)
                     }
                 }
             }
