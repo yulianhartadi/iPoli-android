@@ -55,10 +55,17 @@ class FindQuestsForRepeatingQuest(private val questRepository: QuestRepository) 
                 end
             )
 
-            is RepeatingPattern.Flexible.Weekly -> {
-                flexibleWeekly(rq.repeatingPattern, start, end, parameters.lastDayOfWeek)
-            }
+            is RepeatingPattern.Flexible.Weekly ->
+                flexibleWeeklyToScheduleInPeriod(
+                    rq.repeatingPattern,
+                    start,
+                    end,
+                    parameters.lastDayOfWeek
+                )
 
+
+            is RepeatingPattern.Flexible.Monthly ->
+                flexibleMonthlyToScheduleInPeriod(rq.repeatingPattern, start, end)
         }
 
 
@@ -82,7 +89,21 @@ class FindQuestsForRepeatingQuest(private val questRepository: QuestRepository) 
         }
     }
 
-    private fun flexibleWeekly(
+    private fun flexibleMonthlyToScheduleInPeriod(
+        pattern: RepeatingPattern.Flexible.Monthly,
+        start: LocalDate,
+        end: LocalDate
+    ): List<LocalDate> {
+        val preferredDays = pattern.preferredDays
+        val timerPerMonth = pattern.timesPerMonth
+        require(timerPerMonth != preferredDays.size)
+        require(timerPerMonth >= 1)
+        require(timerPerMonth <= 31)
+
+        return listOf()
+    }
+
+    private fun flexibleWeeklyToScheduleInPeriod(
         pattern: RepeatingPattern.Flexible.Weekly,
         start: LocalDate,
         end: LocalDate,

@@ -404,7 +404,7 @@ class FindQuestsForRepeatingQuestSpek : Spek({
                         DayOfWeek.SUNDAY
                     )
                     if (quests.size == 1) {
-                        quests.first().scheduledDate.dayOfWeek.`should be`(
+                        quests.first().scheduledDate.dayOfWeek.`should be in`(
                             possibleWeekDays
                         )
                     } else {
@@ -471,6 +471,65 @@ class FindQuestsForRepeatingQuestSpek : Spek({
                     )
                     quests.size.`should be`(5)
                     quests.filter { it.id.isEmpty() }.size.`should be`(4)
+                }
+            }
+
+            describe("flexible") {
+
+                fun createQuest(
+                    timesPerMonth: Int,
+                    preferredDays: Set<Int> = setOf()
+                ): RepeatingQuest {
+                    return TestUtil.repeatingQuest.copy(
+                        repeatingPattern = RepeatingPattern.Flexible.Monthly(
+                            timesPerMonth = timesPerMonth,
+                            preferredDays = preferredDays
+                        )
+                    )
+                }
+
+                it("should not allow 1 time per month with 1 preferred day") {
+
+                    val exec = {
+
+                        executeUseCase(
+                            createQuest(
+                                timesPerMonth = 1,
+                                preferredDays = setOf(1)
+                            ),
+                            firstDateOfWeek,
+                            lastDateOfWeek
+                        )
+                    }
+                    exec shouldThrow IllegalArgumentException::class
+                }
+
+                it("should not allow to repeat less than once per month") {
+                    val exec = {
+                        executeUseCase(
+                            createQuest(
+                                timesPerMonth = 0,
+                                preferredDays = setOf(1)
+                            ),
+                            firstDateOfWeek,
+                            lastDateOfWeek
+                        )
+                    }
+                    exec shouldThrow IllegalArgumentException::class
+                }
+
+                it("should not allow to repeat more than 31 times per month") {
+                    val exec = {
+                        executeUseCase(
+                            createQuest(
+                                timesPerMonth = 32,
+                                preferredDays = setOf(1)
+                            ),
+                            firstDateOfWeek,
+                            lastDateOfWeek
+                        )
+                    }
+                    exec shouldThrow IllegalArgumentException::class
                 }
             }
 

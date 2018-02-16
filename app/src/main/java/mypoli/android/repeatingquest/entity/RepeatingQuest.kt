@@ -22,6 +22,7 @@ sealed class RepeatingPattern {
 
     sealed class Flexible : RepeatingPattern() {
         data class Weekly(val timesPerWeek: Int, val preferredDays: Set<DayOfWeek>) : Flexible()
+        data class Monthly(val timesPerMonth: Int, val preferredDays: Set<Int>) : Flexible()
     }
 }
 
