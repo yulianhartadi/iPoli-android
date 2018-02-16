@@ -478,9 +478,31 @@ class FindQuestsForRepeatingQuestSpek : Spek({
                         lastDateOfWeek
                     )
 
-                    val pattern = rq.repeatingPattern as RepeatingPattern.Flexible.Weekly
-                    pattern.scheduledPeriods.size.`should be`(1)
-                    pattern.scheduledPeriods.keys.first().`should be`(firstDateOfWeek)
+                    val scheduledPeriods = (rq.repeatingPattern as RepeatingPattern.Flexible.Weekly).scheduledPeriods
+                    scheduledPeriods.size.`should be`(1)
+                    scheduledPeriods.keys.first().`should be`(firstDateOfWeek)
+                    scheduledPeriods[firstDateOfWeek]!!.size.`should be`(1)
+
+                }
+
+                it("should add 2 scheduled periods") {
+                    val rq = executeUseCaseWithRepeatingQuestResult(
+                        createQuest(
+                            timesPerWeek = 3,
+                            scheduledPeriods = mapOf()
+                        ),
+                        firstDateOfWeek.plusDays(1),
+                        lastDateOfWeek.plusDays(3)
+                    )
+
+                    val scheduledPeriods = (rq.repeatingPattern as RepeatingPattern.Flexible.Weekly).scheduledPeriods
+                    scheduledPeriods.size.`should be`(2)
+                    scheduledPeriods.keys.`should contain all`(
+                        listOf(
+                            firstDateOfWeek,
+                            lastDateOfWeek.plusDays(1)
+                        )
+                    )
                 }
             }
         }
@@ -551,13 +573,15 @@ class FindQuestsForRepeatingQuestSpek : Spek({
 
                 fun createQuest(
                     timesPerMonth: Int,
-                    preferredDays: Set<Int> = setOf()
+                    preferredDays: Set<Int> = setOf(),
+                    scheduledPeriods: Map<LocalDate, List<LocalDate>> = mapOf()
                 ): RepeatingQuest {
                     return TestUtil.repeatingQuest.copy(
                         start = firstJanuary,
                         repeatingPattern = RepeatingPattern.Flexible.Monthly(
                             timesPerMonth = timesPerMonth,
-                            preferredDays = preferredDays
+                            preferredDays = preferredDays,
+                            scheduledPeriods = scheduledPeriods
                         )
                     )
                 }

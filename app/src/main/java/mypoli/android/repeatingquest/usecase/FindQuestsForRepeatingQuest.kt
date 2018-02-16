@@ -12,7 +12,6 @@ import org.threeten.bp.DayOfWeek
 import org.threeten.bp.LocalDate
 import org.threeten.bp.temporal.TemporalAdjusters
 import org.threeten.bp.temporal.TemporalAdjusters.lastDayOfMonth
-import timber.log.Timber
 
 /**
  * Created by Venelin Valkov <venelin@mypoli.fun>
@@ -82,7 +81,6 @@ class FindQuestsForRepeatingQuest(
                     scheduledPeriods = scheduledPeriods
                 )
 
-                Timber.d("AAA periods")
                 Pair(
                     flexibleWeeklyToScheduleInPeriod(
                         pattern,

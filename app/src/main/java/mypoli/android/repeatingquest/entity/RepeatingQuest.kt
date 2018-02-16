@@ -25,7 +25,11 @@ sealed class RepeatingPattern {
             val timesPerWeek: Int,
             val preferredDays: Set<DayOfWeek>,
             val scheduledPeriods : Map<LocalDate, List<LocalDate>>) : Flexible()
-        data class Monthly(val timesPerMonth: Int, val preferredDays: Set<Int>) : Flexible()
+
+        data class Monthly(
+            val timesPerMonth: Int,
+            val preferredDays: Set<Int>,
+            val scheduledPeriods : Map<LocalDate, List<LocalDate>>) : Flexible()
     }
 }
 
