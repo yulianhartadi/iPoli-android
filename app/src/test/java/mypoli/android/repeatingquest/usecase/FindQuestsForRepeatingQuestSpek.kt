@@ -10,6 +10,7 @@ import mypoli.android.quest.Quest
 import mypoli.android.quest.data.persistence.QuestRepository
 import mypoli.android.repeatingquest.entity.RepeatingPattern
 import mypoli.android.repeatingquest.entity.RepeatingQuest
+import mypoli.android.repeatingquest.persistence.RepeatingQuestRepository
 import org.amshove.kluent.*
 import org.jetbrains.spek.api.Spek
 import org.jetbrains.spek.api.dsl.describe
@@ -30,9 +31,10 @@ class FindQuestsForRepeatingQuestSpek : Spek({
             quest: RepeatingQuest,
             start: LocalDate,
             end: LocalDate,
-            questRepo: QuestRepository = TestUtil.questRepoMock()
+            questRepo: QuestRepository = TestUtil.questRepoMock(),
+            rqRepo: RepeatingQuestRepository = TestUtil.repeatingQuestRepoMock()
         ) =
-            FindQuestsForRepeatingQuest(questRepo).execute(
+            FindQuestsForRepeatingQuest(questRepo, rqRepo).execute(
                 FindQuestsForRepeatingQuest.Params(
                     repeatingQuest = quest,
                     start = start,
@@ -40,7 +42,7 @@ class FindQuestsForRepeatingQuestSpek : Spek({
                     firstDayOfWeek = DayOfWeek.MONDAY,
                     lastDayOfWeek = DayOfWeek.SUNDAY
                 )
-            )
+            ).quests
 
         fun mockQuestsForRepeatingQuest(quests: List<Quest> = listOf()) =
             mock<QuestRepository> {
@@ -260,12 +262,14 @@ class FindQuestsForRepeatingQuestSpek : Spek({
 
                 fun createQuest(
                     timesPerWeek: Int,
-                    preferredDays: Set<DayOfWeek> = setOf()
+                    preferredDays: Set<DayOfWeek> = setOf(),
+                    scheduledPeriods: Map<LocalDate, List<LocalDate>> = mapOf()
                 ): RepeatingQuest {
                     return TestUtil.repeatingQuest.copy(
                         repeatingPattern = RepeatingPattern.Flexible.Weekly(
                             timesPerWeek = timesPerWeek,
-                            preferredDays = preferredDays
+                            preferredDays = preferredDays,
+                            scheduledPeriods = scheduledPeriods
                         )
                     )
                 }
@@ -444,6 +448,30 @@ class FindQuestsForRepeatingQuestSpek : Spek({
                         first.dayOfWeek.`should not be`(second.dayOfWeek)
                     }
                 }
+
+//                it("should add 1 scheduled period") {
+//                    val quests = executeUseCase(
+//                        createQuest(
+//                            timesPerWeek = 1
+//                        ),
+//                        firstDateOfWeek,
+//                        lastDateOfWeek
+//                    )
+//
+//                    quests.size.`should be in range`(1, 2)
+//                    if (quests.size == 1) {
+//                        quests.first().scheduledDate.dayOfWeek.`should be in`(
+//                            possibleWeekDays
+//                        )
+//                    } else {
+//                        quests.map { it.scheduledDate.dayOfWeek }.`should contain all`(
+//                            possibleWeekDays
+//                        )
+//                        val first = quests.first().scheduledDate
+//                        val second = quests[1].scheduledDate
+//                        first.dayOfWeek.`should not be`(second.dayOfWeek)
+//                    }
+//                }
             }
         }
 

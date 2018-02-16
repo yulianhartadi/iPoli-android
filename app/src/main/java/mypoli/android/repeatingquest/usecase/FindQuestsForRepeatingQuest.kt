@@ -7,6 +7,7 @@ import mypoli.android.quest.Quest
 import mypoli.android.quest.data.persistence.QuestRepository
 import mypoli.android.repeatingquest.entity.RepeatingPattern
 import mypoli.android.repeatingquest.entity.RepeatingQuest
+import mypoli.android.repeatingquest.persistence.RepeatingQuestRepository
 import org.threeten.bp.DayOfWeek
 import org.threeten.bp.LocalDate
 import org.threeten.bp.temporal.TemporalAdjusters.lastDayOfMonth
@@ -15,20 +16,22 @@ import org.threeten.bp.temporal.TemporalAdjusters.lastDayOfMonth
  * Created by Venelin Valkov <venelin@mypoli.fun>
  * on 02/14/2018.
  */
-class FindQuestsForRepeatingQuest(private val questRepository: QuestRepository) :
-    UseCase<FindQuestsForRepeatingQuest.Params, List<Quest>> {
+class FindQuestsForRepeatingQuest(
+    private val questRepository: QuestRepository,
+    private val repeatingQuestRepository: RepeatingQuestRepository
+) : UseCase<FindQuestsForRepeatingQuest.Params, FindQuestsForRepeatingQuest.Result> {
 
-    override fun execute(parameters: Params): List<Quest> {
+    override fun execute(parameters: Params): FindQuestsForRepeatingQuest.Result {
         val rq = parameters.repeatingQuest
 
         require(parameters.end.isAfter(parameters.start))
 
         if (parameters.end.isBefore(rq.start)) {
-            return listOf()
+            return Result(listOf(), rq)
         }
 
         if (rq.end != null && parameters.start.isAfter(rq.end)) {
-            return listOf()
+            return Result(listOf(), rq)
         }
 
         val start = if (parameters.start.isBefore(rq.start)) rq.start else parameters.start
@@ -71,7 +74,7 @@ class FindQuestsForRepeatingQuest(private val questRepository: QuestRepository) 
 
 
         if (scheduleDates.isEmpty()) {
-            return listOf()
+            return Result(listOf(), rq)
         }
 
         val scheduledQuests = questRepository.findForRepeatingQuestBetween(rq.id, start, end)
@@ -80,14 +83,14 @@ class FindQuestsForRepeatingQuest(private val questRepository: QuestRepository) 
         val removedDates = removed.map { it.originalScheduledDate }
         val resultDates = scheduleDates - removedDates
 
-        return resultDates.map {
+        return Result(resultDates.map {
 
             if (schedule.containsKey(it)) {
                 schedule[it]!!
             } else {
                 createQuest(rq, it)
             }
-        }
+        }, rq)
     }
 
     private fun flexibleMonthlyToScheduleInPeriod(
@@ -287,6 +290,8 @@ class FindQuestsForRepeatingQuest(private val questRepository: QuestRepository) 
         return dates
 
     }
+
+    data class Result(val quests: List<Quest>, val repeatingQuest: RepeatingQuest)
 
     /**
      * @start inclusive

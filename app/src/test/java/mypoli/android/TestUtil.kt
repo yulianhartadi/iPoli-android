@@ -15,6 +15,7 @@ import mypoli.android.quest.Quest
 import mypoli.android.quest.data.persistence.QuestRepository
 import mypoli.android.repeatingquest.entity.RepeatingPattern
 import mypoli.android.repeatingquest.entity.RepeatingQuest
+import mypoli.android.repeatingquest.persistence.RepeatingQuestRepository
 import org.threeten.bp.DayOfWeek
 import org.threeten.bp.LocalDate
 
@@ -47,6 +48,12 @@ object TestUtil {
     }
 
     fun questRepoMock() = mock<QuestRepository> {
+        on { save(any()) } doAnswer { invocation ->
+            invocation.getArgument(0)
+        }
+    }
+
+    fun repeatingQuestRepoMock() = mock<RepeatingQuestRepository> {
         on { save(any()) } doAnswer { invocation ->
             invocation.getArgument(0)
         }
