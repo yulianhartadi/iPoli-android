@@ -11,6 +11,7 @@ import mypoli.android.common.di.Module
 import mypoli.android.common.redux.Action
 import mypoli.android.common.redux.Dispatcher
 import mypoli.android.common.redux.SideEffect
+import mypoli.android.common.view.AppWidgetUtil
 import mypoli.android.myPoliApp
 import mypoli.android.pet.store.PetStoreAction
 import mypoli.android.pet.usecase.BuyPetUseCase
@@ -314,9 +315,18 @@ class LoadAllDataSideEffect : SideEffect<AppState>, Injects<Module> {
             scheduledQuestsChannel =
                 questRepository.listenForScheduledAt(state.appDataState.today)
             scheduledQuestsChannel!!.consumeEach {
-                dispatcher.dispatch(DataLoadedAction.TodayQuestsChanged(it))
+
+                questRepository.listenForScheduledAt(state.appDataState.today).consumeEach {
+
+                    updateWidgets()
+                    dispatcher.dispatch(DataLoadedAction.TodayQuestsChanged(it))
+                }
             }
         }
+    }
+
+    private fun updateWidgets() {
+        AppWidgetUtil.updateAgendaWidget(myPoliApp.instance)
     }
 
     private fun listenForPlayer(dispatcher: Dispatcher) {

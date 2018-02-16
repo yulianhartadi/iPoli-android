@@ -20,6 +20,7 @@ interface QuestRepository : CollectionRepository<Quest> {
     ): ReceiveChannel<List<Quest>>
 
     fun listenForScheduledAt(date: LocalDate): ReceiveChannel<List<Quest>>
+    fun findScheduledAt(date: LocalDate): List<Quest>
     fun findForRepeatingQuestBetween(
         repeatingQuestId: String,
         start: LocalDate,
@@ -101,6 +102,14 @@ class FirestoreQuestRepository(
             .orderBy("startMinute")
         return listenForChanges(query)
     }
+
+    override fun findScheduledAt(date: LocalDate) =
+        collectionReference
+            .whereGreaterThanOrEqualTo("scheduledDate", date.startOfDayUTC())
+            .whereLessThanOrEqualTo("scheduledDate", date.startOfDayUTC())
+            .orderBy("scheduledDate")
+            .orderBy("startMinute")
+            .entities
 
     override fun findForRepeatingQuestBetween(
         repeatingQuestId: String,

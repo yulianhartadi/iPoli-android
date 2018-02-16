@@ -66,8 +66,8 @@ abstract class BaseFirestoreRepository<E, out T>(
     }
 
     protected fun logError(error: FirebaseFirestoreException) {
-        Crashlytics.logException(error)
         Timber.e(error)
+        Crashlytics.logException(error)
     }
 
     abstract val collectionReference: CollectionReference

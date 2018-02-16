@@ -14,22 +14,32 @@ import java.util.*
 class CalendarFormatter(private val context: Context) {
 
     fun date(date: LocalDate): String =
-        formatter(date.dayOfMonth)
+        formatterWithYear(date.dayOfMonth)
             .format(date.toStartOfDay())
 
-    private fun formatter(dayOfMonth: Int) =
-        SimpleDateFormat(pattern(dayOfMonth), Locale.getDefault())
+    fun dateWithoutYear(date: LocalDate): String =
+        formatterWithoutYear(date.dayOfMonth)
+            .format(date.toStartOfDay())
 
-    private fun pattern(day: Int): String {
+    private fun formatterWithYear(dayOfMonth: Int) =
+        SimpleDateFormat(patternWithYear(dayOfMonth), Locale.getDefault())
+
+    private fun formatterWithoutYear(dayOfMonth: Int) =
+        SimpleDateFormat(patternWithoutYear(dayOfMonth), Locale.getDefault())
+
+    private fun patternWithoutYear(day: Int): String {
         if (day !in 11..18)
             return when (day % 10) {
-                1 -> "MMM d'st' yy"
-                2 -> "MMM d'nd' yy"
-                3 -> "MMM d'rd' yy"
-                else -> "MMM d'th' yy"
+                1 -> "MMM d'st'"
+                2 -> "MMM d'nd'"
+                3 -> "MMM d'rd'"
+                else -> "MMM d'th'"
             }
-        return "MMM d'th' yy"
+        return "MMM d'th'"
     }
+
+    private fun patternWithYear(day: Int) =
+        patternWithoutYear(day) + " yy"
 
     fun day(date: LocalDate): String {
         return when {
