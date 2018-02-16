@@ -459,9 +459,9 @@ class FindQuestsForRepeatingQuestSpek : Spek({
                             possibleWeekDays
                         )
                     } else {
-                        quests.map { it.scheduledDate.dayOfWeek }.`should contain all`(
-                            possibleWeekDays
-                        )
+                        quests.forEach {
+                            it.scheduledDate.dayOfWeek.`should be in`(possibleWeekDays)
+                        }
                         val first = quests.first().scheduledDate
                         val second = quests[1].scheduledDate
                         first.dayOfWeek.`should not be`(second.dayOfWeek)
@@ -503,6 +503,30 @@ class FindQuestsForRepeatingQuestSpek : Spek({
                             lastDateOfWeek.plusDays(1)
                         )
                     )
+                }
+
+                it("should add 1 scheduled periods and not override the other") {
+                    val scheduledPeriodDates = listOf(
+                        firstDateOfWeek,
+                        firstDateOfWeek.plusDays(1),
+                        firstDateOfWeek.plusDays(2)
+                    )
+
+                    val rq = executeUseCaseWithRepeatingQuestResult(
+                        createQuest(
+                            timesPerWeek = 3,
+                            scheduledPeriods = mapOf(
+                                firstDateOfWeek to scheduledPeriodDates
+                            )
+                        ),
+                        firstDateOfWeek.plusDays(1),
+                        lastDateOfWeek.plusDays(3)
+                    )
+
+                    val scheduledPeriods =
+                        (rq.repeatingPattern as RepeatingPattern.Flexible.Weekly).scheduledPeriods
+                    scheduledPeriods.size.`should be`(2)
+                    scheduledPeriods[firstDateOfWeek]!!.`should contain all`(scheduledPeriodDates)
                 }
             }
         }
@@ -748,9 +772,9 @@ class FindQuestsForRepeatingQuestSpek : Spek({
                         scheduledDate.dayOfMonth.`should be in`(possibleMonthDays)
                         scheduledDate.month.`should be`(Month.FEBRUARY)
                     } else {
-                        quests.map { it.scheduledDate.dayOfMonth }.`should be in`(
-                            possibleMonthDays
-                        )
+                        quests.forEach {
+                            it.scheduledDate.dayOfMonth.`should be in`(possibleMonthDays)
+                        }
                         val first = quests.first().scheduledDate
                         val second = quests[1].scheduledDate
                         first.monthValue.`should not be equal to`(second.monthValue)

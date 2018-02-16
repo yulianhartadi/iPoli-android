@@ -38,35 +38,35 @@ class FindQuestsForRepeatingQuest(
         val start = if (parameters.start.isBefore(rq.start)) rq.start else parameters.start
         val end = if (rq.end != null && rq.end.isBefore(parameters.end)) rq.end else parameters.end
 
-        val (scheduleDates, pattern) = when (rq.repeatingPattern) {
+        var newRQ : RepeatingQuest? = null
 
-            RepeatingPattern.Daily -> {
-                Pair(start.datesUntil(end).toSet(), rq.repeatingPattern)
-            }
+        val scheduleDates = when (rq.repeatingPattern) {
 
-            is RepeatingPattern.Weekly -> Pair(
+            RepeatingPattern.Daily -> start.datesUntil(end).toSet()
+
+
+            is RepeatingPattern.Weekly ->
                 weeklyDatesToScheduleInPeriod(
                 rq.repeatingPattern,
                 start,
-                end
-                ), rq.repeatingPattern
-            )
+                    end
+                )
 
-            is RepeatingPattern.Monthly -> Pair(
+            is RepeatingPattern.Monthly ->
                 monthlyDatesToScheduleInPeriod(
                 rq.repeatingPattern,
                 start,
                 end
-                ), rq.repeatingPattern
-            )
+                )
 
-            is RepeatingPattern.Yearly -> Pair(
+
+            is RepeatingPattern.Yearly ->
                 yearlyDatesToScheduleInPeriod(
                 rq.repeatingPattern,
                 start,
                 end
-                ), rq.repeatingPattern
-            )
+                )
+
 
             is RepeatingPattern.Flexible.Weekly -> {
                 val scheduledPeriods = rq.repeatingPattern.scheduledPeriods.toMutableMap()
@@ -81,22 +81,24 @@ class FindQuestsForRepeatingQuest(
                     scheduledPeriods = scheduledPeriods
                 )
 
-                Pair(
-                    flexibleWeeklyToScheduleInPeriod(
+                newRQ = repeatingQuestRepository.save(
+                    rq.copy(
+                        repeatingPattern = pattern
+                    )
+                )
+
+
+                flexibleWeeklyToScheduleInPeriod(
+                    periods,
                         pattern,
                         start,
-                        end,
-                        parameters.lastDayOfWeek
-                    ), pattern
+                    end
                 )
             }
 
 
             is RepeatingPattern.Flexible.Monthly ->
-                Pair(
-                    flexibleMonthlyToScheduleInPeriod(rq.repeatingPattern, start, end),
-                    rq.repeatingPattern
-                )
+                flexibleMonthlyToScheduleInPeriod(rq.repeatingPattern, start, end)
         }
 
 
@@ -118,14 +120,7 @@ class FindQuestsForRepeatingQuest(
                 createQuest(rq, it)
             }
         }
-        return Result(
-            quests,
-            repeatingQuestRepository.save(
-                rq.copy(
-                    repeatingPattern = pattern
-                )
-            )
-        )
+        return Result(quests, newRQ ?: rq)
     }
 
     private fun flexibleMonthlyToScheduleInPeriod(
@@ -166,10 +161,10 @@ class FindQuestsForRepeatingQuest(
     }
 
     private fun flexibleWeeklyToScheduleInPeriod(
+        periods: List<Period>,
         pattern: RepeatingPattern.Flexible.Weekly,
         start: LocalDate,
-        end: LocalDate,
-        lastDayOfWeek: DayOfWeek
+        end: LocalDate
     ): List<LocalDate> {
 
         val preferredDays = pattern.preferredDays
@@ -177,8 +172,6 @@ class FindQuestsForRepeatingQuest(
         require(timesPerWeek != preferredDays.size)
         require(timesPerWeek >= 1)
         require(timesPerWeek <= 7)
-
-        val periods = findWeeklyPeriods2(start, end, lastDayOfWeek)
 
         val result = mutableListOf<LocalDate>()
 
@@ -242,7 +235,6 @@ class FindQuestsForRepeatingQuest(
 
         val periods = mutableListOf<Period>()
         val firstDayOfWeek = lastDayOfWeek.minus(6)
-
 
         var periodStart = start.with(TemporalAdjusters.previousOrSame(firstDayOfWeek))
         val dayAfterEnd = end.plusDays(1)
