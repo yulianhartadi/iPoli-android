@@ -390,7 +390,7 @@ class FindQuestsForRepeatingQuestSpek : Spek({
                     }
                 }
 
-                it("should schedule 6 quest for 2 days") {
+                it("should schedule 5 quest for 2 days") {
                     val quests = executeUseCase(
                         createQuest(
                             timesPerWeek = 5
@@ -565,78 +565,67 @@ class FindQuestsForRepeatingQuestSpek : Spek({
                     scheduledDate.dayOfMonth.`should be in`(preferredDays)
                 }
 
-//            it("should schedule 2 quest with 1 preferred day") {
-//                val preferredDays = setOf(DayOfWeek.FRIDAY)
-//                val quests = executeUseCase(
-//                    createQuest(
-//                        timesPerWeek = 2,
-//                        preferredDays = preferredDays
-//                    ),
-//                    firstDateOfWeek,
-//                    lastDateOfWeek
-//                )
-//
-//                quests.size.`should be`(2)
-//                val scheduledDates = quests.map { it.scheduledDate }
-//                scheduledDates.filter { it.dayOfWeek == DayOfWeek.FRIDAY }.size.`should be`(1)
-//            }
-//
-//            it("should schedule 3 quest with 4 preferred day") {
-//                val preferredDays = setOf(
-//                    DayOfWeek.MONDAY,
-//                    DayOfWeek.TUESDAY,
-//                    DayOfWeek.THURSDAY,
-//                    DayOfWeek.FRIDAY
-//                )
-//                val quests = executeUseCase(
-//                    createQuest(
-//                        timesPerWeek = 3,
-//                        preferredDays = preferredDays
-//                    ),
-//                    firstDateOfWeek.with(DayOfWeek.WEDNESDAY),
-//                    lastDateOfWeek
-//                )
-//
-//                quests.size.`should be in range`(1, 2)
-//                val possibleWeekDays = setOf(
-//                    DayOfWeek.THURSDAY,
-//                    DayOfWeek.FRIDAY
-//                )
-//                if (quests.size == 1) {
-//                    quests.first().scheduledDate.dayOfWeek.`should be in`(
-//                        possibleWeekDays
-//                    )
-//                } else {
-//                    quests.map { it.scheduledDate.dayOfWeek }.`should contain all`(
-//                        possibleWeekDays
-//                    )
-//                }
-//            }
-//
-//            it("should schedule 6 quest for 2 days") {
-//                val quests = executeUseCase(
-//                    createQuest(
-//                        timesPerWeek = 5
-//                    ),
-//                    firstDateOfWeek.with(DayOfWeek.SATURDAY),
-//                    lastDateOfWeek
-//                )
-//
-//                quests.size.`should be in range`(1, 2)
-//                val possibleWeekDays = setOf(
-//                    DayOfWeek.SATURDAY,
-//                    DayOfWeek.SUNDAY
-//                )
-//                if (quests.size == 1) {
-//                    quests.first().scheduledDate.dayOfWeek.`should be in`(
-//                        possibleWeekDays
-//                    )
-//                } else {
-//                    quests.map { it.scheduledDate.dayOfWeek }.`should contain all`(
-//                        possibleWeekDays
-//                    )
-//                }
-//            }
+                it("should schedule 2 quest with 1 preferred day") {
+                    val preferredDays = setOf(10)
+                    val quests = executeUseCase(
+                        createQuest(
+                            timesPerMonth = 2,
+                            preferredDays = preferredDays
+                        ),
+                        firstJanuary,
+                        lastJanuary
+                    )
+
+                    quests.size.`should be`(2)
+                    val scheduledDates = quests.map { it.scheduledDate }
+                    scheduledDates.filter { it.dayOfMonth == 10 }.size.`should be`(1)
+                }
+
+                it("should schedule 3 quest with 4 preferred day") {
+                    val preferredDays = setOf(10, 12, 20, 25)
+                    val quests = executeUseCase(
+                        createQuest(
+                            timesPerMonth = 3,
+                            preferredDays = preferredDays
+                        ),
+                        firstJanuary.plusDays(15),
+                        lastJanuary
+                    )
+
+                    quests.size.`should be in range`(1, 2)
+                    val possibleMonthDays = setOf(20, 25)
+                    if (quests.size == 1) {
+                        quests.first().scheduledDate.dayOfMonth.`should be in`(
+                            possibleMonthDays
+                        )
+                    } else {
+                        quests.map { it.scheduledDate.dayOfMonth }.`should contain all`(
+                            possibleMonthDays
+                        )
+                    }
+                }
+
+                it("should schedule 30 quest for 2 days") {
+                    val quests = executeUseCase(
+                        createQuest(
+                            timesPerMonth = 30
+                        ),
+                        firstJanuary.plusDays(29),
+                        lastJanuary
+                    )
+
+                    quests.size.`should be in range`(1, 2)
+                    val possibleWeekDays = setOf(30, 31)
+                    if (quests.size == 1) {
+                        quests.first().scheduledDate.dayOfMonth.`should be in`(
+                            possibleWeekDays
+                        )
+                    } else {
+                        quests.map { it.scheduledDate.dayOfMonth }.`should contain all`(
+                            possibleWeekDays
+                        )
+                    }
+                }
             }
         }
 
