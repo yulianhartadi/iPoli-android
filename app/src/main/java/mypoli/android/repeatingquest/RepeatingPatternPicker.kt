@@ -4,8 +4,6 @@ import android.os.Bundle
 import android.support.v7.app.AlertDialog
 import android.view.LayoutInflater
 import android.view.View
-import android.widget.ArrayAdapter
-import kotlinx.android.synthetic.main.dialog_repeating_picker.view.*
 import kotlinx.android.synthetic.main.view_dialog_header.view.*
 import mypoli.android.R
 import mypoli.android.common.view.BaseDialogController
@@ -33,10 +31,10 @@ class RepeatingPatternPicker : BaseDialogController {
 
     override fun onCreateContentView(inflater: LayoutInflater, savedViewState: Bundle?): View {
         val view = inflater.inflate(R.layout.dialog_repeating_picker, null)
-        val spinnerArrayAdapter =
-            ArrayAdapter<String>(view.context, android.R.layout.simple_spinner_dropdown_item,
-                (1..31).map { it.toString() })
-        view.rqCount.adapter = spinnerArrayAdapter
+//        val spinnerArrayAdapter =
+//            ArrayAdapter<String>(view.context, android.R.layout.simple_spinner_dropdown_item,
+//                (1..31).map { it.toString() })
+//        view.rqCount.adapter = spinnerArrayAdapter
         return view
     }
 

@@ -123,8 +123,6 @@ class HomeViewController(args: Bundle? = null) :
             )
         }
 
-//        RepeatingPatternPicker(null, {}).showDialog(router, "pick")
-
 //        router.pushController(RouterTransaction.with(TimerViewController()))
 //        actionBarDrawerToggle.syncState()
 

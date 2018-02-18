@@ -24,6 +24,7 @@ import mypoli.android.quest.schedule.ScheduleViewState.DatePickerState.*
 import mypoli.android.quest.schedule.addquest.AddQuestViewController
 import mypoli.android.quest.schedule.agenda.AgendaViewController
 import mypoli.android.quest.schedule.calendar.CalendarViewController
+import mypoli.android.repeatingquest.RepeatingPatternPicker
 import org.threeten.bp.LocalDate
 import sun.bob.mcalendarview.CellConfig
 import sun.bob.mcalendarview.MarkStyle
@@ -262,7 +263,8 @@ class ScheduleViewController(args: Bundle? = null) :
         view.currentMonth.text = state.monthText
 
         view.addQuest.setOnClickListener {
-            openAddContainer(state.currentDate)
+            RepeatingPatternPicker(null, {}).showDialog(router, "pick")
+//            openAddContainer(state.currentDate)
         }
 
         when (state.type) {
