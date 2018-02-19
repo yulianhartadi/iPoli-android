@@ -1,10 +1,9 @@
 package mypoli.android.repeatingquest.list
 
 import mypoli.android.common.AppState
-import mypoli.android.common.AppStateReducer
+import mypoli.android.common.BaseViewStateReducer
 import mypoli.android.common.mvi.ViewState
 import mypoli.android.common.redux.Action
-import mypoli.android.common.redux.State
 
 /**
  * Created by Polina Zhelyazkova <polina@ipoli.io>
@@ -12,27 +11,28 @@ import mypoli.android.common.redux.State
  */
 sealed class RepeatingQuestListAction : Action
 
-data class RepeatingQuestListState(
-    val type: StateType
-) : State {
-    enum class StateType {
-        LOADING
-    }
-}
 
-object RepeatingQuestListReducer : AppStateReducer<RepeatingQuestListState> {
+object RepeatingQuestListReducer : BaseViewStateReducer<RepeatingQuestListViewState>() {
 
-    override fun reduce(state: AppState, action: Action): RepeatingQuestListState {
-        return state.repeatingQuestListState
+    override val stateKey = key<RepeatingQuestListViewState>()
+
+    override fun reduce(
+        state: AppState,
+        subState: RepeatingQuestListViewState,
+        action: Action
+    ): RepeatingQuestListViewState {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 
     override fun defaultState() =
-        RepeatingQuestListState(
-            type = RepeatingQuestListState.StateType.LOADING
-        )
+        RepeatingQuestListViewState(RepeatingQuestListViewState.StateType.LOADING)
 
 }
 
 data class RepeatingQuestListViewState(
-    val type: RepeatingQuestListState.StateType
-) : ViewState
+    val type: RepeatingQuestListViewState.StateType
+) : ViewState {
+    enum class StateType {
+        LOADING
+    }
+}

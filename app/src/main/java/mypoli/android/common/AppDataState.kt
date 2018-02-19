@@ -1,6 +1,7 @@
 package mypoli.android.common
 
 import mypoli.android.common.redux.Action
+import mypoli.android.common.redux.Reducer
 import mypoli.android.common.redux.State
 import mypoli.android.player.Player
 import mypoli.android.quest.Quest
@@ -29,26 +30,25 @@ data class AppDataState(
     val todayQuests: List<Quest>
 ) : State
 
-object AppDataReducer : AppStateReducer<AppDataState> {
+object AppDataReducer : Reducer<AppState, AppDataState> {
 
-    override fun reduce(state: AppState, action: Action) =
-        state.appDataState.let {
-            when (action) {
+    override val stateKey = AppDataState::class.java
 
-                is DataLoadedAction.PlayerChanged -> {
-                    it.copy(
-                        player = action.player
-                    )
-                }
+    override fun reduce(state: AppState, subState: AppDataState, action: Action) =
+        when (action) {
 
-                is DataLoadedAction.TodayQuestsChanged -> {
-                    it.copy(
-                        todayQuests = action.quests
-                    )
-                }
-                else -> it
+            is DataLoadedAction.PlayerChanged -> {
+                subState.copy(
+                    player = action.player
+                )
             }
 
+            is DataLoadedAction.TodayQuestsChanged -> {
+                subState.copy(
+                    todayQuests = action.quests
+                )
+            }
+            else -> subState
         }
 
     override fun defaultState(): AppDataState {

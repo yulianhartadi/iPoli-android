@@ -19,8 +19,8 @@ import mypoli.android.common.ViewUtils
 import mypoli.android.common.redux.android.ReduxViewController
 import mypoli.android.common.view.*
 import mypoli.android.common.view.changehandler.CircularRevealChangeHandler
-import mypoli.android.quest.schedule.ScheduleState.StateType.*
 import mypoli.android.quest.schedule.ScheduleViewState.DatePickerState.*
+import mypoli.android.quest.schedule.ScheduleViewState.StateType.*
 import mypoli.android.quest.schedule.addquest.AddQuestViewController
 import mypoli.android.quest.schedule.agenda.AgendaViewController
 import mypoli.android.quest.schedule.calendar.CalendarViewController
@@ -33,9 +33,9 @@ import sun.bob.mcalendarview.listeners.OnMonthScrollListener
 import sun.bob.mcalendarview.vo.DateData
 
 class ScheduleViewController(args: Bundle? = null) :
-    ReduxViewController<ScheduleAction, ScheduleViewState, SchedulePresenter>(args) {
+    ReduxViewController<ScheduleAction, ScheduleViewState, ScheduleReducer>(args) {
 
-    override val presenter get() = SchedulePresenter()
+    override val reducer = ScheduleReducer
 
     private lateinit var calendarToolbar: ViewGroup
 
@@ -258,8 +258,8 @@ class ScheduleViewController(args: Bundle? = null) :
 
         val levelProgress = view.levelProgress
 
-        calendarToolbar.day.text = state.dayText
-        calendarToolbar.date.text = state.dateText
+        calendarToolbar.day.text = state.dayText(activity!!)
+        calendarToolbar.date.text = state.dateText(activity!!)
         view.currentMonth.text = state.monthText
 
         view.addQuest.setOnClickListener {
@@ -345,7 +345,7 @@ class ScheduleViewController(args: Bundle? = null) :
                 val handler = FadeChangeHandler()
                 val childRouter = getChildRouter(view.contentContainer, null)
                 val newController =
-                    if (state.viewMode == ScheduleState.ViewMode.CALENDAR)
+                    if (state.viewMode == ScheduleViewState.ViewMode.CALENDAR)
                         CalendarViewController()
                     else
                         AgendaViewController()
@@ -355,6 +355,7 @@ class ScheduleViewController(args: Bundle? = null) :
                         .pushChangeHandler(handler)
                         .popChangeHandler(handler)
                 )
+
                 viewModeIcon = state.viewModeIcon
                 viewModeTitle = state.viewModeTitle
                 activity?.invalidateOptionsMenu()
