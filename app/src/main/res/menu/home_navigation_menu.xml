@@ -4,22 +4,23 @@
         android:id="@+id/drawer_main_group"
         android:checkableBehavior="single">
         <item
-            android:id="@+id/home"
+            android:id="@+id/agenda"
             android:checked="true"
             android:icon="@drawable/ic_event_white_24dp"
-            android:title="@string/calendar" />
-
-        <item
-            android:id="@+id/overview"
-            android:checked="false"
-            android:icon="@drawable/ic_favorite_outline_white_24dp"
-            android:title="@string/overview" />
+            android:title="@string/agenda" />
 
         <item
             android:id="@+id/inbox"
             android:checked="false"
             android:icon="@drawable/ic_inbox_white_24dp"
-            android:title="@string/inbox" />
+            android:title="@string/inbox"
+            android:visible="false" />
+
+        <item
+            android:id="@+id/repeatingQuests"
+            android:checked="false"
+            android:icon="@drawable/ic_repeat_white_24dp"
+            android:title="@string/repeating_quests" />
 
         <item
             android:id="@+id/challenges"
@@ -28,28 +29,18 @@
             android:title="@string/challenges" />
 
         <item
-            android:id="@+id/repeating_quests"
-            android:checked="false"
-            android:icon="@drawable/ic_repeat_white_24dp"
-            android:title="@string/repeating_quests" />
-
-        <item
             android:id="@+id/growth"
             android:checked="false"
             android:icon="@drawable/ic_growth_white_24dp"
-            android:title="@string/growth" />
-
-        <item
-            android:id="@+id/rewards"
-            android:checked="false"
-            android:icon="@drawable/ic_gift_white_24dp"
-            android:title="@string/rewards" />
+            android:title="@string/growth"
+            android:visible="false" />
 
         <item
             android:id="@+id/feed"
             android:checked="false"
             android:icon="@drawable/ic_summit_black_24dp"
-            android:title="@string/achievement_feed" />
+            android:title="@string/achievement_feed"
+            android:visible="false" />
     </group>
 
     <group
@@ -60,19 +51,21 @@
             android:checkable="false"
             android:checked="false"
             android:icon="@drawable/ic_shopping_basket_black_24dp"
-            android:title="Store" />
+            android:title="@string/drawer_store" />
         <item
             android:id="@+id/invite_friends"
             android:checkable="false"
             android:checked="false"
             android:icon="@drawable/ic_invite_black_24dp"
-            android:title="@string/invite_friends" />
+            android:title="@string/invite_friends"
+            android:visible="false" />
         <item
             android:id="@+id/settings"
             android:checkable="false"
             android:checked="false"
             android:icon="@drawable/ic_settings_black_24dp"
-            android:title="@string/settings" />
+            android:title="@string/settings"
+            android:visible="false" />
         <item
             android:id="@+id/feedback"
             android:checkable="false"
@@ -80,7 +73,7 @@
             android:icon="@drawable/ic_comment_white_24dp"
             android:title="@string/feedback" />
         <item
-            android:id="@+id/contact_us"
+            android:id="@+id/contactUs"
             android:checkable="false"
             android:checked="false"
             android:icon="@drawable/ic_email_white_24dp"

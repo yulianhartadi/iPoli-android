@@ -35,6 +35,7 @@ import mypoli.android.player.AndroidLevelUpScheduler
 import mypoli.android.player.LevelDownScheduler
 import mypoli.android.player.LevelUpScheduler
 import mypoli.android.player.auth.saga.AuthSideEffect
+import mypoli.android.player.inventory.GemInventoryReducer
 import mypoli.android.player.persistence.FirestorePlayerRepository
 import mypoli.android.player.persistence.PlayerRepository
 import mypoli.android.player.usecase.*
@@ -513,7 +514,8 @@ class AndroidStateStoreModule : StateStoreModule, Injects<Module> {
                 PetStoreReducer,
                 AuthReducer,
                 RepeatingQuestListReducer,
-                ChallengeListForCategoryReducer
+                ChallengeListForCategoryReducer,
+                GemInventoryReducer
             ),
             sideEffects = setOf(
                 LoadAllDataSideEffect(),

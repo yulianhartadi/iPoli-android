@@ -6,10 +6,10 @@ import android.net.Uri
 import android.os.Bundle
 import android.support.design.widget.NavigationView
 import android.support.v4.view.GravityCompat
-import android.support.v4.widget.DrawerLayout
 import android.support.v7.app.ActionBarDrawerToggle
 import android.view.*
 import com.amplitude.api.Amplitude
+import com.bluelinelabs.conductor.Controller
 import com.bluelinelabs.conductor.RouterTransaction
 import com.bluelinelabs.conductor.changehandler.FadeChangeHandler
 import kotlinx.android.synthetic.main.controller_home.view.*
@@ -18,15 +18,18 @@ import mypoli.android.MainActivity
 import mypoli.android.R
 import mypoli.android.auth.AuthViewController
 import mypoli.android.challenge.category.ChallengeCategoryListViewController
+import mypoli.android.common.EmailUtils
 import mypoli.android.common.redux.android.ReduxViewController
 import mypoli.android.common.view.FeedbackDialogController
 import mypoli.android.common.view.setToolbar
 import mypoli.android.common.view.showShortToast
+import mypoli.android.common.view.stringRes
 import mypoli.android.pet.PetViewController
 import mypoli.android.quest.schedule.ScheduleViewController
+import mypoli.android.repeatingquest.list.RepeatingQuestListViewController
 import mypoli.android.store.theme.ThemeStoreViewController
 import org.json.JSONObject
-
+import space.traversal.kapsule.required
 
 /**
  * Created by Venelin Valkov <venelin@mypoli.fun>
@@ -36,27 +39,16 @@ class HomeViewController(args: Bundle? = null) :
     ReduxViewController<HomeAction, HomeViewState, HomeReducer>(args),
     NavigationView.OnNavigationItemSelectedListener {
 
-
     private lateinit var actionBarDrawerToggle: ActionBarDrawerToggle
-    private lateinit var drawerLayout: DrawerLayout
     private var navigationItemSelected: MenuItem? = null
 
     override val reducer = HomeReducer
 
     private var showSignIn = true
 
-    override fun render(state: HomeViewState, view: View) {
-        showSignIn = state.showSignIn
-        activity?.invalidateOptionsMenu()
-    }
+    private val fadeChangeHandler = FadeChangeHandler()
 
-//    private var navigationItemSelected: MenuItem? = null
-
-//    override fun onNavigationItemSelected(item: MenuItem): Boolean {
-//        navigationItemSelected = item
-//        view?.drawerLayout?.closeDrawer(GravityCompat.START)
-//        return false
-//    }
+    private val sharedPreferences by required { sharedPreferences }
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -83,15 +75,14 @@ class HomeViewController(args: Bundle? = null) :
             }
 
             override fun onDrawerClosed(drawerView: View) {
-                if (navigationItemSelected == null) {
-                    return
+                navigationItemSelected?.let {
+                    onItemSelectedFromDrawer(it)
                 }
-                onItemSelectedFromDrawer()
+
             }
         }
 
         contentView.drawerLayout.addDrawerListener(actionBarDrawerToggle)
-        drawerLayout = contentView.drawerLayout
 
         val actionBar = (activity as MainActivity).supportActionBar
         actionBar?.setDisplayHomeAsUpEnabled(true)
@@ -100,32 +91,77 @@ class HomeViewController(args: Bundle? = null) :
         return contentView
     }
 
-    private fun onItemSelectedFromDrawer() {
+    private fun onItemSelectedFromDrawer(item: MenuItem) {
 
+        when (item.itemId) {
+            R.id.agenda ->
+                changeChildController(ScheduleViewController())
+
+            R.id.repeatingQuests ->
+                changeChildController(RepeatingQuestListViewController())
+
+            R.id.challenges ->
+                changeChildController(ChallengeCategoryListViewController())
+
+            R.id.feedback -> {
+                FeedbackDialogController(object : FeedbackDialogController.FeedbackListener {
+                    override fun onSendFeedback(feedback: String) {
+                        if (feedback.isNotEmpty()) {
+                            Amplitude.getInstance().logEvent(
+                                "feedback",
+                                JSONObject().put("feedback", feedback)
+                            )
+                            showShortToast(R.string.feedback_response)
+                        }
+                    }
+
+                    override fun onChatWithUs() {
+                        Amplitude.getInstance().logEvent("feedback_chat")
+                        val myIntent = Intent(ACTION_VIEW, Uri.parse(Constants.DISCORD_CHAT_LINK))
+                        startActivity(myIntent)
+                    }
+                }).showDialog(router, "feedback-dialog")
+            }
+
+            R.id.contactUs -> {
+                EmailUtils.send(
+                    activity!!,
+                    "Hi",
+                    sharedPreferences.getString(Constants.KEY_PLAYER_ID, null),
+                    stringRes(R.string.contact_us_email_chooser_title)
+                )
+            }
+        }
+
+        view!!.navigationView.setCheckedItem(item.itemId)
     }
 
     override fun onNavigationItemSelected(item: MenuItem): Boolean {
         navigationItemSelected = item;
-        drawerLayout.closeDrawer(GravityCompat.START)
+        view!!.drawerLayout.closeDrawer(GravityCompat.START)
         return false;
     }
 
     override fun onAttach(view: View) {
         super.onAttach(view)
-        val handler = FadeChangeHandler()
         val childRouter = getChildRouter(view.controllerContainer, null)
         if (!childRouter.hasRootController()) {
             childRouter.setRoot(
                 RouterTransaction.with(ScheduleViewController())
 //                RouterTransaction.with(RepeatingQuestListViewController())
-                    .pushChangeHandler(handler)
-                    .popChangeHandler(handler)
+                    .pushChangeHandler(fadeChangeHandler)
+                    .popChangeHandler(fadeChangeHandler)
             )
         }
+    }
 
-//        router.pushController(RouterTransaction.with(TimerViewController()))
-//        actionBarDrawerToggle.syncState()
-
+    private fun changeChildController(controller: Controller) {
+        val childRouter = getChildRouter(view!!.controllerContainer, null)
+        childRouter.setRoot(
+            RouterTransaction.with(controller)
+                .pushChangeHandler(fadeChangeHandler)
+                .popChangeHandler(fadeChangeHandler)
+        )
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
@@ -142,7 +178,7 @@ class HomeViewController(args: Bundle? = null) :
         when (item.itemId) {
 
             android.R.id.home -> {
-                drawerLayout.openDrawer(GravityCompat.START)
+                view!!.drawerLayout.openDrawer(GravityCompat.START)
                 true
             }
 
@@ -226,6 +262,11 @@ class HomeViewController(args: Bundle? = null) :
                 startActivity(myIntent)
             }
         }).showDialog(router, "feedback-dialog")
+    }
+
+    override fun render(state: HomeViewState, view: View) {
+        showSignIn = state.showSignIn
+        activity?.invalidateOptionsMenu()
     }
 
 }

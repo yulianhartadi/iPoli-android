@@ -215,6 +215,7 @@
     <string name="name_validation">Please, add name</string>
 
     <string name="calendar">Calendar</string>
+    <string name="agenda">Agenda</string>
     <string name="overview">Journey Ahead</string>
     <string name="do_today">Do today</string>
     <string name="snooze_for_tomorrow">Snooze for tomorrow</string>
@@ -649,7 +650,7 @@
     <string name="challenge8_rq4_raw_text">Go out with friends 2 times a week</string>
     <string name="challenge8_rq4_name">Go out with friends</string>
 
-    <string name="fragment_store_title">Store</string>
+    <string name="drawer_store">Store</string>
     <string name="power_up_dialog_not_enough_coins">Unfortunately, you don\'t have enough coins to enable this power-up. Become premium member to enable all power-ups at once!</string>
 
     <string name="pet_seal">Modern Tail</string>
