@@ -4,6 +4,7 @@ import mypoli.android.common.AppState
 import mypoli.android.common.BaseViewStateReducer
 import mypoli.android.common.mvi.ViewState
 import mypoli.android.common.redux.Action
+import mypoli.android.quest.Color
 
 /**
  * Created by Venelin Valkov <venelin@mypoli.fun>
@@ -18,7 +19,7 @@ sealed class RepeatingQuestViewState : ViewState {
 
     object Loading : RepeatingQuestViewState()
 
-    data class Changed(val name: String) : RepeatingQuestViewState()
+    data class Changed(val name: String, val color: Color) : RepeatingQuestViewState()
 }
 
 object RepeatingQuestReducer : BaseViewStateReducer<RepeatingQuestViewState>() {
@@ -31,7 +32,7 @@ object RepeatingQuestReducer : BaseViewStateReducer<RepeatingQuestViewState>() {
         action: Action
     ) = when (action) {
         is RepeatingQuestAction.Load -> {
-            RepeatingQuestViewState.Changed("hello")
+            RepeatingQuestViewState.Changed("Hello World", Color.BLUE)
         }
         else -> subState
     }
