@@ -12,6 +12,7 @@ import mypoli.android.challenge.category.list.ChallengeListForCategoryViewContro
 import mypoli.android.challenge.data.Challenge
 import mypoli.android.challenge.data.Challenge.Category.*
 import mypoli.android.common.mvi.MviViewController
+import mypoli.android.common.view.stringRes
 import mypoli.android.common.view.toolbarTitle
 import space.traversal.kapsule.required
 
@@ -33,7 +34,7 @@ class ChallengeCategoryListViewController(args: Bundle? = null) :
         container: ViewGroup,
         savedViewState: Bundle?
     ): View {
-        toolbarTitle = "Challenges"
+        toolbarTitle = stringRes(R.string.drawer_challenges)
         val view = inflater.inflate(R.layout.controller_challenge_category_list, container, false)
         view.healthAndFitness.setOnClickListener { showChallengeList(HEALTH_AND_FITNESS) }
         view.buildSkill.setOnClickListener { showChallengeList(BUILD_SKILL) }

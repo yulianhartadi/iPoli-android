@@ -14,10 +14,7 @@ import kotlinx.android.synthetic.main.controller_repeating_quest_list.view.*
 import kotlinx.android.synthetic.main.item_repeating_quest.view.*
 import mypoli.android.R
 import mypoli.android.common.redux.android.ReduxViewController
-import mypoli.android.common.view.AndroidColor
-import mypoli.android.common.view.AndroidIcon
-import mypoli.android.common.view.colorRes
-import mypoli.android.common.view.toolbarTitle
+import mypoli.android.common.view.*
 
 /**
  * Created by Polina Zhelyazkova <polina@ipoli.io>
@@ -35,7 +32,7 @@ class RepeatingQuestListViewController(args: Bundle? = null) :
         container: ViewGroup,
         savedViewState: Bundle?
     ): View {
-        toolbarTitle = "Repeating Quests"
+        toolbarTitle = stringRes(R.string.drawer_repeating_quests)
         val view = inflater.inflate(
             R.layout.controller_repeating_quest_list, container, false
         )

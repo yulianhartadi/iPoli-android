@@ -20,13 +20,13 @@
             android:id="@+id/repeatingQuests"
             android:checked="false"
             android:icon="@drawable/ic_repeat_white_24dp"
-            android:title="@string/repeating_quests" />
+            android:title="@string/drawer_repeating_quests" />
 
         <item
             android:id="@+id/challenges"
             android:checked="false"
             android:icon="@drawable/ic_sword_white_24dp"
-            android:title="@string/challenges" />
+            android:title="@string/drawer_challenges" />
 
         <item
             android:id="@+id/growth"
