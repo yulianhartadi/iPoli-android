@@ -12,14 +12,12 @@ import com.mikepenz.iconics.IconicsDrawable
 import com.mikepenz.iconics.typeface.IIcon
 import kotlinx.android.synthetic.main.controller_repeating_quest_list.view.*
 import kotlinx.android.synthetic.main.item_repeating_quest.view.*
-import kotlinx.android.synthetic.main.view_inventory_toolbar.view.*
 import mypoli.android.R
 import mypoli.android.common.redux.android.ReduxViewController
 import mypoli.android.common.view.AndroidColor
 import mypoli.android.common.view.AndroidIcon
 import mypoli.android.common.view.colorRes
-import mypoli.android.common.view.setChildController
-import mypoli.android.player.inventory.GemInventoryViewController
+import mypoli.android.common.view.toolbarTitle
 
 /**
  * Created by Polina Zhelyazkova <polina@ipoli.io>
@@ -37,11 +35,10 @@ class RepeatingQuestListViewController(args: Bundle? = null) :
         container: ViewGroup,
         savedViewState: Bundle?
     ): View {
+        toolbarTitle = "Repeating Quests"
         val view = inflater.inflate(
             R.layout.controller_repeating_quest_list, container, false
         )
-
-        view.toolbarTitle.setText("Repeating quests")
         view.repeatingQuestList.layoutManager =
             LinearLayoutManager(container.context, LinearLayoutManager.VERTICAL, false)
         view.repeatingQuestList.adapter = RepeatingQuestAdapter(
@@ -72,8 +69,6 @@ class RepeatingQuestListViewController(args: Bundle? = null) :
                 )
             )
         )
-
-        setChildController(view.playerGems, GemInventoryViewController())
         return view
     }
 
