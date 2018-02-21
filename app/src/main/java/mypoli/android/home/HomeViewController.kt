@@ -299,7 +299,8 @@ class HomeViewController(args: Bundle? = null) :
 
     private fun HomeViewState.PlayerChanged.title(resources: Resources): String {
         val titles = resources.getStringArray(R.array.player_titles)
-        return titles[Math.min(titleIndex, titles.size - 1)]
+        val titleText = titles[Math.min(titleIndex, titles.size - 1)]
+        return stringRes(R.string.player_level, level, titleText)
     }
 
     private val HomeViewState.PlayerChanged.experienceText
