@@ -1,6 +1,8 @@
 package mypoli.android.repeatingquest.picker
 
 import android.os.Bundle
+import android.support.annotation.ColorRes
+import android.support.annotation.DrawableRes
 import android.support.v7.app.AlertDialog
 import android.support.v7.widget.GridLayoutManager
 import android.support.v7.widget.LinearLayoutManager
@@ -51,15 +53,7 @@ class RepeatingPatternPicker :
         view.rpWeekDayList.layoutManager =
             LinearLayoutManager(activity!!, LinearLayoutManager.HORIZONTAL, false)
 
-        view.rpWeekDayList.adapter = WeekDayAdapter(
-            DayOfWeek.values().map {
-                WeekDayViewModel(
-                    it.name.first().toString().toUpperCase(),
-                    Random().nextBoolean(),
-                    it
-                )
-            }
-        )
+        view.rpWeekDayList.adapter = WeekDayAdapter(listOf())
 
         view.rpMonthDayList.layoutManager = GridLayoutManager(activity, 7)
         view.rpMonthDayList.setHasFixedSize(true)
@@ -92,6 +86,15 @@ class RepeatingPatternPicker :
                 view.yearlyPatternGroup.visibility =
                     if (state.showYearDay) View.VISIBLE else View.GONE
 
+                if (state.showWeekDays) {
+                    (view.rpWeekDayList.adapter as WeekDayAdapter).updateAll(
+                        state.weekDaysViewModels(
+                            state.selectedWeekDays
+                        )
+                    )
+                }
+
+
                 view.rpFrequency.onItemSelectedListener =
                     object : AdapterView.OnItemSelectedListener {
                         override fun onNothingSelected(parent: AdapterView<*>?) {
@@ -119,6 +122,14 @@ class RepeatingPatternPicker :
                 view.yearlyPatternGroup.visibility =
                     if (state.showYearDay) View.VISIBLE else View.GONE
 
+                if (state.showWeekDays) {
+                    (view.rpWeekDayList.adapter as WeekDayAdapter).updateAll(
+                        state.weekDaysViewModels(
+                            state.selectedWeekDays
+                        )
+                    )
+                }
+
             }
         }
 
@@ -141,7 +152,13 @@ class RepeatingPatternPicker :
         headerView.dialogHeaderIcon.setImageResource(R.drawable.logo)
     }
 
-    data class WeekDayViewModel(val text: String, val isSelected: Boolean, val weekDay: DayOfWeek)
+    data class WeekDayViewModel(
+        val text: String,
+        @DrawableRes val background: Int,
+        @ColorRes val textColor: Int,
+        val isSelected: Boolean,
+        val weekDay: DayOfWeek
+    )
 
     inner class WeekDayAdapter(private var viewModels: List<WeekDayViewModel>) :
         RecyclerView.Adapter<ViewHolder>() {
@@ -211,5 +228,23 @@ class RepeatingPatternPicker :
             )
 
     }
+
+    private fun RepeatingPatternViewState.weekDaysViewModels(selectedWeekDays: Set<DayOfWeek>): List<WeekDayViewModel> =
+        DayOfWeek.values().map {
+            val isSelected = selectedWeekDays.contains(it)
+            val (background, textColor) = if (isSelected)
+                Pair(R.drawable.circle_accent, colorRes(R.color.md_white))
+            else
+                Pair(R.drawable.circle_normal, attr(R.attr.colorAccent))
+            RepeatingPatternPicker.WeekDayViewModel(
+                text = it.name.first().toString().toUpperCase(),
+                background = background,
+                textColor = textColor,
+                isSelected = isSelected,
+                weekDay = it
+            )
+        }
+
+
 
 }
