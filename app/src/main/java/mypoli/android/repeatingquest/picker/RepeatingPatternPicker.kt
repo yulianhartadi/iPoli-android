@@ -31,7 +31,7 @@ class RepeatingPatternPicker :
 
     override val reducer = RepeatingPatternReducer
 
-    private lateinit var repeatingPattern: RepeatingPattern
+    private var repeatingPattern: RepeatingPattern? = null
     private lateinit var resultListener: (RepeatingPattern) -> Unit
 
     constructor(args: Bundle? = null) : super(args)
@@ -40,11 +40,19 @@ class RepeatingPatternPicker :
         repeatingPattern: RepeatingPattern? = null,
         resultListener: (RepeatingPattern) -> Unit
     ) : this() {
-        this.repeatingPattern = repeatingPattern ?: RepeatingPattern.Daily
+        this.repeatingPattern = repeatingPattern
         this.resultListener = resultListener
     }
 
+    override fun onCreateLoadAction() =
+        RepeatingPatternAction.LoadData(repeatingPattern)
+
     override fun render(state: RepeatingPatternViewState, view: View) {
+        when(state.type) {
+            RepeatingPatternViewState.StateType.DATA_LOADED -> {
+                view.rpFrequency.setSelection(state.selectedFrequencyIndex)
+            }
+        }
 
     }
 
@@ -91,7 +99,7 @@ class RepeatingPatternPicker :
     ): AlertDialog =
         dialogBuilder
             .setPositiveButton("OK", { _, _ ->
-                resultListener(repeatingPattern)
+                //                resultListener(repeatingPattern)
             })
             .setNegativeButton(R.string.cancel, null)
             .create()
