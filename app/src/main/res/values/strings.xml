@@ -105,8 +105,8 @@
 
     <string name="drawer_close">Navigation Closed</string>
     <string name="drawer_open">Navigation Opened</string>
-    <string name="repeating_quests">Repeating Quests</string>
-    <string name="challenges">Challenges</string>
+    <string name="drawer_repeating_quests">Repeating Quests</string>
+    <string name="drawer_challenges">Challenges</string>
     <string name="growth">Growth</string>
     <string name="rewards">Rewards</string>
     <string name="title_fragment_challenges">Challenges</string>

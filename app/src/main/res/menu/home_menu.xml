@@ -12,7 +12,7 @@
         android:id="@+id/actionChallenges"
         android:icon="@drawable/ic_sword_white_24dp"
         android:orderInCategory="98"
-        android:title="@string/challenges"
+        android:title="@string/drawer_challenges"
         app:showAsAction="ifRoom" />
 
     <item
