@@ -5,6 +5,7 @@ import mypoli.android.common.BaseViewStateReducer
 import mypoli.android.common.mvi.ViewState
 import mypoli.android.common.redux.Action
 import mypoli.android.repeatingquest.entity.RepeatingPattern
+import org.threeten.bp.DayOfWeek
 import org.threeten.bp.LocalDate
 
 /**
@@ -131,5 +132,14 @@ val RepeatingPatternViewState.showYearDay: Boolean
             is RepeatingPattern.Monthly -> false
             is RepeatingPattern.Flexible.Monthly -> false
             is RepeatingPattern.Yearly -> true
+        }
+    }
+
+val RepeatingPatternViewState.selectedWeekDays: Set<DayOfWeek>
+    get() {
+        return when (repeatingPattern) {
+            is RepeatingPattern.Weekly -> repeatingPattern.daysOfWeek
+            is RepeatingPattern.Flexible.Weekly -> repeatingPattern.preferredDays
+            else -> setOf()
         }
     }
