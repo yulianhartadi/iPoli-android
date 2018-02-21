@@ -284,6 +284,9 @@ class HomeViewController(args: Bundle? = null) :
 
                 val drawable = view.petMood.background as GradientDrawable
                 drawable.setColor(colorRes(state.petMoodColor))
+
+                view.levelProgress.max = state.maxProgress
+                view.levelProgress.progress = state.progress
             }
         }
     }

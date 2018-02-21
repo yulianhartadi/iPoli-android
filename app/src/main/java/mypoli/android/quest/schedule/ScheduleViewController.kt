@@ -257,8 +257,6 @@ class ScheduleViewController(args: Bundle? = null) :
 
     override fun render(state: ScheduleViewState, view: View) {
 
-        val levelProgress = view.levelProgress
-
         calendarToolbar.day.text = state.dayText(activity!!)
         calendarToolbar.date.text = state.dateText(activity!!)
         view.currentMonth.text = state.monthText
@@ -271,51 +269,11 @@ class ScheduleViewController(args: Bundle? = null) :
 
         when (state.type) {
 
-            LOADING -> levelProgress.visible = false
-
-            XP_AND_COINS_CHANGED -> {
-                levelProgress.visible = true
-                val animator = ObjectAnimator.ofInt(
-                    levelProgress,
-                    "progress",
-                    levelProgress.progress,
-                    state.progress
-                )
-                animator.duration = shortAnimTime
-                animator.start()
-                calendarToolbar.playerGems.text = state.coins.toString()
-            }
-
-            LEVEL_CHANGED -> {
-                levelProgress.max = state.maxProgress
-                levelProgress.progress = state.progress
-                calendarToolbar.playerLevel.text =
-                    resources!!.getString(R.string.player_level, state.level)
-            }
-
             DATE_PICKER_CHANGED -> renderDatePicker(
                 state.datePickerState,
                 view,
                 state.currentDate
             )
-
-            INITIAL -> {
-                levelProgress.visible = true
-                levelProgress.max = state.maxProgress
-                levelProgress.progress = state.progress
-                calendarToolbar.playerLevel.text =
-                    resources!!.getString(R.string.player_level, state.level)
-                calendarToolbar.playerGems.text = state.coins.toString()
-            }
-
-            DATA_CHANGED -> {
-                levelProgress.visible = true
-                levelProgress.max = state.maxProgress
-                levelProgress.progress = state.progress
-                calendarToolbar.playerLevel.text =
-                    resources!!.getString(R.string.player_level, state.level)
-                calendarToolbar.playerGems.text = state.coins.toString()
-            }
 
             DATE_AUTO_CHANGED -> {
                 val dateData = DateData(

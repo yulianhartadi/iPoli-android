@@ -29,6 +29,15 @@
 
         </android.support.design.widget.AppBarLayout>
 
+        <ProgressBar
+            android:id="@+id/levelProgress"
+            style="@style/Widget.AppCompat.ProgressBar.Horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="6dp"
+            android:elevation="1dp"
+            android:progressDrawable="@drawable/experience_progress_bar"
+            app:layout_behavior="@string/appbar_scrolling_view_behavior" />
+
         <com.bluelinelabs.conductor.ChangeHandlerFrameLayout
             android:id="@+id/controllerContainer"
             android:layout_width="match_parent"

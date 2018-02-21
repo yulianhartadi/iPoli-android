@@ -29,7 +29,9 @@ object HomeReducer : BaseViewStateReducer<HomeViewState>() {
                     lifeCoins = player.coins,
                     experience = player.experience,
                     titleIndex = player.level / 10,
-                    level = player.level
+                    level = player.level,
+                    progress = player.experienceProgressForLevel,
+                    maxProgress = player.experienceForNextLevel
                 )
             }
             else -> {
@@ -54,6 +56,8 @@ sealed class HomeViewState : ViewState {
         val petAvatar: PetAvatar,
         val petMood: PetMood,
         val lifeCoins: Int,
-        val experience: Long
+        val experience: Long,
+        val progress: Int,
+        val maxProgress: Int
     ) : HomeViewState()
 }
