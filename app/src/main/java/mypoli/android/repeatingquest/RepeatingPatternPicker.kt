@@ -2,12 +2,21 @@ package mypoli.android.repeatingquest
 
 import android.os.Bundle
 import android.support.v7.app.AlertDialog
+import android.support.v7.widget.LinearLayoutManager
+import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
+import android.view.ViewGroup
+import android.widget.Button
+import kotlinx.android.synthetic.main.dialog_repeating_picker.view.*
 import kotlinx.android.synthetic.main.view_dialog_header.view.*
 import mypoli.android.R
 import mypoli.android.common.view.BaseDialogController
+import mypoli.android.common.view.attr
+import mypoli.android.common.view.colorRes
 import mypoli.android.repeatingquest.entity.RepeatingPattern
+import org.threeten.bp.DayOfWeek
+import java.util.*
 
 
 /**
@@ -31,10 +40,24 @@ class RepeatingPatternPicker : BaseDialogController {
 
     override fun onCreateContentView(inflater: LayoutInflater, savedViewState: Bundle?): View {
         val view = inflater.inflate(R.layout.dialog_repeating_picker, null)
+
 //        val spinnerArrayAdapter =
 //            ArrayAdapter<String>(view.context, android.R.layout.simple_spinner_dropdown_item,
 //                (1..31).map { it.toString() })
 //        view.rqCount.adapter = spinnerArrayAdapter
+
+        view.rpWeekDayList.layoutManager =
+            LinearLayoutManager(activity!!, LinearLayoutManager.HORIZONTAL, false)
+
+        view.rpWeekDayList.adapter = WeekDayAdapter(
+            DayOfWeek.values().map {
+                WeekDayViewModel(
+                    it.name.first().toString().toUpperCase(),
+                    Random().nextBoolean(),
+                    it
+                )
+            }
+        )
         return view
     }
 
@@ -53,5 +76,42 @@ class RepeatingPatternPicker : BaseDialogController {
     override fun onHeaderViewCreated(headerView: View?) {
         headerView!!.dialogHeaderTitle.setText("Pick repeating pattern")
         headerView.dialogHeaderIcon.setImageResource(R.drawable.logo)
+    }
+
+    data class WeekDayViewModel(val text: String, val isSelected: Boolean, val weekDay: DayOfWeek)
+
+    inner class WeekDayAdapter(private var viewModels: List<WeekDayViewModel>) :
+        RecyclerView.Adapter<WeekDayAdapter.ViewHolder>() {
+        override fun getItemCount() = viewModels.size
+
+        override fun onBindViewHolder(holder: WeekDayAdapter.ViewHolder, position: Int) {
+            val vm = viewModels[position]
+            val button = holder.itemView as Button
+            button.text = vm.text
+            val (background, textColor) = if (vm.isSelected)
+                Pair(R.drawable.circle_accent, colorRes(R.color.md_white))
+            else
+                Pair(R.drawable.circle_normal, attr(R.attr.colorAccent))
+
+            button.setBackgroundResource(background)
+            button.setTextColor(textColor)
+
+        }
+
+        fun updateAll(viewModels: List<WeekDayViewModel>) {
+            this.viewModels = viewModels
+            notifyDataSetChanged()
+        }
+
+        override fun onCreateViewHolder(parent: ViewGroup, viewType: Int) =
+            ViewHolder(
+                LayoutInflater.from(parent.context).inflate(
+                    R.layout.item_repeating_pattern_week_day,
+                    parent,
+                    false
+                )
+            )
+
+        inner class ViewHolder(view: View) : RecyclerView.ViewHolder(view)
     }
 }

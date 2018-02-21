@@ -20,7 +20,7 @@
         tools:text="Every" />
 
     <Spinner
-        android:id="@+id/rqFrequency"
+        android:id="@+id/rpFrequency"
         style="@style/Widget.AppCompat.Spinner.DropDown"
         android:background="@drawable/bordered_accent_background"
         android:layout_width="wrap_content"
@@ -44,7 +44,7 @@
         android:textColor="@color/md_dark_text_54"
         android:textStyle="bold"
         app:layout_constraintBottom_toBottomOf="@+id/rpEvery"
-        app:layout_constraintStart_toEndOf="@+id/rqFrequency"
+        app:layout_constraintStart_toEndOf="@+id/rpFrequency"
         app:layout_constraintTop_toTopOf="@+id/rpEvery"
         tools:text="x" />
 
@@ -73,15 +73,15 @@
     <!--app:layout_constraintTop_toTopOf="@+id/rpEvery" />-->
 
     <TextView
-        android:id="@+id/textView4"
+        android:id="@+id/rpTimes"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginEnd="8dp"
         android:layout_marginStart="8dp"
         android:text="times"
-        android:textStyle="bold"
         android:textAppearance="@style/TextAppearance.AppCompat.Subhead"
         android:textColor="@color/md_dark_text_54"
+        android:textStyle="bold"
         app:layout_constraintBottom_toBottomOf="@+id/rpEvery"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
@@ -89,113 +89,113 @@
         app:layout_constraintTop_toTopOf="@+id/rpEvery"
         tools:text="times" />
 
-    <Button
-        android:id="@+id/button2"
-        android:layout_width="42dp"
-        android:layout_height="42dp"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="32dp"
-        android:background="@drawable/circle_accent"
-        android:text="M"
-        android:textAppearance="@style/TextAppearance.AppCompat.Title"
-        android:textColor="@color/md_white"
-        app:layout_constraintEnd_toStartOf="@+id/button4"
-        app:layout_constraintHorizontal_bias="0.5"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/rpEvery" />
+    <!--<Button-->
+        <!--android:id="@+id/button2"-->
+        <!--android:layout_width="42dp"-->
+        <!--android:layout_height="42dp"-->
+        <!--android:layout_marginStart="8dp"-->
+        <!--android:layout_marginTop="32dp"-->
+        <!--android:background="@drawable/circle_accent"-->
+        <!--android:text="M"-->
+        <!--android:textAppearance="@style/TextAppearance.AppCompat.Title"-->
+        <!--android:textColor="@color/md_white"-->
+        <!--app:layout_constraintEnd_toStartOf="@+id/button4"-->
+        <!--app:layout_constraintHorizontal_bias="0.5"-->
+        <!--app:layout_constraintStart_toStartOf="parent"-->
+        <!--app:layout_constraintTop_toBottomOf="@+id/rpEvery" />-->
 
-    <Button
-        android:id="@+id/button3"
-        android:layout_width="42dp"
-        android:layout_height="42dp"
-        android:layout_marginEnd="8dp"
-        android:layout_marginTop="32dp"
-        android:background="@drawable/circle_normal"
-        android:text="S"
-        android:textAppearance="@style/TextAppearance.AppCompat.Title"
-        android:textColor="?attr/colorAccent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.5"
-        app:layout_constraintStart_toEndOf="@+id/button8"
-        app:layout_constraintTop_toBottomOf="@+id/rpEvery" />
+    <!--<Button-->
+        <!--android:id="@+id/button3"-->
+        <!--android:layout_width="42dp"-->
+        <!--android:layout_height="42dp"-->
+        <!--android:layout_marginEnd="8dp"-->
+        <!--android:layout_marginTop="32dp"-->
+        <!--android:background="@drawable/circle_normal"-->
+        <!--android:text="S"-->
+        <!--android:textAppearance="@style/TextAppearance.AppCompat.Title"-->
+        <!--android:textColor="?attr/colorAccent"-->
+        <!--app:layout_constraintEnd_toEndOf="parent"-->
+        <!--app:layout_constraintHorizontal_bias="0.5"-->
+        <!--app:layout_constraintStart_toEndOf="@+id/button8"-->
+        <!--app:layout_constraintTop_toBottomOf="@+id/rpEvery" />-->
 
-    <Button
-        android:id="@+id/button8"
-        android:layout_width="42dp"
-        android:layout_height="42dp"
-        android:layout_marginTop="32dp"
-        android:background="@drawable/circle_normal"
-        android:text="S"
-        android:textAppearance="@style/TextAppearance.AppCompat.Title"
-        android:textColor="?attr/colorAccent"
-        app:layout_constraintEnd_toStartOf="@+id/button3"
-        app:layout_constraintHorizontal_bias="0.5"
-        app:layout_constraintStart_toEndOf="@+id/button7"
-        app:layout_constraintTop_toBottomOf="@+id/rpEvery" />
+    <!--<Button-->
+        <!--android:id="@+id/button8"-->
+        <!--android:layout_width="42dp"-->
+        <!--android:layout_height="42dp"-->
+        <!--android:layout_marginTop="32dp"-->
+        <!--android:background="@drawable/circle_normal"-->
+        <!--android:text="S"-->
+        <!--android:textAppearance="@style/TextAppearance.AppCompat.Title"-->
+        <!--android:textColor="?attr/colorAccent"-->
+        <!--app:layout_constraintEnd_toStartOf="@+id/button3"-->
+        <!--app:layout_constraintHorizontal_bias="0.5"-->
+        <!--app:layout_constraintStart_toEndOf="@+id/button7"-->
+        <!--app:layout_constraintTop_toBottomOf="@+id/rpEvery" />-->
 
-    <Button
-        android:id="@+id/button7"
-        android:layout_width="42dp"
-        android:layout_height="42dp"
-        android:layout_marginTop="32dp"
-        android:background="@drawable/circle_normal"
-        android:text="F"
-        android:textAppearance="@style/TextAppearance.AppCompat.Title"
-        android:textColor="?attr/colorAccent"
-        app:layout_constraintEnd_toStartOf="@+id/button8"
-        app:layout_constraintHorizontal_bias="0.5"
-        app:layout_constraintStart_toEndOf="@+id/button6"
-        app:layout_constraintTop_toBottomOf="@+id/rpEvery" />
+    <!--<Button-->
+        <!--android:id="@+id/button7"-->
+        <!--android:layout_width="42dp"-->
+        <!--android:layout_height="42dp"-->
+        <!--android:layout_marginTop="32dp"-->
+        <!--android:background="@drawable/circle_normal"-->
+        <!--android:text="F"-->
+        <!--android:textAppearance="@style/TextAppearance.AppCompat.Title"-->
+        <!--android:textColor="?attr/colorAccent"-->
+        <!--app:layout_constraintEnd_toStartOf="@+id/button8"-->
+        <!--app:layout_constraintHorizontal_bias="0.5"-->
+        <!--app:layout_constraintStart_toEndOf="@+id/button6"-->
+        <!--app:layout_constraintTop_toBottomOf="@+id/rpEvery" />-->
 
-    <Button
-        android:id="@+id/button6"
-        android:layout_width="42dp"
-        android:layout_height="42dp"
-        android:layout_marginTop="32dp"
-        android:background="@drawable/circle_normal"
-        android:text="T"
-        android:textAppearance="@style/TextAppearance.AppCompat.Title"
-        android:textColor="?attr/colorAccent"
-        app:layout_constraintEnd_toStartOf="@+id/button7"
-        app:layout_constraintHorizontal_bias="0.5"
-        app:layout_constraintStart_toEndOf="@+id/button5"
-        app:layout_constraintTop_toBottomOf="@+id/rpEvery" />
+    <!--<Button-->
+        <!--android:id="@+id/button6"-->
+        <!--android:layout_width="42dp"-->
+        <!--android:layout_height="42dp"-->
+        <!--android:layout_marginTop="32dp"-->
+        <!--android:background="@drawable/circle_normal"-->
+        <!--android:text="T"-->
+        <!--android:textAppearance="@style/TextAppearance.AppCompat.Title"-->
+        <!--android:textColor="?attr/colorAccent"-->
+        <!--app:layout_constraintEnd_toStartOf="@+id/button7"-->
+        <!--app:layout_constraintHorizontal_bias="0.5"-->
+        <!--app:layout_constraintStart_toEndOf="@+id/button5"-->
+        <!--app:layout_constraintTop_toBottomOf="@+id/rpEvery" />-->
 
-    <Button
-        android:id="@+id/button5"
-        android:layout_width="42dp"
-        android:layout_height="42dp"
-        android:layout_marginTop="32dp"
-        android:background="@drawable/circle_normal"
-        android:text="W"
-        android:textAppearance="@style/TextAppearance.AppCompat.Title"
-        android:textColor="?attr/colorAccent"
-        app:layout_constraintEnd_toStartOf="@+id/button6"
-        app:layout_constraintHorizontal_bias="0.5"
-        app:layout_constraintStart_toEndOf="@+id/button4"
-        app:layout_constraintTop_toBottomOf="@+id/rpEvery" />
+    <!--<Button-->
+        <!--android:id="@+id/button5"-->
+        <!--android:layout_width="42dp"-->
+        <!--android:layout_height="42dp"-->
+        <!--android:layout_marginTop="32dp"-->
+        <!--android:background="@drawable/circle_normal"-->
+        <!--android:text="W"-->
+        <!--android:textAppearance="@style/TextAppearance.AppCompat.Title"-->
+        <!--android:textColor="?attr/colorAccent"-->
+        <!--app:layout_constraintEnd_toStartOf="@+id/button6"-->
+        <!--app:layout_constraintHorizontal_bias="0.5"-->
+        <!--app:layout_constraintStart_toEndOf="@+id/button4"-->
+        <!--app:layout_constraintTop_toBottomOf="@+id/rpEvery" />-->
 
-    <Button
-        android:id="@+id/button4"
-        android:layout_width="42dp"
-        android:layout_height="42dp"
-        android:layout_marginTop="32dp"
-        android:background="@drawable/circle_accent"
-        android:text="T"
-        android:textAppearance="@style/TextAppearance.AppCompat.Title"
-        android:textColor="@color/md_white"
-        app:layout_constraintEnd_toStartOf="@+id/button5"
-        app:layout_constraintHorizontal_bias="0.5"
-        app:layout_constraintStart_toEndOf="@+id/button2"
-        app:layout_constraintTop_toBottomOf="@+id/rpEvery" />
+    <!--<Button-->
+        <!--android:id="@+id/button4"-->
+        <!--android:layout_width="42dp"-->
+        <!--android:layout_height="42dp"-->
+        <!--android:layout_marginTop="32dp"-->
+        <!--android:background="@drawable/circle_accent"-->
+        <!--android:text="T"-->
+        <!--android:textAppearance="@style/TextAppearance.AppCompat.Title"-->
+        <!--android:textColor="@color/md_white"-->
+        <!--app:layout_constraintEnd_toStartOf="@+id/button5"-->
+        <!--app:layout_constraintHorizontal_bias="0.5"-->
+        <!--app:layout_constraintStart_toEndOf="@+id/button2"-->
+        <!--app:layout_constraintTop_toBottomOf="@+id/rpEvery" />-->
 
     <TextView
-        android:id="@+id/textView"
+        android:id="@+id/rpMessage"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginEnd="16dp"
         android:layout_marginStart="16dp"
-        android:layout_marginTop="32dp"
+        android:layout_marginTop="24dp"
         android:background="@drawable/bordered_accent_background"
         android:drawablePadding="16dp"
         android:drawableStart="@drawable/pet_1_head"
@@ -205,7 +205,7 @@
         android:textAppearance="@style/TextAppearance.AppCompat.Body1"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/button2" />
+        app:layout_constraintTop_toBottomOf="@+id/rpWeekDayList" />
 
     <TextView
         android:id="@+id/textView5"
@@ -218,9 +218,9 @@
         android:textAppearance="@style/TextAppearance.AppCompat.Subhead"
         android:textColor="@color/md_dark_text_54"
         android:textStyle="bold"
-        app:layout_constraintBottom_toBottomOf="@+id/button10"
+        app:layout_constraintBottom_toBottomOf="@+id/rpEnd"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/button10"
+        app:layout_constraintTop_toTopOf="@+id/rpEnd"
         tools:text="Until" />
 
     <TextView
@@ -234,13 +234,13 @@
         android:textAppearance="@style/TextAppearance.AppCompat.Subhead"
         android:textColor="@color/md_dark_text_54"
         android:textStyle="bold"
-        app:layout_constraintBottom_toBottomOf="@+id/button9"
+        app:layout_constraintBottom_toBottomOf="@+id/rpStart"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/button9"
+        app:layout_constraintTop_toTopOf="@+id/rpStart"
         tools:text="Start" />
 
     <Button
-        android:id="@+id/button9"
+        android:id="@+id/rpStart"
         style="@style/Widget.AppCompat.Button.Colored"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -248,17 +248,28 @@
         android:layout_marginTop="24dp"
         android:text="Today"
         app:layout_constraintStart_toEndOf="@+id/textView6"
-        app:layout_constraintTop_toBottomOf="@+id/textView"
+        app:layout_constraintTop_toBottomOf="@+id/rpMessage"
         tools:text="Today" />
 
     <Button
-        android:id="@+id/button10"
+        android:id="@+id/rpEnd"
         style="@style/Widget.AppCompat.Button.Colored"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
         android:text="End of time"
-        app:layout_constraintStart_toStartOf="@+id/button9"
-        app:layout_constraintTop_toBottomOf="@+id/button9"
+        app:layout_constraintStart_toStartOf="@+id/rpStart"
+        app:layout_constraintTop_toBottomOf="@+id/rpStart"
         tools:text="End of time" />
+
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/rpWeekDayList"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="8dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="24dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/rpEvery" />
 </android.support.constraint.ConstraintLayout>
