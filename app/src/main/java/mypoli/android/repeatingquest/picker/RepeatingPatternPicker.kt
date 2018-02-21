@@ -14,8 +14,9 @@ import android.widget.AdapterView
 import android.widget.Button
 import android.widget.TextView
 import kotlinx.android.synthetic.main.dialog_repeating_picker.view.*
-import kotlinx.android.synthetic.main.view_dialog_header.view.*
+import kotlinx.android.synthetic.main.popup_rate.view.*
 import mypoli.android.R
+import mypoli.android.common.ViewUtils
 import mypoli.android.common.view.ReduxDialogController
 import mypoli.android.common.view.attrData
 import mypoli.android.common.view.attrResourceId
@@ -76,62 +77,89 @@ class RepeatingPatternPicker :
     override fun render(state: RepeatingPatternViewState, view: View) {
         val count = state.count.toString()
         when (state.type) {
-            RepeatingPatternViewState.StateType.DATA_LOADED -> {
-                view.rpFrequency.setSelection(state.selectedFrequencyIndex)
-                view.rpCount.setText(count)
-                view.rpCount.setSelection(count.length)
-                view.rpWeekDayList.visibility = if (state.showWeekDays) View.VISIBLE else View.GONE
-                view.rpMonthDayList.visibility =
-                    if (state.showMonthDays) View.VISIBLE else View.GONE
-                view.yearlyPatternGroup.visibility =
-                    if (state.showYearDay) View.VISIBLE else View.GONE
-
-                if (state.showWeekDays) {
-                    (view.rpWeekDayList.adapter as WeekDayAdapter).updateAll(
-                        state.weekDaysViewModels(
-                            state.selectedWeekDays
-                        )
-                    )
-                }
-
-
-                view.rpFrequency.onItemSelectedListener =
-                    object : AdapterView.OnItemSelectedListener {
-                        override fun onNothingSelected(parent: AdapterView<*>?) {
-
-                        }
-
-                        override fun onItemSelected(
-                            parent: AdapterView<*>?,
-                            view: View?,
-                            position: Int,
-                            id: Long
-                        ) {
-                            dispatch(RepeatingPatternAction.ChangeFrequency(position))
-                        }
-
-                    }
+            RepeatingPatternViewState.StateType.SHOW_DAILY -> {
+                ViewUtils.goneViews(
+                    view.rpWeekDayList,
+                    view.rpMonthDayList,
+                    view.yearlyPatternGroup,
+                    view.countGroup
+                )
+                setupFrequencies(view, state)
             }
 
-            RepeatingPatternViewState.StateType.FREQUENCY_CHANGED -> {
+            RepeatingPatternViewState.StateType.SHOW_WEEKLY -> {
+                ViewUtils.goneViews(
+                    view.rpMonthDayList,
+                    view.yearlyPatternGroup
+                )
+                ViewUtils.showViews(
+                    view.rpWeekDayList,
+                    view.countGroup
+                )
+
                 view.rpCount.setText(count)
                 view.rpCount.setSelection(count.length)
-                view.rpWeekDayList.visibility = if (state.showWeekDays) View.VISIBLE else View.GONE
-                view.rpMonthDayList.visibility =
-                    if (state.showMonthDays) View.VISIBLE else View.GONE
-                view.yearlyPatternGroup.visibility =
-                    if (state.showYearDay) View.VISIBLE else View.GONE
 
-                if (state.showWeekDays) {
-                    (view.rpWeekDayList.adapter as WeekDayAdapter).updateAll(
-                        state.weekDaysViewModels(
-                            state.selectedWeekDays
-                        )
+                (view.rpWeekDayList.adapter as WeekDayAdapter).updateAll(
+                    state.weekDaysViewModels(
+                        state.selectedWeekDays
                     )
-                }
+                )
+                setupFrequencies(view, state)
+            }
 
+            RepeatingPatternViewState.StateType.SHOW_MONTHLY -> {
+                ViewUtils.goneViews(
+                    view.rpWeekDayList,
+                    view.yearlyPatternGroup
+                )
+                ViewUtils.showViews(
+                    view.rpMonthDayList,
+                    view.countGroup
+                )
+                setupFrequencies(view, state)
+            }
+
+            RepeatingPatternViewState.StateType.SHOW_YEARLY -> {
+                ViewUtils.goneViews(
+                    view.rpWeekDayList,
+                    view.rpMonthDayList,
+                    view.countGroup
+                )
+                ViewUtils.showViews(
+                    view.yearlyPatternGroup
+                )
+
+                setupFrequencies(view, state)
             }
         }
+    }
+
+    private fun setupFrequencies(
+        view: View,
+        state: RepeatingPatternViewState
+    ) {
+        val frequency = view.rpFrequency
+        frequency.onItemSelectedListener = null
+        frequency.setSelection(state.selectedFrequencyIndex)
+        frequency.post {
+            frequency.onItemSelectedListener =
+                object : AdapterView.OnItemSelectedListener {
+                    override fun onNothingSelected(parent: AdapterView<*>?) {
+
+                    }
+
+                    override fun onItemSelected(
+                        parent: AdapterView<*>?,
+                        view: View?,
+                        position: Int,
+                        id: Long
+                    ) {
+                        dispatch(RepeatingPatternAction.ChangeFrequency(position))
+                    }
+
+                }
+            }
 
     }
 
