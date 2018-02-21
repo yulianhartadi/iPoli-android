@@ -8,7 +8,6 @@ import mypoli.android.common.DataLoadedAction
 import mypoli.android.common.datetime.isBetween
 import mypoli.android.common.mvi.ViewState
 import mypoli.android.common.redux.Action
-import mypoli.android.common.redux.State
 import mypoli.android.common.text.DateFormatter
 import mypoli.android.common.view.AndroidColor
 import mypoli.android.common.view.AndroidIcon
@@ -33,21 +32,6 @@ sealed class AgendaAction : Action {
     data class FirstVisibleItemChanged(val itemPosition: Int) : AgendaAction()
 }
 
-data class AgendaState(
-    val type: StateType,
-    val agendaItems: List<CreateAgendaItemsUseCase.AgendaItem>,
-    val scrollToPosition: Int?,
-    val userScrollPosition: Int?
-) : State {
-    enum class StateType {
-        LOADING,
-        DATA_CHANGED,
-        SHOW_TOP_LOADER,
-        SHOW_BOTTOM_LOADER,
-        IDLE
-    }
-}
-
 object AgendaReducer : BaseViewStateReducer<AgendaViewState>() {
 
     override val stateKey = key<AgendaViewState>()
@@ -68,7 +52,7 @@ object AgendaReducer : BaseViewStateReducer<AgendaViewState>() {
                     } else null
 
                 subState.copy(
-                    type = AgendaState.StateType.DATA_CHANGED,
+                    type = AgendaViewState.StateType.DATA_CHANGED,
                     agendaItems = action.agendaItems,
                     scrollToPosition = findItemPositionToScrollTo(
                         action.currentAgendaItemDate,
@@ -80,19 +64,19 @@ object AgendaReducer : BaseViewStateReducer<AgendaViewState>() {
             }
             is AgendaAction.LoadBefore -> {
                 subState.copy(
-                    type = AgendaState.StateType.SHOW_TOP_LOADER,
+                    type = AgendaViewState.StateType.SHOW_TOP_LOADER,
                     userScrollPosition = action.itemPosition
                 )
             }
             is AgendaAction.LoadAfter -> {
                 subState.copy(
-                    type = AgendaState.StateType.SHOW_BOTTOM_LOADER,
+                    type = AgendaViewState.StateType.SHOW_BOTTOM_LOADER,
                     userScrollPosition = action.itemPosition
                 )
             }
             is AgendaAction.FirstVisibleItemChanged -> {
                 subState.copy(
-                    type = AgendaState.StateType.IDLE,
+                    type = AgendaViewState.StateType.IDLE,
                     userScrollPosition = action.itemPosition
                 )
             }
@@ -123,7 +107,7 @@ object AgendaReducer : BaseViewStateReducer<AgendaViewState>() {
     }
 
     override fun defaultState() = AgendaViewState(
-        type = AgendaState.StateType.LOADING,
+        type = AgendaViewState.StateType.LOADING,
         agendaItems = listOf(),
         scrollToPosition = null,
         userScrollPosition = null,
@@ -135,7 +119,7 @@ object AgendaReducer : BaseViewStateReducer<AgendaViewState>() {
 }
 
 data class AgendaViewState(
-    val type: AgendaState.StateType,
+    val type: AgendaViewState.StateType,
     val userScrollPosition: Int?,
     val scrollToPosition: Int?,
     val shouldScrollToUserPosition: Boolean,

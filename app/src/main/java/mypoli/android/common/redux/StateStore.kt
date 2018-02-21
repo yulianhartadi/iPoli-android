@@ -150,7 +150,9 @@ class StateStore<S : CompositeState<S>>(
 
             if (action is UIAction.Attach<*>) {
                 val stateKey = action.reducer.stateKey
-                require(stateToReducer.contains(stateKey))
+                require(
+                    stateToReducer.contains(stateKey),
+                    { "Have you added the reducer ${action.reducer} to the store?" })
                 val reducer = stateToReducer[stateKey]!!
                 return state.update(stateKey, reducer.defaultState())
             }

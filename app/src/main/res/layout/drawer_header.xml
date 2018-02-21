@@ -79,7 +79,7 @@
             android:layout_marginEnd="16dp">
 
             <de.hdodenhof.circleimageview.CircleImageView
-                android:id="@+id/pet_picture"
+                android:id="@+id/petHeadImage"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_alignParentBottom="true"
@@ -88,7 +88,7 @@
                 app:civ_fill_color="@color/md_white" />
 
             <ImageView
-                android:id="@+id/pet_state"
+                android:id="@+id/petMood"
                 android:layout_width="12dp"
                 android:layout_height="12dp"
                 android:layout_alignParentBottom="true"

@@ -1,5 +1,6 @@
 package mypoli.android.pet
 
+import android.support.annotation.ColorRes
 import android.support.annotation.DrawableRes
 import android.support.annotation.StringRes
 import mypoli.android.Constants
@@ -18,7 +19,7 @@ data class Pet(
     val equipment: PetEquipment = PetEquipment(),
     val moodPoints: Int = Constants.DEFAULT_PET_HP,
     val healthPoints: Int = Constants.DEFAULT_PET_MP,
-    val mood: PetMood = moodFor(moodPoints),
+    val mood: PetMood = moodFor(moodPoints, healthPoints),
     val experienceBonus: Float = bonusFor(mood, MAX_XP_BONUS),
     val coinBonus: Float = bonusFor(mood, MAX_COIN_BONUS),
     val bountyBonus: Float = bonusFor(mood, MAX_BOUNTY_BONUS)
@@ -164,6 +165,7 @@ data class Pet(
     private fun moodPointsForXP(experience: Int) =
         Math.floor(experience / Constants.XP_TO_PET_MOOD_RATIO).toInt()
 
+
     companion object {
 
         const val MAX_HP = 100
@@ -184,12 +186,14 @@ data class Pet(
                 HAPPY -> 0.5f
                 GOOD -> 0.25f
                 SAD -> 0.1f
+                else -> 0.0f
             }
             return maxBonus * percentage
         }
 
-        private fun moodFor(moodPoints: Int) =
+        private fun moodFor(moodPoints: Int, healthPoints: Int? = null) =
             when {
+                healthPoints != null && healthPoints == 0 -> DEAD
                 moodPoints >= AWESOME_MIN_MOOD_POINTS -> AWESOME
                 moodPoints >= HAPPY_MIN_MOOD_POINTS -> HAPPY
                 moodPoints >= GOOD_MIN_MOOD_POINTS -> GOOD
@@ -214,7 +218,7 @@ data class PetEquipment(
 )
 
 enum class PetMood {
-    SAD, GOOD, HAPPY, AWESOME
+    DEAD, SAD, GOOD, HAPPY, AWESOME
 }
 
 enum class PetItemType {
@@ -605,4 +609,12 @@ enum class AndroidPetAvatar(
             PetItem.RED_DEER_SWEATER to R.drawable.pet_12_item_sweater_red_deer
         )
     )
+}
+
+enum class AndroidPetMood(@ColorRes val color: Int) {
+    AWESOME(R.color.md_green_500),
+    HAPPY(R.color.md_orange_500),
+    GOOD(R.color.md_yellow_500),
+    SAD(R.color.md_red_500),
+    DEAD(R.color.md_black);
 }

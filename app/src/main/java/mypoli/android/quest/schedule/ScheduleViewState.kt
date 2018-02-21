@@ -4,7 +4,6 @@ import android.content.Context
 import mypoli.android.R
 import mypoli.android.common.AppState
 import mypoli.android.common.BaseViewStateReducer
-import mypoli.android.common.DataLoadedAction
 import mypoli.android.common.mvi.ViewState
 import mypoli.android.common.redux.Action
 import mypoli.android.common.text.CalendarFormatter
@@ -46,10 +45,6 @@ object ScheduleReducer : BaseViewStateReducer<ScheduleViewState>() {
 
     override fun reduce(state: AppState, subState: ScheduleViewState, action: Action) =
         when (action) {
-            is DataLoadedAction.PlayerChanged -> reducePlayerChanged(
-                subState,
-                action
-            )
             is ScheduleAction -> reduceCalendarAction(
                 subState,
                 action
@@ -89,25 +84,6 @@ object ScheduleReducer : BaseViewStateReducer<ScheduleViewState>() {
             }
             else -> subState
         }
-
-    private fun reducePlayerChanged(
-        state: ScheduleViewState,
-        action: DataLoadedAction.PlayerChanged
-    ): ScheduleViewState {
-        val player = action.player
-        val type = when {
-            state.level == 0 -> ScheduleViewState.StateType.DATA_CHANGED
-            state.level != player.level -> ScheduleViewState.StateType.LEVEL_CHANGED
-            else -> ScheduleViewState.StateType.XP_AND_COINS_CHANGED
-        }
-        return state.copy(
-            type = type,
-            level = player.level,
-            progress = player.experienceProgressForLevel,
-            coins = player.coins,
-            maxProgress = player.experienceForNextLevel
-        )
-    }
 
     private fun reduceCalendarAction(state: ScheduleViewState, action: ScheduleAction) =
         when (action) {
@@ -166,17 +142,12 @@ data class ScheduleViewState(
     val currentMonth: YearMonth,
     val currentDate: LocalDate,
     val datePickerState: DatePickerState,
-    val progress: Int = 0,
-    val maxProgress: Int = 0,
-    val level: Int = 0,
-    val coins: Int = 0,
     val viewMode: ViewMode
 ) : ViewState {
 
     enum class StateType {
         LOADING, IDLE,
         INITIAL, CALENDAR_DATE_CHANGED, SWIPE_DATE_CHANGED, DATE_PICKER_CHANGED, MONTH_CHANGED,
-        LEVEL_CHANGED, XP_AND_COINS_CHANGED, DATA_CHANGED,
         VIEW_MODE_CHANGED, DATE_AUTO_CHANGED
     }
 
