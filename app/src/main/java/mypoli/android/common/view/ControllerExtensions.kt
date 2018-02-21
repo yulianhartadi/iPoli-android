@@ -55,6 +55,12 @@ fun Controller.attr(@AttrRes attributeRes: Int) =
         it.data
     }
 
+fun Controller.attrResource(@AttrRes attributeRes: Int) =
+    TypedValue().let {
+        activity!!.theme.resolveAttribute(attributeRes, it, true)
+        it.resourceId
+    }
+
 var Controller.toolbarTitle: String
     set(value) {
         (activity!! as MainActivity).supportActionBar!!.title = value
