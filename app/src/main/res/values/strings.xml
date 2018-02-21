@@ -126,7 +126,6 @@
     <string name="empty_overview_text">Your adventure is empty! Start it by adding a quest?</string>
     <string name="empty_inbox_text">Your inbox is empty</string>
     <string name="empty_repeating_quests_text">No repeating quests? Add repeating task or habit?</string>
-    <string name="nav_drawer_player_xp">XP: %s</string>
     <string name="help_dialog_growth_title">What is growth all about?</string>
     <string name="help_dialog_growth_daily_progress">Monitor your daily progress</string>
     <string name="help_dialog_growth_time_spent_chart">The time spent chart shows you which quest contexts take most of your time</string>

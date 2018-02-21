@@ -14,6 +14,8 @@ import com.amplitude.api.Amplitude
 import com.bluelinelabs.conductor.Controller
 import com.bluelinelabs.conductor.RouterTransaction
 import com.bluelinelabs.conductor.changehandler.FadeChangeHandler
+import com.bumptech.glide.Glide
+import com.bumptech.glide.request.RequestOptions
 import kotlinx.android.synthetic.main.controller_home.view.*
 import kotlinx.android.synthetic.main.drawer_header_home.view.*
 import mypoli.android.Constants
@@ -281,7 +283,9 @@ class HomeViewController(args: Bundle? = null) :
 
                 view.drawerPlayerTitle.text = state.title(resources!!)
 
-                view.petHeadImage.setImageResource(state.petHeadImage)
+                Glide.with(view.context).load(state.petHeadImage)
+                    .apply(RequestOptions.circleCropTransform())
+                    .into(view.petHeadImage)
 
                 val drawable = view.petMood.background as GradientDrawable
                 drawable.setColor(colorRes(state.petMoodColor))
