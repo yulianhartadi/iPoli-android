@@ -88,7 +88,7 @@ class AgendaViewController(args: Bundle? = null) :
     override fun render(state: AgendaViewState, view: View) {
 
         when (state.type) {
-            AgendaState.StateType.DATA_CHANGED -> {
+            AgendaViewState.StateType.DATA_CHANGED -> {
                 ViewUtils.goneViews(view.topLoader, view.bottomLoader)
                 val agendaList = view.agendaList
                 agendaList.clearOnScrollListeners()
@@ -96,11 +96,11 @@ class AgendaViewController(args: Bundle? = null) :
                 addScrollListeners(agendaList, state)
             }
 
-            AgendaState.StateType.SHOW_TOP_LOADER -> {
+            AgendaViewState.StateType.SHOW_TOP_LOADER -> {
                 ViewUtils.showViews(view.topLoader)
             }
 
-            AgendaState.StateType.SHOW_BOTTOM_LOADER -> {
+            AgendaViewState.StateType.SHOW_BOTTOM_LOADER -> {
                 ViewUtils.showViews(view.bottomLoader)
             }
         }

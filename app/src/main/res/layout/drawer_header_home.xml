@@ -30,11 +30,12 @@
                 android:layout_gravity="center_vertical"
                 android:layout_marginEnd="16dp"
                 android:layout_marginStart="16dp"
+                android:src="@drawable/avatar_01"
                 app:civ_border_color="#FF000000"
                 app:civ_fill_color="@color/md_white" />
 
             <TextView
-                android:id="@+id/player_level"
+                android:id="@+id/drawerPlayerTitle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="16dp"
@@ -52,7 +53,7 @@
                 android:layout_marginTop="8dp">
 
                 <TextView
-                    android:id="@+id/player_coins"
+                    android:id="@+id/drawerPlayerCoins"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:drawablePadding="4dp"
@@ -62,10 +63,10 @@
                     android:textSize="14sp" />
 
                 <TextView
-                    android:id="@+id/player_current_xp"
+                    android:id="@+id/drawerCurrentExperience"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="4dp"
+                    android:layout_marginStart="8dp"
                     android:textColor="@color/md_white"
                     android:textSize="14sp" />
 
@@ -91,7 +92,7 @@
             android:layout_marginEnd="16dp">
 
             <de.hdodenhof.circleimageview.CircleImageView
-                android:id="@+id/pet_picture"
+                android:id="@+id/petHeadImage"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_alignParentStart="true"
@@ -100,7 +101,7 @@
                 app:civ_fill_color="@color/md_white" />
 
             <ImageView
-                android:id="@+id/pet_state"
+                android:id="@+id/petMood"
                 android:layout_width="12dp"
                 android:layout_height="12dp"
                 android:layout_alignParentBottom="true"

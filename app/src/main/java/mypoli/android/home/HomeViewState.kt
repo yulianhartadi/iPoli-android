@@ -2,8 +2,11 @@ package mypoli.android.home
 
 import mypoli.android.common.AppState
 import mypoli.android.common.BaseViewStateReducer
+import mypoli.android.common.DataLoadedAction
 import mypoli.android.common.mvi.ViewState
 import mypoli.android.common.redux.Action
+import mypoli.android.pet.PetAvatar
+import mypoli.android.pet.PetMood
 
 /**
  * Created by Polina Zhelyazkova <polina@ipoli.io>
@@ -16,15 +19,41 @@ object HomeReducer : BaseViewStateReducer<HomeViewState>() {
     override val stateKey = key<HomeViewState>()
 
     override fun reduce(state: AppState, subState: HomeViewState, action: Action) =
-        state.dataState.player.let {
-            subState.copy(
-                showSignIn = if (it != null) !it.isLoggedIn() else true
-            )
+        when (action) {
+            is DataLoadedAction.PlayerChanged -> {
+                val player = action.player
+                HomeViewState.PlayerChanged(
+                    showSignIn = player.isLoggedIn(),
+                    petAvatar = player.pet.avatar,
+                    petMood = player.pet.mood,
+                    lifeCoins = player.coins,
+                    experience = player.experience,
+                    titleIndex = player.level / 10,
+                    level = player.level
+                )
+            }
+            else -> {
+                state.dataState.player.let {
+                    HomeViewState.Initial(
+                        showSignIn = if (it != null) !it.isLoggedIn() else true
+                    )
+                }
+            }
         }
 
-    override fun defaultState() = HomeViewState(showSignIn = true)
+    override fun defaultState() = HomeViewState.Initial(showSignIn = true)
 }
 
-data class HomeViewState(
-    val showSignIn: Boolean
-) : ViewState
+sealed class HomeViewState : ViewState {
+    data class Initial(val showSignIn: Boolean) : HomeViewState()
+
+    data class PlayerChanged(
+        val showSignIn: Boolean,
+        val titleIndex: Int,
+        val level: Int,
+        val petAvatar: PetAvatar,
+        val petMood: PetMood,
+        val lifeCoins: Int,
+        val experience: Long
+    ) : HomeViewState()
+}
