@@ -39,6 +39,13 @@ class RepeatingQuestViewController :
         return view
     }
 
+    override fun onCreateLoadAction() =
+        RepeatingQuestAction.Load(repeatingQuestId)
+
     override fun render(state: RepeatingQuestViewState, view: View) {
+        when (state) {
+            is RepeatingQuestViewState.Changed -> {
+            }
+        }
     }
 }

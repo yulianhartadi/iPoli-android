@@ -11,7 +11,7 @@ import mypoli.android.common.redux.Action
  */
 
 sealed class RepeatingQuestAction : Action {
-
+    data class Load(val repeatingQuestId: String) : RepeatingQuestAction()
 }
 
 sealed class RepeatingQuestViewState : ViewState {
@@ -29,8 +29,11 @@ object RepeatingQuestReducer : BaseViewStateReducer<RepeatingQuestViewState>() {
         state: AppState,
         subState: RepeatingQuestViewState,
         action: Action
-    ): RepeatingQuestViewState {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    ) = when (action) {
+        is RepeatingQuestAction.Load -> {
+            RepeatingQuestViewState.Changed("hello")
+        }
+        else -> subState
     }
 
     override fun defaultState() = RepeatingQuestViewState.Loading
