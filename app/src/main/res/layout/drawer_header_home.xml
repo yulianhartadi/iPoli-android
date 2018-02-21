@@ -23,16 +23,16 @@
             android:layout_height="wrap_content"
             android:orientation="vertical">
 
-            <de.hdodenhof.circleimageview.CircleImageView
+            <ImageView
                 android:id="@+id/player_avatar"
                 android:layout_width="76dp"
                 android:layout_height="76dp"
                 android:layout_gravity="center_vertical"
                 android:layout_marginEnd="16dp"
                 android:layout_marginStart="16dp"
-                android:src="@drawable/avatar_01"
-                app:civ_border_color="#FF000000"
-                app:civ_fill_color="@color/md_white" />
+                android:background="@drawable/white_circular_background"
+                android:scaleType="fitCenter"
+                android:src="@drawable/avatar_01" />
 
             <TextView
                 android:id="@+id/drawerPlayerTitle"
@@ -88,15 +88,15 @@
             </LinearLayout>
         </LinearLayout>
 
-        <de.hdodenhof.circleimageview.CircleImageView
+        <ImageView
             android:id="@+id/player_achievements"
             android:layout_width="48dp"
             android:layout_height="48dp"
             android:layout_marginEnd="8dp"
             android:layout_toStartOf="@+id/pet_container"
-            android:src="@drawable/ic_achievement_badge"
-            app:civ_border_color="#FF000000"
-            app:civ_fill_color="@color/md_white" />
+            android:background="@drawable/white_circular_background"
+            android:scaleType="fitCenter"
+            android:src="@drawable/ic_achievement_badge" />
 
         <RelativeLayout
             android:id="@+id/pet_container"
@@ -106,14 +106,14 @@
             android:layout_alignParentTop="true"
             android:layout_marginEnd="16dp">
 
-            <de.hdodenhof.circleimageview.CircleImageView
+            <ImageView
                 android:id="@+id/petHeadImage"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_alignParentStart="true"
                 android:layout_alignParentTop="true"
-                app:civ_border_color="#FF000000"
-                app:civ_fill_color="@color/md_white" />
+                android:background="@drawable/white_circular_background"
+                android:scaleType="fitCenter" />
 
             <ImageView
                 android:id="@+id/petMood"
