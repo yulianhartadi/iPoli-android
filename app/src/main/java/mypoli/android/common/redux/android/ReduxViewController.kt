@@ -69,9 +69,13 @@ abstract class ReduxViewController<A : Action, VS : ViewState, out R : ViewState
             currentState = viewState
 
             launch(UI) {
-                render(viewState, view!!)
+                onRenderViewState(viewState)
             }
         }
+    }
+
+    protected open fun onRenderViewState(state: VS) {
+        render(state, view!!)
     }
 
     protected open fun onCreateLoadAction(): A? {
