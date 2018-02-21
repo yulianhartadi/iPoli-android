@@ -15,6 +15,7 @@ import kotlinx.android.synthetic.main.view_dialog_header.view.*
 import mypoli.android.R
 import mypoli.android.common.view.BaseDialogController
 import mypoli.android.common.view.attr
+import mypoli.android.common.view.attrResource
 import mypoli.android.common.view.colorRes
 import mypoli.android.repeatingquest.entity.RepeatingPattern
 import org.threeten.bp.DayOfWeek
@@ -135,6 +136,11 @@ class RepeatingPatternPicker : BaseDialogController {
             val vm = viewModels[position]
             val view = holder.itemView as TextView
             view.text = vm.text
+            if (vm.isSelected) {
+                view.setBackgroundResource(R.drawable.bordered_circle_accent_background)
+            } else {
+                view.setBackgroundResource(attrResource(android.R.attr.selectableItemBackgroundBorderless))
+            }
         }
 
         fun updateAll(viewModels: List<MonthDayViewModel>) {
