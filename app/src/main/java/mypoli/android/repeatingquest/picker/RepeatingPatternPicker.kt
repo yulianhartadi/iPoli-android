@@ -1,4 +1,4 @@
-package mypoli.android.repeatingquest
+package mypoli.android.repeatingquest.picker
 
 import android.os.Bundle
 import android.support.v7.app.AlertDialog
@@ -13,7 +13,7 @@ import android.widget.TextView
 import kotlinx.android.synthetic.main.dialog_repeating_picker.view.*
 import kotlinx.android.synthetic.main.view_dialog_header.view.*
 import mypoli.android.R
-import mypoli.android.common.view.BaseDialogController
+import mypoli.android.common.view.ReduxDialogController
 import mypoli.android.common.view.attr
 import mypoli.android.common.view.attrResource
 import mypoli.android.common.view.colorRes
@@ -26,7 +26,10 @@ import java.util.*
  * Created by Polina Zhelyazkova <polina@ipoli.io>
  * on 2/16/18.
  */
-class RepeatingPatternPicker : BaseDialogController {
+class RepeatingPatternPicker :
+    ReduxDialogController<RepeatingPatternAction, RepeatingPatternViewState, RepeatingPatternReducer> {
+
+    override val reducer = RepeatingPatternReducer
 
     private lateinit var repeatingPattern: RepeatingPattern
     private lateinit var resultListener: (RepeatingPattern) -> Unit
@@ -39,6 +42,10 @@ class RepeatingPatternPicker : BaseDialogController {
     ) : this() {
         this.repeatingPattern = repeatingPattern ?: RepeatingPattern.Daily
         this.resultListener = resultListener
+    }
+
+    override fun render(state: RepeatingPatternViewState, view: View) {
+
     }
 
     override fun onCreateContentView(inflater: LayoutInflater, savedViewState: Bundle?): View {
@@ -65,7 +72,13 @@ class RepeatingPatternPicker : BaseDialogController {
         view.rpMonthDayList.layoutManager = GridLayoutManager(activity, 7)
         view.rpMonthDayList.setHasFixedSize(true)
         view.rpMonthDayList.adapter = MonthDayAdapter(
-            (1..31).map { MonthDayViewModel(it.toString(), Random().nextBoolean(), it) }
+            (1..31).map {
+                MonthDayViewModel(
+                    it.toString(),
+                    Random().nextBoolean(),
+                    it
+                )
+            }
         )
 
         return view
@@ -83,8 +96,8 @@ class RepeatingPatternPicker : BaseDialogController {
             .setNegativeButton(R.string.cancel, null)
             .create()
 
-    override fun onHeaderViewCreated(headerView: View?) {
-        headerView!!.dialogHeaderTitle.setText("Pick repeating pattern")
+    override fun onHeaderViewCreated(headerView: View) {
+        headerView.dialogHeaderTitle.text = "Pick repeating pattern"
         headerView.dialogHeaderIcon.setImageResource(R.drawable.logo)
     }
 
