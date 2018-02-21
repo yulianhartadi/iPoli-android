@@ -275,6 +275,7 @@ class HomeViewController(args: Bundle? = null) :
             }
 
             is HomeViewState.PlayerChanged -> {
+                view.drawerPlayerGems.text = state.gemsText
                 view.drawerPlayerCoins.text = state.lifeCoinsText
                 view.drawerCurrentExperience.text = state.experienceText
 
@@ -303,11 +304,14 @@ class HomeViewController(args: Bundle? = null) :
         return stringRes(R.string.player_level, level, titleText)
     }
 
-    private val HomeViewState.PlayerChanged.experienceText
-        get() = stringRes(R.string.nav_drawer_player_xp, formatValue(experience))
+    private val HomeViewState.PlayerChanged.gemsText
+        get() = formatValue(gems.toLong())
 
     private val HomeViewState.PlayerChanged.lifeCoinsText
         get() = formatValue(lifeCoins.toLong())
+
+    private val HomeViewState.PlayerChanged.experienceText
+        get() = formatValue(experience)
 
     private fun formatValue(value: Long): String {
         val valString = value.toString()
