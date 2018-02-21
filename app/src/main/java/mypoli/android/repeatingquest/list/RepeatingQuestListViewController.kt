@@ -8,6 +8,8 @@ import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import com.bluelinelabs.conductor.RouterTransaction
+import com.bluelinelabs.conductor.changehandler.FadeChangeHandler
 import com.mikepenz.iconics.IconicsDrawable
 import com.mikepenz.iconics.typeface.IIcon
 import kotlinx.android.synthetic.main.controller_repeating_quest_list.view.*
@@ -15,6 +17,7 @@ import kotlinx.android.synthetic.main.item_repeating_quest.view.*
 import mypoli.android.R
 import mypoli.android.common.redux.android.ReduxViewController
 import mypoli.android.common.view.*
+import mypoli.android.repeatingquest.show.RepeatingQuestViewController
 
 /**
  * Created by Polina Zhelyazkova <polina@ipoli.io>
@@ -41,6 +44,7 @@ class RepeatingQuestListViewController(args: Bundle? = null) :
         view.repeatingQuestList.adapter = RepeatingQuestAdapter(
             listOf(
                 RepeatingQuestViewModel(
+                    "",
                     "Workout",
                     AndroidIcon.BUS.icon,
                     AndroidColor.GREEN.color500,
@@ -49,6 +53,7 @@ class RepeatingQuestListViewController(args: Bundle? = null) :
                     3
                 ),
                 RepeatingQuestViewModel(
+                    "",
                     "Run",
                     AndroidIcon.BIKE.icon,
                     AndroidColor.BLUE.color500,
@@ -57,6 +62,7 @@ class RepeatingQuestListViewController(args: Bundle? = null) :
                     5
                 ),
                 RepeatingQuestViewModel(
+                    "",
                     "Cook",
                     AndroidIcon.ACADEMIC.icon,
                     AndroidColor.DEEP_ORANGE.color500,
@@ -73,6 +79,7 @@ class RepeatingQuestListViewController(args: Bundle? = null) :
     }
 
     data class RepeatingQuestViewModel(
+        val id: String,
         val name: String,
         val icon: IIcon,
         @ColorRes val color: Int,
@@ -109,6 +116,15 @@ class RepeatingQuestListViewController(args: Bundle? = null) :
             view.rqProgress.text = "${vm.completedCount}/${vm.allCount}"
             view.rqProgressBar.progressTintList = ColorStateList.valueOf(colorRes(vm.color))
             view.rqProgressBar.tickMarkTintList = ColorStateList.valueOf(colorRes(vm.color))
+
+            view.setOnClickListener {
+                val changeHandler = FadeChangeHandler()
+                rootRouter.pushController(
+                    RouterTransaction.with(RepeatingQuestViewController(vm.id))
+                        .popChangeHandler(changeHandler)
+                        .popChangeHandler(changeHandler)
+                )
+            }
 
         }
 

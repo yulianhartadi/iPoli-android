@@ -4,17 +4,26 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import mypoli.android.R
 import mypoli.android.common.redux.android.ReduxViewController
 
 /**
  * Created by Venelin Valkov <venelin@mypoli.fun>
  * on 02/21/2018.
  */
-class RepeatingQuestViewController(args: Bundle? = null) :
-    ReduxViewController<RepeatingQuestAction, RepeatingQuestViewState, RepeatingQuestReducer>(args) {
+class RepeatingQuestViewController :
+    ReduxViewController<RepeatingQuestAction, RepeatingQuestViewState, RepeatingQuestReducer> {
 
-    override fun render(state: RepeatingQuestViewState, view: View) {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    override val reducer = RepeatingQuestReducer
+
+    private lateinit var repeatingQuestId: String
+
+    constructor(args: Bundle? = null) : super(args)
+
+    constructor(
+        repeatingQuestId: String
+    ) : this() {
+        this.repeatingQuestId = repeatingQuestId
     }
 
     override fun onCreateView(
@@ -22,8 +31,14 @@ class RepeatingQuestViewController(args: Bundle? = null) :
         container: ViewGroup,
         savedViewState: Bundle?
     ): View {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        val view = inflater.inflate(
+            R.layout.controller_repeating_quest,
+            container,
+            false
+        )
+        return view
     }
 
-    override val reducer = RepeatingQuestReducer
+    override fun render(state: RepeatingQuestViewState, view: View) {
+    }
 }

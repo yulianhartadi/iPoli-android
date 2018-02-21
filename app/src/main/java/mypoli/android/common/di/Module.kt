@@ -64,6 +64,7 @@ import mypoli.android.reminder.view.formatter.TimeUnitFormatter
 import mypoli.android.reminder.view.picker.ReminderPickerDialogPresenter
 import mypoli.android.repeatingquest.list.RepeatingQuestListReducer
 import mypoli.android.repeatingquest.picker.RepeatingPatternReducer
+import mypoli.android.repeatingquest.show.RepeatingQuestReducer
 import mypoli.android.store.GemStorePresenter
 import mypoli.android.store.theme.ThemeStorePresenter
 import mypoli.android.store.theme.usecase.BuyThemeUseCase
@@ -517,7 +518,8 @@ class AndroidStateStoreModule : StateStoreModule, Injects<Module> {
                 RepeatingQuestListReducer,
                 ChallengeListForCategoryReducer,
                 GemInventoryReducer,
-                RepeatingPatternReducer
+                RepeatingPatternReducer,
+                RepeatingQuestReducer
             ),
             sideEffects = setOf(
                 LoadAllDataSideEffect(),
