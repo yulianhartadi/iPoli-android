@@ -5,6 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
+
     <TextView
         android:id="@+id/rpEvery"
         android:layout_width="wrap_content"
@@ -22,14 +23,14 @@
     <Spinner
         android:id="@+id/rpFrequency"
         style="@style/Widget.AppCompat.Spinner.DropDown"
-        android:background="@drawable/bordered_accent_background"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
+        android:background="@drawable/bordered_accent_background"
         android:dropDownWidth="wrap_content"
+        android:entries="@array/repeating_quest_frequencies"
         android:paddingEnd="4dp"
         android:paddingStart="4dp"
-        android:entries="@array/repeating_quest_frequencies"
         app:layout_constraintBottom_toBottomOf="@+id/rpEvery"
         app:layout_constraintStart_toEndOf="@+id/rpEvery"
         app:layout_constraintTop_toTopOf="@+id/rpEvery" />
@@ -89,105 +90,28 @@
         app:layout_constraintTop_toTopOf="@+id/rpEvery"
         tools:text="times" />
 
-    <!--<Button-->
-        <!--android:id="@+id/button2"-->
-        <!--android:layout_width="42dp"-->
-        <!--android:layout_height="42dp"-->
-        <!--android:layout_marginStart="8dp"-->
-        <!--android:layout_marginTop="32dp"-->
-        <!--android:background="@drawable/circle_accent"-->
-        <!--android:text="M"-->
-        <!--android:textAppearance="@style/TextAppearance.AppCompat.Title"-->
-        <!--android:textColor="@color/md_white"-->
-        <!--app:layout_constraintEnd_toStartOf="@+id/button4"-->
-        <!--app:layout_constraintHorizontal_bias="0.5"-->
-        <!--app:layout_constraintStart_toStartOf="parent"-->
-        <!--app:layout_constraintTop_toBottomOf="@+id/rpEvery" />-->
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/rpWeekDayList"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="8dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="24dp"
+        android:visibility="invisible"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/rpEvery" />
 
-    <!--<Button-->
-        <!--android:id="@+id/button3"-->
-        <!--android:layout_width="42dp"-->
-        <!--android:layout_height="42dp"-->
-        <!--android:layout_marginEnd="8dp"-->
-        <!--android:layout_marginTop="32dp"-->
-        <!--android:background="@drawable/circle_normal"-->
-        <!--android:text="S"-->
-        <!--android:textAppearance="@style/TextAppearance.AppCompat.Title"-->
-        <!--android:textColor="?attr/colorAccent"-->
-        <!--app:layout_constraintEnd_toEndOf="parent"-->
-        <!--app:layout_constraintHorizontal_bias="0.5"-->
-        <!--app:layout_constraintStart_toEndOf="@+id/button8"-->
-        <!--app:layout_constraintTop_toBottomOf="@+id/rpEvery" />-->
-
-    <!--<Button-->
-        <!--android:id="@+id/button8"-->
-        <!--android:layout_width="42dp"-->
-        <!--android:layout_height="42dp"-->
-        <!--android:layout_marginTop="32dp"-->
-        <!--android:background="@drawable/circle_normal"-->
-        <!--android:text="S"-->
-        <!--android:textAppearance="@style/TextAppearance.AppCompat.Title"-->
-        <!--android:textColor="?attr/colorAccent"-->
-        <!--app:layout_constraintEnd_toStartOf="@+id/button3"-->
-        <!--app:layout_constraintHorizontal_bias="0.5"-->
-        <!--app:layout_constraintStart_toEndOf="@+id/button7"-->
-        <!--app:layout_constraintTop_toBottomOf="@+id/rpEvery" />-->
-
-    <!--<Button-->
-        <!--android:id="@+id/button7"-->
-        <!--android:layout_width="42dp"-->
-        <!--android:layout_height="42dp"-->
-        <!--android:layout_marginTop="32dp"-->
-        <!--android:background="@drawable/circle_normal"-->
-        <!--android:text="F"-->
-        <!--android:textAppearance="@style/TextAppearance.AppCompat.Title"-->
-        <!--android:textColor="?attr/colorAccent"-->
-        <!--app:layout_constraintEnd_toStartOf="@+id/button8"-->
-        <!--app:layout_constraintHorizontal_bias="0.5"-->
-        <!--app:layout_constraintStart_toEndOf="@+id/button6"-->
-        <!--app:layout_constraintTop_toBottomOf="@+id/rpEvery" />-->
-
-    <!--<Button-->
-        <!--android:id="@+id/button6"-->
-        <!--android:layout_width="42dp"-->
-        <!--android:layout_height="42dp"-->
-        <!--android:layout_marginTop="32dp"-->
-        <!--android:background="@drawable/circle_normal"-->
-        <!--android:text="T"-->
-        <!--android:textAppearance="@style/TextAppearance.AppCompat.Title"-->
-        <!--android:textColor="?attr/colorAccent"-->
-        <!--app:layout_constraintEnd_toStartOf="@+id/button7"-->
-        <!--app:layout_constraintHorizontal_bias="0.5"-->
-        <!--app:layout_constraintStart_toEndOf="@+id/button5"-->
-        <!--app:layout_constraintTop_toBottomOf="@+id/rpEvery" />-->
-
-    <!--<Button-->
-        <!--android:id="@+id/button5"-->
-        <!--android:layout_width="42dp"-->
-        <!--android:layout_height="42dp"-->
-        <!--android:layout_marginTop="32dp"-->
-        <!--android:background="@drawable/circle_normal"-->
-        <!--android:text="W"-->
-        <!--android:textAppearance="@style/TextAppearance.AppCompat.Title"-->
-        <!--android:textColor="?attr/colorAccent"-->
-        <!--app:layout_constraintEnd_toStartOf="@+id/button6"-->
-        <!--app:layout_constraintHorizontal_bias="0.5"-->
-        <!--app:layout_constraintStart_toEndOf="@+id/button4"-->
-        <!--app:layout_constraintTop_toBottomOf="@+id/rpEvery" />-->
-
-    <!--<Button-->
-        <!--android:id="@+id/button4"-->
-        <!--android:layout_width="42dp"-->
-        <!--android:layout_height="42dp"-->
-        <!--android:layout_marginTop="32dp"-->
-        <!--android:background="@drawable/circle_accent"-->
-        <!--android:text="T"-->
-        <!--android:textAppearance="@style/TextAppearance.AppCompat.Title"-->
-        <!--android:textColor="@color/md_white"-->
-        <!--app:layout_constraintEnd_toStartOf="@+id/button5"-->
-        <!--app:layout_constraintHorizontal_bias="0.5"-->
-        <!--app:layout_constraintStart_toEndOf="@+id/button2"-->
-        <!--app:layout_constraintTop_toBottomOf="@+id/rpEvery" />-->
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/rpMonthDayList"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="8dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="24dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/rpEvery" />
 
     <TextView
         android:id="@+id/rpMessage"
@@ -205,7 +129,7 @@
         android:textAppearance="@style/TextAppearance.AppCompat.Body1"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/rpWeekDayList" />
+        app:layout_constraintTop_toBottomOf="@+id/messageTopBarrier" />
 
     <TextView
         android:id="@+id/textView5"
@@ -262,14 +186,11 @@
         app:layout_constraintTop_toBottomOf="@+id/rpStart"
         tools:text="End of time" />
 
-    <android.support.v7.widget.RecyclerView
-        android:id="@+id/rpWeekDayList"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginEnd="8dp"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="24dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/rpEvery" />
+    <android.support.constraint.Barrier
+        android:id="@+id/messageTopBarrier"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        app:barrierDirection="bottom"
+        app:constraint_referenced_ids="rpMonthDayList,rpWeekDayList" />
+
 </android.support.constraint.ConstraintLayout>

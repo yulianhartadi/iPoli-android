@@ -2,12 +2,14 @@ package mypoli.android.repeatingquest
 
 import android.os.Bundle
 import android.support.v7.app.AlertDialog
+import android.support.v7.widget.GridLayoutManager
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
+import android.widget.TextView
 import kotlinx.android.synthetic.main.dialog_repeating_picker.view.*
 import kotlinx.android.synthetic.main.view_dialog_header.view.*
 import mypoli.android.R
@@ -58,6 +60,13 @@ class RepeatingPatternPicker : BaseDialogController {
                 )
             }
         )
+
+        view.rpMonthDayList.layoutManager = GridLayoutManager(activity, 7)
+        view.rpMonthDayList.setHasFixedSize(true)
+        view.rpMonthDayList.adapter = MonthDayAdapter(
+            (1..31).map { MonthDayViewModel(it.toString(), Random().nextBoolean(), it) }
+        )
+
         return view
     }
 
@@ -81,10 +90,10 @@ class RepeatingPatternPicker : BaseDialogController {
     data class WeekDayViewModel(val text: String, val isSelected: Boolean, val weekDay: DayOfWeek)
 
     inner class WeekDayAdapter(private var viewModels: List<WeekDayViewModel>) :
-        RecyclerView.Adapter<WeekDayAdapter.ViewHolder>() {
+        RecyclerView.Adapter<ViewHolder>() {
         override fun getItemCount() = viewModels.size
 
-        override fun onBindViewHolder(holder: WeekDayAdapter.ViewHolder, position: Int) {
+        override fun onBindViewHolder(holder: ViewHolder, position: Int) {
             val vm = viewModels[position]
             val button = holder.itemView as Button
             button.text = vm.text
@@ -112,6 +121,36 @@ class RepeatingPatternPicker : BaseDialogController {
                 )
             )
 
-        inner class ViewHolder(view: View) : RecyclerView.ViewHolder(view)
     }
+
+    inner class ViewHolder(view: View) : RecyclerView.ViewHolder(view)
+
+    data class MonthDayViewModel(val text: String, val isSelected: Boolean, val day: Int)
+
+    inner class MonthDayAdapter(private var viewModels: List<MonthDayViewModel>) :
+        RecyclerView.Adapter<ViewHolder>() {
+        override fun getItemCount() = viewModels.size
+
+        override fun onBindViewHolder(holder: ViewHolder, position: Int) {
+            val vm = viewModels[position]
+            val view = holder.itemView as TextView
+            view.text = vm.text
+        }
+
+        fun updateAll(viewModels: List<MonthDayViewModel>) {
+            this.viewModels = viewModels
+            notifyDataSetChanged()
+        }
+
+        override fun onCreateViewHolder(parent: ViewGroup, viewType: Int) =
+            ViewHolder(
+                LayoutInflater.from(parent.context).inflate(
+                    R.layout.item_repeating_pattern_month_day,
+                    parent,
+                    false
+                )
+            )
+
+    }
+
 }
