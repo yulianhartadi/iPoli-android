@@ -183,9 +183,8 @@ abstract class ReduxDialogController<A : Action, VS : ViewState, out R : ViewSta
         return View(activity)
     }
 
-    protected open fun createHeaderView(inflater: LayoutInflater): View {
-        return inflater.inflate(mypoli.android.R.layout.view_dialog_header, null)
-    }
+    protected open fun createHeaderView(inflater: LayoutInflater): View =
+        inflater.inflate(mypoli.android.R.layout.view_dialog_header, null)
 
     protected open fun onHeaderViewCreated(headerView: View) {
 

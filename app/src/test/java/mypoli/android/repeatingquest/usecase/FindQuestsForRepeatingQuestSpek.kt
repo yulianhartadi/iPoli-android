@@ -15,11 +15,12 @@ import org.amshove.kluent.*
 import org.jetbrains.spek.api.Spek
 import org.jetbrains.spek.api.dsl.describe
 import org.jetbrains.spek.api.dsl.it
-import org.jetbrains.spek.api.dsl.xit
 import org.threeten.bp.DayOfWeek
 import org.threeten.bp.LocalDate
 import org.threeten.bp.Month
 import org.threeten.bp.temporal.TemporalAdjusters
+import org.threeten.bp.temporal.WeekFields
+import java.util.*
 
 /**
  * Created by Venelin Valkov <venelin@mypoli.fun>
@@ -440,7 +441,7 @@ class FindQuestsForRepeatingQuestSpek : Spek({
                     }
                 }
 
-                xit("should schedule quests in different weeks") {
+                it("should schedule quests in different weeks") {
                     val possibleWeekDays = setOf(
                         DayOfWeek.WEDNESDAY,
                         DayOfWeek.FRIDAY
@@ -465,7 +466,8 @@ class FindQuestsForRepeatingQuestSpek : Spek({
                         }
                         val first = quests.first().scheduledDate
                         val second = quests[1].scheduledDate
-                        first.dayOfWeek.`should not be`(second.dayOfWeek)
+                        val woy = WeekFields.of(Locale.getDefault()).weekOfWeekBasedYear()
+                        first.get(woy).`should not be`(second.get(woy))
                     }
                 }
 
