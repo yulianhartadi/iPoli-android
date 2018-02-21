@@ -67,7 +67,7 @@
                     android:id="@+id/drawerPlayerCoins"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="8dp"
+                    android:layout_marginStart="12dp"
                     android:drawablePadding="4dp"
                     android:drawableStart="@drawable/ic_life_coin_24dp"
                     android:gravity="center_vertical"
