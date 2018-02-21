@@ -118,16 +118,16 @@ class CompletedQuestViewController :
                 view.level.text = "Lvl ${state.playerLevel!!}"
 
                 view.levelProgress.backgroundTintList =
-                    ColorStateList.valueOf(attr(R.attr.colorAccent))
+                    ColorStateList.valueOf(attrData(R.attr.colorAccent))
 
                 view.levelProgress.progressTintList =
                     ColorStateList.valueOf(
-                        lighten(attr(R.attr.colorAccent), 0.6f)
+                        lighten(attrData(R.attr.colorAccent), 0.6f)
                     )
 
                 view.levelProgress.secondaryProgressTintList =
                     ColorStateList.valueOf(
-                        lighten(attr(R.attr.colorAccent), 0.3f)
+                        lighten(attrData(R.attr.colorAccent), 0.3f)
                     )
 
                 view.levelProgress.max = state.playerLevelMaxProgress!!

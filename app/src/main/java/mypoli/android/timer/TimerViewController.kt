@@ -52,7 +52,7 @@ class TimerViewController :
 
         val icon = IconicsDrawable(view.context)
             .icon(Ionicons.Icon.ion_android_done)
-            .color(attr(R.attr.colorAccent))
+            .color(attrData(R.attr.colorAccent))
             .sizeDp(22)
 
         view.complete.setImageDrawable(icon)
@@ -63,14 +63,14 @@ class TimerViewController :
 
         val minusIcon = IconicsDrawable(view.context)
             .icon(Ionicons.Icon.ion_minus)
-            .color(attr(R.attr.colorAccent))
+            .color(attrData(R.attr.colorAccent))
             .sizeDp(22)
 
         view.removePomodoro.setImageDrawable(minusIcon)
 
         val addIcon = IconicsDrawable(view.context)
             .icon(Ionicons.Icon.ion_plus)
-            .color(attr(R.attr.colorAccent))
+            .color(attrData(R.attr.colorAccent))
             .sizeDp(22)
 
         view.addPomodoro.setImageDrawable(addIcon)
@@ -250,7 +250,7 @@ class TimerViewController :
 
         val icon = IconicsDrawable(button.context)
             .icon(iconImage)
-            .color(attr(R.attr.colorAccent))
+            .color(attrData(R.attr.colorAccent))
             .sizeDp(22)
 
         button.setImageDrawable(icon)
@@ -330,7 +330,7 @@ class TimerViewController :
             }
 
             PomodoroProgress.COMPLETE_WORK -> {
-                progressDrawable.setColor(attr(R.attr.colorAccent))
+                progressDrawable.setColor(attrData(R.attr.colorAccent))
             }
 
             PomodoroProgress.INCOMPLETE_SHORT_BREAK -> {
@@ -339,7 +339,7 @@ class TimerViewController :
             }
 
             PomodoroProgress.COMPLETE_SHORT_BREAK -> {
-                progressDrawable.setColor(attr(R.attr.colorAccent))
+                progressDrawable.setColor(attrData(R.attr.colorAccent))
                 progressView.setScale(0.5f)
             }
 
@@ -349,7 +349,7 @@ class TimerViewController :
             }
 
             PomodoroProgress.COMPLETE_LONG_BREAK -> {
-                progressDrawable.setColor(attr(R.attr.colorAccent))
+                progressDrawable.setColor(attrData(R.attr.colorAccent))
                 progressView.setScale(0.75f)
             }
         }

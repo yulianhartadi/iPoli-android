@@ -188,8 +188,8 @@ class ScheduleViewController(args: Bundle? = null) :
         val duration = view!!.resources.getInteger(android.R.integer.config_shortAnimTime).toLong()
         val fabTranslation = ObjectAnimator.ofFloat(fab, "x", x)
 
-        val fabColor = attr(R.attr.colorAccent)
-        val primaryColor = attr(R.attr.colorPrimary)
+        val fabColor = attrData(R.attr.colorAccent)
+        val primaryColor = attrData(R.attr.colorPrimary)
 
         val startColor = if (reverse) primaryColor else fabColor
         val endColor = if (reverse) fabColor else primaryColor
@@ -214,7 +214,7 @@ class ScheduleViewController(args: Bundle? = null) :
     private fun initDayPicker(view: View, calendarToolbar: ViewGroup) {
         view.datePickerContainer.visibility = View.GONE
 
-        view.datePicker.setMarkedStyle(MarkStyle.BACKGROUND, attr(R.attr.colorAccent))
+        view.datePicker.setMarkedStyle(MarkStyle.BACKGROUND, attrData(R.attr.colorAccent))
 
         val currentDate = LocalDate.now()
 

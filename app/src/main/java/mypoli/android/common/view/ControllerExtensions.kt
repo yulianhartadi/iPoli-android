@@ -49,13 +49,13 @@ fun Controller.pushWithRootRouter(transaction: RouterTransaction) =
 
 val Controller.rootRouter get() = (activity!! as MainActivity).rootRouter
 
-fun Controller.attr(@AttrRes attributeRes: Int) =
+fun Controller.attrData(@AttrRes attributeRes: Int) =
     TypedValue().let {
         activity!!.theme.resolveAttribute(attributeRes, it, true)
         it.data
     }
 
-fun Controller.attrResource(@AttrRes attributeRes: Int) =
+fun Controller.attrResourceId(@AttrRes attributeRes: Int) =
     TypedValue().let {
         activity!!.theme.resolveAttribute(attributeRes, it, true)
         it.resourceId

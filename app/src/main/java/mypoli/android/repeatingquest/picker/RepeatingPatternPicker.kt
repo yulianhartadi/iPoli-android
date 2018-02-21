@@ -17,8 +17,8 @@ import kotlinx.android.synthetic.main.dialog_repeating_picker.view.*
 import kotlinx.android.synthetic.main.view_dialog_header.view.*
 import mypoli.android.R
 import mypoli.android.common.view.ReduxDialogController
-import mypoli.android.common.view.attr
-import mypoli.android.common.view.attrResource
+import mypoli.android.common.view.attrData
+import mypoli.android.common.view.attrResourceId
 import mypoli.android.common.view.colorRes
 import mypoli.android.repeatingquest.entity.RepeatingPattern
 import org.threeten.bp.DayOfWeek
@@ -171,7 +171,7 @@ class RepeatingPatternPicker :
             val (background, textColor) = if (vm.isSelected)
                 Pair(R.drawable.circle_accent, colorRes(R.color.md_white))
             else
-                Pair(R.drawable.circle_normal, attr(R.attr.colorAccent))
+                Pair(R.drawable.circle_normal, attrData(R.attr.colorAccent))
 
             button.setBackgroundResource(background)
             button.setTextColor(textColor)
@@ -209,7 +209,7 @@ class RepeatingPatternPicker :
             if (vm.isSelected) {
                 view.setBackgroundResource(R.drawable.bordered_circle_accent_background)
             } else {
-                view.setBackgroundResource(attrResource(android.R.attr.selectableItemBackgroundBorderless))
+                view.setBackgroundResource(attrResourceId(android.R.attr.selectableItemBackgroundBorderless))
             }
         }
 
@@ -235,7 +235,7 @@ class RepeatingPatternPicker :
             val (background, textColor) = if (isSelected)
                 Pair(R.drawable.circle_accent, colorRes(R.color.md_white))
             else
-                Pair(R.drawable.circle_normal, attr(R.attr.colorAccent))
+                Pair(R.drawable.circle_normal, attrData(R.attr.colorAccent))
             RepeatingPatternPicker.WeekDayViewModel(
                 text = it.name.first().toString().toUpperCase(),
                 background = background,

@@ -81,7 +81,7 @@ class PersonalizeChallengeViewController :
 
     override fun onDetach(view: View) {
         val window = activity!!.window
-        window.statusBarColor = attr(R.attr.colorPrimaryDark)
+        window.statusBarColor = attrData(R.attr.colorPrimaryDark)
         super.onDetach(view)
     }
 
