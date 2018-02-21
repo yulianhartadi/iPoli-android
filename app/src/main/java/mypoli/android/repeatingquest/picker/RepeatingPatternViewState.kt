@@ -34,7 +34,9 @@ object RepeatingPatternReducer : BaseViewStateReducer<RepeatingPatternViewState>
                 subState.copy(
                     type = typeFor(pattern),
                     repeatingPattern = pattern,
-                    selectedFrequencyIndex = frequencyIndexFor(pattern)
+                    selectedFrequencyIndex = frequencyIndexFor(pattern),
+                    count = countFor(pattern),
+                    selectedWeekDays = selectedWeekDaysFor(pattern)
                 )
             }
 
@@ -43,7 +45,9 @@ object RepeatingPatternReducer : BaseViewStateReducer<RepeatingPatternViewState>
                 subState.copy(
                     type = typeFor(pattern),
                     repeatingPattern = pattern,
-                    selectedFrequencyIndex = frequencyIndexFor(pattern)
+                    selectedFrequencyIndex = frequencyIndexFor(pattern),
+                    count = countFor(pattern),
+                    selectedWeekDays = selectedWeekDaysFor(pattern)
                 )
             }
 
@@ -81,11 +85,34 @@ object RepeatingPatternReducer : BaseViewStateReducer<RepeatingPatternViewState>
             is RepeatingPattern.Yearly -> 3
         }
 
+    private fun countFor(pattern: RepeatingPattern): Int {
+        val count = when (pattern) {
+            RepeatingPattern.Daily -> 1
+            is RepeatingPattern.Weekly -> pattern.daysOfWeek.size
+            is RepeatingPattern.Flexible.Weekly -> pattern.timesPerWeek
+            is RepeatingPattern.Monthly -> pattern.daysOfMonth.size
+            is RepeatingPattern.Flexible.Monthly -> pattern.timesPerMonth
+            is RepeatingPattern.Yearly -> 1
+        }
+
+        return Math.max(count, 1)
+    }
+
+    private fun selectedWeekDaysFor(pattern: RepeatingPattern): Set<DayOfWeek> =
+        when (pattern) {
+            is RepeatingPattern.Weekly -> pattern.daysOfWeek
+            is RepeatingPattern.Flexible.Weekly -> pattern.preferredDays
+            else -> setOf()
+        }
+
+
     override fun defaultState() =
         RepeatingPatternViewState(
             LOADING,
             RepeatingPattern.Daily,
-            selectedFrequencyIndex = 0
+            selectedFrequencyIndex = 0,
+            count = 0,
+            selectedWeekDays = setOf()
         )
 
 }
@@ -93,7 +120,9 @@ object RepeatingPatternReducer : BaseViewStateReducer<RepeatingPatternViewState>
 data class RepeatingPatternViewState(
     val type: RepeatingPatternViewState.StateType,
     val repeatingPattern: RepeatingPattern,
-    val selectedFrequencyIndex: Int
+    val selectedFrequencyIndex: Int,
+    val count: Int,
+    val selectedWeekDays: Set<DayOfWeek>
     ) : ViewState {
     enum class StateType {
         LOADING,
@@ -103,60 +132,3 @@ data class RepeatingPatternViewState(
         SHOW_YEARLY
     }
 }
-
-val RepeatingPatternViewState.count: Int
-    get() {
-        return when (repeatingPattern) {
-            RepeatingPattern.Daily -> 1
-            is RepeatingPattern.Weekly -> repeatingPattern.daysOfWeek.size
-            is RepeatingPattern.Flexible.Weekly -> repeatingPattern.timesPerWeek
-            is RepeatingPattern.Monthly -> repeatingPattern.daysOfMonth.size
-            is RepeatingPattern.Flexible.Monthly -> repeatingPattern.timesPerMonth
-            is RepeatingPattern.Yearly -> 1
-        }
-    }
-
-val RepeatingPatternViewState.showWeekDays: Boolean
-    get() {
-        return when (repeatingPattern) {
-            RepeatingPattern.Daily -> false
-            is RepeatingPattern.Weekly -> true
-            is RepeatingPattern.Flexible.Weekly -> true
-            is RepeatingPattern.Monthly -> false
-            is RepeatingPattern.Flexible.Monthly -> false
-            is RepeatingPattern.Yearly -> false
-        }
-    }
-
-val RepeatingPatternViewState.showMonthDays: Boolean
-    get() {
-        return when (repeatingPattern) {
-            RepeatingPattern.Daily -> false
-            is RepeatingPattern.Weekly -> false
-            is RepeatingPattern.Flexible.Weekly -> false
-            is RepeatingPattern.Monthly -> true
-            is RepeatingPattern.Flexible.Monthly -> true
-            is RepeatingPattern.Yearly -> false
-        }
-    }
-
-val RepeatingPatternViewState.showYearDay: Boolean
-    get() {
-        return when (repeatingPattern) {
-            RepeatingPattern.Daily -> false
-            is RepeatingPattern.Weekly -> false
-            is RepeatingPattern.Flexible.Weekly -> false
-            is RepeatingPattern.Monthly -> false
-            is RepeatingPattern.Flexible.Monthly -> false
-            is RepeatingPattern.Yearly -> true
-        }
-    }
-
-val RepeatingPatternViewState.selectedWeekDays: Set<DayOfWeek>
-    get() {
-        return when (repeatingPattern) {
-            is RepeatingPattern.Weekly -> repeatingPattern.daysOfWeek
-            is RepeatingPattern.Flexible.Weekly -> repeatingPattern.preferredDays
-            else -> setOf()
-        }
-    }
