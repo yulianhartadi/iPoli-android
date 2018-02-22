@@ -75,7 +75,6 @@ class RepeatingPatternPicker :
         RepeatingPatternAction.LoadData(repeatingPattern)
 
     override fun render(state: RepeatingPatternViewState, view: View) {
-        val count = state.count.toString()
         when (state.type) {
             RepeatingPatternViewState.StateType.SHOW_DAILY -> {
                 ViewUtils.goneViews(
@@ -97,8 +96,9 @@ class RepeatingPatternPicker :
                     view.countGroup
                 )
 
-                view.rpCount.setText(count)
-                view.rpCount.setSelection(count.length)
+                val weekCount = state.weekCount.toString()
+                view.rpCount.setText(weekCount)
+                view.rpCount.setSelection(weekCount.length)
 
                 (view.rpWeekDayList.adapter as WeekDayAdapter).updateAll(
                     state.weekDaysViewModels(
@@ -117,6 +117,11 @@ class RepeatingPatternPicker :
                     view.rpMonthDayList,
                     view.countGroup
                 )
+
+                val monthCount = state.monthCount.toString()
+                view.rpCount.setText(monthCount)
+                view.rpCount.setSelection(monthCount.length)
+
                 setupFrequencies(view, state)
             }
 
