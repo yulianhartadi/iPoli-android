@@ -19,11 +19,9 @@ import kotlinx.android.synthetic.main.dialog_repeating_picker.view.*
 import kotlinx.android.synthetic.main.popup_rate.view.*
 import mypoli.android.R
 import mypoli.android.common.ViewUtils
+import mypoli.android.common.datetime.DateUtils
 import mypoli.android.common.text.DateFormatter
-import mypoli.android.common.view.ReduxDialogController
-import mypoli.android.common.view.attrData
-import mypoli.android.common.view.attrResourceId
-import mypoli.android.common.view.colorRes
+import mypoli.android.common.view.*
 import mypoli.android.repeatingquest.entity.RepeatingPattern
 import mypoli.android.repeatingquest.picker.RepeatingPatternViewState.StateType.*
 import org.threeten.bp.DayOfWeek
@@ -62,6 +60,7 @@ class RepeatingPatternPicker :
         view.rpMonthDayList.layoutManager = GridLayoutManager(activity, 7)
         view.rpMonthDayList.setHasFixedSize(true)
         view.rpMonthDayList.adapter = MonthDayAdapter()
+
         return view
     }
 
@@ -70,76 +69,18 @@ class RepeatingPatternPicker :
 
     override fun render(state: RepeatingPatternViewState, view: View) {
         when (state.type) {
-            SHOW_DAILY -> {
-                ViewUtils.goneViews(
-                    view.rpWeekDayList,
-                    view.rpMonthDayList,
-                    view.yearlyPatternGroup,
-                    view.countGroup
-                )
-                renderFrequencies(view, state)
-                renderMessage(view, state)
+            DATA_LOADED -> {
+                renderStartDate(view, state)
+                initStartDateListener(view, state)
+
+                renderEndDate(view, state)
+                initEndDateListener(view, state)
+
+                renderForFrequencyType(state, view)
             }
 
-            SHOW_WEEKLY -> {
-                ViewUtils.goneViews(
-                    view.rpMonthDayList,
-                    view.yearlyPatternGroup
-                )
-                ViewUtils.showViews(
-                    view.rpWeekDayList,
-                    view.countGroup
-                )
-
-                renderFrequencies(view, state)
-                renderWeekDaysCount(view, state)
-                renderWeekDays(view, state)
-                renderMessage(view, state)
-            }
-
-            SHOW_MONTHLY -> {
-                ViewUtils.goneViews(
-                    view.rpWeekDayList,
-                    view.yearlyPatternGroup
-                )
-                ViewUtils.showViews(
-                    view.rpMonthDayList,
-                    view.countGroup
-                )
-
-                renderFrequencies(view, state)
-                renderMonthDaysCount(view, state)
-                renderMonthDays(view, state)
-                renderMessage(view, state)
-            }
-
-            SHOW_YEARLY -> {
-                ViewUtils.goneViews(
-                    view.rpWeekDayList,
-                    view.rpMonthDayList,
-                    view.countGroup
-                )
-                ViewUtils.showViews(
-                    view.yearlyPatternGroup
-                )
-
-                renderFrequencies(view, state)
-                renderMessage(view, state)
-
-                view.rpDayOfYear.text = state.formattedDayOfYear
-                view.rpDayOfYear.setOnClickListener {
-                    val date = state.dayOfYear
-                    DatePickerDialog(
-                        view.context, R.style.Theme_myPoli_AlertDialog,
-                        DatePickerDialog.OnDateSetListener { _, year, month, dayOfMonth ->
-                            dispatch(
-                                RepeatingPatternAction.ChangeDayOfYear(
-                                    LocalDate.of(year, month + 1, dayOfMonth)
-                                )
-                            )
-                        }, date.year, date.month.value - 1, date.dayOfMonth
-                    ).show()
-                }
+            FREQUENCY_CHANGED -> {
+                renderForFrequencyType(state, view)
             }
 
             WEEK_DAYS_CHANGED -> {
@@ -157,9 +98,186 @@ class RepeatingPatternPicker :
             }
 
             YEAR_DAY_CHANGED -> {
-                view.rpDayOfYear.text = state.formattedDayOfYear
+                renderDayOfYear(view, state)
+            }
+
+            START_DATE_CHANGED -> {
+                renderStartDate(view, state)
+            }
+
+            END_DATE_CHANGED -> {
+                renderEndDate(view, state)
+            }
+
+            PATTERN_CREATED -> {
+                resultListener(state.resultPattern!!)
+                dismissDialog()
             }
         }
+    }
+
+    private fun renderDayOfYear(
+        view: View,
+        state: RepeatingPatternViewState
+    ) {
+        view.rpDayOfYear.text = state.formattedDayOfYear
+    }
+
+    private fun initEndDateListener(
+        view: View,
+        state: RepeatingPatternViewState
+    ) {
+        view.rpEnd.setOnClickListener {
+            val date = state.pickerEndDate
+            val datePickerDialog = DatePickerDialog(
+                view.context, R.style.Theme_myPoli_AlertDialog,
+                DatePickerDialog.OnDateSetListener { _, year, month, dayOfMonth ->
+                    dispatch(
+                        RepeatingPatternAction.ChangeEndDate(
+                            LocalDate.of(year, month + 1, dayOfMonth)
+                        )
+                    )
+                }, date.year, date.month.value - 1, date.dayOfMonth
+            )
+            datePickerDialog.datePicker.minDate = DateUtils.toMillis(state.startDate.plusDays(1))
+            datePickerDialog.show()
+        }
+    }
+
+    private fun renderEndDate(
+        view: View,
+        state: RepeatingPatternViewState
+    ) {
+        view.rpEnd.text = state.formattedEndDate
+    }
+
+    private fun initStartDateListener(
+        view: View,
+        state: RepeatingPatternViewState
+    ) {
+        view.rpStart.setOnClickListener {
+            val date = state.startDate
+            val datePickerDialog = DatePickerDialog(
+                view.context, R.style.Theme_myPoli_AlertDialog,
+                DatePickerDialog.OnDateSetListener { _, year, month, dayOfMonth ->
+                    dispatch(
+                        RepeatingPatternAction.ChangeStartDate(
+                            LocalDate.of(year, month + 1, dayOfMonth)
+                        )
+                    )
+                }, date.year, date.month.value - 1, date.dayOfMonth
+            )
+            datePickerDialog.datePicker.minDate = DateUtils.toMillis(LocalDate.now())
+            if (state.endDate != null) {
+                datePickerDialog.datePicker.maxDate = DateUtils.toMillis(state.endDate.minusDays(1))
+            }
+            datePickerDialog.show()
+        }
+    }
+
+    private fun renderStartDate(
+        view: View,
+        state: RepeatingPatternViewState
+    ) {
+        view.rpStart.text = state.formattedStartDate
+    }
+
+    private fun renderForFrequencyType(
+        state: RepeatingPatternViewState,
+        view: View
+    ) {
+        when (state.frequencyType) {
+            RepeatingPatternViewState.FrequencyType.DAILY -> renderDaily(view, state)
+            RepeatingPatternViewState.FrequencyType.WEEKLY -> renderWeekly(view, state)
+            RepeatingPatternViewState.FrequencyType.MONTHLY -> renderMonthly(view, state)
+            RepeatingPatternViewState.FrequencyType.YEARLY -> renderYearly(view, state)
+        }
+    }
+
+    private fun renderYearly(
+        view: View,
+        state: RepeatingPatternViewState
+    ) {
+        ViewUtils.goneViews(
+            view.rpWeekDayList,
+            view.rpMonthDayList,
+            view.countGroup
+        )
+        ViewUtils.showViews(
+            view.yearlyPatternGroup
+        )
+
+        renderFrequencies(view, state)
+        renderMessage(view, state)
+
+        renderDayOfYear(view, state)
+
+        view.rpDayOfYear.setOnClickListener {
+            val date = state.dayOfYear
+            val datePickerDialog = DatePickerDialog(
+                view.context, R.style.Theme_myPoli_AlertDialog,
+                DatePickerDialog.OnDateSetListener { _, year, month, dayOfMonth ->
+                    dispatch(
+                        RepeatingPatternAction.ChangeDayOfYear(
+                            LocalDate.of(year, month + 1, dayOfMonth)
+                        )
+                    )
+                }, date.year, date.month.value - 1, date.dayOfMonth
+            )
+            datePickerDialog.show()
+        }
+    }
+
+    private fun renderMonthly(
+        view: View,
+        state: RepeatingPatternViewState
+    ) {
+        ViewUtils.goneViews(
+            view.rpWeekDayList,
+            view.yearlyPatternGroup
+        )
+        ViewUtils.showViews(
+            view.rpMonthDayList,
+            view.countGroup
+        )
+
+        renderFrequencies(view, state)
+        renderMonthDaysCount(view, state)
+        renderMonthDays(view, state)
+        renderMessage(view, state)
+    }
+
+    private fun renderWeekly(
+        view: View,
+        state: RepeatingPatternViewState
+    ) {
+        ViewUtils.goneViews(
+            view.rpMonthDayList,
+            view.yearlyPatternGroup
+        )
+        ViewUtils.showViews(
+            view.rpWeekDayList,
+            view.countGroup
+        )
+
+        renderFrequencies(view, state)
+        renderWeekDaysCount(view, state)
+        renderWeekDays(view, state)
+        renderMessage(view, state)
+    }
+
+    private fun renderDaily(
+        view: View,
+        state: RepeatingPatternViewState
+    ) {
+        ViewUtils.goneViews(
+            view.rpWeekDayList,
+            view.rpMonthDayList,
+            view.yearlyPatternGroup,
+            view.countGroup
+        )
+        renderFrequencies(view, state)
+        renderMessage(view, state)
     }
 
     private fun renderMonthDays(
@@ -283,11 +401,18 @@ class RepeatingPatternPicker :
         savedViewState: Bundle?
     ): AlertDialog =
         dialogBuilder
-            .setPositiveButton("OK", { _, _ ->
-                //                resultListener(repeatingPattern)
-            })
+            .setPositiveButton("OK", null)
             .setNegativeButton(R.string.cancel, null)
             .create()
+
+
+    override fun onDialogCreated(dialog: AlertDialog, contentView: View) {
+        dialog.setOnShowListener {
+            setPositiveButtonListener {
+                dispatch(RepeatingPatternAction.CreatePattern)
+            }
+        }
+    }
 
     override fun onHeaderViewCreated(headerView: View) {
         headerView.dialogHeaderTitle.text = "Pick repeating pattern"
@@ -406,6 +531,17 @@ class RepeatingPatternPicker :
 
     private val RepeatingPatternViewState.formattedDayOfYear
         get() = DateFormatter.formatDayWithWeek(dayOfYear)
+
+    private val RepeatingPatternViewState.formattedStartDate
+        get() = DateFormatter.format(view!!.context, startDate)
+
+    private val RepeatingPatternViewState.formattedEndDate
+        get() =
+            if (endDate == null)
+                stringRes(R.string.end_of_time)
+            else
+                DateFormatter.format(view!!.context, endDate)
+
 
 
 }

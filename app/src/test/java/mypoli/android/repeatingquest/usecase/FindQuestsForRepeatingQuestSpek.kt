@@ -78,6 +78,11 @@ class FindQuestsForRepeatingQuestSpek : Spek({
 
         val questId = "qid"
 
+        fun createRepeatingQuest(start: LocalDate, end: LocalDate? = null) =
+            TestUtil.repeatingQuest.copy(
+                repeatingPattern = RepeatingPattern.Daily(start = start, end = end)
+            )
+
         it("should require end after start") {
             val exec = {
                 val today = LocalDate.now()
@@ -88,7 +93,7 @@ class FindQuestsForRepeatingQuestSpek : Spek({
 
         it("should not schedule anything before quest start") {
             val quests = executeUseCase(
-                quest = TestUtil.repeatingQuest.copy(start = lastDateOfWeek.plusDays(1)),
+                quest = createRepeatingQuest(start = lastDateOfWeek.plusDays(1)),
                 start = firstDateOfWeek,
                 end = lastDateOfWeek
             )
@@ -98,7 +103,7 @@ class FindQuestsForRepeatingQuestSpek : Spek({
 
         it("should not schedule anything after quest end") {
             val quests = executeUseCase(
-                quest = TestUtil.repeatingQuest.copy(
+                quest = createRepeatingQuest(
                     start = firstDateOfWeek.minusDays(2),
                     end = firstDateOfWeek.minusDays(1)
                 ),
@@ -193,7 +198,7 @@ class FindQuestsForRepeatingQuestSpek : Spek({
                 val repo = mockQuestsForRepeatingQuest(listOf())
 
                 val quests = executeUseCase(
-                    quest = TestUtil.repeatingQuest.copy(
+                    quest = createRepeatingQuest(
                         start = firstDateOfWeek,
                         end = firstDateOfWeek.plusDays(3)
                     ),
@@ -209,7 +214,7 @@ class FindQuestsForRepeatingQuestSpek : Spek({
                 val repo = mockQuestsForRepeatingQuest(listOf())
 
                 val quests = executeUseCase(
-                    quest = TestUtil.repeatingQuest.copy(
+                    quest = createRepeatingQuest(
                         start = firstDateOfWeek.plusDays(1),
                         end = lastDateOfWeek
                     ),
@@ -237,7 +242,8 @@ class FindQuestsForRepeatingQuestSpek : Spek({
                                     DayOfWeek.MONDAY,
                                     DayOfWeek.WEDNESDAY,
                                     DayOfWeek.FRIDAY
-                                )
+                                ),
+                                firstDateOfWeek
                             )
                         ),
                         start = firstDateOfWeek,
@@ -267,7 +273,8 @@ class FindQuestsForRepeatingQuestSpek : Spek({
                                     DayOfWeek.MONDAY,
                                     DayOfWeek.WEDNESDAY,
                                     DayOfWeek.FRIDAY
-                                )
+                                ),
+                                firstDateOfWeek
                             )
                         ),
                         start = firstDateOfWeek,
@@ -290,7 +297,8 @@ class FindQuestsForRepeatingQuestSpek : Spek({
                         repeatingPattern = RepeatingPattern.Flexible.Weekly(
                             timesPerWeek = timesPerWeek,
                             preferredDays = preferredDays,
-                            scheduledPeriods = scheduledPeriods
+                            scheduledPeriods = scheduledPeriods,
+                            start = firstDateOfWeek
                         )
                     )
                 }
@@ -550,9 +558,8 @@ class FindQuestsForRepeatingQuestSpek : Spek({
 
                     val quests = executeUseCase(
                         quest = TestUtil.repeatingQuest.copy(
-                            start = start,
                             repeatingPattern = RepeatingPattern.Monthly(
-                                setOf(1, 10, 29, 31)
+                                setOf(1, 10, 29, 31), start
                             )
                         ),
                         start = start,
@@ -579,9 +586,8 @@ class FindQuestsForRepeatingQuestSpek : Spek({
 
                     val quests = executeUseCase(
                         quest = TestUtil.repeatingQuest.copy(
-                            start = start,
                             repeatingPattern = RepeatingPattern.Monthly(
-                                setOf(1, 10, 29, 31)
+                                setOf(1, 10, 29, 31), start
                             )
                         ),
                         start = start,
@@ -605,11 +611,11 @@ class FindQuestsForRepeatingQuestSpek : Spek({
                     scheduledPeriods: Map<LocalDate, List<LocalDate>> = mapOf()
                 ): RepeatingQuest {
                     return TestUtil.repeatingQuest.copy(
-                        start = firstJanuary,
                         repeatingPattern = RepeatingPattern.Flexible.Monthly(
                             timesPerMonth = timesPerMonth,
                             preferredDays = preferredDays,
-                            scheduledPeriods = scheduledPeriods
+                            scheduledPeriods = scheduledPeriods,
+                            start = firstJanuary
                         )
                     )
                 }
@@ -866,7 +872,8 @@ class FindQuestsForRepeatingQuestSpek : Spek({
                     quest = TestUtil.repeatingQuest.copy(
                         repeatingPattern = RepeatingPattern.Yearly(
                             firstDateOfWeek.dayOfMonth,
-                            firstDateOfWeek.monthValue
+                            firstDateOfWeek.monthValue,
+                            firstDateOfWeek
                         )
                     ),
                     start = firstDateOfWeek.plusDays(1),
@@ -883,7 +890,8 @@ class FindQuestsForRepeatingQuestSpek : Spek({
                     quest = TestUtil.repeatingQuest.copy(
                         repeatingPattern = RepeatingPattern.Yearly(
                             firstDateOfWeek.dayOfMonth,
-                            firstDateOfWeek.monthValue
+                            firstDateOfWeek.monthValue,
+                            firstDateOfWeek
                         )
                     ),
                     start = firstDateOfWeek,
@@ -908,7 +916,8 @@ class FindQuestsForRepeatingQuestSpek : Spek({
                     quest = TestUtil.repeatingQuest.copy(
                         repeatingPattern = RepeatingPattern.Yearly(
                             firstDateOfWeek.dayOfMonth,
-                            firstDateOfWeek.monthValue
+                            firstDateOfWeek.monthValue,
+                            firstDateOfWeek
                         )
                     ),
                     start = firstDateOfWeek,
@@ -935,7 +944,8 @@ class FindQuestsForRepeatingQuestSpek : Spek({
                     quest = TestUtil.repeatingQuest.copy(
                         repeatingPattern = RepeatingPattern.Yearly(
                             firstDateOfWeek.dayOfMonth,
-                            firstDateOfWeek.monthValue
+                            firstDateOfWeek.monthValue,
+                            firstDateOfWeek
                         )
                     ),
                     start = firstDateOfWeek,
@@ -954,7 +964,8 @@ class FindQuestsForRepeatingQuestSpek : Spek({
                     quest = TestUtil.repeatingQuest.copy(
                         repeatingPattern = RepeatingPattern.Yearly(
                             firstDateOfWeek.plusDays(1).dayOfMonth,
-                            firstDateOfWeek.plusDays(1).monthValue
+                            firstDateOfWeek.plusDays(1).monthValue,
+                            firstDateOfWeek
                         )
                     ),
                     start = start,
@@ -985,7 +996,8 @@ class FindQuestsForRepeatingQuestSpek : Spek({
                     quest = TestUtil.repeatingQuest.copy(
                         repeatingPattern = RepeatingPattern.Yearly(
                             firstDateOfWeek.plusDays(1).dayOfMonth,
-                            firstDateOfWeek.plusDays(1).monthValue
+                            firstDateOfWeek.plusDays(1).monthValue,
+                            firstDateOfWeek
                         )
                     ),
                     start = start,

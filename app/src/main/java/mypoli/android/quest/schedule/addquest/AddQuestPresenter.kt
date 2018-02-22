@@ -38,7 +38,7 @@ class AddQuestPresenter(
                     date = intent.startDate
                 )
 
-            is AddQuestIntent.PickDate ->
+            AddQuestIntent.PickDate ->
                 state.copy(type = PICK_DATE)
 
             is AddQuestIntent.DatePicked -> {
@@ -46,35 +46,42 @@ class AddQuestPresenter(
                 state.copy(type = DEFAULT, date = date)
             }
 
-            is AddQuestIntent.PickTime ->
+            AddQuestIntent.PickTime ->
                 state.copy(type = PICK_TIME)
 
             is AddQuestIntent.TimePicked ->
                 state.copy(type = DEFAULT, time = intent.time)
 
-            is AddQuestIntent.PickDuration ->
+            AddQuestIntent.PickDuration ->
                 state.copy(type = PICK_DURATION)
 
             is AddQuestIntent.DurationPicked ->
                 state.copy(type = DEFAULT, duration = intent.minutes)
 
-            is AddQuestIntent.PickColor ->
+            AddQuestIntent.PickColor ->
                 state.copy(type = PICK_COLOR)
 
             is AddQuestIntent.ColorPicked ->
                 state.copy(type = DEFAULT, color = intent.color)
 
-            is AddQuestIntent.PickIcon ->
+            AddQuestIntent.PickIcon ->
                 state.copy(type = PICK_ICON)
 
             is AddQuestIntent.IconPicked ->
                 state.copy(type = DEFAULT, icon = intent.icon)
 
-            is AddQuestIntent.PickReminder ->
+            AddQuestIntent.PickReminder ->
                 state.copy(type = PICK_REMINDER)
 
             is AddQuestIntent.ReminderPicked ->
                 state.copy(type = DEFAULT, reminder = intent.reminder)
+
+            AddQuestIntent.PickRepeatingPattern ->
+                state.copy(type = PICK_REPEATING_PATTERN)
+
+            is AddQuestIntent.RepeatingPatternPicked -> {
+                state.copy(type = DEFAULT, repeatingPattern = intent.pattern)
+            }
 
             is AddQuestIntent.SaveQuest -> {
                 val color = state.color ?: Color.GREEN

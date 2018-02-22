@@ -6,6 +6,7 @@ import mypoli.android.common.mvi.ViewState
 import mypoli.android.quest.Color
 import mypoli.android.quest.Icon
 import mypoli.android.reminder.view.picker.ReminderViewModel
+import mypoli.android.repeatingquest.entity.RepeatingPattern
 import org.threeten.bp.LocalDate
 
 /**
@@ -20,12 +21,14 @@ sealed class AddQuestIntent : Intent {
     object PickColor : AddQuestIntent()
     object PickReminder : AddQuestIntent()
     object PickIcon : AddQuestIntent()
+    object PickRepeatingPattern : AddQuestIntent()
     data class DatePicked(val year: Int, val month: Int, val day: Int) : AddQuestIntent()
     data class TimePicked(val time: Time?) : AddQuestIntent()
     data class DurationPicked(val minutes: Int) : AddQuestIntent()
     data class ColorPicked(val color: Color) : AddQuestIntent()
     data class IconPicked(val icon: Icon?) : AddQuestIntent()
     data class ReminderPicked(val reminder: ReminderViewModel?) : AddQuestIntent()
+    data class RepeatingPatternPicked(val pattern: RepeatingPattern) : AddQuestIntent()
     data class SaveQuest(val name: String) : AddQuestIntent()
 }
 
@@ -36,7 +39,8 @@ data class AddQuestViewState(
     val duration: Int? = null,
     val color: Color? = null,
     val icon: Icon? = null,
-    val reminder: ReminderViewModel? = null
+    val reminder: ReminderViewModel? = null,
+    val repeatingPattern: RepeatingPattern? = null
 
 ) : ViewState
 
@@ -48,6 +52,7 @@ enum class StateType {
     PICK_COLOR,
     PICK_ICON,
     PICK_REMINDER,
+    PICK_REPEATING_PATTERN,
     VALIDATION_ERROR_EMPTY_NAME,
     QUEST_SAVED
 }

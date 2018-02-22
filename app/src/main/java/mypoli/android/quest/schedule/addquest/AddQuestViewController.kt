@@ -23,6 +23,7 @@ import mypoli.android.quest.Icon
 import mypoli.android.quest.schedule.addquest.StateType.*
 import mypoli.android.reminder.view.picker.ReminderPickerDialogController
 import mypoli.android.reminder.view.picker.ReminderViewModel
+import mypoli.android.repeatingquest.picker.RepeatingPatternPicker
 import org.threeten.bp.LocalDate
 import space.traversal.kapsule.required
 
@@ -103,6 +104,7 @@ class AddQuestViewController(args: Bundle? = null) :
             send(AddQuestIntent.SaveQuest(view.questName.text.toString()))
         }
 
+        view.repeatingPattern.sendOnClick(AddQuestIntent.PickRepeatingPattern)
         return view
     }
 
@@ -171,6 +173,13 @@ class AddQuestViewController(args: Bundle? = null) :
                         send(AddQuestIntent.ReminderPicked(reminder))
                     }
                 }, state.reminder).showDialog(router, "pick_reminder_tag")
+
+            PICK_REPEATING_PATTERN -> {
+                RepeatingPatternPicker(state.repeatingPattern, {
+                    send(AddQuestIntent.RepeatingPatternPicked(it))
+                })
+                .showDialog(router, "pick_repeating_pattern_tag")
+            }
 
             VALIDATION_ERROR_EMPTY_NAME ->
                 view.questName.error = "Think of a name"
