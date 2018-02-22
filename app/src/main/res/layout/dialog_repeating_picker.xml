@@ -53,29 +53,31 @@
             app:layout_constraintTop_toTopOf="@+id/rpEvery"
             tools:text="x" />
 
-        <EditText
+        <!--<EditText-->
+            <!--android:id="@+id/rpCount"-->
+            <!--android:layout_width="wrap_content"-->
+            <!--android:layout_height="wrap_content"-->
+            <!--android:layout_marginStart="16dp"-->
+            <!--android:background="@drawable/bordered_rectangle_accent_background"-->
+            <!--android:hint="10"-->
+            <!--android:inputType="number"-->
+            <!--android:paddingEnd="4dp"-->
+            <!--android:paddingStart="4dp"-->
+            <!--app:layout_constraintBottom_toBottomOf="@+id/rpEvery"-->
+            <!--app:layout_constraintStart_toEndOf="@+id/textView2"-->
+            <!--app:layout_constraintTop_toTopOf="@+id/rpEvery"-->
+            <!--tools:text="20" />-->
+
+        <Spinner
             android:id="@+id/rpCount"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_height="0dp"
             android:layout_marginStart="16dp"
             android:background="@drawable/bordered_rectangle_accent_background"
-            android:hint="10"
-            android:inputType="number"
-            android:paddingEnd="4dp"
-            android:paddingStart="4dp"
-            app:layout_constraintBottom_toBottomOf="@+id/rpEvery"
+            android:dropDownWidth="wrap_content"
+            app:layout_constraintBottom_toBottomOf="@+id/rpFrequency"
             app:layout_constraintStart_toEndOf="@+id/textView2"
-            app:layout_constraintTop_toTopOf="@+id/rpEvery"
-            tools:text="20" />
-
-        <!--<Spinner-->
-        <!--android:id="@+id/rqCount"-->
-        <!--android:layout_width="wrap_content"-->
-        <!--android:layout_height="wrap_content"-->
-        <!--android:layout_marginStart="16dp"-->
-        <!--app:layout_constraintBottom_toBottomOf="@+id/rpEvery"-->
-        <!--app:layout_constraintStart_toEndOf="@+id/textView2"-->
-        <!--app:layout_constraintTop_toTopOf="@+id/rpEvery" />-->
+            app:layout_constraintTop_toTopOf="@+id/rpFrequency" />
 
         <TextView
             android:id="@+id/rpTimes"
@@ -230,6 +232,7 @@
             android:id="@+id/yearlyPatternGroup"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:visibility="gone"
             app:constraint_referenced_ids="rpDayOfYear,textView" />
 
         <android.support.constraint.Group

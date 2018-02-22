@@ -34,16 +34,23 @@ object RepeatingPatternReducer : BaseViewStateReducer<RepeatingPatternViewState>
                 val frequencyType =
                     if (pattern != null) frequencyTypeFor(pattern)
                     else subState.frequencyType
+
                 val selectedWeekDays =
                     if (pattern != null) selectedWeekDaysFor(pattern) else subState.selectedWeekDays
+                val weekDaysCount = Math.max(1, selectedWeekDays.size)
+                val weekDaysCountIndex = subState.weekCountValues.indexOfFirst { weekDaysCount == it }
+
                 val selectedMonthDays =
                     if (pattern != null) selectedMonthDaysFor(pattern) else subState.selectedMonthDays
+                val monthDaysCount = Math.max(1, selectedMonthDays.size)
+                val monthDaysCountIndex = subState.monthCountValues.indexOfFirst { monthDaysCount == it }
+
                 subState.copy(
                     type = typeFor(frequencyType),
                     frequencyType = frequencyType,
-                    selectedFrequencyIndex = frequencyIndexFor(frequencyType),
-                    weekCount = Math.max(selectedWeekDays.size, subState.weekCount),
-                    monthCount = Math.max(selectedMonthDays.size, subState.monthCount),
+                    frequencyIndex = frequencyIndexFor(frequencyType),
+                    weekDaysCountIndex = weekDaysCountIndex,
+                    monthDaysCountIndex = monthDaysCountIndex,
                     selectedWeekDays = selectedWeekDays,
                     selectedMonthDays = selectedMonthDays
                 )
@@ -54,7 +61,7 @@ object RepeatingPatternReducer : BaseViewStateReducer<RepeatingPatternViewState>
                 subState.copy(
                     type = typeFor(frequencyType),
                     frequencyType = frequencyType,
-                    selectedFrequencyIndex = frequencyIndexFor(frequencyType)
+                    frequencyIndex = frequencyIndexFor(frequencyType)
                 )
             }
 
@@ -117,11 +124,13 @@ object RepeatingPatternReducer : BaseViewStateReducer<RepeatingPatternViewState>
         RepeatingPatternViewState(
             LOADING,
             DAILY,
-            selectedFrequencyIndex = 0,
-            weekCount = 1,
-            monthCount = 1,
+            frequencyIndex = 0,
+            weekDaysCountIndex = 0,
+            monthDaysCountIndex = 0,
             selectedWeekDays = setOf(),
-            selectedMonthDays = setOf()
+            selectedMonthDays = setOf(),
+            weekCountValues = (1..6).toList(),
+            monthCountValues = (1..31).toList()
         )
 
 }
@@ -129,11 +138,13 @@ object RepeatingPatternReducer : BaseViewStateReducer<RepeatingPatternViewState>
 data class RepeatingPatternViewState(
     val type: RepeatingPatternViewState.StateType,
     val frequencyType: FrequencyType,
-    val selectedFrequencyIndex: Int,
-    val weekCount: Int,
-    val monthCount: Int,
+    val frequencyIndex: Int,
+    val weekDaysCountIndex: Int,
+    val monthDaysCountIndex: Int,
     val selectedWeekDays: Set<DayOfWeek>,
-    val selectedMonthDays: Set<Int>
+    val selectedMonthDays: Set<Int>,
+    val weekCountValues: List<Int>,
+    val monthCountValues: List<Int>
     ) : ViewState {
     enum class StateType {
         LOADING,

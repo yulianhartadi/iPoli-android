@@ -11,6 +11,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.AdapterView
+import android.widget.ArrayAdapter
 import android.widget.Button
 import android.widget.TextView
 import kotlinx.android.synthetic.main.dialog_repeating_picker.view.*
@@ -96,9 +97,14 @@ class RepeatingPatternPicker :
                     view.countGroup
                 )
 
-                val weekCount = state.weekCount.toString()
-                view.rpCount.setText(weekCount)
-                view.rpCount.setSelection(weekCount.length)
+                val spinnerArrayAdapter =
+                    ArrayAdapter<Int>(
+                        view.context,
+                        R.layout.item_dropdown_number_spinner,
+                        state.weekCountValues
+                    )
+                view.rpCount.adapter = spinnerArrayAdapter
+                view.rpCount.setSelection(state.weekDaysCountIndex)
 
                 (view.rpWeekDayList.adapter as WeekDayAdapter).updateAll(
                     state.weekDaysViewModels(
@@ -118,9 +124,9 @@ class RepeatingPatternPicker :
                     view.countGroup
                 )
 
-                val monthCount = state.monthCount.toString()
-                view.rpCount.setText(monthCount)
-                view.rpCount.setSelection(monthCount.length)
+//                val monthCount = state.monthCount.toString()
+//                view.rpCount.setText(monthCount)
+//                view.rpCount.setSelection(monthCount.length)
 
                 setupFrequencies(view, state)
             }
@@ -146,7 +152,7 @@ class RepeatingPatternPicker :
     ) {
         val frequency = view.rpFrequency
         frequency.onItemSelectedListener = null
-        frequency.setSelection(state.selectedFrequencyIndex)
+        frequency.setSelection(state.frequencyIndex)
         frequency.post {
             frequency.onItemSelectedListener =
                 object : AdapterView.OnItemSelectedListener {
