@@ -97,13 +97,11 @@ class RepeatingPatternPicker :
                     view.countGroup
                 )
 
-                val spinnerArrayAdapter =
-                    ArrayAdapter<Int>(
-                        view.context,
-                        R.layout.item_dropdown_number_spinner,
-                        state.weekCountValues
-                    )
-                view.rpCount.adapter = spinnerArrayAdapter
+                view.rpCount.adapter = ArrayAdapter(
+                    view.context,
+                    R.layout.item_dropdown_number_spinner,
+                    state.weekCountValues
+                )
                 view.rpCount.setSelection(state.weekDaysCountIndex)
 
                 (view.rpWeekDayList.adapter as WeekDayAdapter).updateAll(
@@ -124,9 +122,12 @@ class RepeatingPatternPicker :
                     view.countGroup
                 )
 
-//                val monthCount = state.monthCount.toString()
-//                view.rpCount.setText(monthCount)
-//                view.rpCount.setSelection(monthCount.length)
+                view.rpCount.adapter = ArrayAdapter(
+                    view.context,
+                    R.layout.item_dropdown_number_spinner,
+                    state.monthCountValues
+                )
+                view.rpCount.setSelection(state.monthDaysCountIndex)
 
                 setupFrequencies(view, state)
             }
