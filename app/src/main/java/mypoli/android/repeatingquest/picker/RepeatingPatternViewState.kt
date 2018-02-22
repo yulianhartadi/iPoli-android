@@ -8,6 +8,7 @@ import mypoli.android.repeatingquest.entity.RepeatingPattern
 import mypoli.android.repeatingquest.picker.RepeatingPatternViewState.FrequencyType.*
 import mypoli.android.repeatingquest.picker.RepeatingPatternViewState.StateType.*
 import org.threeten.bp.DayOfWeek
+import org.threeten.bp.LocalDate
 
 /**
  * Created by Polina Zhelyazkova <polina@ipoli.io>
@@ -20,6 +21,7 @@ sealed class RepeatingPatternAction : Action {
     data class ChangeWeekDayCount(val index: Int) : RepeatingPatternAction()
     data class ToggleMonthDay(val day: Int) : RepeatingPatternAction()
     data class ChangeMonthDayCount(val index: Int) : RepeatingPatternAction()
+    data class ChangeDayOfYear(val date: LocalDate) : RepeatingPatternAction()
 }
 
 
@@ -116,6 +118,12 @@ object RepeatingPatternReducer : BaseViewStateReducer<RepeatingPatternViewState>
                 )
             }
 
+            is RepeatingPatternAction.ChangeDayOfYear -> {
+                subState.copy(
+                    dayOfYear = action.date
+                )
+            }
+
             else -> {
                 subState
             }
@@ -199,7 +207,8 @@ object RepeatingPatternReducer : BaseViewStateReducer<RepeatingPatternViewState>
             selectedMonthDays = setOf(),
             weekCountValues = (1..6).toList(),
             monthCountValues = (1..31).toList(),
-            isFlexible = false
+            isFlexible = false,
+            dayOfYear = LocalDate.now()
         )
 
 }
@@ -214,7 +223,8 @@ data class RepeatingPatternViewState(
     val selectedMonthDays: Set<Int>,
     val weekCountValues: List<Int>,
     val monthCountValues: List<Int>,
-    val isFlexible: Boolean
+    val isFlexible: Boolean,
+    val dayOfYear: LocalDate
     ) : ViewState {
     enum class StateType {
         LOADING,
@@ -224,7 +234,8 @@ data class RepeatingPatternViewState(
         SHOW_YEARLY,
         WEEK_DAYS_CHANGED,
         COUNT_CHANGED,
-        MONTH_DAYS_CHANGED
+        MONTH_DAYS_CHANGED,
+        YEAR_DAY_CHANGED
     }
 
     enum class FrequencyType {

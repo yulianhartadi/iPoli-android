@@ -1,5 +1,6 @@
 package mypoli.android.repeatingquest.picker
 
+import android.app.DatePickerDialog
 import android.os.Bundle
 import android.support.annotation.ColorRes
 import android.support.annotation.DrawableRes
@@ -18,6 +19,7 @@ import kotlinx.android.synthetic.main.dialog_repeating_picker.view.*
 import kotlinx.android.synthetic.main.popup_rate.view.*
 import mypoli.android.R
 import mypoli.android.common.ViewUtils
+import mypoli.android.common.text.DateFormatter
 import mypoli.android.common.view.ReduxDialogController
 import mypoli.android.common.view.attrData
 import mypoli.android.common.view.attrResourceId
@@ -25,6 +27,7 @@ import mypoli.android.common.view.colorRes
 import mypoli.android.repeatingquest.entity.RepeatingPattern
 import mypoli.android.repeatingquest.picker.RepeatingPatternViewState.StateType.*
 import org.threeten.bp.DayOfWeek
+import org.threeten.bp.LocalDate
 
 
 /**
@@ -122,6 +125,21 @@ class RepeatingPatternPicker :
 
                 renderFrequencies(view, state)
                 renderMessage(view, state)
+
+                view.rpDayOfYear.text = state.formattedDayOfYear
+                view.rpDayOfYear.setOnClickListener {
+                    val date = state.dayOfYear
+                    DatePickerDialog(
+                        view.context, R.style.Theme_myPoli_AlertDialog,
+                        DatePickerDialog.OnDateSetListener { _, year, month, dayOfMonth ->
+                            dispatch(
+                                RepeatingPatternAction.ChangeDayOfYear(
+                                    LocalDate.of(year, month + 1, dayOfMonth)
+                                )
+                            )
+                        }, date.year, date.month.value - 1, date.dayOfMonth
+                    ).show()
+                }
             }
 
             WEEK_DAYS_CHANGED -> {
@@ -137,6 +155,10 @@ class RepeatingPatternPicker :
                 renderMonthDays(view, state)
                 renderMessage(view, state)
             }
+
+            YEAR_DAY_CHANGED -> {
+                view.rpDayOfYear.text = state.formattedDayOfYear
+            }
         }
     }
 
@@ -145,9 +167,7 @@ class RepeatingPatternPicker :
         state: RepeatingPatternViewState
     ) {
         (view.rpMonthDayList.adapter as MonthDayAdapter).updateAll(
-            state.monthDaysViewModels(
-                state.selectedMonthDays
-            )
+            state.monthDaysViewModels()
         )
     }
 
@@ -226,9 +246,7 @@ class RepeatingPatternPicker :
         state: RepeatingPatternViewState
     ) {
         (view.rpWeekDayList.adapter as WeekDayAdapter).updateAll(
-            state.weekDaysViewModels(
-                state.selectedWeekDays
-            )
+            state.weekDaysViewModels()
         )
     }
 
@@ -354,7 +372,7 @@ class RepeatingPatternPicker :
 
     }
 
-    private fun RepeatingPatternViewState.weekDaysViewModels(selectedWeekDays: Set<DayOfWeek>) =
+    private fun RepeatingPatternViewState.weekDaysViewModels() =
         DayOfWeek.values().map {
             val isSelected = selectedWeekDays.contains(it)
             val (background, textColor) = if (isSelected)
@@ -370,7 +388,7 @@ class RepeatingPatternPicker :
             )
         }
 
-    private fun RepeatingPatternViewState.monthDaysViewModels(selectedMonthDays: Set<Int>) =
+    private fun RepeatingPatternViewState.monthDaysViewModels() =
         (1..31).map {
             val isSelected = selectedMonthDays.contains(it)
             val background = if (isSelected)
@@ -386,6 +404,8 @@ class RepeatingPatternPicker :
             )
         }
 
+    private val RepeatingPatternViewState.formattedDayOfYear
+        get() = DateFormatter.formatDayWithWeek(dayOfYear)
 
 
 }
