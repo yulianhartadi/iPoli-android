@@ -23,6 +23,7 @@ import mypoli.android.common.view.attrData
 import mypoli.android.common.view.attrResourceId
 import mypoli.android.common.view.colorRes
 import mypoli.android.repeatingquest.entity.RepeatingPattern
+import mypoli.android.repeatingquest.picker.RepeatingPatternViewState.StateType.*
 import org.threeten.bp.DayOfWeek
 import java.util.*
 
@@ -77,17 +78,17 @@ class RepeatingPatternPicker :
 
     override fun render(state: RepeatingPatternViewState, view: View) {
         when (state.type) {
-            RepeatingPatternViewState.StateType.SHOW_DAILY -> {
+            SHOW_DAILY -> {
                 ViewUtils.goneViews(
                     view.rpWeekDayList,
                     view.rpMonthDayList,
                     view.yearlyPatternGroup,
                     view.countGroup
                 )
-                setupFrequencies(view, state)
+                renderFrequencies(view, state)
             }
 
-            RepeatingPatternViewState.StateType.SHOW_WEEKLY -> {
+            SHOW_WEEKLY -> {
                 ViewUtils.goneViews(
                     view.rpMonthDayList,
                     view.yearlyPatternGroup
@@ -97,22 +98,12 @@ class RepeatingPatternPicker :
                     view.countGroup
                 )
 
-                view.rpCount.adapter = ArrayAdapter(
-                    view.context,
-                    R.layout.item_dropdown_number_spinner,
-                    state.weekCountValues
-                )
-                view.rpCount.setSelection(state.weekDaysCountIndex)
-
-                (view.rpWeekDayList.adapter as WeekDayAdapter).updateAll(
-                    state.weekDaysViewModels(
-                        state.selectedWeekDays
-                    )
-                )
-                setupFrequencies(view, state)
+                renderFrequencies(view, state)
+                renderWeekDaysCount(view, state)
+                renderWeekDays(view, state)
             }
 
-            RepeatingPatternViewState.StateType.SHOW_MONTHLY -> {
+            SHOW_MONTHLY -> {
                 ViewUtils.goneViews(
                     view.rpWeekDayList,
                     view.yearlyPatternGroup
@@ -122,17 +113,11 @@ class RepeatingPatternPicker :
                     view.countGroup
                 )
 
-                view.rpCount.adapter = ArrayAdapter(
-                    view.context,
-                    R.layout.item_dropdown_number_spinner,
-                    state.monthCountValues
-                )
-                view.rpCount.setSelection(state.monthDaysCountIndex)
-
-                setupFrequencies(view, state)
+                renderFrequencies(view, state)
+                renderMonthDaysCount(view, state)
             }
 
-            RepeatingPatternViewState.StateType.SHOW_YEARLY -> {
+            SHOW_YEARLY -> {
                 ViewUtils.goneViews(
                     view.rpWeekDayList,
                     view.rpMonthDayList,
@@ -142,12 +127,51 @@ class RepeatingPatternPicker :
                     view.yearlyPatternGroup
                 )
 
-                setupFrequencies(view, state)
+                renderFrequencies(view, state)
+            }
+
+            WEEK_DAYS_CHANGED -> {
+                renderWeekDays(view, state)
             }
         }
     }
 
-    private fun setupFrequencies(
+    private fun renderWeekDaysCount(
+        view: View,
+        state: RepeatingPatternViewState
+    ) {
+        view.rpCount.adapter = ArrayAdapter(
+            view.context,
+            R.layout.item_dropdown_number_spinner,
+            state.weekCountValues
+        )
+        view.rpCount.setSelection(state.weekDaysCountIndex)
+    }
+
+    private fun renderMonthDaysCount(
+        view: View,
+        state: RepeatingPatternViewState
+    ) {
+        view.rpCount.adapter = ArrayAdapter(
+            view.context,
+            R.layout.item_dropdown_number_spinner,
+            state.monthCountValues
+        )
+        view.rpCount.setSelection(state.monthDaysCountIndex)
+    }
+
+    private fun renderWeekDays(
+        view: View,
+        state: RepeatingPatternViewState
+    ) {
+        (view.rpWeekDayList.adapter as WeekDayAdapter).updateAll(
+            state.weekDaysViewModels(
+                state.selectedWeekDays
+            )
+        )
+    }
+
+    private fun renderFrequencies(
         view: View,
         state: RepeatingPatternViewState
     ) {
@@ -215,7 +239,7 @@ class RepeatingPatternPicker :
 
             button.setBackgroundResource(background)
             button.setTextColor(textColor)
-
+            button.dispatchOnClick(RepeatingPatternAction.ToggleWeekDay(vm.weekDay))
         }
 
         fun updateAll(viewModels: List<WeekDayViewModel>) {

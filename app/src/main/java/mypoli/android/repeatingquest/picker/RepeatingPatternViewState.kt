@@ -16,6 +16,7 @@ import org.threeten.bp.DayOfWeek
 sealed class RepeatingPatternAction : Action {
     data class LoadData(val repeatingPattern: RepeatingPattern?) : RepeatingPatternAction()
     data class ChangeFrequency(val position: Int) : RepeatingPatternAction()
+    data class ToggleWeekDay(val weekDay: DayOfWeek) : RepeatingPatternAction()
 }
 
 
@@ -62,6 +63,20 @@ object RepeatingPatternReducer : BaseViewStateReducer<RepeatingPatternViewState>
                     type = typeFor(frequencyType),
                     frequencyType = frequencyType,
                     frequencyIndex = frequencyIndexFor(frequencyType)
+                )
+            }
+
+            is RepeatingPatternAction.ToggleWeekDay -> {
+                val weekDay = action.weekDay
+                val selectedWeekDays = subState.selectedWeekDays
+
+                subState.copy(
+                    type = WEEK_DAYS_CHANGED,
+                    selectedWeekDays = if (selectedWeekDays.contains(weekDay)) {
+                        selectedWeekDays.minus(weekDay)
+                    } else {
+                        selectedWeekDays.plus(weekDay)
+                    }
                 )
             }
 
@@ -151,7 +166,8 @@ data class RepeatingPatternViewState(
         SHOW_DAILY,
         SHOW_WEEKLY,
         SHOW_MONTHLY,
-        SHOW_YEARLY
+        SHOW_YEARLY,
+        WEEK_DAYS_CHANGED
     }
 
     enum class FrequencyType {
