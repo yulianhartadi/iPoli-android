@@ -19,6 +19,7 @@ import kotlinx.android.synthetic.main.dialog_repeating_picker.view.*
 import kotlinx.android.synthetic.main.popup_rate.view.*
 import mypoli.android.R
 import mypoli.android.common.ViewUtils
+import mypoli.android.common.datetime.DateUtils
 import mypoli.android.common.text.DateFormatter
 import mypoli.android.common.view.*
 import mypoli.android.repeatingquest.entity.RepeatingPattern
@@ -123,7 +124,7 @@ class RepeatingPatternPicker :
     ) {
         view.rpEnd.setOnClickListener {
             val date = state.pickerEndDate
-            DatePickerDialog(
+            val datePickerDialog = DatePickerDialog(
                 view.context, R.style.Theme_myPoli_AlertDialog,
                 DatePickerDialog.OnDateSetListener { _, year, month, dayOfMonth ->
                     dispatch(
@@ -132,7 +133,9 @@ class RepeatingPatternPicker :
                         )
                     )
                 }, date.year, date.month.value - 1, date.dayOfMonth
-            ).show()
+            )
+            datePickerDialog.datePicker.minDate = DateUtils.toMillis(state.startDate.plusDays(1))
+            datePickerDialog.show()
         }
     }
 
@@ -149,7 +152,7 @@ class RepeatingPatternPicker :
     ) {
         view.rpStart.setOnClickListener {
             val date = state.startDate
-            DatePickerDialog(
+            val datePickerDialog = DatePickerDialog(
                 view.context, R.style.Theme_myPoli_AlertDialog,
                 DatePickerDialog.OnDateSetListener { _, year, month, dayOfMonth ->
                     dispatch(
@@ -158,7 +161,12 @@ class RepeatingPatternPicker :
                         )
                     )
                 }, date.year, date.month.value - 1, date.dayOfMonth
-            ).show()
+            )
+            datePickerDialog.datePicker.minDate = DateUtils.toMillis(LocalDate.now())
+            if (state.endDate != null) {
+                datePickerDialog.datePicker.maxDate = DateUtils.toMillis(state.endDate.minusDays(1))
+            }
+            datePickerDialog.show()
         }
     }
 

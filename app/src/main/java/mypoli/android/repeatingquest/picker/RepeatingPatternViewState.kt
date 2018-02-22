@@ -136,7 +136,10 @@ object RepeatingPatternReducer : BaseViewStateReducer<RepeatingPatternViewState>
             is RepeatingPatternAction.ChangeStartDate -> {
                 subState.copy(
                     type = START_DATE_CHANGED,
-                    startDate = action.date
+                    startDate = action.date,
+                    pickerEndDate = if (subState.endDate == null)
+                        action.date.plusDays(1)
+                    else subState.pickerEndDate
                 )
             }
 
