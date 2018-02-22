@@ -108,6 +108,11 @@ class RepeatingPatternPicker :
             END_DATE_CHANGED -> {
                 renderEndDate(view, state)
             }
+
+            PATTERN_CREATED -> {
+                resultListener(state.resultPattern!!)
+                dismissDialog()
+            }
         }
     }
 
@@ -209,7 +214,7 @@ class RepeatingPatternPicker :
 
         view.rpDayOfYear.setOnClickListener {
             val date = state.dayOfYear
-            DatePickerDialog(
+            val datePickerDialog = DatePickerDialog(
                 view.context, R.style.Theme_myPoli_AlertDialog,
                 DatePickerDialog.OnDateSetListener { _, year, month, dayOfMonth ->
                     dispatch(
@@ -218,7 +223,8 @@ class RepeatingPatternPicker :
                         )
                     )
                 }, date.year, date.month.value - 1, date.dayOfMonth
-            ).show()
+            )
+            datePickerDialog.show()
         }
     }
 
@@ -395,11 +401,18 @@ class RepeatingPatternPicker :
         savedViewState: Bundle?
     ): AlertDialog =
         dialogBuilder
-            .setPositiveButton("OK", { _, _ ->
-                //                resultListener(repeatingPattern)
-            })
+            .setPositiveButton("OK", null)
             .setNegativeButton(R.string.cancel, null)
             .create()
+
+
+    override fun onDialogCreated(dialog: AlertDialog, contentView: View) {
+        dialog.setOnShowListener {
+            setPositiveButtonListener {
+                dispatch(RepeatingPatternAction.CreatePattern)
+            }
+        }
+    }
 
     override fun onHeaderViewCreated(headerView: View) {
         headerView.dialogHeaderTitle.text = "Pick repeating pattern"

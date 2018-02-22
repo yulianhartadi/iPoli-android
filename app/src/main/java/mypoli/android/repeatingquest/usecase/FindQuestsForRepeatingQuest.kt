@@ -42,7 +42,7 @@ class FindQuestsForRepeatingQuest(
 
         val scheduleDates = when (rq.repeatingPattern) {
 
-            RepeatingPattern.Daily -> start.datesUntil(end).toSet()
+            is RepeatingPattern.Daily -> start.datesUntil(end).toSet()
 
 
             is RepeatingPattern.Weekly ->

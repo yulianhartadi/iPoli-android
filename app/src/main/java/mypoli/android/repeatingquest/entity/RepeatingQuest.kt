@@ -12,27 +12,54 @@ import org.threeten.bp.LocalDate
  */
 
 sealed class RepeatingPattern(
-    val start: LocalDate = LocalDate.now(),
-    val end: LocalDate? = null
+    open val start: LocalDate,
+    open val end: LocalDate?
 ) {
-    object Daily : RepeatingPattern()
-    data class Yearly(val dayOfMonth: Int, val month: Int) : RepeatingPattern()
-    data class Weekly(val daysOfWeek: Set<DayOfWeek>) :
-        RepeatingPattern()
+    data class Daily(
+        override val start: LocalDate = LocalDate.now(),
+        override val end: LocalDate? = null
+    ) : RepeatingPattern(start, end)
 
-    data class Monthly(val daysOfMonth: Set<Int>) :
-        RepeatingPattern()
 
-    sealed class Flexible : RepeatingPattern() {
+    data class Yearly(
+        val dayOfMonth: Int,
+        val month: Int,
+        override val start: LocalDate = LocalDate.now(),
+        override val end: LocalDate? = null
+    ) : RepeatingPattern(start, end)
+
+    data class Weekly(
+        val daysOfWeek: Set<DayOfWeek>,
+        override val start: LocalDate = LocalDate.now(),
+        override val end: LocalDate? = null
+    ) : RepeatingPattern(start, end)
+
+    data class Monthly(
+        val daysOfMonth: Set<Int>,
+        override val start: LocalDate = LocalDate.now(),
+        override val end: LocalDate? = null
+    ) : RepeatingPattern(start, end)
+
+    sealed class Flexible(
+        override val start: LocalDate,
+        override val end: LocalDate?
+    ) : RepeatingPattern(start, end) {
+
         data class Weekly(
             val timesPerWeek: Int,
             val preferredDays: Set<DayOfWeek>,
-            val scheduledPeriods : Map<LocalDate, List<LocalDate>>) : Flexible()
+            val scheduledPeriods : Map<LocalDate, List<LocalDate>> = mapOf(),
+            override val start: LocalDate = LocalDate.now(),
+            override val end: LocalDate? = null
+        ) : Flexible(start, end)
 
         data class Monthly(
             val timesPerMonth: Int,
             val preferredDays: Set<Int>,
-            val scheduledPeriods : Map<LocalDate, List<LocalDate>>) : Flexible()
+            val scheduledPeriods : Map<LocalDate, List<LocalDate>> = mapOf(),
+            override val start: LocalDate = LocalDate.now(),
+            override val end: LocalDate? = null
+        ) : Flexible(start, end)
     }
 }
 
