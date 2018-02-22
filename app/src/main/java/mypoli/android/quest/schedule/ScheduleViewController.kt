@@ -263,15 +263,7 @@ class ScheduleViewController(args: Bundle? = null) :
         view.currentMonth.text = state.monthText
 
         view.addQuest.setOnClickListener {
-            RepeatingPatternPicker(
-                RepeatingPattern.Weekly(
-                    setOf(
-                        DayOfWeek.MONDAY,
-                        DayOfWeek.FRIDAY
-                    )
-                ), {})
-                .showDialog(router, "pick")
-//            openAddContainer(state.currentDate)
+            openAddContainer(state.currentDate)
         }
 
         when (state.type) {
