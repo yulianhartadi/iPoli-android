@@ -18,6 +18,8 @@ sealed class RepeatingPatternAction : Action {
     data class ChangeFrequency(val index: Int) : RepeatingPatternAction()
     data class ToggleWeekDay(val weekDay: DayOfWeek) : RepeatingPatternAction()
     data class ChangeWeekDayCount(val index: Int) : RepeatingPatternAction()
+    data class ToggleMonthDay(val day: Int) : RepeatingPatternAction()
+    data class ChangeMonthDayCount(val index: Int) : RepeatingPatternAction()
 }
 
 
@@ -89,6 +91,28 @@ object RepeatingPatternReducer : BaseViewStateReducer<RepeatingPatternViewState>
                     type = COUNT_CHANGED,
                     weekDaysCountIndex = action.index,
                     isFlexible = subState.weekCountValues[action.index] != subState.selectedWeekDays.size
+                )
+            }
+
+            is RepeatingPatternAction.ToggleMonthDay -> {
+                val day = action.day
+                val selectedMonthDays = if (subState.selectedMonthDays.contains(day)) {
+                    subState.selectedMonthDays.minus(day)
+                } else {
+                    subState.selectedMonthDays.plus(day)
+                }
+                subState.copy(
+                    type = MONTH_DAYS_CHANGED,
+                    selectedMonthDays = selectedMonthDays,
+                    isFlexible = subState.monthCountValues[subState.monthDaysCountIndex] != selectedMonthDays.size
+                )
+            }
+
+            is RepeatingPatternAction.ChangeMonthDayCount -> {
+                subState.copy(
+                    type = COUNT_CHANGED,
+                    monthDaysCountIndex = action.index,
+                    isFlexible = subState.monthCountValues[action.index] != subState.selectedMonthDays.size
                 )
             }
 
@@ -199,7 +223,8 @@ data class RepeatingPatternViewState(
         SHOW_MONTHLY,
         SHOW_YEARLY,
         WEEK_DAYS_CHANGED,
-        COUNT_CHANGED
+        COUNT_CHANGED,
+        MONTH_DAYS_CHANGED
     }
 
     enum class FrequencyType {
