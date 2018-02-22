@@ -86,6 +86,7 @@ class RepeatingPatternPicker :
                     view.countGroup
                 )
                 renderFrequencies(view, state)
+                renderMessage(view, state)
             }
 
             SHOW_WEEKLY -> {
@@ -101,6 +102,7 @@ class RepeatingPatternPicker :
                 renderFrequencies(view, state)
                 renderWeekDaysCount(view, state)
                 renderWeekDays(view, state)
+                renderMessage(view, state)
             }
 
             SHOW_MONTHLY -> {
@@ -115,6 +117,7 @@ class RepeatingPatternPicker :
 
                 renderFrequencies(view, state)
                 renderMonthDaysCount(view, state)
+                renderMessage(view, state)
             }
 
             SHOW_YEARLY -> {
@@ -128,11 +131,28 @@ class RepeatingPatternPicker :
                 )
 
                 renderFrequencies(view, state)
+                renderMessage(view, state)
             }
 
             WEEK_DAYS_CHANGED -> {
                 renderWeekDays(view, state)
+                renderMessage(view, state)
             }
+
+            COUNT_CHANGED -> {
+                renderMessage(view, state)
+            }
+        }
+    }
+
+    private fun renderMessage(
+        view: View,
+        state: RepeatingPatternViewState
+    ) {
+        if (state.isFlexible) {
+            ViewUtils.showViews(view.rpMessage)
+        } else {
+            ViewUtils.goneViews(view.rpMessage)
         }
     }
 
@@ -140,12 +160,30 @@ class RepeatingPatternPicker :
         view: View,
         state: RepeatingPatternViewState
     ) {
-        view.rpCount.adapter = ArrayAdapter(
+        val count = view.rpCount
+        count.adapter = ArrayAdapter(
             view.context,
             R.layout.item_dropdown_number_spinner,
             state.weekCountValues
         )
-        view.rpCount.setSelection(state.weekDaysCountIndex)
+        count.onItemSelectedListener = null
+        count.setSelection(state.weekDaysCountIndex)
+        count.post {
+            count.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+                override fun onNothingSelected(parent: AdapterView<*>?) {
+                }
+
+                override fun onItemSelected(
+                    parent: AdapterView<*>?,
+                    view: View?,
+                    position: Int,
+                    id: Long
+                ) {
+                    dispatch(RepeatingPatternAction.ChangeWeekDayCount(position))
+                }
+
+            }
+        }
     }
 
     private fun renderMonthDaysCount(
@@ -182,7 +220,6 @@ class RepeatingPatternPicker :
             frequency.onItemSelectedListener =
                 object : AdapterView.OnItemSelectedListener {
                     override fun onNothingSelected(parent: AdapterView<*>?) {
-
                     }
 
                     override fun onItemSelected(
