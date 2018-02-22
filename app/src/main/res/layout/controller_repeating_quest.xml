@@ -103,7 +103,7 @@
                             android:src="@drawable/ic_timer_white_24dp" />
 
                         <TextView
-                            android:id="@+id/quest_total_time_spent"
+                            android:id="@+id/totalTimeSpent"
                             style="@style/TextAppearance.AppCompat.Body1"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
@@ -125,7 +125,7 @@
                             android:src="@drawable/ic_event_white_24dp" />
 
                         <TextView
-                            android:id="@+id/quest_next_scheduled_date"
+                            android:id="@+id/nextScheduledDate"
                             style="@style/TextAppearance.AppCompat.Body1"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
