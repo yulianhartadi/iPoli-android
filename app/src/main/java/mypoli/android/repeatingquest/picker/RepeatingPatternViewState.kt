@@ -5,6 +5,7 @@ import mypoli.android.common.BaseViewStateReducer
 import mypoli.android.common.mvi.ViewState
 import mypoli.android.common.redux.Action
 import mypoli.android.repeatingquest.entity.RepeatingPattern
+import mypoli.android.repeatingquest.picker.RepeatingPatternViewState.FrequencyType.*
 import mypoli.android.repeatingquest.picker.RepeatingPatternViewState.StateType.*
 import org.threeten.bp.DayOfWeek
 import org.threeten.bp.LocalDate
@@ -15,7 +16,12 @@ import org.threeten.bp.LocalDate
  */
 sealed class RepeatingPatternAction : Action {
     data class LoadData(val repeatingPattern: RepeatingPattern?) : RepeatingPatternAction()
-    data class ChangeFrequency(val position: Int) : RepeatingPatternAction()
+    data class ChangeFrequency(val index: Int) : RepeatingPatternAction()
+    data class ToggleWeekDay(val weekDay: DayOfWeek) : RepeatingPatternAction()
+    data class ChangeWeekDayCount(val index: Int) : RepeatingPatternAction()
+    data class ToggleMonthDay(val day: Int) : RepeatingPatternAction()
+    data class ChangeMonthDayCount(val index: Int) : RepeatingPatternAction()
+    data class ChangeDayOfYear(val date: LocalDate) : RepeatingPatternAction()
 }
 
 
@@ -30,24 +36,91 @@ object RepeatingPatternReducer : BaseViewStateReducer<RepeatingPatternViewState>
     ): RepeatingPatternViewState {
         return when (action) {
             is RepeatingPatternAction.LoadData -> {
-                val pattern = action.repeatingPattern ?: subState.repeatingPattern
+                val pattern = action.repeatingPattern
+                val frequencyType =
+                    if (pattern != null) frequencyTypeFor(pattern)
+                    else subState.frequencyType
+
+                val selectedWeekDays =
+                    if (pattern != null) selectedWeekDaysFor(pattern) else subState.selectedWeekDays
+                val weekDaysCount = Math.max(1, selectedWeekDays.size)
+                val weekDaysCountIndex = subState.weekCountValues.indexOfFirst { weekDaysCount == it }
+
+                val selectedMonthDays =
+                    if (pattern != null) selectedMonthDaysFor(pattern) else subState.selectedMonthDays
+                val monthDaysCount = Math.max(1, selectedMonthDays.size)
+                val monthDaysCountIndex = subState.monthCountValues.indexOfFirst { monthDaysCount == it }
+
                 subState.copy(
-                    type = typeFor(pattern),
-                    repeatingPattern = pattern,
-                    selectedFrequencyIndex = frequencyIndexFor(pattern),
-                    count = countFor(pattern),
-                    selectedWeekDays = selectedWeekDaysFor(pattern)
+                    type = typeFor(frequencyType),
+                    frequencyType = frequencyType,
+                    frequencyIndex = frequencyIndexFor(frequencyType),
+                    weekDaysCountIndex = weekDaysCountIndex,
+                    monthDaysCountIndex = monthDaysCountIndex,
+                    selectedWeekDays = selectedWeekDays,
+                    selectedMonthDays = selectedMonthDays,
+                    isFlexible = pattern is RepeatingPattern.Flexible
                 )
             }
 
             is RepeatingPatternAction.ChangeFrequency -> {
-                val pattern = createDefaultRepeatingPattern(action.position)
+                val frequencyType = frequencyTypeForIndex(action.index)
                 subState.copy(
-                    type = typeFor(pattern),
-                    repeatingPattern = pattern,
-                    selectedFrequencyIndex = frequencyIndexFor(pattern),
-                    count = countFor(pattern),
-                    selectedWeekDays = selectedWeekDaysFor(pattern)
+                    type = typeFor(frequencyType),
+                    frequencyType = frequencyType,
+                    frequencyIndex = frequencyIndexFor(frequencyType),
+                    isFlexible = isFlexible(frequencyType, subState)
+                )
+            }
+
+            is RepeatingPatternAction.ToggleWeekDay -> {
+                val weekDay = action.weekDay
+                val selectedWeekDays = if (subState.selectedWeekDays.contains(weekDay)) {
+                    subState.selectedWeekDays.minus(weekDay)
+                } else {
+                    subState.selectedWeekDays.plus(weekDay)
+                }
+
+                subState.copy(
+                    type = WEEK_DAYS_CHANGED,
+                    selectedWeekDays = selectedWeekDays,
+                    isFlexible = subState.weekCountValues[subState.weekDaysCountIndex] != selectedWeekDays.size
+                )
+            }
+
+            is RepeatingPatternAction.ChangeWeekDayCount -> {
+                subState.copy(
+                    type = COUNT_CHANGED,
+                    weekDaysCountIndex = action.index,
+                    isFlexible = subState.weekCountValues[action.index] != subState.selectedWeekDays.size
+                )
+            }
+
+            is RepeatingPatternAction.ToggleMonthDay -> {
+                val day = action.day
+                val selectedMonthDays = if (subState.selectedMonthDays.contains(day)) {
+                    subState.selectedMonthDays.minus(day)
+                } else {
+                    subState.selectedMonthDays.plus(day)
+                }
+                subState.copy(
+                    type = MONTH_DAYS_CHANGED,
+                    selectedMonthDays = selectedMonthDays,
+                    isFlexible = subState.monthCountValues[subState.monthDaysCountIndex] != selectedMonthDays.size
+                )
+            }
+
+            is RepeatingPatternAction.ChangeMonthDayCount -> {
+                subState.copy(
+                    type = COUNT_CHANGED,
+                    monthDaysCountIndex = action.index,
+                    isFlexible = subState.monthCountValues[action.index] != subState.selectedMonthDays.size
+                )
+            }
+
+            is RepeatingPatternAction.ChangeDayOfYear -> {
+                subState.copy(
+                    dayOfYear = action.date
                 )
             }
 
@@ -57,46 +130,57 @@ object RepeatingPatternReducer : BaseViewStateReducer<RepeatingPatternViewState>
         }
     }
 
-    private fun typeFor(pattern: RepeatingPattern) =
+    private fun isFlexible(
+        frequencyType: RepeatingPatternViewState.FrequencyType,
+        state: RepeatingPatternViewState
+    ) =
+        when (frequencyType) {
+            DAILY -> false
+            YEARLY -> false
+            WEEKLY -> {
+                val daysCount = state.weekCountValues[state.weekDaysCountIndex]
+                daysCount != state.selectedWeekDays.size
+            }
+            MONTHLY -> {
+                val daysCount = state.monthCountValues[state.monthDaysCountIndex]
+                daysCount != state.selectedMonthDays.size
+            }
+        }
+
+    private fun typeFor(frequencyType: RepeatingPatternViewState.FrequencyType) =
+        when (frequencyType) {
+            RepeatingPatternViewState.FrequencyType.DAILY -> SHOW_DAILY
+            RepeatingPatternViewState.FrequencyType.WEEKLY -> SHOW_WEEKLY
+            RepeatingPatternViewState.FrequencyType.MONTHLY -> SHOW_MONTHLY
+            RepeatingPatternViewState.FrequencyType.YEARLY -> SHOW_YEARLY
+        }
+
+    private fun frequencyTypeForIndex(index: Int) =
+        when (index) {
+            1 -> RepeatingPatternViewState.FrequencyType.WEEKLY
+            2 -> RepeatingPatternViewState.FrequencyType.MONTHLY
+            3 -> RepeatingPatternViewState.FrequencyType.YEARLY
+            else -> RepeatingPatternViewState.FrequencyType.DAILY
+        }
+
+    private fun frequencyIndexFor(frequencyType: RepeatingPatternViewState.FrequencyType): Int =
+        when (frequencyType) {
+            RepeatingPatternViewState.FrequencyType.DAILY -> 0
+            RepeatingPatternViewState.FrequencyType.WEEKLY -> 1
+            RepeatingPatternViewState.FrequencyType.MONTHLY -> 2
+            RepeatingPatternViewState.FrequencyType.YEARLY -> 3
+        }
+
+    private fun frequencyTypeFor(pattern: RepeatingPattern) =
         when (pattern) {
-            RepeatingPattern.Daily -> SHOW_DAILY
-            is RepeatingPattern.Weekly -> SHOW_WEEKLY
-            is RepeatingPattern.Flexible.Weekly -> SHOW_WEEKLY
-            is RepeatingPattern.Monthly -> SHOW_MONTHLY
-            is RepeatingPattern.Flexible.Monthly -> SHOW_MONTHLY
-            is RepeatingPattern.Yearly -> SHOW_YEARLY
+            RepeatingPattern.Daily -> RepeatingPatternViewState.FrequencyType.DAILY
+            is RepeatingPattern.Weekly -> RepeatingPatternViewState.FrequencyType.WEEKLY
+            is RepeatingPattern.Flexible.Weekly -> RepeatingPatternViewState.FrequencyType.WEEKLY
+            is RepeatingPattern.Monthly -> RepeatingPatternViewState.FrequencyType.MONTHLY
+            is RepeatingPattern.Flexible.Monthly -> RepeatingPatternViewState.FrequencyType.MONTHLY
+            is RepeatingPattern.Yearly -> RepeatingPatternViewState.FrequencyType.YEARLY
         }
 
-    private fun createDefaultRepeatingPattern(position: Int) =
-        when (position) {
-            1 -> RepeatingPattern.Weekly(setOf())
-            2 -> RepeatingPattern.Monthly(setOf())
-            3 -> RepeatingPattern.Yearly(LocalDate.now().dayOfMonth, LocalDate.now().monthValue)
-            else -> RepeatingPattern.Daily
-        }
-
-    private fun frequencyIndexFor(pattern: RepeatingPattern): Int =
-        when (pattern) {
-            RepeatingPattern.Daily -> 0
-            is RepeatingPattern.Weekly -> 1
-            is RepeatingPattern.Flexible.Weekly -> 1
-            is RepeatingPattern.Monthly -> 2
-            is RepeatingPattern.Flexible.Monthly -> 2
-            is RepeatingPattern.Yearly -> 3
-        }
-
-    private fun countFor(pattern: RepeatingPattern): Int {
-        val count = when (pattern) {
-            RepeatingPattern.Daily -> 1
-            is RepeatingPattern.Weekly -> pattern.daysOfWeek.size
-            is RepeatingPattern.Flexible.Weekly -> pattern.timesPerWeek
-            is RepeatingPattern.Monthly -> pattern.daysOfMonth.size
-            is RepeatingPattern.Flexible.Monthly -> pattern.timesPerMonth
-            is RepeatingPattern.Yearly -> 1
-        }
-
-        return Math.max(count, 1)
-    }
 
     private fun selectedWeekDaysFor(pattern: RepeatingPattern): Set<DayOfWeek> =
         when (pattern) {
@@ -105,30 +189,59 @@ object RepeatingPatternReducer : BaseViewStateReducer<RepeatingPatternViewState>
             else -> setOf()
         }
 
+    private fun selectedMonthDaysFor(pattern: RepeatingPattern): Set<Int> =
+        when (pattern) {
+            is RepeatingPattern.Monthly -> pattern.daysOfMonth
+            is RepeatingPattern.Flexible.Monthly -> pattern.preferredDays
+            else -> setOf()
+        }
 
     override fun defaultState() =
         RepeatingPatternViewState(
             LOADING,
-            RepeatingPattern.Daily,
-            selectedFrequencyIndex = 0,
-            count = 0,
-            selectedWeekDays = setOf()
+            DAILY,
+            frequencyIndex = 0,
+            weekDaysCountIndex = 0,
+            monthDaysCountIndex = 0,
+            selectedWeekDays = setOf(),
+            selectedMonthDays = setOf(),
+            weekCountValues = (1..6).toList(),
+            monthCountValues = (1..31).toList(),
+            isFlexible = false,
+            dayOfYear = LocalDate.now()
         )
 
 }
 
 data class RepeatingPatternViewState(
     val type: RepeatingPatternViewState.StateType,
-    val repeatingPattern: RepeatingPattern,
-    val selectedFrequencyIndex: Int,
-    val count: Int,
-    val selectedWeekDays: Set<DayOfWeek>
+    val frequencyType: FrequencyType,
+    val frequencyIndex: Int,
+    val weekDaysCountIndex: Int,
+    val monthDaysCountIndex: Int,
+    val selectedWeekDays: Set<DayOfWeek>,
+    val selectedMonthDays: Set<Int>,
+    val weekCountValues: List<Int>,
+    val monthCountValues: List<Int>,
+    val isFlexible: Boolean,
+    val dayOfYear: LocalDate
     ) : ViewState {
     enum class StateType {
         LOADING,
         SHOW_DAILY,
         SHOW_WEEKLY,
         SHOW_MONTHLY,
-        SHOW_YEARLY
+        SHOW_YEARLY,
+        WEEK_DAYS_CHANGED,
+        COUNT_CHANGED,
+        MONTH_DAYS_CHANGED,
+        YEAR_DAY_CHANGED
+    }
+
+    enum class FrequencyType {
+        DAILY,
+        WEEKLY,
+        MONTHLY,
+        YEARLY
     }
 }

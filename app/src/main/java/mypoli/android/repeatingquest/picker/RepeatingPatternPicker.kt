@@ -1,5 +1,6 @@
 package mypoli.android.repeatingquest.picker
 
+import android.app.DatePickerDialog
 import android.os.Bundle
 import android.support.annotation.ColorRes
 import android.support.annotation.DrawableRes
@@ -11,19 +12,22 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.AdapterView
+import android.widget.ArrayAdapter
 import android.widget.Button
 import android.widget.TextView
 import kotlinx.android.synthetic.main.dialog_repeating_picker.view.*
 import kotlinx.android.synthetic.main.popup_rate.view.*
 import mypoli.android.R
 import mypoli.android.common.ViewUtils
+import mypoli.android.common.text.DateFormatter
 import mypoli.android.common.view.ReduxDialogController
 import mypoli.android.common.view.attrData
 import mypoli.android.common.view.attrResourceId
 import mypoli.android.common.view.colorRes
 import mypoli.android.repeatingquest.entity.RepeatingPattern
+import mypoli.android.repeatingquest.picker.RepeatingPatternViewState.StateType.*
 import org.threeten.bp.DayOfWeek
-import java.util.*
+import org.threeten.bp.LocalDate
 
 
 /**
@@ -53,21 +57,11 @@ class RepeatingPatternPicker :
 
         view.rpWeekDayList.layoutManager =
             LinearLayoutManager(activity!!, LinearLayoutManager.HORIZONTAL, false)
-
-        view.rpWeekDayList.adapter = WeekDayAdapter(listOf())
+        view.rpWeekDayList.adapter = WeekDayAdapter()
 
         view.rpMonthDayList.layoutManager = GridLayoutManager(activity, 7)
         view.rpMonthDayList.setHasFixedSize(true)
-        view.rpMonthDayList.adapter = MonthDayAdapter(
-            (1..31).map {
-                MonthDayViewModel(
-                    it.toString(),
-                    Random().nextBoolean(),
-                    it
-                )
-            }
-        )
-
+        view.rpMonthDayList.adapter = MonthDayAdapter()
         return view
     }
 
@@ -75,19 +69,19 @@ class RepeatingPatternPicker :
         RepeatingPatternAction.LoadData(repeatingPattern)
 
     override fun render(state: RepeatingPatternViewState, view: View) {
-        val count = state.count.toString()
         when (state.type) {
-            RepeatingPatternViewState.StateType.SHOW_DAILY -> {
+            SHOW_DAILY -> {
                 ViewUtils.goneViews(
                     view.rpWeekDayList,
                     view.rpMonthDayList,
                     view.yearlyPatternGroup,
                     view.countGroup
                 )
-                setupFrequencies(view, state)
+                renderFrequencies(view, state)
+                renderMessage(view, state)
             }
 
-            RepeatingPatternViewState.StateType.SHOW_WEEKLY -> {
+            SHOW_WEEKLY -> {
                 ViewUtils.goneViews(
                     view.rpMonthDayList,
                     view.yearlyPatternGroup
@@ -97,18 +91,13 @@ class RepeatingPatternPicker :
                     view.countGroup
                 )
 
-                view.rpCount.setText(count)
-                view.rpCount.setSelection(count.length)
-
-                (view.rpWeekDayList.adapter as WeekDayAdapter).updateAll(
-                    state.weekDaysViewModels(
-                        state.selectedWeekDays
-                    )
-                )
-                setupFrequencies(view, state)
+                renderFrequencies(view, state)
+                renderWeekDaysCount(view, state)
+                renderWeekDays(view, state)
+                renderMessage(view, state)
             }
 
-            RepeatingPatternViewState.StateType.SHOW_MONTHLY -> {
+            SHOW_MONTHLY -> {
                 ViewUtils.goneViews(
                     view.rpWeekDayList,
                     view.yearlyPatternGroup
@@ -117,10 +106,14 @@ class RepeatingPatternPicker :
                     view.rpMonthDayList,
                     view.countGroup
                 )
-                setupFrequencies(view, state)
+
+                renderFrequencies(view, state)
+                renderMonthDaysCount(view, state)
+                renderMonthDays(view, state)
+                renderMessage(view, state)
             }
 
-            RepeatingPatternViewState.StateType.SHOW_YEARLY -> {
+            SHOW_YEARLY -> {
                 ViewUtils.goneViews(
                     view.rpWeekDayList,
                     view.rpMonthDayList,
@@ -130,23 +123,144 @@ class RepeatingPatternPicker :
                     view.yearlyPatternGroup
                 )
 
-                setupFrequencies(view, state)
+                renderFrequencies(view, state)
+                renderMessage(view, state)
+
+                view.rpDayOfYear.text = state.formattedDayOfYear
+                view.rpDayOfYear.setOnClickListener {
+                    val date = state.dayOfYear
+                    DatePickerDialog(
+                        view.context, R.style.Theme_myPoli_AlertDialog,
+                        DatePickerDialog.OnDateSetListener { _, year, month, dayOfMonth ->
+                            dispatch(
+                                RepeatingPatternAction.ChangeDayOfYear(
+                                    LocalDate.of(year, month + 1, dayOfMonth)
+                                )
+                            )
+                        }, date.year, date.month.value - 1, date.dayOfMonth
+                    ).show()
+                }
+            }
+
+            WEEK_DAYS_CHANGED -> {
+                renderWeekDays(view, state)
+                renderMessage(view, state)
+            }
+
+            COUNT_CHANGED -> {
+                renderMessage(view, state)
+            }
+
+            MONTH_DAYS_CHANGED -> {
+                renderMonthDays(view, state)
+                renderMessage(view, state)
+            }
+
+            YEAR_DAY_CHANGED -> {
+                view.rpDayOfYear.text = state.formattedDayOfYear
             }
         }
     }
 
-    private fun setupFrequencies(
+    private fun renderMonthDays(
+        view: View,
+        state: RepeatingPatternViewState
+    ) {
+        (view.rpMonthDayList.adapter as MonthDayAdapter).updateAll(
+            state.monthDaysViewModels()
+        )
+    }
+
+    private fun renderMessage(
+        view: View,
+        state: RepeatingPatternViewState
+    ) {
+        if (state.isFlexible) {
+            ViewUtils.showViews(view.rpMessage)
+        } else {
+            ViewUtils.goneViews(view.rpMessage)
+        }
+    }
+
+    private fun renderWeekDaysCount(
+        view: View,
+        state: RepeatingPatternViewState
+    ) {
+        val count = view.rpCount
+        count.adapter = ArrayAdapter(
+            view.context,
+            R.layout.item_dropdown_number_spinner,
+            state.weekCountValues
+        )
+        count.onItemSelectedListener = null
+        count.setSelection(state.weekDaysCountIndex)
+        count.post {
+            count.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+                override fun onNothingSelected(parent: AdapterView<*>?) {
+                }
+
+                override fun onItemSelected(
+                    parent: AdapterView<*>?,
+                    view: View?,
+                    position: Int,
+                    id: Long
+                ) {
+                    dispatch(RepeatingPatternAction.ChangeWeekDayCount(position))
+                }
+
+            }
+        }
+    }
+
+    private fun renderMonthDaysCount(
+        view: View,
+        state: RepeatingPatternViewState
+    ) {
+        val count = view.rpCount
+        count.adapter = ArrayAdapter(
+            view.context,
+            R.layout.item_dropdown_number_spinner,
+            state.monthCountValues
+        )
+        count.onItemSelectedListener = null
+        count.setSelection(state.monthDaysCountIndex)
+        count.post {
+            count.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+                override fun onNothingSelected(parent: AdapterView<*>?) {
+                }
+
+                override fun onItemSelected(
+                    parent: AdapterView<*>?,
+                    view: View?,
+                    position: Int,
+                    id: Long
+                ) {
+                    dispatch(RepeatingPatternAction.ChangeMonthDayCount(position))
+                }
+            }
+        }
+    }
+
+    private fun renderWeekDays(
+        view: View,
+        state: RepeatingPatternViewState
+    ) {
+        (view.rpWeekDayList.adapter as WeekDayAdapter).updateAll(
+            state.weekDaysViewModels()
+        )
+    }
+
+    private fun renderFrequencies(
         view: View,
         state: RepeatingPatternViewState
     ) {
         val frequency = view.rpFrequency
         frequency.onItemSelectedListener = null
-        frequency.setSelection(state.selectedFrequencyIndex)
+        frequency.setSelection(state.frequencyIndex)
         frequency.post {
             frequency.onItemSelectedListener =
                 object : AdapterView.OnItemSelectedListener {
                     override fun onNothingSelected(parent: AdapterView<*>?) {
-
                     }
 
                     override fun onItemSelected(
@@ -188,7 +302,7 @@ class RepeatingPatternPicker :
         val weekDay: DayOfWeek
     )
 
-    inner class WeekDayAdapter(private var viewModels: List<WeekDayViewModel>) :
+    inner class WeekDayAdapter(private var viewModels: List<WeekDayViewModel> = listOf()) :
         RecyclerView.Adapter<ViewHolder>() {
         override fun getItemCount() = viewModels.size
 
@@ -203,7 +317,7 @@ class RepeatingPatternPicker :
 
             button.setBackgroundResource(background)
             button.setTextColor(textColor)
-
+            button.dispatchOnClick(RepeatingPatternAction.ToggleWeekDay(vm.weekDay))
         }
 
         fun updateAll(viewModels: List<WeekDayViewModel>) {
@@ -224,9 +338,13 @@ class RepeatingPatternPicker :
 
     inner class ViewHolder(view: View) : RecyclerView.ViewHolder(view)
 
-    data class MonthDayViewModel(val text: String, val isSelected: Boolean, val day: Int)
+    data class MonthDayViewModel(
+        val text: String,
+        @DrawableRes val background: Int,
+        val isSelected: Boolean, val day: Int
+    )
 
-    inner class MonthDayAdapter(private var viewModels: List<MonthDayViewModel>) :
+    inner class MonthDayAdapter(private var viewModels: List<MonthDayViewModel> = listOf()) :
         RecyclerView.Adapter<ViewHolder>() {
         override fun getItemCount() = viewModels.size
 
@@ -234,11 +352,8 @@ class RepeatingPatternPicker :
             val vm = viewModels[position]
             val view = holder.itemView as TextView
             view.text = vm.text
-            if (vm.isSelected) {
-                view.setBackgroundResource(R.drawable.bordered_circle_accent_background)
-            } else {
-                view.setBackgroundResource(attrResourceId(android.R.attr.selectableItemBackgroundBorderless))
-            }
+            view.setBackgroundResource(vm.background)
+            view.dispatchOnClick(RepeatingPatternAction.ToggleMonthDay(vm.day))
         }
 
         fun updateAll(viewModels: List<MonthDayViewModel>) {
@@ -257,7 +372,7 @@ class RepeatingPatternPicker :
 
     }
 
-    private fun RepeatingPatternViewState.weekDaysViewModels(selectedWeekDays: Set<DayOfWeek>): List<WeekDayViewModel> =
+    private fun RepeatingPatternViewState.weekDaysViewModels() =
         DayOfWeek.values().map {
             val isSelected = selectedWeekDays.contains(it)
             val (background, textColor) = if (isSelected)
@@ -273,6 +388,24 @@ class RepeatingPatternPicker :
             )
         }
 
+    private fun RepeatingPatternViewState.monthDaysViewModels() =
+        (1..31).map {
+            val isSelected = selectedMonthDays.contains(it)
+            val background = if (isSelected)
+                R.drawable.bordered_circle_accent_background
+            else
+                attrResourceId(android.R.attr.selectableItemBackgroundBorderless)
+
+            RepeatingPatternPicker.MonthDayViewModel(
+                text = it.toString(),
+                background = background,
+                isSelected = isSelected,
+                day = it
+            )
+        }
+
+    private val RepeatingPatternViewState.formattedDayOfYear
+        get() = DateFormatter.formatDayWithWeek(dayOfYear)
 
 
 }
