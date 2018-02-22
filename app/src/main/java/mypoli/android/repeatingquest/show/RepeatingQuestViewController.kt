@@ -83,6 +83,8 @@ class RepeatingQuestViewController :
         view: View,
         state: RepeatingQuestViewState.Changed
     ) {
+        view.categoryName.text = state.category.name
+        view.categoryImage.setImageResource(R.drawable.ic_context_chores_white)
         view.totalTimeSpent.text = state.timeSpentText
         view.nextScheduledDate.text = state.nextScheduledDateText
         view.quest_streak.text = state.currentStreak.toString()

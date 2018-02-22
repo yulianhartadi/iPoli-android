@@ -7,6 +7,7 @@ import mypoli.android.common.datetime.Minute
 import mypoli.android.common.datetime.minutes
 import mypoli.android.common.mvi.ViewState
 import mypoli.android.common.redux.Action
+import mypoli.android.quest.Category
 import mypoli.android.quest.Color
 import mypoli.android.repeatingquest.show.RepeatingQuestViewState.Changed.ProgressModel.COMPLETE
 import mypoli.android.repeatingquest.show.RepeatingQuestViewState.Changed.ProgressModel.INCOMPLETE
@@ -28,6 +29,7 @@ sealed class RepeatingQuestViewState : ViewState {
     data class Changed(
         val name: String,
         val color: Color,
+        val category: Category,
         val nextScheduledDate: LocalDate,
         val totalDuration: Duration<Minute>,
         val currentStreak: Int,
@@ -61,6 +63,7 @@ object RepeatingQuestReducer : BaseViewStateReducer<RepeatingQuestViewState>() {
             RepeatingQuestViewState.Changed(
                 name = "Hello World",
                 color = Color.DEEP_ORANGE,
+                category = Category("Chores", Color.BROWN),
                 nextScheduledDate = LocalDate.now(),
                 totalDuration = 180.minutes,
                 currentStreak = 10,
