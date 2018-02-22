@@ -41,7 +41,7 @@
                     android:paddingTop="?attr/actionBarSize" />
 
                 <LinearLayout
-                    android:id="@+id/repeating_quest_progress_container"
+                    android:id="@+id/progressContainer"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_vertical"
