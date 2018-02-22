@@ -31,10 +31,19 @@ sealed class RepeatingQuestViewState : ViewState {
         val nextScheduledDate: LocalDate,
         val totalDuration: Duration<Minute>,
         val currentStreak: Int,
+        val repeat: RepeatType,
         val progress: List<ProgressModel>
     ) : RepeatingQuestViewState() {
+
         enum class ProgressModel {
             COMPLETE, INCOMPLETE
+        }
+
+        sealed class RepeatType {
+            object Daily : RepeatType()
+            data class Weekly(val frequency: Int) : RepeatType()
+            data class Monthly(val frequency: Int) : RepeatType()
+            object Yearly : RepeatType()
         }
     }
 }
@@ -51,10 +60,11 @@ object RepeatingQuestReducer : BaseViewStateReducer<RepeatingQuestViewState>() {
         is RepeatingQuestAction.Load -> {
             RepeatingQuestViewState.Changed(
                 name = "Hello World",
-                color = Color.TEAL,
+                color = Color.DEEP_ORANGE,
                 nextScheduledDate = LocalDate.now(),
                 totalDuration = 180.minutes,
                 currentStreak = 10,
+                repeat = RepeatingQuestViewState.Changed.RepeatType.Weekly(5),
                 progress = listOf(COMPLETE, COMPLETE, COMPLETE, INCOMPLETE, INCOMPLETE)
             )
         }

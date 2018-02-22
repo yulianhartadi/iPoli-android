@@ -120,6 +120,8 @@ class RepeatingQuestViewController :
 
             view.progressContainer.addView(progressViewEmpty)
         }
+
+        view.frequencyText.text = state.frequencyText
     }
 
     private fun colorLayout(
@@ -163,6 +165,37 @@ class RepeatingQuestViewController :
 
     private val RepeatingQuestViewState.Changed.nextScheduledDateText
         get() = DateFormatter.format(view!!.context, nextScheduledDate)
+
+    private val RepeatingQuestViewState.Changed.frequencyText
+        get() = when (repeat) {
+            RepeatingQuestViewState.Changed.RepeatType.Daily -> {
+                "Every day"
+            }
+
+            is RepeatingQuestViewState.Changed.RepeatType.Weekly -> {
+                repeat.frequency.let {
+                    if (it == 1) {
+                        "Once per week"
+                    } else {
+                        "$it times per week"
+                    }
+                }
+            }
+
+            is RepeatingQuestViewState.Changed.RepeatType.Monthly -> {
+                repeat.frequency.let {
+                    if (it == 1) {
+                        "Once per month"
+                    } else {
+                        "$it times per month"
+                    }
+                }
+            }
+
+            RepeatingQuestViewState.Changed.RepeatType.Yearly -> {
+                "Once per year"
+            }
+        }
 
     data class ProgressViewModel(@LayoutRes val layout: Int, @ColorInt val color: Int)
 }
