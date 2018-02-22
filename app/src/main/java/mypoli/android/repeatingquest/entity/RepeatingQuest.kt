@@ -11,7 +11,10 @@ import org.threeten.bp.LocalDate
  * on 02/14/2018.
  */
 
-sealed class RepeatingPattern {
+sealed class RepeatingPattern(
+    val start: LocalDate = LocalDate.now(),
+    val end: LocalDate? = null
+) {
     object Daily : RepeatingPattern()
     data class Yearly(val dayOfMonth: Int, val month: Int) : RepeatingPattern()
     data class Weekly(val daysOfWeek: Set<DayOfWeek>) :
@@ -36,8 +39,6 @@ sealed class RepeatingPattern {
 data class RepeatingQuest(
     override val id: String = "",
     val name: String,
-    val start: LocalDate = LocalDate.now(),
-    val end: LocalDate? = null,
     val color: Color,
     val icon: Icon? = null,
     val category: Category,
@@ -47,4 +48,10 @@ data class RepeatingQuest(
     val repeatingPattern: RepeatingPattern,
     override val createdAt: Instant = Instant.now(),
     override val updatedAt: Instant = Instant.now()
-) : Entity
+) : Entity {
+    val start
+        get() = repeatingPattern.start
+
+    val end
+        get() = repeatingPattern.end
+}

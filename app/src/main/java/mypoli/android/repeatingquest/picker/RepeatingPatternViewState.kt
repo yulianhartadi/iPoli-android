@@ -22,6 +22,8 @@ sealed class RepeatingPatternAction : Action {
     data class ToggleMonthDay(val day: Int) : RepeatingPatternAction()
     data class ChangeMonthDayCount(val index: Int) : RepeatingPatternAction()
     data class ChangeDayOfYear(val date: LocalDate) : RepeatingPatternAction()
+    data class ChangeStartDate(val date: LocalDate) : RepeatingPatternAction()
+    data class ChangeEndDate(val date: LocalDate) : RepeatingPatternAction()
 }
 
 
@@ -51,22 +53,28 @@ object RepeatingPatternReducer : BaseViewStateReducer<RepeatingPatternViewState>
                 val monthDaysCount = Math.max(1, selectedMonthDays.size)
                 val monthDaysCountIndex = subState.monthCountValues.indexOfFirst { monthDaysCount == it }
 
+                val startDate = pattern?.start ?: subState.startDate
+                val endDate = pattern?.end ?: subState.endDate
+
                 subState.copy(
-                    type = typeFor(frequencyType),
+                    type = DATA_LOADED,
                     frequencyType = frequencyType,
                     frequencyIndex = frequencyIndexFor(frequencyType),
                     weekDaysCountIndex = weekDaysCountIndex,
                     monthDaysCountIndex = monthDaysCountIndex,
                     selectedWeekDays = selectedWeekDays,
                     selectedMonthDays = selectedMonthDays,
-                    isFlexible = pattern is RepeatingPattern.Flexible
+                    isFlexible = pattern is RepeatingPattern.Flexible,
+                    startDate = startDate,
+                    endDate = endDate,
+                    pickerEndDate = endDate ?: subState.pickerEndDate
                 )
             }
 
             is RepeatingPatternAction.ChangeFrequency -> {
                 val frequencyType = frequencyTypeForIndex(action.index)
                 subState.copy(
-                    type = typeFor(frequencyType),
+                    type = FREQUENCY_CHANGED,
                     frequencyType = frequencyType,
                     frequencyIndex = frequencyIndexFor(frequencyType),
                     isFlexible = isFlexible(frequencyType, subState)
@@ -120,7 +128,23 @@ object RepeatingPatternReducer : BaseViewStateReducer<RepeatingPatternViewState>
 
             is RepeatingPatternAction.ChangeDayOfYear -> {
                 subState.copy(
+                    type = YEAR_DAY_CHANGED,
                     dayOfYear = action.date
+                )
+            }
+
+            is RepeatingPatternAction.ChangeStartDate -> {
+                subState.copy(
+                    type = START_DATE_CHANGED,
+                    startDate = action.date
+                )
+            }
+
+            is RepeatingPatternAction.ChangeEndDate -> {
+                subState.copy(
+                    type = END_DATE_CHANGED,
+                    endDate = action.date,
+                    pickerEndDate = action.date
                 )
             }
 
@@ -145,14 +169,6 @@ object RepeatingPatternReducer : BaseViewStateReducer<RepeatingPatternViewState>
                 val daysCount = state.monthCountValues[state.monthDaysCountIndex]
                 daysCount != state.selectedMonthDays.size
             }
-        }
-
-    private fun typeFor(frequencyType: RepeatingPatternViewState.FrequencyType) =
-        when (frequencyType) {
-            RepeatingPatternViewState.FrequencyType.DAILY -> SHOW_DAILY
-            RepeatingPatternViewState.FrequencyType.WEEKLY -> SHOW_WEEKLY
-            RepeatingPatternViewState.FrequencyType.MONTHLY -> SHOW_MONTHLY
-            RepeatingPatternViewState.FrequencyType.YEARLY -> SHOW_YEARLY
         }
 
     private fun frequencyTypeForIndex(index: Int) =
@@ -208,7 +224,10 @@ object RepeatingPatternReducer : BaseViewStateReducer<RepeatingPatternViewState>
             weekCountValues = (1..6).toList(),
             monthCountValues = (1..31).toList(),
             isFlexible = false,
-            dayOfYear = LocalDate.now()
+            dayOfYear = LocalDate.now(),
+            startDate = LocalDate.now(),
+            endDate = null,
+            pickerEndDate = LocalDate.now()
         )
 
 }
@@ -224,18 +243,21 @@ data class RepeatingPatternViewState(
     val weekCountValues: List<Int>,
     val monthCountValues: List<Int>,
     val isFlexible: Boolean,
-    val dayOfYear: LocalDate
+    val dayOfYear: LocalDate,
+    val startDate: LocalDate,
+    val endDate: LocalDate?,
+    val pickerEndDate: LocalDate
     ) : ViewState {
     enum class StateType {
         LOADING,
-        SHOW_DAILY,
-        SHOW_WEEKLY,
-        SHOW_MONTHLY,
-        SHOW_YEARLY,
+        DATA_LOADED,
+        FREQUENCY_CHANGED,
         WEEK_DAYS_CHANGED,
         COUNT_CHANGED,
         MONTH_DAYS_CHANGED,
-        YEAR_DAY_CHANGED
+        YEAR_DAY_CHANGED,
+        START_DATE_CHANGED,
+        END_DATE_CHANGED
     }
 
     enum class FrequencyType {

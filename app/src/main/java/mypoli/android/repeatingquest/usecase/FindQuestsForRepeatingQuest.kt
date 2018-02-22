@@ -30,12 +30,13 @@ class FindQuestsForRepeatingQuest(
             return Result(listOf(), rq)
         }
 
-        if (rq.end != null && parameters.start.isAfter(rq.end)) {
+        val rqEnd = rq.end
+        if (rqEnd != null && parameters.start.isAfter(rqEnd)) {
             return Result(listOf(), rq)
         }
 
         val start = if (parameters.start.isBefore(rq.start)) rq.start else parameters.start
-        val end = if (rq.end != null && rq.end.isBefore(parameters.end)) rq.end else parameters.end
+        val end = if (rqEnd != null && rqEnd.isBefore(parameters.end)) rqEnd else parameters.end
 
         var newRQ : RepeatingQuest? = null
 
