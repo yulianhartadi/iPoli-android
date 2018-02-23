@@ -30,10 +30,13 @@ sealed class AddQuestIntent : Intent {
     data class ReminderPicked(val reminder: ReminderViewModel?) : AddQuestIntent()
     data class RepeatingPatternPicked(val pattern: RepeatingPattern) : AddQuestIntent()
     data class SaveQuest(val name: String) : AddQuestIntent()
+    object RepeatingPatterPickerCanceled : AddQuestIntent()
+    object DatePickerCanceled : AddQuestIntent()
 }
 
 data class AddQuestViewState(
     val type: StateType,
+    val originalDate: LocalDate,
     val date: LocalDate? = null,
     val time: Time? = null,
     val duration: Int? = null,
@@ -56,6 +59,6 @@ enum class StateType {
     VALIDATION_ERROR_EMPTY_NAME,
     VALIDATION_ERROR_NO_REPEATING_PATTERN,
     QUEST_SAVED,
-    DATE_PICKED,
-    REPEATING_PATTERN_PICKED
+    SWITCHED_TO_QUEST,
+    SWITCHED_TO_REPEATING
 }

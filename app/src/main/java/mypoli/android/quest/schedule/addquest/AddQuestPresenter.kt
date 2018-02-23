@@ -27,7 +27,8 @@ class AddQuestPresenter(
     coroutineContext: CoroutineContext
 ) : BaseMviPresenter<ViewStateRenderer<AddQuestViewState>, AddQuestViewState, AddQuestIntent>(
     AddQuestViewState(
-        type = DEFAULT
+        type = DEFAULT,
+        originalDate = LocalDate.now()
     ),
     coroutineContext
 ) {
@@ -37,6 +38,7 @@ class AddQuestPresenter(
             is AddQuestIntent.LoadData ->
                 state.copy(
                     type = DEFAULT,
+                    originalDate = intent.startDate,
                     date = intent.startDate
                 )
 
@@ -45,7 +47,7 @@ class AddQuestPresenter(
 
             is AddQuestIntent.DatePicked -> {
                 val date = LocalDate.of(intent.year, intent.month, intent.day)
-                state.copy(type = DATE_PICKED, date = date)
+                state.copy(type = DEFAULT, date = date, isRepeating = false)
             }
 
             AddQuestIntent.PickTime ->
@@ -82,7 +84,23 @@ class AddQuestPresenter(
                 state.copy(type = PICK_REPEATING_PATTERN)
 
             is AddQuestIntent.RepeatingPatternPicked -> {
-                state.copy(type = REPEATING_PATTERN_PICKED, repeatingPattern = intent.pattern, isRepeating = true)
+                state.copy(type = DEFAULT, repeatingPattern = intent.pattern, isRepeating = true)
+            }
+
+            AddQuestIntent.RepeatingPatterPickerCanceled -> {
+                if (state.date != null) {
+                    state.copy(type = SWITCHED_TO_QUEST, isRepeating = false)
+                } else {
+                    state.copy(type = DEFAULT)
+                }
+            }
+
+            AddQuestIntent.DatePickerCanceled -> {
+                if (state.repeatingPattern != null) {
+                    state.copy(type = SWITCHED_TO_REPEATING, isRepeating = true)
+                } else {
+                    state.copy(type = DEFAULT)
+                }
             }
 
             is AddQuestIntent.SaveQuest -> {
@@ -107,7 +125,11 @@ class AddQuestPresenter(
                         is SaveRepeatingQuestUseCase.Result.Invalid ->
                             state.copy(type = VALIDATION_ERROR_EMPTY_NAME)
                         is SaveRepeatingQuestUseCase.Result.Added ->
-                            AddQuestViewState(type = QUEST_SAVED)
+                            AddQuestViewState(
+                                type = QUEST_SAVED,
+                                originalDate = state.originalDate,
+                                date = state.originalDate
+                            )
                     }
                 } else {
 
@@ -126,7 +148,11 @@ class AddQuestPresenter(
                         is Result.Invalid ->
                             state.copy(type = VALIDATION_ERROR_EMPTY_NAME)
                         is Result.Added ->
-                            AddQuestViewState(type = QUEST_SAVED)
+                            AddQuestViewState(
+                                type = QUEST_SAVED,
+                                originalDate = state.originalDate,
+                                date = state.originalDate
+                            )
                     }
                 }
             }

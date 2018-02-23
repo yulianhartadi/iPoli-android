@@ -40,15 +40,18 @@ class RepeatingPatternPicker :
 
     private var repeatingPattern: RepeatingPattern? = null
     private lateinit var resultListener: (RepeatingPattern) -> Unit
+    private var cancelListener: (() -> Unit)? = null
 
     constructor(args: Bundle? = null) : super(args)
 
     constructor(
         repeatingPattern: RepeatingPattern? = null,
-        resultListener: (RepeatingPattern) -> Unit
+        resultListener: (RepeatingPattern) -> Unit,
+        cancelListener: (() -> Unit)? = null
     ) : this() {
         this.repeatingPattern = repeatingPattern
         this.resultListener = resultListener
+        this.cancelListener = cancelListener
     }
 
     override fun onCreateContentView(inflater: LayoutInflater, savedViewState: Bundle?): View {
@@ -412,6 +415,10 @@ class RepeatingPatternPicker :
         dialog.setOnShowListener {
             setPositiveButtonListener {
                 dispatch(RepeatingPatternAction.CreatePattern)
+            }
+            setNegativeButtonListener {
+                cancelListener?.invoke()
+                dismissDialog()
             }
         }
     }

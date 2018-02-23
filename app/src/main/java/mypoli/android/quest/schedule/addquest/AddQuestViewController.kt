@@ -80,9 +80,7 @@ class AddQuestViewController(args: Bundle? = null) :
         )
 
         view.scheduleDate.sendOnClickAndExec(AddQuestIntent.PickDate, {
-            TransitionManager.beginDelayedTransition(view as ViewGroup)
-            view.scheduleDate.setBackgroundResource(R.drawable.quest_type_left_solid_background)
-            view.repeatingPattern.setBackgroundResource(R.drawable.quest_type_right_bordered_background)
+            selectScheduleDate(view)
         })
 
         view.startTime.setOnClickListener {
@@ -110,11 +108,21 @@ class AddQuestViewController(args: Bundle? = null) :
         }
 
         view.repeatingPattern.sendOnClickAndExec(AddQuestIntent.PickRepeatingPattern, {
-            TransitionManager.beginDelayedTransition(view as ViewGroup)
-            view.scheduleDate.setBackgroundResource(R.drawable.quest_type_left_bordered_background)
-            view.repeatingPattern.setBackgroundResource(R.drawable.quest_type_right_solid_background)
+            selectRepeatingPattern(view)
         })
         return view
+    }
+
+    private fun selectRepeatingPattern(view: View) {
+        TransitionManager.beginDelayedTransition(view as ViewGroup)
+        view.scheduleDate.setBackgroundResource(R.drawable.quest_type_left_bordered_background)
+        view.repeatingPattern.setBackgroundResource(R.drawable.quest_type_right_solid_background)
+    }
+
+    private fun selectScheduleDate(view: View) {
+        TransitionManager.beginDelayedTransition(view as ViewGroup)
+        view.scheduleDate.setBackgroundResource(R.drawable.quest_type_left_solid_background)
+        view.repeatingPattern.setBackgroundResource(R.drawable.quest_type_right_bordered_background)
     }
 
     override fun render(state: AddQuestViewState, view: View) {
@@ -123,11 +131,16 @@ class AddQuestViewController(args: Bundle? = null) :
         when (state.type) {
             PICK_DATE -> {
                 val date = state.date ?: LocalDate.now()
-                DatePickerDialog(view.context, R.style.Theme_myPoli_AlertDialog,
+                val datePickerDialog = DatePickerDialog(
+                    view.context, R.style.Theme_myPoli_AlertDialog,
                     DatePickerDialog.OnDateSetListener { _, year, month, dayOfMonth ->
                         send(AddQuestIntent.DatePicked(year, month + 1, dayOfMonth))
                     }, date.year, date.month.value - 1, date.dayOfMonth
-                ).show()
+                )
+                datePickerDialog.setOnCancelListener {
+                    send(AddQuestIntent.DatePickerCanceled)
+                }
+                datePickerDialog.show()
             }
 
             PICK_TIME -> {
@@ -184,10 +197,20 @@ class AddQuestViewController(args: Bundle? = null) :
                 }, state.reminder).showDialog(router, "pick_reminder_tag")
 
             PICK_REPEATING_PATTERN -> {
-                RepeatingPatternPicker(state.repeatingPattern, {
-                    send(AddQuestIntent.RepeatingPatternPicked(it))
-                })
+                RepeatingPatternPicker(
+                    state.repeatingPattern,
+                    { send(AddQuestIntent.RepeatingPatternPicked(it)) },
+                    { send(AddQuestIntent.RepeatingPatterPickerCanceled) }
+                )
                 .showDialog(router, "pick_repeating_pattern_tag")
+            }
+
+            SWITCHED_TO_QUEST -> {
+                selectScheduleDate(view)
+            }
+
+            SWITCHED_TO_REPEATING -> {
+                selectRepeatingPattern(view)
             }
 
             VALIDATION_ERROR_EMPTY_NAME ->
@@ -200,13 +223,6 @@ class AddQuestViewController(args: Bundle? = null) :
             DEFAULT -> {
             }
 
-            DATE_PICKED -> {
-
-            }
-
-            REPEATING_PATTERN_PICKED -> {
-
-            }
         }
     }
 
@@ -222,6 +238,7 @@ class AddQuestViewController(args: Bundle? = null) :
             view.repeatingPattern
         )
             .forEach { resetColor(it) }
+        selectScheduleDate(view)
     }
 
     private fun colorSelectedIcons(state: AddQuestViewState, view: View) {
