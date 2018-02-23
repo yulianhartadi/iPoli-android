@@ -45,7 +45,7 @@ class AddQuestPresenter(
 
             is AddQuestIntent.DatePicked -> {
                 val date = LocalDate.of(intent.year, intent.month, intent.day)
-                state.copy(type = DEFAULT, date = date)
+                state.copy(type = DATE_PICKED, date = date)
             }
 
             AddQuestIntent.PickTime ->
@@ -82,7 +82,7 @@ class AddQuestPresenter(
                 state.copy(type = PICK_REPEATING_PATTERN)
 
             is AddQuestIntent.RepeatingPatternPicked -> {
-                state.copy(type = DEFAULT, repeatingPattern = intent.pattern, isRepeating = true)
+                state.copy(type = REPEATING_PATTERN_PICKED, repeatingPattern = intent.pattern, isRepeating = true)
             }
 
             is AddQuestIntent.SaveQuest -> {

@@ -190,6 +190,16 @@ class AddQuestViewController(args: Bundle? = null) :
 
             DEFAULT -> {
             }
+
+            DATE_PICKED -> {
+                view.scheduleDate.setBackgroundResource(R.drawable.quest_type_left_solid_background)
+                view.repeatingPattern.setBackgroundResource(R.drawable.quest_type_right_bordered_background)
+            }
+
+            REPEATING_PATTERN_PICKED -> {
+                view.scheduleDate.setBackgroundResource(R.drawable.quest_type_left_bordered_background)
+                view.repeatingPattern.setBackgroundResource(R.drawable.quest_type_right_solid_background)
+            }
         }
     }
 
@@ -201,16 +211,13 @@ class AddQuestViewController(args: Bundle? = null) :
             view.duration,
             view.color,
             view.icon,
-            view.reminder
+            view.reminder,
+            view.repeatingPattern
         )
             .forEach { resetColor(it) }
     }
 
     private fun colorSelectedIcons(state: AddQuestViewState, view: View) {
-        state.date?.let {
-            applySelectedColor(view.scheduleDate)
-        }
-
         state.duration?.let {
             applySelectedColor(view.duration)
         }
