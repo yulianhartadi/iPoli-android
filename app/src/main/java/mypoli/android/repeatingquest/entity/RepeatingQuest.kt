@@ -20,7 +20,6 @@ sealed class RepeatingPattern(
         override val end: LocalDate? = null
     ) : RepeatingPattern(start, end)
 
-
     data class Yearly(
         val dayOfMonth: Int,
         val month: Int,

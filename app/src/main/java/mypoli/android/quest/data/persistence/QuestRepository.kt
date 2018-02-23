@@ -148,7 +148,7 @@ class FirestoreQuestRepository(
 
         val reminder = documents[0]
 
-        val remindDate = (reminder.get("date") as Long).startOfDayUtc
+        val remindDate = (reminder.get("date") as Long).startOfDayUTC
         val remindMillis = reminder.get("millisOfDay") as Long
         return LocalDateTime.of(
             remindDate,
@@ -279,7 +279,7 @@ class FirestoreQuestRepository(
             null
         })
 
-        val plannedDate = cq.scheduledDate.startOfDayUtc
+        val plannedDate = cq.scheduledDate.startOfDayUTC
         val plannedTime = cq.startMinute?.let { Time.of(it.toInt()) }
 
         return Quest(
@@ -303,13 +303,13 @@ class FirestoreQuestRepository(
                     else -> null
                 }
             },
-            completedAtDate = cq.completedAtDate?.startOfDayUtc,
+            completedAtDate = cq.completedAtDate?.startOfDayUTC,
             completedAtTime = cq.completedAtMinute?.let {
                 Time.of(it.toInt())
             },
             reminder = cq.reminder?.let {
                 val cr = DbReminder(it)
-                Reminder(cr.message, Time.of(cr.minute), cr.date.startOfDayUtc)
+                Reminder(cr.message, Time.of(cr.minute), cr.date.startOfDayUTC)
             },
             timeRanges = cq.timeRanges.map {
                 val ctr = DbTimeRange(it)
