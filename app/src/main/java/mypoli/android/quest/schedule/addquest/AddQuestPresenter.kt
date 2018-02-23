@@ -11,6 +11,7 @@ import mypoli.android.quest.schedule.addquest.StateType.*
 import mypoli.android.quest.usecase.Result
 import mypoli.android.quest.usecase.SaveQuestUseCase
 import mypoli.android.reminder.view.picker.ReminderViewModel
+import mypoli.android.repeatingquest.usecase.SaveRepeatingQuestUseCase
 import org.threeten.bp.LocalDate
 import org.threeten.bp.LocalDateTime
 import org.threeten.bp.LocalTime
@@ -22,6 +23,7 @@ import kotlin.coroutines.experimental.CoroutineContext
  */
 class AddQuestPresenter(
     private val saveQuestUseCase: SaveQuestUseCase,
+    private val saveRepeatingQuestUseCase: SaveRepeatingQuestUseCase,
     coroutineContext: CoroutineContext
 ) : BaseMviPresenter<ViewStateRenderer<AddQuestViewState>, AddQuestViewState, AddQuestIntent>(
     AddQuestViewState(
@@ -39,7 +41,7 @@ class AddQuestPresenter(
                 )
 
             AddQuestIntent.PickDate ->
-                state.copy(type = PICK_DATE)
+                state.copy(type = PICK_DATE, isRepeating = false)
 
             is AddQuestIntent.DatePicked -> {
                 val date = LocalDate.of(intent.year, intent.month, intent.day)
@@ -80,7 +82,7 @@ class AddQuestPresenter(
                 state.copy(type = PICK_REPEATING_PATTERN)
 
             is AddQuestIntent.RepeatingPatternPicked -> {
-                state.copy(type = DEFAULT, repeatingPattern = intent.pattern)
+                state.copy(type = DEFAULT, repeatingPattern = intent.pattern, isRepeating = true)
             }
 
             is AddQuestIntent.SaveQuest -> {
@@ -89,21 +91,43 @@ class AddQuestPresenter(
 
                 val reminder = createReminder(state, scheduledDate)
 
-                val questParams = SaveQuestUseCase.Parameters(
-                    name = intent.name,
-                    color = Color.valueOf(color.name),
-                    icon = state.icon,
-                    category = Category("WELLNESS", Color.GREEN),
-                    scheduledDate = scheduledDate,
-                    startTime = state.time,
-                    duration = state.duration ?: Constants.QUEST_MIN_DURATION,
-                    reminder = reminder
-                )
-                val result = saveQuestUseCase.execute(questParams)
-                when (result) {
-                    is Result.Invalid ->
-                        state.copy(type = VALIDATION_ERROR_EMPTY_NAME)
-                    else -> AddQuestViewState(type = QUEST_SAVED)
+                if (state.isRepeating) {
+                    val rqParams = SaveRepeatingQuestUseCase.Params(
+                        name = intent.name,
+                        color = Color.valueOf(color.name),
+                        icon = state.icon,
+                        category = Category("WELLNESS", Color.GREEN),
+                        startTime = state.time,
+                        duration = state.duration ?: Constants.QUEST_MIN_DURATION,
+                        reminder = reminder,
+                        repeatingPattern = state.repeatingPattern!!
+                    )
+                    val result = saveRepeatingQuestUseCase.execute(rqParams)
+                    when (result) {
+                        is SaveRepeatingQuestUseCase.Result.Invalid ->
+                            state.copy(type = VALIDATION_ERROR_EMPTY_NAME)
+                        is SaveRepeatingQuestUseCase.Result.Added ->
+                            AddQuestViewState(type = QUEST_SAVED)
+                    }
+                } else {
+
+                    val questParams = SaveQuestUseCase.Parameters(
+                        name = intent.name,
+                        color = Color.valueOf(color.name),
+                        icon = state.icon,
+                        category = Category("WELLNESS", Color.GREEN),
+                        scheduledDate = scheduledDate,
+                        startTime = state.time,
+                        duration = state.duration ?: Constants.QUEST_MIN_DURATION,
+                        reminder = reminder
+                    )
+                    val result = saveQuestUseCase.execute(questParams)
+                    when (result) {
+                        is Result.Invalid ->
+                            state.copy(type = VALIDATION_ERROR_EMPTY_NAME)
+                        is Result.Added ->
+                            AddQuestViewState(type = QUEST_SAVED)
+                    }
                 }
             }
         }

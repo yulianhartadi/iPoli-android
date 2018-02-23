@@ -76,8 +76,7 @@ class SaveRepeatingQuestUseCase(
     sealed class Result {
 
         enum class ValidationError {
-            EMPTY_NAME,
-            TIMER_RUNNING
+            EMPTY_NAME
         }
 
         data class Added(val repeatingQuest: RepeatingQuest) : Result()

@@ -40,8 +40,8 @@ data class AddQuestViewState(
     val color: Color? = null,
     val icon: Icon? = null,
     val reminder: ReminderViewModel? = null,
-    val repeatingPattern: RepeatingPattern? = null
-
+    val repeatingPattern: RepeatingPattern? = null,
+    val isRepeating: Boolean = false
 ) : ViewState
 
 enum class StateType {
@@ -54,5 +54,6 @@ enum class StateType {
     PICK_REMINDER,
     PICK_REPEATING_PATTERN,
     VALIDATION_ERROR_EMPTY_NAME,
+    VALIDATION_ERROR_NO_REPEATING_PATTERN,
     QUEST_SAVED
 }
