@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.support.annotation.ColorRes
 import android.support.annotation.DrawableRes
 import android.support.transition.TransitionManager
+import android.support.v4.content.ContextCompat
 import android.support.v7.app.AlertDialog
 import android.support.v7.widget.GridLayoutManager
 import android.support.v7.widget.LinearLayoutManager
@@ -81,6 +82,13 @@ class RepeatingPatternPicker :
                 initEndDateListener(view, state)
 
                 renderForFrequencyType(state, view)
+
+                view.rpMessage.setCompoundDrawablesWithIntrinsicBounds(
+                    ContextCompat.getDrawable(view.context, state.petAvatar!!),
+                    null,
+                    null,
+                    null
+                )
             }
 
             FREQUENCY_CHANGED -> {

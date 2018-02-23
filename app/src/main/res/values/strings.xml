@@ -1137,4 +1137,6 @@
     <string name="login_error_contact_us_message">Something went really wrong</string>
     <string name="help_me_login">Help me login</string>
     <string name="welcome_back_hero">Welcome back, Hero!</string>
+    <string name="every">Every</string>
+    <string name="times">times</string>
 </resources>

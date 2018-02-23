@@ -16,7 +16,7 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="24dp"
             android:layout_marginTop="16dp"
-            android:text="Every"
+            android:text="@string/every"
             android:textAppearance="@style/TextAppearance.AppCompat.Subhead"
             android:textColor="@color/md_dark_text_54"
             android:textStyle="bold"
@@ -53,21 +53,6 @@
             app:layout_constraintTop_toTopOf="@+id/rpEvery"
             tools:text="x" />
 
-        <!--<EditText-->
-            <!--android:id="@+id/rpCount"-->
-            <!--android:layout_width="wrap_content"-->
-            <!--android:layout_height="wrap_content"-->
-            <!--android:layout_marginStart="16dp"-->
-            <!--android:background="@drawable/bordered_rectangle_accent_background"-->
-            <!--android:hint="10"-->
-            <!--android:inputType="number"-->
-            <!--android:paddingEnd="4dp"-->
-            <!--android:paddingStart="4dp"-->
-            <!--app:layout_constraintBottom_toBottomOf="@+id/rpEvery"-->
-            <!--app:layout_constraintStart_toEndOf="@+id/textView2"-->
-            <!--app:layout_constraintTop_toTopOf="@+id/rpEvery"-->
-            <!--tools:text="20" />-->
-
         <Spinner
             android:id="@+id/rpCount"
             android:layout_width="wrap_content"
@@ -85,7 +70,7 @@
             android:layout_height="wrap_content"
             android:layout_marginEnd="8dp"
             android:layout_marginStart="8dp"
-            android:text="times"
+            android:text="@string/times"
             android:textAppearance="@style/TextAppearance.AppCompat.Subhead"
             android:textColor="@color/md_dark_text_54"
             android:textStyle="bold"
@@ -129,9 +114,9 @@
             android:layout_marginTop="24dp"
             android:background="@drawable/bordered_rectangle_accent_background"
             android:drawablePadding="16dp"
-            android:drawableStart="@drawable/pet_1_head"
             android:gravity="center_vertical"
             android:paddingStart="16dp"
+            android:paddingEnd="16dp"
             android:text="You're choosing flexible pattern"
             android:textAppearance="@style/TextAppearance.AppCompat.Body1"
             android:visibility="gone"
@@ -146,7 +131,7 @@
             android:layout_marginBottom="8dp"
             android:layout_marginStart="24dp"
             android:layout_marginTop="8dp"
-            android:text="Until"
+            android:text="@string/until"
             android:textAppearance="@style/TextAppearance.AppCompat.Subhead"
             android:textColor="@color/md_dark_text_54"
             android:textStyle="bold"
@@ -162,7 +147,7 @@
             android:layout_marginBottom="8dp"
             android:layout_marginStart="24dp"
             android:layout_marginTop="8dp"
-            android:text="Start"
+            android:text="@string/start"
             android:textAppearance="@style/TextAppearance.AppCompat.Subhead"
             android:textColor="@color/md_dark_text_54"
             android:textStyle="bold"
@@ -176,7 +161,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="24dp"
-            android:text="Day"
+            android:text="@string/day"
             android:textAppearance="@style/TextAppearance.AppCompat.Subhead"
             android:textColor="@color/md_dark_text_54"
             android:textStyle="bold"
@@ -192,7 +177,6 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="24dp"
             android:layout_marginTop="24dp"
-            android:text="Today"
             app:layout_constraintStart_toEndOf="@+id/textView6"
             app:layout_constraintTop_toBottomOf="@+id/rpMessage"
             tools:text="Today" />
@@ -204,7 +188,6 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="24dp"
             android:layout_marginTop="24dp"
-            android:text="21 Feb"
             app:layout_constraintStart_toEndOf="@+id/textView"
             app:layout_constraintTop_toBottomOf="@+id/rpEvery"
             tools:text="21 Feb" />
@@ -215,7 +198,6 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
-            android:text="End of time"
             app:layout_constraintStart_toStartOf="@+id/rpStart"
             app:layout_constraintTop_toBottomOf="@+id/rpStart"
             tools:text="End of time" />
