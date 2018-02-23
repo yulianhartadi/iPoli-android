@@ -4,6 +4,7 @@ import android.app.DatePickerDialog
 import android.os.Bundle
 import android.support.annotation.ColorRes
 import android.support.annotation.DrawableRes
+import android.support.transition.TransitionManager
 import android.support.v7.app.AlertDialog
 import android.support.v7.widget.GridLayoutManager
 import android.support.v7.widget.LinearLayoutManager
@@ -80,6 +81,7 @@ class RepeatingPatternPicker :
             }
 
             FREQUENCY_CHANGED -> {
+                TransitionManager.beginDelayedTransition(view as ViewGroup)
                 renderForFrequencyType(state, view)
             }
 

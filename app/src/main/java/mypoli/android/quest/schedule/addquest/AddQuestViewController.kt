@@ -4,6 +4,7 @@ import android.app.DatePickerDialog
 import android.app.Dialog
 import android.app.TimePickerDialog
 import android.os.Bundle
+import android.support.transition.TransitionManager
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -78,7 +79,11 @@ class AddQuestViewController(args: Bundle? = null) :
                 .sizeDp(22)
         )
 
-        view.scheduleDate.sendOnClick(AddQuestIntent.PickDate)
+        view.scheduleDate.sendOnClickAndExec(AddQuestIntent.PickDate, {
+            TransitionManager.beginDelayedTransition(view as ViewGroup)
+            view.scheduleDate.setBackgroundResource(R.drawable.quest_type_left_solid_background)
+            view.repeatingPattern.setBackgroundResource(R.drawable.quest_type_right_bordered_background)
+        })
 
         view.startTime.setOnClickListener {
             send(AddQuestIntent.PickTime)
@@ -104,7 +109,11 @@ class AddQuestViewController(args: Bundle? = null) :
             send(AddQuestIntent.SaveQuest(view.questName.text.toString()))
         }
 
-        view.repeatingPattern.sendOnClick(AddQuestIntent.PickRepeatingPattern)
+        view.repeatingPattern.sendOnClickAndExec(AddQuestIntent.PickRepeatingPattern, {
+            TransitionManager.beginDelayedTransition(view as ViewGroup)
+            view.scheduleDate.setBackgroundResource(R.drawable.quest_type_left_bordered_background)
+            view.repeatingPattern.setBackgroundResource(R.drawable.quest_type_right_solid_background)
+        })
         return view
     }
 
@@ -192,13 +201,11 @@ class AddQuestViewController(args: Bundle? = null) :
             }
 
             DATE_PICKED -> {
-                view.scheduleDate.setBackgroundResource(R.drawable.quest_type_left_solid_background)
-                view.repeatingPattern.setBackgroundResource(R.drawable.quest_type_right_bordered_background)
+
             }
 
             REPEATING_PATTERN_PICKED -> {
-                view.scheduleDate.setBackgroundResource(R.drawable.quest_type_left_bordered_background)
-                view.repeatingPattern.setBackgroundResource(R.drawable.quest_type_right_solid_background)
+
             }
         }
     }
