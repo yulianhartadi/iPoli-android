@@ -13,6 +13,7 @@ import mypoli.android.common.datetime.daysUntil
 import org.threeten.bp.LocalDate
 import org.threeten.bp.Month
 import org.threeten.bp.YearMonth
+import org.threeten.bp.format.DateTimeFormatter
 import org.threeten.bp.temporal.TemporalAdjusters
 
 /**
@@ -35,6 +36,7 @@ class StreakChart @JvmOverloads constructor(
 
     private val rowData: List<RowData>
 
+    private val monthFormatter = DateTimeFormatter.ofPattern("MMMM")
 
     data class Cell(val dayOfMonth: Int, val type: CellType) {
         enum class CellType {
@@ -65,7 +67,7 @@ class StreakChart @JvmOverloads constructor(
         dayPaint.color = Color.BLACK
         dayPaint.isAntiAlias = true
         dayPaint.textAlign = Paint.Align.CENTER
-        dayPaint.textSize = ViewUtils.spToPx(12, context).toFloat()
+        dayPaint.textSize = ViewUtils.spToPx(18, context).toFloat()
 
         rowData = createRowData()
     }
@@ -264,18 +266,27 @@ class StreakChart @JvmOverloads constructor(
         val cxs = (1..7).map { it * (totalWidth / 8) }
 
         rowData.forEachIndexed { i, rowData ->
+
+            val y = (i + 1) * rowPadding + ((i + 1) * circleRadius * 2)
+
             when (rowData) {
                 is RowData.MonthRow -> {
 
+                    val monthText = monthFormatter.format(rowData.month)
+                    dayPaint.getTextBounds(monthText, 0, monthText.length, dayTextBounds)
+
+                    canvas.drawText(
+                        monthText,
+                        (totalWidth / 2).toFloat(),
+                        y - dayTextBounds.exactCenterY(),
+                        dayPaint
+                    )
                 }
 
                 is RowData.CellRow -> {
 
-                    val y = (i + 1) * rowPadding + ((i + 1) * circleRadius * 2)
 
                     rowData.cells.forEachIndexed { j, cell ->
-
-                        val x = cxs[j]
 
                         val paint = when (cell.type) {
                             Cell.CellType.COMPLETED -> completedPaint
@@ -283,7 +294,7 @@ class StreakChart @JvmOverloads constructor(
                             else -> skippedPaint
                         }
 
-                        canvas.drawCircle(x.toFloat(), y, circleRadius, paint)
+                        canvas.drawCircle(cxs[j].toFloat(), y, circleRadius, paint)
 
 
                     }
