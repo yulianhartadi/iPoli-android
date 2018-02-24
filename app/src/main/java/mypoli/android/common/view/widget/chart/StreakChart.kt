@@ -14,7 +14,6 @@ import org.threeten.bp.LocalDate
 import org.threeten.bp.Month
 import org.threeten.bp.YearMonth
 import org.threeten.bp.temporal.TemporalAdjusters
-import timber.log.Timber
 
 /**
  * Created by Venelin Valkov <venelin@mypoli.fun>
@@ -27,13 +26,14 @@ class StreakChart @JvmOverloads constructor(
     private val completedPaint = Paint()
     private val skippedPaint = Paint()
     private val failedPaint = Paint()
+    private val nonePaint = Paint()
     private val dayPaint = Paint()
 
     private val dayTextBounds = Rect()
 
-    private val today = LocalDate.of(2018, Month.FEBRUARY, 15)
+    private val today = LocalDate.of(2018, Month.FEBRUARY, 28)
 
-    private val cellTypes: List<RowData>
+    private val rowData: List<RowData>
 
 
     data class Cell(val dayOfMonth: Int, val type: CellType) {
@@ -59,24 +59,25 @@ class StreakChart @JvmOverloads constructor(
         failedPaint.color = Color.RED
         failedPaint.isAntiAlias = true
 
-        dayPaint.color = Color.WHITE
+        nonePaint.color = Color.GRAY
+        nonePaint.isAntiAlias = true
+
+        dayPaint.color = Color.BLACK
         dayPaint.isAntiAlias = true
         dayPaint.textAlign = Paint.Align.CENTER
         dayPaint.textSize = ViewUtils.spToPx(12, context).toFloat()
 
-        cellTypes = findCellTypes()
-
-        Timber.d("AAA $cellTypes")
+        rowData = createRowData()
     }
 
-    private fun findCellTypes(): List<RowData> {
+    private fun createRowData(): List<RowData> {
 
         val data = mutableListOf<RowData>()
 
         val nextWeekFirst =
             today.plusDays(7).with(TemporalAdjusters.previousOrSame(DateUtils.firstDayOfWeek))
 
-        val lastOfMonth = today.with(TemporalAdjusters.lastDayOfMonth())
+        val lastOfMonth = today.minusWeeks(1).with(TemporalAdjusters.lastDayOfMonth())
 
         val shouldSplitBottom = lastOfMonth.isBefore(nextWeekFirst)
 
@@ -86,6 +87,10 @@ class StreakChart @JvmOverloads constructor(
         val firstOfMonth = today.with(TemporalAdjusters.firstDayOfMonth())
 
         val shouldSplitTop = firstOfMonth.isAfter(firstWeekLast)
+
+        require(
+            !(shouldSplitTop && shouldSplitBottom),
+            { "Should not be able to split top AND bottom" })
 
         if (shouldSplitTop) {
             val firstWeekFirst =
@@ -97,78 +102,128 @@ class StreakChart @JvmOverloads constructor(
 
 
             while (true) {
-                val thisWeekEnd = thisWeekStart.plusDays(7)
+                val thisWeekEnd = thisWeekStart.plusWeeks(1)
 
                 if (thisWeekStart.monthValue != thisWeekEnd.monthValue) {
-                    data.add(RowData.CellRow(createWeekWithNoneCellsAtEnd(thisWeekStart, firstWeekMonthLast)))
+                    data.add(
+                        RowData.CellRow(
+                            createWeekWithNoneCellsAtEnd(
+                                firstWeekMonthLast
+                            )
+                        )
+                    )
                     break
                 } else {
-                    val cells = mutableListOf<Cell>()
-
-                    val startDayOfMonth = thisWeekStart.dayOfMonth
-
-                    (0.until(7)).forEach {
-                        cells.add(Cell(startDayOfMonth + it, Cell.CellType.COMPLETED))
-                    }
-
-                    data.add(RowData.CellRow(cells))
-                    thisWeekStart = thisWeekStart.plusDays(7)
+                    data.add(RowData.CellRow(createCellsForWeek(thisWeekStart)))
+                    thisWeekStart = thisWeekStart.plusWeeks(1)
                 }
             }
 
             data.add(RowData.MonthRow(YearMonth.of(today.year, today.month)))
 
-            val firstOfWeek =
+            if (firstOfMonth.dayOfWeek != DateUtils.firstDayOfWeek) {
+                data.add(RowData.CellRow(createWeekWithNoneCellsAtStart(firstOfMonth)))
+            }
+
+            val fullWeeksToAdd = 7 - data.size
+
+            val firstWeekStart =
                 firstOfMonth.with(TemporalAdjusters.previousOrSame(DateUtils.firstDayOfWeek))
+                    .plusWeeks(1)
 
-            val noneCellCount = firstOfWeek.daysUntil(firstOfMonth).toInt()
+            data.addAll(
+                createCellsForWeeks(
+                    weeksToAdd = fullWeeksToAdd,
+                    firstWeekStart = firstWeekStart
+                )
+            )
 
-            val cells = mutableListOf<Cell>()
+        } else if (shouldSplitBottom) {
 
-            val firstOfWeekDayOfMonth = firstOfWeek.dayOfMonth
+            val firstWeekStart =
+                today.minusWeeks(3).with(TemporalAdjusters.previousOrSame(DateUtils.firstDayOfWeek))
+            data.addAll(createCellsForWeeks(weeksToAdd = 3, firstWeekStart = firstWeekStart))
 
-            (0 until noneCellCount).forEach {
-                cells.add(Cell(firstOfWeekDayOfMonth + it, Cell.CellType.NONE))
+            data.add(RowData.CellRow(createWeekWithNoneCellsAtEnd(lastOfMonth)))
+            val nextMonthFirst = lastOfMonth.plusDays(1)
+            data.add(RowData.MonthRow(YearMonth.of(nextMonthFirst.year, nextMonthFirst.month)))
+            data.add(RowData.CellRow(createWeekWithNoneCellsAtStart(nextMonthFirst)))
+
+            if (nextMonthFirst.dayOfWeek != DateUtils.firstDayOfWeek) {
+                val lastWeekStart = nextMonthFirst.plusWeeks(1).with(
+                    TemporalAdjusters.previousOrSame(DateUtils.firstDayOfWeek)
+                )
+                data.add(RowData.CellRow(createCellsForWeek(lastWeekStart)))
             }
+        } else {
+            data.add(RowData.MonthRow(YearMonth.of(today.year, today.month)))
 
-            val lastOfWeek = firstOfMonth.with(DateUtils.lastDayOfWeek)
+            data.add(RowData.CellRow(createWeekWithNoneCellsAtStart(firstOfMonth)))
 
-            val cellCount = (firstOfMonth.daysUntil(lastOfWeek) + 1).toInt()
+            data.addAll(
+                createCellsForWeeks(
+                    weeksToAdd = 3,
+                    firstWeekStart = firstOfMonth.plusWeeks(1).with(
+                        TemporalAdjusters.previousOrSame(
+                            DateUtils.firstDayOfWeek
+                        )
+                    )
+                )
+            )
 
-            (1..cellCount).forEach {
-                cells.add(Cell(it, Cell.CellType.COMPLETED))
-            }
-
-            data.add(RowData.CellRow(cells))
-
-            val fullWeeksToAdd = 6 - data.size
-
-            var weekStart = firstOfWeek
-
-            (1..fullWeeksToAdd).forEach {
-                weekStart = weekStart.plusDays(7)
-                data.add(RowData.CellRow(createCellsForWeek(weekStart)))
-            }
-
-            weekStart = weekStart.plusDays(7)
-
-            val weekEnd = weekStart.with(DateUtils.lastDayOfWeek)
-
-            if (weekStart.monthValue != weekEnd.monthValue) {
-                // pad with none
-                data.add(RowData.CellRow(createWeekWithNoneCellsAtEnd(weekStart, lastOfMonth)))
-            } else {
-                data.add(RowData.CellRow(createCellsForWeek(weekStart)))
-            }
+            data.add(RowData.CellRow(createWeekWithNoneCellsAtEnd(lastOfMonth)))
         }
 
         return data
     }
 
+    private fun createCellsForWeeks(
+        weeksToAdd: Int,
+        firstWeekStart: LocalDate
+    ): List<RowData> {
+
+        val data = mutableListOf<RowData>()
+
+        var currentWeekStart = firstWeekStart
+        (1..weeksToAdd).forEach {
+            data.add(RowData.CellRow(createCellsForWeek(currentWeekStart)))
+            currentWeekStart = currentWeekStart.plusWeeks(1)
+        }
+
+        return data
+    }
+
+    private fun createWeekWithNoneCellsAtStart(firstOfMonth: LocalDate): List<Cell> {
+        val firstOfWeek =
+            firstOfMonth.with(TemporalAdjusters.previousOrSame(DateUtils.firstDayOfWeek))
+
+        val noneCellCount = firstOfWeek.daysUntil(firstOfMonth).toInt()
+
+        val cells = mutableListOf<Cell>()
+
+        val firstOfWeekDayOfMonth = firstOfWeek.dayOfMonth
+
+        (0 until noneCellCount).forEach {
+            cells.add(Cell(firstOfWeekDayOfMonth + it, Cell.CellType.NONE))
+        }
+
+        val lastOfWeek = firstOfMonth.with(DateUtils.lastDayOfWeek)
+
+        val cellCount = (firstOfMonth.daysUntil(lastOfWeek) + 1).toInt()
+
+        (1..cellCount).forEach {
+            cells.add(Cell(it, Cell.CellType.COMPLETED))
+        }
+        return cells
+    }
+
     private fun createWeekWithNoneCellsAtEnd(
-        thisWeekStart: LocalDate,
         lastOfMonth: LocalDate
     ): List<Cell> {
+
+        val thisWeekStart =
+            lastOfMonth.with(TemporalAdjusters.previousOrSame(DateUtils.firstDayOfWeek))
+
         val daysBetweenEnd = (thisWeekStart.daysUntil(lastOfMonth) + 1).toInt()
 
         val cells = mutableListOf<Cell>()
@@ -207,26 +262,34 @@ class StreakChart @JvmOverloads constructor(
         val totalWidth = measuredWidth
 
         val cxs = (1..7).map { it * (totalWidth / 8) }
-        val cys = (1..6).map { it * rowPadding + (it * circleRadius * 2) }
 
-        cys.forEach { y ->
-            cxs.forEach { x ->
-                canvas.drawCircle(
-                    x.toFloat(),
-                    y,
-                    circleRadius,
-                    completedPaint
-                )
+        rowData.forEachIndexed { i, rowData ->
+            when (rowData) {
+                is RowData.MonthRow -> {
 
-                val text = "31"
+                }
 
-                dayPaint.getTextBounds(text, 0, text.length, dayTextBounds);
+                is RowData.CellRow -> {
+
+                    val y = (i + 1) * rowPadding + ((i + 1) * circleRadius * 2)
+
+                    rowData.cells.forEachIndexed { j, cell ->
+
+                        val x = cxs[j]
+
+                        val paint = when (cell.type) {
+                            Cell.CellType.COMPLETED -> completedPaint
+                            Cell.CellType.NONE -> nonePaint
+                            else -> skippedPaint
+                        }
+
+                        canvas.drawCircle(x.toFloat(), y, circleRadius, paint)
 
 
-                canvas.drawText(text, x.toFloat(), y - dayTextBounds.exactCenterY(), dayPaint)
+                    }
+                }
             }
         }
-
 
     }
 }
