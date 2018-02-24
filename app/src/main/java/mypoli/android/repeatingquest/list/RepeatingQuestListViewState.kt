@@ -1,5 +1,6 @@
 package mypoli.android.repeatingquest.list
 
+import com.mikepenz.ionicons_typeface_library.Ionicons
 import mypoli.android.common.AppState
 import mypoli.android.common.BaseViewStateReducer
 import mypoli.android.common.mvi.ViewState
@@ -57,38 +58,14 @@ data class RepeatingQuestListViewState(
 
 fun RepeatingQuestListViewState.toViewModels() =
     repeatingQuests.map {
+
         RepeatingQuestListViewController.RepeatingQuestViewModel(
-            it.name,
-            AndroidIcon.BUS.icon,
-            AndroidColor.GREEN.color500,
-            "Next: Today",
-            2,
-            3
+            name = it.name,
+            icon = it.icon?.let { AndroidIcon.valueOf(it.name).icon }
+                ?: Ionicons.Icon.ion_android_clipboard,
+            color = AndroidColor.valueOf(it.color.name).color500,
+            next = "Next: Today",
+            completedCount = 2,
+            allCount = 3
         )
     }
-//    return listOf(
-//        RepeatingQuestListViewController.RepeatingQuestViewModel(
-//            "Workout",
-//            AndroidIcon.BUS.icon,
-//            AndroidColor.GREEN.color500,
-//            "Next: Today",
-//            2,
-//            3
-//        ),
-//        RepeatingQuestListViewController.RepeatingQuestViewModel(
-//            "Run",
-//            AndroidIcon.BIKE.icon,
-//            AndroidColor.BLUE.color500,
-//            "Next: Tomorrow",
-//            1,
-//            5
-//        ),
-//        RepeatingQuestListViewController.RepeatingQuestViewModel(
-//            "Cook",
-//            AndroidIcon.ACADEMIC.icon,
-//            AndroidColor.DEEP_ORANGE.color500,
-//            "Next: Today",
-//            4,
-//            10
-//        )
-//    )
