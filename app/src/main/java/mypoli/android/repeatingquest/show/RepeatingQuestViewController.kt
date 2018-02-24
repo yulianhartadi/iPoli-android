@@ -61,6 +61,8 @@ class RepeatingQuestViewController :
             }
         })
 
+//        view.repeating_quest_history.populateWithRandomData()
+
         return view
     }
 

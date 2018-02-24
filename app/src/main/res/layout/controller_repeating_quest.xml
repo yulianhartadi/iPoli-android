@@ -169,9 +169,9 @@
 
     </android.support.design.widget.AppBarLayout>
 
-    <ScrollView
+    <android.support.v4.widget.NestedScrollView
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="match_parent"
         app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
         <LinearLayout
@@ -190,12 +190,12 @@
                 android:text="@string/history"
                 android:textColor="?attr/colorAccent" />
 
-            <com.github.mikephil.charting.charts.BarChart
+            <mypoli.android.common.view.widget.chart.StreakChart
                 android:id="@+id/repeating_quest_history"
                 android:layout_width="match_parent"
-                android:layout_height="260dp" />
+                android:layout_height="304dp" />
 
         </LinearLayout>
-    </ScrollView>
+    </android.support.v4.widget.NestedScrollView>
 
 </android.support.design.widget.CoordinatorLayout>
