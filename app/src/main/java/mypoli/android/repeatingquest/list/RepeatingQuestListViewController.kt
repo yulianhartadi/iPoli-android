@@ -101,14 +101,21 @@ class RepeatingQuestListViewController(args: Bundle? = null) :
                     .sizeDp(24)
             )
             view.rqNext.text = vm.next
-            view.rqProgressBar.setOnTouchListener { _, _ ->
-                true
-            }
-            view.rqProgressBar.max = vm.allCount
-            view.rqProgressBar.progress = vm.completedCount
+            val progressBar = view.rqProgressBar
+//            progressBar.setOnTouchListener { _, _ ->
+//                true
+//            }
+            progressBar.max = vm.allCount
+            progressBar.progress = vm.completedCount
             view.rqProgress.text = "${vm.completedCount}/${vm.allCount}"
-            view.rqProgressBar.progressTintList = ColorStateList.valueOf(colorRes(vm.color))
-            view.rqProgressBar.tickMarkTintList = ColorStateList.valueOf(colorRes(vm.color))
+            progressBar.progressTintList = ColorStateList.valueOf(colorRes(vm.color))
+
+//            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+//                val dr = view.rqProgressBar.tickMark
+//                dr.setTintList(ColorStateList.valueOf(colorRes(vm.color)))
+//
+////                view.rqProgressBar.tickMarkTintList = ColorStateList.valueOf(colorRes(vm.color))
+//            }
 
         }
 
