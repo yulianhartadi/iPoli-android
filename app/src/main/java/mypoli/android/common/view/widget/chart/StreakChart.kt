@@ -314,7 +314,7 @@ class StreakChart @JvmOverloads constructor(
                     canvas.drawText(
                         monthText,
                         (totalWidth / 2).toFloat(),
-                        y - textBounds.exactCenterY(),
+                        y - (textBounds.exactCenterY() * 2),
                         monthPaint
                     )
                 }
@@ -322,7 +322,8 @@ class StreakChart @JvmOverloads constructor(
                 is RowData.WeekDaysRow -> {
                     dayTexts.forEachIndexed { j, dayText ->
                         val x = cxs[j].toFloat()
-                        canvas.drawText(dayText, x, y, dayOfWeekPaint)
+                        dayOfWeekPaint.getTextBounds(dayText, 0, dayText.length, textBounds)
+                        canvas.drawText(dayText, x, y - textBounds.exactCenterY(), dayOfWeekPaint)
                     }
                 }
 
