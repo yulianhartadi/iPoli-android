@@ -200,6 +200,87 @@ class RepeatingPatternSpek : Spek({
                     shouldHaveNextDate(pattern.nextDate(today), first.plusMonths(1))
                 }
             }
+
+            describe("Flexible") {
+                it("should give today when today is first day of month") {
+                    val today =
+                        DateUtils.today.with(TemporalAdjusters.firstDayOfMonth())
+
+                    val pattern = RepeatingPattern.Flexible.Monthly(
+                        timesPerMonth = 2,
+                        preferredDays = setOf(),
+                        scheduledPeriods = mapOf(
+                            today to listOf(today)
+                        ),
+                        start = today
+                    )
+
+                    shouldHaveNextDate(pattern.nextDate(today), today)
+                }
+
+                it("should give tomorrow when today is not scheduled") {
+
+                    val today =
+                        DateUtils.today.with(TemporalAdjusters.firstDayOfMonth())
+                    val tomorrow = today.plusDays(1)
+
+                    val pattern = RepeatingPattern.Flexible.Monthly(
+                        timesPerMonth = 2,
+                        preferredDays = setOf(),
+                        scheduledPeriods = mapOf(
+                            today to listOf(tomorrow)
+                        ),
+                        start = today
+                    )
+
+                    shouldHaveNextDate(pattern.nextDate(today), tomorrow)
+                }
+
+                it("should give two days after tomorrow when from is after tomorrow") {
+
+                    val today =
+                        DateUtils.today.with(TemporalAdjusters.firstDayOfMonth())
+
+                    val tomorrow = today.plusDays(1)
+                    val dayAfterTomorrow = tomorrow.plusDays(1)
+                    val twoDaysAfterTomorrow = tomorrow.plusDays(2)
+
+                    val pattern = RepeatingPattern.Flexible.Monthly(
+                        timesPerMonth = 2,
+                        preferredDays = setOf(),
+                        scheduledPeriods = mapOf(
+                            today to listOf(tomorrow, twoDaysAfterTomorrow)
+                        ),
+                        start = today
+                    )
+
+                    shouldHaveNextDate(pattern.nextDate(dayAfterTomorrow), twoDaysAfterTomorrow)
+                }
+
+                it("should get first date from next period") {
+
+                    val today =
+                        DateUtils.today.with(TemporalAdjusters.firstDayOfMonth())
+
+                    val tomorrow = today.plusDays(1)
+                    val dayAfterTomorrow = tomorrow.plusDays(1)
+
+                    val nextPeriodStart = today.plusMonths(1)
+
+                    val pattern = RepeatingPattern.Flexible.Monthly(
+                        timesPerMonth = 2,
+                        preferredDays = setOf(),
+                        scheduledPeriods = mapOf(
+                            today to listOf(tomorrow),
+                            nextPeriodStart to listOf(nextPeriodStart)
+                        ),
+                        start = today
+                    )
+
+                    shouldHaveNextDate(pattern.nextDate(dayAfterTomorrow), nextPeriodStart)
+                }
+
+            }
         }
     }
 })

@@ -110,7 +110,18 @@ sealed class RepeatingPattern(
             override val end: LocalDate? = null
         ) : Flexible(start, end) {
             override fun nextDateWithoutRange(from: LocalDate): LocalDate {
-                TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+                require(scheduledPeriods.isNotEmpty())
+                val periodStart = from.with(TemporalAdjusters.firstDayOfMonth())
+                require(scheduledPeriods.contains(periodStart))
+
+                val nextDate = scheduledPeriods[periodStart]!!.firstOrNull { !it.isBefore(from) }
+                return if (nextDate != null) {
+                    nextDate
+                } else {
+                    val nextPeriodStart = periodStart.plusMonths(1)
+                    require(scheduledPeriods.contains(nextPeriodStart))
+                    scheduledPeriods[nextPeriodStart]!!.first()
+                }
             }
         }
     }
