@@ -123,6 +123,50 @@ class RepeatingPatternSpek : Spek({
 
                     shouldHaveNextDate(pattern.nextDate(today), tomorrow)
                 }
+
+                it("should give two days after tomorrow when from is after tomorrow") {
+
+                    val today =
+                        DateUtils.today.with(TemporalAdjusters.previousOrSame(DateUtils.firstDayOfWeek))
+
+                    val tomorrow = today.plusDays(1)
+                    val dayAfterTomorrow = tomorrow.plusDays(1)
+                    val twoDaysAfterTomorrow = tomorrow.plusDays(2)
+
+                    val pattern = RepeatingPattern.Flexible.Weekly(
+                        timesPerWeek = 2,
+                        preferredDays = setOf(),
+                        scheduledPeriods = mapOf(
+                            today to listOf(tomorrow, twoDaysAfterTomorrow)
+                        ),
+                        start = today
+                    )
+
+                    shouldHaveNextDate(pattern.nextDate(dayAfterTomorrow), twoDaysAfterTomorrow)
+                }
+
+                it("should get first date from next period") {
+
+                    val today =
+                        DateUtils.today.with(TemporalAdjusters.previousOrSame(DateUtils.firstDayOfWeek))
+
+                    val tomorrow = today.plusDays(1)
+                    val dayAfterTomorrow = tomorrow.plusDays(1)
+
+                    val nextPeriodStart = today.plusWeeks(1)
+
+                    val pattern = RepeatingPattern.Flexible.Weekly(
+                        timesPerWeek = 2,
+                        preferredDays = setOf(),
+                        scheduledPeriods = mapOf(
+                            today to listOf(tomorrow),
+                            nextPeriodStart to listOf(nextPeriodStart)
+                        ),
+                        start = today
+                    )
+
+                    shouldHaveNextDate(pattern.nextDate(dayAfterTomorrow), nextPeriodStart)
+                }
             }
         }
     }

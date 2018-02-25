@@ -84,8 +84,15 @@ sealed class RepeatingPattern(
                 val periodStart =
                     from.with(TemporalAdjusters.previousOrSame(DateUtils.firstDayOfWeek))
                 require(scheduledPeriods.contains(periodStart))
-                val periodDates = scheduledPeriods[periodStart]!!
-                return periodDates.first()
+
+                val nextDate = scheduledPeriods[periodStart]!!.firstOrNull { !it.isBefore(from) }
+                return if (nextDate != null) {
+                    nextDate
+                } else {
+                    val nextPeriodStart = periodStart.plusWeeks(1)
+                    require(scheduledPeriods.contains(nextPeriodStart))
+                    scheduledPeriods[nextPeriodStart]!!.first()
+                }
             }
         }
 
