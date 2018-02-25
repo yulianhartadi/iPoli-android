@@ -33,8 +33,8 @@ interface QuestRepository : CollectionRepository<Quest> {
     fun findStartedQuests(): List<Quest>
     fun findLastScheduledDate(currentDate: LocalDate, maxQuests: Int): LocalDate?
     fun findFirstScheduledDate(currentDate: LocalDate, maxQuests: Int): LocalDate?
-    fun findNextScheduledForRepeatingQuest(currentDate: LocalDate): Quest?
-    fun findNextOriginalScheduledForRepeatingQuest(currentDate: LocalDate): Quest?
+    fun findScheduledForRepeatingQuestAtDate(currentDate: LocalDate): Quest?
+    fun findOriginalScheduledForRepeatingQuestAtDate(currentDate: LocalDate): Quest?
 }
 
 data class DbQuest(override val map: MutableMap<String, Any?> = mutableMapOf()) :
@@ -92,11 +92,12 @@ class FirestoreQuestRepository(
     coroutineContext,
     sharedPreferences
 ), QuestRepository {
-    override fun findNextScheduledForRepeatingQuest(currentDate: LocalDate): Quest? {
+    override fun findScheduledForRepeatingQuestAtDate(currentDate: LocalDate): Quest? {
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 
-    override fun findNextOriginalScheduledForRepeatingQuest(currentDate: LocalDate): Quest? {
+    override fun findOriginalScheduledForRepeatingQuestAtDate(currentDate: LocalDate): Quest? {
+        // take into account "removed" quests
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 
