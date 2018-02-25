@@ -5,8 +5,10 @@ import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.Paint
 import android.graphics.Rect
+import android.support.v4.content.ContextCompat
 import android.util.AttributeSet
 import android.view.View
+import mypoli.android.R
 import mypoli.android.common.ViewUtils
 import mypoli.android.common.datetime.DateUtils
 import mypoli.android.common.datetime.DateUtils.DAYS_IN_A_WEEK
@@ -30,10 +32,11 @@ class StreakChart @JvmOverloads constructor(
     private val skippedPaint = Paint()
     private val failedPaint = Paint()
     private val nonePaint = Paint()
+    private val dayPaint = Paint()
     private val monthPaint = Paint()
     private val dayOfWeekPaint = Paint()
 
-    private val dayTextBounds = Rect()
+    private val textBounds = Rect()
 
     private val today = LocalDate.of(2018, Month.FEBRUARY, 28)
 
@@ -60,7 +63,7 @@ class StreakChart @JvmOverloads constructor(
     }
 
     init {
-        completedPaint.color = Color.GREEN
+        completedPaint.color = ContextCompat.getColor(context, R.color.md_green_500)
         completedPaint.isAntiAlias = true
 
         skippedPaint.color = Color.BLUE
@@ -69,13 +72,18 @@ class StreakChart @JvmOverloads constructor(
         failedPaint.color = Color.RED
         failedPaint.isAntiAlias = true
 
-        nonePaint.color = Color.GRAY
+        nonePaint.color = ContextCompat.getColor(context, R.color.md_grey_500)
         nonePaint.isAntiAlias = true
 
         monthPaint.color = Color.BLACK
         monthPaint.isAntiAlias = true
         monthPaint.textAlign = Paint.Align.CENTER
         monthPaint.textSize = ViewUtils.spToPx(18, context).toFloat()
+
+        dayPaint.color = ContextCompat.getColor(context, R.color.md_white)
+        dayPaint.isAntiAlias = true
+        dayPaint.textAlign = Paint.Align.CENTER
+        dayPaint.textSize = ViewUtils.spToPx(14, context).toFloat()
 
         dayOfWeekPaint.color = Color.BLACK
         dayOfWeekPaint.isAntiAlias = true
@@ -294,12 +302,12 @@ class StreakChart @JvmOverloads constructor(
                 is RowData.MonthRow -> {
 
                     val monthText = monthFormatter.format(rowData.month)
-                    monthPaint.getTextBounds(monthText, 0, monthText.length, dayTextBounds)
+                    monthPaint.getTextBounds(monthText, 0, monthText.length, textBounds)
 
                     canvas.drawText(
                         monthText,
                         (totalWidth / 2).toFloat(),
-                        y - dayTextBounds.exactCenterY(),
+                        y - textBounds.exactCenterY(),
                         monthPaint
                     )
                 }
@@ -315,14 +323,31 @@ class StreakChart @JvmOverloads constructor(
 
                     rowData.cells.forEachIndexed { j, cell ->
 
-                        val paint = when (cell.type) {
-                            Cell.CellType.COMPLETED -> completedPaint
-                            Cell.CellType.NONE -> nonePaint
-                            else -> skippedPaint
-                        }
-
                         val x = cxs[j].toFloat()
-                        canvas.drawCircle(x, y, circleRadius, paint)
+
+                        when (cell.type) {
+                            Cell.CellType.COMPLETED -> {
+                                canvas.drawCircle(x, y, circleRadius, completedPaint)
+
+                                val dayOfMonthText = cell.dayOfMonth.toString()
+                                dayPaint.getTextBounds(
+                                    dayOfMonthText,
+                                    0,
+                                    dayOfMonthText.length,
+                                    textBounds
+                                )
+                                canvas.drawText(
+                                    dayOfMonthText,
+                                    x,
+                                    y - textBounds.exactCenterY(),
+                                    dayPaint
+                                )
+                            }
+
+                            else -> {
+                                canvas.drawCircle(x, y, circleRadius, nonePaint)
+                            }
+                        }
                     }
                 }
             }
