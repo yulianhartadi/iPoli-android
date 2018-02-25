@@ -139,4 +139,7 @@ object DateUtils {
 
     val lastDayOfWeek: DayOfWeek
         get() = firstDayOfWeek.plus(6)
+
+    val today: LocalDate
+        get() = LocalDate.now()
 }

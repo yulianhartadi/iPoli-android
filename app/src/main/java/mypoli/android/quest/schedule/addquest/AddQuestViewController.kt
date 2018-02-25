@@ -4,6 +4,7 @@ import android.app.DatePickerDialog
 import android.app.Dialog
 import android.app.TimePickerDialog
 import android.os.Bundle
+import android.support.transition.TransitionManager
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -23,7 +24,7 @@ import mypoli.android.quest.Icon
 import mypoli.android.quest.schedule.addquest.StateType.*
 import mypoli.android.reminder.view.picker.ReminderPickerDialogController
 import mypoli.android.reminder.view.picker.ReminderViewModel
-import mypoli.android.repeatingquest.picker.RepeatingPatternPicker
+import mypoli.android.repeatingquest.picker.RepeatingPatternPickerDialogController
 import org.threeten.bp.LocalDate
 import space.traversal.kapsule.required
 
@@ -78,7 +79,9 @@ class AddQuestViewController(args: Bundle? = null) :
                 .sizeDp(22)
         )
 
-        view.scheduleDate.sendOnClick(AddQuestIntent.PickDate)
+        view.scheduleDate.sendOnClickAndExec(AddQuestIntent.PickDate, {
+            selectScheduleDate(view)
+        })
 
         view.startTime.setOnClickListener {
             send(AddQuestIntent.PickTime)
@@ -104,8 +107,22 @@ class AddQuestViewController(args: Bundle? = null) :
             send(AddQuestIntent.SaveQuest(view.questName.text.toString()))
         }
 
-        view.repeatingPattern.sendOnClick(AddQuestIntent.PickRepeatingPattern)
+        view.repeatingPattern.sendOnClickAndExec(AddQuestIntent.PickRepeatingPattern, {
+            selectRepeatingPattern(view)
+        })
         return view
+    }
+
+    private fun selectRepeatingPattern(view: View) {
+        TransitionManager.beginDelayedTransition(view as ViewGroup)
+        view.scheduleDate.setBackgroundResource(R.drawable.quest_type_left_bordered_background)
+        view.repeatingPattern.setBackgroundResource(R.drawable.quest_type_right_solid_background)
+    }
+
+    private fun selectScheduleDate(view: View) {
+        TransitionManager.beginDelayedTransition(view as ViewGroup)
+        view.scheduleDate.setBackgroundResource(R.drawable.quest_type_left_solid_background)
+        view.repeatingPattern.setBackgroundResource(R.drawable.quest_type_right_bordered_background)
     }
 
     override fun render(state: AddQuestViewState, view: View) {
@@ -114,11 +131,16 @@ class AddQuestViewController(args: Bundle? = null) :
         when (state.type) {
             PICK_DATE -> {
                 val date = state.date ?: LocalDate.now()
-                DatePickerDialog(view.context, R.style.Theme_myPoli_AlertDialog,
+                val datePickerDialog = DatePickerDialog(
+                    view.context, R.style.Theme_myPoli_AlertDialog,
                     DatePickerDialog.OnDateSetListener { _, year, month, dayOfMonth ->
                         send(AddQuestIntent.DatePicked(year, month + 1, dayOfMonth))
                     }, date.year, date.month.value - 1, date.dayOfMonth
-                ).show()
+                )
+                datePickerDialog.setOnCancelListener {
+                    send(AddQuestIntent.DatePickerCanceled)
+                }
+                datePickerDialog.show()
             }
 
             PICK_TIME -> {
@@ -175,10 +197,20 @@ class AddQuestViewController(args: Bundle? = null) :
                 }, state.reminder).showDialog(router, "pick_reminder_tag")
 
             PICK_REPEATING_PATTERN -> {
-                RepeatingPatternPicker(state.repeatingPattern, {
-                    send(AddQuestIntent.RepeatingPatternPicked(it))
-                })
+                RepeatingPatternPickerDialogController(
+                    state.repeatingPattern,
+                    { send(AddQuestIntent.RepeatingPatternPicked(it)) },
+                    { send(AddQuestIntent.RepeatingPatterPickerCanceled) }
+                )
                 .showDialog(router, "pick_repeating_pattern_tag")
+            }
+
+            SWITCHED_TO_QUEST -> {
+                selectScheduleDate(view)
+            }
+
+            SWITCHED_TO_REPEATING -> {
+                selectRepeatingPattern(view)
             }
 
             VALIDATION_ERROR_EMPTY_NAME ->
@@ -190,6 +222,7 @@ class AddQuestViewController(args: Bundle? = null) :
 
             DEFAULT -> {
             }
+
         }
     }
 
@@ -201,16 +234,14 @@ class AddQuestViewController(args: Bundle? = null) :
             view.duration,
             view.color,
             view.icon,
-            view.reminder
+            view.reminder,
+            view.repeatingPattern
         )
             .forEach { resetColor(it) }
+        selectScheduleDate(view)
     }
 
     private fun colorSelectedIcons(state: AddQuestViewState, view: View) {
-        state.date?.let {
-            applySelectedColor(view.scheduleDate)
-        }
-
         state.duration?.let {
             applySelectedColor(view.duration)
         }

@@ -27,6 +27,7 @@ import mypoli.android.quest.schedule.agenda.usecase.FindAgendaDatesUseCase
 import mypoli.android.quest.schedule.calendar.CalendarAction
 import mypoli.android.quest.schedule.calendar.CalendarViewState
 import mypoli.android.quest.usecase.CompleteQuestUseCase.Params.WithQuest
+import mypoli.android.repeatingquest.entity.RepeatingQuest
 import org.threeten.bp.LocalDate
 import space.traversal.kapsule.Injects
 import space.traversal.kapsule.inject
@@ -275,17 +276,23 @@ class LoadAllDataSideEffect : AppSideEffect() {
 
     private val playerRepository by required { playerRepository }
     private val questRepository by required { questRepository }
+    private val repeatingQuestRepository by required { repeatingQuestRepository }
 
     private var playerChannel: ReceiveChannel<Player?>? = null
     private var scheduledQuestsChannel: ReceiveChannel<List<Quest>>? = null
+    private var repeatingQuestsChannel: ReceiveChannel<List<RepeatingQuest>>? = null
 
     override suspend fun doExecute(action: Action, state: AppState) {
 
         if (action is LoadDataAction.ChangePlayer) {
             playerChannel?.cancel()
             scheduledQuestsChannel?.cancel()
+            repeatingQuestsChannel?.cancel()
+
             playerChannel = null
             scheduledQuestsChannel = null
+            repeatingQuestsChannel = null
+
             playerRepository.purge(action.oldPlayerId)
             listenForPlayer()
             listenForQuests(state)
@@ -294,6 +301,17 @@ class LoadAllDataSideEffect : AppSideEffect() {
         if (action == LoadDataAction.All) {
             listenForPlayer()
             listenForQuests(state)
+            listenForRepeatingQuests()
+        }
+    }
+
+    private fun listenForRepeatingQuests() {
+        launch(UI) {
+            repeatingQuestsChannel?.cancel()
+            repeatingQuestsChannel = repeatingQuestRepository.listenForAll()
+            repeatingQuestsChannel!!.consumeEach {
+                dispatch(DataLoadedAction.RepeatingQuestsChanged(it))
+            }
         }
     }
 

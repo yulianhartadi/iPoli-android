@@ -18,6 +18,10 @@ import mypoli.android.R
 import mypoli.android.common.redux.android.ReduxViewController
 import mypoli.android.common.view.*
 import mypoli.android.repeatingquest.show.RepeatingQuestViewController
+import mypoli.android.common.view.colorRes
+import mypoli.android.common.view.stringRes
+import mypoli.android.common.view.toolbarTitle
+import mypoli.android.repeatingquest.list.RepeatingQuestListViewState.StateType.DATA_LOADED
 
 /**
  * Created by Polina Zhelyazkova <polina@ipoli.io>
@@ -41,41 +45,19 @@ class RepeatingQuestListViewController(args: Bundle? = null) :
         )
         view.repeatingQuestList.layoutManager =
             LinearLayoutManager(container.context, LinearLayoutManager.VERTICAL, false)
-        view.repeatingQuestList.adapter = RepeatingQuestAdapter(
-            listOf(
-                RepeatingQuestViewModel(
-                    "",
-                    "Workout",
-                    AndroidIcon.BUS.icon,
-                    AndroidColor.GREEN.color500,
-                    "Next: Today",
-                    2,
-                    3
-                ),
-                RepeatingQuestViewModel(
-                    "",
-                    "Run",
-                    AndroidIcon.BIKE.icon,
-                    AndroidColor.BLUE.color500,
-                    "Next: Tomorrow",
-                    1,
-                    5
-                ),
-                RepeatingQuestViewModel(
-                    "",
-                    "Cook",
-                    AndroidIcon.ACADEMIC.icon,
-                    AndroidColor.DEEP_ORANGE.color500,
-                    "Next: Today",
-                    4,
-                    10
-                )
-            )
-        )
+        view.repeatingQuestList.adapter = RepeatingQuestAdapter()
         return view
     }
 
+    override fun onCreateLoadAction() =
+        RepeatingQuestListAction.LoadData
+
     override fun render(state: RepeatingQuestListViewState, view: View) {
+        when (state.type) {
+            DATA_LOADED -> {
+                (view.repeatingQuestList.adapter as RepeatingQuestAdapter).updateAll(state.toViewModels())
+            }
+        }
     }
 
     data class RepeatingQuestViewModel(
@@ -108,14 +90,12 @@ class RepeatingQuestListViewController(args: Bundle? = null) :
                     .sizeDp(24)
             )
             view.rqNext.text = vm.next
-            view.rqProgressBar.setOnTouchListener { _, _ ->
-                true
-            }
-            view.rqProgressBar.max = vm.allCount
-            view.rqProgressBar.progress = vm.completedCount
+
+            val progressBar = view.rqProgressBar
+            progressBar.max = vm.allCount
+            progressBar.progress = vm.completedCount
+            progressBar.progressTintList = ColorStateList.valueOf(colorRes(vm.color))
             view.rqProgress.text = "${vm.completedCount}/${vm.allCount}"
-            view.rqProgressBar.progressTintList = ColorStateList.valueOf(colorRes(vm.color))
-            view.rqProgressBar.tickMarkTintList = ColorStateList.valueOf(colorRes(vm.color))
 
             view.setOnClickListener {
                 val changeHandler = FadeChangeHandler()
@@ -144,6 +124,10 @@ class RepeatingQuestListViewController(args: Bundle? = null) :
 
         inner class ViewHolder(view: View) : RecyclerView.ViewHolder(view)
 
-    }
+        fun updateAll(viewModels: List<RepeatingQuestViewModel>) {
+            this.viewModels = viewModels
+            notifyDataSetChanged()
+        }
 
+    }
 }

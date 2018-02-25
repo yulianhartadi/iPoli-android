@@ -33,6 +33,8 @@ interface QuestRepository : CollectionRepository<Quest> {
     fun findStartedQuests(): List<Quest>
     fun findLastScheduledDate(currentDate: LocalDate, maxQuests: Int): LocalDate?
     fun findFirstScheduledDate(currentDate: LocalDate, maxQuests: Int): LocalDate?
+    fun findScheduledForRepeatingQuestAtDate(currentDate: LocalDate): Quest?
+    fun findOriginalScheduledForRepeatingQuestAtDate(currentDate: LocalDate): Quest?
 }
 
 data class DbQuest(override val map: MutableMap<String, Any?> = mutableMapOf()) :
@@ -53,6 +55,7 @@ data class DbQuest(override val map: MutableMap<String, Any?> = mutableMapOf()) 
     var completedAtMinute: Long? by map
     var timeRanges: List<MutableMap<String, Any?>> by map
     var timeRangeCount: Int by map
+    var repeatingQuestId: String? by map
     override var createdAt: Long by map
     override var updatedAt: Long by map
     override var removedAt: Long? by map
@@ -89,6 +92,14 @@ class FirestoreQuestRepository(
     coroutineContext,
     sharedPreferences
 ), QuestRepository {
+    override fun findScheduledForRepeatingQuestAtDate(currentDate: LocalDate): Quest? {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    }
+
+    override fun findOriginalScheduledForRepeatingQuestAtDate(currentDate: LocalDate): Quest? {
+        // take into account "removed" quests
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    }
 
     override fun listenForScheduledBetween(
         startDate: LocalDate,
@@ -148,7 +159,7 @@ class FirestoreQuestRepository(
 
         val reminder = documents[0]
 
-        val remindDate = (reminder.get("date") as Long).startOfDayUtc
+        val remindDate = (reminder.get("date") as Long).startOfDayUTC
         val remindMillis = reminder.get("millisOfDay") as Long
         return LocalDateTime.of(
             remindDate,
@@ -279,7 +290,7 @@ class FirestoreQuestRepository(
             null
         })
 
-        val plannedDate = cq.scheduledDate.startOfDayUtc
+        val plannedDate = cq.scheduledDate.startOfDayUTC
         val plannedTime = cq.startMinute?.let { Time.of(it.toInt()) }
 
         return Quest(
@@ -303,13 +314,13 @@ class FirestoreQuestRepository(
                     else -> null
                 }
             },
-            completedAtDate = cq.completedAtDate?.startOfDayUtc,
+            completedAtDate = cq.completedAtDate?.startOfDayUTC,
             completedAtTime = cq.completedAtMinute?.let {
                 Time.of(it.toInt())
             },
             reminder = cq.reminder?.let {
                 val cr = DbReminder(it)
-                Reminder(cr.message, Time.of(cr.minute), cr.date.startOfDayUtc)
+                Reminder(cr.message, Time.of(cr.minute), cr.date.startOfDayUTC)
             },
             timeRanges = cq.timeRanges.map {
                 val ctr = DbTimeRange(it)
@@ -319,7 +330,8 @@ class FirestoreQuestRepository(
                     ctr.start?.instant,
                     ctr.end?.instant
                 )
-            }
+            },
+            repeatingQuestId = cq.repeatingQuestId
         )
     }
 
@@ -358,6 +370,7 @@ class FirestoreQuestRepository(
             createDbTimeRange(it).map
         }
         q.timeRangeCount = q.timeRanges.size
+        q.repeatingQuestId = entity.repeatingQuestId
         return q
     }
 

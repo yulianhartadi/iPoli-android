@@ -63,8 +63,11 @@ import mypoli.android.reminder.view.formatter.ReminderTimeFormatter
 import mypoli.android.reminder.view.formatter.TimeUnitFormatter
 import mypoli.android.reminder.view.picker.ReminderPickerDialogPresenter
 import mypoli.android.repeatingquest.list.RepeatingQuestListReducer
+import mypoli.android.repeatingquest.persistence.FirestoreRepeatingQuestRepository
+import mypoli.android.repeatingquest.persistence.RepeatingQuestRepository
 import mypoli.android.repeatingquest.picker.RepeatingPatternReducer
 import mypoli.android.repeatingquest.show.RepeatingQuestReducer
+import mypoli.android.repeatingquest.usecase.SaveRepeatingQuestUseCase
 import mypoli.android.store.GemStorePresenter
 import mypoli.android.store.theme.ThemeStorePresenter
 import mypoli.android.store.theme.usecase.BuyThemeUseCase
@@ -85,6 +88,7 @@ import space.traversal.kapsule.required
 interface RepositoryModule {
     val questRepository: QuestRepository
     val playerRepository: PlayerRepository
+    val repeatingQuestRepository: RepeatingQuestRepository
 }
 
 class FirestoreRepositoryModule : RepositoryModule, Injects<Module> {
@@ -105,6 +109,16 @@ class FirestoreRepositoryModule : RepositoryModule, Injects<Module> {
                 sharedPreferences
             )
         }
+
+    override val repeatingQuestRepository
+        by required {
+            FirestoreRepeatingQuestRepository(
+                firestoreDatabase,
+                job + CommonPool,
+                sharedPreferences
+            )
+        }
+
 }
 
 interface AndroidModule {
@@ -178,6 +192,7 @@ class MainAndroidModule(
 
 class MainUseCaseModule : UseCaseModule, Injects<Module> {
     private val questRepository by required { questRepository }
+    private val repeatingQuestRepository by required { repeatingQuestRepository }
     private val playerRepository by required { playerRepository }
     private val reminderScheduler by required { reminderScheduler }
     private val questCompleteScheduler by required { questCompleteScheduler }
@@ -290,6 +305,11 @@ class MainUseCaseModule : UseCaseModule, Injects<Module> {
             questRepository,
             playerRepository
         )
+
+    override val saveRepeatingQuestUseCase
+        get() = SaveRepeatingQuestUseCase(
+            repeatingQuestRepository
+        )
 }
 
 interface UseCaseModule {
@@ -333,6 +353,7 @@ interface UseCaseModule {
     val addTimerToQuestUseCase: AddTimerToQuestUseCase
     val findAgendaDatesUseCase: FindAgendaDatesUseCase
     val createAgendaItemsUseCase: CreateAgendaItemsUseCase
+    val saveRepeatingQuestUseCase: SaveRepeatingQuestUseCase
 }
 
 interface PresenterModule {
@@ -391,6 +412,7 @@ class AndroidPresenterModule : PresenterModule, Injects<Module> {
     private val addPomodoroUseCase by required { addPomodoroUseCase }
     private val removePomodoroUseCase by required { removePomodoroUseCase }
     private val addTimerToQuestUseCase by required { addTimerToQuestUseCase }
+    private val saveRepeatingQuestUseCase by required { saveRepeatingQuestUseCase }
     private val job by required { job }
     override val dayViewPresenter
         get() = DayViewPresenter(
@@ -410,7 +432,12 @@ class AndroidPresenterModule : PresenterModule, Injects<Module> {
             findPetUseCase,
             job
         )
-    override val addQuestPresenter get() = AddQuestPresenter(saveQuestUseCase, job)
+    override val addQuestPresenter
+        get() = AddQuestPresenter(
+            saveQuestUseCase,
+            saveRepeatingQuestUseCase,
+            job
+        )
     override val petPresenter
         get() = PetPresenter(
             listenForPlayerChangesUseCase,

@@ -4,6 +4,8 @@ import android.app.DatePickerDialog
 import android.os.Bundle
 import android.support.annotation.ColorRes
 import android.support.annotation.DrawableRes
+import android.support.transition.TransitionManager
+import android.support.v4.content.ContextCompat
 import android.support.v7.app.AlertDialog
 import android.support.v7.widget.GridLayoutManager
 import android.support.v7.widget.LinearLayoutManager
@@ -32,22 +34,25 @@ import org.threeten.bp.LocalDate
  * Created by Polina Zhelyazkova <polina@ipoli.io>
  * on 2/16/18.
  */
-class RepeatingPatternPicker :
+class RepeatingPatternPickerDialogController :
     ReduxDialogController<RepeatingPatternAction, RepeatingPatternViewState, RepeatingPatternReducer> {
 
     override val reducer = RepeatingPatternReducer
 
     private var repeatingPattern: RepeatingPattern? = null
     private lateinit var resultListener: (RepeatingPattern) -> Unit
+    private var cancelListener: (() -> Unit)? = null
 
     constructor(args: Bundle? = null) : super(args)
 
     constructor(
         repeatingPattern: RepeatingPattern? = null,
-        resultListener: (RepeatingPattern) -> Unit
+        resultListener: (RepeatingPattern) -> Unit,
+        cancelListener: (() -> Unit)? = null
     ) : this() {
         this.repeatingPattern = repeatingPattern
         this.resultListener = resultListener
+        this.cancelListener = cancelListener
     }
 
     override fun onCreateContentView(inflater: LayoutInflater, savedViewState: Bundle?): View {
@@ -77,9 +82,17 @@ class RepeatingPatternPicker :
                 initEndDateListener(view, state)
 
                 renderForFrequencyType(state, view)
+
+                view.rpMessage.setCompoundDrawablesWithIntrinsicBounds(
+                    ContextCompat.getDrawable(view.context, state.petAvatar!!),
+                    null,
+                    null,
+                    null
+                )
             }
 
             FREQUENCY_CHANGED -> {
+                TransitionManager.beginDelayedTransition(view as ViewGroup)
                 renderForFrequencyType(state, view)
             }
 
@@ -411,6 +424,10 @@ class RepeatingPatternPicker :
             setPositiveButtonListener {
                 dispatch(RepeatingPatternAction.CreatePattern)
             }
+            setNegativeButtonListener {
+                cancelListener?.invoke()
+                dismissDialog()
+            }
         }
     }
 
@@ -504,7 +521,7 @@ class RepeatingPatternPicker :
                 Pair(R.drawable.circle_accent, colorRes(R.color.md_white))
             else
                 Pair(R.drawable.circle_normal, attrData(R.attr.colorAccent))
-            RepeatingPatternPicker.WeekDayViewModel(
+            RepeatingPatternPickerDialogController.WeekDayViewModel(
                 text = it.name.first().toString().toUpperCase(),
                 background = background,
                 textColor = textColor,
@@ -521,7 +538,7 @@ class RepeatingPatternPicker :
             else
                 attrResourceId(android.R.attr.selectableItemBackgroundBorderless)
 
-            RepeatingPatternPicker.MonthDayViewModel(
+            RepeatingPatternPickerDialogController.MonthDayViewModel(
                 text = it.toString(),
                 background = background,
                 isSelected = isSelected,

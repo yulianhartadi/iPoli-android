@@ -1,9 +1,11 @@
 package mypoli.android.repeatingquest.picker
 
+import android.support.annotation.DrawableRes
 import mypoli.android.common.AppState
 import mypoli.android.common.BaseViewStateReducer
 import mypoli.android.common.mvi.ViewState
 import mypoli.android.common.redux.Action
+import mypoli.android.pet.AndroidPetAvatar
 import mypoli.android.repeatingquest.entity.RepeatingPattern
 import mypoli.android.repeatingquest.picker.RepeatingPatternViewState.FrequencyType.*
 import mypoli.android.repeatingquest.picker.RepeatingPatternViewState.StateType.*
@@ -57,6 +59,8 @@ object RepeatingPatternReducer : BaseViewStateReducer<RepeatingPatternViewState>
                 val startDate = pattern?.start ?: subState.startDate
                 val endDate = pattern?.end ?: subState.endDate
 
+                val petAvatar = AndroidPetAvatar.valueOf(state.dataState.player!!.pet.avatar.name)
+
                 subState.copy(
                     type = DATA_LOADED,
                     frequencyType = frequencyType,
@@ -68,7 +72,8 @@ object RepeatingPatternReducer : BaseViewStateReducer<RepeatingPatternViewState>
                     isFlexible = pattern is RepeatingPattern.Flexible,
                     startDate = startDate,
                     endDate = endDate,
-                    pickerEndDate = endDate ?: subState.pickerEndDate
+                    pickerEndDate = endDate ?: subState.pickerEndDate,
+                    petAvatar = petAvatar.headImage
                 )
             }
 
@@ -206,7 +211,7 @@ object RepeatingPatternReducer : BaseViewStateReducer<RepeatingPatternViewState>
                 val date = state.dayOfYear
                 RepeatingPattern.Yearly(
                     dayOfMonth = date.dayOfMonth,
-                    month = date.monthValue,
+                    month = date.month,
                     start = state.startDate,
                     end = state.endDate
                 )
@@ -278,7 +283,8 @@ object RepeatingPatternReducer : BaseViewStateReducer<RepeatingPatternViewState>
             startDate = LocalDate.now(),
             endDate = null,
             pickerEndDate = LocalDate.now(),
-            resultPattern = null
+            resultPattern = null,
+            petAvatar = null
         )
 
 }
@@ -298,7 +304,8 @@ data class RepeatingPatternViewState(
     val startDate: LocalDate,
     val endDate: LocalDate?,
     val pickerEndDate: LocalDate,
-    val resultPattern: RepeatingPattern?
+    val resultPattern: RepeatingPattern?,
+    @DrawableRes val petAvatar: Int?
     ) : ViewState {
     enum class StateType {
         LOADING,
