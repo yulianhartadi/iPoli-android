@@ -10,11 +10,14 @@ import android.view.View
 import mypoli.android.common.ViewUtils
 import mypoli.android.common.datetime.DateUtils
 import mypoli.android.common.datetime.daysUntil
+import org.threeten.bp.DayOfWeek
 import org.threeten.bp.LocalDate
 import org.threeten.bp.Month
 import org.threeten.bp.YearMonth
 import org.threeten.bp.format.DateTimeFormatter
+import org.threeten.bp.format.TextStyle
 import org.threeten.bp.temporal.TemporalAdjusters
+import java.util.*
 
 /**
  * Created by Venelin Valkov <venelin@mypoli.fun>
@@ -272,6 +275,8 @@ class StreakChart @JvmOverloads constructor(
             when (rowData) {
                 is RowData.MonthRow -> {
 
+
+
                     val monthText = monthFormatter.format(rowData.month)
                     dayPaint.getTextBounds(monthText, 0, monthText.length, dayTextBounds)
 
@@ -281,6 +286,16 @@ class StreakChart @JvmOverloads constructor(
                         y - dayTextBounds.exactCenterY(),
                         dayPaint
                     )
+
+                    val dayTexts = DayOfWeek.values()
+                        .map { it.getDisplayName(TextStyle.SHORT, Locale.getDefault()) }
+
+                    val y = (i + 2) * rowPadding + ((i + 2) * circleRadius * 2)
+
+                    dayTexts.forEachIndexed { j, dayText ->
+                        val x = cxs[j].toFloat()
+                        canvas.drawText(dayText, x, y, dayPaint)
+                    }
                 }
 
                 is RowData.CellRow -> {
@@ -294,7 +309,8 @@ class StreakChart @JvmOverloads constructor(
                             else -> skippedPaint
                         }
 
-                        canvas.drawCircle(cxs[j].toFloat(), y, circleRadius, paint)
+                        val x = cxs[j].toFloat()
+                        canvas.drawCircle(x, y, circleRadius, paint)
 
 
                     }
