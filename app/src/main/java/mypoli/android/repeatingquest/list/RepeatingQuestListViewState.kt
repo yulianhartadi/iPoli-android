@@ -60,6 +60,7 @@ fun RepeatingQuestListViewState.toViewModels() =
     repeatingQuests.map {
 
         RepeatingQuestListViewController.RepeatingQuestViewModel(
+            id = it.id,
             name = it.name,
             icon = it.icon?.let { AndroidIcon.valueOf(it.name).icon }
                 ?: Ionicons.Icon.ion_android_clipboard,
