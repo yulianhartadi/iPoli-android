@@ -18,26 +18,45 @@ sealed class RepeatingPattern(
     data class Daily(
         override val start: LocalDate = LocalDate.now(),
         override val end: LocalDate? = null
-    ) : RepeatingPattern(start, end)
+    ) : RepeatingPattern(start, end) {
+        override fun nextDate(from: LocalDate) =
+            when {
+                from.isBefore(start) -> start
+                end != null && from.isAfter(end) -> null
+                else -> from
+            }
+    }
 
     data class Yearly(
         val dayOfMonth: Int,
         val month: Int,
         override val start: LocalDate = LocalDate.now(),
         override val end: LocalDate? = null
-    ) : RepeatingPattern(start, end)
+    ) : RepeatingPattern(start, end) {
+        override fun nextDate(from: LocalDate): LocalDate? {
+            TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        }
+    }
 
     data class Weekly(
         val daysOfWeek: Set<DayOfWeek>,
         override val start: LocalDate = LocalDate.now(),
         override val end: LocalDate? = null
-    ) : RepeatingPattern(start, end)
+    ) : RepeatingPattern(start, end) {
+        override fun nextDate(from: LocalDate): LocalDate? {
+            TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        }
+    }
 
     data class Monthly(
         val daysOfMonth: Set<Int>,
         override val start: LocalDate = LocalDate.now(),
         override val end: LocalDate? = null
-    ) : RepeatingPattern(start, end)
+    ) : RepeatingPattern(start, end) {
+        override fun nextDate(from: LocalDate): LocalDate? {
+            TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        }
+    }
 
     sealed class Flexible(
         override val start: LocalDate,
@@ -47,19 +66,29 @@ sealed class RepeatingPattern(
         data class Weekly(
             val timesPerWeek: Int,
             val preferredDays: Set<DayOfWeek>,
-            val scheduledPeriods : Map<LocalDate, List<LocalDate>> = mapOf(),
+            val scheduledPeriods: Map<LocalDate, List<LocalDate>> = mapOf(),
             override val start: LocalDate = LocalDate.now(),
             override val end: LocalDate? = null
-        ) : Flexible(start, end)
+        ) : Flexible(start, end) {
+            override fun nextDate(from: LocalDate): LocalDate? {
+                TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+            }
+        }
 
         data class Monthly(
             val timesPerMonth: Int,
             val preferredDays: Set<Int>,
-            val scheduledPeriods : Map<LocalDate, List<LocalDate>> = mapOf(),
+            val scheduledPeriods: Map<LocalDate, List<LocalDate>> = mapOf(),
             override val start: LocalDate = LocalDate.now(),
             override val end: LocalDate? = null
-        ) : Flexible(start, end)
+        ) : Flexible(start, end) {
+            override fun nextDate(from: LocalDate): LocalDate? {
+                TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+            }
+        }
     }
+
+    abstract fun nextDate(from: LocalDate): LocalDate?
 }
 
 data class RepeatingQuest(
@@ -72,7 +101,7 @@ data class RepeatingQuest(
     val duration: Int,
     val reminder: Reminder? = null,
     val repeatingPattern: RepeatingPattern,
-    val nextDate : LocalDate? = null,
+    val nextDate: LocalDate? = null,
     override val createdAt: Instant = Instant.now(),
     override val updatedAt: Instant = Instant.now()
 ) : Entity {

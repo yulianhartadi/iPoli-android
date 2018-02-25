@@ -2,6 +2,7 @@ package mypoli.android.repeatingquest.usecase
 
 import mypoli.android.common.UseCase
 import mypoli.android.quest.data.persistence.QuestRepository
+import mypoli.android.repeatingquest.entity.RepeatingPattern
 import mypoli.android.repeatingquest.entity.RepeatingQuest
 import org.threeten.bp.LocalDate
 
@@ -19,8 +20,23 @@ class FindNextDateForRepeatingQuestUseCase(
         val nextOriginalScheduled =
             questRepository.findNextOriginalScheduledForRepeatingQuest(fromDate)
 
+        val rq = parameters.repeatingQuest
+        if (nextScheduled == null && nextOriginalScheduled == null) {
+            val nextDate = when (rq.repeatingPattern) {
+                is RepeatingPattern.Daily -> {
+                    fromDate
+                }
+                else -> fromDate
+            }
+            return Result(
+                rq.copy(
+                    nextDate = nextDate
+                )
+            )
+        }
+
         return Result(
-            parameters.repeatingQuest.copy(
+            rq.copy(
                 nextDate = nextScheduled!!.scheduledDate
             )
         )

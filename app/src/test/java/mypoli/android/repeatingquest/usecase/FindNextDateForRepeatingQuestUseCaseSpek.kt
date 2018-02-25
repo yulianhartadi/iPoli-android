@@ -64,6 +64,18 @@ class FindNextDateForRepeatingQuestUseCaseSpek : Spek({
             shouldHaveNextDate(result.repeatingQuest, tomorrow)
         }
 
+        it("should find next from daily pattern") {
+
+            val today = LocalDate.now()
+            val questRepoMock = mock<QuestRepository> {
+//                on { findNextScheduledForRepeatingQuest(any()) } doReturn null
+//                on { findNextOriginalScheduledForRepeatingQuest(any()) } doReturn null
+            }
+
+            val result = executeUseCase(questRepoMock, TestUtil.repeatingQuest)
+            shouldHaveNextDate(result.repeatingQuest, today)
+        }
+
 
     }
 })
