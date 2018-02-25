@@ -427,7 +427,7 @@ class FindQuestsForRepeatingQuestSpek : Spek({
                 it("should schedule 5 quests for 2 days") {
                     val quests = executeUseCase(
                         createQuest(
-                            timesPerWeek = 5
+                            timesPerWeek = 6
                         ),
                         firstDateOfWeek.with(DayOfWeek.SATURDAY),
                         lastDateOfWeek
