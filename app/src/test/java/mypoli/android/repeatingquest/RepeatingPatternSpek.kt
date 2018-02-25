@@ -169,5 +169,37 @@ class RepeatingPatternSpek : Spek({
                 }
             }
         }
+
+        describe("Monthly") {
+            describe("Fixed") {
+                it("should give today when today is 1st and 1st is chosen day") {
+                    val first = DateUtils.today.withDayOfMonth(1)
+                    val pattern = RepeatingPattern.Monthly(
+                        daysOfMonth = setOf(1),
+                        start = first
+                    )
+                    shouldHaveNextDate(pattern.nextDate(first), first)
+                }
+
+                it("should find first chosen date after today when today is not chosen") {
+                    val today = DateUtils.today.withDayOfMonth(10)
+                    val pattern = RepeatingPattern.Monthly(
+                        setOf(1, 20, 15),
+                        today.withDayOfMonth(1)
+                    )
+                    shouldHaveNextDate(pattern.nextDate(today), today.withDayOfMonth(15))
+                }
+
+                it("should find first chosen date from next month") {
+                    val today = DateUtils.today.withDayOfMonth(10)
+                    val first = today.withDayOfMonth(1)
+                    val pattern = RepeatingPattern.Monthly(
+                        setOf(1),
+                        first
+                    )
+                    shouldHaveNextDate(pattern.nextDate(today), first.plusMonths(1))
+                }
+            }
+        }
     }
 })

@@ -47,7 +47,6 @@ sealed class RepeatingPattern(
             require(daysOfWeek.isNotEmpty())
             var nextDate = from
             while (true) {
-
                 if (daysOfWeek.contains(nextDate.dayOfWeek)) {
                     return nextDate
                 }
@@ -62,7 +61,14 @@ sealed class RepeatingPattern(
         override val end: LocalDate? = null
     ) : RepeatingPattern(start, end) {
         override fun nextDateWithoutRange(from: LocalDate): LocalDate {
-            TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+            require(daysOfMonth.isNotEmpty())
+            var nextDate = from
+            while (true) {
+                if (daysOfMonth.contains(nextDate.dayOfMonth)) {
+                    return nextDate
+                }
+                nextDate = nextDate.plusDays(1)
+            }
         }
     }
 
