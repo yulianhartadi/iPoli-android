@@ -1,10 +1,12 @@
 package mypoli.android.repeatingquest.entity
 
+import mypoli.android.common.datetime.DateUtils
 import mypoli.android.common.datetime.Time
 import mypoli.android.quest.*
 import org.threeten.bp.DayOfWeek
 import org.threeten.bp.Instant
 import org.threeten.bp.LocalDate
+import org.threeten.bp.temporal.TemporalAdjusters
 
 /**
  * Created by Venelin Valkov <venelin@mypoli.fun>
@@ -77,7 +79,13 @@ sealed class RepeatingPattern(
             override val end: LocalDate? = null
         ) : Flexible(start, end) {
             override fun nextDateWithoutRange(from: LocalDate): LocalDate {
-                TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+                require(scheduledPeriods.isNotEmpty())
+
+                val periodStart =
+                    from.with(TemporalAdjusters.previousOrSame(DateUtils.firstDayOfWeek))
+                require(scheduledPeriods.contains(periodStart))
+                val periodDates = scheduledPeriods[periodStart]!!
+                return periodDates.first()
             }
         }
 

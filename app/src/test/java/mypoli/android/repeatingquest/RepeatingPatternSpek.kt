@@ -88,6 +88,41 @@ class RepeatingPatternSpek : Spek({
             }
 
             describe("Flexible") {
+
+                it("should give today when today is first day of week") {
+                    val today =
+                        DateUtils.today.with(TemporalAdjusters.previousOrSame(DateUtils.firstDayOfWeek))
+
+                    val pattern = RepeatingPattern.Flexible.Weekly(
+                        timesPerWeek = 2,
+                        preferredDays = setOf(),
+                        scheduledPeriods = mapOf(
+                            today to listOf(today)
+                        ),
+                        start = today
+                    )
+
+                    shouldHaveNextDate(pattern.nextDate(today), today)
+                }
+
+                it("should give tomorrow when today is not scheduled") {
+
+                    val today =
+                        DateUtils.today.with(TemporalAdjusters.previousOrSame(DateUtils.firstDayOfWeek))
+
+                    val tomorrow = today.plusDays(1)
+
+                    val pattern = RepeatingPattern.Flexible.Weekly(
+                        timesPerWeek = 2,
+                        preferredDays = setOf(),
+                        scheduledPeriods = mapOf(
+                            today to listOf(tomorrow)
+                        ),
+                        start = today
+                    )
+
+                    shouldHaveNextDate(pattern.nextDate(today), tomorrow)
+                }
             }
         }
     }
