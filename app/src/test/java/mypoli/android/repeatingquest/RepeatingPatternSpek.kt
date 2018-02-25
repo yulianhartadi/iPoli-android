@@ -9,6 +9,7 @@ import org.jetbrains.spek.api.dsl.describe
 import org.jetbrains.spek.api.dsl.it
 import org.threeten.bp.DayOfWeek
 import org.threeten.bp.LocalDate
+import org.threeten.bp.Month
 import org.threeten.bp.temporal.TemporalAdjusters
 
 /**
@@ -280,6 +281,29 @@ class RepeatingPatternSpek : Spek({
                     shouldHaveNextDate(pattern.nextDate(dayAfterTomorrow), nextPeriodStart)
                 }
 
+            }
+        }
+
+        describe("Yearly") {
+
+            val firstDayOfYear = DateUtils.today.with(TemporalAdjusters.firstDayOfYear())
+            it("should give today") {
+                val today = firstDayOfYear
+                val pattern = RepeatingPattern.Yearly(today.dayOfMonth, today.month, today)
+                shouldHaveNextDate(pattern.nextDate(today), today)
+            }
+
+            it("should give tomorrow when starting today") {
+                val today = firstDayOfYear
+                val tomorrow = today.plusDays(1)
+                val pattern = RepeatingPattern.Yearly(tomorrow.dayOfMonth, tomorrow.month, today)
+                shouldHaveNextDate(pattern.nextDate(today), tomorrow)
+            }
+
+            it("should give from the next year") {
+                val today = firstDayOfYear.plusDays(1)
+                val pattern = RepeatingPattern.Yearly(1, Month.JANUARY, today)
+                shouldHaveNextDate(pattern.nextDate(today), firstDayOfYear.plusYears(1))
             }
         }
     }

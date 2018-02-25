@@ -24,9 +24,6 @@ import mypoli.android.quest.schedule.ScheduleViewState.StateType.*
 import mypoli.android.quest.schedule.addquest.AddQuestViewController
 import mypoli.android.quest.schedule.agenda.AgendaViewController
 import mypoli.android.quest.schedule.calendar.CalendarViewController
-import mypoli.android.repeatingquest.entity.RepeatingPattern
-import mypoli.android.repeatingquest.picker.RepeatingPatternPicker
-import org.threeten.bp.DayOfWeek
 import org.threeten.bp.LocalDate
 import sun.bob.mcalendarview.CellConfig
 import sun.bob.mcalendarview.MarkStyle

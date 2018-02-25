@@ -34,7 +34,7 @@ import org.threeten.bp.LocalDate
  * Created by Polina Zhelyazkova <polina@ipoli.io>
  * on 2/16/18.
  */
-class RepeatingPatternPicker :
+class RepeatingPatternPickerDialogController :
     ReduxDialogController<RepeatingPatternAction, RepeatingPatternViewState, RepeatingPatternReducer> {
 
     override val reducer = RepeatingPatternReducer
@@ -521,7 +521,7 @@ class RepeatingPatternPicker :
                 Pair(R.drawable.circle_accent, colorRes(R.color.md_white))
             else
                 Pair(R.drawable.circle_normal, attrData(R.attr.colorAccent))
-            RepeatingPatternPicker.WeekDayViewModel(
+            RepeatingPatternPickerDialogController.WeekDayViewModel(
                 text = it.name.first().toString().toUpperCase(),
                 background = background,
                 textColor = textColor,
@@ -538,7 +538,7 @@ class RepeatingPatternPicker :
             else
                 attrResourceId(android.R.attr.selectableItemBackgroundBorderless)
 
-            RepeatingPatternPicker.MonthDayViewModel(
+            RepeatingPatternPickerDialogController.MonthDayViewModel(
                 text = it.toString(),
                 background = background,
                 isSelected = isSelected,

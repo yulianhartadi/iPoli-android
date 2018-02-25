@@ -211,7 +211,7 @@ object RepeatingPatternReducer : BaseViewStateReducer<RepeatingPatternViewState>
                 val date = state.dayOfYear
                 RepeatingPattern.Yearly(
                     dayOfMonth = date.dayOfMonth,
-                    month = date.monthValue,
+                    month = date.month,
                     start = state.startDate,
                     end = state.endDate
                 )

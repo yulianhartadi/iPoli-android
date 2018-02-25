@@ -16,6 +16,7 @@ import mypoli.android.quest.data.persistence.DbReminder
 import mypoli.android.repeatingquest.entity.RepeatingPattern
 import mypoli.android.repeatingquest.entity.RepeatingQuest
 import org.threeten.bp.DayOfWeek
+import org.threeten.bp.Month
 import kotlin.coroutines.experimental.CoroutineContext
 
 /**
@@ -46,7 +47,7 @@ data class DbRepeatingPattern(val map: MutableMap<String, Any?> = mutableMapOf()
     var start: Long by map
     var end: Long? by map
     var dayOfMonth: Int by map
-    var month: Int by map
+    var month: String by map
     var daysOfWeek: List<String> by map
     var daysOfMonth: List<Int> by map
     var timesPerWeek: Int by map
@@ -124,7 +125,7 @@ class FirestoreRepeatingQuestRepository(
             DbRepeatingPatternType.YEARLY -> {
                 RepeatingPattern.Yearly(
                     dayOfMonth = rp.dayOfMonth,
-                    month = rp.month,
+                    month = Month.valueOf(rp.month),
                     start = rp.start.startOfDayUTC,
                     end = rp.end?.startOfDayUTC
                 )
@@ -192,7 +193,7 @@ class FirestoreRepeatingQuestRepository(
             is RepeatingPattern.Yearly -> {
                 rp.type = DbRepeatingPatternType.YEARLY.name
                 rp.dayOfMonth = repeatingPattern.dayOfMonth
-                rp.month = repeatingPattern.month
+                rp.month = repeatingPattern.month.name
             }
             is RepeatingPattern.Flexible.Weekly -> {
                 rp.type = DbRepeatingPatternType.FLEXIBLE_WEEKLY.name

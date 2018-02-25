@@ -24,7 +24,7 @@ import mypoli.android.quest.Icon
 import mypoli.android.quest.schedule.addquest.StateType.*
 import mypoli.android.reminder.view.picker.ReminderPickerDialogController
 import mypoli.android.reminder.view.picker.ReminderViewModel
-import mypoli.android.repeatingquest.picker.RepeatingPatternPicker
+import mypoli.android.repeatingquest.picker.RepeatingPatternPickerDialogController
 import org.threeten.bp.LocalDate
 import space.traversal.kapsule.required
 
@@ -197,7 +197,7 @@ class AddQuestViewController(args: Bundle? = null) :
                 }, state.reminder).showDialog(router, "pick_reminder_tag")
 
             PICK_REPEATING_PATTERN -> {
-                RepeatingPatternPicker(
+                RepeatingPatternPickerDialogController(
                     state.repeatingPattern,
                     { send(AddQuestIntent.RepeatingPatternPicked(it)) },
                     { send(AddQuestIntent.RepeatingPatterPickerCanceled) }

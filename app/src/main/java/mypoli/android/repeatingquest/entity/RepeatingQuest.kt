@@ -6,6 +6,7 @@ import mypoli.android.quest.*
 import org.threeten.bp.DayOfWeek
 import org.threeten.bp.Instant
 import org.threeten.bp.LocalDate
+import org.threeten.bp.Month
 import org.threeten.bp.temporal.TemporalAdjusters
 
 /**
@@ -28,13 +29,18 @@ sealed class RepeatingPattern(
 
     data class Yearly(
         val dayOfMonth: Int,
-        val month: Int,
+        val month: Month,
         override val start: LocalDate = LocalDate.now(),
         override val end: LocalDate? = null
     ) : RepeatingPattern(start, end) {
-        override fun nextDateWithoutRange(from: LocalDate): LocalDate {
-            TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-        }
+
+        override fun nextDateWithoutRange(from: LocalDate): LocalDate =
+            LocalDate.of(from.year, month, dayOfMonth).let {
+                when {
+                    it.isBefore(from) -> it.plusYears(1)
+                    else -> it
+                }
+            }
     }
 
     data class Weekly(
@@ -92,13 +98,13 @@ sealed class RepeatingPattern(
                 require(scheduledPeriods.contains(periodStart))
 
                 val nextDate = scheduledPeriods[periodStart]!!.firstOrNull { !it.isBefore(from) }
-                return if (nextDate != null) {
-                    nextDate
-                } else {
-                    val nextPeriodStart = periodStart.plusWeeks(1)
-                    require(scheduledPeriods.contains(nextPeriodStart))
-                    scheduledPeriods[nextPeriodStart]!!.first()
-                }
+                return nextDate ?: firstDateForNextPeriod(periodStart)
+            }
+
+            private fun firstDateForNextPeriod(periodStart: LocalDate): LocalDate {
+                val nextPeriodStart = periodStart.plusWeeks(1)
+                require(scheduledPeriods.contains(nextPeriodStart))
+                return scheduledPeriods[nextPeriodStart]!!.first()
             }
         }
 
@@ -115,13 +121,13 @@ sealed class RepeatingPattern(
                 require(scheduledPeriods.contains(periodStart))
 
                 val nextDate = scheduledPeriods[periodStart]!!.firstOrNull { !it.isBefore(from) }
-                return if (nextDate != null) {
-                    nextDate
-                } else {
-                    val nextPeriodStart = periodStart.plusMonths(1)
-                    require(scheduledPeriods.contains(nextPeriodStart))
-                    scheduledPeriods[nextPeriodStart]!!.first()
-                }
+                return nextDate ?: firstDateFromNextPeriod(periodStart)
+            }
+
+            private fun firstDateFromNextPeriod(periodStart: LocalDate): LocalDate {
+                val nextPeriodStart = periodStart.plusMonths(1)
+                require(scheduledPeriods.contains(nextPeriodStart))
+                return scheduledPeriods[nextPeriodStart]!!.first()
             }
         }
     }
