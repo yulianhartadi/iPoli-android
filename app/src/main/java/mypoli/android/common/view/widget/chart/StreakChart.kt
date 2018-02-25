@@ -31,7 +31,8 @@ class StreakChart @JvmOverloads constructor(
     private val skippedPaint = Paint()
     private val failedPaint = Paint()
     private val nonePaint = Paint()
-    private val dayPaint = Paint()
+    private val monthPaint = Paint()
+    private val dayOfWeekPaint = Paint()
 
     private val dayTextBounds = Rect()
 
@@ -47,12 +48,16 @@ class StreakChart @JvmOverloads constructor(
         }
     }
 
-
     sealed class RowData {
         data class MonthRow(val month: YearMonth) : RowData()
+        object WeekDaysRow : RowData()
         data class CellRow(val cells: List<Cell>) : RowData()
     }
 
+    companion object {
+        const val ROW_COUNT_WITH_SPLIT = 8
+        const val DAYS_IN_A_WEEK = 7
+    }
 
     init {
         completedPaint.color = Color.GREEN
@@ -67,10 +72,15 @@ class StreakChart @JvmOverloads constructor(
         nonePaint.color = Color.GRAY
         nonePaint.isAntiAlias = true
 
-        dayPaint.color = Color.BLACK
-        dayPaint.isAntiAlias = true
-        dayPaint.textAlign = Paint.Align.CENTER
-        dayPaint.textSize = ViewUtils.spToPx(18, context).toFloat()
+        monthPaint.color = Color.BLACK
+        monthPaint.isAntiAlias = true
+        monthPaint.textAlign = Paint.Align.CENTER
+        monthPaint.textSize = ViewUtils.spToPx(18, context).toFloat()
+
+        dayOfWeekPaint.color = Color.BLACK
+        dayOfWeekPaint.isAntiAlias = true
+        dayOfWeekPaint.textAlign = Paint.Align.CENTER
+        dayOfWeekPaint.textSize = ViewUtils.spToPx(12, context).toFloat()
 
         rowData = createRowData()
     }
@@ -80,7 +90,7 @@ class StreakChart @JvmOverloads constructor(
         val data = mutableListOf<RowData>()
 
         val nextWeekFirst =
-            today.plusDays(7).with(TemporalAdjusters.previousOrSame(DateUtils.firstDayOfWeek))
+            today.plusWeeks(1).with(TemporalAdjusters.previousOrSame(DateUtils.firstDayOfWeek))
 
         val lastOfMonth = today.minusWeeks(1).with(TemporalAdjusters.lastDayOfMonth())
 
@@ -124,13 +134,13 @@ class StreakChart @JvmOverloads constructor(
                 }
             }
 
-            data.add(RowData.MonthRow(YearMonth.of(today.year, today.month)))
+            data.addAll(createMonthWithWeekDaysRows())
 
             if (firstOfMonth.dayOfWeek != DateUtils.firstDayOfWeek) {
                 data.add(RowData.CellRow(createWeekWithNoneCellsAtStart(firstOfMonth)))
             }
 
-            val fullWeeksToAdd = 7 - data.size
+            val fullWeeksToAdd = ROW_COUNT_WITH_SPLIT - data.size
 
             val firstWeekStart =
                 firstOfMonth.with(TemporalAdjusters.previousOrSame(DateUtils.firstDayOfWeek))
@@ -151,7 +161,9 @@ class StreakChart @JvmOverloads constructor(
 
             data.add(RowData.CellRow(createWeekWithNoneCellsAtEnd(lastOfMonth)))
             val nextMonthFirst = lastOfMonth.plusDays(1)
-            data.add(RowData.MonthRow(YearMonth.of(nextMonthFirst.year, nextMonthFirst.month)))
+
+            data.addAll(createMonthWithWeekDaysRows())
+
             data.add(RowData.CellRow(createWeekWithNoneCellsAtStart(nextMonthFirst)))
 
             if (nextMonthFirst.dayOfWeek != DateUtils.firstDayOfWeek) {
@@ -161,7 +173,7 @@ class StreakChart @JvmOverloads constructor(
                 data.add(RowData.CellRow(createCellsForWeek(lastWeekStart)))
             }
         } else {
-            data.add(RowData.MonthRow(YearMonth.of(today.year, today.month)))
+            data.addAll(createMonthWithWeekDaysRows())
 
             data.add(RowData.CellRow(createWeekWithNoneCellsAtStart(firstOfMonth)))
 
@@ -181,6 +193,12 @@ class StreakChart @JvmOverloads constructor(
 
         return data
     }
+
+    private fun createMonthWithWeekDaysRows() =
+        listOf(
+            RowData.MonthRow(YearMonth.of(today.year, today.month)),
+            RowData.WeekDaysRow
+        )
 
     private fun createCellsForWeeks(
         weeksToAdd: Int,
@@ -239,7 +257,7 @@ class StreakChart @JvmOverloads constructor(
             cells.add(Cell(startDayOfMonth + it, Cell.CellType.COMPLETED))
         }
 
-        val noneCellCount = 7 - daysBetweenEnd
+        val noneCellCount = DAYS_IN_A_WEEK - daysBetweenEnd
 
         (1..noneCellCount).forEach {
             cells.add(Cell(it, Cell.CellType.NONE))
@@ -248,7 +266,7 @@ class StreakChart @JvmOverloads constructor(
     }
 
     private fun createCellsForWeek(weekStart: LocalDate) =
-        (0 until 7).map {
+        (0 until DAYS_IN_A_WEEK).map {
             Cell(weekStart.dayOfMonth + it, Cell.CellType.COMPLETED)
         }
 
@@ -266,7 +284,7 @@ class StreakChart @JvmOverloads constructor(
 
         val totalWidth = measuredWidth
 
-        val cxs = (1..7).map { it * (totalWidth / 8) }
+        val cxs = (1..DAYS_IN_A_WEEK).map { it * (totalWidth / 8) }
 
         rowData.forEachIndexed { i, rowData ->
 
@@ -275,31 +293,28 @@ class StreakChart @JvmOverloads constructor(
             when (rowData) {
                 is RowData.MonthRow -> {
 
-
-
                     val monthText = monthFormatter.format(rowData.month)
-                    dayPaint.getTextBounds(monthText, 0, monthText.length, dayTextBounds)
+                    monthPaint.getTextBounds(monthText, 0, monthText.length, dayTextBounds)
 
                     canvas.drawText(
                         monthText,
                         (totalWidth / 2).toFloat(),
                         y - dayTextBounds.exactCenterY(),
-                        dayPaint
+                        monthPaint
                     )
+                }
 
+                is RowData.WeekDaysRow -> {
                     val dayTexts = DayOfWeek.values()
-                        .map { it.getDisplayName(TextStyle.SHORT, Locale.getDefault()) }
-
-                    val y = (i + 2) * rowPadding + ((i + 2) * circleRadius * 2)
+                        .map { it.getDisplayName(TextStyle.SHORT_STANDALONE, Locale.getDefault()) }
 
                     dayTexts.forEachIndexed { j, dayText ->
                         val x = cxs[j].toFloat()
-                        canvas.drawText(dayText, x, y, dayPaint)
+                        canvas.drawText(dayText, x, y, dayOfWeekPaint)
                     }
                 }
 
                 is RowData.CellRow -> {
-
 
                     rowData.cells.forEachIndexed { j, cell ->
 
@@ -311,8 +326,6 @@ class StreakChart @JvmOverloads constructor(
 
                         val x = cxs[j].toFloat()
                         canvas.drawCircle(x, y, circleRadius, paint)
-
-
                     }
                 }
             }

@@ -193,7 +193,7 @@
             <mypoli.android.common.view.widget.chart.StreakChart
                 android:id="@+id/repeating_quest_history"
                 android:layout_width="match_parent"
-                android:layout_height="304dp" />
+                android:layout_height="364dp" />
 
         </LinearLayout>
     </android.support.v4.widget.NestedScrollView>
