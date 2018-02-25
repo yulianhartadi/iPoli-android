@@ -33,6 +33,8 @@ interface QuestRepository : CollectionRepository<Quest> {
     fun findStartedQuests(): List<Quest>
     fun findLastScheduledDate(currentDate: LocalDate, maxQuests: Int): LocalDate?
     fun findFirstScheduledDate(currentDate: LocalDate, maxQuests: Int): LocalDate?
+    fun findNextScheduledForRepeatingQuest(currentDate: LocalDate): Quest?
+    fun findNextOriginalScheduledForRepeatingQuest(currentDate: LocalDate): Quest?
 }
 
 data class DbQuest(override val map: MutableMap<String, Any?> = mutableMapOf()) :
@@ -53,6 +55,7 @@ data class DbQuest(override val map: MutableMap<String, Any?> = mutableMapOf()) 
     var completedAtMinute: Long? by map
     var timeRanges: List<MutableMap<String, Any?>> by map
     var timeRangeCount: Int by map
+    var repeatingQuestId: String? by map
     override var createdAt: Long by map
     override var updatedAt: Long by map
     override var removedAt: Long? by map
@@ -89,6 +92,13 @@ class FirestoreQuestRepository(
     coroutineContext,
     sharedPreferences
 ), QuestRepository {
+    override fun findNextScheduledForRepeatingQuest(currentDate: LocalDate): Quest? {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    }
+
+    override fun findNextOriginalScheduledForRepeatingQuest(currentDate: LocalDate): Quest? {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    }
 
     override fun listenForScheduledBetween(
         startDate: LocalDate,
@@ -319,7 +329,8 @@ class FirestoreQuestRepository(
                     ctr.start?.instant,
                     ctr.end?.instant
                 )
-            }
+            },
+            repeatingQuestId = cq.repeatingQuestId
         )
     }
 
@@ -358,6 +369,7 @@ class FirestoreQuestRepository(
             createDbTimeRange(it).map
         }
         q.timeRangeCount = q.timeRanges.size
+        q.repeatingQuestId = entity.repeatingQuestId
         return q
     }
 

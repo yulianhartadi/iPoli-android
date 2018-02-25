@@ -72,6 +72,7 @@ data class RepeatingQuest(
     val duration: Int,
     val reminder: Reminder? = null,
     val repeatingPattern: RepeatingPattern,
+    val nextDate : LocalDate? = null,
     override val createdAt: Instant = Instant.now(),
     override val updatedAt: Instant = Instant.now()
 ) : Entity {
