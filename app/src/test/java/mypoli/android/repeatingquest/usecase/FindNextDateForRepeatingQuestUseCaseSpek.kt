@@ -68,7 +68,7 @@ class FindNextDateForRepeatingQuestUseCaseSpek : Spek({
 
             val today = LocalDate.now()
             val questRepoMock = mock<QuestRepository> {
-//                on { findNextScheduledForRepeatingQuest(any()) } doReturn null
+                //                on { findNextScheduledForRepeatingQuest(any()) } doReturn null
 //                on { findNextOriginalScheduledForRepeatingQuest(any()) } doReturn null
             }
 

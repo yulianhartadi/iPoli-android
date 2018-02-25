@@ -15,16 +15,13 @@ sealed class RepeatingPattern(
     open val start: LocalDate,
     open val end: LocalDate?
 ) {
+
     data class Daily(
         override val start: LocalDate = LocalDate.now(),
         override val end: LocalDate? = null
     ) : RepeatingPattern(start, end) {
-        override fun nextDate(from: LocalDate) =
-            when {
-                from.isBefore(start) -> start
-                end != null && from.isAfter(end) -> null
-                else -> from
-            }
+
+        override fun nextDateWithoutRange(from: LocalDate) = from
     }
 
     data class Yearly(
@@ -33,7 +30,7 @@ sealed class RepeatingPattern(
         override val start: LocalDate = LocalDate.now(),
         override val end: LocalDate? = null
     ) : RepeatingPattern(start, end) {
-        override fun nextDate(from: LocalDate): LocalDate? {
+        override fun nextDateWithoutRange(from: LocalDate): LocalDate {
             TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
         }
     }
@@ -43,8 +40,17 @@ sealed class RepeatingPattern(
         override val start: LocalDate = LocalDate.now(),
         override val end: LocalDate? = null
     ) : RepeatingPattern(start, end) {
-        override fun nextDate(from: LocalDate): LocalDate? {
-            TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+
+        override fun nextDateWithoutRange(from: LocalDate): LocalDate {
+            require(daysOfWeek.isNotEmpty())
+            var nextDate = from
+            while (true) {
+
+                if (daysOfWeek.contains(nextDate.dayOfWeek)) {
+                    return nextDate
+                }
+                nextDate = nextDate.plusDays(1)
+            }
         }
     }
 
@@ -53,7 +59,7 @@ sealed class RepeatingPattern(
         override val start: LocalDate = LocalDate.now(),
         override val end: LocalDate? = null
     ) : RepeatingPattern(start, end) {
-        override fun nextDate(from: LocalDate): LocalDate? {
+        override fun nextDateWithoutRange(from: LocalDate): LocalDate {
             TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
         }
     }
@@ -70,7 +76,7 @@ sealed class RepeatingPattern(
             override val start: LocalDate = LocalDate.now(),
             override val end: LocalDate? = null
         ) : Flexible(start, end) {
-            override fun nextDate(from: LocalDate): LocalDate? {
+            override fun nextDateWithoutRange(from: LocalDate): LocalDate {
                 TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
             }
         }
@@ -82,13 +88,20 @@ sealed class RepeatingPattern(
             override val start: LocalDate = LocalDate.now(),
             override val end: LocalDate? = null
         ) : Flexible(start, end) {
-            override fun nextDate(from: LocalDate): LocalDate? {
+            override fun nextDateWithoutRange(from: LocalDate): LocalDate {
                 TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
             }
         }
     }
 
-    abstract fun nextDate(from: LocalDate): LocalDate?
+    fun nextDate(from: LocalDate) =
+        when {
+            end != null && from.isAfter(end) -> null
+            from.isBefore(start) -> nextDateWithoutRange(start)
+            else -> nextDateWithoutRange(from)
+        }
+
+    protected abstract fun nextDateWithoutRange(from: LocalDate): LocalDate
 }
 
 data class RepeatingQuest(
