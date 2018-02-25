@@ -134,6 +134,19 @@ object DateUtils {
         }
     }
 
+    const val DAYS_IN_A_WEEK = 7
+
+    fun daysOfWeekText(style: TextStyle): List<String> {
+        return (0 until DAYS_IN_A_WEEK).map {
+            val dayOfWeek = DateUtils.firstDayOfWeek.plus(it.toLong())
+
+            dayOfWeek.getDisplayName(
+                style,
+                Locale.getDefault()
+            )
+        }
+    }
+
     val firstDayOfWeek: DayOfWeek
         get() = WeekFields.of(Locale.getDefault()).firstDayOfWeek
 

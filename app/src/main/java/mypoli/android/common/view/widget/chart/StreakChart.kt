@@ -9,15 +9,14 @@ import android.util.AttributeSet
 import android.view.View
 import mypoli.android.common.ViewUtils
 import mypoli.android.common.datetime.DateUtils
+import mypoli.android.common.datetime.DateUtils.DAYS_IN_A_WEEK
 import mypoli.android.common.datetime.daysUntil
-import org.threeten.bp.DayOfWeek
 import org.threeten.bp.LocalDate
 import org.threeten.bp.Month
 import org.threeten.bp.YearMonth
 import org.threeten.bp.format.DateTimeFormatter
 import org.threeten.bp.format.TextStyle
 import org.threeten.bp.temporal.TemporalAdjusters
-import java.util.*
 
 /**
  * Created by Venelin Valkov <venelin@mypoli.fun>
@@ -42,6 +41,8 @@ class StreakChart @JvmOverloads constructor(
 
     private val monthFormatter = DateTimeFormatter.ofPattern("MMMM")
 
+    private val dayTexts = DateUtils.daysOfWeekText(TextStyle.SHORT_STANDALONE)
+
     data class Cell(val dayOfMonth: Int, val type: CellType) {
         enum class CellType {
             COMPLETED, FAILED, SKIPPED, TODAY_SKIP, TODAY_DO, FUTURE, NONE
@@ -56,7 +57,6 @@ class StreakChart @JvmOverloads constructor(
 
     companion object {
         const val ROW_COUNT_WITH_SPLIT = 8
-        const val DAYS_IN_A_WEEK = 7
     }
 
     init {
@@ -305,9 +305,6 @@ class StreakChart @JvmOverloads constructor(
                 }
 
                 is RowData.WeekDaysRow -> {
-                    val dayTexts = DayOfWeek.values()
-                        .map { it.getDisplayName(TextStyle.SHORT_STANDALONE, Locale.getDefault()) }
-
                     dayTexts.forEachIndexed { j, dayText ->
                         val x = cxs[j].toFloat()
                         canvas.drawText(dayText, x, y, dayOfWeekPaint)
