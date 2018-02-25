@@ -66,10 +66,10 @@ class StreakChart @JvmOverloads constructor(
         completedPaint.color = ContextCompat.getColor(context, R.color.md_green_500)
         completedPaint.isAntiAlias = true
 
-        skippedPaint.color = Color.BLUE
+        skippedPaint.color = ContextCompat.getColor(context, R.color.md_blue_500)
         skippedPaint.isAntiAlias = true
 
-        failedPaint.color = Color.RED
+        failedPaint.color = ContextCompat.getColor(context, R.color.md_red_500)
         failedPaint.isAntiAlias = true
 
         nonePaint.color = ContextCompat.getColor(context, R.color.md_grey_500)
@@ -275,7 +275,14 @@ class StreakChart @JvmOverloads constructor(
 
     private fun createCellsForWeek(weekStart: LocalDate) =
         (0 until DAYS_IN_A_WEEK).map {
-            Cell(weekStart.dayOfMonth + it, Cell.CellType.COMPLETED)
+            Cell(
+                weekStart.dayOfMonth + it,
+                listOf(
+                    Cell.CellType.COMPLETED,
+                    Cell.CellType.FAILED,
+                    Cell.CellType.SKIPPED
+                ).shuffled().first()
+            )
         }
 
     override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
@@ -287,7 +294,7 @@ class StreakChart @JvmOverloads constructor(
     override fun onDraw(canvas: Canvas) {
         super.onDraw(canvas)
 
-        val circleRadius = ViewUtils.dpToPx(16f, context)
+        val cellRadius = ViewUtils.dpToPx(16f, context)
         val rowPadding = ViewUtils.dpToPx(8f, context)
 
         val totalWidth = measuredWidth
@@ -296,7 +303,7 @@ class StreakChart @JvmOverloads constructor(
 
         rowData.forEachIndexed { i, rowData ->
 
-            val y = (i + 1) * rowPadding + ((i + 1) * circleRadius * 2)
+            val y = (i + 1) * rowPadding + ((i + 1) * cellRadius * 2)
 
             when (rowData) {
                 is RowData.MonthRow -> {
@@ -325,33 +332,48 @@ class StreakChart @JvmOverloads constructor(
 
                         val x = cxs[j].toFloat()
 
+                        val dayOfMonth = cell.dayOfMonth.toString()
+
                         when (cell.type) {
+
                             Cell.CellType.COMPLETED -> {
-                                canvas.drawCircle(x, y, circleRadius, completedPaint)
-
-                                val dayOfMonthText = cell.dayOfMonth.toString()
-                                dayPaint.getTextBounds(
-                                    dayOfMonthText,
-                                    0,
-                                    dayOfMonthText.length,
-                                    textBounds
-                                )
-                                canvas.drawText(
-                                    dayOfMonthText,
-                                    x,
-                                    y - textBounds.exactCenterY(),
-                                    dayPaint
-                                )
+                                canvas.drawCell(cellRadius, completedPaint, x, y)
+                                canvas.drawDayOfMonth(dayOfMonth, dayPaint, x, y)
                             }
 
-                            else -> {
-                                canvas.drawCircle(x, y, circleRadius, nonePaint)
+                            Cell.CellType.SKIPPED -> {
+                                canvas.drawCell(cellRadius, skippedPaint, x, y)
+                                canvas.drawDayOfMonth(dayOfMonth, dayPaint, x, y)
                             }
+
+                            Cell.CellType.FAILED -> {
+                                canvas.drawCell(cellRadius, failedPaint, x, y)
+                                canvas.drawDayOfMonth(dayOfMonth, dayPaint, x, y)
+                            }
+
+                            else -> canvas.drawCell(cellRadius, nonePaint, x, y)
                         }
                     }
                 }
             }
         }
 
+    }
+
+    private fun Canvas.drawCell(
+        radius: Float,
+        paint: Paint,
+        x: Float,
+        y: Float
+    ) = drawCircle(x, y, radius, paint)
+
+    private fun Canvas.drawDayOfMonth(
+        dayOfMonth: String,
+        paint: Paint,
+        x: Float,
+        y: Float
+    ) {
+        paint.getTextBounds(dayOfMonth, 0, dayOfMonth.length, textBounds)
+        drawText(dayOfMonth, x, y - textBounds.exactCenterY(), paint)
     }
 }
