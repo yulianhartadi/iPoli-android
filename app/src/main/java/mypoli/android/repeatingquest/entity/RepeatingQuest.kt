@@ -23,6 +23,13 @@ sealed class RepeatingPattern(
         override val start: LocalDate = LocalDate.now(),
         override val end: LocalDate? = null
     ) : RepeatingPattern(start, end) {
+        override fun periodRangeFor(date: LocalDate) =
+            PeriodRange(
+                start = date.with(TemporalAdjusters.previousOrSame(DateUtils.firstDayOfWeek)),
+                end = date.with(DateUtils.lastDayOfWeek)
+            )
+
+        override val periodCount get() = DayOfWeek.values().size
 
         override fun nextDateWithoutRange(from: LocalDate) = from
     }
@@ -33,6 +40,13 @@ sealed class RepeatingPattern(
         override val start: LocalDate = LocalDate.now(),
         override val end: LocalDate? = null
     ) : RepeatingPattern(start, end) {
+        override fun periodRangeFor(date: LocalDate) =
+            PeriodRange(
+                start = date.with(TemporalAdjusters.firstDayOfYear()),
+                end = date.with(TemporalAdjusters.lastDayOfYear())
+            )
+
+        override val periodCount get() = 1
 
         override fun nextDateWithoutRange(from: LocalDate): LocalDate =
             LocalDate.of(from.year, month, dayOfMonth).let {
@@ -48,6 +62,13 @@ sealed class RepeatingPattern(
         override val start: LocalDate = LocalDate.now(),
         override val end: LocalDate? = null
     ) : RepeatingPattern(start, end) {
+        override fun periodRangeFor(date: LocalDate) =
+            PeriodRange(
+                start = date.with(TemporalAdjusters.previousOrSame(DateUtils.firstDayOfWeek)),
+                end = date.with(DateUtils.lastDayOfWeek)
+            )
+
+        override val periodCount get() = daysOfWeek.size
 
         override fun nextDateWithoutRange(from: LocalDate): LocalDate {
             require(daysOfWeek.isNotEmpty())
@@ -66,6 +87,14 @@ sealed class RepeatingPattern(
         override val start: LocalDate = LocalDate.now(),
         override val end: LocalDate? = null
     ) : RepeatingPattern(start, end) {
+        override fun periodRangeFor(date: LocalDate) =
+            PeriodRange(
+                start = date.with(TemporalAdjusters.firstDayOfMonth()),
+                end = date.with(TemporalAdjusters.lastDayOfMonth())
+            )
+
+        override val periodCount get() = daysOfMonth.size
+
         override fun nextDateWithoutRange(from: LocalDate): LocalDate {
             require(daysOfMonth.isNotEmpty())
             var nextDate = from
@@ -90,6 +119,14 @@ sealed class RepeatingPattern(
             override val start: LocalDate = LocalDate.now(),
             override val end: LocalDate? = null
         ) : Flexible(start, end) {
+            override fun periodRangeFor(date: LocalDate) =
+                PeriodRange(
+                    start = date.with(TemporalAdjusters.previousOrSame(DateUtils.firstDayOfWeek)),
+                    end = date.with(DateUtils.lastDayOfWeek)
+                )
+
+            override val periodCount get() = timesPerWeek
+
             override fun nextDateWithoutRange(from: LocalDate): LocalDate {
                 require(scheduledPeriods.isNotEmpty())
 
@@ -115,6 +152,14 @@ sealed class RepeatingPattern(
             override val start: LocalDate = LocalDate.now(),
             override val end: LocalDate? = null
         ) : Flexible(start, end) {
+            override fun periodRangeFor(date: LocalDate) =
+                PeriodRange(
+                    start = date.with(TemporalAdjusters.firstDayOfMonth()),
+                    end = date.with(TemporalAdjusters.lastDayOfMonth())
+                )
+
+            override val periodCount get() = timesPerMonth
+
             override fun nextDateWithoutRange(from: LocalDate): LocalDate {
                 require(scheduledPeriods.isNotEmpty())
                 val periodStart = from.with(TemporalAdjusters.firstDayOfMonth())
@@ -139,8 +184,14 @@ sealed class RepeatingPattern(
             else -> nextDateWithoutRange(from)
         }
 
+    abstract val periodCount: Int
+    abstract fun periodRangeFor(date: LocalDate): PeriodRange
     protected abstract fun nextDateWithoutRange(from: LocalDate): LocalDate
 }
+
+data class PeriodRange(val start: LocalDate, val end: LocalDate)
+
+data class PeriodProgress(val completedCount: Int, val allCount: Int)
 
 data class RepeatingQuest(
     override val id: String = "",
@@ -153,6 +204,7 @@ data class RepeatingQuest(
     val reminder: Reminder? = null,
     val repeatingPattern: RepeatingPattern,
     val nextDate: LocalDate? = null,
+    val periodProgress: PeriodProgress? = null,
     override val createdAt: Instant = Instant.now(),
     override val updatedAt: Instant = Instant.now()
 ) : Entity {
