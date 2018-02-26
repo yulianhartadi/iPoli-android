@@ -33,8 +33,15 @@ interface QuestRepository : CollectionRepository<Quest> {
     fun findStartedQuests(): List<Quest>
     fun findLastScheduledDate(currentDate: LocalDate, maxQuests: Int): LocalDate?
     fun findFirstScheduledDate(currentDate: LocalDate, maxQuests: Int): LocalDate?
-    fun findScheduledForRepeatingQuestAtDate(currentDate: LocalDate): Quest?
-    fun findOriginalScheduledForRepeatingQuestAtDate(currentDate: LocalDate): Quest?
+    fun findNextScheduledForRepeatingQuest(
+        repeatingQuestId: String,
+        currentDate: LocalDate
+    ): Quest?
+
+    fun findOriginalScheduledForRepeatingQuestAtDate(
+        repeatingQuestId: String,
+        currentDate: LocalDate
+    ): Quest?
     fun findCompletedForRepeatingQuestInPeriod(
         repeatingQuestId: String,
         start: LocalDate,
@@ -97,21 +104,42 @@ class FirestoreQuestRepository(
     coroutineContext,
     sharedPreferences
 ), QuestRepository {
+
     override fun findCompletedForRepeatingQuestInPeriod(
         repeatingQuestId: String,
         start: LocalDate,
         end: LocalDate
-    ): Int {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-    }
+    ) =
+        collectionReference
+            .whereEqualTo("repeatingQuestId", repeatingQuestId)
+            .whereGreaterThanOrEqualTo("completedAtDate", start.startOfDayUTC())
+            .whereLessThanOrEqualTo("completedAtDate", end.startOfDayUTC())
+            .documents.size
 
-    override fun findScheduledForRepeatingQuestAtDate(currentDate: LocalDate): Quest? {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-    }
+    override fun findNextScheduledForRepeatingQuest(
+        repeatingQuestId: String,
+        currentDate: LocalDate
+    ) =
+        collectionReference
+            .whereEqualTo("repeatingQuestId", repeatingQuestId)
+            .whereGreaterThanOrEqualTo("scheduleDate", currentDate.startOfDayUTC())
+            .orderBy("scheduledDate", Query.Direction.ASCENDING)
+            .limit(1)
+            .entities.firstOrNull()
 
-    override fun findOriginalScheduledForRepeatingQuestAtDate(currentDate: LocalDate): Quest? {
-        // take into account "removed" quests
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    override fun findOriginalScheduledForRepeatingQuestAtDate(
+        repeatingQuestId: String,
+        currentDate: LocalDate
+    ): Quest? {
+        val doc = collectionReference
+            .whereEqualTo("repeatingQuestId", repeatingQuestId)
+            .whereEqualTo("originalScheduledDate", currentDate.startOfDayUTC())
+            .limit(1)
+            .execute().documents
+        if (doc.isEmpty()) {
+            return null
+        }
+        return toEntityObject(doc.first().data)
     }
 
     override fun listenForScheduledBetween(
