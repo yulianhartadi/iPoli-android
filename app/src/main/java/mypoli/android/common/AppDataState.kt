@@ -6,6 +6,7 @@ import mypoli.android.common.redux.State
 import mypoli.android.player.Player
 import mypoli.android.quest.Quest
 import mypoli.android.quest.schedule.agenda.usecase.CreateAgendaItemsUseCase
+import mypoli.android.quest.usecase.Schedule
 import mypoli.android.repeatingquest.entity.RepeatingQuest
 import org.threeten.bp.LocalDate
 
@@ -19,18 +20,23 @@ sealed class DataLoadedAction : Action {
     data class TodayQuestsChanged(val quests: List<Quest>) : DataLoadedAction()
     data class RepeatingQuestsChanged(val repeatingQuests: List<RepeatingQuest>) :
         DataLoadedAction()
+
     data class AgendaItemsChanged(
         val start: LocalDate,
         val end: LocalDate,
         val agendaItems: List<CreateAgendaItemsUseCase.AgendaItem>,
         val currentAgendaItemDate: LocalDate?
     ) : DataLoadedAction()
+
+    data class ScheduledQuestsChanged(val scheduledQuests: Map<LocalDate, Schedule>) :
+        DataLoadedAction()
 }
 
 data class AppDataState(
     val today: LocalDate,
     val player: Player?,
     val todayQuests: List<Quest>,
+    val scheduledQuests: Map<LocalDate, Schedule>,
     val repeatingQuests: List<RepeatingQuest>
 ) : State
 
@@ -44,6 +50,12 @@ object AppDataReducer : Reducer<AppState, AppDataState> {
             is DataLoadedAction.PlayerChanged -> {
                 subState.copy(
                     player = action.player
+                )
+            }
+
+            is DataLoadedAction.ScheduledQuestsChanged -> {
+                subState.copy(
+                    scheduledQuests = action.scheduledQuests
                 )
             }
 
@@ -66,6 +78,7 @@ object AppDataReducer : Reducer<AppState, AppDataState> {
             today = LocalDate.now(),
             player = null,
             todayQuests = listOf(),
+            scheduledQuests = mapOf(),
             repeatingQuests = listOf()
         )
     }

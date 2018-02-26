@@ -54,6 +54,7 @@ import mypoli.android.quest.schedule.agenda.usecase.CreateAgendaItemsUseCase
 import mypoli.android.quest.schedule.agenda.usecase.FindAgendaDatesUseCase
 import mypoli.android.quest.schedule.calendar.CalendarReducer
 import mypoli.android.quest.schedule.calendar.dayview.DayViewPresenter
+import mypoli.android.quest.schedule.calendar.dayview.view.DayViewReducer
 import mypoli.android.quest.usecase.*
 import mypoli.android.quest.view.QuestCompletePresenter
 import mypoli.android.rate.AndroidRatePopupScheduler
@@ -205,7 +206,7 @@ class MainUseCaseModule : UseCaseModule, Injects<Module> {
     private val timerCompleteScheduler by required { timerCompleteScheduler }
 
     override val loadScheduleForDateUseCase
-        get() = LoadScheduleForDateUseCase(questRepository)
+        get() = LoadScheduleForDateUseCase()
     override val saveQuestUseCase
         get() = SaveQuestUseCase(
             questRepository,
@@ -568,7 +569,8 @@ class AndroidStateStoreModule : StateStoreModule, Injects<Module> {
                 ChallengeListForCategoryReducer,
                 GemInventoryReducer,
                 RepeatingPatternReducer,
-                EditRepeatingQuestReducer
+                EditRepeatingQuestReducer,
+                DayViewReducer
             ),
             sideEffects = setOf(
                 LoadAllDataSideEffect(),

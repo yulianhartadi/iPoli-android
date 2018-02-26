@@ -32,22 +32,23 @@ import mypoli.android.common.datetime.DateUtils
 import mypoli.android.common.datetime.Time
 import mypoli.android.common.datetime.isNotEqual
 import mypoli.android.common.datetime.startOfDayUTC
-import mypoli.android.common.mvi.MviViewController
+import mypoli.android.common.mvi.Intent
+import mypoli.android.common.redux.android.ReduxViewController
 import mypoli.android.common.view.*
 import mypoli.android.quest.CompletedQuestViewController
 import mypoli.android.quest.Icon
 import mypoli.android.quest.schedule.calendar.CalendarViewController
-import mypoli.android.quest.schedule.calendar.dayview.DayViewPresenter
 import mypoli.android.quest.schedule.calendar.dayview.view.DayViewState.StateType.*
 import mypoli.android.quest.schedule.calendar.dayview.view.widget.*
 import mypoli.android.reminder.view.picker.ReminderPickerDialogController
 import mypoli.android.reminder.view.picker.ReminderViewModel
 import mypoli.android.timer.TimerViewController
 import org.threeten.bp.LocalDate
-import space.traversal.kapsule.required
+import timber.log.Timber
 
 class DayViewController :
-    MviViewController<DayViewState, DayViewController, DayViewPresenter, DayViewIntent>,
+    ReduxViewController<DayViewAction, DayViewState, DayViewReducer>,
+//    MviViewController<DayViewState, DayViewController, DayViewPresenter, DayViewIntent>,
     CalendarDayView.CalendarChangeListener {
 
     private lateinit var currentDate: LocalDate
@@ -72,9 +73,9 @@ class DayViewController :
 
     constructor(args: Bundle? = null) : super(args)
 
-    private val presenter by required { dayViewPresenter }
-
     private lateinit var calendarDayView: CalendarDayView
+
+    override val reducer = DayViewReducer
 
     override fun onSaveViewState(view: View, outState: Bundle) {
         outState.putLong("current_date", currentDate.startOfDayUTC())
@@ -107,9 +108,12 @@ class DayViewController :
         return view
     }
 
+    override fun onCreateLoadAction(): DayViewAction? {
+        return DayViewAction.Load(currentDate)
+    }
+
     override fun onAttach(view: View) {
         super.onAttach(view)
-        send(LoadDataIntent(currentDate))
         if (currentDate.isNotEqual(LocalDate.now())) {
             calendarDayView.hideTimeline()
         }
@@ -124,8 +128,6 @@ class DayViewController :
         ViewUtils.hideKeyboard(calendarDayView)
         calendarDayView.cancelEdit()
     }
-
-    override fun createPresenter() = presenter
 
     override fun render(state: DayViewState, view: View) {
         when (state.type) {
@@ -780,6 +782,9 @@ class DayViewController :
 
         private fun tintList(@ColorRes color: Int, context: Context) =
             ContextCompat.getColorStateList(context, color)
+    }
+
+    private fun send(context: Intent) {
     }
 
     private fun showQuest(questId: String) {
