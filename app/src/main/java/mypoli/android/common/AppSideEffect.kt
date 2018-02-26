@@ -277,6 +277,8 @@ class LoadAllDataSideEffect : AppSideEffect() {
     private val playerRepository by required { playerRepository }
     private val questRepository by required { questRepository }
     private val repeatingQuestRepository by required { repeatingQuestRepository }
+    private val findNextDateForRepeatingQuestUseCase by required { findNextDateForRepeatingQuestUseCase }
+    private val findPeriodProgressForRepeatingQuestUseCase by required { findPeriodProgressForRepeatingQuestUseCase }
 
     private var playerChannel: ReceiveChannel<Player?>? = null
     private var scheduledQuestsChannel: ReceiveChannel<List<Quest>>? = null
@@ -310,6 +312,8 @@ class LoadAllDataSideEffect : AppSideEffect() {
             repeatingQuestsChannel?.cancel()
             repeatingQuestsChannel = repeatingQuestRepository.listenForAll()
             repeatingQuestsChannel!!.consumeEach {
+//                var result = findNextDateForRepeatingQuestUseCase()
+
                 dispatch(DataLoadedAction.RepeatingQuestsChanged(it))
             }
         }
