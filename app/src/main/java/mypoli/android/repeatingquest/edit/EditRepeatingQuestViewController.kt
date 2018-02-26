@@ -41,4 +41,9 @@ class EditRepeatingQuestViewController(args: Bundle? = null) :
 
     override fun render(state: EditRepeatingQuestViewState, view: View) {
     }
+
+    override fun onAttach(view: View) {
+        super.onAttach(view)
+//        showBackButton()
+    }
 }

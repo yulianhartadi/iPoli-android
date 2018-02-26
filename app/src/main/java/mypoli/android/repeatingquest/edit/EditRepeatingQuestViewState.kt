@@ -1,9 +1,15 @@
 package mypoli.android.repeatingquest.edit
 
+import com.mikepenz.iconics.typeface.IIcon
+import mypoli.android.Constants
 import mypoli.android.common.AppState
 import mypoli.android.common.BaseViewStateReducer
+import mypoli.android.common.datetime.Time
 import mypoli.android.common.mvi.ViewState
 import mypoli.android.common.redux.Action
+import mypoli.android.quest.Color
+import mypoli.android.quest.Reminder
+import mypoli.android.repeatingquest.entity.RepeatingPattern
 
 /**
  * Created by Polina Zhelyazkova <polina@ipoli.io>
@@ -36,14 +42,28 @@ object EditRepeatingQuestReducer : BaseViewStateReducer<EditRepeatingQuestViewSt
 
     override fun defaultState() =
         EditRepeatingQuestViewState(
-            type = EditRepeatingQuestViewState.StateType.LOADING
+            type = EditRepeatingQuestViewState.StateType.LOADING,
+            name = "",
+            repeatingPattern = RepeatingPattern.Daily(),
+            duration = Constants.QUEST_MIN_DURATION,
+            startTime = null,
+            reminder = null,
+            icon = null,
+            color = Color.GREEN
         )
 
 }
 
 
 data class EditRepeatingQuestViewState(
-    val type: EditRepeatingQuestViewState.StateType
+    val type: EditRepeatingQuestViewState.StateType,
+    val name: String,
+    val repeatingPattern: RepeatingPattern,
+    val duration: Int,
+    val startTime: Time?,
+    val reminder: Reminder?,
+    val icon: IIcon?,
+    val color: Color
 ) : ViewState {
     enum class StateType {
         LOADING,
