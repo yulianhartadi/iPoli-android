@@ -81,5 +81,5 @@ class FindNextDateForRepeatingQuestUseCase(
         }
     }
 
-    data class Params(val repeatingQuest: RepeatingQuest, val fromDate: LocalDate)
+    data class Params(val repeatingQuest: RepeatingQuest, val fromDate: LocalDate = LocalDate.now())
 }

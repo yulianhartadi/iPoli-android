@@ -51,7 +51,11 @@ class RepeatingQuestListViewController(args: Bundle? = null) :
     override fun render(state: RepeatingQuestListViewState, view: View) {
         when (state.type) {
             DATA_LOADED -> {
-                (view.repeatingQuestList.adapter as RepeatingQuestAdapter).updateAll(state.toViewModels())
+                (view.repeatingQuestList.adapter as RepeatingQuestAdapter).updateAll(
+                    state.toViewModels(
+                        view.context
+                    )
+                )
             }
         }
     }

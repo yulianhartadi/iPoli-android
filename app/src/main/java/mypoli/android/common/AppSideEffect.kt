@@ -28,6 +28,8 @@ import mypoli.android.quest.schedule.calendar.CalendarAction
 import mypoli.android.quest.schedule.calendar.CalendarViewState
 import mypoli.android.quest.usecase.CompleteQuestUseCase.Params.WithQuest
 import mypoli.android.repeatingquest.entity.RepeatingQuest
+import mypoli.android.repeatingquest.usecase.FindNextDateForRepeatingQuestUseCase
+import mypoli.android.repeatingquest.usecase.FindPeriodProgressForRepeatingQuestUseCase
 import org.threeten.bp.LocalDate
 import space.traversal.kapsule.Injects
 import space.traversal.kapsule.inject
@@ -312,9 +314,19 @@ class LoadAllDataSideEffect : AppSideEffect() {
             repeatingQuestsChannel?.cancel()
             repeatingQuestsChannel = repeatingQuestRepository.listenForAll()
             repeatingQuestsChannel!!.consumeEach {
-//                var result = findNextDateForRepeatingQuestUseCase()
-
-                dispatch(DataLoadedAction.RepeatingQuestsChanged(it))
+                launch {
+                    var result = it.map {
+                        findNextDateForRepeatingQuestUseCase.execute(
+                            FindNextDateForRepeatingQuestUseCase.Params(it)
+                        )
+                    }
+                    result = result.map {
+                        findPeriodProgressForRepeatingQuestUseCase.execute(
+                            FindPeriodProgressForRepeatingQuestUseCase.Params(it)
+                        )
+                    }
+                    dispatch(DataLoadedAction.RepeatingQuestsChanged(result))
+                }
             }
         }
     }

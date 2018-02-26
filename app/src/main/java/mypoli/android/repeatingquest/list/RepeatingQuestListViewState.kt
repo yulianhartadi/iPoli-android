@@ -1,10 +1,13 @@
 package mypoli.android.repeatingquest.list
 
+import android.content.Context
 import com.mikepenz.ionicons_typeface_library.Ionicons
+import mypoli.android.R
 import mypoli.android.common.AppState
 import mypoli.android.common.BaseViewStateReducer
 import mypoli.android.common.mvi.ViewState
 import mypoli.android.common.redux.Action
+import mypoli.android.common.text.DateFormatter
 import mypoli.android.common.view.AndroidColor
 import mypoli.android.common.view.AndroidIcon
 import mypoli.android.repeatingquest.entity.RepeatingQuest
@@ -56,16 +59,26 @@ data class RepeatingQuestListViewState(
     }
 }
 
-fun RepeatingQuestListViewState.toViewModels() =
+fun RepeatingQuestListViewState.toViewModels(context: Context) =
     repeatingQuests.map {
-
+        val next = if (it.nextDate != null) {
+            context.getString(
+                R.string.repeating_quest_next,
+                DateFormatter.format(context, it.nextDate)
+            )
+        } else {
+            context.getString(
+                R.string.repeating_quest_next,
+                context.getString(R.string.unscheduled)
+            )
+        }
         RepeatingQuestListViewController.RepeatingQuestViewModel(
             name = it.name,
             icon = it.icon?.let { AndroidIcon.valueOf(it.name).icon }
                 ?: Ionicons.Icon.ion_android_clipboard,
             color = AndroidColor.valueOf(it.color.name).color500,
-            next = "Next: Today",
-            completedCount = 2,
-            allCount = 3
+            next = next,
+            completedCount = it.periodProgress!!.completedCount,
+            allCount = it.periodProgress.allCount
         )
     }
