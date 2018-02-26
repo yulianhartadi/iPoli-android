@@ -20,6 +20,7 @@ class FindPeriodProgressForRepeatingQuestUseCase(
         return rq.copy(
             periodProgress = PeriodProgress(
                 completedCount = questRepository.findCompletedForRepeatingQuestInPeriod(
+                    rq.id,
                     periodRange.start,
                     periodRange.end
                 ),
