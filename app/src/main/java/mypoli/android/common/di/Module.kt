@@ -66,6 +66,9 @@ import mypoli.android.repeatingquest.list.RepeatingQuestListReducer
 import mypoli.android.repeatingquest.persistence.FirestoreRepeatingQuestRepository
 import mypoli.android.repeatingquest.persistence.RepeatingQuestRepository
 import mypoli.android.repeatingquest.picker.RepeatingPatternReducer
+import mypoli.android.repeatingquest.usecase.FindNextDateForRepeatingQuestUseCase
+import mypoli.android.repeatingquest.usecase.FindPeriodProgressForRepeatingQuestUseCase
+import mypoli.android.repeatingquest.usecase.FindQuestsForRepeatingQuestUseCase
 import mypoli.android.repeatingquest.usecase.SaveRepeatingQuestUseCase
 import mypoli.android.store.GemStorePresenter
 import mypoli.android.store.theme.ThemeStorePresenter
@@ -309,6 +312,22 @@ class MainUseCaseModule : UseCaseModule, Injects<Module> {
         get() = SaveRepeatingQuestUseCase(
             repeatingQuestRepository
         )
+
+    override val findNextDateForRepeatingQuestUseCase
+        get() = FindNextDateForRepeatingQuestUseCase(
+            questRepository
+        )
+
+    override val findPeriodProgressForRepeatingQuestUseCase
+        get() = FindPeriodProgressForRepeatingQuestUseCase(
+            questRepository
+        )
+
+    override val findQuestsForRepeatingQuestUseCase
+        get() = FindQuestsForRepeatingQuestUseCase(
+            questRepository,
+            repeatingQuestRepository
+        )
 }
 
 interface UseCaseModule {
@@ -353,6 +372,9 @@ interface UseCaseModule {
     val findAgendaDatesUseCase: FindAgendaDatesUseCase
     val createAgendaItemsUseCase: CreateAgendaItemsUseCase
     val saveRepeatingQuestUseCase: SaveRepeatingQuestUseCase
+    val findNextDateForRepeatingQuestUseCase: FindNextDateForRepeatingQuestUseCase
+    val findPeriodProgressForRepeatingQuestUseCase: FindPeriodProgressForRepeatingQuestUseCase
+    val findQuestsForRepeatingQuestUseCase: FindQuestsForRepeatingQuestUseCase
 }
 
 interface PresenterModule {
