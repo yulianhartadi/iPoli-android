@@ -83,14 +83,6 @@ class FindQuestsForRepeatingQuestUseCaseSpek : Spek({
                 repeatingPattern = RepeatingPattern.Daily(start = start, end = end)
             )
 
-        it("should require end after start") {
-            val exec = {
-                val today = LocalDate.now()
-                executeUseCase(TestUtil.repeatingQuest, today, today)
-            }
-            exec shouldThrow IllegalArgumentException::class
-        }
-
         it("should not schedule anything before quest start") {
             val quests = executeUseCase(
                 quest = createRepeatingQuest(start = lastDateOfWeek.plusDays(1)),

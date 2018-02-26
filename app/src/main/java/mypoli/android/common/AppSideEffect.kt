@@ -279,6 +279,7 @@ class LoadAllDataSideEffect : AppSideEffect() {
     private val playerRepository by required { playerRepository }
     private val questRepository by required { questRepository }
     private val repeatingQuestRepository by required { repeatingQuestRepository }
+    private val findQuestsForRepeatingQuestUseCase by required { findQuestsForRepeatingQuestUseCase }
     private val findNextDateForRepeatingQuestUseCase by required { findNextDateForRepeatingQuestUseCase }
     private val findPeriodProgressForRepeatingQuestUseCase by required { findPeriodProgressForRepeatingQuestUseCase }
 
@@ -315,17 +316,34 @@ class LoadAllDataSideEffect : AppSideEffect() {
             repeatingQuestsChannel = repeatingQuestRepository.listenForAll()
             repeatingQuestsChannel!!.consumeEach {
                 launch {
-                    var result = it.map {
-                        findNextDateForRepeatingQuestUseCase.execute(
-                            FindNextDateForRepeatingQuestUseCase.Params(it)
-                        )
-                    }
-                    result = result.map {
-                        findPeriodProgressForRepeatingQuestUseCase.execute(
-                            FindPeriodProgressForRepeatingQuestUseCase.Params(it)
-                        )
-                    }
-                    dispatch(DataLoadedAction.RepeatingQuestsChanged(result))
+                    val rqs = it
+                        .map {
+                            findNextDateForRepeatingQuestUseCase.execute(
+                                FindNextDateForRepeatingQuestUseCase.Params(it)
+                            )
+                        }.map {
+                            findPeriodProgressForRepeatingQuestUseCase.execute(
+                                FindPeriodProgressForRepeatingQuestUseCase.Params(it)
+                            )
+                        }
+//
+//                    val scheduledQuests = rqs.map {
+//                        findQuestsForRepeatingQuestUseCase.execute(
+//                            FindQuestsForRepeatingQuestUseCase.Params(
+//                                it,
+//                                LocalDate.now(),
+//                                LocalDate.now()
+//                            )
+//                        ).quests
+//                    }
+//
+//                    scheduledQuests.forEach {
+//                        it.forEach {
+//                            Timber.d("AAA ${it.scheduledDate}")
+//                        }
+//
+//                    }
+                    dispatch(DataLoadedAction.RepeatingQuestsChanged(rqs))
                 }
             }
         }

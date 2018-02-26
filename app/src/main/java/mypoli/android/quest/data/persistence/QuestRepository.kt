@@ -42,6 +42,7 @@ interface QuestRepository : CollectionRepository<Quest> {
         repeatingQuestId: String,
         currentDate: LocalDate
     ): Quest?
+
     fun findCompletedForRepeatingQuestInPeriod(
         repeatingQuestId: String,
         start: LocalDate,
@@ -157,7 +158,7 @@ class FirestoreQuestRepository(
 
     override fun findScheduledAt(date: LocalDate) =
         collectionReference
-            .whereGreaterThanOrEqualTo("scheduledDate", date.startOfDayUTC())
+            .whereGreaterThan("scheduledDate", date.startOfDayUTC() - 1)
             .whereLessThanOrEqualTo("scheduledDate", date.startOfDayUTC())
             .orderBy("scheduledDate")
             .orderBy("startMinute")
@@ -167,9 +168,10 @@ class FirestoreQuestRepository(
         repeatingQuestId: String,
         start: LocalDate,
         end: LocalDate
-    ): List<Quest> {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-    }
+    ) =
+        collectionReference
+            .whereGreaterThan("scheduledDate", start.startOfDayUTC() - 1)
+            .whereLessThanOrEqualTo("scheduledDate", end.startOfDayUTC()).entities
 
     override fun listenForScheduledAt(date: LocalDate): ReceiveChannel<List<Quest>> {
         val query = collectionReference
