@@ -44,7 +44,7 @@ class FindNextDateForRepeatingQuestUseCaseSpek : Spek({
                 originalScheduledDate = today
             )
             val questRepoMock = mock<QuestRepository> {
-                on { findScheduledForRepeatingQuestAtDate(any()) } doReturn quest
+                on { findNextScheduledForRepeatingQuest(any(), any()) } doReturn quest
             }
 
             val rq = executeUseCase(questRepoMock, TestUtil.repeatingQuest)
@@ -59,8 +59,8 @@ class FindNextDateForRepeatingQuestUseCaseSpek : Spek({
                 scheduledDate = tomorrow
             )
             val questRepoMock = mock<QuestRepository> {
-                on { findScheduledForRepeatingQuestAtDate(any()) } doReturn quest
-                on { findOriginalScheduledForRepeatingQuestAtDate(any()) } doReturn quest
+                on { findNextScheduledForRepeatingQuest(any(), any()) } doReturn quest
+                on { findOriginalScheduledForRepeatingQuestAtDate(any(), any()) } doReturn quest
             }
 
             val rq = executeUseCase(questRepoMock, TestUtil.repeatingQuest.copy(
@@ -81,7 +81,7 @@ class FindNextDateForRepeatingQuestUseCaseSpek : Spek({
         it("should find Friday for weekly pattern MON, WED, FRI when today is TUE and WED is removed & FRI is not scheduled") {
             val today = LocalDate.now().with(TemporalAdjusters.previousOrSame(DayOfWeek.TUESDAY))
             val questRepoMock = mock<QuestRepository> {
-                on { findOriginalScheduledForRepeatingQuestAtDate(today.with(DayOfWeek.WEDNESDAY)) } doReturn TestUtil.quest.copy(
+                on { findOriginalScheduledForRepeatingQuestAtDate("", today.with(DayOfWeek.WEDNESDAY)) } doReturn TestUtil.quest.copy(
                     originalScheduledDate = today.with(DayOfWeek.WEDNESDAY),
                     isRemoved = true
                 )
@@ -113,9 +113,9 @@ class FindNextDateForRepeatingQuestUseCaseSpek : Spek({
 
             val questRepoMock = mock<QuestRepository> {
 
-                on { findOriginalScheduledForRepeatingQuestAtDate(today.with(DayOfWeek.WEDNESDAY)) } doReturn quest
+                on { findOriginalScheduledForRepeatingQuestAtDate("", today.with(DayOfWeek.WEDNESDAY)) } doReturn quest
 
-                on { findScheduledForRepeatingQuestAtDate(any()) } doReturn quest
+                on { findNextScheduledForRepeatingQuest(any(), any()) } doReturn quest
             }
 
             val rq = executeUseCase(

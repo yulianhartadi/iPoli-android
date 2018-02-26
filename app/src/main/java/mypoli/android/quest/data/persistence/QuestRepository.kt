@@ -33,8 +33,21 @@ interface QuestRepository : CollectionRepository<Quest> {
     fun findStartedQuests(): List<Quest>
     fun findLastScheduledDate(currentDate: LocalDate, maxQuests: Int): LocalDate?
     fun findFirstScheduledDate(currentDate: LocalDate, maxQuests: Int): LocalDate?
-    fun findScheduledForRepeatingQuestAtDate(currentDate: LocalDate): Quest?
-    fun findOriginalScheduledForRepeatingQuestAtDate(currentDate: LocalDate): Quest?
+    fun findNextScheduledForRepeatingQuest(
+        repeatingQuestId: String,
+        currentDate: LocalDate
+    ): Quest?
+
+    fun findOriginalScheduledForRepeatingQuestAtDate(
+        repeatingQuestId: String,
+        currentDate: LocalDate
+    ): Quest?
+
+    fun findCompletedForRepeatingQuestInPeriod(
+        repeatingQuestId: String,
+        start: LocalDate,
+        end: LocalDate
+    ): Int
 }
 
 data class DbQuest(override val map: MutableMap<String, Any?> = mutableMapOf()) :
@@ -92,13 +105,42 @@ class FirestoreQuestRepository(
     coroutineContext,
     sharedPreferences
 ), QuestRepository {
-    override fun findScheduledForRepeatingQuestAtDate(currentDate: LocalDate): Quest? {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-    }
 
-    override fun findOriginalScheduledForRepeatingQuestAtDate(currentDate: LocalDate): Quest? {
-        // take into account "removed" quests
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    override fun findCompletedForRepeatingQuestInPeriod(
+        repeatingQuestId: String,
+        start: LocalDate,
+        end: LocalDate
+    ) =
+        collectionReference
+            .whereEqualTo("repeatingQuestId", repeatingQuestId)
+            .whereGreaterThanOrEqualTo("completedAtDate", start.startOfDayUTC())
+            .whereLessThanOrEqualTo("completedAtDate", end.startOfDayUTC())
+            .documents.size
+
+    override fun findNextScheduledForRepeatingQuest(
+        repeatingQuestId: String,
+        currentDate: LocalDate
+    ) =
+        collectionReference
+            .whereEqualTo("repeatingQuestId", repeatingQuestId)
+            .whereGreaterThanOrEqualTo("scheduledDate", currentDate.startOfDayUTC())
+            .orderBy("scheduledDate", Query.Direction.ASCENDING)
+            .limit(1)
+            .entities.firstOrNull()
+
+    override fun findOriginalScheduledForRepeatingQuestAtDate(
+        repeatingQuestId: String,
+        currentDate: LocalDate
+    ): Quest? {
+        val doc = collectionReference
+            .whereEqualTo("repeatingQuestId", repeatingQuestId)
+            .whereEqualTo("originalScheduledDate", currentDate.startOfDayUTC())
+            .limit(1)
+            .execute().documents
+        if (doc.isEmpty()) {
+            return null
+        }
+        return toEntityObject(doc.first().data)
     }
 
     override fun listenForScheduledBetween(
@@ -116,7 +158,7 @@ class FirestoreQuestRepository(
 
     override fun findScheduledAt(date: LocalDate) =
         collectionReference
-            .whereGreaterThanOrEqualTo("scheduledDate", date.startOfDayUTC())
+            .whereGreaterThan("scheduledDate", date.startOfDayUTC() - 1)
             .whereLessThanOrEqualTo("scheduledDate", date.startOfDayUTC())
             .orderBy("scheduledDate")
             .orderBy("startMinute")
@@ -126,9 +168,10 @@ class FirestoreQuestRepository(
         repeatingQuestId: String,
         start: LocalDate,
         end: LocalDate
-    ): List<Quest> {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-    }
+    ) =
+        collectionReference
+            .whereGreaterThan("scheduledDate", start.startOfDayUTC() - 1)
+            .whereLessThanOrEqualTo("scheduledDate", end.startOfDayUTC()).entities
 
     override fun listenForScheduledAt(date: LocalDate): ReceiveChannel<List<Quest>> {
         val query = collectionReference

@@ -54,6 +54,7 @@ import mypoli.android.quest.schedule.agenda.usecase.CreateAgendaItemsUseCase
 import mypoli.android.quest.schedule.agenda.usecase.FindAgendaDatesUseCase
 import mypoli.android.quest.schedule.calendar.CalendarReducer
 import mypoli.android.quest.schedule.calendar.dayview.DayViewPresenter
+import mypoli.android.quest.schedule.calendar.dayview.view.DayViewReducer
 import mypoli.android.quest.usecase.*
 import mypoli.android.quest.view.QuestCompletePresenter
 import mypoli.android.rate.AndroidRatePopupScheduler
@@ -62,11 +63,15 @@ import mypoli.android.rate.RatePresenter
 import mypoli.android.reminder.view.formatter.ReminderTimeFormatter
 import mypoli.android.reminder.view.formatter.TimeUnitFormatter
 import mypoli.android.reminder.view.picker.ReminderPickerDialogPresenter
+import mypoli.android.repeatingquest.edit.EditRepeatingQuestReducer
 import mypoli.android.repeatingquest.list.RepeatingQuestListReducer
 import mypoli.android.repeatingquest.persistence.FirestoreRepeatingQuestRepository
 import mypoli.android.repeatingquest.persistence.RepeatingQuestRepository
 import mypoli.android.repeatingquest.picker.RepeatingPatternReducer
 import mypoli.android.repeatingquest.show.RepeatingQuestReducer
+import mypoli.android.repeatingquest.usecase.FindNextDateForRepeatingQuestUseCase
+import mypoli.android.repeatingquest.usecase.FindPeriodProgressForRepeatingQuestUseCase
+import mypoli.android.repeatingquest.usecase.FindQuestsForRepeatingQuestUseCase
 import mypoli.android.repeatingquest.usecase.SaveRepeatingQuestUseCase
 import mypoli.android.store.GemStorePresenter
 import mypoli.android.store.theme.ThemeStorePresenter
@@ -202,7 +207,7 @@ class MainUseCaseModule : UseCaseModule, Injects<Module> {
     private val timerCompleteScheduler by required { timerCompleteScheduler }
 
     override val loadScheduleForDateUseCase
-        get() = LoadScheduleForDateUseCase(questRepository)
+        get() = LoadScheduleForDateUseCase()
     override val saveQuestUseCase
         get() = SaveQuestUseCase(
             questRepository,
@@ -310,6 +315,22 @@ class MainUseCaseModule : UseCaseModule, Injects<Module> {
         get() = SaveRepeatingQuestUseCase(
             repeatingQuestRepository
         )
+
+    override val findNextDateForRepeatingQuestUseCase
+        get() = FindNextDateForRepeatingQuestUseCase(
+            questRepository
+        )
+
+    override val findPeriodProgressForRepeatingQuestUseCase
+        get() = FindPeriodProgressForRepeatingQuestUseCase(
+            questRepository
+        )
+
+    override val findQuestsForRepeatingQuestUseCase
+        get() = FindQuestsForRepeatingQuestUseCase(
+            questRepository,
+            repeatingQuestRepository
+        )
 }
 
 interface UseCaseModule {
@@ -354,6 +375,9 @@ interface UseCaseModule {
     val findAgendaDatesUseCase: FindAgendaDatesUseCase
     val createAgendaItemsUseCase: CreateAgendaItemsUseCase
     val saveRepeatingQuestUseCase: SaveRepeatingQuestUseCase
+    val findNextDateForRepeatingQuestUseCase: FindNextDateForRepeatingQuestUseCase
+    val findPeriodProgressForRepeatingQuestUseCase: FindPeriodProgressForRepeatingQuestUseCase
+    val findQuestsForRepeatingQuestUseCase: FindQuestsForRepeatingQuestUseCase
 }
 
 interface PresenterModule {
@@ -546,7 +570,9 @@ class AndroidStateStoreModule : StateStoreModule, Injects<Module> {
                 ChallengeListForCategoryReducer,
                 GemInventoryReducer,
                 RepeatingPatternReducer,
-                RepeatingQuestReducer
+                RepeatingQuestReducer,
+                EditRepeatingQuestReducer,
+                DayViewReducer
             ),
             sideEffects = setOf(
                 LoadAllDataSideEffect(),

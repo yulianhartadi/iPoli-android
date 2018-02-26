@@ -27,7 +27,10 @@ import mypoli.android.quest.schedule.agenda.usecase.FindAgendaDatesUseCase
 import mypoli.android.quest.schedule.calendar.CalendarAction
 import mypoli.android.quest.schedule.calendar.CalendarViewState
 import mypoli.android.quest.usecase.CompleteQuestUseCase.Params.WithQuest
+import mypoli.android.quest.usecase.LoadScheduleForDateUseCase
 import mypoli.android.repeatingquest.entity.RepeatingQuest
+import mypoli.android.repeatingquest.usecase.FindNextDateForRepeatingQuestUseCase
+import mypoli.android.repeatingquest.usecase.FindPeriodProgressForRepeatingQuestUseCase
 import org.threeten.bp.LocalDate
 import space.traversal.kapsule.Injects
 import space.traversal.kapsule.inject
@@ -277,8 +280,13 @@ class LoadAllDataSideEffect : AppSideEffect() {
     private val playerRepository by required { playerRepository }
     private val questRepository by required { questRepository }
     private val repeatingQuestRepository by required { repeatingQuestRepository }
+    private val findQuestsForRepeatingQuestUseCase by required { findQuestsForRepeatingQuestUseCase }
+    private val loadScheduleForDateUseCase by required { loadScheduleForDateUseCase }
+    private val findNextDateForRepeatingQuestUseCase by required { findNextDateForRepeatingQuestUseCase }
+    private val findPeriodProgressForRepeatingQuestUseCase by required { findPeriodProgressForRepeatingQuestUseCase }
 
     private var playerChannel: ReceiveChannel<Player?>? = null
+    private var todayQuestsChannel: ReceiveChannel<List<Quest>>? = null
     private var scheduledQuestsChannel: ReceiveChannel<List<Quest>>? = null
     private var repeatingQuestsChannel: ReceiveChannel<List<RepeatingQuest>>? = null
 
@@ -286,11 +294,11 @@ class LoadAllDataSideEffect : AppSideEffect() {
 
         if (action is LoadDataAction.ChangePlayer) {
             playerChannel?.cancel()
-            scheduledQuestsChannel?.cancel()
+            todayQuestsChannel?.cancel()
             repeatingQuestsChannel?.cancel()
 
             playerChannel = null
-            scheduledQuestsChannel = null
+            todayQuestsChannel = null
             repeatingQuestsChannel = null
 
             playerRepository.purge(action.oldPlayerId)
@@ -310,7 +318,36 @@ class LoadAllDataSideEffect : AppSideEffect() {
             repeatingQuestsChannel?.cancel()
             repeatingQuestsChannel = repeatingQuestRepository.listenForAll()
             repeatingQuestsChannel!!.consumeEach {
-                dispatch(DataLoadedAction.RepeatingQuestsChanged(it))
+                launch {
+                    val rqs = it
+                        .map {
+                            findNextDateForRepeatingQuestUseCase.execute(
+                                FindNextDateForRepeatingQuestUseCase.Params(it)
+                            )
+                        }.map {
+                            findPeriodProgressForRepeatingQuestUseCase.execute(
+                                FindPeriodProgressForRepeatingQuestUseCase.Params(it)
+                            )
+                        }
+//
+//                    val scheduledQuests = rqs.map {
+//                        findQuestsForRepeatingQuestUseCase.execute(
+//                            FindQuestsForRepeatingQuestUseCase.Params(
+//                                it,
+//                                LocalDate.now(),
+//                                LocalDate.now()
+//                            )
+//                        ).quests
+//                    }
+//
+//                    scheduledQuests.forEach {
+//                        it.forEach {
+//                            Timber.d("AAA ${it.scheduledDate}")
+//                        }
+//
+//                    }
+                    dispatch(DataLoadedAction.RepeatingQuestsChanged(rqs))
+                }
             }
         }
     }
@@ -319,16 +356,25 @@ class LoadAllDataSideEffect : AppSideEffect() {
         state: AppState
     ) {
         launch(UI) {
+            todayQuestsChannel?.cancel()
+            todayQuestsChannel = questRepository.listenForScheduledAt(state.dataState.today)
+            todayQuestsChannel!!.consumeEach {
+                updateWidgets()
+                dispatch(DataLoadedAction.TodayQuestsChanged(it))
+            }
+        }
+
+        launch(UI) {
             scheduledQuestsChannel?.cancel()
-            scheduledQuestsChannel =
-                questRepository.listenForScheduledAt(state.dataState.today)
+            val today = LocalDate.now()
+            scheduledQuestsChannel = questRepository.listenForScheduledBetween(
+                today.minusDays(1),
+                today.plusDays(1)
+            )
             scheduledQuestsChannel!!.consumeEach {
-
-                questRepository.listenForScheduledAt(state.dataState.today).consumeEach {
-
-                    updateWidgets()
-                    dispatch(DataLoadedAction.TodayQuestsChanged(it))
-                }
+                val scheduledQuests =
+                    loadScheduleForDateUseCase.execute(LoadScheduleForDateUseCase.Params(it))
+                dispatch(DataLoadedAction.ScheduledQuestsChanged(scheduledQuests))
             }
         }
     }

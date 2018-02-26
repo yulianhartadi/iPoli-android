@@ -1,7 +1,5 @@
 package mypoli.android.quest.schedule.calendar.dayview
 
-import kotlinx.coroutines.experimental.channels.consumeEach
-import kotlinx.coroutines.experimental.launch
 import mypoli.android.common.datetime.Time
 import mypoli.android.common.mvi.BaseMviPresenter
 import mypoli.android.common.mvi.ViewStateRenderer
@@ -20,7 +18,6 @@ import org.threeten.bp.LocalDate
 import org.threeten.bp.LocalDateTime
 import org.threeten.bp.LocalTime
 import org.threeten.bp.temporal.ChronoUnit
-import timber.log.Timber
 import kotlin.coroutines.experimental.CoroutineContext
 
 /**
@@ -45,12 +42,12 @@ class DayViewPresenter(
         when (intent) {
 
             is LoadDataIntent -> {
-                launch {
-                    loadScheduleUseCase.listen(intent.currentDate)
-                        .consumeEach {
-                            sendChannel.send(ScheduleLoadedIntent(it))
-                        }
-                }
+//                launch {
+//                    loadScheduleUseCase.listen(intent.currentDate)
+//                        .consumeEach {
+//                            sendChannel.send(ScheduleLoadedIntent(it))
+//                        }
+//                }
                 state.copy(type = LOADING)
             }
 
@@ -186,23 +183,6 @@ class DayViewPresenter(
                 val result = saveQuestUseCase.execute(questParams)
                 savedQuestViewState(result, state)
             }
-
-//            is EditUnscheduledEventIntent -> {
-//                val event = intent.event
-//                val color = Color.valueOf(state.color!!.name)
-//
-//                val questParams = SaveQuestUseCase.Parameters(
-//                    id = event.id,
-//                    name = "",
-//                    color = color,
-//                    category = Category("WELLNESS", Color.GREEN),
-//                    currentDate = state.currentDate,
-//                    startTime = null,
-//                    duration = event.duration
-//                )
-//                val result = saveQuestUseCase.execute(questParams)
-//                savedQuestViewState(result, state)
-//            }
 
             is RemoveEventIntent -> {
                 val eventId = intent.eventId

@@ -15,9 +15,9 @@ class FindNextDateForRepeatingQuestUseCase(
 
     override fun execute(parameters: Params): RepeatingQuest {
         val fromDate = parameters.fromDate
-        val nextScheduled = questRepository.findScheduledForRepeatingQuestAtDate(fromDate)
-
         val rq = parameters.repeatingQuest
+        val nextScheduled = questRepository.findNextScheduledForRepeatingQuest(rq.id, fromDate)
+
 
         if (nextScheduled != null) {
             val patternNext = rq.repeatingPattern.nextDate(fromDate)
@@ -40,7 +40,7 @@ class FindNextDateForRepeatingQuestUseCase(
             while (nextDate!!.isBefore(nextScheduled.scheduledDate)) {
 
                 val originalScheduled =
-                    questRepository.findOriginalScheduledForRepeatingQuestAtDate(nextDate)
+                    questRepository.findOriginalScheduledForRepeatingQuestAtDate(rq.id, nextDate)
                 if (originalScheduled == null) {
                     return rq.copy(
                         nextDate = nextDate
@@ -64,7 +64,7 @@ class FindNextDateForRepeatingQuestUseCase(
             while (true) {
 
                 val originalScheduled =
-                    questRepository.findOriginalScheduledForRepeatingQuestAtDate(nextDate!!)
+                    questRepository.findOriginalScheduledForRepeatingQuestAtDate(rq.id, nextDate!!)
                 if (originalScheduled == null) {
                     return rq.copy(
                         nextDate = nextDate
@@ -81,5 +81,5 @@ class FindNextDateForRepeatingQuestUseCase(
         }
     }
 
-    data class Params(val repeatingQuest: RepeatingQuest, val fromDate: LocalDate)
+    data class Params(val repeatingQuest: RepeatingQuest, val fromDate: LocalDate = LocalDate.now())
 }

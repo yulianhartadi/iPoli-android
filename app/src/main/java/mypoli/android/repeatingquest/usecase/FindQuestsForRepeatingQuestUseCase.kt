@@ -1,6 +1,7 @@
 package mypoli.android.repeatingquest.usecase
 
 import mypoli.android.common.UseCase
+import mypoli.android.common.datetime.DateUtils
 import mypoli.android.common.datetime.datesUntil
 import mypoli.android.common.datetime.isBetween
 import mypoli.android.quest.Quest
@@ -16,15 +17,13 @@ import org.threeten.bp.temporal.TemporalAdjusters.*
  * Created by Venelin Valkov <venelin@mypoli.fun>
  * on 02/14/2018.
  */
-class FindQuestsForRepeatingQuest(
+class FindQuestsForRepeatingQuestUseCase(
     private val questRepository: QuestRepository,
     private val repeatingQuestRepository: RepeatingQuestRepository
-) : UseCase<FindQuestsForRepeatingQuest.Params, FindQuestsForRepeatingQuest.Result> {
+) : UseCase<FindQuestsForRepeatingQuestUseCase.Params, FindQuestsForRepeatingQuestUseCase.Result> {
 
-    override fun execute(parameters: Params): FindQuestsForRepeatingQuest.Result {
+    override fun execute(parameters: Params): FindQuestsForRepeatingQuestUseCase.Result {
         val rq = parameters.repeatingQuest
-
-        require(parameters.end.isAfter(parameters.start))
 
         if (parameters.end.isBefore(rq.start)) {
             return Result(listOf(), rq)
@@ -38,7 +37,7 @@ class FindQuestsForRepeatingQuest(
         val start = if (parameters.start.isBefore(rq.start)) rq.start else parameters.start
         val end = if (rqEnd != null && rqEnd.isBefore(parameters.end)) rqEnd else parameters.end
 
-        var newRQ : RepeatingQuest? = null
+        var newRQ: RepeatingQuest? = null
 
         val scheduleDates = when (rq.repeatingPattern) {
 
@@ -47,24 +46,24 @@ class FindQuestsForRepeatingQuest(
 
             is RepeatingPattern.Weekly ->
                 weeklyDatesToScheduleInPeriod(
-                rq.repeatingPattern,
-                start,
+                    rq.repeatingPattern,
+                    start,
                     end
                 )
 
             is RepeatingPattern.Monthly ->
                 monthlyDatesToScheduleInPeriod(
-                rq.repeatingPattern,
-                start,
-                end
+                    rq.repeatingPattern,
+                    start,
+                    end
                 )
 
 
             is RepeatingPattern.Yearly ->
                 yearlyDatesToScheduleInPeriod(
-                rq.repeatingPattern,
-                start,
-                end
+                    rq.repeatingPattern,
+                    start,
+                    end
                 )
 
 
@@ -374,7 +373,7 @@ class FindQuestsForRepeatingQuest(
         val repeatingQuest: RepeatingQuest,
         val start: LocalDate,
         val end: LocalDate,
-        val firstDayOfWeek: DayOfWeek,
-        val lastDayOfWeek: DayOfWeek
+        val firstDayOfWeek: DayOfWeek = DateUtils.firstDayOfWeek,
+        val lastDayOfWeek: DayOfWeek = DateUtils.lastDayOfWeek
     )
 }
