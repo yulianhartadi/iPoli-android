@@ -213,4 +213,7 @@ data class RepeatingQuest(
 
     val end
         get() = repeatingPattern.end
+
+    val isCompleted
+        get() = if (end == null) false else LocalDate.now().isAfter(end)
 }
