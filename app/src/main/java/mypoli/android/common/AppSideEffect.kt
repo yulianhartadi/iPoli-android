@@ -38,7 +38,6 @@ import org.threeten.bp.LocalDate
 import space.traversal.kapsule.Injects
 import space.traversal.kapsule.inject
 import space.traversal.kapsule.required
-import timber.log.Timber
 
 /**
  * Created by Venelin Valkov <venelin@mypoli.fun>
@@ -73,7 +72,6 @@ class CompleteQuestSideEffect : AppSideEffect() {
     private val completeQuestUseCase by required { completeQuestUseCase }
 
     override suspend fun doExecute(action: Action, state: AppState) {
-        Timber.d("AAAA complete")
         val questId = (action as DayViewAction.CompleteQuest).questId
         if (action.isStarted) {
             completeTimeRangeUseCase.execute(CompleteTimeRangeUseCase.Params(questId))

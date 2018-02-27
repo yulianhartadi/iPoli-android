@@ -18,7 +18,6 @@ import mypoli.android.reminder.view.picker.ReminderViewModel
 import org.threeten.bp.LocalDate
 import org.threeten.bp.LocalDateTime
 import org.threeten.bp.LocalTime
-import timber.log.Timber
 
 /**
  * Created by Venelin Valkov <venelin@mypoli.fun>
@@ -133,7 +132,6 @@ class DayViewReducer(namespace: String) : NamespaceViewStateReducer<DayViewState
             }
 
             is DayViewAction.CompleteQuest -> {
-                Timber.d("AAAA reduce")
                 subState.copy(
                     type = QUEST_COMPLETED
                 )
