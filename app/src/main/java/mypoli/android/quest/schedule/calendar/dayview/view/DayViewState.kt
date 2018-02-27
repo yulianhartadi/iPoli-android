@@ -153,7 +153,7 @@ object DayViewReducer : BaseViewStateReducer<DayViewState>() {
 data class DayViewState(
     val type: StateType,
 //    val currentDate: LocalDate = LocalDate.now(),
-    val schedule: Schedule = Schedule(LocalDate.now(), listOf(), listOf()),
+    val schedule: Schedule? = null,
 //    val scheduledQuests: List<DayViewController.QuestViewModel> = listOf(),
 //    val unscheduledQuests: List<DayViewController.UnscheduledQuestViewModel> = listOf(),
     val removedEventId: String = "",
