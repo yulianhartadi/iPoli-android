@@ -56,15 +56,49 @@ data class DragResizeViewIntent(val startTime: Time?, val endTime: Time?, val du
 
 data class ChangeEditViewNameIntent(val name: String) : DayViewIntent()
 
-sealed class DayViewAction : Action {
-    data class Load(val currentDate: LocalDate) : DayViewAction()
+sealed class DayViewAction(open val namespace: String) : Action {
+    data class Load(val currentDate: LocalDate, override val namespace: String) :
+        DayViewAction(namespace)
 }
 
-class DayViewReducer : BaseViewStateReducer<DayViewState>() {
+class DayViewReducer(private val namespace: String) : BaseViewStateReducer<DayViewState>() {
 
     override val stateKey = key<DayViewState>() + UUID.randomUUID().toString()
 
     override fun reduce(state: AppState, subState: DayViewState, action: Action): DayViewState {
+        if (action is DayViewAction) {
+
+            if (action.namespace != namespace) {
+                return subState
+            }
+
+            return reduceDayViewAction(state, subState, action)
+        }
+
+        return when (action) {
+            is DataLoadedAction.ScheduledQuestsChanged -> {
+                val schedule = action.schedule
+
+                if (schedule.date.isEqual(subState.currentDate)) {
+                    subState.copy(
+                        type = DayViewState.StateType.SCHEDULE_LOADED,
+                        schedule = schedule
+                    )
+                } else {
+                    subState
+                }
+            }
+
+            else -> subState
+        }
+
+    }
+
+    private fun reduceDayViewAction(
+        state: AppState,
+        subState: DayViewState,
+        action: DayViewAction
+    ): DayViewState {
         return when (action) {
             is DayViewAction.Load -> {
 
@@ -82,25 +116,7 @@ class DayViewReducer : BaseViewStateReducer<DayViewState>() {
                     )
                 }
             }
-
-            is DataLoadedAction.ScheduledQuestsChanged -> {
-                val schedule = action.schedule
-
-                if (schedule.date.isEqual(subState.currentDate)) {
-
-                    subState.copy(
-                        type = DayViewState.StateType.SCHEDULE_LOADED,
-                        schedule = schedule
-                    )
-                } else {
-                    subState.copy(
-                        type = DayViewState.StateType.LOADING
-                    )
-                }
-            }
-            else -> subState
         }
-
     }
 
 

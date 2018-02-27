@@ -45,6 +45,7 @@ import mypoli.android.reminder.view.picker.ReminderViewModel
 import mypoli.android.timer.TimerViewController
 import org.threeten.bp.LocalDate
 import org.threeten.bp.temporal.ChronoUnit
+import java.util.*
 
 class DayViewController :
     ReduxViewController<DayViewAction, DayViewState, DayViewReducer>,
@@ -69,7 +70,9 @@ class DayViewController :
 
     private lateinit var calendarDayView: CalendarDayView
 
-    override val reducer = DayViewReducer()
+    private val namespace = UUID.randomUUID().toString()
+
+    override val reducer = DayViewReducer(namespace)
 
     constructor(currentDate: LocalDate) : this() {
         this.currentDate = currentDate
@@ -109,7 +112,7 @@ class DayViewController :
     }
 
     override fun onCreateLoadAction(): DayViewAction? {
-        return DayViewAction.Load(currentDate)
+        return DayViewAction.Load(currentDate, namespace)
     }
 
     override fun onAttach(view: View) {
