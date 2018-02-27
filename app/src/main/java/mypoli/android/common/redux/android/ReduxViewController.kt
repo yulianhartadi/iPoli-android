@@ -5,8 +5,6 @@ import android.os.Bundle
 import android.view.View
 import com.bluelinelabs.conductor.Controller
 import com.bluelinelabs.conductor.RestoreViewOnCreateController
-import kotlinx.coroutines.experimental.android.UI
-import kotlinx.coroutines.experimental.launch
 import mypoli.android.common.AppState
 import mypoli.android.common.UIAction
 import mypoli.android.common.di.Module
@@ -67,10 +65,7 @@ abstract class ReduxViewController<A : Action, VS : ViewState, out R : ViewState
         val viewState = newState.stateFor<VS>(reducer.stateKey)
         if (viewState != currentState) {
             currentState = viewState
-
-            launch(UI) {
-                onRenderViewState(viewState)
-            }
+            onRenderViewState(viewState)
         }
     }
 

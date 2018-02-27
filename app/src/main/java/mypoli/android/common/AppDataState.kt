@@ -11,7 +11,6 @@ import mypoli.android.quest.schedule.calendar.CalendarAction
 import mypoli.android.quest.usecase.Schedule
 import mypoli.android.repeatingquest.entity.RepeatingQuest
 import org.threeten.bp.LocalDate
-import timber.log.Timber
 
 /**
  * Created by Venelin Valkov <venelin@mypoli.fun>
@@ -73,7 +72,6 @@ object AppDataReducer : Reducer<AppState, AppDataState> {
                 )
 
             is CalendarAction.ChangeVisibleDate -> {
-                Timber.d("AAA change")
                 subState.copy(
                     visibleDate = action.date
                 )

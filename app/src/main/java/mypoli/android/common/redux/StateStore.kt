@@ -107,7 +107,8 @@ class StateStore<S : CompositeState<S>>(
     private var state = initialState
 
     private val middleWare = CompositeMiddleware(middleware)
-    private val reducer = CompositeReducer(reducers)
+    private val reducer = CompositeReducer()
+    private val stateReducers = CopyOnWriteArraySet<Reducer<S, *>>(reducers)
     private val stateChangeSubscribers = CopyOnWriteArraySet<StateChangeSubscriber<S>>()
 
     override fun <A : Action> dispatch(action: A) {
@@ -146,28 +147,33 @@ class StateStore<S : CompositeState<S>>(
     }
 
 
-    class CompositeReducer<S : CompositeState<S>>(reducers: Set<Reducer<S, *>>) {
-
-        private val stateToReducer = reducers.map { it.stateKey to it }.toMap()
+    inner class CompositeReducer {
 
         fun reduce(state: S, action: Action): S {
-
             if (action is UIAction.Attach<*>) {
                 val stateKey = action.reducer.stateKey
                 require(
-                    stateToReducer.contains(stateKey),
-                    { "Have you added the reducer ${action.reducer} to the store?" })
-                val reducer = stateToReducer[stateKey]!!
+                    !state.keys.contains(stateKey),
+                    { "Key $stateKey is already added to the state?!" })
+                val reducer = action.reducer
+                stateReducers.add(reducer as Reducer<S, *>)
                 return state.update(stateKey, reducer.defaultState())
             }
 
             if (action is UIAction.Detach<*>) {
                 val stateKey = action.reducer.stateKey
-                require(stateToReducer.contains(stateKey))
-                require(state.keys.contains(stateKey))
+                val reducer = action.reducer as Reducer<S, *>
+                require(
+                    stateReducers.contains(reducer),
+                    { "Reducer $reducer not found in state reducers" })
+                require(
+                    state.keys.contains(stateKey),
+                    { "State with key $stateKey not found in state" })
+                stateReducers.remove(reducer)
                 return state.remove(stateKey)
             }
 
+            val stateToReducer = stateReducers.map { it.stateKey to it }.toMap()
             val newState = state.keys.map {
                 val reducer = stateToReducer[it]!!
                 val subState = reducer.reduce(state, action)

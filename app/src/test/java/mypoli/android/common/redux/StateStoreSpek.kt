@@ -1,6 +1,8 @@
 package mypoli.android.common.redux
 
 import kotlinx.coroutines.experimental.runBlocking
+import mypoli.android.common.UIAction
+import mypoli.android.common.mvi.ViewState
 import org.amshove.kluent.`should be equal to`
 import org.jetbrains.spek.api.Spek
 import org.jetbrains.spek.api.dsl.describe
@@ -18,8 +20,9 @@ object StateStoreSpek : Spek({
             override fun createWithData(stateData: Map<String, State>): TestState {
                 return TestState(stateData)
             }
-
         }
+
+        class TestViewState : ViewState
 
         class TestAction : Action
 
@@ -71,8 +74,8 @@ object StateStoreSpek : Spek({
             sideEffects: Set<SideEffect<TestState>> = setOf()
         ) =
             StateStore(
-                TestState(mapOf(SubState::class.java.simpleName to SubState())),
-                setOf(testReducer),
+                initialState = TestState(mapOf(SubState::class.java.simpleName to SubState())),
+                reducers = setOf(testReducer),
                 sideEffects = sideEffects,
                 sideEffectExecutor = TestSideEffectExecutor(),
                 middleware = middleware
@@ -87,6 +90,49 @@ object StateStoreSpek : Spek({
             createStore(setOf(StopMiddleware())).dispatch(TestAction())
 
             executeCount.`should be equal to`(0)
+        }
+
+        describe("ViewStateReducer") {
+
+            var vsReduceCount = 0
+
+            data class ViewAction(val data: String) : Action
+
+            val vsReducer = object : ViewStateReducer<TestState, TestViewState> {
+                override fun reduce(
+                    state: TestState,
+                    subState: TestViewState,
+                    action: Action
+                ): TestViewState {
+                    if (action is ViewAction)
+                        vsReduceCount++
+                    return subState
+                }
+
+                override fun defaultState(): TestViewState {
+                    return TestViewState()
+                }
+
+                override val stateKey: String
+                    get() = TestViewState::class.java.simpleName
+            }
+
+            it("should attach and call") {
+                vsReduceCount = 0
+                val store = createStore()
+                store.dispatch(UIAction.Attach(vsReducer))
+                store.dispatch(ViewAction("test"))
+                vsReduceCount.`should be equal to`(1)
+            }
+
+            it("should detach and not call") {
+                vsReduceCount = 0
+                val store = createStore()
+                store.dispatch(UIAction.Attach(vsReducer))
+                store.dispatch(UIAction.Detach(vsReducer))
+                store.dispatch(ViewAction("test"))
+                vsReduceCount.`should be equal to`(0)
+            }
         }
 
         it("should call subscriber on subscribe") {

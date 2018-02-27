@@ -17,6 +17,7 @@ import mypoli.android.reminder.view.picker.ReminderViewModel
 import org.threeten.bp.LocalDate
 import org.threeten.bp.LocalDateTime
 import org.threeten.bp.LocalTime
+import java.util.*
 
 /**
  * Created by Venelin Valkov <venelin@mypoli.fun>
@@ -59,9 +60,9 @@ sealed class DayViewAction : Action {
     data class Load(val currentDate: LocalDate) : DayViewAction()
 }
 
-object DayViewReducer : BaseViewStateReducer<DayViewState>() {
+class DayViewReducer : BaseViewStateReducer<DayViewState>() {
 
-    override val stateKey = key<DayViewState>()
+    override val stateKey = key<DayViewState>() + UUID.randomUUID().toString()
 
     override fun reduce(state: AppState, subState: DayViewState, action: Action): DayViewState {
         return when (action) {
@@ -143,12 +144,13 @@ object DayViewReducer : BaseViewStateReducer<DayViewState>() {
             )
         }
 
-    override fun defaultState() = DayViewState(type = DayViewState.StateType.LOADING)
+    override fun defaultState() =
+        DayViewState(type = DayViewState.StateType.LOADING)
 }
 
 data class DayViewState(
     val type: StateType,
-//    val currentDate: LocalDate = LocalDate.now(),
+    val currentDate: LocalDate = LocalDate.now(),
     val schedule: Schedule? = null,
 //    val scheduledQuests: List<DayViewController.QuestViewModel> = listOf(),
 //    val unscheduledQuests: List<DayViewController.UnscheduledQuestViewModel> = listOf(),

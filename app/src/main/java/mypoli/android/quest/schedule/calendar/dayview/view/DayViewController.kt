@@ -69,7 +69,7 @@ class DayViewController :
 
     private lateinit var calendarDayView: CalendarDayView
 
-    override val reducer = DayViewReducer
+    override val reducer = DayViewReducer()
 
     constructor(currentDate: LocalDate) : this() {
         this.currentDate = currentDate
