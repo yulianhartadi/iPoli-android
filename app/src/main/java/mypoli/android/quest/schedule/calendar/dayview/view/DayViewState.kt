@@ -11,12 +11,14 @@ import mypoli.android.common.view.AndroidColor
 import mypoli.android.common.view.AndroidIcon
 import mypoli.android.quest.Icon
 import mypoli.android.quest.Reminder
+import mypoli.android.quest.schedule.calendar.dayview.view.DayViewState.StateType.*
 import mypoli.android.quest.usecase.Result
 import mypoli.android.quest.usecase.Schedule
 import mypoli.android.reminder.view.picker.ReminderViewModel
 import org.threeten.bp.LocalDate
 import org.threeten.bp.LocalDateTime
 import org.threeten.bp.LocalTime
+import timber.log.Timber
 
 /**
  * Created by Venelin Valkov <venelin@mypoli.fun>
@@ -58,6 +60,11 @@ data class ChangeEditViewNameIntent(val name: String) : DayViewIntent()
 sealed class DayViewAction : Action {
     data class Load(val currentDate: LocalDate) :
         DayViewAction()
+
+    data class StartEditScheduledQuest(val questViewModel: DayViewController.QuestViewModel) :
+        DayViewAction()
+
+    data class CompleteQuest(val questId: String, val isStarted: Boolean) : DayViewAction()
 }
 
 class DayViewReducer(namespace: String) : NamespaceViewStateReducer<DayViewState>(namespace) {
@@ -75,7 +82,7 @@ class DayViewReducer(namespace: String) : NamespaceViewStateReducer<DayViewState
 
                 if (schedule.date.isEqual(subState.currentDate)) {
                     subState.copy(
-                        type = DayViewState.StateType.SCHEDULE_LOADED,
+                        type = SCHEDULE_LOADED,
                         schedule = schedule
                     )
                 } else {
@@ -98,16 +105,38 @@ class DayViewReducer(namespace: String) : NamespaceViewStateReducer<DayViewState
                 val schedule = state.dataState.schedule
                 if (schedule != null && schedule.date.isEqual(action.currentDate)) {
                     subState.copy(
-                        type = DayViewState.StateType.SCHEDULE_LOADED,
+                        type = SCHEDULE_LOADED,
                         schedule = schedule,
                         currentDate = action.currentDate
                     )
                 } else {
                     subState.copy(
-                        type = DayViewState.StateType.LOADING,
+                        type = LOADING,
                         currentDate = action.currentDate
                     )
                 }
+            }
+
+            is DayViewAction.StartEditScheduledQuest -> {
+                val vm = action.questViewModel
+                subState.copy(
+                    type = START_EDIT_SCHEDULED_QUEST,
+                    editId = vm.id,
+                    name = vm.name,
+                    color = vm.backgroundColor,
+                    startTime = Time.of(vm.startMinute),
+                    duration = vm.duration,
+                    endTime = Time.plusMinutes(Time.of(vm.startMinute), vm.duration),
+                    icon = vm.icon,
+                    reminder = vm.reminder
+                )
+            }
+
+            is DayViewAction.CompleteQuest -> {
+                Timber.d("AAAA reduce")
+                subState.copy(
+                    type = QUEST_COMPLETED
+                )
             }
         }
     }
@@ -140,23 +169,23 @@ class DayViewReducer(namespace: String) : NamespaceViewStateReducer<DayViewState
                 when (result.error) {
 
                     Result.ValidationError.EMPTY_NAME -> {
-                        state.copy(type = DayViewState.StateType.EVENT_VALIDATION_EMPTY_NAME)
+                        state.copy(type = EVENT_VALIDATION_EMPTY_NAME)
                     }
 
                     Result.ValidationError.TIMER_RUNNING -> {
-                        state.copy(type = DayViewState.StateType.EVENT_VALIDATION_TIMER_RUNNING)
+                        state.copy(type = EVENT_VALIDATION_TIMER_RUNNING)
                     }
                 }
             }
             else -> state.copy(
-                type = DayViewState.StateType.EVENT_UPDATED,
+                type = EVENT_UPDATED,
                 reminder = null,
                 scheduledDate = null
             )
         }
 
     override fun defaultState() =
-        DayViewState(type = DayViewState.StateType.LOADING)
+        DayViewState(type = LOADING)
 }
 
 data class DayViewState(

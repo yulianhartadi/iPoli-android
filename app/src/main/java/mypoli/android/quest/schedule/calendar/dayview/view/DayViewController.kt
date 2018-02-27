@@ -111,9 +111,8 @@ class DayViewController :
         return view
     }
 
-    override fun onCreateLoadAction(): DayViewAction? {
-        return DayViewAction.Load(currentDate)
-    }
+    override fun onCreateLoadAction() =
+        DayViewAction.Load(currentDate)
 
     override fun onAttach(view: View) {
         super.onAttach(view)
@@ -526,7 +525,7 @@ class DayViewController :
                 if (vm.isStarted) {
                     showShortToast(R.string.validation_timer_running)
                 } else {
-                    send(StartEditScheduledQuestIntent(vm))
+                    dispatch(DayViewAction.StartEditScheduledQuest(vm))
                     calendarDayView.startEventRescheduling(vm)
                 }
                 true
@@ -597,7 +596,7 @@ class DayViewController :
                         }
 
                         override fun onAnimationEnd(animation: Animator?) {
-                            send(CompleteQuestIntent(vm.id, vm.isStarted))
+                            dispatch(DayViewAction.CompleteQuest(vm.id, vm.isStarted))
                         }
 
                     })

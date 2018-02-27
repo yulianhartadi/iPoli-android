@@ -554,7 +554,8 @@ class AndroidStateStoreModule : StateStoreModule, Injects<Module> {
                 AgendaSideEffect(),
                 BuyPredefinedChallengeSideEffect(),
                 ChangePetSideEffect(),
-                BuyPetSideEffect()
+                BuyPetSideEffect(),
+                CompleteQuestSideEffect()
             ),
             sideEffectExecutor = CoroutineSideEffectExecutor(job + CommonPool)
         )

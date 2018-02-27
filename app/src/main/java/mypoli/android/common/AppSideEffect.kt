@@ -26,15 +26,19 @@ import mypoli.android.quest.schedule.agenda.usecase.CreateAgendaItemsUseCase
 import mypoli.android.quest.schedule.agenda.usecase.FindAgendaDatesUseCase
 import mypoli.android.quest.schedule.calendar.CalendarAction
 import mypoli.android.quest.schedule.calendar.CalendarViewState
+import mypoli.android.quest.schedule.calendar.dayview.view.DayViewAction
+import mypoli.android.quest.usecase.CompleteQuestUseCase
 import mypoli.android.quest.usecase.CompleteQuestUseCase.Params.WithQuest
 import mypoli.android.quest.usecase.LoadScheduleForDateUseCase
 import mypoli.android.repeatingquest.entity.RepeatingQuest
 import mypoli.android.repeatingquest.usecase.FindNextDateForRepeatingQuestUseCase
 import mypoli.android.repeatingquest.usecase.FindPeriodProgressForRepeatingQuestUseCase
+import mypoli.android.timer.usecase.CompleteTimeRangeUseCase
 import org.threeten.bp.LocalDate
 import space.traversal.kapsule.Injects
 import space.traversal.kapsule.inject
 import space.traversal.kapsule.required
+import timber.log.Timber
 
 /**
  * Created by Venelin Valkov <venelin@mypoli.fun>
@@ -60,6 +64,26 @@ abstract class AppSideEffect : SideEffect<AppState>,
     fun dispatch(action: Action) {
         dispatcher!!.dispatch(action)
     }
+}
+
+class CompleteQuestSideEffect : AppSideEffect() {
+
+
+    private val completeTimeRangeUseCase by required { completeTimeRangeUseCase }
+    private val completeQuestUseCase by required { completeQuestUseCase }
+
+    override suspend fun doExecute(action: Action, state: AppState) {
+        Timber.d("AAAA complete")
+        val questId = (action as DayViewAction.CompleteQuest).questId
+        if (action.isStarted) {
+            completeTimeRangeUseCase.execute(CompleteTimeRangeUseCase.Params(questId))
+        } else {
+            completeQuestUseCase.execute(CompleteQuestUseCase.Params.WithQuestId(questId))
+        }
+    }
+
+    override fun canHandle(action: Action) =
+        action is DayViewAction.CompleteQuest
 }
 
 class BuyPredefinedChallengeSideEffect : AppSideEffect() {
