@@ -11,6 +11,7 @@ import mypoli.android.common.view.AndroidColor
 import mypoli.android.common.view.AndroidIcon
 import mypoli.android.quest.Icon
 import mypoli.android.quest.Reminder
+import mypoli.android.quest.schedule.calendar.CalendarViewState
 import mypoli.android.quest.usecase.Result
 import mypoli.android.quest.usecase.Schedule
 import mypoli.android.reminder.view.picker.ReminderViewModel
@@ -66,41 +67,37 @@ object DayViewReducer : BaseViewStateReducer<DayViewState>() {
     override fun reduce(state: AppState, subState: DayViewState, action: Action): DayViewState {
         return when (action) {
             is DayViewAction.Load -> {
-//                val schedule = state.dataState.scheduledQuests[action.currentDate]
-//                Timber.d("AAA load $schedule ${action.currentDate} ${state.dataState.scheduledQuests}")
-//                schedule?.let {
 
-                val type =
-                    if (state.dataState.scheduledQuests.isEmpty()) DayViewState.StateType.LOADING else DayViewState.StateType.SCHEDULE_LOADED
-
-                subState.copy(
-                    type = type,
-                    schedule = state.dataState.scheduledQuests
-//                        scheduledQuests = createScheduledViewModels(schedule),
-//                        unscheduledQuests = createUnscheduledViewModels(schedule),
-//                        currentDate = schedule.date
-                )
-//                } ?: subState.copy(
-//                    currentDate = action.currentDate
-//                )
+                val schedule = state.dataState.schedule
+                if (schedule != null && schedule.date.isEqual(action.currentDate)) {
+                    subState.copy(
+                        type = DayViewState.StateType.SCHEDULE_LOADED,
+                        schedule = schedule
+                    )
+                } else {
+                    subState.copy(
+                        type = DayViewState.StateType.LOADING
+                    )
+                }
             }
 
             is DataLoadedAction.ScheduledQuestsChanged -> {
-//                val schedule = state.dataState.scheduledQuests[subState.currentDate]
-//                Timber.d("AAA changed $schedule ${subState.currentDate} ${state.dataState.scheduledQuests}")
-//                schedule?.let {
-//                    subState.copy(
-//                        type = DayViewState.StateType.SCHEDULE_LOADED,
-//                        scheduledQuests = createScheduledViewModels(schedule),
-//                        unscheduledQuests = createUnscheduledViewModels(schedule),
-//                        currentDate = schedule.date
-//                    )
-//                } ?: subState
+                val schedule = action.schedule
 
-                subState.copy(
-                    type = DayViewState.StateType.SCHEDULE_LOADED,
-                    schedule = action.scheduledQuests
-                )
+                val calendarState = state.stateFor(CalendarViewState::class.java)
+                val visibleDate = calendarState.currentDate
+
+                if (schedule.date.isEqual(visibleDate)) {
+
+                    subState.copy(
+                        type = DayViewState.StateType.SCHEDULE_LOADED,
+                        schedule = schedule
+                    )
+                } else {
+                    subState.copy(
+                        type = DayViewState.StateType.LOADING
+                    )
+                }
             }
             else -> subState
         }
@@ -156,7 +153,7 @@ object DayViewReducer : BaseViewStateReducer<DayViewState>() {
 data class DayViewState(
     val type: StateType,
 //    val currentDate: LocalDate = LocalDate.now(),
-    val schedule: Map<LocalDate, Schedule> = mapOf(),
+    val schedule: Schedule = Schedule(LocalDate.now(), listOf(), listOf()),
 //    val scheduledQuests: List<DayViewController.QuestViewModel> = listOf(),
 //    val unscheduledQuests: List<DayViewController.UnscheduledQuestViewModel> = listOf(),
     val removedEventId: String = "",

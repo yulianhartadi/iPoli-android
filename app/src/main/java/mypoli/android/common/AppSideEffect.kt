@@ -367,22 +367,16 @@ class LoadAllDataSideEffect : AppSideEffect() {
         launch(UI) {
             scheduledQuestsChannel?.cancel()
             val today = LocalDate.now()
-            val startDate = today.minusDays(1)
-            val endDate = today.plusDays(1)
-            scheduledQuestsChannel = questRepository.listenForScheduledBetween(
-                startDate,
-                endDate
-            )
+            scheduledQuestsChannel = questRepository.listenForScheduledAt(today)
             scheduledQuestsChannel!!.consumeEach {
-                val scheduledQuests =
+                val schedule =
                     loadScheduleForDateUseCase.execute(
                         LoadScheduleForDateUseCase.Params(
-                            startDate = startDate,
-                            endDate = endDate,
+                            date = today,
                             quests = it
                         )
                     )
-                dispatch(DataLoadedAction.ScheduledQuestsChanged(scheduledQuests))
+                dispatch(DataLoadedAction.ScheduledQuestsChanged(schedule))
             }
         }
     }

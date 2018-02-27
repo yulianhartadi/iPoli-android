@@ -796,7 +796,7 @@ class DayViewController :
     }
 
     private val DayViewState.unscheduledQuests
-        get() = schedule[currentDate]!!.unscheduled.map {
+        get() = schedule.unscheduled.map {
             val color = AndroidColor.valueOf(it.color.name)
             DayViewController.UnscheduledQuestViewModel(
                 it.id,
@@ -811,7 +811,7 @@ class DayViewController :
         }
 
     private val DayViewState.scheduledQuests
-        get() = schedule[currentDate]!!.scheduled.map { q ->
+        get() = schedule.scheduled.map { q ->
             val color = AndroidColor.valueOf(q.color.name)
 
             val reminder = q.reminder?.let {

@@ -28,7 +28,7 @@ sealed class DataLoadedAction : Action {
         val currentAgendaItemDate: LocalDate?
     ) : DataLoadedAction()
 
-    data class ScheduledQuestsChanged(val scheduledQuests: Map<LocalDate, Schedule>) :
+    data class ScheduledQuestsChanged(val schedule: Schedule) :
         DataLoadedAction()
 }
 
@@ -36,7 +36,7 @@ data class AppDataState(
     val today: LocalDate,
     val player: Player?,
     val todayQuests: List<Quest>,
-    val scheduledQuests: Map<LocalDate, Schedule>,
+    val schedule: Schedule?,
     val repeatingQuests: List<RepeatingQuest>
 ) : State
 
@@ -55,7 +55,7 @@ object AppDataReducer : Reducer<AppState, AppDataState> {
 
             is DataLoadedAction.ScheduledQuestsChanged -> {
                 subState.copy(
-                    scheduledQuests = action.scheduledQuests
+                    schedule = action.schedule
                 )
             }
 
@@ -78,7 +78,7 @@ object AppDataReducer : Reducer<AppState, AppDataState> {
             today = LocalDate.now(),
             player = null,
             todayQuests = listOf(),
-            scheduledQuests = mapOf(),
+            schedule = null,
             repeatingQuests = listOf()
         )
     }
