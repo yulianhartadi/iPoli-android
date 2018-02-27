@@ -45,7 +45,6 @@ import mypoli.android.reminder.view.picker.ReminderViewModel
 import mypoli.android.timer.TimerViewController
 import org.threeten.bp.LocalDate
 import org.threeten.bp.temporal.ChronoUnit
-import timber.log.Timber
 
 class DayViewController :
     ReduxViewController<DayViewAction, DayViewState, DayViewReducer>,
