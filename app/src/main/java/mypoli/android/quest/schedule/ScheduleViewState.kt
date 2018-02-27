@@ -10,7 +10,6 @@ import mypoli.android.common.text.CalendarFormatter
 import mypoli.android.quest.schedule.agenda.AgendaAction
 import mypoli.android.quest.schedule.agenda.AgendaViewState
 import mypoli.android.quest.schedule.calendar.CalendarAction
-import mypoli.android.quest.schedule.calendar.CalendarViewState
 import org.threeten.bp.LocalDate
 import org.threeten.bp.YearMonth
 import org.threeten.bp.format.DateTimeFormatter
@@ -49,18 +48,10 @@ object ScheduleReducer : BaseViewStateReducer<ScheduleViewState>() {
                 subState,
                 action
             )
-            is CalendarAction.SwipeChangeDate -> {
-                val currentPos = state.stateFor(CalendarViewState::class.java).adapterPosition
-                val newPos = action.adapterPosition
-                val curDate = subState.currentDate
-                val newDate = if (newPos < currentPos)
-                    curDate.minusDays(1)
-                else
-                    curDate.plusDays(1)
-
+            is CalendarAction.ChangeVisibleDate -> {
                 subState.copy(
                     type = ScheduleViewState.StateType.SWIPE_DATE_CHANGED,
-                    currentDate = newDate
+                    currentDate = action.date
                 )
             }
             is AgendaAction.FirstVisibleItemChanged -> {
