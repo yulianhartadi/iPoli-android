@@ -23,14 +23,14 @@ sealed class UIAction : Action {
 }
 
 abstract class BaseViewStateReducer<VS : ViewState> : ViewStateReducer<AppState, VS> {
-    inline fun <reified VS> key() = VS::class.java
+    inline fun <reified VS> key(): String = VS::class.java.simpleName
 }
 
 class AppState(
-    data: Map<Class<*>, State>
+    data: Map<String, State>
 ) : CompositeState<AppState>(data) {
 
     val dataState: AppDataState = stateFor(AppDataState::class.java)
 
-    override fun createWithData(stateData: Map<Class<*>, State>) = AppState(stateData)
+    override fun createWithData(stateData: Map<String, State>) = AppState(stateData)
 }

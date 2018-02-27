@@ -14,8 +14,8 @@ object StateStoreSpek : Spek({
 
     describe("StateStore") {
 
-        class TestState(data: Map<Class<*>, State>) : CompositeState<TestState>(data) {
-            override fun createWithData(stateData: Map<Class<*>, State>): TestState {
+        class TestState(data: Map<String, State>) : CompositeState<TestState>(data) {
+            override fun createWithData(stateData: Map<String, State>): TestState {
                 return TestState(stateData)
             }
 
@@ -55,8 +55,8 @@ object StateStoreSpek : Spek({
 
         val testReducer = object : Reducer<TestState, SubState> {
 
-            override val stateKey: Class<SubState>
-                get() = SubState::class.java
+            override val stateKey
+                get() = SubState::class.java.simpleName
 
             override fun reduce(state: TestState, subState: SubState, action: Action): SubState {
                 executeCount++
@@ -71,7 +71,7 @@ object StateStoreSpek : Spek({
             sideEffects: Set<SideEffect<TestState>> = setOf()
         ) =
             StateStore(
-                TestState(mapOf(SubState::class.java to SubState())),
+                TestState(mapOf(SubState::class.java.simpleName to SubState())),
                 setOf(testReducer),
                 sideEffects = sideEffects,
                 sideEffectExecutor = TestSideEffectExecutor(),

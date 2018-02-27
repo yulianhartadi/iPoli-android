@@ -67,15 +67,15 @@ class DayViewController :
 
     private var datePickedListener: () -> Unit = {}
 
+    private lateinit var calendarDayView: CalendarDayView
+
+    override val reducer = DayViewReducer
+
     constructor(currentDate: LocalDate) : this() {
         this.currentDate = currentDate
     }
 
     constructor(args: Bundle? = null) : super(args)
-
-    private lateinit var calendarDayView: CalendarDayView
-
-    override val reducer = DayViewReducer
 
     override fun onSaveViewState(view: View, outState: Bundle) {
         outState.putLong("current_date", currentDate.startOfDayUTC())

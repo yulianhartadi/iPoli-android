@@ -64,7 +64,7 @@ abstract class ReduxViewController<A : Action, VS : ViewState, out R : ViewState
     }
 
     override fun onStateChanged(newState: AppState) {
-        val viewState = newState.stateFor(reducer.stateKey)
+        val viewState = newState.stateFor<VS>(reducer.stateKey)
         if (viewState != currentState) {
             currentState = viewState
 

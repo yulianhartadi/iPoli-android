@@ -554,7 +554,7 @@ class AndroidStateStoreModule : StateStoreModule, Injects<Module> {
         StateStore(
             initialState = AppState(
                 data = mapOf(
-                    AppDataState::class.java to AppDataReducer.defaultState()
+                    AppDataState::class.java.simpleName to AppDataReducer.defaultState()
                 )
             ),
             reducers = setOf(

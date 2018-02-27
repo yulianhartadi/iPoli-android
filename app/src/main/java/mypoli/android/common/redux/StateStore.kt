@@ -43,10 +43,14 @@ class CoroutineSideEffectExecutor<S : CompositeState<S>>(
 }
 
 abstract class CompositeState<T>(
-    private val stateData: Map<Class<*>, State>
+    private val stateData: Map<String, State>
 ) : State where T : CompositeState<T> {
 
     fun <S> stateFor(key: Class<S>): S {
+        return stateFor(key.simpleName)
+    }
+
+    fun <S> stateFor(key: String): S {
 
         require(stateData.containsKey(key))
 
@@ -56,18 +60,18 @@ abstract class CompositeState<T>(
         return data as S
     }
 
-    fun update(stateKey: Class<*>, newState: State) =
+    fun update(stateKey: String, newState: State) =
         createWithData(stateData.plus(Pair(stateKey, newState)))
 
-    fun update(stateData: Map<Class<*>, State>) =
+    fun update(stateData: Map<String, State>) =
         createWithData(stateData.plus(stateData))
 
-    fun remove(stateKey: Class<*>) =
+    fun remove(stateKey: String) =
         createWithData(stateData.minus(stateKey))
 
     val keys = stateData.keys
 
-    protected abstract fun createWithData(stateData: Map<Class<*>, State>): T
+    protected abstract fun createWithData(stateData: Map<String, State>): T
 }
 
 interface Reducer<AS : CompositeState<AS>, S : State> {
@@ -79,7 +83,7 @@ interface Reducer<AS : CompositeState<AS>, S : State> {
 
     fun defaultState(): S
 
-    val stateKey: Class<S>
+    val stateKey: String
 }
 
 interface ViewStateReducer<S : CompositeState<S>, VS : ViewState> : Reducer<S, VS>
