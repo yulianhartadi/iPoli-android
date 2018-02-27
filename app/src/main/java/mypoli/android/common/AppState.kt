@@ -22,8 +22,26 @@ sealed class UIAction : Action {
     data class Detach<S : CompositeState<S>>(val reducer: ViewStateReducer<S, *>) : UIAction()
 }
 
+data class NamespaceAction(val source: Action, val namespace: String) : Action
+
 abstract class BaseViewStateReducer<VS : ViewState> : ViewStateReducer<AppState, VS> {
     inline fun <reified VS> key(): String = VS::class.java.simpleName
+}
+
+abstract class NamespaceViewStateReducer<VS : ViewState>(private val namespace: String) :
+    BaseViewStateReducer<VS>() {
+
+    override fun reduce(state: AppState, subState: VS, action: Action): VS {
+        if (action is NamespaceAction) {
+            if (action.namespace != namespace) {
+                return subState
+            }
+            return doReduce(state, subState, action.source)
+        }
+        return doReduce(state, subState, action)
+    }
+
+    abstract fun doReduce(state: AppState, subState: VS, action: Action): VS
 }
 
 class AppState(

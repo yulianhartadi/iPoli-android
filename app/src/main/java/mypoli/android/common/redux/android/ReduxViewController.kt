@@ -6,6 +6,7 @@ import android.view.View
 import com.bluelinelabs.conductor.Controller
 import com.bluelinelabs.conductor.RestoreViewOnCreateController
 import mypoli.android.common.AppState
+import mypoli.android.common.NamespaceAction
 import mypoli.android.common.UIAction
 import mypoli.android.common.di.Module
 import mypoli.android.common.mvi.ViewState
@@ -28,6 +29,8 @@ abstract class ReduxViewController<A : Action, VS : ViewState, out R : ViewState
 
     private val stateStore by required { stateStore }
 
+    protected open var namespace: String? = null
+
     protected abstract val reducer: R
 
     @Volatile
@@ -44,7 +47,7 @@ abstract class ReduxViewController<A : Action, VS : ViewState, out R : ViewState
                 stateStore.dispatch(UIAction.Attach(reducer))
                 stateStore.subscribe(this@ReduxViewController)
                 onCreateLoadAction()?.let {
-                    stateStore.dispatch(it)
+                    dispatch(it)
                 }
             }
 
@@ -58,7 +61,11 @@ abstract class ReduxViewController<A : Action, VS : ViewState, out R : ViewState
     }
 
     fun dispatch(action: A) {
-        stateStore.dispatch(action)
+        val a = namespace?.let {
+
+            NamespaceAction(action, it)
+        } ?: action
+        stateStore.dispatch(a)
     }
 
     override fun onStateChanged(newState: AppState) {
@@ -66,7 +73,7 @@ abstract class ReduxViewController<A : Action, VS : ViewState, out R : ViewState
         if (viewState != currentState) {
             currentState = viewState
 //            launch(UI) {
-                onRenderViewState(viewState)
+            onRenderViewState(viewState)
 //            }
         }
     }

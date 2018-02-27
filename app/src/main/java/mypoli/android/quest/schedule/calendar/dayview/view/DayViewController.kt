@@ -70,9 +70,9 @@ class DayViewController :
 
     private lateinit var calendarDayView: CalendarDayView
 
-    private val namespace = UUID.randomUUID().toString()
+    override var namespace: String? = UUID.randomUUID().toString()
 
-    override val reducer = DayViewReducer(namespace)
+    override val reducer = DayViewReducer(namespace!!)
 
     constructor(currentDate: LocalDate) : this() {
         this.currentDate = currentDate
@@ -112,7 +112,7 @@ class DayViewController :
     }
 
     override fun onCreateLoadAction(): DayViewAction? {
-        return DayViewAction.Load(currentDate, namespace)
+        return DayViewAction.Load(currentDate)
     }
 
     override fun onAttach(view: View) {

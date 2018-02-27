@@ -1,8 +1,8 @@
 package mypoli.android.quest.schedule.calendar.dayview.view
 
 import mypoli.android.common.AppState
-import mypoli.android.common.BaseViewStateReducer
 import mypoli.android.common.DataLoadedAction
+import mypoli.android.common.NamespaceViewStateReducer
 import mypoli.android.common.datetime.Time
 import mypoli.android.common.mvi.Intent
 import mypoli.android.common.mvi.ViewState
@@ -17,7 +17,6 @@ import mypoli.android.reminder.view.picker.ReminderViewModel
 import org.threeten.bp.LocalDate
 import org.threeten.bp.LocalDateTime
 import org.threeten.bp.LocalTime
-import java.util.*
 
 /**
  * Created by Venelin Valkov <venelin@mypoli.fun>
@@ -56,22 +55,17 @@ data class DragResizeViewIntent(val startTime: Time?, val endTime: Time?, val du
 
 data class ChangeEditViewNameIntent(val name: String) : DayViewIntent()
 
-sealed class DayViewAction(open val namespace: String) : Action {
-    data class Load(val currentDate: LocalDate, override val namespace: String) :
-        DayViewAction(namespace)
+sealed class DayViewAction : Action {
+    data class Load(val currentDate: LocalDate) :
+        DayViewAction()
 }
 
-class DayViewReducer(private val namespace: String) : BaseViewStateReducer<DayViewState>() {
+class DayViewReducer(namespace: String) : NamespaceViewStateReducer<DayViewState>(namespace) {
 
-    override val stateKey = key<DayViewState>() + UUID.randomUUID().toString()
+    override val stateKey = namespace + "/" + key<DayViewState>()
 
-    override fun reduce(state: AppState, subState: DayViewState, action: Action): DayViewState {
+    override fun doReduce(state: AppState, subState: DayViewState, action: Action): DayViewState {
         if (action is DayViewAction) {
-
-            if (action.namespace != namespace) {
-                return subState
-            }
-
             return reduceDayViewAction(state, subState, action)
         }
 
@@ -101,7 +95,6 @@ class DayViewReducer(private val namespace: String) : BaseViewStateReducer<DayVi
     ): DayViewState {
         return when (action) {
             is DayViewAction.Load -> {
-
                 val schedule = state.dataState.schedule
                 if (schedule != null && schedule.date.isEqual(action.currentDate)) {
                     subState.copy(
