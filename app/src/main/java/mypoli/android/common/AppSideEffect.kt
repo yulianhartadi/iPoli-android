@@ -191,11 +191,10 @@ class AgendaSideEffect : AppSideEffect() {
                 listenForAgendaItems(start, end, agendaDate, true)
             }
             is ScheduleAction.ScheduleChangeDate -> {
-                val agendaDate = LocalDate.of(action.year, action.month, action.day)
-                val pair = findAllAgendaDates(agendaDate)
+                val pair = findAllAgendaDates(action.date)
                 val start = pair.first
                 val end = pair.second
-                listenForAgendaItems(start, end, agendaDate, true)
+                listenForAgendaItems(start, end, action.date, true)
             }
             is CalendarAction.SwipeChangeDate -> {
                 val calendarState = state.stateFor(CalendarViewState::class.java)

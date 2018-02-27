@@ -11,7 +11,6 @@ import mypoli.android.common.view.AndroidColor
 import mypoli.android.common.view.AndroidIcon
 import mypoli.android.quest.Icon
 import mypoli.android.quest.Reminder
-import mypoli.android.quest.schedule.calendar.CalendarViewState
 import mypoli.android.quest.usecase.Result
 import mypoli.android.quest.usecase.Schedule
 import mypoli.android.reminder.view.picker.ReminderViewModel
@@ -84,10 +83,7 @@ object DayViewReducer : BaseViewStateReducer<DayViewState>() {
             is DataLoadedAction.ScheduledQuestsChanged -> {
                 val schedule = action.schedule
 
-                val calendarState = state.stateFor(CalendarViewState::class.java)
-                val visibleDate = calendarState.currentDate
-
-                if (schedule.date.isEqual(visibleDate)) {
+                if (schedule.date.isEqual(state.dataState.visibleDate)) {
 
                     subState.copy(
                         type = DayViewState.StateType.SCHEDULE_LOADED,

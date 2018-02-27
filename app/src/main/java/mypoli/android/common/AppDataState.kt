@@ -5,10 +5,13 @@ import mypoli.android.common.redux.Reducer
 import mypoli.android.common.redux.State
 import mypoli.android.player.Player
 import mypoli.android.quest.Quest
+import mypoli.android.quest.schedule.ScheduleAction
 import mypoli.android.quest.schedule.agenda.usecase.CreateAgendaItemsUseCase
+import mypoli.android.quest.schedule.calendar.CalendarAction
 import mypoli.android.quest.usecase.Schedule
 import mypoli.android.repeatingquest.entity.RepeatingQuest
 import org.threeten.bp.LocalDate
+import timber.log.Timber
 
 /**
  * Created by Venelin Valkov <venelin@mypoli.fun>
@@ -34,6 +37,7 @@ sealed class DataLoadedAction : Action {
 
 data class AppDataState(
     val today: LocalDate,
+    val visibleDate: LocalDate,
     val player: Player?,
     val todayQuests: List<Quest>,
     val schedule: Schedule?,
@@ -53,29 +57,39 @@ object AppDataReducer : Reducer<AppState, AppDataState> {
                 )
             }
 
-            is DataLoadedAction.ScheduledQuestsChanged -> {
+            is DataLoadedAction.ScheduledQuestsChanged ->
                 subState.copy(
                     schedule = action.schedule
                 )
-            }
 
-            is DataLoadedAction.TodayQuestsChanged -> {
+            is DataLoadedAction.TodayQuestsChanged ->
                 subState.copy(
                     todayQuests = action.quests
                 )
+
+            is ScheduleAction.ScheduleChangeDate ->
+                subState.copy(
+                    visibleDate = action.date
+                )
+
+            is CalendarAction.ChangeVisibleDate -> {
+                Timber.d("AAA change")
+                subState.copy(
+                    visibleDate = action.date
+                )
             }
 
-            is DataLoadedAction.RepeatingQuestsChanged -> {
+            is DataLoadedAction.RepeatingQuestsChanged ->
                 subState.copy(
                     repeatingQuests = action.repeatingQuests
                 )
-            }
             else -> subState
         }
 
     override fun defaultState(): AppDataState {
         return AppDataState(
             today = LocalDate.now(),
+            visibleDate = LocalDate.now(),
             player = null,
             todayQuests = listOf(),
             schedule = null,
