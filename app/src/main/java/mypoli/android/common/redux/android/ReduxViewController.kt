@@ -65,7 +65,9 @@ abstract class ReduxViewController<A : Action, VS : ViewState, out R : ViewState
         val viewState = newState.stateFor<VS>(reducer.stateKey)
         if (viewState != currentState) {
             currentState = viewState
-            onRenderViewState(viewState)
+//            launch(UI) {
+                onRenderViewState(viewState)
+//            }
         }
     }
 

@@ -72,11 +72,13 @@ class DayViewReducer : BaseViewStateReducer<DayViewState>() {
                 if (schedule != null && schedule.date.isEqual(action.currentDate)) {
                     subState.copy(
                         type = DayViewState.StateType.SCHEDULE_LOADED,
-                        schedule = schedule
+                        schedule = schedule,
+                        currentDate = action.currentDate
                     )
                 } else {
                     subState.copy(
-                        type = DayViewState.StateType.LOADING
+                        type = DayViewState.StateType.LOADING,
+                        currentDate = action.currentDate
                     )
                 }
             }
@@ -84,7 +86,7 @@ class DayViewReducer : BaseViewStateReducer<DayViewState>() {
             is DataLoadedAction.ScheduledQuestsChanged -> {
                 val schedule = action.schedule
 
-                if (schedule.date.isEqual(state.dataState.visibleDate)) {
+                if (schedule.date.isEqual(subState.currentDate)) {
 
                     subState.copy(
                         type = DayViewState.StateType.SCHEDULE_LOADED,
