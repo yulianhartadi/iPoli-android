@@ -53,12 +53,13 @@ class DayViewPresenter(
 
             is ScheduleLoadedIntent -> {
                 val schedule = intent.schedule
-                state.copy(
-                    type = SCHEDULE_LOADED,
-                    scheduledQuests = createScheduledViewModels(schedule),
-                    unscheduledQuests = createUnscheduledViewModels(schedule),
-                    currentDate = schedule.date
-                )
+                state
+//                state.copy(
+//                    type = SCHEDULE_LOADED,
+//                    scheduledQuests = createScheduledViewModels(schedule),
+//                    unscheduledQuests = createUnscheduledViewModels(schedule),
+//                    currentDate = schedule.date
+//                )
             }
 
             is AddNewScheduledQuestIntent -> {
@@ -109,7 +110,7 @@ class DayViewPresenter(
                     Icon.valueOf(it.name)
                 }
 
-                val scheduledDate = state.scheduledDate ?: state.currentDate
+                val scheduledDate = state.scheduledDate!! //?: state.currentDate
                 val reminder = if (state.reminder != null) {
                     createQuestReminder(
                         state.reminder,
@@ -141,7 +142,7 @@ class DayViewPresenter(
                     Icon.valueOf(it.name)
                 }
 
-                val scheduledDate = state.scheduledDate ?: state.currentDate
+                val scheduledDate = state.scheduledDate!! //?: state.currentDate
                 val questParams = SaveQuestUseCase.Parameters(
                     id = state.editId,
                     name = state.name,
@@ -174,7 +175,7 @@ class DayViewPresenter(
                     color = color,
                     icon = icon,
                     category = Category("WELLNESS", Color.GREEN),
-                    scheduledDate = state.scheduledDate ?: state.currentDate,
+                    scheduledDate = state.scheduledDate!!,// ?: state.currentDate,
                     startTime = state.startTime,
                     duration = state.duration!!,
 //                    reminder = createQuestReminder(state.reminder, state.currentDate, state.startTime!!.toMinuteOfDay())

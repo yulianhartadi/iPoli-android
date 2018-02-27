@@ -2,7 +2,7 @@ package mypoli.android.challenge.usecase
 
 import mypoli.android.challenge.data.Challenge
 import mypoli.android.common.UseCase
-import mypoli.android.common.datetime.datesUntil
+import mypoli.android.common.datetime.datesBetween
 import mypoli.android.common.datetime.daysUntil
 import mypoli.android.quest.Category
 import mypoli.android.quest.Quest
@@ -35,7 +35,7 @@ class ScheduleChallengeUseCase(private val questRepository: QuestRepository) :
                 is Challenge.Quest.Repeating -> {
 
                     startDate
-                        .datesUntil(endDate)
+                        .datesBetween(endDate)
                         .filter { date ->
                             val shouldScheduleForDay = q.weekDays.contains(date.dayOfWeek)
                             val isAfterStartDay = q.startAtDay?.let {
@@ -78,7 +78,7 @@ class ScheduleChallengeUseCase(private val questRepository: QuestRepository) :
     }
 
     private fun chooseRandomScheduledDate(randomSeed: Long?): LocalDate {
-        val dates = startDate.datesUntil(endDate)
+        val dates = startDate.datesBetween(endDate)
 
         val random = randomSeed?.let {
             Random(it)

@@ -38,7 +38,7 @@ fun LocalDate.isBetween(start: LocalDate?, end: LocalDate?): Boolean {
 
 fun LocalDate.isNotEqual(otherDate: LocalDate) = !isEqual(otherDate)
 
-fun LocalDate.datesUntil(date: LocalDate): List<LocalDate> {
+fun LocalDate.datesBetween(date: LocalDate): List<LocalDate> {
     val days = ChronoUnit.DAYS.between(this, date)
     return (0..days).map { this.plusDays(it) }
 }

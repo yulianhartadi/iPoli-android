@@ -1,6 +1,7 @@
 package mypoli.android.quest.usecase
 
 import mypoli.android.common.UseCase
+import mypoli.android.common.datetime.datesBetween
 import mypoli.android.quest.Quest
 import org.threeten.bp.LocalDate
 
@@ -16,10 +17,12 @@ class LoadScheduleForDateUseCase :
     override fun execute(parameters: Params): Map<LocalDate, Schedule> {
         val data = mutableMapOf<LocalDate, Pair<MutableList<Quest>, MutableList<Quest>>>()
 
+        for (d in parameters.startDate.datesBetween(parameters.endDate)) {
+            data[d] = Pair(mutableListOf(), mutableListOf())
+        }
+
         for (q in parameters.quests) {
-            if (!data.containsKey(q.scheduledDate)) {
-                data[q.scheduledDate] = Pair(mutableListOf(), mutableListOf())
-            }
+
             if (q.isScheduled) {
                 data[q.scheduledDate]!!.first.add(q)
             } else {
@@ -36,5 +39,9 @@ class LoadScheduleForDateUseCase :
         }
     }
 
-    data class Params(val quests: List<Quest>)
+    data class Params(
+        val startDate: LocalDate,
+        val endDate: LocalDate,
+        val quests: List<Quest>
+    )
 }

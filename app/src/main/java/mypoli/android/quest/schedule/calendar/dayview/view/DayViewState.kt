@@ -17,8 +17,6 @@ import mypoli.android.reminder.view.picker.ReminderViewModel
 import org.threeten.bp.LocalDate
 import org.threeten.bp.LocalDateTime
 import org.threeten.bp.LocalTime
-import org.threeten.bp.temporal.ChronoUnit
-import timber.log.Timber
 
 /**
  * Created by Venelin Valkov <venelin@mypoli.fun>
@@ -68,31 +66,41 @@ object DayViewReducer : BaseViewStateReducer<DayViewState>() {
     override fun reduce(state: AppState, subState: DayViewState, action: Action): DayViewState {
         return when (action) {
             is DayViewAction.Load -> {
-                val schedule = state.dataState.scheduledQuests[action.currentDate]
-                Timber.d("AAA load $schedule ${action.currentDate} ${state.dataState.scheduledQuests}")
-                schedule?.let {
-                    subState.copy(
-                        type = DayViewState.StateType.SCHEDULE_LOADED,
-                        scheduledQuests = createScheduledViewModels(schedule),
-                        unscheduledQuests = createUnscheduledViewModels(schedule),
-                        currentDate = schedule.date
-                    )
-                } ?: subState.copy(
-                    currentDate = action.currentDate
+//                val schedule = state.dataState.scheduledQuests[action.currentDate]
+//                Timber.d("AAA load $schedule ${action.currentDate} ${state.dataState.scheduledQuests}")
+//                schedule?.let {
+
+                val type =
+                    if (state.dataState.scheduledQuests.isEmpty()) DayViewState.StateType.LOADING else DayViewState.StateType.SCHEDULE_LOADED
+
+                subState.copy(
+                    type = type,
+                    schedule = state.dataState.scheduledQuests
+//                        scheduledQuests = createScheduledViewModels(schedule),
+//                        unscheduledQuests = createUnscheduledViewModels(schedule),
+//                        currentDate = schedule.date
                 )
+//                } ?: subState.copy(
+//                    currentDate = action.currentDate
+//                )
             }
 
             is DataLoadedAction.ScheduledQuestsChanged -> {
-                val schedule = state.dataState.scheduledQuests[subState.currentDate]
-                Timber.d("AAA changed $schedule ${subState.currentDate} ${state.dataState.scheduledQuests}")
-                schedule?.let {
-                    subState.copy(
-                        type = DayViewState.StateType.SCHEDULE_LOADED,
-                        scheduledQuests = createScheduledViewModels(schedule),
-                        unscheduledQuests = createUnscheduledViewModels(schedule),
-                        currentDate = schedule.date
-                    )
-                } ?: subState
+//                val schedule = state.dataState.scheduledQuests[subState.currentDate]
+//                Timber.d("AAA changed $schedule ${subState.currentDate} ${state.dataState.scheduledQuests}")
+//                schedule?.let {
+//                    subState.copy(
+//                        type = DayViewState.StateType.SCHEDULE_LOADED,
+//                        scheduledQuests = createScheduledViewModels(schedule),
+//                        unscheduledQuests = createUnscheduledViewModels(schedule),
+//                        currentDate = schedule.date
+//                    )
+//                } ?: subState
+
+                subState.copy(
+                    type = DayViewState.StateType.SCHEDULE_LOADED,
+                    schedule = action.scheduledQuests
+                )
             }
             else -> subState
         }
@@ -142,55 +150,15 @@ object DayViewReducer : BaseViewStateReducer<DayViewState>() {
             )
         }
 
-    private fun createUnscheduledViewModels(schedule: Schedule): List<DayViewController.UnscheduledQuestViewModel> =
-        schedule.unscheduled.map {
-            val color = AndroidColor.valueOf(it.color.name)
-            DayViewController.UnscheduledQuestViewModel(
-                it.id,
-                it.name,
-                it.duration,
-                it.icon?.let { AndroidIcon.valueOf(it.name) },
-                color,
-                color.color900,
-                it.isCompleted,
-                it.isStarted
-            )
-        }
-
-    private fun createScheduledViewModels(schedule: Schedule): List<DayViewController.QuestViewModel> =
-        schedule.scheduled.map { q ->
-            val color = AndroidColor.valueOf(q.color.name)
-
-            val reminder = q.reminder?.let {
-                val daysDiff = ChronoUnit.DAYS.between(q.scheduledDate, it.remindDate)
-                val minutesDiff = q.startTime!!.toMinuteOfDay() - it.remindTime.toMinuteOfDay()
-                ReminderViewModel(it.message, minutesDiff + Time.MINUTES_IN_A_DAY * daysDiff)
-            }
-
-            DayViewController.QuestViewModel(
-                q.id,
-                q.name,
-                q.duration,
-                q.startTime!!.toMinuteOfDay(),
-                q.startTime.toString(),
-                q.endTime.toString(),
-                q.icon?.let { AndroidIcon.valueOf(it.name) },
-                color,
-                color.color900,
-                reminder,
-                q.isCompleted,
-                q.isStarted
-            )
-        }
-
     override fun defaultState() = DayViewState(type = DayViewState.StateType.LOADING)
 }
 
 data class DayViewState(
     val type: StateType,
-    val currentDate: LocalDate = LocalDate.now(),
-    val scheduledQuests: List<DayViewController.QuestViewModel> = listOf(),
-    val unscheduledQuests: List<DayViewController.UnscheduledQuestViewModel> = listOf(),
+//    val currentDate: LocalDate = LocalDate.now(),
+    val schedule: Map<LocalDate, Schedule> = mapOf(),
+//    val scheduledQuests: List<DayViewController.QuestViewModel> = listOf(),
+//    val unscheduledQuests: List<DayViewController.UnscheduledQuestViewModel> = listOf(),
     val removedEventId: String = "",
     val editId: String = "",
     val name: String = "",

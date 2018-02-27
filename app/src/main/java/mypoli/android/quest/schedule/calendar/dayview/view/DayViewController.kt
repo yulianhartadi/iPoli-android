@@ -44,6 +44,7 @@ import mypoli.android.reminder.view.picker.ReminderPickerDialogController
 import mypoli.android.reminder.view.picker.ReminderViewModel
 import mypoli.android.timer.TimerViewController
 import org.threeten.bp.LocalDate
+import org.threeten.bp.temporal.ChronoUnit
 import timber.log.Timber
 
 class DayViewController :
@@ -146,7 +147,7 @@ class DayViewController :
                 colorPickListener = { showColorPicker(state.color) }
                 iconPickedListener = { showIconPicker(state.icon) }
                 reminderPickedListener = { showReminderPicker(state.reminder) }
-                datePickedListener = { showDatePicker(state.scheduledDate ?: state.currentDate) }
+                datePickedListener = { showDatePicker(state.scheduledDate ?: currentDate) }
 
                 startActionMode()
                 (parentController as CalendarViewController).onStartEdit()
@@ -161,7 +162,7 @@ class DayViewController :
                 colorPickListener = { showColorPicker(state.color) }
                 iconPickedListener = { showIconPicker(state.icon) }
                 reminderPickedListener = { showReminderPicker(state.reminder) }
-                datePickedListener = { showDatePicker(state.scheduledDate ?: state.currentDate) }
+                datePickedListener = { showDatePicker(state.scheduledDate ?: currentDate) }
 
                 startActionMode()
                 (parentController as CalendarViewController).onStartEdit()
@@ -176,7 +177,7 @@ class DayViewController :
                 colorPickListener = { showColorPicker(state.color) }
                 iconPickedListener = { showIconPicker(state.icon) }
                 reminderPickedListener = { showReminderPicker(state.reminder) }
-                datePickedListener = { showDatePicker(state.scheduledDate ?: state.currentDate) }
+                datePickedListener = { showDatePicker(state.scheduledDate ?: currentDate) }
 
                 startActionMode()
                 (parentController as CalendarViewController).onStartEdit()
@@ -249,7 +250,7 @@ class DayViewController :
                 colorPickListener = { showColorPicker(state.color) }
                 iconPickedListener = { showIconPicker(state.icon) }
                 reminderPickedListener = { showReminderPicker(state.reminder) }
-                datePickedListener = { showDatePicker(state.scheduledDate ?: state.currentDate) }
+                datePickedListener = { showDatePicker(state.scheduledDate ?: currentDate) }
                 startActionMode()
             }
 
@@ -274,7 +275,7 @@ class DayViewController :
             }
 
             DATE_PICKED -> {
-                datePickedListener = { showDatePicker(state.scheduledDate ?: state.currentDate) }
+                datePickedListener = { showDatePicker(state.scheduledDate ?: currentDate) }
             }
         }
     }
@@ -794,4 +795,45 @@ class DayViewController :
             )
         )
     }
+
+    private val DayViewState.unscheduledQuests
+        get() = schedule[currentDate]!!.unscheduled.map {
+            val color = AndroidColor.valueOf(it.color.name)
+            DayViewController.UnscheduledQuestViewModel(
+                it.id,
+                it.name,
+                it.duration,
+                it.icon?.let { AndroidIcon.valueOf(it.name) },
+                color,
+                color.color900,
+                it.isCompleted,
+                it.isStarted
+            )
+        }
+
+    private val DayViewState.scheduledQuests
+        get() = schedule[currentDate]!!.scheduled.map { q ->
+            val color = AndroidColor.valueOf(q.color.name)
+
+            val reminder = q.reminder?.let {
+                val daysDiff = ChronoUnit.DAYS.between(q.scheduledDate, it.remindDate)
+                val minutesDiff = q.startTime!!.toMinuteOfDay() - it.remindTime.toMinuteOfDay()
+                ReminderViewModel(it.message, minutesDiff + Time.MINUTES_IN_A_DAY * daysDiff)
+            }
+
+            DayViewController.QuestViewModel(
+                q.id,
+                q.name,
+                q.duration,
+                q.startTime!!.toMinuteOfDay(),
+                q.startTime.toString(),
+                q.endTime.toString(),
+                q.icon?.let { AndroidIcon.valueOf(it.name) },
+                color,
+                color.color900,
+                reminder,
+                q.isCompleted,
+                q.isStarted
+            )
+        }
 }

@@ -2,7 +2,7 @@ package mypoli.android.repeatingquest.usecase
 
 import mypoli.android.common.UseCase
 import mypoli.android.common.datetime.DateUtils
-import mypoli.android.common.datetime.datesUntil
+import mypoli.android.common.datetime.datesBetween
 import mypoli.android.common.datetime.isBetween
 import mypoli.android.quest.Quest
 import mypoli.android.quest.data.persistence.QuestRepository
@@ -41,7 +41,7 @@ class FindQuestsForRepeatingQuestUseCase(
 
         val scheduleDates = when (rq.repeatingPattern) {
 
-            is RepeatingPattern.Daily -> start.datesUntil(end).toSet()
+            is RepeatingPattern.Daily -> start.datesBetween(end).toSet()
 
 
             is RepeatingPattern.Weekly ->
