@@ -15,6 +15,7 @@ import mypoli.android.repeatingquest.entity.RepeatingPattern
 import mypoli.android.repeatingquest.entity.RepeatingQuest
 import mypoli.android.repeatingquest.show.RepeatingQuestViewState.Changed.ProgressModel.COMPLETE
 import mypoli.android.repeatingquest.show.RepeatingQuestViewState.Changed.ProgressModel.INCOMPLETE
+import mypoli.android.repeatingquest.show.RepeatingQuestViewState.Changed.RepeatType.*
 import org.threeten.bp.LocalDate
 
 /**
@@ -111,17 +112,17 @@ object RepeatingQuestReducer : BaseViewStateReducer<RepeatingQuestViewState>() {
 
     private fun repeatTypeFor(repeatingPattern: RepeatingPattern) =
         when (repeatingPattern) {
-            is RepeatingPattern.Daily -> RepeatingQuestViewState.Changed.RepeatType.Daily
-            is RepeatingPattern.Weekly, is RepeatingPattern.Flexible.Weekly -> RepeatingQuestViewState.Changed.RepeatType.Weekly(
+            is RepeatingPattern.Daily -> Daily
+            is RepeatingPattern.Weekly, is RepeatingPattern.Flexible.Weekly -> Weekly(
                 repeatingPattern.periodCount
             )
 
-            is RepeatingPattern.Monthly, is RepeatingPattern.Flexible.Monthly -> RepeatingQuestViewState.Changed.RepeatType.Monthly(
+            is RepeatingPattern.Monthly, is RepeatingPattern.Flexible.Monthly -> Monthly(
                 repeatingPattern.periodCount
             )
 
             is RepeatingPattern.Yearly ->
-                RepeatingQuestViewState.Changed.RepeatType.Yearly
+                Yearly
         }
 
     override fun defaultState() = RepeatingQuestViewState.Loading("")
