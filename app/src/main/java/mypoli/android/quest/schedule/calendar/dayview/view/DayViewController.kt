@@ -793,12 +793,12 @@ class DayViewController :
 
     private val DayViewState.unscheduledQuests
         get() = schedule!!.unscheduled.map {
-            val color = AndroidColor.valueOf(it.color.name)
+            val color = it.color.androidColor
             DayViewController.UnscheduledQuestViewModel(
                 it.id,
                 it.name,
                 it.duration,
-                it.icon?.let { AndroidIcon.valueOf(it.name) },
+                it.icon?.androidIcon,
                 color,
                 color.color900,
                 it.isCompleted,
@@ -808,7 +808,7 @@ class DayViewController :
 
     private val DayViewState.scheduledQuests
         get() = schedule!!.scheduled.map { q ->
-            val color = AndroidColor.valueOf(q.color.name)
+            val color = q.color.androidColor
 
             val reminder = q.reminder?.let {
                 val daysDiff = ChronoUnit.DAYS.between(q.scheduledDate, it.remindDate)
@@ -823,7 +823,7 @@ class DayViewController :
                 q.startTime!!.toMinuteOfDay(),
                 q.startTime.toString(),
                 q.endTime.toString(),
-                q.icon?.let { AndroidIcon.valueOf(it.name) },
+                q.icon?.androidIcon,
                 color,
                 color.color900,
                 reminder,
@@ -831,13 +831,4 @@ class DayViewController :
                 q.isStarted
             )
         }
-
-    private val Color.androidColor: AndroidColor
-        get() = AndroidColor.valueOf(this.name)
-
-    private val AndroidColor.color: Color
-        get() = Color.valueOf(this.name)
-
-    private val Icon.androidIcon: AndroidIcon
-        get() = AndroidIcon.valueOf(this.name)
 }

@@ -8,14 +8,11 @@ import mypoli.android.common.mvi.ViewState
 import mypoli.android.common.redux.Action
 import mypoli.android.quest.Color
 import mypoli.android.quest.Icon
-import mypoli.android.quest.Reminder
 import mypoli.android.quest.schedule.calendar.dayview.view.DayViewState.StateType.*
 import mypoli.android.quest.usecase.Result
 import mypoli.android.quest.usecase.Schedule
 import mypoli.android.reminder.view.picker.ReminderViewModel
 import org.threeten.bp.LocalDate
-import org.threeten.bp.LocalDateTime
-import org.threeten.bp.LocalTime
 
 /**
  * Created by Venelin Valkov <venelin@mypoli.fun>
@@ -254,49 +251,6 @@ class DayViewReducer(namespace: String) : NamespaceViewStateReducer<DayViewState
             }
         }
     }
-
-
-    private fun createDefaultReminder(scheduledDate: LocalDate, startMinute: Int) =
-        Reminder("", Time.of(startMinute), scheduledDate)
-
-    private fun createQuestReminder(
-        reminder: ReminderViewModel?,
-        scheduledDate: LocalDate,
-        eventStartMinute: Int
-    ) =
-        reminder?.let {
-            val time = Time.of(eventStartMinute)
-            val questDateTime =
-                LocalDateTime.of(scheduledDate, LocalTime.of(time.hours, time.getMinutes()))
-            val reminderDateTime = questDateTime.minusMinutes(it.minutesFromStart)
-            val toLocalTime = reminderDateTime.toLocalTime()
-            Reminder(
-                it.message,
-                Time.at(toLocalTime.hour, toLocalTime.minute),
-                reminderDateTime.toLocalDate()
-            )
-        }
-
-    private fun savedQuestViewState(result: Result, state: DayViewState) =
-        when (result) {
-            is Result.Invalid -> {
-                when (result.error) {
-
-                    Result.ValidationError.EMPTY_NAME -> {
-                        state.copy(type = EVENT_VALIDATION_EMPTY_NAME)
-                    }
-
-                    Result.ValidationError.TIMER_RUNNING -> {
-                        state.copy(type = EVENT_VALIDATION_TIMER_RUNNING)
-                    }
-                }
-            }
-            else -> state.copy(
-                type = EVENT_UPDATED,
-                reminder = null,
-                scheduledDate = null
-            )
-        }
 
     override fun defaultState() =
         DayViewState(

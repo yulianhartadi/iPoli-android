@@ -193,6 +193,24 @@ data class PeriodRange(val start: LocalDate, val end: LocalDate)
 
 data class PeriodProgress(val completedCount: Int, val allCount: Int)
 
+enum class FrequencyType {
+    DAILY,
+    WEEKLY,
+    MONTHLY,
+    YEARLY
+}
+
+val RepeatingPattern.frequencyType: FrequencyType
+    get() = when (this) {
+        is RepeatingPattern.Daily -> FrequencyType.DAILY
+        is RepeatingPattern.Weekly -> FrequencyType.WEEKLY
+        is RepeatingPattern.Flexible.Weekly -> FrequencyType.WEEKLY
+        is RepeatingPattern.Monthly -> FrequencyType.MONTHLY
+        is RepeatingPattern.Flexible.Monthly -> FrequencyType.MONTHLY
+        is RepeatingPattern.Yearly -> FrequencyType.YEARLY
+    }
+
+
 data class RepeatingQuest(
     override val id: String = "",
     val name: String,

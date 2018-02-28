@@ -22,6 +22,7 @@ import mypoli.android.common.LoaderDialogController
 import mypoli.android.common.di.Module
 import mypoli.android.common.view.playerTheme
 import mypoli.android.home.HomeViewController
+import mypoli.android.repeatingquest.edit.EditRepeatingQuestViewController
 import mypoli.android.timer.TimerViewController
 import space.traversal.kapsule.Injects
 import space.traversal.kapsule.inject
@@ -101,8 +102,8 @@ class MainActivity : AppCompatActivity(), Injects<Module> {
                         val questId = intent.getStringExtra(Constants.QUEST_ID_EXTRA_KEY)
                         router.setRoot(RouterTransaction.with(TimerViewController(questId)))
                     } else if (!router.hasRootController()) {
-                        router.setRoot(RouterTransaction.with(HomeViewController()))
-//                        router.setRoot(RouterTransaction.with(EditRepeatingQuestViewController("")))
+//                        router.setRoot(RouterTransaction.with(HomeViewController()))
+                        router.setRoot(RouterTransaction.with(EditRepeatingQuestViewController("")))
                     }
                 }
 

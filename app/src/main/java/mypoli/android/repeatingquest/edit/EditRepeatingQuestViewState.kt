@@ -9,7 +9,9 @@ import mypoli.android.common.redux.Action
 import mypoli.android.quest.Color
 import mypoli.android.quest.Icon
 import mypoli.android.quest.Reminder
+import mypoli.android.repeatingquest.entity.FrequencyType
 import mypoli.android.repeatingquest.entity.RepeatingPattern
+import org.threeten.bp.LocalDate
 
 /**
  * Created by Polina Zhelyazkova <polina@ipoli.io>
@@ -35,7 +37,13 @@ object EditRepeatingQuestReducer : BaseViewStateReducer<EditRepeatingQuestViewSt
                 subState.copy(
                     type = EditRepeatingQuestViewState.StateType.CHANGED,
                     name = "Run 3 km",
-                    startTime = Time.at(15, 15)
+                    startTime = Time.at(15, 15),
+                    repeatingPattern = RepeatingPattern.Daily(),
+                    frequencyType = FrequencyType.DAILY,
+                    duration = 20,
+                    reminder = Reminder("AAA", Time.Companion.at(15, 0), LocalDate.now()),
+                    icon = null,
+                    color = Color.PINK
                 )
             }
 
@@ -47,6 +55,7 @@ object EditRepeatingQuestReducer : BaseViewStateReducer<EditRepeatingQuestViewSt
             type = EditRepeatingQuestViewState.StateType.LOADING,
             name = "",
             repeatingPattern = RepeatingPattern.Daily(),
+            frequencyType = FrequencyType.DAILY,
             duration = Constants.QUEST_MIN_DURATION,
             startTime = null,
             reminder = null,
@@ -61,6 +70,7 @@ data class EditRepeatingQuestViewState(
     val type: EditRepeatingQuestViewState.StateType,
     val name: String,
     val repeatingPattern: RepeatingPattern,
+    val frequencyType: FrequencyType,
     val duration: Int,
     val startTime: Time?,
     val reminder: Reminder?,

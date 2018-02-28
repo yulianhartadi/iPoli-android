@@ -15,7 +15,11 @@ import mypoli.android.common.mvi.ViewState
 import mypoli.android.common.redux.Action
 import mypoli.android.common.redux.StateStore
 import mypoli.android.common.redux.ViewStateReducer
+import mypoli.android.common.view.AndroidColor
+import mypoli.android.common.view.AndroidIcon
 import mypoli.android.myPoliApp
+import mypoli.android.quest.Color
+import mypoli.android.quest.Icon
 import space.traversal.kapsule.Injects
 import space.traversal.kapsule.inject
 import space.traversal.kapsule.required
@@ -100,4 +104,16 @@ abstract class ReduxViewController<A : Action, VS : ViewState, out R : ViewState
             block()
         }
     }
+
+    protected val Color.androidColor: AndroidColor
+        get() = AndroidColor.valueOf(this.name)
+
+    protected val AndroidColor.color: Color
+        get() = Color.valueOf(this.name)
+
+    protected val Icon.androidIcon: AndroidIcon
+        get() = AndroidIcon.valueOf(this.name)
+
+    protected val AndroidIcon.toIcon: Icon
+        get() = Icon.valueOf(this.name)
 }

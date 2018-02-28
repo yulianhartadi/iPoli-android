@@ -1113,11 +1113,19 @@
         <item>Titan</item>
     </string-array>
 
-    <string-array name="repeating_quest_frequencies">
+    <string-array name="repeating_quest_picker_frequencies">
         <item>Day</item>
         <item>Week</item>
         <item>Month</item>
         <item>Year</item>
+    </string-array>
+
+
+    <string-array name="repeating_quest_frequencies">
+        <item>Daily</item>
+        <item>Weekly</item>
+        <item>Monthly</item>
+        <item>Yearly</item>
     </string-array>
 
     <string-array name="repeating_quest_flexible_frequencies">

@@ -24,6 +24,7 @@ import mypoli.android.common.ViewUtils
 import mypoli.android.common.datetime.DateUtils
 import mypoli.android.common.text.DateFormatter
 import mypoli.android.common.view.*
+import mypoli.android.repeatingquest.entity.FrequencyType
 import mypoli.android.repeatingquest.entity.RepeatingPattern
 import mypoli.android.repeatingquest.picker.RepeatingPatternViewState.StateType.*
 import org.threeten.bp.DayOfWeek
@@ -200,10 +201,10 @@ class RepeatingPatternPickerDialogController :
         view: View
     ) {
         when (state.frequencyType) {
-            RepeatingPatternViewState.FrequencyType.DAILY -> renderDaily(view, state)
-            RepeatingPatternViewState.FrequencyType.WEEKLY -> renderWeekly(view, state)
-            RepeatingPatternViewState.FrequencyType.MONTHLY -> renderMonthly(view, state)
-            RepeatingPatternViewState.FrequencyType.YEARLY -> renderYearly(view, state)
+            FrequencyType.DAILY -> renderDaily(view, state)
+            FrequencyType.WEEKLY -> renderWeekly(view, state)
+            FrequencyType.MONTHLY -> renderMonthly(view, state)
+            FrequencyType.YEARLY -> renderYearly(view, state)
         }
     }
 
