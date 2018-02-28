@@ -33,6 +33,7 @@ sealed class EditRepeatingQuestAction : Action {
     data class ChangeName(val name: String) : EditRepeatingQuestAction()
     object Save : EditRepeatingQuestAction()
     data class ChangeColor(val color: Color) : EditRepeatingQuestAction()
+    data class ChangeIcon(val icon: Icon?) : EditRepeatingQuestAction()
 }
 
 
@@ -106,6 +107,13 @@ object EditRepeatingQuestReducer : BaseViewStateReducer<EditRepeatingQuestViewSt
                 subState.copy(
                     type = COLOR_CHANGED,
                     color = action.color
+                )
+            }
+
+            is EditRepeatingQuestAction.ChangeIcon -> {
+                subState.copy(
+                    type = ICON_CHANGED,
+                    icon = action.icon
                 )
             }
 
