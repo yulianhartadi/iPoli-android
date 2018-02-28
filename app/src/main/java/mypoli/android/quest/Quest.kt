@@ -6,6 +6,7 @@ import org.threeten.bp.Instant
 import org.threeten.bp.LocalDate
 import org.threeten.bp.LocalDateTime
 import org.threeten.bp.LocalTime
+import org.threeten.bp.temporal.ChronoUnit
 
 /**
  * Created by Venelin Valkov <venelin@mypoli.fun>
@@ -29,6 +30,12 @@ data class Reminder(
             LocalTime.of(remindTime.hours, remindTime.getMinutes())
         ).toMillis()
 
+}
+
+fun Reminder.toMinutesFromStart(startDate: LocalDate, startTime: Time): Long {
+    val daysDiff = ChronoUnit.DAYS.between(startDate, remindDate)
+    val minutesDiff = startTime.toMinuteOfDay() - remindTime.toMinuteOfDay()
+    return minutesDiff + Time.MINUTES_IN_A_DAY * daysDiff
 }
 
 data class Category(

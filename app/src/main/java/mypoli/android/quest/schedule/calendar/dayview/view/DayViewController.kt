@@ -34,17 +34,16 @@ import mypoli.android.common.datetime.isNotEqual
 import mypoli.android.common.datetime.startOfDayUTC
 import mypoli.android.common.redux.android.ReduxViewController
 import mypoli.android.common.view.*
-import mypoli.android.quest.Color
 import mypoli.android.quest.CompletedQuestViewController
 import mypoli.android.quest.Icon
 import mypoli.android.quest.schedule.calendar.CalendarViewController
 import mypoli.android.quest.schedule.calendar.dayview.view.DayViewState.StateType.*
 import mypoli.android.quest.schedule.calendar.dayview.view.widget.*
+import mypoli.android.quest.toMinutesFromStart
 import mypoli.android.reminder.view.picker.ReminderPickerDialogController
 import mypoli.android.reminder.view.picker.ReminderViewModel
 import mypoli.android.timer.TimerViewController
 import org.threeten.bp.LocalDate
-import org.threeten.bp.temporal.ChronoUnit
 import java.util.*
 
 class DayViewController :
@@ -811,9 +810,7 @@ class DayViewController :
             val color = q.color.androidColor
 
             val reminder = q.reminder?.let {
-                val daysDiff = ChronoUnit.DAYS.between(q.scheduledDate, it.remindDate)
-                val minutesDiff = q.startTime!!.toMinuteOfDay() - it.remindTime.toMinuteOfDay()
-                ReminderViewModel(it.message, minutesDiff + Time.MINUTES_IN_A_DAY * daysDiff)
+                ReminderViewModel(it.message, it.toMinutesFromStart(q.scheduledDate, q.startTime!!))
             }
 
             DayViewController.QuestViewModel(

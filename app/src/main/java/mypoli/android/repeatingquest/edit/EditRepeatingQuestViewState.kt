@@ -9,8 +9,11 @@ import mypoli.android.common.redux.Action
 import mypoli.android.quest.Color
 import mypoli.android.quest.Icon
 import mypoli.android.quest.Reminder
+import mypoli.android.reminder.view.picker.ReminderViewModel
+import mypoli.android.repeatingquest.edit.EditRepeatingQuestViewState.StateType.*
 import mypoli.android.repeatingquest.entity.FrequencyType
 import mypoli.android.repeatingquest.entity.RepeatingPattern
+import mypoli.android.repeatingquest.entity.frequencyType
 import org.threeten.bp.LocalDate
 
 /**
@@ -20,6 +23,13 @@ import org.threeten.bp.LocalDate
 
 sealed class EditRepeatingQuestAction : Action {
     data class Load(val repeatingQuestId : String) : EditRepeatingQuestAction()
+    data class ChangeRepeatingPattern(val repeatingPattern: RepeatingPattern) :
+        EditRepeatingQuestAction()
+
+    data class ChangeStartTime(val time: Time?) : EditRepeatingQuestAction()
+    data class ChangeDuration(val minutes: Int) : EditRepeatingQuestAction()
+    data class ChangeReminder(val reminder: ReminderViewModel?) : EditRepeatingQuestAction()
+    data class ChangeName(val name: String) : EditRepeatingQuestAction()
 }
 
 
@@ -35,7 +45,7 @@ object EditRepeatingQuestReducer : BaseViewStateReducer<EditRepeatingQuestViewSt
         when (action) {
             is EditRepeatingQuestAction.Load -> {
                 subState.copy(
-                    type = EditRepeatingQuestViewState.StateType.CHANGED,
+                    type = DATA_LOADED,
                     name = "Run 3 km",
                     startTime = Time.at(15, 15),
                     repeatingPattern = RepeatingPattern.Daily(),
@@ -47,12 +57,48 @@ object EditRepeatingQuestReducer : BaseViewStateReducer<EditRepeatingQuestViewSt
                 )
             }
 
+            is EditRepeatingQuestAction.ChangeRepeatingPattern -> {
+                subState.copy(
+                    type = REPEATING_PATTERN_CHANGED,
+                    repeatingPattern = action.repeatingPattern,
+                    frequencyType = action.repeatingPattern.frequencyType
+                )
+            }
+
+            is EditRepeatingQuestAction.ChangeStartTime -> {
+                subState.copy(
+                    type = START_TIME_CHANGED,
+                    startTime = action.time
+                )
+            }
+
+            is EditRepeatingQuestAction.ChangeDuration -> {
+                subState.copy(
+                    type = DURATION_CHANGED,
+                    duration = action.minutes
+                )
+            }
+
+            is EditRepeatingQuestAction.ChangeReminder -> {
+                subState.copy(
+                    type = REMINDER_CHANGED
+//                    reminder = action.reminder
+                )
+            }
+
+            is EditRepeatingQuestAction.ChangeName -> {
+                subState.copy(
+                    type = NAME_CHANGED,
+                    name = action.name
+                )
+            }
+
             else -> subState
         }
 
     override fun defaultState() =
         EditRepeatingQuestViewState(
-            type = EditRepeatingQuestViewState.StateType.LOADING,
+            type = LOADING,
             name = "",
             repeatingPattern = RepeatingPattern.Daily(),
             frequencyType = FrequencyType.DAILY,
@@ -79,6 +125,15 @@ data class EditRepeatingQuestViewState(
 ) : ViewState {
     enum class StateType {
         LOADING,
-        CHANGED
+        DATA_LOADED,
+        CHANGED,
+        REPEATING_PATTERN_CHANGED,
+        START_TIME_CHANGED,
+        DURATION_CHANGED,
+        REMINDER_CHANGED,
+        NAME_CHANGED
     }
 }
+
+val EditRepeatingQuestViewState.reminderViewModel: ReminderViewModel?
+    get() = reminder?.let { ReminderViewModel(it.message, 10) }
