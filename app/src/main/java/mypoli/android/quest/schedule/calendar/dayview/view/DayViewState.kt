@@ -71,8 +71,10 @@ sealed class DayViewAction : Action {
 
     data class DragMoveView(val startTime: Time?, val endTime: Time?) : DayViewAction()
     object AddQuest : DayViewAction()
-    object QuestAdded : DayViewAction()
-    data class AddInvalidQuest(val result: Result.Invalid) : DayViewAction()
+    object QuestSaved : DayViewAction()
+    data class SaveInvalidQuest(val result: Result.Invalid) : DayViewAction()
+    data class ChangeEditViewName(val name: String) : DayViewAction()
+    object EditQuest : DayViewAction()
 }
 
 class DayViewReducer(namespace: String) : NamespaceViewStateReducer<DayViewState>(namespace) {
@@ -182,11 +184,11 @@ class DayViewReducer(namespace: String) : NamespaceViewStateReducer<DayViewState
                 )
             }
 
-            DayViewAction.QuestAdded -> {
+            DayViewAction.QuestSaved -> {
                 subState.copy(type = EVENT_UPDATED, reminder = null, scheduledDate = null)
             }
 
-            is DayViewAction.AddInvalidQuest -> {
+            is DayViewAction.SaveInvalidQuest -> {
                 when (action.result.error) {
 
                     Result.ValidationError.EMPTY_NAME -> {
@@ -197,6 +199,13 @@ class DayViewReducer(namespace: String) : NamespaceViewStateReducer<DayViewState
                         subState.copy(type = EVENT_VALIDATION_TIMER_RUNNING)
                     }
                 }
+            }
+
+            is DayViewAction.ChangeEditViewName -> {
+                subState.copy(
+                    type = EDIT_VIEW_NAME_CHANGED,
+                    name = action.name
+                )
             }
 
             else -> {

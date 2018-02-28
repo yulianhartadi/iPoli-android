@@ -360,7 +360,7 @@ class DayViewController :
             }
 
             override fun onTextChanged(text: CharSequence?, start: Int, before: Int, count: Int) {
-                send(ChangeEditViewNameIntent(text.toString()))
+                dispatch(DayViewAction.ChangeEditViewName(text.toString()))
             }
 
         })
@@ -400,7 +400,7 @@ class DayViewController :
     }
 
     override fun onEditCalendarEvent() {
-        send(EditQuestIntent)
+        dispatch(DayViewAction.EditQuest)
     }
 
     override fun onEditUnscheduledCalendarEvent() {
