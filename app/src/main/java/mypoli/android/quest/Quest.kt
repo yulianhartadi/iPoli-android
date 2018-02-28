@@ -22,7 +22,7 @@ interface Entity {
 data class Reminder(
     val message: String,
     val remindTime: Time,
-    val remindDate: LocalDate
+    val remindDate: LocalDate?
 ) {
     fun toMillis() =
         LocalDateTime.of(
@@ -37,6 +37,9 @@ fun Reminder.toMinutesFromStart(startDate: LocalDate, startTime: Time): Long {
     val minutesDiff = startTime.toMinuteOfDay() - remindTime.toMinuteOfDay()
     return minutesDiff + Time.MINUTES_IN_A_DAY * daysDiff
 }
+
+fun Reminder.toMinutesFromStart(startTime: Time) =
+    startTime.toMinuteOfDay() - remindTime.toMinuteOfDay()
 
 data class Category(
     val name: String,

@@ -9,6 +9,7 @@ import mypoli.android.common.redux.Action
 import mypoli.android.quest.Color
 import mypoli.android.quest.Icon
 import mypoli.android.quest.Reminder
+import mypoli.android.quest.toMinutesFromStart
 import mypoli.android.reminder.view.picker.ReminderViewModel
 import mypoli.android.repeatingquest.edit.EditRepeatingQuestViewState.StateType.*
 import mypoli.android.repeatingquest.entity.FrequencyType
@@ -81,9 +82,15 @@ object EditRepeatingQuestReducer : BaseViewStateReducer<EditRepeatingQuestViewSt
             }
 
             is EditRepeatingQuestAction.ChangeReminder -> {
+                val r: ReminderViewModel? = action.reminder
+                val reminder = if (subState.startTime == null || r == null) {
+                    null
+                } else {
+                    Reminder(r.message, subState.startTime.minus(r.minutesFromStart.toInt()), null)
+                }
                 subState.copy(
-                    type = REMINDER_CHANGED
-//                    reminder = action.reminder
+                    type = REMINDER_CHANGED,
+                    reminder = reminder
                 )
             }
 
@@ -137,4 +144,13 @@ data class EditRepeatingQuestViewState(
 }
 
 val EditRepeatingQuestViewState.reminderViewModel: ReminderViewModel?
-    get() = reminder?.let { ReminderViewModel(it.message, 10) }
+    get() = reminder?.let {
+        if (startTime == null) {
+            null
+        } else {
+            ReminderViewModel(
+                it.message,
+                it.toMinutesFromStart(startTime).toLong()
+            )
+        }
+    }
