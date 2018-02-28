@@ -78,6 +78,9 @@ class RepeatingQuestViewController :
                 renderProgress(view, state)
                 renderSummaryStats(view, state)
             }
+
+            RepeatingQuestViewState.Removed ->
+                router.popCurrentController()
         }
     }
 
@@ -168,7 +171,10 @@ class RepeatingQuestViewController :
         get() = Time.of(totalDuration.intValue).toString()
 
     private val RepeatingQuestViewState.Changed.nextScheduledDateText
-        get() = DateFormatter.format(view!!.context, nextScheduledDate)
+        get() = if (nextScheduledDate != null) DateFormatter.format(
+            view!!.context,
+            nextScheduledDate
+        ) else stringRes(R.string.unscheduled)
 
     private val RepeatingQuestViewState.Changed.frequencyText
         get() = when (repeat) {

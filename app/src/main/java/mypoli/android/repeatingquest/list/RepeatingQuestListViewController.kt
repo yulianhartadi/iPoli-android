@@ -19,13 +19,10 @@ import kotlinx.android.synthetic.main.item_repeating_quest.view.*
 import mypoli.android.R
 import mypoli.android.common.ViewUtils
 import mypoli.android.common.redux.android.ReduxViewController
-import mypoli.android.repeatingquest.show.RepeatingQuestViewController
-import mypoli.android.common.view.colorRes
-import mypoli.android.common.view.stringRes
-import mypoli.android.common.view.toolbarTitle
 import mypoli.android.common.text.DateFormatter
 import mypoli.android.common.view.*
 import mypoli.android.repeatingquest.list.RepeatingQuestListViewState.StateType.DATA_LOADED
+import mypoli.android.repeatingquest.show.RepeatingQuestViewController
 
 /**
  * Created by Polina Zhelyazkova <polina@ipoli.io>
