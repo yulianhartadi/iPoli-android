@@ -6,7 +6,6 @@ import mypoli.android.common.NamespaceViewStateReducer
 import mypoli.android.common.datetime.Time
 import mypoli.android.common.mvi.ViewState
 import mypoli.android.common.redux.Action
-import mypoli.android.common.view.AndroidColor
 import mypoli.android.quest.Color
 import mypoli.android.quest.Icon
 import mypoli.android.quest.Reminder
@@ -46,7 +45,7 @@ sealed class DayViewAction : Action {
     data class DatePicked(val date: LocalDate) : DayViewAction()
     data class ReminderPicked(val reminder: ReminderViewModel?) : DayViewAction()
     data class IconPicked(val icon: Icon?) : DayViewAction()
-    data class ColorPicked(val color: AndroidColor) : DayViewAction()
+    data class ColorPicked(val color: Color) : DayViewAction()
     data class StartEditUnscheduledQuest(val questViewModel: DayViewController.UnscheduledQuestViewModel) :
         DayViewAction()
 
@@ -227,7 +226,7 @@ class DayViewReducer(namespace: String) : NamespaceViewStateReducer<DayViewState
             is DayViewAction.ColorPicked -> {
                 subState.copy(
                     type = COLOR_PICKED,
-                    color = Color.valueOf(action.color.name)
+                    color = action.color
                 )
             }
 

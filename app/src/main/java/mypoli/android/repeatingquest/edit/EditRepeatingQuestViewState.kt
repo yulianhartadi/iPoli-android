@@ -1,6 +1,5 @@
 package mypoli.android.repeatingquest.edit
 
-import com.mikepenz.iconics.typeface.IIcon
 import mypoli.android.Constants
 import mypoli.android.common.AppState
 import mypoli.android.common.BaseViewStateReducer
@@ -8,6 +7,7 @@ import mypoli.android.common.datetime.Time
 import mypoli.android.common.mvi.ViewState
 import mypoli.android.common.redux.Action
 import mypoli.android.quest.Color
+import mypoli.android.quest.Icon
 import mypoli.android.quest.Reminder
 import mypoli.android.repeatingquest.entity.RepeatingPattern
 
@@ -33,7 +33,9 @@ object EditRepeatingQuestReducer : BaseViewStateReducer<EditRepeatingQuestViewSt
         when (action) {
             is EditRepeatingQuestAction.Load -> {
                 subState.copy(
-                    type = EditRepeatingQuestViewState.StateType.CHANGED
+                    type = EditRepeatingQuestViewState.StateType.CHANGED,
+                    name = "Run 3 km",
+                    startTime = Time.at(15, 15)
                 )
             }
 
@@ -62,7 +64,7 @@ data class EditRepeatingQuestViewState(
     val duration: Int,
     val startTime: Time?,
     val reminder: Reminder?,
-    val icon: IIcon?,
+    val icon: Icon?,
     val color: Color
 ) : ViewState {
     enum class StateType {

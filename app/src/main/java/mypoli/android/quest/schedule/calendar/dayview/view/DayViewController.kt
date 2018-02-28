@@ -34,6 +34,7 @@ import mypoli.android.common.datetime.isNotEqual
 import mypoli.android.common.datetime.startOfDayUTC
 import mypoli.android.common.redux.android.ReduxViewController
 import mypoli.android.common.view.*
+import mypoli.android.quest.Color
 import mypoli.android.quest.CompletedQuestViewController
 import mypoli.android.quest.Icon
 import mypoli.android.quest.schedule.calendar.CalendarViewController
@@ -130,6 +131,9 @@ class DayViewController :
     }
 
     override fun render(state: DayViewState, view: View) {
+        val color = state.color?.androidColor
+        val icon = state.icon?.androidIcon
+
         when (state.type) {
             SCHEDULE_LOADED -> {
                 eventsAdapter =
@@ -142,9 +146,8 @@ class DayViewController :
             }
 
             ADD_NEW_SCHEDULED_QUEST -> {
-
-                colorPickListener = { showColorPicker(state.color) }
-                iconPickedListener = { showIconPicker(state.icon) }
+                colorPickListener = { showColorPicker(color) }
+                iconPickedListener = { showIconPicker(icon) }
                 reminderPickedListener = { showReminderPicker(state.reminder) }
                 datePickedListener = { showDatePicker(state.scheduledDate ?: currentDate) }
 
@@ -154,12 +157,12 @@ class DayViewController :
                 dragView.dragStartTime.visibility = View.VISIBLE
                 dragView.dragEndTime.visibility = View.VISIBLE
                 startEditScheduledEvent(dragView, state.startTime!!, state.endTime!!)
-                setupDragViewUI(dragView, state.name, state.color!!, state.icon)
+                setupDragViewUI(dragView, state.name, color!!, icon)
             }
 
             START_EDIT_SCHEDULED_QUEST -> {
-                colorPickListener = { showColorPicker(state.color) }
-                iconPickedListener = { showIconPicker(state.icon) }
+                colorPickListener = { showColorPicker(color) }
+                iconPickedListener = { showIconPicker(icon) }
                 reminderPickedListener = { showReminderPicker(state.reminder) }
                 datePickedListener = { showDatePicker(state.scheduledDate ?: currentDate) }
 
@@ -169,12 +172,12 @@ class DayViewController :
                 dragView.dragStartTime.visibility = View.VISIBLE
                 dragView.dragEndTime.visibility = View.VISIBLE
                 startEditScheduledEvent(dragView, state.startTime!!, state.endTime!!)
-                setupDragViewUI(dragView, state.name, state.color!!, state.icon, state.reminder)
+                setupDragViewUI(dragView, state.name, color!!, icon, state.reminder)
             }
 
             START_EDIT_UNSCHEDULED_QUEST -> {
-                colorPickListener = { showColorPicker(state.color) }
-                iconPickedListener = { showIconPicker(state.icon) }
+                colorPickListener = { showColorPicker(color) }
+                iconPickedListener = { showIconPicker(icon) }
                 reminderPickedListener = { showReminderPicker(state.reminder) }
                 datePickedListener = { showDatePicker(state.scheduledDate ?: currentDate) }
 
@@ -183,7 +186,7 @@ class DayViewController :
                 val dragView = view.dragContainer
                 dragView.dragStartTime.visibility = View.GONE
                 dragView.dragEndTime.visibility = View.GONE
-                setupDragViewUI(dragView, state.name, state.color!!, state.icon, state.reminder)
+                setupDragViewUI(dragView, state.name, color!!, icon, state.reminder)
             }
 
             EVENT_UPDATED -> {
@@ -212,27 +215,27 @@ class DayViewController :
             }
 
             COLOR_PICKED -> {
-                colorPickListener = { showColorPicker(state.color) }
+                colorPickListener = { showColorPicker(color) }
                 val dragView = view.dragContainer
                 ObjectAnimator.ofArgb(
                     dragView,
                     "backgroundColor",
                     (dragView.background as ColorDrawable).color,
-                    ContextCompat.getColor(dragView.context, state.color!!.color500)
+                    ContextCompat.getColor(dragView.context, color!!.color500)
                 )
                     .setDuration(dragView.context.resources.getInteger(android.R.integer.config_longAnimTime).toLong())
                     .start()
             }
 
             ICON_PICKED -> {
-                iconPickedListener = { showIconPicker(state.icon) }
+                iconPickedListener = { showIconPicker(icon) }
                 val dragIcon = view.dragContainer.dragIcon
-                if (state.icon == null) {
+                if (icon == null) {
                     dragIcon.setImageDrawable(null)
                 } else {
                     dragIcon.setImageDrawable(
                         IconicsDrawable(dragIcon.context)
-                            .icon(state.icon.icon)
+                            .icon(icon.icon)
                             .colorRes(R.color.md_white)
                             .sizeDp(24)
                     )
@@ -246,8 +249,8 @@ class DayViewController :
             }
 
             EDIT_QUEST -> {
-                colorPickListener = { showColorPicker(state.color) }
-                iconPickedListener = { showIconPicker(state.icon) }
+                colorPickListener = { showColorPicker(color) }
+                iconPickedListener = { showIconPicker(icon) }
                 reminderPickedListener = { showReminderPicker(state.reminder) }
                 datePickedListener = { showDatePicker(state.scheduledDate ?: currentDate) }
                 startActionMode()
@@ -472,8 +475,8 @@ class DayViewController :
 
     private fun showColorPicker(selectedColor: AndroidColor?) {
         ColorPickerDialogController(object : ColorPickerDialogController.ColorPickedListener {
-            override fun onColorPicked(color: AndroidColor) {
-                dispatch(DayViewAction.ColorPicked(color))
+            override fun onColorPicked(androidColor: AndroidColor) {
+                dispatch(DayViewAction.ColorPicked(androidColor.color))
             }
 
         }, selectedColor)
@@ -828,4 +831,13 @@ class DayViewController :
                 q.isStarted
             )
         }
+
+    private val Color.androidColor: AndroidColor
+        get() = AndroidColor.valueOf(this.name)
+
+    private val AndroidColor.color: Color
+        get() = Color.valueOf(this.name)
+
+    private val Icon.androidIcon: AndroidIcon
+        get() = AndroidIcon.valueOf(this.name)
 }
