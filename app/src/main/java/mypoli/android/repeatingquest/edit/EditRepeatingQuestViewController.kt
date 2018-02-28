@@ -69,59 +69,7 @@ class EditRepeatingQuestViewController(args: Bundle? = null) :
     override fun render(state: EditRepeatingQuestViewState, view: View) {
         when (state.type) {
             DATA_LOADED -> {
-                renderAll(view, state)
-
-                view.questFrequencyContainer.setOnClickListener {
-                    RepeatingPatternPickerDialogController(
-                        state.repeatingPattern,
-                        {
-                            dispatch(EditRepeatingQuestAction.ChangeRepeatingPattern(it))
-                        }).showDialog(router, "repeating-pattern")
-                }
-
-                view.questStartTimeContainer.setOnClickListener {
-                    val startTime = state.startTime ?: Time.now()
-                    val dialog = TimePickerDialog(
-                        view.context,
-                        TimePickerDialog.OnTimeSetListener { _, hour, minute ->
-                            dispatch(
-                                EditRepeatingQuestAction.ChangeStartTime(
-                                    Time.at(
-                                        hour,
-                                        minute
-                                    )
-                                )
-                            )
-                        }, startTime.hours, startTime.getMinutes(), false
-                    )
-                    dialog.setButton(
-                        Dialog.BUTTON_NEUTRAL,
-                        view.context.getString(R.string.do_not_know),
-                        { _, _ ->
-                            dispatch(EditRepeatingQuestAction.ChangeStartTime(null))
-                        })
-                    dialog.show()
-                }
-
-                view.questDurationContainer.setOnClickListener {
-                    DurationPickerDialogController(object :
-                        DurationPickerDialogController.DurationPickedListener {
-                        override fun onDurationPicked(minutes: Int) {
-                            dispatch(EditRepeatingQuestAction.ChangeDuration(minutes))
-                        }
-
-                    }, state.duration).showDialog(router, "pick_duration_tag")
-                }
-
-                view.questReminderContainer.setOnClickListener {
-                    ReminderPickerDialogController(object :
-                        ReminderPickerDialogController.ReminderPickedListener {
-                        override fun onReminderPicked(reminder: ReminderViewModel?) {
-                            dispatch(EditRepeatingQuestAction.ChangeReminder(reminder))
-                        }
-                    }, state.reminderViewModel).showDialog(router, "pick_reminder_tag")
-                }
-
+                view.questName.setText(state.name)
                 view.questName.addTextChangedListener(object : TextWatcher {
                     override fun afterTextChanged(s: Editable?) {
 
@@ -146,10 +94,6 @@ class EditRepeatingQuestViewController(args: Bundle? = null) :
                     }
 
                 })
-
-            }
-
-            CHANGED -> {
                 renderAll(view, state)
             }
 
@@ -168,6 +112,10 @@ class EditRepeatingQuestViewController(args: Bundle? = null) :
             REMINDER_CHANGED -> {
                 renderReminder(view, state)
             }
+
+            COLOR_CHANGED -> {
+                renderColor(view, state)
+            }
         }
     }
 
@@ -175,11 +123,27 @@ class EditRepeatingQuestViewController(args: Bundle? = null) :
         view: View,
         state: EditRepeatingQuestViewState
     ) {
-        renderName(view, state)
         renderFrequency(view, state)
         renderStartTime(view, state)
         renderDuration(view, state)
         renderReminder(view, state)
+        renderColor(view, state)
+    }
+
+    private fun renderColor(view: View, state: EditRepeatingQuestViewState) {
+        //color layout
+        view.questColorContainer.setOnClickListener {
+            ColorPickerDialogController(object :
+                ColorPickerDialogController.ColorPickedListener {
+                override fun onColorPicked(color: AndroidColor) {
+                    dispatch(EditRepeatingQuestAction.ChangeColor(color.color))
+                }
+
+            }, state.color.androidColor).showDialog(
+                router,
+                "pick_color_tag"
+            )
+        }
     }
 
     private fun renderReminder(
@@ -187,6 +151,15 @@ class EditRepeatingQuestViewController(args: Bundle? = null) :
         state: EditRepeatingQuestViewState
     ) {
         view.questReminderValue.text = state.formattedReminder
+        view.questReminderContainer.setOnClickListener {
+            ReminderPickerDialogController(object :
+                ReminderPickerDialogController.ReminderPickedListener {
+                override fun onReminderPicked(reminder: ReminderViewModel?) {
+                    dispatch(EditRepeatingQuestAction.ChangeReminder(reminder))
+                }
+            }, state.reminderViewModel).showDialog(router, "pick_reminder_tag")
+        }
+
     }
 
     private fun renderDuration(
@@ -194,6 +167,15 @@ class EditRepeatingQuestViewController(args: Bundle? = null) :
         state: EditRepeatingQuestViewState
     ) {
         view.questDurationValue.text = state.formattedDuration
+        view.questDurationContainer.setOnClickListener {
+            DurationPickerDialogController(object :
+                DurationPickerDialogController.DurationPickedListener {
+                override fun onDurationPicked(minutes: Int) {
+                    dispatch(EditRepeatingQuestAction.ChangeDuration(minutes))
+                }
+
+            }, state.duration).showDialog(router, "pick_duration_tag")
+        }
     }
 
     private fun renderStartTime(
@@ -201,6 +183,29 @@ class EditRepeatingQuestViewController(args: Bundle? = null) :
         state: EditRepeatingQuestViewState
     ) {
         view.questStartTimeValue.text = state.formattedStartTime
+        view.questStartTimeContainer.setOnClickListener {
+            val startTime = state.startTime ?: Time.now()
+            val dialog = TimePickerDialog(
+                view.context,
+                TimePickerDialog.OnTimeSetListener { _, hour, minute ->
+                    dispatch(
+                        EditRepeatingQuestAction.ChangeStartTime(
+                            Time.at(
+                                hour,
+                                minute
+                            )
+                        )
+                    )
+                }, startTime.hours, startTime.getMinutes(), false
+            )
+            dialog.setButton(
+                Dialog.BUTTON_NEUTRAL,
+                view.context.getString(R.string.do_not_know),
+                { _, _ ->
+                    dispatch(EditRepeatingQuestAction.ChangeStartTime(null))
+                })
+            dialog.show()
+        }
     }
 
     private fun renderFrequency(
@@ -208,13 +213,13 @@ class EditRepeatingQuestViewController(args: Bundle? = null) :
         state: EditRepeatingQuestViewState
     ) {
         view.questRepeatPatternValue.text = state.formattedFrequencyType
-    }
-
-    private fun renderName(
-        view: View,
-        state: EditRepeatingQuestViewState
-    ) {
-        view.questName.setText(state.name)
+        view.questFrequencyContainer.setOnClickListener {
+            RepeatingPatternPickerDialogController(
+                state.repeatingPattern,
+                {
+                    dispatch(EditRepeatingQuestAction.ChangeRepeatingPattern(it))
+                }).showDialog(router, "repeating-pattern")
+        }
     }
 
     override fun onAttach(view: View) {

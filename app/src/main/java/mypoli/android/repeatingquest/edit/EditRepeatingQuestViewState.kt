@@ -32,6 +32,7 @@ sealed class EditRepeatingQuestAction : Action {
     data class ChangeReminder(val reminder: ReminderViewModel?) : EditRepeatingQuestAction()
     data class ChangeName(val name: String) : EditRepeatingQuestAction()
     object Save : EditRepeatingQuestAction()
+    data class ChangeColor(val color: Color) : EditRepeatingQuestAction()
 }
 
 
@@ -101,6 +102,13 @@ object EditRepeatingQuestReducer : BaseViewStateReducer<EditRepeatingQuestViewSt
                 )
             }
 
+            is EditRepeatingQuestAction.ChangeColor -> {
+                subState.copy(
+                    type = COLOR_CHANGED,
+                    color = action.color
+                )
+            }
+
             else -> subState
         }
 
@@ -134,12 +142,13 @@ data class EditRepeatingQuestViewState(
     enum class StateType {
         LOADING,
         DATA_LOADED,
-        CHANGED,
         REPEATING_PATTERN_CHANGED,
         START_TIME_CHANGED,
         DURATION_CHANGED,
         REMINDER_CHANGED,
-        NAME_CHANGED
+        NAME_CHANGED,
+        COLOR_CHANGED,
+        ICON_CHANGED
     }
 }
 
