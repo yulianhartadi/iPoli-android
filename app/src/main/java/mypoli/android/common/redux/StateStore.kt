@@ -1,7 +1,6 @@
 package mypoli.android.common.redux
 
 import kotlinx.coroutines.experimental.launch
-import mypoli.android.common.NamespaceAction
 import mypoli.android.common.UIAction
 import mypoli.android.common.mvi.ViewState
 import mypoli.android.common.redux.MiddleWare.Result.Continue
@@ -125,8 +124,8 @@ class StateStore<S : CompositeState<S>>(
     }
 
     private fun executeSideEffects(action: Action) {
-        val a = (action as? NamespaceAction)?.source ?: action
-
+//        val a = (action as? NamespaceAction)?.source ?: action
+        val a = action
         sideEffects
             .filter {
                 it.canHandle(a)

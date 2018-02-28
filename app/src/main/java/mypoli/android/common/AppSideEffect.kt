@@ -76,16 +76,20 @@ class DayViewSideEffect : AppSideEffect() {
     private val saveQuestUseCase by required { saveQuestUseCase }
 
     override suspend fun doExecute(action: Action, state: AppState) {
-        when (action) {
+        val a = (action as? NamespaceAction)?.source ?: action
+        when (a) {
             DayViewAction.AddQuest -> {
-                val dayViewState = state.stateFor(DayViewState::class.java)
+
+                val dayViewState: DayViewState = state.stateFor(
+                    "${(action as NamespaceAction).namespace}/${DayViewState::class.java.simpleName}"
+                )
                 val color = Color.valueOf(dayViewState.color!!.name)
 
                 val icon = dayViewState.icon?.let {
                     Icon.valueOf(it.name)
                 }
 
-                val scheduledDate = dayViewState.scheduledDate!! //?: state.currentDate
+                val scheduledDate = dayViewState.scheduledDate ?: dayViewState.currentDate
                 val reminder = if (dayViewState.reminder != null) {
                     createQuestReminder(
                         dayViewState.reminder,
@@ -139,7 +143,10 @@ class DayViewSideEffect : AppSideEffect() {
             )
         }
 
-    override fun canHandle(action: Action) = action is DayViewAction
+    override fun canHandle(action: Action): Boolean {
+        val a = (action as? NamespaceAction)?.source ?: action
+        return a is DayViewAction
+    }
 }
 
 class CompleteQuestSideEffect : AppSideEffect() {
@@ -166,9 +173,11 @@ class CompleteQuestSideEffect : AppSideEffect() {
 
     }
 
-    override fun canHandle(action: Action) =
-        action is DayViewAction.CompleteQuest
-            || action is DayViewAction.UndoCompleteQuest
+    override fun canHandle(action: Action): Boolean {
+        val a = (action as? NamespaceAction)?.source ?: action
+        return a is DayViewAction.CompleteQuest
+            || a is DayViewAction.UndoCompleteQuest
+    }
 }
 
 class BuyPredefinedChallengeSideEffect : AppSideEffect() {
