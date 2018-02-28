@@ -29,6 +29,7 @@ class CalendarViewController(args: Bundle? = null) :
     private var dayViewPagerAdapter: DayViewPagerAdapter? = null
 
     private val pageChangeListener = object : ViewPager.SimpleOnPageChangeListener() {
+
         override fun onPageSelected(position: Int) {
             dispatch(CalendarAction.SwipeChangeDate(position))
         }
@@ -60,6 +61,7 @@ class CalendarViewController(args: Bundle? = null) :
 
             CalendarViewState.StateType.SWIPE_DATE_CHANGED -> {
                 updateDayViewPagerAdapter(state)
+                dispatch(CalendarAction.ChangeVisibleDate(state.currentDate))
             }
         }
     }

@@ -9,10 +9,8 @@ import com.couchbase.lite.DatabaseConfiguration
 import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.experimental.CommonPool
 import kotlinx.coroutines.experimental.Job
-import mypoli.android.auth.AuthReducer
 import mypoli.android.challenge.PersonalizeChallengePresenter
 import mypoli.android.challenge.category.ChallengeCategoryListPresenter
-import mypoli.android.challenge.category.list.ChallengeListForCategoryReducer
 import mypoli.android.challenge.usecase.BuyChallengeUseCase
 import mypoli.android.challenge.usecase.ScheduleChallengeUseCase
 import mypoli.android.common.*
@@ -23,19 +21,16 @@ import mypoli.android.common.view.ColorPickerPresenter
 import mypoli.android.common.view.CurrencyConverterPresenter
 import mypoli.android.common.view.IconPickerDialogPresenter
 import mypoli.android.common.view.PetMessagePresenter
-import mypoli.android.home.HomeReducer
 import mypoli.android.pet.AndroidJobLowerPetStatsScheduler
 import mypoli.android.pet.LowerPetStatsScheduler
 import mypoli.android.pet.PetDialogPresenter
 import mypoli.android.pet.PetPresenter
-import mypoli.android.pet.store.PetStoreReducer
 import mypoli.android.pet.usecase.*
 import mypoli.android.player.AndroidLevelDownScheduler
 import mypoli.android.player.AndroidLevelUpScheduler
 import mypoli.android.player.LevelDownScheduler
 import mypoli.android.player.LevelUpScheduler
 import mypoli.android.player.auth.saga.AuthSideEffect
-import mypoli.android.player.inventory.GemInventoryReducer
 import mypoli.android.player.persistence.FirestorePlayerRepository
 import mypoli.android.player.persistence.PlayerRepository
 import mypoli.android.player.usecase.*
@@ -47,14 +42,9 @@ import mypoli.android.quest.job.AndroidJobQuestCompleteScheduler
 import mypoli.android.quest.job.AndroidJobReminderScheduler
 import mypoli.android.quest.job.QuestCompleteScheduler
 import mypoli.android.quest.job.ReminderScheduler
-import mypoli.android.quest.schedule.ScheduleReducer
 import mypoli.android.quest.schedule.addquest.AddQuestPresenter
-import mypoli.android.quest.schedule.agenda.AgendaReducer
 import mypoli.android.quest.schedule.agenda.usecase.CreateAgendaItemsUseCase
 import mypoli.android.quest.schedule.agenda.usecase.FindAgendaDatesUseCase
-import mypoli.android.quest.schedule.calendar.CalendarReducer
-import mypoli.android.quest.schedule.calendar.dayview.DayViewPresenter
-import mypoli.android.quest.schedule.calendar.dayview.view.DayViewReducer
 import mypoli.android.quest.usecase.*
 import mypoli.android.quest.view.QuestCompletePresenter
 import mypoli.android.rate.AndroidRatePopupScheduler
@@ -63,10 +53,9 @@ import mypoli.android.rate.RatePresenter
 import mypoli.android.reminder.view.formatter.ReminderTimeFormatter
 import mypoli.android.reminder.view.formatter.TimeUnitFormatter
 import mypoli.android.reminder.view.picker.ReminderPickerDialogPresenter
-import mypoli.android.repeatingquest.edit.EditRepeatingQuestReducer
-import mypoli.android.repeatingquest.list.RepeatingQuestListReducer
 import mypoli.android.repeatingquest.persistence.FirestoreRepeatingQuestRepository
 import mypoli.android.repeatingquest.persistence.RepeatingQuestRepository
+
 import mypoli.android.repeatingquest.picker.RepeatingPatternReducer
 import mypoli.android.repeatingquest.show.RepeatingQuestReducer
 import mypoli.android.repeatingquest.usecase.FindNextDateForRepeatingQuestUseCase
@@ -381,7 +370,6 @@ interface UseCaseModule {
 }
 
 interface PresenterModule {
-    val dayViewPresenter: DayViewPresenter
     val reminderPickerPresenter: ReminderPickerDialogPresenter
     val addQuestPresenter: AddQuestPresenter
     val petPresenter: PetPresenter
@@ -438,17 +426,6 @@ class AndroidPresenterModule : PresenterModule, Injects<Module> {
     private val addTimerToQuestUseCase by required { addTimerToQuestUseCase }
     private val saveRepeatingQuestUseCase by required { saveRepeatingQuestUseCase }
     private val job by required { job }
-    override val dayViewPresenter
-        get() = DayViewPresenter(
-            loadScheduleForDateUseCase,
-            saveQuestUseCase,
-            removeQuestUseCase,
-            undoRemoveQuestUseCase,
-            completeQuestUseCase,
-            undoCompleteQuestUseCase,
-            completeTimeRangeUseCase,
-            job
-        )
     override val reminderPickerPresenter
         get() = ReminderPickerDialogPresenter(
             reminderTimeFormatter,
@@ -555,24 +532,11 @@ class AndroidStateStoreModule : StateStoreModule, Injects<Module> {
         StateStore(
             initialState = AppState(
                 data = mapOf(
-                    AppDataState::class.java to AppDataReducer.defaultState()
+                    AppDataState::class.java.simpleName to AppDataReducer.defaultState()
                 )
             ),
             reducers = setOf(
-                AppDataReducer,
-                HomeReducer,
-                CalendarReducer,
-                ScheduleReducer,
-                AgendaReducer,
-                PetStoreReducer,
-                AuthReducer,
-                RepeatingQuestListReducer,
-                ChallengeListForCategoryReducer,
-                GemInventoryReducer,
-                RepeatingPatternReducer,
-                RepeatingQuestReducer,
-                EditRepeatingQuestReducer,
-                DayViewReducer
+                AppDataReducer
             ),
             sideEffects = setOf(
                 LoadAllDataSideEffect(),
@@ -580,7 +544,9 @@ class AndroidStateStoreModule : StateStoreModule, Injects<Module> {
                 AgendaSideEffect(),
                 BuyPredefinedChallengeSideEffect(),
                 ChangePetSideEffect(),
-                BuyPetSideEffect()
+                BuyPetSideEffect(),
+                DayViewSideEffect(),
+                CompleteQuestSideEffect()
             ),
             sideEffectExecutor = CoroutineSideEffectExecutor(job + CommonPool)
         )

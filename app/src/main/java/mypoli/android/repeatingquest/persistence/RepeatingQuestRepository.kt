@@ -91,7 +91,7 @@ class FirestoreRepeatingQuestRepository(
             duration = rq.duration,
             reminder = rq.reminder?.let {
                 val cr = DbReminder(it)
-                Reminder(cr.message, Time.of(cr.minute), cr.date.startOfDayUTC)
+                Reminder(cr.message, Time.of(cr.minute), cr.date?.startOfDayUTC)
             },
             repeatingPattern = createRepeatingPattern(DbRepeatingPattern(rq.repeatingPattern))
         )
@@ -217,7 +217,7 @@ class FirestoreRepeatingQuestRepository(
     private fun createDbReminder(reminder: Reminder): DbReminder {
         val cr = DbReminder()
         cr.message = reminder.message
-        cr.date = reminder.remindDate.startOfDayUTC()
+        cr.date = reminder.remindDate?.startOfDayUTC()
         cr.minute = reminder.remindTime.toMinuteOfDay()
         return cr
     }

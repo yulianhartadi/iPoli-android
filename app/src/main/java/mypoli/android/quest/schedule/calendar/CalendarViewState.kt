@@ -5,7 +5,6 @@ import mypoli.android.common.BaseViewStateReducer
 import mypoli.android.common.mvi.ViewState
 import mypoli.android.common.redux.Action
 import mypoli.android.quest.schedule.ScheduleAction
-import mypoli.android.quest.schedule.ScheduleViewState
 import org.threeten.bp.LocalDate
 
 /**
@@ -23,23 +22,31 @@ object CalendarReducer : BaseViewStateReducer<CalendarViewState>() {
         action: Action
     ): CalendarViewState {
 
-        val calendarState = subState
-            .copy(currentDate = state.stateFor(ScheduleViewState::class.java).currentDate)
-
         return when (action) {
             is CalendarAction.SwipeChangeDate -> {
-                calendarState.copy(
+
+                val currentPos = subState.adapterPosition
+                val newPos = action.adapterPosition
+                val currentDate = state.dataState.visibleDate
+                val newDate = if (newPos < currentPos)
+                    currentDate.minusDays(1)
+                else
+                    currentDate.plusDays(1)
+
+                subState.copy(
                     type = CalendarViewState.StateType.SWIPE_DATE_CHANGED,
-                    adapterPosition = action.adapterPosition
+                    adapterPosition = action.adapterPosition,
+                    currentDate = newDate
                 )
             }
             is ScheduleAction.ScheduleChangeDate -> {
-                calendarState.copy(
+                subState.copy(
                     type = CalendarViewState.StateType.CALENDAR_DATE_CHANGED,
-                    adapterPosition = MID_POSITION
+                    adapterPosition = MID_POSITION,
+                    currentDate = action.date
                 )
             }
-            else -> calendarState
+            else -> subState
         }
     }
 
@@ -57,6 +64,7 @@ object CalendarReducer : BaseViewStateReducer<CalendarViewState>() {
 
 sealed class CalendarAction : Action {
     data class SwipeChangeDate(val adapterPosition: Int) : CalendarAction()
+    data class ChangeVisibleDate(val date: LocalDate) : CalendarAction()
 }
 
 data class CalendarViewState(

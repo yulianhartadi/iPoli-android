@@ -25,7 +25,7 @@ class SnoozeQuestUseCase(
         val newQuest = questRepository.findById(parameters)!!.let {
             val (scheduledDate, startTime) = calculateNewDateTime(it.scheduledDate, it.startTime!!)
             val (remindDate, remindTime) = calculateNewDateTime(
-                it.reminder!!.remindDate,
+                it.reminder!!.remindDate!!,
                 it.reminder.remindTime
             )
 

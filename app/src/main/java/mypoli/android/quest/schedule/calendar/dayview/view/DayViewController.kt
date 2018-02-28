@@ -32,7 +32,6 @@ import mypoli.android.common.datetime.DateUtils
 import mypoli.android.common.datetime.Time
 import mypoli.android.common.datetime.isNotEqual
 import mypoli.android.common.datetime.startOfDayUTC
-import mypoli.android.common.mvi.Intent
 import mypoli.android.common.redux.android.ReduxViewController
 import mypoli.android.common.view.*
 import mypoli.android.quest.CompletedQuestViewController
@@ -40,15 +39,15 @@ import mypoli.android.quest.Icon
 import mypoli.android.quest.schedule.calendar.CalendarViewController
 import mypoli.android.quest.schedule.calendar.dayview.view.DayViewState.StateType.*
 import mypoli.android.quest.schedule.calendar.dayview.view.widget.*
+import mypoli.android.quest.toMinutesFromStart
 import mypoli.android.reminder.view.picker.ReminderPickerDialogController
 import mypoli.android.reminder.view.picker.ReminderViewModel
 import mypoli.android.timer.TimerViewController
 import org.threeten.bp.LocalDate
-import timber.log.Timber
+import java.util.*
 
 class DayViewController :
     ReduxViewController<DayViewAction, DayViewState, DayViewReducer>,
-//    MviViewController<DayViewState, DayViewController, DayViewPresenter, DayViewIntent>,
     CalendarDayView.CalendarChangeListener {
 
     private lateinit var currentDate: LocalDate
@@ -67,15 +66,17 @@ class DayViewController :
 
     private var datePickedListener: () -> Unit = {}
 
+    private lateinit var calendarDayView: CalendarDayView
+
+    override var namespace: String? = UUID.randomUUID().toString()
+
+    override val reducer = DayViewReducer(namespace!!)
+
     constructor(currentDate: LocalDate) : this() {
         this.currentDate = currentDate
     }
 
     constructor(args: Bundle? = null) : super(args)
-
-    private lateinit var calendarDayView: CalendarDayView
-
-    override val reducer = DayViewReducer
 
     override fun onSaveViewState(view: View, outState: Bundle) {
         outState.putLong("current_date", currentDate.startOfDayUTC())
@@ -108,9 +109,8 @@ class DayViewController :
         return view
     }
 
-    override fun onCreateLoadAction(): DayViewAction? {
-        return DayViewAction.Load(currentDate)
-    }
+    override fun onCreateLoadAction() =
+        DayViewAction.Load(currentDate)
 
     override fun onAttach(view: View) {
         super.onAttach(view)
@@ -130,6 +130,9 @@ class DayViewController :
     }
 
     override fun render(state: DayViewState, view: View) {
+        val color = state.color?.androidColor
+        val icon = state.icon?.androidIcon
+
         when (state.type) {
             SCHEDULE_LOADED -> {
                 eventsAdapter =
@@ -142,11 +145,10 @@ class DayViewController :
             }
 
             ADD_NEW_SCHEDULED_QUEST -> {
-
-                colorPickListener = { showColorPicker(state.color) }
-                iconPickedListener = { showIconPicker(state.icon) }
+                colorPickListener = { showColorPicker(color) }
+                iconPickedListener = { showIconPicker(icon) }
                 reminderPickedListener = { showReminderPicker(state.reminder) }
-                datePickedListener = { showDatePicker(state.scheduledDate ?: state.currentDate) }
+                datePickedListener = { showDatePicker(state.scheduledDate ?: currentDate) }
 
                 startActionMode()
                 (parentController as CalendarViewController).onStartEdit()
@@ -154,14 +156,14 @@ class DayViewController :
                 dragView.dragStartTime.visibility = View.VISIBLE
                 dragView.dragEndTime.visibility = View.VISIBLE
                 startEditScheduledEvent(dragView, state.startTime!!, state.endTime!!)
-                setupDragViewUI(dragView, state.name, state.color!!, state.icon)
+                setupDragViewUI(dragView, state.name, color!!, icon)
             }
 
             START_EDIT_SCHEDULED_QUEST -> {
-                colorPickListener = { showColorPicker(state.color) }
-                iconPickedListener = { showIconPicker(state.icon) }
+                colorPickListener = { showColorPicker(color) }
+                iconPickedListener = { showIconPicker(icon) }
                 reminderPickedListener = { showReminderPicker(state.reminder) }
-                datePickedListener = { showDatePicker(state.scheduledDate ?: state.currentDate) }
+                datePickedListener = { showDatePicker(state.scheduledDate ?: currentDate) }
 
                 startActionMode()
                 (parentController as CalendarViewController).onStartEdit()
@@ -169,21 +171,21 @@ class DayViewController :
                 dragView.dragStartTime.visibility = View.VISIBLE
                 dragView.dragEndTime.visibility = View.VISIBLE
                 startEditScheduledEvent(dragView, state.startTime!!, state.endTime!!)
-                setupDragViewUI(dragView, state.name, state.color!!, state.icon, state.reminder)
+                setupDragViewUI(dragView, state.name, color!!, icon, state.reminder)
             }
 
             START_EDIT_UNSCHEDULED_QUEST -> {
-                colorPickListener = { showColorPicker(state.color) }
-                iconPickedListener = { showIconPicker(state.icon) }
+                colorPickListener = { showColorPicker(color) }
+                iconPickedListener = { showIconPicker(icon) }
                 reminderPickedListener = { showReminderPicker(state.reminder) }
-                datePickedListener = { showDatePicker(state.scheduledDate ?: state.currentDate) }
+                datePickedListener = { showDatePicker(state.scheduledDate ?: currentDate) }
 
                 startActionMode()
                 (parentController as CalendarViewController).onStartEdit()
                 val dragView = view.dragContainer
                 dragView.dragStartTime.visibility = View.GONE
                 dragView.dragEndTime.visibility = View.GONE
-                setupDragViewUI(dragView, state.name, state.color!!, state.icon, state.reminder)
+                setupDragViewUI(dragView, state.name, color!!, icon, state.reminder)
             }
 
             EVENT_UPDATED -> {
@@ -203,7 +205,7 @@ class DayViewController :
             EVENT_REMOVED -> {
                 PetMessagePopup(
                     stringRes(R.string.remove_quest_undo_message),
-                    { sendUndoRemovedEventIntent(state.removedEventId) }
+                    { dispatch(DayViewAction.UndoRemoveQuest(state.removedEventId))}
                 ).show(view.context)
             }
 
@@ -212,27 +214,27 @@ class DayViewController :
             }
 
             COLOR_PICKED -> {
-                colorPickListener = { showColorPicker(state.color) }
+                colorPickListener = { showColorPicker(color) }
                 val dragView = view.dragContainer
                 ObjectAnimator.ofArgb(
                     dragView,
                     "backgroundColor",
                     (dragView.background as ColorDrawable).color,
-                    ContextCompat.getColor(dragView.context, state.color!!.color500)
+                    ContextCompat.getColor(dragView.context, color!!.color500)
                 )
                     .setDuration(dragView.context.resources.getInteger(android.R.integer.config_longAnimTime).toLong())
                     .start()
             }
 
             ICON_PICKED -> {
-                iconPickedListener = { showIconPicker(state.icon) }
+                iconPickedListener = { showIconPicker(icon) }
                 val dragIcon = view.dragContainer.dragIcon
-                if (state.icon == null) {
+                if (icon == null) {
                     dragIcon.setImageDrawable(null)
                 } else {
                     dragIcon.setImageDrawable(
                         IconicsDrawable(dragIcon.context)
-                            .icon(state.icon.icon)
+                            .icon(icon.icon)
                             .colorRes(R.color.md_white)
                             .sizeDp(24)
                     )
@@ -246,10 +248,10 @@ class DayViewController :
             }
 
             EDIT_QUEST -> {
-                colorPickListener = { showColorPicker(state.color) }
-                iconPickedListener = { showIconPicker(state.icon) }
+                colorPickListener = { showColorPicker(color) }
+                iconPickedListener = { showIconPicker(icon) }
                 reminderPickedListener = { showReminderPicker(state.reminder) }
-                datePickedListener = { showDatePicker(state.scheduledDate ?: state.currentDate) }
+                datePickedListener = { showDatePicker(state.scheduledDate ?: currentDate) }
                 startActionMode()
             }
 
@@ -274,7 +276,7 @@ class DayViewController :
             }
 
             DATE_PICKED -> {
-                datePickedListener = { showDatePicker(state.scheduledDate ?: state.currentDate) }
+                datePickedListener = { showDatePicker(state.scheduledDate ?: currentDate) }
             }
         }
     }
@@ -293,10 +295,6 @@ class DayViewController :
             layoutParams.height = layoutParams.height - itemHeight / 2
         }
         view.unscheduledEvents.layoutParams = layoutParams
-    }
-
-    private fun sendUndoRemovedEventIntent(eventId: String) {
-        send(UndoRemoveEventIntent(eventId))
     }
 
     private fun startEditScheduledEvent(dragView: View, startTime: Time, endTime: Time) {
@@ -319,7 +317,7 @@ class DayViewController :
     }
 
     override fun onStartEditNewScheduledEvent(startTime: Time, duration: Int) {
-        send(AddNewScheduledQuestIntent(startTime, duration))
+        dispatch(DayViewAction.AddNewScheduledQuest(startTime, duration))
     }
 
     private fun setupDragViewUI(
@@ -358,7 +356,7 @@ class DayViewController :
             }
 
             override fun onTextChanged(text: CharSequence?, start: Int, before: Int, count: Int) {
-                send(ChangeEditViewNameIntent(text.toString()))
+                dispatch(DayViewAction.ChangeEditViewName(text.toString()))
             }
 
         })
@@ -375,15 +373,15 @@ class DayViewController :
 
     override fun onRemoveEvent(eventId: String) {
         onStopEditMode()
-        send(RemoveEventIntent(eventId))
+        dispatch(DayViewAction.RemoveQuest(eventId))
     }
 
     override fun onMoveEvent(startTime: Time?, endTime: Time?) {
-        send(DragMoveViewIntent(startTime, endTime))
+        dispatch(DayViewAction.DragMoveView(startTime, endTime))
     }
 
     override fun onResizeEvent(startTime: Time?, endTime: Time?, duration: Int) {
-        send(DragResizeViewIntent(startTime, endTime, duration))
+        dispatch(DayViewAction.DragResizeView(startTime, endTime, duration))
     }
 
     override fun onZoomEvent(adapterView: View) {
@@ -394,19 +392,19 @@ class DayViewController :
     }
 
     override fun onAddEvent() {
-        send(AddQuestIntent)
+        dispatch(DayViewAction.AddQuest)
     }
 
     override fun onEditCalendarEvent() {
-        send(EditQuestIntent)
+        dispatch(DayViewAction.EditQuest)
     }
 
     override fun onEditUnscheduledCalendarEvent() {
-        send(EditQuestIntent)
+        dispatch(DayViewAction.EditQuest)
     }
 
     override fun onEditUnscheduledEvent() {
-        send(EditUnscheduledQuestIntent)
+        dispatch(DayViewAction.EditUnscheduledQuest)
     }
 
     private fun startActionMode() {
@@ -450,7 +448,7 @@ class DayViewController :
         DatePickerDialog(
             view!!.context, R.style.Theme_myPoli_AlertDialog,
             DatePickerDialog.OnDateSetListener { _, year, month, dayOfMonth ->
-                send(DayViewIntent.DatePicked(year, month + 1, dayOfMonth))
+                dispatch(DayViewAction.DatePicked(LocalDate.of(year, month + 1, dayOfMonth)))
             }, selectedDate.year, selectedDate.month.value - 1, selectedDate.dayOfMonth
         ).show()
     }
@@ -459,7 +457,7 @@ class DayViewController :
         ReminderPickerDialogController(object :
             ReminderPickerDialogController.ReminderPickedListener {
             override fun onReminderPicked(reminder: ReminderViewModel?) {
-                send(ReminderPickedIntent(reminder))
+                dispatch(DayViewAction.ReminderPicked(reminder))
             }
         }, selectedReminder)
             .showDialog(router, "reminder-picker")
@@ -470,14 +468,14 @@ class DayViewController :
             val ic = icon?.let {
                 Icon.valueOf(it.name)
             }
-            send(IconPickedIntent(ic))
+            dispatch(DayViewAction.IconPicked(ic))
         }, selectedIcon).showDialog(router, "icon-picker")
     }
 
     private fun showColorPicker(selectedColor: AndroidColor?) {
         ColorPickerDialogController(object : ColorPickerDialogController.ColorPickedListener {
-            override fun onColorPicked(color: AndroidColor) {
-                send(ColorPickedIntent(color))
+            override fun onColorPicked(androidColor: AndroidColor) {
+                dispatch(DayViewAction.ColorPicked(androidColor.color))
             }
 
         }, selectedColor)
@@ -523,7 +521,7 @@ class DayViewController :
                 if (vm.isStarted) {
                     showShortToast(R.string.validation_timer_running)
                 } else {
-                    send(StartEditScheduledQuestIntent(vm))
+                    dispatch(DayViewAction.StartEditScheduledQuest(vm))
                     calendarDayView.startEventRescheduling(vm)
                 }
                 true
@@ -594,7 +592,7 @@ class DayViewController :
                         }
 
                         override fun onAnimationEnd(animation: Animator?) {
-                            send(CompleteQuestIntent(vm.id, vm.isStarted))
+                            dispatch(DayViewAction.CompleteQuest(vm.id, vm.isStarted))
                         }
 
                     })
@@ -611,7 +609,7 @@ class DayViewController :
 
                         override fun onAnimationEnd(animation: Animator?) {
                             view.completedBackgroundView.visibility = View.INVISIBLE
-                            send(UndoCompleteQuestIntent(vm.id))
+                            dispatch(DayViewAction.UndoCompleteQuest(vm.id))
                         }
                     })
                     anim.start()
@@ -718,7 +716,7 @@ class DayViewController :
                 if (event.isStarted) {
                     showShortToast(R.string.validation_timer_running)
                 } else {
-                    send(StartEditUnscheduledQuestIntent(event))
+                    dispatch(DayViewAction.StartEditUnscheduledQuest(event))
                     calendarDayView.startEventRescheduling(events[adapterPosition])
                 }
                 true
@@ -772,9 +770,9 @@ class DayViewController :
 
             itemView.unscheduledDone.setOnCheckedChangeListener { _, checked ->
                 if (checked) {
-                    send(CompleteQuestIntent(event.id, event.isStarted))
+                    dispatch(DayViewAction.CompleteQuest(event.id, event.isStarted))
                 } else {
-                    send(UndoCompleteQuestIntent(event.id))
+                    dispatch(DayViewAction.UndoCompleteQuest(event.id))
                 }
 
             }
@@ -784,9 +782,6 @@ class DayViewController :
             ContextCompat.getColorStateList(context, color)
     }
 
-    private fun send(context: Intent) {
-    }
-
     private fun showQuest(questId: String) {
         pushWithRootRouter(
             RouterTransaction.with(TimerViewController(questId)).tag(
@@ -794,4 +789,43 @@ class DayViewController :
             )
         )
     }
+
+    private val DayViewState.unscheduledQuests
+        get() = schedule!!.unscheduled.map {
+            val color = it.color.androidColor
+            DayViewController.UnscheduledQuestViewModel(
+                it.id,
+                it.name,
+                it.duration,
+                it.icon?.androidIcon,
+                color,
+                color.color900,
+                it.isCompleted,
+                it.isStarted
+            )
+        }
+
+    private val DayViewState.scheduledQuests
+        get() = schedule!!.scheduled.map { q ->
+            val color = q.color.androidColor
+
+            val reminder = q.reminder?.let {
+                ReminderViewModel(it.message, it.toMinutesFromStart(q.scheduledDate, q.startTime!!))
+            }
+
+            DayViewController.QuestViewModel(
+                q.id,
+                q.name,
+                q.duration,
+                q.startTime!!.toMinuteOfDay(),
+                q.startTime.toString(),
+                q.endTime.toString(),
+                q.icon?.androidIcon,
+                color,
+                color.color900,
+                reminder,
+                q.isCompleted,
+                q.isStarted
+            )
+        }
 }

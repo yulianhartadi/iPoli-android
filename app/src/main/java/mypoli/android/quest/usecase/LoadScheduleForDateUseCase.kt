@@ -11,30 +11,26 @@ import org.threeten.bp.LocalDate
 data class Schedule(val date: LocalDate, val scheduled: List<Quest>, val unscheduled: List<Quest>)
 
 class LoadScheduleForDateUseCase :
-    UseCase<LoadScheduleForDateUseCase.Params, Map<LocalDate, Schedule>> {
+    UseCase<LoadScheduleForDateUseCase.Params, Schedule> {
 
-    override fun execute(parameters: Params): Map<LocalDate, Schedule> {
-        val data = mutableMapOf<LocalDate, Pair<MutableList<Quest>, MutableList<Quest>>>()
+    override fun execute(parameters: Params): Schedule {
+
+        val data = Pair<MutableList<Quest>, MutableList<Quest>>(mutableListOf(), mutableListOf())
 
         for (q in parameters.quests) {
-            if (!data.containsKey(q.scheduledDate)) {
-                data[q.scheduledDate] = Pair(mutableListOf(), mutableListOf())
-            }
+
             if (q.isScheduled) {
-                data[q.scheduledDate]!!.first.add(q)
+                data.first.add(q)
             } else {
-                data[q.scheduledDate]!!.second.add(q)
+                data.second.add(q)
             }
         }
 
-        return data.entries.associate {
-            it.key to Schedule(
-                it.key,
-                it.value.first,
-                it.value.second
-            )
-        }
+        return Schedule(parameters.date, data.first, data.second)
     }
 
-    data class Params(val quests: List<Quest>)
+    data class Params(
+        val date: LocalDate,
+        val quests: List<Quest>
+    )
 }

@@ -5,7 +5,9 @@ import mypoli.android.common.redux.Reducer
 import mypoli.android.common.redux.State
 import mypoli.android.player.Player
 import mypoli.android.quest.Quest
+import mypoli.android.quest.schedule.ScheduleAction
 import mypoli.android.quest.schedule.agenda.usecase.CreateAgendaItemsUseCase
+import mypoli.android.quest.schedule.calendar.CalendarAction
 import mypoli.android.quest.usecase.Schedule
 import mypoli.android.repeatingquest.entity.RepeatingQuest
 import org.threeten.bp.LocalDate
@@ -28,21 +30,22 @@ sealed class DataLoadedAction : Action {
         val currentAgendaItemDate: LocalDate?
     ) : DataLoadedAction()
 
-    data class ScheduledQuestsChanged(val scheduledQuests: Map<LocalDate, Schedule>) :
+    data class ScheduledQuestsChanged(val schedule: Schedule) :
         DataLoadedAction()
 }
 
 data class AppDataState(
     val today: LocalDate,
+    val visibleDate: LocalDate,
     val player: Player?,
     val todayQuests: List<Quest>,
-    val scheduledQuests: Map<LocalDate, Schedule>,
+    val schedule: Schedule?,
     val repeatingQuests: List<RepeatingQuest>
 ) : State
 
 object AppDataReducer : Reducer<AppState, AppDataState> {
 
-    override val stateKey = AppDataState::class.java
+    override val stateKey: String = AppDataState::class.java.simpleName
 
     override fun reduce(state: AppState, subState: AppDataState, action: Action) =
         when (action) {
@@ -53,32 +56,41 @@ object AppDataReducer : Reducer<AppState, AppDataState> {
                 )
             }
 
-            is DataLoadedAction.ScheduledQuestsChanged -> {
+            is DataLoadedAction.ScheduledQuestsChanged ->
                 subState.copy(
-                    scheduledQuests = action.scheduledQuests
+                    schedule = action.schedule
                 )
-            }
 
-            is DataLoadedAction.TodayQuestsChanged -> {
+            is DataLoadedAction.TodayQuestsChanged ->
                 subState.copy(
                     todayQuests = action.quests
                 )
+
+            is ScheduleAction.ScheduleChangeDate ->
+                subState.copy(
+                    visibleDate = action.date
+                )
+
+            is CalendarAction.ChangeVisibleDate -> {
+                subState.copy(
+                    visibleDate = action.date
+                )
             }
 
-            is DataLoadedAction.RepeatingQuestsChanged -> {
+            is DataLoadedAction.RepeatingQuestsChanged ->
                 subState.copy(
                     repeatingQuests = action.repeatingQuests
                 )
-            }
             else -> subState
         }
 
     override fun defaultState(): AppDataState {
         return AppDataState(
             today = LocalDate.now(),
+            visibleDate = LocalDate.now(),
             player = null,
             todayQuests = listOf(),
-            scheduledQuests = mapOf(),
+            schedule = null,
             repeatingQuests = listOf()
         )
     }

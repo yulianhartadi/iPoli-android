@@ -8,13 +8,18 @@ import com.bluelinelabs.conductor.RestoreViewOnCreateController
 import kotlinx.coroutines.experimental.android.UI
 import kotlinx.coroutines.experimental.launch
 import mypoli.android.common.AppState
+import mypoli.android.common.NamespaceAction
 import mypoli.android.common.UIAction
 import mypoli.android.common.di.Module
 import mypoli.android.common.mvi.ViewState
 import mypoli.android.common.redux.Action
 import mypoli.android.common.redux.StateStore
 import mypoli.android.common.redux.ViewStateReducer
+import mypoli.android.common.view.AndroidColor
+import mypoli.android.common.view.AndroidIcon
 import mypoli.android.myPoliApp
+import mypoli.android.quest.Color
+import mypoli.android.quest.Icon
 import space.traversal.kapsule.Injects
 import space.traversal.kapsule.inject
 import space.traversal.kapsule.required
@@ -29,6 +34,8 @@ abstract class ReduxViewController<A : Action, VS : ViewState, out R : ViewState
     StateStore.StateChangeSubscriber<AppState> {
 
     private val stateStore by required { stateStore }
+
+    protected open var namespace: String? = null
 
     protected abstract val reducer: R
 
@@ -46,7 +53,7 @@ abstract class ReduxViewController<A : Action, VS : ViewState, out R : ViewState
                 stateStore.dispatch(UIAction.Attach(reducer))
                 stateStore.subscribe(this@ReduxViewController)
                 onCreateLoadAction()?.let {
-                    stateStore.dispatch(it)
+                    dispatch(it)
                 }
             }
 
@@ -60,14 +67,17 @@ abstract class ReduxViewController<A : Action, VS : ViewState, out R : ViewState
     }
 
     fun dispatch(action: A) {
-        stateStore.dispatch(action)
+        val a = namespace?.let {
+
+            NamespaceAction(action, it)
+        } ?: action
+        stateStore.dispatch(a)
     }
 
     override fun onStateChanged(newState: AppState) {
-        val viewState = newState.stateFor(reducer.stateKey)
+        val viewState = newState.stateFor<VS>(reducer.stateKey)
         if (viewState != currentState) {
             currentState = viewState
-
             launch(UI) {
                 onRenderViewState(viewState)
             }
@@ -94,4 +104,16 @@ abstract class ReduxViewController<A : Action, VS : ViewState, out R : ViewState
             block()
         }
     }
+
+    protected val Color.androidColor: AndroidColor
+        get() = AndroidColor.valueOf(this.name)
+
+    protected val AndroidColor.color: Color
+        get() = Color.valueOf(this.name)
+
+    protected val Icon.androidIcon: AndroidIcon
+        get() = AndroidIcon.valueOf(this.name)
+
+    protected val AndroidIcon.toIcon: Icon
+        get() = Icon.valueOf(this.name)
 }

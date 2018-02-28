@@ -43,10 +43,14 @@ class CoroutineSideEffectExecutor<S : CompositeState<S>>(
 }
 
 abstract class CompositeState<T>(
-    private val stateData: Map<Class<*>, State>
+    private val stateData: Map<String, State>
 ) : State where T : CompositeState<T> {
 
     fun <S> stateFor(key: Class<S>): S {
+        return stateFor(key.simpleName)
+    }
+
+    fun <S> stateFor(key: String): S {
 
         require(stateData.containsKey(key))
 
@@ -56,18 +60,18 @@ abstract class CompositeState<T>(
         return data as S
     }
 
-    fun update(stateKey: Class<*>, newState: State) =
+    fun update(stateKey: String, newState: State) =
         createWithData(stateData.plus(Pair(stateKey, newState)))
 
-    fun update(stateData: Map<Class<*>, State>) =
+    fun update(stateData: Map<String, State>) =
         createWithData(stateData.plus(stateData))
 
-    fun remove(stateKey: Class<*>) =
+    fun remove(stateKey: String) =
         createWithData(stateData.minus(stateKey))
 
     val keys = stateData.keys
 
-    protected abstract fun createWithData(stateData: Map<Class<*>, State>): T
+    protected abstract fun createWithData(stateData: Map<String, State>): T
 }
 
 interface Reducer<AS : CompositeState<AS>, S : State> {
@@ -79,7 +83,7 @@ interface Reducer<AS : CompositeState<AS>, S : State> {
 
     fun defaultState(): S
 
-    val stateKey: Class<S>
+    val stateKey: String
 }
 
 interface ViewStateReducer<S : CompositeState<S>, VS : ViewState> : Reducer<S, VS>
@@ -103,7 +107,8 @@ class StateStore<S : CompositeState<S>>(
     private var state = initialState
 
     private val middleWare = CompositeMiddleware(middleware)
-    private val reducer = CompositeReducer(reducers)
+    private val reducer = CompositeReducer()
+    private val stateReducers = CopyOnWriteArraySet<Reducer<S, *>>(reducers)
     private val stateChangeSubscribers = CopyOnWriteArraySet<StateChangeSubscriber<S>>()
 
     override fun <A : Action> dispatch(action: A) {
@@ -119,10 +124,14 @@ class StateStore<S : CompositeState<S>>(
     }
 
     private fun executeSideEffects(action: Action) {
+//        val a = (action as? NamespaceAction)?.source ?: action
+        val a = action
         sideEffects
-            .filter { it.canHandle(action) }
+            .filter {
+                it.canHandle(a)
+            }
             .forEach {
-                sideEffectExecutor.execute(it, action, state, this)
+                sideEffectExecutor.execute(it, a, state, this)
             }
     }
 
@@ -142,28 +151,33 @@ class StateStore<S : CompositeState<S>>(
     }
 
 
-    class CompositeReducer<S : CompositeState<S>>(reducers: Set<Reducer<S, *>>) {
-
-        private val stateToReducer = reducers.map { it.stateKey to it }.toMap()
+    inner class CompositeReducer {
 
         fun reduce(state: S, action: Action): S {
-
             if (action is UIAction.Attach<*>) {
                 val stateKey = action.reducer.stateKey
                 require(
-                    stateToReducer.contains(stateKey),
-                    { "Have you added the reducer ${action.reducer} to the store?" })
-                val reducer = stateToReducer[stateKey]!!
+                    !state.keys.contains(stateKey),
+                    { "Key $stateKey is already added to the state?!" })
+                val reducer = action.reducer
+                stateReducers.add(reducer as Reducer<S, *>)
                 return state.update(stateKey, reducer.defaultState())
             }
 
             if (action is UIAction.Detach<*>) {
                 val stateKey = action.reducer.stateKey
-                require(stateToReducer.contains(stateKey))
-                require(state.keys.contains(stateKey))
+                val reducer = action.reducer as Reducer<S, *>
+                require(
+                    stateReducers.contains(reducer),
+                    { "Reducer $reducer not found in state reducers" })
+                require(
+                    state.keys.contains(stateKey),
+                    { "State with key $stateKey not found in state" })
+                stateReducers.remove(reducer)
                 return state.remove(stateKey)
             }
 
+            val stateToReducer = stateReducers.map { it.stateKey to it }.toMap()
             val newState = state.keys.map {
                 val reducer = stateToReducer[it]!!
                 val subState = reducer.reduce(state, action)

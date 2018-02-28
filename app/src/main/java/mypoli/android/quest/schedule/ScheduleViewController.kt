@@ -234,9 +234,11 @@ class ScheduleViewController(args: Bundle? = null) :
             override fun onDateClick(v: View, date: DateData) {
                 dispatch(
                     ScheduleAction.ScheduleChangeDate(
-                        date.year,
-                        date.month,
-                        date.day
+                        LocalDate.of(
+                            date.year,
+                            date.month,
+                            date.day
+                        )
                     )
                 )
             }

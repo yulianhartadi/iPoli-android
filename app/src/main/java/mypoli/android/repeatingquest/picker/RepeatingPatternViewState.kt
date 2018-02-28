@@ -6,8 +6,9 @@ import mypoli.android.common.BaseViewStateReducer
 import mypoli.android.common.mvi.ViewState
 import mypoli.android.common.redux.Action
 import mypoli.android.pet.AndroidPetAvatar
+import mypoli.android.repeatingquest.entity.FrequencyType
 import mypoli.android.repeatingquest.entity.RepeatingPattern
-import mypoli.android.repeatingquest.picker.RepeatingPatternViewState.FrequencyType.*
+import mypoli.android.repeatingquest.entity.frequencyType
 import mypoli.android.repeatingquest.picker.RepeatingPatternViewState.StateType.*
 import org.threeten.bp.DayOfWeek
 import org.threeten.bp.LocalDate
@@ -43,7 +44,7 @@ object RepeatingPatternReducer : BaseViewStateReducer<RepeatingPatternViewState>
             is RepeatingPatternAction.LoadData -> {
                 val pattern = action.repeatingPattern
                 val frequencyType =
-                    if (pattern != null) frequencyTypeFor(pattern)
+                    if (pattern != null) pattern.frequencyType
                     else subState.frequencyType
 
                 val selectedWeekDays =
@@ -172,10 +173,10 @@ object RepeatingPatternReducer : BaseViewStateReducer<RepeatingPatternViewState>
 
     private fun createRepeatingPattern(state: RepeatingPatternViewState): RepeatingPattern =
         when (state.frequencyType) {
-            DAILY -> {
+            FrequencyType.DAILY -> {
                 RepeatingPattern.Daily(state.startDate, state.endDate)
             }
-            WEEKLY -> {
+            FrequencyType.WEEKLY -> {
                 if (state.isFlexible) {
                     RepeatingPattern.Flexible.Weekly(
                         timesPerWeek = state.weekCountValues[state.weekDaysCountIndex],
@@ -191,7 +192,7 @@ object RepeatingPatternReducer : BaseViewStateReducer<RepeatingPatternViewState>
                     )
                 }
             }
-            MONTHLY -> {
+            FrequencyType.MONTHLY -> {
                 if (state.isFlexible) {
                     RepeatingPattern.Flexible.Monthly(
                         timesPerMonth = state.monthDaysCount,
@@ -207,7 +208,7 @@ object RepeatingPatternReducer : BaseViewStateReducer<RepeatingPatternViewState>
                     )
                 }
             }
-            YEARLY -> {
+            FrequencyType.YEARLY -> {
                 val date = state.dayOfYear
                 RepeatingPattern.Yearly(
                     dayOfMonth = date.dayOfMonth,
@@ -220,38 +221,27 @@ object RepeatingPatternReducer : BaseViewStateReducer<RepeatingPatternViewState>
         }
 
     private fun isFlexible(
-        frequencyType: RepeatingPatternViewState.FrequencyType,
+        frequencyType: FrequencyType,
         state: RepeatingPatternViewState
     ) =
         when (frequencyType) {
-            DAILY -> false
-            YEARLY -> false
-            WEEKLY -> {
+            FrequencyType.DAILY -> false
+            FrequencyType.YEARLY -> false
+            FrequencyType.WEEKLY -> {
                 val daysCount = state.weekCountValues[state.weekDaysCountIndex]
                 daysCount != state.selectedWeekDays.size
             }
-            MONTHLY -> {
+            FrequencyType.MONTHLY -> {
                 val daysCount = state.monthCountValues[state.monthDaysCountIndex]
                 daysCount != state.selectedMonthDays.size
             }
         }
 
     private fun frequencyTypeForIndex(index: Int) =
-        RepeatingPatternViewState.FrequencyType.values()[index]
+        FrequencyType.values()[index]
 
-    private fun frequencyIndexFor(frequencyType: RepeatingPatternViewState.FrequencyType) =
+    private fun frequencyIndexFor(frequencyType: FrequencyType) =
         frequencyType.ordinal
-
-    private fun frequencyTypeFor(pattern: RepeatingPattern) =
-        when (pattern) {
-            is RepeatingPattern.Daily -> DAILY
-            is RepeatingPattern.Weekly -> WEEKLY
-            is RepeatingPattern.Flexible.Weekly -> WEEKLY
-            is RepeatingPattern.Monthly -> MONTHLY
-            is RepeatingPattern.Flexible.Monthly -> MONTHLY
-            is RepeatingPattern.Yearly -> YEARLY
-        }
-
 
     private fun selectedWeekDaysFor(pattern: RepeatingPattern): Set<DayOfWeek> =
         when (pattern) {
@@ -270,7 +260,7 @@ object RepeatingPatternReducer : BaseViewStateReducer<RepeatingPatternViewState>
     override fun defaultState() =
         RepeatingPatternViewState(
             LOADING,
-            DAILY,
+            FrequencyType.DAILY,
             frequencyIndex = 0,
             weekDaysCountIndex = 0,
             monthDaysCountIndex = 0,
@@ -318,13 +308,6 @@ data class RepeatingPatternViewState(
         START_DATE_CHANGED,
         END_DATE_CHANGED,
         PATTERN_CREATED
-    }
-
-    enum class FrequencyType {
-        DAILY,
-        WEEKLY,
-        MONTHLY,
-        YEARLY
     }
 
     val weekDaysCount

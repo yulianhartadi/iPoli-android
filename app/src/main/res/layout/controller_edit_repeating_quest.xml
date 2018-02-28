@@ -19,7 +19,7 @@
         android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar">
 
         <android.support.design.widget.CollapsingToolbarLayout
-            android:id="@+id/toolbar_collapsing_container"
+            android:id="@+id/toolbarCollapsingContainer"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:minHeight="?attr/actionBarSize"
@@ -28,7 +28,7 @@
             app:statusBarScrim="?attr/colorPrimaryDark">
 
             <android.support.design.widget.TextInputLayout
-                android:id="@+id/quest_text_layout"
+                android:id="@+id/questNameLayout"
                 android:layout_width="match_parent"
                 android:layout_height="136dp"
                 android:layout_gravity="center_horizontal"
@@ -38,7 +38,7 @@
                 app:hintTextAppearance="@style/TextAppearance.myPoli.EditText">
 
                 <android.support.design.widget.TextInputEditText
-                    android:id="@+id/quest_text"
+                    android:id="@+id/questName"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:hint="@string/add_quest_name_hint"
@@ -56,7 +56,7 @@
                 app:popupTheme="@style/ThemeOverlay.AppCompat.Light">
 
                 <TextView
-                    android:id="@+id/toolbar_title"
+                    android:id="@+id/toolbarTitle"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_alignParentStart="true"
@@ -72,7 +72,7 @@
     </android.support.design.widget.AppBarLayout>
 
     <android.support.v4.widget.NestedScrollView
-        android:id="@+id/quest_info_container"
+        android:id="@+id/questInfoContainer"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         app:layout_behavior="@string/appbar_scrolling_view_behavior">
@@ -82,17 +82,8 @@
             android:layout_height="wrap_content"
             android:orientation="vertical">
 
-            <!--<io.ipoli.android.app.ui.CategoryView-->
-                <!--android:id="@+id/quest_category"-->
-                <!--android:layout_width="match_parent"-->
-                <!--android:layout_height="wrap_content" />-->
-
-            <!--<android.support.v4.widget.Space-->
-                <!--android:layout_width="match_parent"-->
-                <!--android:layout_height="32dp" />-->
-
             <RelativeLayout
-                android:id="@+id/quest_frequency_container"
+                android:id="@+id/questFrequencyContainer"
                 android:layout_width="match_parent"
                 android:layout_height="60dp"
                 android:layout_gravity="center_horizontal"
@@ -100,7 +91,7 @@
                 android:clickable="true">
 
                 <ImageView
-                    android:id="@+id/quest_repeat_pattern_icon"
+                    android:id="@+id/questRepeatPatternIcon"
                     android:layout_width="24dp"
                     android:layout_height="24dp"
                     android:layout_alignParentStart="true"
@@ -113,18 +104,18 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_centerVertical="true"
-                    android:layout_toEndOf="@id/quest_repeat_pattern_icon"
+                    android:layout_toEndOf="@id/questRepeatPatternIcon"
                     android:orientation="vertical">
 
                     <TextView
-                        android:id="@+id/quest_repeat_pattern_question"
+                        android:id="@+id/questRepeatPatternQuestion"
                         style="@style/TextAppearance.AppCompat.Body1"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="@string/quest_repeat_pattern_question" />
 
                     <TextView
-                        android:id="@+id/quest_repeat_pattern_value"
+                        android:id="@+id/questRepeatPatternValue"
                         style="@style/TextAppearance.AppCompat.Caption"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content" />
@@ -132,7 +123,7 @@
             </RelativeLayout>
 
             <RelativeLayout
-                android:id="@+id/quest_start_time_container"
+                android:id="@+id/questStartTimeContainer"
                 android:layout_width="match_parent"
                 android:layout_height="60dp"
                 android:layout_gravity="center_horizontal"
@@ -140,7 +131,7 @@
                 android:clickable="true">
 
                 <ImageView
-                    android:id="@+id/quest_start_time_icon"
+                    android:id="@+id/questStartTimeIcon"
                     android:layout_width="24dp"
                     android:layout_height="24dp"
                     android:layout_alignParentStart="true"
@@ -153,18 +144,18 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_centerVertical="true"
-                    android:layout_toEndOf="@id/quest_start_time_icon"
+                    android:layout_toEndOf="@id/questStartTimeIcon"
                     android:orientation="vertical">
 
                     <TextView
-                        android:id="@+id/quest_start_time_question"
+                        android:id="@+id/questStartTimeQuestion"
                         style="@style/TextAppearance.AppCompat.Body1"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="@string/quest_start_time_question" />
 
                     <TextView
-                        android:id="@+id/quest_start_time_value"
+                        android:id="@+id/questStartTimeValue"
                         style="@style/TextAppearance.AppCompat.Caption"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content" />
@@ -172,7 +163,7 @@
             </RelativeLayout>
 
             <RelativeLayout
-                android:id="@+id/quest_duration_container"
+                android:id="@+id/questDurationContainer"
                 android:layout_width="match_parent"
                 android:layout_height="60dp"
                 android:layout_gravity="center_horizontal"
@@ -180,7 +171,7 @@
                 android:clickable="true">
 
                 <ImageView
-                    android:id="@+id/quest_duration_icon"
+                    android:id="@+id/questDurationIcon"
                     android:layout_width="24dp"
                     android:layout_height="24dp"
                     android:layout_alignParentStart="true"
@@ -193,18 +184,18 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_centerVertical="true"
-                    android:layout_toEndOf="@id/quest_duration_icon"
+                    android:layout_toEndOf="@id/questDurationIcon"
                     android:orientation="vertical">
 
                     <TextView
-                        android:id="@+id/quest_duration_question"
+                        android:id="@+id/questDurationQuestion"
                         style="@style/TextAppearance.AppCompat.Body1"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="@string/quest_duration_question" />
 
                     <TextView
-                        android:id="@+id/quest_duration_value"
+                        android:id="@+id/questDurationValue"
                         style="@style/TextAppearance.AppCompat.Caption"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content" />
@@ -212,12 +203,15 @@
             </RelativeLayout>
 
             <RelativeLayout
+                android:id="@+id/questReminderContainer"
                 android:layout_width="match_parent"
                 android:layout_height="60dp"
-                android:layout_gravity="center_horizontal">
+                android:layout_gravity="center_horizontal"
+                android:background="?android:attr/selectableItemBackground"
+                android:clickable="true">
 
                 <ImageView
-                    android:id="@+id/quest_reminders_icon"
+                    android:id="@+id/questRemindersIcon"
                     android:layout_width="24dp"
                     android:layout_height="24dp"
                     android:layout_alignParentStart="true"
@@ -230,23 +224,52 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_centerVertical="true"
-                    android:layout_toEndOf="@id/quest_reminders_icon"
+                    android:layout_toEndOf="@id/questRemindersIcon"
                     android:orientation="vertical">
 
                 <TextView
-                    android:id="@+id/quest_reminders_question"
+                    android:id="@+id/questRemindersQuestion"
                     style="@style/TextAppearance.AppCompat.Body1"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="@string/quest_duration_question" />
 
                 <TextView
-                    android:id="@+id/quest_reminder_value"
+                    android:id="@+id/questReminderValue"
                     style="@style/TextAppearance.AppCompat.Caption"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content" />
 
                 </LinearLayout>
+            </RelativeLayout>
+
+            <RelativeLayout
+                android:id="@+id/questColorContainer"
+                android:layout_width="match_parent"
+                android:layout_height="48dp"
+                android:layout_gravity="center_horizontal"
+                android:background="?android:attr/selectableItemBackground"
+                android:clickable="true">
+
+                <ImageView
+                    android:id="@+id/questColorIcon"
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:layout_alignParentStart="true"
+                    android:layout_centerVertical="true"
+                    android:layout_marginEnd="24dp"
+                    android:layout_marginStart="24dp"
+                    android:src="@drawable/ic_color_palette_black_24dp" />
+
+                <TextView
+                    android:id="@+id/questColorQuestion"
+                    style="@style/TextAppearance.AppCompat.Body1"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerVertical="true"
+                    android:text="@string/quest_color_question"
+                    android:layout_toEndOf="@id/questColorIcon" />
+
             </RelativeLayout>
 
         </LinearLayout>
