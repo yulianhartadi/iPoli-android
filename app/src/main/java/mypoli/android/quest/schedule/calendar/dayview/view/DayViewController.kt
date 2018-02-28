@@ -32,7 +32,6 @@ import mypoli.android.common.datetime.DateUtils
 import mypoli.android.common.datetime.Time
 import mypoli.android.common.datetime.isNotEqual
 import mypoli.android.common.datetime.startOfDayUTC
-import mypoli.android.common.mvi.Intent
 import mypoli.android.common.redux.android.ReduxViewController
 import mypoli.android.common.view.*
 import mypoli.android.quest.CompletedQuestViewController
@@ -49,7 +48,6 @@ import java.util.*
 
 class DayViewController :
     ReduxViewController<DayViewAction, DayViewState, DayViewReducer>,
-//    MviViewController<DayViewState, DayViewController, DayViewPresenter, DayViewIntent>,
     CalendarDayView.CalendarChangeListener {
 
     private lateinit var currentDate: LocalDate
@@ -205,7 +203,7 @@ class DayViewController :
             EVENT_REMOVED -> {
                 PetMessagePopup(
                     stringRes(R.string.remove_quest_undo_message),
-                    { sendUndoRemovedEventIntent(state.removedEventId) }
+                    { dispatch(DayViewAction.UndoRemoveQuest(state.removedEventId))}
                 ).show(view.context)
             }
 
@@ -297,10 +295,6 @@ class DayViewController :
         view.unscheduledEvents.layoutParams = layoutParams
     }
 
-    private fun sendUndoRemovedEventIntent(eventId: String) {
-        send(UndoRemoveEventIntent(eventId))
-    }
-
     private fun startEditScheduledEvent(dragView: View, startTime: Time, endTime: Time) {
         dragView.dragStartTime.text = startTime.toString()
         dragView.dragEndTime.text = endTime.toString()
@@ -377,7 +371,7 @@ class DayViewController :
 
     override fun onRemoveEvent(eventId: String) {
         onStopEditMode()
-        send(RemoveEventIntent(eventId))
+        dispatch(DayViewAction.RemoveQuest(eventId))
     }
 
     override fun onMoveEvent(startTime: Time?, endTime: Time?) {
@@ -404,11 +398,11 @@ class DayViewController :
     }
 
     override fun onEditUnscheduledCalendarEvent() {
-        send(EditQuestIntent)
+        dispatch(DayViewAction.EditQuest)
     }
 
     override fun onEditUnscheduledEvent() {
-        send(EditUnscheduledQuestIntent)
+        dispatch(DayViewAction.EditUnscheduledQuest)
     }
 
     private fun startActionMode() {
@@ -452,7 +446,7 @@ class DayViewController :
         DatePickerDialog(
             view!!.context, R.style.Theme_myPoli_AlertDialog,
             DatePickerDialog.OnDateSetListener { _, year, month, dayOfMonth ->
-                send(DayViewIntent.DatePicked(year, month + 1, dayOfMonth))
+                dispatch(DayViewAction.DatePicked(LocalDate.of(year, month + 1, dayOfMonth)))
             }, selectedDate.year, selectedDate.month.value - 1, selectedDate.dayOfMonth
         ).show()
     }
@@ -461,7 +455,7 @@ class DayViewController :
         ReminderPickerDialogController(object :
             ReminderPickerDialogController.ReminderPickedListener {
             override fun onReminderPicked(reminder: ReminderViewModel?) {
-                send(ReminderPickedIntent(reminder))
+                dispatch(DayViewAction.ReminderPicked(reminder))
             }
         }, selectedReminder)
             .showDialog(router, "reminder-picker")
@@ -472,14 +466,14 @@ class DayViewController :
             val ic = icon?.let {
                 Icon.valueOf(it.name)
             }
-            send(IconPickedIntent(ic))
+            dispatch(DayViewAction.IconPicked(ic))
         }, selectedIcon).showDialog(router, "icon-picker")
     }
 
     private fun showColorPicker(selectedColor: AndroidColor?) {
         ColorPickerDialogController(object : ColorPickerDialogController.ColorPickedListener {
             override fun onColorPicked(color: AndroidColor) {
-                send(ColorPickedIntent(color))
+                dispatch(DayViewAction.ColorPicked(color))
             }
 
         }, selectedColor)
@@ -720,7 +714,7 @@ class DayViewController :
                 if (event.isStarted) {
                     showShortToast(R.string.validation_timer_running)
                 } else {
-                    send(StartEditUnscheduledQuestIntent(event))
+                    dispatch(DayViewAction.StartEditUnscheduledQuest(event))
                     calendarDayView.startEventRescheduling(events[adapterPosition])
                 }
                 true
@@ -784,9 +778,6 @@ class DayViewController :
 
         private fun tintList(@ColorRes color: Int, context: Context) =
             ContextCompat.getColorStateList(context, color)
-    }
-
-    private fun send(context: Intent) {
     }
 
     private fun showQuest(questId: String) {

@@ -4,7 +4,6 @@ import mypoli.android.common.AppState
 import mypoli.android.common.DataLoadedAction
 import mypoli.android.common.NamespaceViewStateReducer
 import mypoli.android.common.datetime.Time
-import mypoli.android.common.mvi.Intent
 import mypoli.android.common.mvi.ViewState
 import mypoli.android.common.redux.Action
 import mypoli.android.common.view.AndroidColor
@@ -23,38 +22,6 @@ import org.threeten.bp.LocalTime
  * Created by Venelin Valkov <venelin@mypoli.fun>
  * on 10/4/17.
  */
-
-sealed class DayViewIntent : Intent {
-    data class DatePicked(val year: Int, val month: Int, val day: Int) : DayViewIntent()
-}
-
-data class LoadDataIntent(val currentDate: LocalDate) : DayViewIntent()
-
-data class RemoveEventIntent(val eventId: String) : DayViewIntent()
-
-data class ScheduleLoadedIntent(val schedule: Schedule) : DayViewIntent()
-data class UndoRemoveEventIntent(val eventId: String) : DayViewIntent()
-data class ReminderPickedIntent(val reminder: ReminderViewModel?) : DayViewIntent()
-data class IconPickedIntent(val icon: Icon?) : DayViewIntent()
-data class ColorPickedIntent(val color: AndroidColor) : DayViewIntent()
-data class CompleteQuestIntent(val questId: String, val isStarted: Boolean) : DayViewIntent()
-data class UndoCompleteQuestIntent(val questId: String) : DayViewIntent()
-data class AddNewScheduledQuestIntent(val startTime: Time, val duration: Int) : DayViewIntent()
-data class StartEditScheduledQuestIntent(val questViewModel: DayViewController.QuestViewModel) :
-    DayViewIntent()
-
-data class StartEditUnscheduledQuestIntent(val questViewModel: DayViewController.UnscheduledQuestViewModel) :
-    DayViewIntent()
-
-
-object EditQuestIntent : DayViewIntent()
-object AddQuestIntent : DayViewIntent()
-object EditUnscheduledQuestIntent : DayViewIntent()
-data class DragMoveViewIntent(val startTime: Time?, val endTime: Time?) : DayViewIntent()
-data class DragResizeViewIntent(val startTime: Time?, val endTime: Time?, val duration: Int) :
-    DayViewIntent()
-
-data class ChangeEditViewNameIntent(val name: String) : DayViewIntent()
 
 sealed class DayViewAction : Action {
     data class Load(val currentDate: LocalDate) :
@@ -75,6 +42,16 @@ sealed class DayViewAction : Action {
     data class SaveInvalidQuest(val result: Result.Invalid) : DayViewAction()
     data class ChangeEditViewName(val name: String) : DayViewAction()
     object EditQuest : DayViewAction()
+    object EditUnscheduledQuest : DayViewAction()
+    data class DatePicked(val date: LocalDate) : DayViewAction()
+    data class ReminderPicked(val reminder: ReminderViewModel?) : DayViewAction()
+    data class IconPicked(val icon: Icon?) : DayViewAction()
+    data class ColorPicked(val color: AndroidColor) : DayViewAction()
+    data class StartEditUnscheduledQuest(val questViewModel: DayViewController.UnscheduledQuestViewModel) :
+        DayViewAction()
+
+    data class RemoveQuest(val questId: String) : DayViewAction()
+    data class UndoRemoveQuest(val questId: String) : DayViewAction()
 }
 
 class DayViewReducer(namespace: String) : NamespaceViewStateReducer<DayViewState>(namespace) {
@@ -142,6 +119,20 @@ class DayViewReducer(namespace: String) : NamespaceViewStateReducer<DayViewState
                 )
             }
 
+            is DayViewAction.StartEditUnscheduledQuest -> {
+                val vm = action.questViewModel
+                subState.copy(
+                    type = START_EDIT_UNSCHEDULED_QUEST,
+                    editId = vm.id,
+                    name = vm.name,
+                    color = vm.backgroundColor,
+                    duration = vm.duration,
+                    icon = vm.icon,
+                    reminder = vm.reminder,
+                    startTime = null
+                )
+            }
+
             is DayViewAction.CompleteQuest -> {
                 subState.copy(
                     type = QUEST_COMPLETED
@@ -206,6 +197,55 @@ class DayViewReducer(namespace: String) : NamespaceViewStateReducer<DayViewState
                     type = EDIT_VIEW_NAME_CHANGED,
                     name = action.name
                 )
+            }
+
+            is DayViewAction.DatePicked -> {
+                subState.copy(
+                    type = DATE_PICKED,
+                    scheduledDate = action.date
+                )
+            }
+
+            is DayViewAction.ReminderPicked -> {
+                subState.copy(
+                    type = REMINDER_PICKED,
+                    reminder = action.reminder
+                )
+            }
+
+            is DayViewAction.IconPicked -> {
+                subState.copy(
+                    type = ICON_PICKED,
+                    icon = action.icon?.let {
+                        AndroidIcon.valueOf(it.name)
+                    }
+                )
+            }
+
+            is DayViewAction.ColorPicked -> {
+                subState.copy(
+                    type = COLOR_PICKED,
+                    color = action.color
+                )
+            }
+
+            is DayViewAction.RemoveQuest -> {
+                val eventId = action.questId
+                if (eventId.isEmpty()) {
+                    subState.copy(
+                        type = NEW_EVENT_REMOVED
+                    )
+                } else {
+                    subState.copy(
+                        type = DayViewState.StateType.EVENT_REMOVED,
+                        removedEventId = eventId,
+                        reminder = null
+                    )
+                }
+            }
+
+            is DayViewAction.UndoRemoveQuest -> {
+                subState.copy(type = DayViewState.StateType.UNDO_REMOVED_EVENT, removedEventId = "")
             }
 
             else -> {

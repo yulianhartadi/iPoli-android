@@ -74,42 +74,30 @@ abstract class AppSideEffect : SideEffect<AppState>,
 
 class DayViewSideEffect : AppSideEffect() {
     private val saveQuestUseCase by required { saveQuestUseCase }
+    private val removeQuestUseCase by required { removeQuestUseCase }
+    private val undoRemoveQuestUseCase by required { undoRemoveQuestUseCase }
 
     override suspend fun doExecute(action: Action, state: AppState) {
         val a = (action as? NamespaceAction)?.source ?: action
         when (a) {
             DayViewAction.AddQuest -> {
-
                 saveQuest(state, action)
             }
 
             DayViewAction.EditQuest -> {
-                val dayViewState: DayViewState = state.stateFor(
-                    "${(action as NamespaceAction).namespace}/${DayViewState::class.java.simpleName}"
-                )
-                val color = Color.valueOf(dayViewState.color!!.name)
+                saveQuest(state, action)
+            }
 
-                val icon = dayViewState.icon?.let {
-                    Icon.valueOf(it.name)
-                }
+            DayViewAction.EditUnscheduledQuest -> {
+                saveQuest(state, action)
+            }
 
-                val scheduledDate = dayViewState.scheduledDate!! //?: state.currentDate
-                val questParams = SaveQuestUseCase.Parameters(
-                    id = dayViewState.editId,
-                    name = dayViewState.name,
-                    color = color,
-                    icon = icon,
-                    category = Category("WELLNESS", Color.GREEN),
-                    scheduledDate = scheduledDate,
-                    startTime = dayViewState.startTime,
-                    duration = dayViewState.duration!!,
-                    reminder = createQuestReminder(
-                        dayViewState.reminder,
-                        scheduledDate,
-                        dayViewState.startTime!!.toMinuteOfDay()
-                    )
-                )
-                val result = saveQuestUseCase.execute(questParams)
+            is DayViewAction.RemoveQuest -> {
+                removeQuestUseCase.execute(a.questId)
+            }
+
+            is DayViewAction.UndoRemoveQuest -> {
+                undoRemoveQuestUseCase.execute(a.questId)
             }
         }
     }
@@ -128,11 +116,11 @@ class DayViewSideEffect : AppSideEffect() {
         }
 
         val scheduledDate = dayViewState.scheduledDate ?: dayViewState.currentDate
-        val reminder = if (dayViewState.reminder != null) {
+        val reminder = if (dayViewState.startTime != null && dayViewState.reminder != null) {
             createQuestReminder(
                 dayViewState.reminder,
                 scheduledDate,
-                dayViewState.startTime!!.toMinuteOfDay()
+                dayViewState.startTime.toMinuteOfDay()
             )
         } else if (dayViewState.editId.isEmpty()) {
             createDefaultReminder(scheduledDate, dayViewState.startTime!!.toMinuteOfDay())

@@ -45,7 +45,6 @@ import mypoli.android.quest.job.ReminderScheduler
 import mypoli.android.quest.schedule.addquest.AddQuestPresenter
 import mypoli.android.quest.schedule.agenda.usecase.CreateAgendaItemsUseCase
 import mypoli.android.quest.schedule.agenda.usecase.FindAgendaDatesUseCase
-import mypoli.android.quest.schedule.calendar.dayview.DayViewPresenter
 import mypoli.android.quest.usecase.*
 import mypoli.android.quest.view.QuestCompletePresenter
 import mypoli.android.rate.AndroidRatePopupScheduler
@@ -368,7 +367,6 @@ interface UseCaseModule {
 }
 
 interface PresenterModule {
-    val dayViewPresenter: DayViewPresenter
     val reminderPickerPresenter: ReminderPickerDialogPresenter
     val addQuestPresenter: AddQuestPresenter
     val petPresenter: PetPresenter
@@ -425,17 +423,6 @@ class AndroidPresenterModule : PresenterModule, Injects<Module> {
     private val addTimerToQuestUseCase by required { addTimerToQuestUseCase }
     private val saveRepeatingQuestUseCase by required { saveRepeatingQuestUseCase }
     private val job by required { job }
-    override val dayViewPresenter
-        get() = DayViewPresenter(
-            loadScheduleForDateUseCase,
-            saveQuestUseCase,
-            removeQuestUseCase,
-            undoRemoveQuestUseCase,
-            completeQuestUseCase,
-            undoCompleteQuestUseCase,
-            completeTimeRangeUseCase,
-            job
-        )
     override val reminderPickerPresenter
         get() = ReminderPickerDialogPresenter(
             reminderTimeFormatter,
