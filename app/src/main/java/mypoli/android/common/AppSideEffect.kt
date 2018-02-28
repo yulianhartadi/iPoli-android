@@ -17,7 +17,10 @@ import mypoli.android.myPoliApp
 import mypoli.android.pet.store.PetStoreAction
 import mypoli.android.pet.usecase.BuyPetUseCase
 import mypoli.android.player.Player
-import mypoli.android.quest.*
+import mypoli.android.quest.Category
+import mypoli.android.quest.Color
+import mypoli.android.quest.Quest
+import mypoli.android.quest.Reminder
 import mypoli.android.quest.schedule.ScheduleAction
 import mypoli.android.quest.schedule.ScheduleViewState
 import mypoli.android.quest.schedule.agenda.AgendaAction
@@ -109,11 +112,6 @@ class DayViewSideEffect : AppSideEffect() {
         val dayViewState: DayViewState = state.stateFor(
             "${(action as NamespaceAction).namespace}/${DayViewState::class.java.simpleName}"
         )
-        val color = Color.valueOf(dayViewState.color!!.name)
-
-        val icon = dayViewState.icon?.let {
-            Icon.valueOf(it.name)
-        }
 
         val scheduledDate = dayViewState.scheduledDate ?: dayViewState.currentDate
         val reminder = if (dayViewState.startTime != null && dayViewState.reminder != null) {
@@ -131,8 +129,8 @@ class DayViewSideEffect : AppSideEffect() {
         val questParams = SaveQuestUseCase.Parameters(
             id = dayViewState.editId,
             name = dayViewState.name,
-            color = color,
-            icon = icon,
+            color = dayViewState.color!!,
+            icon = dayViewState.icon,
             category = Category("WELLNESS", Color.GREEN),
             scheduledDate = scheduledDate,
             startTime = dayViewState.startTime,

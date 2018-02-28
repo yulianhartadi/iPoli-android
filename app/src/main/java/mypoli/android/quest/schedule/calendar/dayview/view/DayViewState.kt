@@ -7,7 +7,7 @@ import mypoli.android.common.datetime.Time
 import mypoli.android.common.mvi.ViewState
 import mypoli.android.common.redux.Action
 import mypoli.android.common.view.AndroidColor
-import mypoli.android.common.view.AndroidIcon
+import mypoli.android.quest.Color
 import mypoli.android.quest.Icon
 import mypoli.android.quest.Reminder
 import mypoli.android.quest.schedule.calendar.dayview.view.DayViewState.StateType.*
@@ -110,11 +110,13 @@ class DayViewReducer(namespace: String) : NamespaceViewStateReducer<DayViewState
                     type = START_EDIT_SCHEDULED_QUEST,
                     editId = vm.id,
                     name = vm.name,
-                    color = vm.backgroundColor,
+                    color = Color.valueOf(vm.backgroundColor.name),
                     startTime = Time.of(vm.startMinute),
                     duration = vm.duration,
                     endTime = Time.plusMinutes(Time.of(vm.startMinute), vm.duration),
-                    icon = vm.icon,
+                    icon = vm.icon?.let {
+                        Icon.valueOf(it.name)
+                    },
                     reminder = vm.reminder
                 )
             }
@@ -125,9 +127,11 @@ class DayViewReducer(namespace: String) : NamespaceViewStateReducer<DayViewState
                     type = START_EDIT_UNSCHEDULED_QUEST,
                     editId = vm.id,
                     name = vm.name,
-                    color = vm.backgroundColor,
+                    color = Color.valueOf(vm.backgroundColor.name),
                     duration = vm.duration,
-                    icon = vm.icon,
+                    icon = vm.icon?.let {
+                        Icon.valueOf(it.name)
+                    },
                     reminder = vm.reminder,
                     startTime = null
                 )
@@ -150,7 +154,7 @@ class DayViewReducer(namespace: String) : NamespaceViewStateReducer<DayViewState
                     type = ADD_NEW_SCHEDULED_QUEST,
                     editId = "",
                     name = "",
-                    color = AndroidColor.GREEN,
+                    color = Color.GREEN,
                     icon = null,
                     startTime = action.startTime,
                     duration = action.duration,
@@ -216,16 +220,14 @@ class DayViewReducer(namespace: String) : NamespaceViewStateReducer<DayViewState
             is DayViewAction.IconPicked -> {
                 subState.copy(
                     type = ICON_PICKED,
-                    icon = action.icon?.let {
-                        AndroidIcon.valueOf(it.name)
-                    }
+                    icon = action.icon
                 )
             }
 
             is DayViewAction.ColorPicked -> {
                 subState.copy(
                     type = COLOR_PICKED,
-                    color = action.color
+                    color = Color.valueOf(action.color.name)
                 )
             }
 
@@ -298,25 +300,37 @@ class DayViewReducer(namespace: String) : NamespaceViewStateReducer<DayViewState
         }
 
     override fun defaultState() =
-        DayViewState(type = LOADING)
+        DayViewState(
+            type = LOADING,
+            currentDate = LocalDate.now(),
+            schedule = null,
+            removedEventId = "",
+            editId = "",
+            name = "",
+            scheduledDate = null,
+            startTime = null,
+            endTime = null,
+            duration = null,
+            color = null,
+            reminder = null,
+            icon = null
+        )
 }
 
 data class DayViewState(
     val type: StateType,
-    val currentDate: LocalDate = LocalDate.now(),
-    val schedule: Schedule? = null,
-//    val scheduledQuests: List<DayViewController.QuestViewModel> = listOf(),
-//    val unscheduledQuests: List<DayViewController.UnscheduledQuestViewModel> = listOf(),
-    val removedEventId: String = "",
-    val editId: String = "",
-    val name: String = "",
-    val scheduledDate: LocalDate? = null,
-    val startTime: Time? = null,
-    val endTime: Time? = null,
-    val duration: Int? = null,
-    val color: AndroidColor? = null,
-    val reminder: ReminderViewModel? = null,
-    val icon: AndroidIcon? = null
+    val currentDate: LocalDate,
+    val schedule: Schedule?,
+    val removedEventId: String,
+    val editId: String,
+    val name: String,
+    val scheduledDate: LocalDate?,
+    val startTime: Time?,
+    val endTime: Time?,
+    val duration: Int?,
+    val color: Color?,
+    val reminder: ReminderViewModel?,
+    val icon: Icon?
 ) : ViewState {
 
     enum class StateType {
