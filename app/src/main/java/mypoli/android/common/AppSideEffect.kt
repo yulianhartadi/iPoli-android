@@ -7,6 +7,7 @@ import kotlinx.coroutines.experimental.launch
 import mypoli.android.challenge.category.list.ChallengeListForCategoryAction
 import mypoli.android.challenge.usecase.BuyChallengeUseCase
 import mypoli.android.common.DataLoadedAction.PlayerChanged
+import mypoli.android.common.datetime.Time
 import mypoli.android.common.di.Module
 import mypoli.android.common.redux.Action
 import mypoli.android.common.redux.Dispatcher
@@ -16,7 +17,7 @@ import mypoli.android.myPoliApp
 import mypoli.android.pet.store.PetStoreAction
 import mypoli.android.pet.usecase.BuyPetUseCase
 import mypoli.android.player.Player
-import mypoli.android.quest.Quest
+import mypoli.android.quest.*
 import mypoli.android.quest.schedule.ScheduleAction
 import mypoli.android.quest.schedule.ScheduleViewState
 import mypoli.android.quest.schedule.agenda.AgendaAction
@@ -27,14 +28,20 @@ import mypoli.android.quest.schedule.agenda.usecase.FindAgendaDatesUseCase
 import mypoli.android.quest.schedule.calendar.CalendarAction
 import mypoli.android.quest.schedule.calendar.CalendarViewState
 import mypoli.android.quest.schedule.calendar.dayview.view.DayViewAction
+import mypoli.android.quest.schedule.calendar.dayview.view.DayViewState
 import mypoli.android.quest.usecase.CompleteQuestUseCase
 import mypoli.android.quest.usecase.CompleteQuestUseCase.Params.WithQuest
 import mypoli.android.quest.usecase.LoadScheduleForDateUseCase
+import mypoli.android.quest.usecase.Result
+import mypoli.android.quest.usecase.SaveQuestUseCase
+import mypoli.android.reminder.view.picker.ReminderViewModel
 import mypoli.android.repeatingquest.entity.RepeatingQuest
 import mypoli.android.repeatingquest.usecase.FindNextDateForRepeatingQuestUseCase
 import mypoli.android.repeatingquest.usecase.FindPeriodProgressForRepeatingQuestUseCase
 import mypoli.android.timer.usecase.CompleteTimeRangeUseCase
 import org.threeten.bp.LocalDate
+import org.threeten.bp.LocalDateTime
+import org.threeten.bp.LocalTime
 import space.traversal.kapsule.Injects
 import space.traversal.kapsule.inject
 import space.traversal.kapsule.required
@@ -65,23 +72,103 @@ abstract class AppSideEffect : SideEffect<AppState>,
     }
 }
 
-class CompleteQuestSideEffect : AppSideEffect() {
+class DayViewSideEffect : AppSideEffect() {
+    private val saveQuestUseCase by required { saveQuestUseCase }
 
+    override suspend fun doExecute(action: Action, state: AppState) {
+        when (action) {
+            DayViewAction.AddQuest -> {
+                val dayViewState = state.stateFor(DayViewState::class.java)
+                val color = Color.valueOf(dayViewState.color!!.name)
+
+                val icon = dayViewState.icon?.let {
+                    Icon.valueOf(it.name)
+                }
+
+                val scheduledDate = dayViewState.scheduledDate!! //?: state.currentDate
+                val reminder = if (dayViewState.reminder != null) {
+                    createQuestReminder(
+                        dayViewState.reminder,
+                        scheduledDate,
+                        dayViewState.startTime!!.toMinuteOfDay()
+                    )
+                } else {
+                    createDefaultReminder(scheduledDate, dayViewState.startTime!!.toMinuteOfDay())
+                }
+
+                val questParams = SaveQuestUseCase.Parameters(
+                    name = dayViewState.name,
+                    color = color,
+                    icon = icon,
+                    category = Category("WELLNESS", Color.GREEN),
+                    scheduledDate = scheduledDate,
+                    startTime = dayViewState.startTime,
+                    duration = dayViewState.duration!!,
+                    reminder = reminder
+                )
+                val result = saveQuestUseCase.execute(questParams)
+
+                when (result) {
+                    is Result.Invalid -> {
+                        dispatch(DayViewAction.AddInvalidQuest(result))
+                    }
+                    else -> dispatch(DayViewAction.QuestAdded)
+                }
+            }
+        }
+    }
+
+    private fun createDefaultReminder(scheduledDate: LocalDate, startMinute: Int) =
+        Reminder("", Time.of(startMinute), scheduledDate)
+
+    private fun createQuestReminder(
+        reminder: ReminderViewModel?,
+        scheduledDate: LocalDate,
+        eventStartMinute: Int
+    ) =
+        reminder?.let {
+            val time = Time.of(eventStartMinute)
+            val questDateTime =
+                LocalDateTime.of(scheduledDate, LocalTime.of(time.hours, time.getMinutes()))
+            val reminderDateTime = questDateTime.minusMinutes(it.minutesFromStart)
+            val toLocalTime = reminderDateTime.toLocalTime()
+            Reminder(
+                it.message,
+                Time.at(toLocalTime.hour, toLocalTime.minute),
+                reminderDateTime.toLocalDate()
+            )
+        }
+
+    override fun canHandle(action: Action) = action is DayViewAction
+}
+
+class CompleteQuestSideEffect : AppSideEffect() {
 
     private val completeTimeRangeUseCase by required { completeTimeRangeUseCase }
     private val completeQuestUseCase by required { completeQuestUseCase }
+    private val undoCompletedQuestUseCase by required { undoCompletedQuestUseCase }
 
     override suspend fun doExecute(action: Action, state: AppState) {
-        val questId = (action as DayViewAction.CompleteQuest).questId
-        if (action.isStarted) {
-            completeTimeRangeUseCase.execute(CompleteTimeRangeUseCase.Params(questId))
-        } else {
-            completeQuestUseCase.execute(CompleteQuestUseCase.Params.WithQuestId(questId))
+        when (action) {
+            is DayViewAction.CompleteQuest -> {
+                val questId = action.questId
+                if (action.isStarted) {
+                    completeTimeRangeUseCase.execute(CompleteTimeRangeUseCase.Params(questId))
+                } else {
+                    completeQuestUseCase.execute(CompleteQuestUseCase.Params.WithQuestId(questId))
+                }
+            }
+
+            is DayViewAction.UndoCompleteQuest -> {
+                undoCompletedQuestUseCase.execute(action.questId)
+            }
         }
+
     }
 
     override fun canHandle(action: Action) =
         action is DayViewAction.CompleteQuest
+            || action is DayViewAction.UndoCompleteQuest
 }
 
 class BuyPredefinedChallengeSideEffect : AppSideEffect() {

@@ -64,6 +64,15 @@ sealed class DayViewAction : Action {
         DayViewAction()
 
     data class CompleteQuest(val questId: String, val isStarted: Boolean) : DayViewAction()
+    data class UndoCompleteQuest(val questId: String) : DayViewAction()
+    data class AddNewScheduledQuest(val startTime: Time, val duration: Int) : DayViewAction()
+    data class DragResizeView(val startTime: Time?, val endTime: Time?, val duration: Int) :
+        DayViewAction()
+
+    data class DragMoveView(val startTime: Time?, val endTime: Time?) : DayViewAction()
+    object AddQuest : DayViewAction()
+    object QuestAdded : DayViewAction()
+    data class AddInvalidQuest(val result: Result.Invalid) : DayViewAction()
 }
 
 class DayViewReducer(namespace: String) : NamespaceViewStateReducer<DayViewState>(namespace) {
@@ -135,6 +144,63 @@ class DayViewReducer(namespace: String) : NamespaceViewStateReducer<DayViewState
                 subState.copy(
                     type = QUEST_COMPLETED
                 )
+            }
+
+            is DayViewAction.UndoCompleteQuest -> {
+                subState.copy(
+                    type = UNDO_QUEST_COMPLETED
+                )
+            }
+
+            is DayViewAction.AddNewScheduledQuest -> {
+                subState.copy(
+                    type = ADD_NEW_SCHEDULED_QUEST,
+                    editId = "",
+                    name = "",
+                    color = AndroidColor.GREEN,
+                    icon = null,
+                    startTime = action.startTime,
+                    duration = action.duration,
+                    endTime = Time.plusMinutes(action.startTime, action.duration)
+                )
+            }
+
+            is DayViewAction.DragResizeView -> {
+                subState.copy(
+                    type = EDIT_VIEW_DRAGGED,
+                    startTime = action.startTime,
+                    endTime = action.endTime,
+                    duration = action.duration
+                )
+            }
+
+            is DayViewAction.DragMoveView -> {
+                subState.copy(
+                    type = EDIT_VIEW_DRAGGED,
+                    startTime = action.startTime,
+                    endTime = action.endTime
+                )
+            }
+
+            DayViewAction.QuestAdded -> {
+                subState.copy(type = EVENT_UPDATED, reminder = null, scheduledDate = null)
+            }
+
+            is DayViewAction.AddInvalidQuest -> {
+                when (action.result.error) {
+
+                    Result.ValidationError.EMPTY_NAME -> {
+                        subState.copy(type = EVENT_VALIDATION_EMPTY_NAME)
+                    }
+
+                    Result.ValidationError.TIMER_RUNNING -> {
+                        subState.copy(type = EVENT_VALIDATION_TIMER_RUNNING)
+                    }
+                }
+            }
+
+            else -> {
+                subState
             }
         }
     }

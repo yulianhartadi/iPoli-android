@@ -321,7 +321,7 @@ class DayViewController :
     }
 
     override fun onStartEditNewScheduledEvent(startTime: Time, duration: Int) {
-        send(AddNewScheduledQuestIntent(startTime, duration))
+        dispatch(DayViewAction.AddNewScheduledQuest(startTime, duration))
     }
 
     private fun setupDragViewUI(
@@ -381,11 +381,11 @@ class DayViewController :
     }
 
     override fun onMoveEvent(startTime: Time?, endTime: Time?) {
-        send(DragMoveViewIntent(startTime, endTime))
+        dispatch(DayViewAction.DragMoveView(startTime, endTime))
     }
 
     override fun onResizeEvent(startTime: Time?, endTime: Time?, duration: Int) {
-        send(DragResizeViewIntent(startTime, endTime, duration))
+        dispatch(DayViewAction.DragResizeView(startTime, endTime, duration))
     }
 
     override fun onZoomEvent(adapterView: View) {
@@ -396,7 +396,7 @@ class DayViewController :
     }
 
     override fun onAddEvent() {
-        send(AddQuestIntent)
+        dispatch(DayViewAction.AddQuest)
     }
 
     override fun onEditCalendarEvent() {
@@ -613,7 +613,7 @@ class DayViewController :
 
                         override fun onAnimationEnd(animation: Animator?) {
                             view.completedBackgroundView.visibility = View.INVISIBLE
-                            send(UndoCompleteQuestIntent(vm.id))
+                            dispatch(DayViewAction.UndoCompleteQuest(vm.id))
                         }
                     })
                     anim.start()
@@ -774,9 +774,9 @@ class DayViewController :
 
             itemView.unscheduledDone.setOnCheckedChangeListener { _, checked ->
                 if (checked) {
-                    send(CompleteQuestIntent(event.id, event.isStarted))
+                    dispatch(DayViewAction.CompleteQuest(event.id, event.isStarted))
                 } else {
-                    send(UndoCompleteQuestIntent(event.id))
+                    dispatch(DayViewAction.UndoCompleteQuest(event.id))
                 }
 
             }

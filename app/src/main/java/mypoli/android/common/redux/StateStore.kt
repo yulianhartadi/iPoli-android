@@ -125,20 +125,13 @@ class StateStore<S : CompositeState<S>>(
     }
 
     private fun executeSideEffects(action: Action) {
+        val a = (action as? NamespaceAction)?.source ?: action
+
         sideEffects
             .filter {
-                val a = if (action is NamespaceAction)
-                    action.source
-                else
-                    action
-
                 it.canHandle(a)
             }
             .forEach {
-                val a = if (action is NamespaceAction)
-                    action.source
-                else
-                    action
                 sideEffectExecutor.execute(it, a, state, this)
             }
     }
