@@ -30,6 +30,7 @@ sealed class EditRepeatingQuestAction : Action {
     data class ChangeDuration(val minutes: Int) : EditRepeatingQuestAction()
     data class ChangeReminder(val reminder: ReminderViewModel?) : EditRepeatingQuestAction()
     data class ChangeName(val name: String) : EditRepeatingQuestAction()
+    object Save : EditRepeatingQuestAction()
 }
 
 

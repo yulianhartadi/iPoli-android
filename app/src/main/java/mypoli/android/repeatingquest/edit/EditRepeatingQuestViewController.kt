@@ -5,18 +5,13 @@ import android.app.TimePickerDialog
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
+import android.view.*
 import kotlinx.android.synthetic.main.controller_edit_repeating_quest.view.*
 import mypoli.android.R
 import mypoli.android.common.datetime.Time
 import mypoli.android.common.redux.android.ReduxViewController
 import mypoli.android.common.text.DurationFormatter
-import mypoli.android.common.view.DurationPickerDialogController
-import mypoli.android.common.view.stringRes
-import mypoli.android.common.view.stringsRes
-import mypoli.android.quest.schedule.calendar.dayview.view.DayViewAction
+import mypoli.android.common.view.*
 import mypoli.android.reminder.view.formatter.ReminderTimeFormatter
 import mypoli.android.reminder.view.picker.ReminderPickerDialogController
 import mypoli.android.reminder.view.picker.ReminderViewModel
@@ -46,14 +41,31 @@ class EditRepeatingQuestViewController(args: Bundle? = null) :
         container: ViewGroup,
         savedViewState: Bundle?
     ): View {
+        setHasOptionsMenu(true)
         val view = inflater.inflate(
             R.layout.controller_edit_repeating_quest, container, false
         )
+        setToolbar(view.toolbar)
+        toolbarTitle = ""
         return view
     }
 
     override fun onCreateLoadAction() =
         EditRepeatingQuestAction.Load(repeatingQuestId)
+
+    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+        super.onCreateOptionsMenu(menu, inflater)
+        inflater.inflate(R.menu.edit_repeating_quest_menu, menu)
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem) =
+        when (item.itemId) {
+            R.id.actionSave -> {
+                dispatch(EditRepeatingQuestAction.Save)
+                true
+            }
+            else -> super.onOptionsItemSelected(item)
+        }
 
     override fun render(state: EditRepeatingQuestViewState, view: View) {
         when (state.type) {
