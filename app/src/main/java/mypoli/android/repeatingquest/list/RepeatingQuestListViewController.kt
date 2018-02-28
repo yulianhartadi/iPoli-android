@@ -9,6 +9,8 @@ import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import com.bluelinelabs.conductor.RouterTransaction
+import com.bluelinelabs.conductor.changehandler.FadeChangeHandler
 import com.mikepenz.iconics.IconicsDrawable
 import com.mikepenz.iconics.typeface.IIcon
 import com.mikepenz.ionicons_typeface_library.Ionicons
@@ -19,6 +21,8 @@ import mypoli.android.common.ViewUtils
 import mypoli.android.common.redux.android.ReduxViewController
 import mypoli.android.common.text.DateFormatter
 import mypoli.android.common.view.*
+import mypoli.android.repeatingquest.edit.EditRepeatingQuestViewController
+import mypoli.android.repeatingquest.entity.RepeatingQuest
 import mypoli.android.repeatingquest.list.RepeatingQuestListViewState.StateType.DATA_LOADED
 
 /**
@@ -69,7 +73,8 @@ class RepeatingQuestListViewController(args: Bundle? = null) :
         val next: String,
         val completedCount: Int,
         val allCount: Int,
-        val isCompleted: Boolean
+        val isCompleted: Boolean,
+        val repeatingQuest: RepeatingQuest
     )
 
     inner class RepeatingQuestAdapter(private var viewModels: List<RepeatingQuestViewModel> = listOf()) :
@@ -81,6 +86,20 @@ class RepeatingQuestListViewController(args: Bundle? = null) :
         ) {
             val vm = viewModels[position]
             val view = holder.itemView
+
+            view.setOnClickListener {
+                val handler = FadeChangeHandler()
+                rootRouter.pushController(
+                    RouterTransaction.with(
+                        EditRepeatingQuestViewController(
+                            vm.repeatingQuest
+                        )
+                    )
+                        .pushChangeHandler(handler)
+                        .popChangeHandler(handler)
+                )
+            }
+
             view.rqName.text = vm.name
 
             view.rqIcon.backgroundTintList =
@@ -153,7 +172,8 @@ class RepeatingQuestListViewController(args: Bundle? = null) :
                 next = next,
                 completedCount = it.periodProgress!!.completedCount,
                 allCount = it.periodProgress.allCount,
-                isCompleted = it.isCompleted
+                isCompleted = it.isCompleted,
+                repeatingQuest = it
             )
         }
 }

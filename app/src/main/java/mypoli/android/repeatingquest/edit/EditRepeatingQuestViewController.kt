@@ -18,6 +18,7 @@ import mypoli.android.common.view.*
 import mypoli.android.reminder.view.picker.ReminderPickerDialogController
 import mypoli.android.reminder.view.picker.ReminderViewModel
 import mypoli.android.repeatingquest.edit.EditRepeatingQuestViewState.StateType.*
+import mypoli.android.repeatingquest.entity.RepeatingQuest
 import mypoli.android.repeatingquest.picker.RepeatingPatternPickerDialogController
 
 /**
@@ -30,12 +31,12 @@ class EditRepeatingQuestViewController(args: Bundle? = null) :
     ) {
     override val reducer = EditRepeatingQuestReducer
 
-    private lateinit var repeatingQuestId: String
+    private lateinit var repeatingQuest: RepeatingQuest
 
     constructor(
-        repeatingQuestId: String
+        repeatingQuest: RepeatingQuest
     ) : this() {
-        this.repeatingQuestId = repeatingQuestId
+        this.repeatingQuest = repeatingQuest
     }
 
     override fun onCreateView(
@@ -53,7 +54,7 @@ class EditRepeatingQuestViewController(args: Bundle? = null) :
     }
 
     override fun onCreateLoadAction() =
-        EditRepeatingQuestAction.Load(repeatingQuestId)
+        EditRepeatingQuestAction.Load(repeatingQuest)
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         super.onCreateOptionsMenu(menu, inflater)
@@ -122,6 +123,14 @@ class EditRepeatingQuestViewController(args: Bundle? = null) :
 
             ICON_CHANGED -> {
                 renderIcon(view, state)
+            }
+
+            VALIDATION_ERROR_EMPTY_NAME -> {
+                view.questName.error = "Think of a name"
+            }
+
+            QUEST_SAVED -> {
+                router.popController(this)
             }
         }
     }
@@ -244,7 +253,7 @@ class EditRepeatingQuestViewController(args: Bundle? = null) :
 
     override fun onAttach(view: View) {
         super.onAttach(view)
-//        showBackButton()
+        showBackButton()
     }
 
     private val EditRepeatingQuestViewState.formattedDuration: String

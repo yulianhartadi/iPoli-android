@@ -14,8 +14,9 @@ import mypoli.android.reminder.view.picker.ReminderViewModel
 import mypoli.android.repeatingquest.edit.EditRepeatingQuestViewState.StateType.*
 import mypoli.android.repeatingquest.entity.FrequencyType
 import mypoli.android.repeatingquest.entity.RepeatingPattern
+import mypoli.android.repeatingquest.entity.RepeatingQuest
 import mypoli.android.repeatingquest.entity.frequencyType
-import org.threeten.bp.LocalDate
+import mypoli.android.repeatingquest.usecase.SaveRepeatingQuestUseCase
 
 /**
  * Created by Polina Zhelyazkova <polina@ipoli.io>
@@ -23,7 +24,7 @@ import org.threeten.bp.LocalDate
  */
 
 sealed class EditRepeatingQuestAction : Action {
-    data class Load(val repeatingQuestId : String) : EditRepeatingQuestAction()
+    data class Load(val repeatingQuest: RepeatingQuest) : EditRepeatingQuestAction()
     data class ChangeRepeatingPattern(val repeatingPattern: RepeatingPattern) :
         EditRepeatingQuestAction()
 
@@ -34,6 +35,9 @@ sealed class EditRepeatingQuestAction : Action {
     object Save : EditRepeatingQuestAction()
     data class ChangeColor(val color: Color) : EditRepeatingQuestAction()
     data class ChangeIcon(val icon: Icon?) : EditRepeatingQuestAction()
+    object QuestSaved : EditRepeatingQuestAction()
+    data class SaveInvalidQuest(val error: SaveRepeatingQuestUseCase.Result.Invalid) :
+        EditRepeatingQuestAction()
 }
 
 
@@ -48,16 +52,18 @@ object EditRepeatingQuestReducer : BaseViewStateReducer<EditRepeatingQuestViewSt
     ) =
         when (action) {
             is EditRepeatingQuestAction.Load -> {
+                val rq = action.repeatingQuest
                 subState.copy(
                     type = DATA_LOADED,
-                    name = "Run 3 km",
-                    startTime = Time.at(15, 15),
-                    repeatingPattern = RepeatingPattern.Daily(),
-                    frequencyType = FrequencyType.DAILY,
-                    duration = 20,
-                    reminder = Reminder("AAA", Time.Companion.at(15, 0), LocalDate.now()),
-                    icon = null,
-                    color = Color.PINK
+                    id = rq.id,
+                    name = rq.name,
+                    startTime = rq.startTime,
+                    repeatingPattern = rq.repeatingPattern,
+                    frequencyType = rq.repeatingPattern.frequencyType,
+                    duration = rq.duration,
+                    reminder = rq.reminder,
+                    icon = rq.icon,
+                    color = rq.color
                 )
             }
 
@@ -117,12 +123,25 @@ object EditRepeatingQuestReducer : BaseViewStateReducer<EditRepeatingQuestViewSt
                 )
             }
 
+            is EditRepeatingQuestAction.SaveInvalidQuest -> {
+                subState.copy(
+                    type = VALIDATION_ERROR_EMPTY_NAME
+                )
+            }
+
+            EditRepeatingQuestAction.QuestSaved -> {
+                subState.copy(
+                    type = QUEST_SAVED
+                )
+            }
+
             else -> subState
         }
 
     override fun defaultState() =
         EditRepeatingQuestViewState(
             type = LOADING,
+            id = "",
             name = "",
             repeatingPattern = RepeatingPattern.Daily(),
             frequencyType = FrequencyType.DAILY,
@@ -138,6 +157,7 @@ object EditRepeatingQuestReducer : BaseViewStateReducer<EditRepeatingQuestViewSt
 
 data class EditRepeatingQuestViewState(
     val type: EditRepeatingQuestViewState.StateType,
+    val id: String,
     val name: String,
     val repeatingPattern: RepeatingPattern,
     val frequencyType: FrequencyType,
@@ -156,7 +176,9 @@ data class EditRepeatingQuestViewState(
         REMINDER_CHANGED,
         NAME_CHANGED,
         COLOR_CHANGED,
-        ICON_CHANGED
+        ICON_CHANGED,
+        VALIDATION_ERROR_EMPTY_NAME,
+        QUEST_SAVED
     }
 }
 

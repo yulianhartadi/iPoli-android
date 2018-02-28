@@ -543,7 +543,8 @@ class AndroidStateStoreModule : StateStoreModule, Injects<Module> {
                 ChangePetSideEffect(),
                 BuyPetSideEffect(),
                 DayViewSideEffect(),
-                CompleteQuestSideEffect()
+                CompleteQuestSideEffect(),
+                EditRepeatingQuestSideEffect()
             ),
             sideEffectExecutor = CoroutineSideEffectExecutor(job + CommonPool)
         )

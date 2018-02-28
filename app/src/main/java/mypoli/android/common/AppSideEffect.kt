@@ -38,9 +38,12 @@ import mypoli.android.quest.usecase.LoadScheduleForDateUseCase
 import mypoli.android.quest.usecase.Result
 import mypoli.android.quest.usecase.SaveQuestUseCase
 import mypoli.android.reminder.view.picker.ReminderViewModel
+import mypoli.android.repeatingquest.edit.EditRepeatingQuestAction
+import mypoli.android.repeatingquest.edit.EditRepeatingQuestViewState
 import mypoli.android.repeatingquest.entity.RepeatingQuest
 import mypoli.android.repeatingquest.usecase.FindNextDateForRepeatingQuestUseCase
 import mypoli.android.repeatingquest.usecase.FindPeriodProgressForRepeatingQuestUseCase
+import mypoli.android.repeatingquest.usecase.SaveRepeatingQuestUseCase
 import mypoli.android.timer.usecase.CompleteTimeRangeUseCase
 import org.threeten.bp.LocalDate
 import org.threeten.bp.LocalDateTime
@@ -203,6 +206,36 @@ class CompleteQuestSideEffect : AppSideEffect() {
         return a is DayViewAction.CompleteQuest
             || a is DayViewAction.UndoCompleteQuest
     }
+}
+
+class EditRepeatingQuestSideEffect : AppSideEffect() {
+    private val saveRepeatingQuestUseCase by required { saveRepeatingQuestUseCase }
+
+    override suspend fun doExecute(action: Action, state: AppState) {
+        val rqState = state.stateFor(EditRepeatingQuestViewState::class.java)
+
+        val rqParams = SaveRepeatingQuestUseCase.Params(
+            id = rqState.id,
+            name = rqState.name,
+            color = rqState.color,
+            icon = rqState.icon,
+            category = Category("WELLNESS", Color.GREEN),
+            startTime = rqState.startTime,
+            duration = rqState.duration,
+            reminder = rqState.reminder,
+            repeatingPattern = rqState.repeatingPattern
+        )
+        val result = saveRepeatingQuestUseCase.execute(rqParams)
+        when (result) {
+            is SaveRepeatingQuestUseCase.Result.Invalid ->
+                dispatch(EditRepeatingQuestAction.SaveInvalidQuest(result))
+            is SaveRepeatingQuestUseCase.Result.Added ->
+                dispatch(EditRepeatingQuestAction.QuestSaved)
+        }
+    }
+
+    override fun canHandle(action: Action) =
+        action is EditRepeatingQuestAction.Save
 }
 
 class BuyPredefinedChallengeSideEffect : AppSideEffect() {
