@@ -12,7 +12,6 @@ import mypoli.android.common.datetime.Time
 import mypoli.android.common.redux.android.ReduxViewController
 import mypoli.android.common.text.DurationFormatter
 import mypoli.android.common.view.*
-import mypoli.android.reminder.view.formatter.ReminderTimeFormatter
 import mypoli.android.reminder.view.picker.ReminderPickerDialogController
 import mypoli.android.reminder.view.picker.ReminderViewModel
 import mypoli.android.repeatingquest.edit.EditRepeatingQuestViewState.StateType.*
@@ -239,7 +238,7 @@ class EditRepeatingQuestViewController(args: Bundle? = null) :
             if (reminder == null) {
                 return stringRes(R.string.do_not_remind)
             } else {
-                return ReminderTimeFormatter(view!!.context).format(reminder.remindTime.toMinuteOfDay())
+                return reminder.remindTime.toString()
             }
         }
 }

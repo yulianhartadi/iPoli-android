@@ -207,7 +207,7 @@ class Migration : Injects<Module> {
             },
             reminder = cq.reminder?.let {
                 val cr = DbReminder(it)
-                Reminder(cr.message, Time.of(cr.minute), cr.date.startOfDayUTC)
+                Reminder(cr.message, Time.of(cr.minute), cr.date?.startOfDayUTC)
             },
             timeRanges = cq.timeRanges.map {
                 val ctr = DbTimeRange(it)

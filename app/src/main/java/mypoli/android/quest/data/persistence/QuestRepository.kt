@@ -77,7 +77,7 @@ data class DbQuest(override val map: MutableMap<String, Any?> = mutableMapOf()) 
 data class DbReminder(val map: MutableMap<String, Any?> = mutableMapOf()) {
     var message: String by map
     var minute: Int by map
-    var date: Long by map
+    var date: Long? by map
 }
 
 data class DbBounty(val map: MutableMap<String, Any?> = mutableMapOf()) {
@@ -301,7 +301,7 @@ class FirestoreQuestRepository(
         reminders.forEach {
             val r = mapOf(
                 "questId" to questId,
-                "date" to it.remindDate.startOfDayUTC(),
+                "date" to it.remindDate!!.startOfDayUTC(),
                 "millisOfDay" to it.remindTime.toMillisOfDay()
             )
             remindersReference.add(r)
@@ -363,7 +363,7 @@ class FirestoreQuestRepository(
             },
             reminder = cq.reminder?.let {
                 val cr = DbReminder(it)
-                Reminder(cr.message, Time.of(cr.minute), cr.date.startOfDayUTC)
+                Reminder(cr.message, Time.of(cr.minute), cr.date?.startOfDayUTC)
             },
             timeRanges = cq.timeRanges.map {
                 val ctr = DbTimeRange(it)
@@ -429,7 +429,7 @@ class FirestoreQuestRepository(
     private fun createDbReminder(reminder: Reminder): DbReminder {
         val cr = DbReminder()
         cr.message = reminder.message
-        cr.date = reminder.remindDate.startOfDayUTC()
+        cr.date = reminder.remindDate!!.startOfDayUTC()
         cr.minute = reminder.remindTime.toMinuteOfDay()
         return cr
     }

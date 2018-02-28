@@ -1147,4 +1147,5 @@
     <string name="welcome_back_hero">Welcome back, Hero!</string>
     <string name="every">Every</string>
     <string name="times">times</string>
+    <string name="quest_color_question">What color?</string>
 </resources>
