@@ -23,7 +23,7 @@ import mypoli.android.common.text.DateFormatter
 import mypoli.android.common.view.*
 import mypoli.android.repeatingquest.edit.EditRepeatingQuestViewController
 import mypoli.android.repeatingquest.entity.RepeatingQuest
-import mypoli.android.repeatingquest.list.RepeatingQuestListViewState.StateType.DATA_LOADED
+import mypoli.android.repeatingquest.list.RepeatingQuestListViewState.StateType.CHANGED
 
 /**
  * Created by Polina Zhelyazkova <polina@ipoli.io>
@@ -56,7 +56,7 @@ class RepeatingQuestListViewController(args: Bundle? = null) :
 
     override fun render(state: RepeatingQuestListViewState, view: View) {
         when (state.type) {
-            DATA_LOADED -> {
+            CHANGED -> {
                 (view.repeatingQuestList.adapter as RepeatingQuestAdapter).updateAll(
                     state.toViewModels(
                         view.context
