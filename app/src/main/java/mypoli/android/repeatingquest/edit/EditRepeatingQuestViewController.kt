@@ -63,6 +63,10 @@ class EditRepeatingQuestViewController(args: Bundle? = null) :
 
     override fun onOptionsItemSelected(item: MenuItem) =
         when (item.itemId) {
+            android.R.id.home -> {
+                router.popCurrentController()
+                true
+            }
             R.id.actionSave -> {
                 dispatch(EditRepeatingQuestAction.Save)
                 true
