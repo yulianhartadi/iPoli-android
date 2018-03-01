@@ -22,6 +22,7 @@ import mypoli.android.common.redux.android.ReduxViewController
 import mypoli.android.common.text.DateFormatter
 import mypoli.android.common.text.DurationFormatter
 import mypoli.android.common.view.*
+import mypoli.android.repeatingquest.entity.frequencyType
 import mypoli.android.repeatingquest.list.RepeatingQuestListViewState.StateType.CHANGED
 import mypoli.android.repeatingquest.show.RepeatingQuestViewController
 
@@ -80,7 +81,8 @@ class RepeatingQuestListViewController(args: Bundle? = null) :
         val next: String,
         val completedCount: Int,
         val allCount: Int,
-        val isCompleted: Boolean
+        val isCompleted: Boolean,
+        val frequency: String
     )
 
     inner class RepeatingQuestAdapter(private var viewModels: List<RepeatingQuestViewModel> = listOf()) :
@@ -104,6 +106,7 @@ class RepeatingQuestListViewController(args: Bundle? = null) :
                     .sizeDp(24)
             )
             view.rqNext.text = vm.next
+            view.rqFrequency.text = vm.frequency
 
             val progressBar = view.rqProgressBar
             val progress = view.rqProgress
@@ -151,8 +154,9 @@ class RepeatingQuestListViewController(args: Bundle? = null) :
 
     }
 
-    private fun RepeatingQuestListViewState.toViewModels(context: Context) =
-        repeatingQuests.map {
+    private fun RepeatingQuestListViewState.toViewModels(context: Context): List<RepeatingQuestViewModel> {
+        val frequencies = stringsRes(R.array.repeating_quest_frequencies)
+        return repeatingQuests.map {
             val next = when {
                 it.isCompleted -> stringRes(R.string.completed)
                 it.nextDate != null -> {
@@ -184,7 +188,9 @@ class RepeatingQuestListViewController(args: Bundle? = null) :
                 next = next,
                 completedCount = it.periodProgress!!.completedCount,
                 allCount = it.periodProgress.allCount,
-                isCompleted = it.isCompleted
+                isCompleted = it.isCompleted,
+                frequency = frequencies[it.repeatingPattern.frequencyType.ordinal]
             )
         }
+    }
 }
