@@ -20,6 +20,7 @@ import mypoli.android.R
 import mypoli.android.common.ViewUtils
 import mypoli.android.common.redux.android.ReduxViewController
 import mypoli.android.common.text.DateFormatter
+import mypoli.android.common.text.DurationFormatter
 import mypoli.android.common.view.*
 import mypoli.android.repeatingquest.list.RepeatingQuestListViewState.StateType.CHANGED
 import mypoli.android.repeatingquest.show.RepeatingQuestViewController
@@ -152,15 +153,24 @@ class RepeatingQuestListViewController(args: Bundle? = null) :
 
     private fun RepeatingQuestListViewState.toViewModels(context: Context) =
         repeatingQuests.map {
-            val next = if (it.isCompleted) {
-                stringRes(R.string.completed)
-            } else if (it.nextDate != null) {
-                stringRes(
-                    R.string.repeating_quest_next,
-                    DateFormatter.format(context, it.nextDate)
-                )
-            } else {
-                stringRes(
+            val next = when {
+                it.isCompleted -> stringRes(R.string.completed)
+                it.nextDate != null -> {
+                    var res = stringRes(
+                        R.string.repeating_quest_next,
+                        DateFormatter.format(context, it.nextDate)
+                    )
+                    res += if (it.startTime != null) {
+                        " ${it.startTime} - ${it.endTime}"
+                    } else {
+                        " " + stringRes(
+                            R.string.quest_for_time,
+                            DurationFormatter.formatShort(view!!.context, it.duration)
+                        )
+                    }
+                    res
+                }
+                else -> stringRes(
                     R.string.repeating_quest_next,
                     stringRes(R.string.unscheduled)
                 )

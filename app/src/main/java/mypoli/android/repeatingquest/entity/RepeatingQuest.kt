@@ -234,4 +234,9 @@ data class RepeatingQuest(
 
     val isCompleted
         get() = if (end == null) false else LocalDate.now().isAfter(end)
+
+    val endTime: Time?
+        get() = startTime?.let {
+            startTime.plus(duration)
+        }
 }
