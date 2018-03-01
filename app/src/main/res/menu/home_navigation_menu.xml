@@ -52,6 +52,14 @@
             android:checked="false"
             android:icon="@drawable/ic_shopping_basket_black_24dp"
             android:title="@string/drawer_store" />
+
+        <item
+            android:id="@+id/themes"
+            android:checkable="false"
+            android:checked="false"
+            android:icon="@drawable/ic_color_palette_white_24dp"
+            android:title="@string/themes" />
+
         <item
             android:id="@+id/invite_friends"
             android:checkable="false"
@@ -78,5 +86,11 @@
             android:checked="false"
             android:icon="@drawable/ic_email_white_24dp"
             android:title="@string/contact_us" />
+        <item
+            android:id="@+id/signIn"
+            android:checkable="false"
+            android:checked="false"
+            android:icon="@drawable/ic_login_white_24dp"
+            android:title="@string/sign_in_button" />
     </group>
 </menu>

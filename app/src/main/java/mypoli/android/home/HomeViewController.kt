@@ -9,7 +9,10 @@ import android.os.Bundle
 import android.support.design.widget.NavigationView
 import android.support.v4.view.GravityCompat
 import android.support.v7.app.ActionBarDrawerToggle
-import android.view.*
+import android.view.LayoutInflater
+import android.view.MenuItem
+import android.view.View
+import android.view.ViewGroup
 import com.amplitude.api.Amplitude
 import com.bluelinelabs.conductor.Controller
 import com.bluelinelabs.conductor.RouterTransaction
@@ -31,6 +34,7 @@ import mypoli.android.pet.AndroidPetMood
 import mypoli.android.pet.PetViewController
 import mypoli.android.quest.schedule.ScheduleViewController
 import mypoli.android.repeatingquest.list.RepeatingQuestListViewController
+import mypoli.android.store.GemStoreViewController
 import mypoli.android.store.theme.ThemeStoreViewController
 import org.json.JSONObject
 import space.traversal.kapsule.required
@@ -66,6 +70,7 @@ class HomeViewController(args: Bundle? = null) :
         setToolbar(contentView.toolbar)
 
         contentView.navigationView.setNavigationItemSelectedListener(this)
+        contentView.navigationView.menu.findItem(R.id.signIn).isVisible = showSignIn
 
         actionBarDrawerToggle = object :
             ActionBarDrawerToggle(
@@ -108,6 +113,18 @@ class HomeViewController(args: Bundle? = null) :
             R.id.challenges ->
                 changeChildController(ChallengeCategoryListViewController())
 
+            R.id.store -> {
+                router.pushController(
+                    RouterTransaction.with(GemStoreViewController())
+                        .pushChangeHandler(fadeChangeHandler)
+                        .popChangeHandler(fadeChangeHandler)
+                )
+            }
+
+            R.id.themes -> {
+                showThemes()
+            }
+
             R.id.feedback -> {
                 FeedbackDialogController(object : FeedbackDialogController.FeedbackListener {
                     override fun onSendFeedback(feedback: String) {
@@ -135,6 +152,10 @@ class HomeViewController(args: Bundle? = null) :
                     sharedPreferences.getString(Constants.KEY_PLAYER_ID, null),
                     stringRes(R.string.contact_us_email_chooser_title)
                 )
+            }
+
+            R.id.signIn -> {
+                showAuth()
             }
         }
 
@@ -169,43 +190,11 @@ class HomeViewController(args: Bundle? = null) :
         )
     }
 
-    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
-        super.onCreateOptionsMenu(menu, inflater)
-        inflater.inflate(R.menu.home_menu, menu)
-    }
-
-    override fun onPrepareOptionsMenu(menu: Menu) {
-        menu.findItem(R.id.actionSignIn).isVisible = showSignIn
-        super.onPrepareOptionsMenu(menu)
-    }
-
     override fun onOptionsItemSelected(item: MenuItem) =
         when (item.itemId) {
 
             android.R.id.home -> {
                 view!!.drawerLayout.openDrawer(GravityCompat.START)
-                true
-            }
-
-            R.id.actionPet -> {
-                showPet()
-                true
-            }
-
-            R.id.actionFeedback -> {
-                showFeedbackDialog()
-                true
-            }
-            R.id.actionThemes -> {
-                showThemes()
-                true
-            }
-            R.id.actionChallenges -> {
-                showChallenges()
-                true
-            }
-            R.id.actionSignIn -> {
-                showAuth()
                 true
             }
 
@@ -231,14 +220,6 @@ class HomeViewController(args: Bundle? = null) :
         )
     }
 
-    private fun showChallenges() {
-        val handler = FadeChangeHandler()
-        router.pushController(
-            RouterTransaction.with(ChallengeCategoryListViewController())
-                .pushChangeHandler(handler)
-                .popChangeHandler(handler)
-        )
-    }
 
     private fun showThemes() {
         val handler = FadeChangeHandler()
@@ -247,26 +228,6 @@ class HomeViewController(args: Bundle? = null) :
                 .pushChangeHandler(handler)
                 .popChangeHandler(handler)
         )
-    }
-
-    private fun showFeedbackDialog() {
-        FeedbackDialogController(object : FeedbackDialogController.FeedbackListener {
-            override fun onSendFeedback(feedback: String) {
-                if (feedback.isNotEmpty()) {
-                    Amplitude.getInstance().logEvent(
-                        "feedback",
-                        JSONObject().put("feedback", feedback)
-                    )
-                    showShortToast(R.string.feedback_response)
-                }
-            }
-
-            override fun onChatWithUs() {
-                Amplitude.getInstance().logEvent("feedback_chat")
-                val myIntent = Intent(ACTION_VIEW, Uri.parse(Constants.DISCORD_CHAT_LINK))
-                startActivity(myIntent)
-            }
-        }).showDialog(router, "feedback-dialog")
     }
 
     override fun render(state: HomeViewState, view: View) {
@@ -292,6 +253,10 @@ class HomeViewController(args: Bundle? = null) :
 
                 view.levelProgress.max = state.maxProgress
                 view.levelProgress.progress = state.progress
+
+                view.petContainer.setOnClickListener {
+                    showPet()
+                }
             }
         }
     }

@@ -5,7 +5,10 @@ import android.content.res.ColorStateList
 import android.os.Bundle
 import android.preference.PreferenceManager
 import android.support.v4.view.PagerAdapter
-import android.view.*
+import android.view.LayoutInflater
+import android.view.MenuItem
+import android.view.View
+import android.view.ViewGroup
 import android.widget.Toast
 import kotlinx.android.synthetic.main.calendar_hour_cell.view.*
 import kotlinx.android.synthetic.main.calendar_time_line.view.*
@@ -61,11 +64,6 @@ class ThemeStoreViewController(args: Bundle? = null) :
         showBackButton()
         super.onAttach(view)
         send(LoadDataIntent)
-    }
-
-    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
-        super.onCreateOptionsMenu(menu, inflater)
-        inflater.inflate(R.menu.menu_theme_store, menu)
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
