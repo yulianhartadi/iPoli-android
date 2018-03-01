@@ -55,6 +55,9 @@ import mypoli.android.reminder.view.formatter.TimeUnitFormatter
 import mypoli.android.reminder.view.picker.ReminderPickerDialogPresenter
 import mypoli.android.repeatingquest.persistence.FirestoreRepeatingQuestRepository
 import mypoli.android.repeatingquest.persistence.RepeatingQuestRepository
+
+import mypoli.android.repeatingquest.picker.RepeatingPatternReducer
+import mypoli.android.repeatingquest.show.RepeatingQuestReducer
 import mypoli.android.repeatingquest.usecase.FindNextDateForRepeatingQuestUseCase
 import mypoli.android.repeatingquest.usecase.FindPeriodProgressForRepeatingQuestUseCase
 import mypoli.android.repeatingquest.usecase.FindQuestsForRepeatingQuestUseCase

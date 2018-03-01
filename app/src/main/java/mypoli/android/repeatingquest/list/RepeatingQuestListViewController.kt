@@ -24,6 +24,7 @@ import mypoli.android.common.view.*
 import mypoli.android.repeatingquest.edit.EditRepeatingQuestViewController
 import mypoli.android.repeatingquest.entity.RepeatingQuest
 import mypoli.android.repeatingquest.list.RepeatingQuestListViewState.StateType.CHANGED
+import mypoli.android.repeatingquest.show.RepeatingQuestViewController
 
 /**
  * Created by Polina Zhelyazkova <polina@ipoli.io>
@@ -67,14 +68,14 @@ class RepeatingQuestListViewController(args: Bundle? = null) :
     }
 
     data class RepeatingQuestViewModel(
+        val id: String,
         val name: String,
         val icon: IIcon,
         @ColorRes val color: Int,
         val next: String,
         val completedCount: Int,
         val allCount: Int,
-        val isCompleted: Boolean,
-        val repeatingQuest: RepeatingQuest
+        val isCompleted: Boolean
     )
 
     inner class RepeatingQuestAdapter(private var viewModels: List<RepeatingQuestViewModel> = listOf()) :
@@ -86,19 +87,6 @@ class RepeatingQuestListViewController(args: Bundle? = null) :
         ) {
             val vm = viewModels[position]
             val view = holder.itemView
-
-            view.setOnClickListener {
-                val handler = FadeChangeHandler()
-                rootRouter.pushController(
-                    RouterTransaction.with(
-                        EditRepeatingQuestViewController(
-                            vm.repeatingQuest
-                        )
-                    )
-                        .pushChangeHandler(handler)
-                        .popChangeHandler(handler)
-                )
-            }
 
             view.rqName.text = vm.name
 
@@ -122,6 +110,15 @@ class RepeatingQuestListViewController(args: Bundle? = null) :
                 progressBar.progress = vm.completedCount
                 progressBar.progressTintList = ColorStateList.valueOf(colorRes(vm.color))
                 progress.text = "${vm.completedCount}/${vm.allCount}"
+            }
+
+            view.setOnClickListener {
+                val changeHandler = FadeChangeHandler()
+                rootRouter.pushController(
+                    RouterTransaction.with(RepeatingQuestViewController(vm.id))
+                        .popChangeHandler(changeHandler)
+                        .popChangeHandler(changeHandler)
+                )
             }
 
         }
@@ -165,6 +162,7 @@ class RepeatingQuestListViewController(args: Bundle? = null) :
                 )
             }
             RepeatingQuestListViewController.RepeatingQuestViewModel(
+                id = it.id,
                 name = it.name,
                 icon = it.icon?.let { AndroidIcon.valueOf(it.name).icon }
                     ?: Ionicons.Icon.ion_android_clipboard,
@@ -172,8 +170,7 @@ class RepeatingQuestListViewController(args: Bundle? = null) :
                 next = next,
                 completedCount = it.periodProgress!!.completedCount,
                 allCount = it.periodProgress.allCount,
-                isCompleted = it.isCompleted,
-                repeatingQuest = it
+                isCompleted = it.isCompleted
             )
         }
 }
