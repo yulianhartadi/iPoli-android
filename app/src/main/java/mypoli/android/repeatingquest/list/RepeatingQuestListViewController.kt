@@ -21,6 +21,8 @@ import mypoli.android.common.ViewUtils
 import mypoli.android.common.redux.android.ReduxViewController
 import mypoli.android.common.text.DateFormatter
 import mypoli.android.common.view.*
+import mypoli.android.repeatingquest.edit.EditRepeatingQuestViewController
+import mypoli.android.repeatingquest.entity.RepeatingQuest
 import mypoli.android.repeatingquest.list.RepeatingQuestListViewState.StateType.DATA_LOADED
 import mypoli.android.repeatingquest.show.RepeatingQuestViewController
 
@@ -73,7 +75,8 @@ class RepeatingQuestListViewController(args: Bundle? = null) :
         val next: String,
         val completedCount: Int,
         val allCount: Int,
-        val isCompleted: Boolean
+        val isCompleted: Boolean,
+        val repeatingQuest: RepeatingQuest
     )
 
     inner class RepeatingQuestAdapter(private var viewModels: List<RepeatingQuestViewModel> = listOf()) :
@@ -85,6 +88,20 @@ class RepeatingQuestListViewController(args: Bundle? = null) :
         ) {
             val vm = viewModels[position]
             val view = holder.itemView
+
+            view.setOnClickListener {
+                val handler = FadeChangeHandler()
+                rootRouter.pushController(
+                    RouterTransaction.with(
+                        EditRepeatingQuestViewController(
+                            vm.repeatingQuest
+                        )
+                    )
+                        .pushChangeHandler(handler)
+                        .popChangeHandler(handler)
+                )
+            }
+
             view.rqName.text = vm.name
 
             view.rqIcon.backgroundTintList =
@@ -167,7 +184,8 @@ class RepeatingQuestListViewController(args: Bundle? = null) :
                 next = next,
                 completedCount = it.periodProgress!!.completedCount,
                 allCount = it.periodProgress.allCount,
-                isCompleted = it.isCompleted
+                isCompleted = it.isCompleted,
+                repeatingQuest = it
             )
         }
 }

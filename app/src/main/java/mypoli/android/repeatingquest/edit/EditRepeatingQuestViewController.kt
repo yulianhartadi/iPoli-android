@@ -2,10 +2,13 @@ package mypoli.android.repeatingquest.edit
 
 import android.app.Dialog
 import android.app.TimePickerDialog
+import android.graphics.drawable.Drawable
 import android.os.Bundle
+import android.support.v4.content.ContextCompat
 import android.text.Editable
 import android.text.TextWatcher
 import android.view.*
+import com.mikepenz.iconics.IconicsDrawable
 import kotlinx.android.synthetic.main.controller_edit_repeating_quest.view.*
 import mypoli.android.R
 import mypoli.android.common.datetime.Time
@@ -15,6 +18,7 @@ import mypoli.android.common.view.*
 import mypoli.android.reminder.view.picker.ReminderPickerDialogController
 import mypoli.android.reminder.view.picker.ReminderViewModel
 import mypoli.android.repeatingquest.edit.EditRepeatingQuestViewState.StateType.*
+import mypoli.android.repeatingquest.entity.RepeatingQuest
 import mypoli.android.repeatingquest.picker.RepeatingPatternPickerDialogController
 
 /**
@@ -27,12 +31,12 @@ class EditRepeatingQuestViewController(args: Bundle? = null) :
     ) {
     override val reducer = EditRepeatingQuestReducer
 
-    private lateinit var repeatingQuestId: String
+    private lateinit var repeatingQuest: RepeatingQuest
 
     constructor(
-        repeatingQuestId: String
+        repeatingQuest: RepeatingQuest
     ) : this() {
-        this.repeatingQuestId = repeatingQuestId
+        this.repeatingQuest = repeatingQuest
     }
 
     override fun onCreateView(
@@ -50,7 +54,7 @@ class EditRepeatingQuestViewController(args: Bundle? = null) :
     }
 
     override fun onCreateLoadAction() =
-        EditRepeatingQuestAction.Load(repeatingQuestId)
+        EditRepeatingQuestAction.Load(repeatingQuest)
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         super.onCreateOptionsMenu(menu, inflater)
@@ -59,6 +63,10 @@ class EditRepeatingQuestViewController(args: Bundle? = null) :
 
     override fun onOptionsItemSelected(item: MenuItem) =
         when (item.itemId) {
+            android.R.id.home -> {
+                router.popCurrentController()
+                true
+            }
             R.id.actionSave -> {
                 dispatch(EditRepeatingQuestAction.Save)
                 true
@@ -116,6 +124,18 @@ class EditRepeatingQuestViewController(args: Bundle? = null) :
             COLOR_CHANGED -> {
                 renderColor(view, state)
             }
+
+            ICON_CHANGED -> {
+                renderIcon(view, state)
+            }
+
+            VALIDATION_ERROR_EMPTY_NAME -> {
+                view.questName.error = "Think of a name"
+            }
+
+            QUEST_SAVED -> {
+                router.popController(this)
+            }
         }
     }
 
@@ -128,6 +148,19 @@ class EditRepeatingQuestViewController(args: Bundle? = null) :
         renderDuration(view, state)
         renderReminder(view, state)
         renderColor(view, state)
+        renderIcon(view, state)
+    }
+
+    private fun renderIcon(view: View, state: EditRepeatingQuestViewState) {
+        view.questIconIcon.setImageDrawable(state.iconDrawable)
+        view.questIconContainer.setOnClickListener {
+            IconPickerDialogController({ icon ->
+                dispatch(EditRepeatingQuestAction.ChangeIcon(icon))
+            }, state.icon?.androidIcon).showDialog(
+                router,
+                "pick_icon_tag"
+            )
+        }
     }
 
     private fun renderColor(view: View, state: EditRepeatingQuestViewState) {
@@ -224,7 +257,7 @@ class EditRepeatingQuestViewController(args: Bundle? = null) :
 
     override fun onAttach(view: View) {
         super.onAttach(view)
-//        showBackButton()
+        showBackButton()
     }
 
     private val EditRepeatingQuestViewState.formattedDuration: String
@@ -246,4 +279,16 @@ class EditRepeatingQuestViewController(args: Bundle? = null) :
                 return reminder.remindTime.toString()
             }
         }
+
+    private val EditRepeatingQuestViewState.iconDrawable: Drawable
+        get() =
+            if (icon == null) {
+                ContextCompat.getDrawable(view!!.context, R.drawable.ic_icon_black_24dp)!!
+            } else {
+                val androidIcon = icon.androidIcon
+                IconicsDrawable(view!!.context)
+                    .icon(androidIcon.icon)
+                    .colorRes(androidIcon.color)
+                    .sizeDp(24)
+            }
 }

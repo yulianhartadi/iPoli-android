@@ -1148,4 +1148,5 @@
     <string name="every">Every</string>
     <string name="times">times</string>
     <string name="quest_color_question">What color?</string>
+    <string name="quest_icon_question">Want an icon?</string>
 </resources>
