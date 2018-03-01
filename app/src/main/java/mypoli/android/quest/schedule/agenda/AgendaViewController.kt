@@ -333,7 +333,9 @@ class AgendaViewController(args: Bundle? = null) :
                         false
                     )
                 )
-                else -> null
+                else -> {
+                    throw IllegalArgumentException("Unknown viewType $viewType")
+                }
             }
 
         inner class QuestViewHolder(view: View) : RecyclerView.ViewHolder(view)
