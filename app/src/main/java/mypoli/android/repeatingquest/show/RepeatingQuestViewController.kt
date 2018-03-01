@@ -103,12 +103,6 @@ class RepeatingQuestViewController :
         showBackButton()
     }
 
-    override fun onDetach(view: View) {
-        super.onDetach(view)
-        activity?.window?.navigationBarColor = attrData(R.attr.colorPrimary)
-        activity?.window?.statusBarColor = attrData(R.attr.colorPrimaryDark)
-    }
-
     override fun render(state: RepeatingQuestViewState, view: View) {
         when (state) {
             is RepeatingQuestViewState.Changed -> {

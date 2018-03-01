@@ -29,6 +29,7 @@ import mypoli.android.repeatingquest.entity.RepeatingPattern
 import mypoli.android.repeatingquest.picker.RepeatingPatternViewState.StateType.*
 import org.threeten.bp.DayOfWeek
 import org.threeten.bp.LocalDate
+import org.threeten.bp.format.TextStyle
 
 
 /**
@@ -516,14 +517,19 @@ class RepeatingPatternPickerDialogController :
     }
 
     private fun RepeatingPatternViewState.weekDaysViewModels() =
-        DayOfWeek.values().map {
+        DateUtils.localeDaysOfWeek.map {
             val isSelected = selectedWeekDays.contains(it)
             val (background, textColor) = if (isSelected)
                 Pair(R.drawable.circle_accent, colorRes(R.color.md_white))
             else
                 Pair(R.drawable.circle_normal, attrData(R.attr.colorAccent))
+            DateUtils.daysOfWeekText(TextStyle.SHORT_STANDALONE)
+
             RepeatingPatternPickerDialogController.WeekDayViewModel(
-                text = it.name.first().toString().toUpperCase(),
+                text = DateUtils.dayOfWeekText(
+                    it,
+                    TextStyle.SHORT_STANDALONE
+                ).first().toUpperCase().toString(),
                 background = background,
                 textColor = textColor,
                 isSelected = isSelected,

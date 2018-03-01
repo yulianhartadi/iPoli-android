@@ -139,13 +139,35 @@ object DateUtils {
     fun daysOfWeekText(style: TextStyle): List<String> {
         return (0 until DAYS_IN_A_WEEK).map {
             val dayOfWeek = DateUtils.firstDayOfWeek.plus(it.toLong())
-
-            dayOfWeek.getDisplayName(
-                style,
-                Locale.getDefault()
-            )
+            dayOfWeekText(dayOfWeek, style)
         }
     }
+
+    fun dayOfWeekText(
+        dayOfWeek: DayOfWeek,
+        style: TextStyle
+    ): String {
+        return dayOfWeek.getDisplayName(
+            style,
+            Locale.getDefault()
+        )
+    }
+
+    val localeDaysOfWeek: List<DayOfWeek>
+        get() = (0 until DAYS_IN_A_WEEK).map {
+            DateUtils.firstDayOfWeek.plus(it.toLong())
+        }
+
+//    fun dayOfWeekText(val dayOfWeek : DayOfWeek, style: TextStyle): String {
+//        return (0 until DAYS_IN_A_WEEK).map {
+//            val dayOfWeek = DateUtils.firstDayOfWeek.plus(it.toLong())
+//
+//            dayOfWeek.getDisplayName(
+//                style,
+//                Locale.getDefault()
+//            )
+//        }
+//    }
 
     val firstDayOfWeek: DayOfWeek
         get() = WeekFields.of(Locale.getDefault()).firstDayOfWeek

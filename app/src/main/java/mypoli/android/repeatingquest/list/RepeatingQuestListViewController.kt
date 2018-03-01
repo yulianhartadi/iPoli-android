@@ -53,6 +53,12 @@ class RepeatingQuestListViewController(args: Bundle? = null) :
     override fun onCreateLoadAction() =
         RepeatingQuestListAction.LoadData
 
+    override fun onAttach(view: View) {
+        super.onAttach(view)
+        activity?.window?.navigationBarColor = attrData(R.attr.colorPrimary)
+        activity?.window?.statusBarColor = attrData(R.attr.colorPrimaryDark)
+    }
+
     override fun render(state: RepeatingQuestListViewState, view: View) {
         when (state.type) {
             CHANGED -> {
