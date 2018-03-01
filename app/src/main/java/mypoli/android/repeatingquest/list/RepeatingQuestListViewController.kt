@@ -64,6 +64,9 @@ class RepeatingQuestListViewController(args: Bundle? = null) :
     override fun render(state: RepeatingQuestListViewState, view: View) {
         when (state.type) {
             CHANGED -> {
+                view.loader.visible = false
+                view.emptyGroup.visible = state.showEmptyView
+
                 (view.repeatingQuestList.adapter as RepeatingQuestAdapter).updateAll(
                     state.toViewModels(
                         view.context
