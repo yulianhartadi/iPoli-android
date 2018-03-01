@@ -18,7 +18,6 @@ import mypoli.android.common.view.*
 import mypoli.android.reminder.view.picker.ReminderPickerDialogController
 import mypoli.android.reminder.view.picker.ReminderViewModel
 import mypoli.android.repeatingquest.edit.EditRepeatingQuestViewState.StateType.*
-import mypoli.android.repeatingquest.entity.RepeatingQuest
 import mypoli.android.repeatingquest.picker.RepeatingPatternPickerDialogController
 
 /**
@@ -31,12 +30,12 @@ class EditRepeatingQuestViewController(args: Bundle? = null) :
     ) {
     override val reducer = EditRepeatingQuestReducer
 
-    private lateinit var repeatingQuest: RepeatingQuest
+    private lateinit var repeatingQuestId: String
 
     constructor(
-        repeatingQuest: RepeatingQuest
+        repeatingQuestId: String
     ) : this() {
-        this.repeatingQuest = repeatingQuest
+        this.repeatingQuestId = repeatingQuestId
     }
 
     override fun onCreateView(
@@ -54,7 +53,7 @@ class EditRepeatingQuestViewController(args: Bundle? = null) :
     }
 
     override fun onCreateLoadAction() =
-        EditRepeatingQuestAction.Load(repeatingQuest)
+        EditRepeatingQuestAction.Load(repeatingQuestId)
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         super.onCreateOptionsMenu(menu, inflater)
@@ -151,6 +150,19 @@ class EditRepeatingQuestViewController(args: Bundle? = null) :
         renderIcon(view, state)
     }
 
+    private fun colorLayout(
+        view: View,
+        state: EditRepeatingQuestViewState
+    ) {
+        val color500 = colorRes(state.color500)
+        val color700 = colorRes(state.color700)
+        view.appbar.setBackgroundColor(color500)
+        view.toolbar.setBackgroundColor(color500)
+        view.toolbarCollapsingContainer.setContentScrimColor(color500)
+        activity?.window?.navigationBarColor = color500
+        activity?.window?.statusBarColor = color700
+    }
+
     private fun renderIcon(view: View, state: EditRepeatingQuestViewState) {
         view.questIconIcon.setImageDrawable(state.iconDrawable)
         view.questIconContainer.setOnClickListener {
@@ -164,7 +176,7 @@ class EditRepeatingQuestViewController(args: Bundle? = null) :
     }
 
     private fun renderColor(view: View, state: EditRepeatingQuestViewState) {
-        //color layout
+        colorLayout(view, state)
         view.questColorContainer.setOnClickListener {
             ColorPickerDialogController(object :
                 ColorPickerDialogController.ColorPickedListener {
@@ -291,4 +303,10 @@ class EditRepeatingQuestViewController(args: Bundle? = null) :
                     .colorRes(androidIcon.color)
                     .sizeDp(24)
             }
+
+    private val EditRepeatingQuestViewState.color500: Int
+        get() = color.androidColor.color500
+
+    private val EditRepeatingQuestViewState.color700: Int
+        get() = color.androidColor.color700
 }

@@ -14,7 +14,6 @@ import mypoli.android.reminder.view.picker.ReminderViewModel
 import mypoli.android.repeatingquest.edit.EditRepeatingQuestViewState.StateType.*
 import mypoli.android.repeatingquest.entity.FrequencyType
 import mypoli.android.repeatingquest.entity.RepeatingPattern
-import mypoli.android.repeatingquest.entity.RepeatingQuest
 import mypoli.android.repeatingquest.entity.frequencyType
 import mypoli.android.repeatingquest.usecase.SaveRepeatingQuestUseCase
 
@@ -24,7 +23,7 @@ import mypoli.android.repeatingquest.usecase.SaveRepeatingQuestUseCase
  */
 
 sealed class EditRepeatingQuestAction : Action {
-    data class Load(val repeatingQuest: RepeatingQuest) : EditRepeatingQuestAction()
+    data class Load(val repeatingQuestId: String) : EditRepeatingQuestAction()
     data class ChangeRepeatingPattern(val repeatingPattern: RepeatingPattern) :
         EditRepeatingQuestAction()
 
@@ -52,7 +51,9 @@ object EditRepeatingQuestReducer : BaseViewStateReducer<EditRepeatingQuestViewSt
     ) =
         when (action) {
             is EditRepeatingQuestAction.Load -> {
-                val rq = action.repeatingQuest
+                val dataState = state.dataState
+                val rq = dataState.repeatingQuests.first { it.id == action.repeatingQuestId }
+
                 subState.copy(
                     type = DATA_LOADED,
                     id = rq.id,

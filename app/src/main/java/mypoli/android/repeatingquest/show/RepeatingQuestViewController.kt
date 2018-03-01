@@ -5,9 +5,9 @@ import android.os.Bundle
 import android.support.annotation.ColorInt
 import android.support.annotation.LayoutRes
 import android.support.v4.view.ViewCompat
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
+import android.view.*
+import com.bluelinelabs.conductor.RouterTransaction
+import com.bluelinelabs.conductor.changehandler.FadeChangeHandler
 import kotlinx.android.synthetic.main.controller_repeating_quest.view.*
 import mypoli.android.MainActivity
 import mypoli.android.R
@@ -16,6 +16,7 @@ import mypoli.android.common.datetime.Time
 import mypoli.android.common.redux.android.ReduxViewController
 import mypoli.android.common.text.DateFormatter
 import mypoli.android.common.view.*
+import mypoli.android.repeatingquest.edit.EditRepeatingQuestViewController
 
 
 /**
@@ -42,6 +43,7 @@ class RepeatingQuestViewController :
         container: ViewGroup,
         savedViewState: Bundle?
     ): View {
+        setHasOptionsMenu(true)
         val view = inflater.inflate(
             R.layout.controller_repeating_quest,
             container,
@@ -68,6 +70,44 @@ class RepeatingQuestViewController :
 
     override fun onCreateLoadAction() =
         RepeatingQuestAction.Load(repeatingQuestId)
+
+    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+        super.onCreateOptionsMenu(menu, inflater)
+        inflater.inflate(R.menu.repeating_quest_menu, menu)
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem) =
+        when (item.itemId) {
+            android.R.id.home -> {
+                router.popCurrentController()
+                true
+            }
+            R.id.actionEdit -> {
+                val changeHandler = FadeChangeHandler()
+                rootRouter.pushController(
+                    RouterTransaction.with(EditRepeatingQuestViewController(repeatingQuestId))
+                        .pushChangeHandler(changeHandler)
+                        .popChangeHandler(changeHandler)
+                )
+                true
+            }
+            R.id.actionDelete -> {
+//                dispatch(EditRepeatingQuestAction.Save)
+                true
+            }
+            else -> super.onOptionsItemSelected(item)
+        }
+
+    override fun onAttach(view: View) {
+        super.onAttach(view)
+        showBackButton()
+    }
+
+    override fun onDetach(view: View) {
+        super.onDetach(view)
+        activity?.window?.navigationBarColor = attrData(R.attr.colorPrimary)
+        activity?.window?.statusBarColor = attrData(R.attr.colorPrimaryDark)
+    }
 
     override fun render(state: RepeatingQuestViewState, view: View) {
         when (state) {
@@ -143,10 +183,10 @@ class RepeatingQuestViewController :
     }
 
     private val RepeatingQuestViewState.Changed.color500
-        get() = AndroidColor.valueOf(color.name).color500
+        get() = color.androidColor.color500
 
     private val RepeatingQuestViewState.Changed.color700
-        get() = AndroidColor.valueOf(color.name).color700
+        get() = color.androidColor.color700
 
     private val RepeatingQuestViewState.Changed.progressViewModels
         get() = progress.map {

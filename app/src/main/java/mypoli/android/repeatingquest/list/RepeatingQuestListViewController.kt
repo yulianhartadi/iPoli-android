@@ -21,8 +21,6 @@ import mypoli.android.common.ViewUtils
 import mypoli.android.common.redux.android.ReduxViewController
 import mypoli.android.common.text.DateFormatter
 import mypoli.android.common.view.*
-import mypoli.android.repeatingquest.edit.EditRepeatingQuestViewController
-import mypoli.android.repeatingquest.entity.RepeatingQuest
 import mypoli.android.repeatingquest.list.RepeatingQuestListViewState.StateType.CHANGED
 import mypoli.android.repeatingquest.show.RepeatingQuestViewController
 
@@ -116,7 +114,7 @@ class RepeatingQuestListViewController(args: Bundle? = null) :
                 val changeHandler = FadeChangeHandler()
                 rootRouter.pushController(
                     RouterTransaction.with(RepeatingQuestViewController(vm.id))
-                        .popChangeHandler(changeHandler)
+                        .pushChangeHandler(changeHandler)
                         .popChangeHandler(changeHandler)
                 )
             }
