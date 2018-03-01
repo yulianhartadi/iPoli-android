@@ -33,7 +33,7 @@ object RepeatingQuestListReducer : BaseViewStateReducer<RepeatingQuestListViewSt
             }
 
             else -> subState
-    }
+        }
 
     override fun defaultState() =
         RepeatingQuestListViewState(
@@ -52,3 +52,18 @@ data class RepeatingQuestListViewState(
         DATA_LOADED
     }
 }
+//
+//fun RepeatingQuestListViewState.toViewModels() =
+//    repeatingQuests.map {
+//
+//        RepeatingQuestListViewController.RepeatingQuestViewModel(
+//            id = it.id,
+//            name = it.name,
+//            icon = it.icon?.let { AndroidIcon.valueOf(it.name).icon }
+//                ?: Ionicons.Icon.ion_android_clipboard,
+//            color = AndroidColor.valueOf(it.color.name).color500,
+//            next = "Next: Today",
+//            completedCount = 2,
+//            allCount = 3
+//        )
+//    }

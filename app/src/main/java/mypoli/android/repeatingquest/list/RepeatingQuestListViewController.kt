@@ -24,6 +24,7 @@ import mypoli.android.common.view.*
 import mypoli.android.repeatingquest.edit.EditRepeatingQuestViewController
 import mypoli.android.repeatingquest.entity.RepeatingQuest
 import mypoli.android.repeatingquest.list.RepeatingQuestListViewState.StateType.DATA_LOADED
+import mypoli.android.repeatingquest.show.RepeatingQuestViewController
 
 /**
  * Created by Polina Zhelyazkova <polina@ipoli.io>
@@ -67,6 +68,7 @@ class RepeatingQuestListViewController(args: Bundle? = null) :
     }
 
     data class RepeatingQuestViewModel(
+        val id: String,
         val name: String,
         val icon: IIcon,
         @ColorRes val color: Int,
@@ -124,6 +126,15 @@ class RepeatingQuestListViewController(args: Bundle? = null) :
                 progress.text = "${vm.completedCount}/${vm.allCount}"
             }
 
+            view.setOnClickListener {
+                val changeHandler = FadeChangeHandler()
+                rootRouter.pushController(
+                    RouterTransaction.with(RepeatingQuestViewController(vm.id))
+                        .popChangeHandler(changeHandler)
+                        .popChangeHandler(changeHandler)
+                )
+            }
+
         }
 
         override fun onCreateViewHolder(
@@ -165,6 +176,7 @@ class RepeatingQuestListViewController(args: Bundle? = null) :
                 )
             }
             RepeatingQuestListViewController.RepeatingQuestViewModel(
+                id = it.id,
                 name = it.name,
                 icon = it.icon?.let { AndroidIcon.valueOf(it.name).icon }
                     ?: Ionicons.Icon.ion_android_clipboard,
