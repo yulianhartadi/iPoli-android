@@ -29,9 +29,12 @@ class RepeatingQuestHistoryUseCaseSpek : Spek({
             repeatingQuest: RepeatingQuest,
             start: LocalDate, end: LocalDate
         ) =
-            RepeatingQuestHistoryUseCase(questRepo).execute(
+            RepeatingQuestHistoryUseCase(questRepo,
+                mock {
+                    on { findById(any()) } doReturn repeatingQuest
+                }).execute(
                 RepeatingQuestHistoryUseCase.Params(
-                    repeatingQuest,
+                    "",
                     start,
                     end
                 )

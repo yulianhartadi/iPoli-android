@@ -320,6 +320,11 @@ class MainUseCaseModule : UseCaseModule, Injects<Module> {
             questRepository,
             repeatingQuestRepository
         )
+    override val repeatingQuestHistoryUseCase: RepeatingQuestHistoryUseCase
+        get() = RepeatingQuestHistoryUseCase(
+            questRepository,
+            repeatingQuestRepository
+        )
 }
 
 interface UseCaseModule {
@@ -368,6 +373,7 @@ interface UseCaseModule {
     val findPeriodProgressForRepeatingQuestUseCase: FindPeriodProgressForRepeatingQuestUseCase
     val findQuestsForRepeatingQuestUseCase: FindQuestsForRepeatingQuestUseCase
     val removeRepeatingQuestUseCase: RemoveRepeatingQuestUseCase
+    val repeatingQuestHistoryUseCase: RepeatingQuestHistoryUseCase
 }
 
 interface PresenterModule {
