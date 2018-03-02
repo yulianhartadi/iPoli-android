@@ -105,7 +105,7 @@ class EditRepeatingQuestViewController(args: Bundle? = null) :
             }
 
             REPEATING_PATTERN_CHANGED -> {
-                renderFrequency(view, state)
+                renderRepeatType(view, state)
             }
 
             START_TIME_CHANGED -> {
@@ -142,7 +142,7 @@ class EditRepeatingQuestViewController(args: Bundle? = null) :
         view: View,
         state: EditRepeatingQuestViewState
     ) {
-        renderFrequency(view, state)
+        renderRepeatType(view, state)
         renderStartTime(view, state)
         renderDuration(view, state)
         renderReminder(view, state)
@@ -253,12 +253,12 @@ class EditRepeatingQuestViewController(args: Bundle? = null) :
         }
     }
 
-    private fun renderFrequency(
+    private fun renderRepeatType(
         view: View,
         state: EditRepeatingQuestViewState
     ) {
-        view.questRepeatPatternValue.text = state.formattedFrequencyType
-        view.questFrequencyContainer.setOnClickListener {
+        view.questRepeatPatternValue.text = state.formattedRepeatType
+        view.questRepeatContainer.setOnClickListener {
             RepeatingPatternPickerDialogController(
                 state.repeatingPattern,
                 {
@@ -280,8 +280,8 @@ class EditRepeatingQuestViewController(args: Bundle? = null) :
             if (startTime != null) startTime.toString()
             else stringRes(R.string.do_not_know)
 
-    private val EditRepeatingQuestViewState.formattedFrequencyType: String
-        get() = stringsRes(R.array.repeating_quest_frequencies)[frequencyType.ordinal]
+    private val EditRepeatingQuestViewState.formattedRepeatType: String
+        get() = stringsRes(R.array.repeating_quest_frequencies)[repeatType.ordinal]
 
     private val EditRepeatingQuestViewState.formattedReminder: String
         get() {

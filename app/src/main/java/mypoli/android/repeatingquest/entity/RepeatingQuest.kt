@@ -201,21 +201,21 @@ data class PeriodRange(val start: LocalDate, val end: LocalDate)
 
 data class PeriodProgress(val completedCount: Int, val allCount: Int)
 
-enum class FrequencyType {
+enum class RepeatType {
     DAILY,
     WEEKLY,
     MONTHLY,
     YEARLY
 }
 
-val RepeatingPattern.frequencyType: FrequencyType
+val RepeatingPattern.repeatType: RepeatType
     get() = when (this) {
-        is RepeatingPattern.Daily -> FrequencyType.DAILY
-        is RepeatingPattern.Weekly -> FrequencyType.WEEKLY
-        is RepeatingPattern.Flexible.Weekly -> FrequencyType.WEEKLY
-        is RepeatingPattern.Monthly -> FrequencyType.MONTHLY
-        is RepeatingPattern.Flexible.Monthly -> FrequencyType.MONTHLY
-        is RepeatingPattern.Yearly -> FrequencyType.YEARLY
+        is RepeatingPattern.Daily -> RepeatType.DAILY
+        is RepeatingPattern.Weekly -> RepeatType.WEEKLY
+        is RepeatingPattern.Flexible.Weekly -> RepeatType.WEEKLY
+        is RepeatingPattern.Monthly -> RepeatType.MONTHLY
+        is RepeatingPattern.Flexible.Monthly -> RepeatType.MONTHLY
+        is RepeatingPattern.Yearly -> RepeatType.YEARLY
     }
 
 

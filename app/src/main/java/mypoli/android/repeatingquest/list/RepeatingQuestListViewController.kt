@@ -22,7 +22,7 @@ import mypoli.android.common.redux.android.ReduxViewController
 import mypoli.android.common.text.DateFormatter
 import mypoli.android.common.text.DurationFormatter
 import mypoli.android.common.view.*
-import mypoli.android.repeatingquest.entity.frequencyType
+import mypoli.android.repeatingquest.entity.repeatType
 import mypoli.android.repeatingquest.list.RepeatingQuestListViewState.StateType.CHANGED
 import mypoli.android.repeatingquest.show.RepeatingQuestViewController
 
@@ -192,7 +192,7 @@ class RepeatingQuestListViewController(args: Bundle? = null) :
                 completedCount = it.periodProgress!!.completedCount,
                 allCount = it.periodProgress.allCount,
                 isCompleted = it.isCompleted,
-                frequency = frequencies[it.repeatingPattern.frequencyType.ordinal]
+                frequency = frequencies[it.repeatingPattern.repeatType.ordinal]
             )
         }
     }

@@ -24,7 +24,7 @@ import mypoli.android.common.ViewUtils
 import mypoli.android.common.datetime.DateUtils
 import mypoli.android.common.text.DateFormatter
 import mypoli.android.common.view.*
-import mypoli.android.repeatingquest.entity.FrequencyType
+import mypoli.android.repeatingquest.entity.RepeatType
 import mypoli.android.repeatingquest.entity.RepeatingPattern
 import mypoli.android.repeatingquest.picker.RepeatingPatternViewState.StateType.*
 import org.threeten.bp.DayOfWeek
@@ -83,7 +83,7 @@ class RepeatingPatternPickerDialogController :
                 renderEndDate(view, state)
                 initEndDateListener(view, state)
 
-                renderForFrequencyType(state, view)
+                renderForRepeatType(state, view)
 
                 view.rpMessage.setCompoundDrawablesWithIntrinsicBounds(
                     ContextCompat.getDrawable(view.context, state.petAvatar!!),
@@ -93,9 +93,9 @@ class RepeatingPatternPickerDialogController :
                 )
             }
 
-            FREQUENCY_CHANGED -> {
+            REPEAT_TYPE_CHANGED -> {
                 TransitionManager.beginDelayedTransition(view as ViewGroup)
-                renderForFrequencyType(state, view)
+                renderForRepeatType(state, view)
             }
 
             WEEK_DAYS_CHANGED -> {
@@ -197,15 +197,15 @@ class RepeatingPatternPickerDialogController :
         view.rpStart.text = state.formattedStartDate
     }
 
-    private fun renderForFrequencyType(
+    private fun renderForRepeatType(
         state: RepeatingPatternViewState,
         view: View
     ) {
-        when (state.frequencyType) {
-            FrequencyType.DAILY -> renderDaily(view, state)
-            FrequencyType.WEEKLY -> renderWeekly(view, state)
-            FrequencyType.MONTHLY -> renderMonthly(view, state)
-            FrequencyType.YEARLY -> renderYearly(view, state)
+        when (state.repeatType) {
+            RepeatType.DAILY -> renderDaily(view, state)
+            RepeatType.WEEKLY -> renderWeekly(view, state)
+            RepeatType.MONTHLY -> renderMonthly(view, state)
+            RepeatType.YEARLY -> renderYearly(view, state)
         }
     }
 
@@ -387,11 +387,11 @@ class RepeatingPatternPickerDialogController :
         view: View,
         state: RepeatingPatternViewState
     ) {
-        val frequency = view.rpFrequency
-        frequency.onItemSelectedListener = null
-        frequency.setSelection(state.frequencyIndex)
-        frequency.post {
-            frequency.onItemSelectedListener =
+        val repeatType = view.rpRepeatType
+        repeatType.onItemSelectedListener = null
+        repeatType.setSelection(state.repeatTypeIndex)
+        repeatType.post {
+            repeatType.onItemSelectedListener =
                 object : AdapterView.OnItemSelectedListener {
                     override fun onNothingSelected(parent: AdapterView<*>?) {
                     }

@@ -12,9 +12,9 @@ import mypoli.android.quest.Reminder
 import mypoli.android.quest.toMinutesFromStart
 import mypoli.android.reminder.view.picker.ReminderViewModel
 import mypoli.android.repeatingquest.edit.EditRepeatingQuestViewState.StateType.*
-import mypoli.android.repeatingquest.entity.FrequencyType
+import mypoli.android.repeatingquest.entity.RepeatType
 import mypoli.android.repeatingquest.entity.RepeatingPattern
-import mypoli.android.repeatingquest.entity.frequencyType
+import mypoli.android.repeatingquest.entity.repeatType
 import mypoli.android.repeatingquest.usecase.SaveRepeatingQuestUseCase
 
 /**
@@ -60,7 +60,7 @@ object EditRepeatingQuestReducer : BaseViewStateReducer<EditRepeatingQuestViewSt
                     name = rq.name,
                     startTime = rq.startTime,
                     repeatingPattern = rq.repeatingPattern,
-                    frequencyType = rq.repeatingPattern.frequencyType,
+                    repeatType = rq.repeatingPattern.repeatType,
                     duration = rq.duration,
                     reminder = rq.reminder,
                     icon = rq.icon,
@@ -72,7 +72,7 @@ object EditRepeatingQuestReducer : BaseViewStateReducer<EditRepeatingQuestViewSt
                 subState.copy(
                     type = REPEATING_PATTERN_CHANGED,
                     repeatingPattern = action.repeatingPattern,
-                    frequencyType = action.repeatingPattern.frequencyType
+                    repeatType = action.repeatingPattern.repeatType
                 )
             }
 
@@ -145,7 +145,7 @@ object EditRepeatingQuestReducer : BaseViewStateReducer<EditRepeatingQuestViewSt
             id = "",
             name = "",
             repeatingPattern = RepeatingPattern.Daily(),
-            frequencyType = FrequencyType.DAILY,
+            repeatType = RepeatType.DAILY,
             duration = Constants.QUEST_MIN_DURATION,
             startTime = null,
             reminder = null,
@@ -161,7 +161,7 @@ data class EditRepeatingQuestViewState(
     val id: String,
     val name: String,
     val repeatingPattern: RepeatingPattern,
-    val frequencyType: FrequencyType,
+    val repeatType: RepeatType,
     val duration: Int,
     val startTime: Time?,
     val reminder: Reminder?,

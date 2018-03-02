@@ -83,7 +83,7 @@
             android:orientation="vertical">
 
             <RelativeLayout
-                android:id="@+id/questFrequencyContainer"
+                android:id="@+id/questRepeatContainer"
                 android:layout_width="match_parent"
                 android:layout_height="60dp"
                 android:layout_gravity="center_horizontal"

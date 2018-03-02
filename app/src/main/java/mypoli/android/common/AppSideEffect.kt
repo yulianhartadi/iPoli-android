@@ -213,9 +213,14 @@ class CompleteQuestSideEffect : AppSideEffect() {
 class RepeatingQuestSideEffect : AppSideEffect() {
     private val saveRepeatingQuestUseCase by required { saveRepeatingQuestUseCase }
     private val removeRepeatingQuestUseCase by required { removeRepeatingQuestUseCase }
+    private val repeatingQuestHistoryUseCase by required { repeatingQuestHistoryUseCase }
 
     override suspend fun doExecute(action: Action, state: AppState) {
         when (action) {
+            is RepeatingQuestAction.Load -> {
+
+            }
+
             EditRepeatingQuestAction.Save -> {
                 val rqState = state.stateFor(EditRepeatingQuestViewState::class.java)
 
@@ -248,6 +253,7 @@ class RepeatingQuestSideEffect : AppSideEffect() {
     override fun canHandle(action: Action) =
         action == EditRepeatingQuestAction.Save
             || action is RepeatingQuestAction.Remove
+            || action is RepeatingQuestAction.Load
 }
 
 class BuyPredefinedChallengeSideEffect : AppSideEffect() {
