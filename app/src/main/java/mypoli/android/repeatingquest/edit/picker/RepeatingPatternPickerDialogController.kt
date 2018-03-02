@@ -1,4 +1,4 @@
-package mypoli.android.repeatingquest.picker
+package mypoli.android.repeatingquest.edit.picker
 
 import android.app.DatePickerDialog
 import android.os.Bundle
@@ -26,7 +26,7 @@ import mypoli.android.common.text.DateFormatter
 import mypoli.android.common.view.*
 import mypoli.android.repeatingquest.entity.RepeatType
 import mypoli.android.repeatingquest.entity.RepeatingPattern
-import mypoli.android.repeatingquest.picker.RepeatingPatternViewState.StateType.*
+import mypoli.android.repeatingquest.edit.picker.RepeatingPatternViewState.StateType.*
 import org.threeten.bp.DayOfWeek
 import org.threeten.bp.LocalDate
 import org.threeten.bp.format.TextStyle

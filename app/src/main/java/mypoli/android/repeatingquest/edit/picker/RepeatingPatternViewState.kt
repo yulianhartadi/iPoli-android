@@ -1,4 +1,4 @@
-package mypoli.android.repeatingquest.picker
+package mypoli.android.repeatingquest.edit.picker
 
 import android.support.annotation.DrawableRes
 import mypoli.android.common.AppState
@@ -6,10 +6,10 @@ import mypoli.android.common.BaseViewStateReducer
 import mypoli.android.common.mvi.ViewState
 import mypoli.android.common.redux.Action
 import mypoli.android.pet.AndroidPetAvatar
+import mypoli.android.repeatingquest.edit.picker.RepeatingPatternViewState.StateType.*
 import mypoli.android.repeatingquest.entity.RepeatType
 import mypoli.android.repeatingquest.entity.RepeatingPattern
 import mypoli.android.repeatingquest.entity.repeatType
-import mypoli.android.repeatingquest.picker.RepeatingPatternViewState.StateType.*
 import org.threeten.bp.DayOfWeek
 import org.threeten.bp.LocalDate
 

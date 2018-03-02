@@ -18,7 +18,7 @@ import mypoli.android.common.view.*
 import mypoli.android.reminder.view.picker.ReminderPickerDialogController
 import mypoli.android.reminder.view.picker.ReminderViewModel
 import mypoli.android.repeatingquest.edit.EditRepeatingQuestViewState.StateType.*
-import mypoli.android.repeatingquest.picker.RepeatingPatternPickerDialogController
+import mypoli.android.repeatingquest.edit.picker.RepeatingPatternPickerDialogController
 
 /**
  * Created by Polina Zhelyazkova <polina@ipoli.io>

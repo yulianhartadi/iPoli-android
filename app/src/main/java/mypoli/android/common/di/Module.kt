@@ -53,6 +53,8 @@ import mypoli.android.rate.RatePresenter
 import mypoli.android.reminder.view.formatter.ReminderTimeFormatter
 import mypoli.android.reminder.view.formatter.TimeUnitFormatter
 import mypoli.android.reminder.view.picker.ReminderPickerDialogPresenter
+import mypoli.android.repeatingquest.AndroidSaveQuestsForRepeatingQuestScheduler
+import mypoli.android.repeatingquest.SaveQuestsForRepeatingQuestScheduler
 import mypoli.android.repeatingquest.persistence.FirestoreRepeatingQuestRepository
 import mypoli.android.repeatingquest.persistence.RepeatingQuestRepository
 import mypoli.android.repeatingquest.usecase.*
@@ -137,6 +139,8 @@ interface AndroidModule {
 
     val lowerPetStatsScheduler: LowerPetStatsScheduler
 
+    val saveQuestsForRepeatingQuestScheduler: SaveQuestsForRepeatingQuestScheduler
+
     val ratePopupScheduler: RatePopupScheduler
 
     val job: Job
@@ -168,6 +172,8 @@ class MainAndroidModule(
     override val levelDownScheduler get() = AndroidLevelDownScheduler()
 
     override val lowerPetStatsScheduler get() = AndroidJobLowerPetStatsScheduler()
+
+    override val saveQuestsForRepeatingQuestScheduler get() = AndroidSaveQuestsForRepeatingQuestScheduler()
 
     override val ratePopupScheduler get() = AndroidRatePopupScheduler()
 
