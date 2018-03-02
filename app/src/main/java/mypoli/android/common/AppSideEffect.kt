@@ -473,7 +473,7 @@ class LoadAllDataSideEffect : AppSideEffect() {
     private val playerRepository by required { playerRepository }
     private val questRepository by required { questRepository }
     private val repeatingQuestRepository by required { repeatingQuestRepository }
-    private val findQuestsForRepeatingQuestUseCase by required { createQuestsForRepeatingQuestUseCase }
+    private val findQuestsForRepeatingQuestUseCase by required { saveQuestsForRepeatingQuestUseCase }
     private val loadScheduleForDateUseCase by required { loadScheduleForDateUseCase }
     private val findNextDateForRepeatingQuestUseCase by required { findNextDateForRepeatingQuestUseCase }
     private val findPeriodProgressForRepeatingQuestUseCase by required { findPeriodProgressForRepeatingQuestUseCase }
@@ -524,8 +524,8 @@ class LoadAllDataSideEffect : AppSideEffect() {
                         }
 //
 //                    val scheduledQuests = rqs.map {
-//                        createQuestsForRepeatingQuestUseCase.execute(
-//                            CreateQuestsForRepeatingQuestUseCase.Params(
+//                        saveQuestsForRepeatingQuestUseCase.execute(
+//                            SaveQuestsForRepeatingQuestUseCase.Params(
 //                                it,
 //                                LocalDate.now(),
 //                                LocalDate.now()

@@ -17,12 +17,12 @@ import org.threeten.bp.temporal.TemporalAdjusters.*
  * Created by Venelin Valkov <venelin@mypoli.fun>
  * on 02/14/2018.
  */
-class CreateQuestsForRepeatingQuestUseCase(
+class SaveQuestsForRepeatingQuestUseCase(
     private val questRepository: QuestRepository,
     private val repeatingQuestRepository: RepeatingQuestRepository
-) : UseCase<CreateQuestsForRepeatingQuestUseCase.Params, CreateQuestsForRepeatingQuestUseCase.Result> {
+) : UseCase<SaveQuestsForRepeatingQuestUseCase.Params, SaveQuestsForRepeatingQuestUseCase.Result> {
 
-    override fun execute(parameters: Params): CreateQuestsForRepeatingQuestUseCase.Result {
+    override fun execute(parameters: Params): SaveQuestsForRepeatingQuestUseCase.Result {
         val rq = parameters.repeatingQuest
 
         if (parameters.end.isBefore(rq.start)) {

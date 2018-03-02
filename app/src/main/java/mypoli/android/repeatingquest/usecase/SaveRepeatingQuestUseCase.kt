@@ -20,7 +20,7 @@ import org.threeten.bp.LocalDate
 class SaveRepeatingQuestUseCase(
     private val questRepository: QuestRepository,
     private val repeatingQuestRepository: RepeatingQuestRepository,
-    private val createQuestsForRepeatingQuestUseCase: CreateQuestsForRepeatingQuestUseCase
+    private val saveQuestsForRepeatingQuestUseCase: SaveQuestsForRepeatingQuestUseCase
 ) : UseCase<SaveRepeatingQuestUseCase.Params, SaveRepeatingQuestUseCase.Result> {
 
     override fun execute(parameters: Params): Result {
@@ -76,8 +76,8 @@ class SaveRepeatingQuestUseCase(
         val currentPeriod = repeatingQuest.repeatingPattern.periodRangeFor(LocalDate.now())
         val nextPeriodFirstDate = currentPeriod.end.plusDays(1)
         val end = repeatingQuest.repeatingPattern.periodRangeFor(nextPeriodFirstDate).end
-        createQuestsForRepeatingQuestUseCase.execute(
-            CreateQuestsForRepeatingQuestUseCase.Params(
+        saveQuestsForRepeatingQuestUseCase.execute(
+            SaveQuestsForRepeatingQuestUseCase.Params(
                 repeatingQuest = repeatingQuest,
                 start = LocalDate.now(),
                 end = end

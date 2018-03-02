@@ -26,9 +26,9 @@ import java.util.*
  * Created by Venelin Valkov <venelin@mypoli.fun>
  * on 02/14/2018.
  */
-class CreateQuestsForRepeatingQuestUseCaseSpek : Spek({
+class SaveQuestsForRepeatingQuestUseCaseSpek : Spek({
 
-    describe("CreateQuestsForRepeatingQuestUseCase") {
+    describe("SaveQuestsForRepeatingQuestUseCase") {
 
         fun doExecuteUseCase(
             quest: RepeatingQuest,
@@ -37,8 +37,8 @@ class CreateQuestsForRepeatingQuestUseCaseSpek : Spek({
             questRepo: QuestRepository = TestUtil.questRepoMock(),
             rqRepo: RepeatingQuestRepository = TestUtil.repeatingQuestRepoMock()
         ) =
-            CreateQuestsForRepeatingQuestUseCase(questRepo, rqRepo).execute(
-                CreateQuestsForRepeatingQuestUseCase.Params(
+            SaveQuestsForRepeatingQuestUseCase(questRepo, rqRepo).execute(
+                SaveQuestsForRepeatingQuestUseCase.Params(
                     repeatingQuest = quest,
                     start = start,
                     end = end,

@@ -53,6 +53,7 @@ class AndroidJobLowerPetStatsScheduler : LowerPetStatsScheduler {
         bundle.putInt("lowerStatsTime", lowerStatsTime.toMinuteOfDay())
         JobRequest.Builder(LowerPetStatsJob.TAG)
             .setExtras(bundle)
+            .setUpdateCurrent(true)
             .setExact(TimeUnit.MINUTES.toMillis(currentTime.minutesTo(lowerStatsTime).toLong()))
             .build()
             .schedule()
