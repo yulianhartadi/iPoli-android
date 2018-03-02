@@ -24,10 +24,16 @@ class RepeatingQuestHistoryUseCase(private val questRepository: QuestRepository)
 
         return start.datesBetween(end).map {
             val shouldBeCompleted = rq.repeatingPattern.shouldScheduleOn(it)
-            val state = if (shouldBeCompleted && completedDates.contains(it)) {
+            val hasCompletedOnDate = completedDates.contains(it)
+
+            val state = if (shouldBeCompleted && hasCompletedOnDate) {
                 QuestState.COMPLETED
-            } else {
+            } else if (shouldBeCompleted && !hasCompletedOnDate) {
                 QuestState.NOT_COMPLETED
+            } else if (!shouldBeCompleted && hasCompletedOnDate) {
+                QuestState.COMPLETED_NOT_ORIGINAL
+            } else {
+                QuestState.EMPTY
             }
             it to state
         }.toMap()

@@ -13,6 +13,7 @@ import org.amshove.kluent.shouldThrow
 import org.jetbrains.spek.api.Spek
 import org.jetbrains.spek.api.dsl.describe
 import org.jetbrains.spek.api.dsl.it
+import org.threeten.bp.DayOfWeek
 import org.threeten.bp.LocalDate
 
 /**
@@ -57,7 +58,7 @@ class RepeatingQuestHistoryUseCaseSpek : Spek({
                         any(),
                         any()
                     )
-                } doReturn listOf<Quest>(
+                } doReturn listOf(
                     TestUtil.quest.copy(
                         completedAtDate = date
                     )
@@ -88,6 +89,48 @@ class RepeatingQuestHistoryUseCaseSpek : Spek({
                 ), date, date
             )
             result[date].`should equal`(RepeatingQuestHistoryUseCase.QuestState.NOT_COMPLETED)
+        }
+
+        it("should return empty") {
+            val date = LocalDate.now().with(DayOfWeek.TUESDAY)
+            val questRepoMock = mock<QuestRepository> {
+                on {
+                    findCompletedForRepeatingQuestInPeriod(
+                        any(),
+                        any(),
+                        any()
+                    )
+                } doReturn listOf<Quest>()
+            }
+            val result = executeUseCase(
+                questRepoMock, TestUtil.repeatingQuest.copy(
+                    repeatingPattern = RepeatingPattern.Weekly(setOf(DayOfWeek.MONDAY))
+                ), date, date
+            )
+            result[date].`should equal`(RepeatingQuestHistoryUseCase.QuestState.EMPTY)
+        }
+
+        it("should return completed not original") {
+            val date = LocalDate.now().with(DayOfWeek.TUESDAY)
+            val questRepoMock = mock<QuestRepository> {
+                on {
+                    findCompletedForRepeatingQuestInPeriod(
+                        any(),
+                        any(),
+                        any()
+                    )
+                } doReturn listOf(
+                    TestUtil.quest.copy(
+                        completedAtDate = date
+                    )
+                )
+            }
+            val result = executeUseCase(
+                questRepoMock, TestUtil.repeatingQuest.copy(
+                    repeatingPattern = RepeatingPattern.Weekly(setOf(DayOfWeek.MONDAY))
+                ), date, date
+            )
+            result[date].`should equal`(RepeatingQuestHistoryUseCase.QuestState.COMPLETED_NOT_ORIGINAL)
         }
     }
 })
