@@ -188,7 +188,13 @@ sealed class RepeatingPattern(
             else -> nextDateWithoutRange(from)
         }
 
-    fun shouldScheduleOn(date: LocalDate) = date.isEqual(nextDate(date))
+    fun shouldScheduleOn(date: LocalDate): Boolean {
+        val nextDate = nextDate(date)
+        if (nextDate == null) {
+            return false
+        }
+        return date.isEqual(nextDate)
+    }
 }
 
 data class PeriodRange(val start: LocalDate, val end: LocalDate)

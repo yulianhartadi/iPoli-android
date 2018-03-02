@@ -69,7 +69,7 @@ class RepeatingQuestHistoryUseCaseSpek : Spek({
                     repeatingPattern = RepeatingPattern.Daily()
                 ), date, date
             )
-            result[date].`should equal`(RepeatingQuestHistoryUseCase.QuestState.COMPLETED)
+            result[date].`should equal`(RepeatingQuestHistoryUseCase.QuestState.COMPLETED_ON_SCHEDULE)
         }
 
         it("should return not completed") {
@@ -110,7 +110,7 @@ class RepeatingQuestHistoryUseCaseSpek : Spek({
             result[date].`should equal`(RepeatingQuestHistoryUseCase.QuestState.EMPTY)
         }
 
-        it("should return completed not original") {
+        it("should return completed not on schedule") {
             val date = LocalDate.now().with(DayOfWeek.TUESDAY)
             val questRepoMock = mock<QuestRepository> {
                 on {
@@ -130,7 +130,57 @@ class RepeatingQuestHistoryUseCaseSpek : Spek({
                     repeatingPattern = RepeatingPattern.Weekly(setOf(DayOfWeek.MONDAY))
                 ), date, date
             )
-            result[date].`should equal`(RepeatingQuestHistoryUseCase.QuestState.COMPLETED_NOT_ORIGINAL)
+            result[date].`should equal`(RepeatingQuestHistoryUseCase.QuestState.COMPLETED_NOT_ON_SCHEDULE)
+        }
+
+        it("should return completed not on schedule after repeating quest end") {
+            val today = LocalDate.now()
+            val tomorrow = LocalDate.now().plusDays(1)
+            val questRepoMock = mock<QuestRepository> {
+                on {
+                    findCompletedForRepeatingQuestInPeriod(
+                        any(),
+                        any(),
+                        any()
+                    )
+                } doReturn listOf(
+                    TestUtil.quest.copy(
+                        completedAtDate = tomorrow
+                    )
+                )
+            }
+            val result = executeUseCase(
+                questRepoMock, TestUtil.repeatingQuest.copy(
+                    repeatingPattern = RepeatingPattern.Daily(today.minusDays(1), today)
+                ), tomorrow, tomorrow
+            )
+            result[tomorrow].`should equal`(RepeatingQuestHistoryUseCase.QuestState.COMPLETED_NOT_ON_SCHEDULE)
+        }
+
+        it("should return states for 2 dates") {
+            val today = LocalDate.now()
+            val tomorrow = LocalDate.now().plusDays(1)
+            val questRepoMock = mock<QuestRepository> {
+                on {
+                    findCompletedForRepeatingQuestInPeriod(
+                        any(),
+                        any(),
+                        any()
+                    )
+                } doReturn listOf(
+                    TestUtil.quest.copy(
+                        completedAtDate = tomorrow
+                    )
+                )
+            }
+            val result = executeUseCase(
+                questRepoMock, TestUtil.repeatingQuest.copy(
+                    repeatingPattern = RepeatingPattern.Daily()
+                ), today, tomorrow
+            )
+            result.size.`should equal`(2)
+            result[today].`should equal`(RepeatingQuestHistoryUseCase.QuestState.NOT_COMPLETED)
+            result[tomorrow].`should equal`(RepeatingQuestHistoryUseCase.QuestState.COMPLETED_ON_SCHEDULE)
         }
     }
 })
