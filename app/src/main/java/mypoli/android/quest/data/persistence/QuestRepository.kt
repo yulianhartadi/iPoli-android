@@ -46,13 +46,13 @@ interface QuestRepository : CollectionRepository<Quest> {
     fun findCompletedCountForRepeatingQuestInPeriod(
         repeatingQuestId: String,
         start: LocalDate,
-        end: LocalDate
+        end: LocalDate?
     ): Int
 
     fun findCompletedForRepeatingQuestInPeriod(
         repeatingQuestId: String,
         start: LocalDate,
-        end: LocalDate
+        end: LocalDate?
     ): List<Quest>
 
     fun purgeAllNotCompletedForRepeating(
@@ -133,24 +133,28 @@ class FirestoreQuestRepository(
     override fun findCompletedForRepeatingQuestInPeriod(
         repeatingQuestId: String,
         start: LocalDate,
-        end: LocalDate
+        end: LocalDate?
     ) = createCompletedForRepeatingInPeriodQuery(repeatingQuestId, start, end).entities
 
     override fun findCompletedCountForRepeatingQuestInPeriod(
         repeatingQuestId: String,
         start: LocalDate,
-        end: LocalDate
+        end: LocalDate?
     ) = createCompletedForRepeatingInPeriodQuery(repeatingQuestId, start, end).documents.size
 
     private fun createCompletedForRepeatingInPeriodQuery(
         repeatingQuestId: String,
         start: LocalDate,
-        end: LocalDate
-    ) =
-        collectionReference
+        end: LocalDate?
+    ): Query {
+        var ref = collectionReference
             .whereEqualTo("repeatingQuestId", repeatingQuestId)
             .whereGreaterThanOrEqualTo("completedAtDate", start.startOfDayUTC())
-            .whereLessThanOrEqualTo("completedAtDate", end.startOfDayUTC())
+        if (end != null) {
+            ref = ref.whereLessThanOrEqualTo("completedAtDate", end.startOfDayUTC())
+        }
+        return ref
+    }
 
     override fun findNextScheduledForRepeatingQuest(
         repeatingQuestId: String,
