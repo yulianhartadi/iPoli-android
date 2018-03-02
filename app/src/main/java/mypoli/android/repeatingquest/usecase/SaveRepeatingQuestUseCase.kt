@@ -7,16 +7,20 @@ import mypoli.android.quest.Category
 import mypoli.android.quest.Color
 import mypoli.android.quest.Icon
 import mypoli.android.quest.Reminder
+import mypoli.android.quest.data.persistence.QuestRepository
 import mypoli.android.repeatingquest.entity.RepeatingPattern
 import mypoli.android.repeatingquest.entity.RepeatingQuest
 import mypoli.android.repeatingquest.persistence.RepeatingQuestRepository
+import org.threeten.bp.LocalDate
 
 /**
  * Created by Polina Zhelyazkova <polina@ipoli.io>
  * on 2/23/18.
  */
 class SaveRepeatingQuestUseCase(
-    private val repeatingQuestRepository: RepeatingQuestRepository
+    private val questRepository: QuestRepository,
+    private val repeatingQuestRepository: RepeatingQuestRepository,
+    private val createQuestsForRepeatingQuestUseCase: CreateQuestsForRepeatingQuestUseCase
 ) : UseCase<SaveRepeatingQuestUseCase.Params, SaveRepeatingQuestUseCase.Result> {
 
     override fun execute(parameters: Params): Result {
@@ -56,9 +60,29 @@ class SaveRepeatingQuestUseCase(
             )
         }
 
-        repeatingQuestRepository.save(repeatingQuest)
+        val rq = repeatingQuestRepository.save(repeatingQuest)
 
-        return Result.Added(repeatingQuest)
+        if (parameters.id.isEmpty()) {
+            saveQuestsFor(rq)
+        } else {
+            questRepository.purgeAllNotCompletedForRepeating(rq.id, LocalDate.now())
+            saveQuestsFor(rq)
+        }
+
+        return Result.Added(rq)
+    }
+
+    private fun saveQuestsFor(repeatingQuest: RepeatingQuest) {
+        val currentPeriod = repeatingQuest.repeatingPattern.periodRangeFor(LocalDate.now())
+        val nextPeriodFirstDate = currentPeriod.end.plusDays(1)
+        val end = repeatingQuest.repeatingPattern.periodRangeFor(nextPeriodFirstDate).end
+        createQuestsForRepeatingQuestUseCase.execute(
+            CreateQuestsForRepeatingQuestUseCase.Params(
+                repeatingQuest = repeatingQuest,
+                start = LocalDate.now(),
+                end = end
+            )
+        )
     }
 
     data class Params(

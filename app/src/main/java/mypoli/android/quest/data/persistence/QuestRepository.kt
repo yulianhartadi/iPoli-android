@@ -52,7 +52,7 @@ interface QuestRepository : CollectionRepository<Quest> {
     fun findCompletedForRepeatingQuestInPeriod(
         repeatingQuestId: String,
         start: LocalDate,
-        end: LocalDate?
+        end: LocalDate? = null
     ): List<Quest>
 
     fun purgeAllNotCompletedForRepeating(
@@ -119,11 +119,12 @@ class FirestoreQuestRepository(
 
 
     override fun purgeAllNotCompletedForRepeating(repeatingQuestId: String, startDate: LocalDate) {
-        collectionReference
+        val docs = collectionReference
             .whereEqualTo("repeatingQuestId", repeatingQuestId)
             .whereEqualTo("completedAtDate", null)
             .whereGreaterThanOrEqualTo("scheduledDate", startDate.startOfDayUTC())
             .documents
+        docs
             .forEach {
                 deleteReminders(it.id)
                 it.reference.delete()

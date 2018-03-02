@@ -17,12 +17,12 @@ import org.threeten.bp.temporal.TemporalAdjusters.*
  * Created by Venelin Valkov <venelin@mypoli.fun>
  * on 02/14/2018.
  */
-class FindQuestsForRepeatingQuestUseCase(
+class CreateQuestsForRepeatingQuestUseCase(
     private val questRepository: QuestRepository,
     private val repeatingQuestRepository: RepeatingQuestRepository
-) : UseCase<FindQuestsForRepeatingQuestUseCase.Params, FindQuestsForRepeatingQuestUseCase.Result> {
+) : UseCase<CreateQuestsForRepeatingQuestUseCase.Params, CreateQuestsForRepeatingQuestUseCase.Result> {
 
-    override fun execute(parameters: Params): FindQuestsForRepeatingQuestUseCase.Result {
+    override fun execute(parameters: Params): CreateQuestsForRepeatingQuestUseCase.Result {
         val rq = parameters.repeatingQuest
 
         if (parameters.end.isBefore(rq.start)) {
@@ -129,18 +129,21 @@ class FindQuestsForRepeatingQuestUseCase(
             return Result(listOf(), rq)
         }
 
-        val scheduledQuests = questRepository.findScheduledForRepeatingQuestBetween(rq.id, start, end)
+        val scheduledQuests =
+            questRepository.findScheduledForRepeatingQuestBetween(rq.id, start, end)
         val (removed, existing) = scheduledQuests.partition { it.isRemoved }
-        val schedule = existing.associateBy({ it.originalScheduledDate }, { it })
+        val scheduledDateToQuest = existing.associateBy({ it.originalScheduledDate }, { it })
         val removedDates = removed.map { it.originalScheduledDate }
         val resultDates = scheduleDates - removedDates
 
         val quests = resultDates.map {
 
-            if (schedule.containsKey(it)) {
-                schedule[it]!!
+            if (scheduledDateToQuest.containsKey(it)) {
+                scheduledDateToQuest[it]!!
             } else {
-                createQuest(rq, it)
+                val q = createQuest(rq, it)
+                questRepository.save(q)
+                q
             }
         }
         return Result(quests, newRQ ?: rq)
@@ -280,19 +283,21 @@ class FindQuestsForRepeatingQuestUseCase(
 
     private fun createQuest(
         rq: RepeatingQuest,
-        it: LocalDate
-    ): Quest {
-        return Quest(
+        scheduleDate: LocalDate
+    ) =
+        Quest(
             name = rq.name,
             color = rq.color,
             icon = rq.icon,
             category = rq.category,
             startTime = rq.startTime,
             duration = rq.duration,
-            scheduledDate = it,
-            reminder = rq.reminder
+            scheduledDate = scheduleDate,
+            reminder = rq.reminder?.copy(
+                remindDate = scheduleDate
+            ),
+            repeatingQuestId = rq.id
         )
-    }
 
     private fun monthlyDatesToScheduleInPeriod(
         repeatingPattern: RepeatingPattern.Monthly,
