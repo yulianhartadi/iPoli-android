@@ -101,6 +101,8 @@ class HomeViewController(args: Bundle? = null) :
         return contentView
     }
 
+    override fun onCreateLoadAction() = HomeAction.Load
+
     private fun onItemSelectedFromDrawer(item: MenuItem) {
 
         when (item.itemId) {
@@ -174,7 +176,6 @@ class HomeViewController(args: Bundle? = null) :
         if (!childRouter.hasRootController()) {
             childRouter.setRoot(
                 RouterTransaction.with(ScheduleViewController())
-//                RouterTransaction.with(RepeatingQuestListViewController())
                     .pushChangeHandler(fadeChangeHandler)
                     .popChangeHandler(fadeChangeHandler)
             )
@@ -234,7 +235,6 @@ class HomeViewController(args: Bundle? = null) :
         when (state) {
             is HomeViewState.Initial -> {
                 showSignIn = state.showSignIn
-                activity?.invalidateOptionsMenu()
             }
 
             is HomeViewState.PlayerChanged -> {
