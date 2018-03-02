@@ -48,6 +48,11 @@ interface QuestRepository : CollectionRepository<Quest> {
         start: LocalDate,
         end: LocalDate
     ): Int
+
+    fun purgeAllNotCompletedForRepeating(
+        repeatingQuestId: String,
+        startDate: LocalDate = LocalDate.now()
+    )
 }
 
 data class DbQuest(override val map: MutableMap<String, Any?> = mutableMapOf()) :
@@ -105,6 +110,18 @@ class FirestoreQuestRepository(
     coroutineContext,
     sharedPreferences
 ), QuestRepository {
+
+    override fun purgeAllNotCompletedForRepeating(repeatingQuestId: String, startDate: LocalDate) {
+        collectionReference
+            .whereEqualTo("repeatingQuestId", repeatingQuestId)
+            .whereEqualTo("completedAtDate", null)
+            .whereGreaterThanOrEqualTo("scheduledDate", startDate.startOfDayUTC())
+            .documents
+            .forEach {
+                deleteReminders(it.id)
+                it.reference.delete()
+            }
+    }
 
     override fun findCompletedForRepeatingQuestInPeriod(
         repeatingQuestId: String,

@@ -25,6 +25,7 @@ import org.threeten.bp.LocalDate
 
 sealed class RepeatingQuestAction : Action {
     data class Load(val repeatingQuestId: String) : RepeatingQuestAction()
+    data class Remove(val repeatingQuestId: String) : RepeatingQuestAction()
 }
 
 sealed class RepeatingQuestViewState(open val id: String) : ViewState {
@@ -83,6 +84,11 @@ object RepeatingQuestReducer : BaseViewStateReducer<RepeatingQuestViewState>() {
                     createChangedState(it)
                 } ?: RepeatingQuestViewState.Removed
             }
+
+            is RepeatingQuestAction.Remove -> {
+                RepeatingQuestViewState.Removed
+            }
+
             else -> subState
         }
 

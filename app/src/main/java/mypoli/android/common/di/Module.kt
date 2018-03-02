@@ -55,13 +55,8 @@ import mypoli.android.reminder.view.formatter.TimeUnitFormatter
 import mypoli.android.reminder.view.picker.ReminderPickerDialogPresenter
 import mypoli.android.repeatingquest.persistence.FirestoreRepeatingQuestRepository
 import mypoli.android.repeatingquest.persistence.RepeatingQuestRepository
+import mypoli.android.repeatingquest.usecase.*
 
-import mypoli.android.repeatingquest.picker.RepeatingPatternReducer
-import mypoli.android.repeatingquest.show.RepeatingQuestReducer
-import mypoli.android.repeatingquest.usecase.FindNextDateForRepeatingQuestUseCase
-import mypoli.android.repeatingquest.usecase.FindPeriodProgressForRepeatingQuestUseCase
-import mypoli.android.repeatingquest.usecase.FindQuestsForRepeatingQuestUseCase
-import mypoli.android.repeatingquest.usecase.SaveRepeatingQuestUseCase
 import mypoli.android.store.GemStorePresenter
 import mypoli.android.store.theme.ThemeStorePresenter
 import mypoli.android.store.theme.usecase.BuyThemeUseCase
@@ -320,6 +315,11 @@ class MainUseCaseModule : UseCaseModule, Injects<Module> {
             questRepository,
             repeatingQuestRepository
         )
+    override val removeRepeatingQuestUseCase: RemoveRepeatingQuestUseCase
+        get() = RemoveRepeatingQuestUseCase(
+            questRepository,
+            repeatingQuestRepository
+        )
 }
 
 interface UseCaseModule {
@@ -367,6 +367,7 @@ interface UseCaseModule {
     val findNextDateForRepeatingQuestUseCase: FindNextDateForRepeatingQuestUseCase
     val findPeriodProgressForRepeatingQuestUseCase: FindPeriodProgressForRepeatingQuestUseCase
     val findQuestsForRepeatingQuestUseCase: FindQuestsForRepeatingQuestUseCase
+    val removeRepeatingQuestUseCase: RemoveRepeatingQuestUseCase
 }
 
 interface PresenterModule {
@@ -547,7 +548,7 @@ class AndroidStateStoreModule : StateStoreModule, Injects<Module> {
                 BuyPetSideEffect(),
                 DayViewSideEffect(),
                 CompleteQuestSideEffect(),
-                EditRepeatingQuestSideEffect()
+                RepeatingQuestSideEffect()
             ),
             sideEffectExecutor = CoroutineSideEffectExecutor(job + CommonPool)
         )

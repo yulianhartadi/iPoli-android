@@ -92,7 +92,7 @@ class RepeatingQuestViewController :
                 true
             }
             R.id.actionDelete -> {
-//                dispatch(EditRepeatingQuestAction.Save)
+                dispatch(RepeatingQuestAction.Remove(repeatingQuestId))
                 true
             }
             else -> super.onOptionsItemSelected(item)

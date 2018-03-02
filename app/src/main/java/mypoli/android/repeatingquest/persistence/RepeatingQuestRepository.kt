@@ -73,6 +73,10 @@ class FirestoreRepeatingQuestRepository(
     override val collectionReference: CollectionReference
         get() = database.collection("players").document(playerId).collection("repeatingQuests")
 
+    override fun remove(id: String) {
+        collectionReference.document(id).delete()
+    }
+
     override fun toEntityObject(dataMap: MutableMap<String, Any?>): RepeatingQuest {
         val rq = DbRepeatingQuest(dataMap.withDefault {
             null

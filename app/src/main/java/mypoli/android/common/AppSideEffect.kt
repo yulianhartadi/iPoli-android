@@ -41,8 +41,10 @@ import mypoli.android.reminder.view.picker.ReminderViewModel
 import mypoli.android.repeatingquest.edit.EditRepeatingQuestAction
 import mypoli.android.repeatingquest.edit.EditRepeatingQuestViewState
 import mypoli.android.repeatingquest.entity.RepeatingQuest
+import mypoli.android.repeatingquest.show.RepeatingQuestAction
 import mypoli.android.repeatingquest.usecase.FindNextDateForRepeatingQuestUseCase
 import mypoli.android.repeatingquest.usecase.FindPeriodProgressForRepeatingQuestUseCase
+import mypoli.android.repeatingquest.usecase.RemoveRepeatingQuestUseCase
 import mypoli.android.repeatingquest.usecase.SaveRepeatingQuestUseCase
 import mypoli.android.timer.usecase.CompleteTimeRangeUseCase
 import org.threeten.bp.LocalDate
@@ -208,34 +210,44 @@ class CompleteQuestSideEffect : AppSideEffect() {
     }
 }
 
-class EditRepeatingQuestSideEffect : AppSideEffect() {
+class RepeatingQuestSideEffect : AppSideEffect() {
     private val saveRepeatingQuestUseCase by required { saveRepeatingQuestUseCase }
+    private val removeRepeatingQuestUseCase by required { removeRepeatingQuestUseCase }
 
     override suspend fun doExecute(action: Action, state: AppState) {
-        val rqState = state.stateFor(EditRepeatingQuestViewState::class.java)
+        when (action) {
+            EditRepeatingQuestAction.Save -> {
+                val rqState = state.stateFor(EditRepeatingQuestViewState::class.java)
 
-        val rqParams = SaveRepeatingQuestUseCase.Params(
-            id = rqState.id,
-            name = rqState.name,
-            color = rqState.color,
-            icon = rqState.icon,
-            category = Category("WELLNESS", Color.GREEN),
-            startTime = rqState.startTime,
-            duration = rqState.duration,
-            reminder = rqState.reminder,
-            repeatingPattern = rqState.repeatingPattern
-        )
-        val result = saveRepeatingQuestUseCase.execute(rqParams)
-        when (result) {
-            is SaveRepeatingQuestUseCase.Result.Invalid ->
-                dispatch(EditRepeatingQuestAction.SaveInvalidQuest(result))
-            is SaveRepeatingQuestUseCase.Result.Added ->
-                dispatch(EditRepeatingQuestAction.QuestSaved)
+                val rqParams = SaveRepeatingQuestUseCase.Params(
+                    id = rqState.id,
+                    name = rqState.name,
+                    color = rqState.color,
+                    icon = rqState.icon,
+                    category = Category("WELLNESS", Color.GREEN),
+                    startTime = rqState.startTime,
+                    duration = rqState.duration,
+                    reminder = rqState.reminder,
+                    repeatingPattern = rqState.repeatingPattern
+                )
+                val result = saveRepeatingQuestUseCase.execute(rqParams)
+                when (result) {
+                    is SaveRepeatingQuestUseCase.Result.Invalid ->
+                        dispatch(EditRepeatingQuestAction.SaveInvalidQuest(result))
+                    is SaveRepeatingQuestUseCase.Result.Added ->
+                        dispatch(EditRepeatingQuestAction.QuestSaved)
+                }
+            }
+
+            is RepeatingQuestAction.Remove -> {
+                removeRepeatingQuestUseCase.execute(RemoveRepeatingQuestUseCase.Params(action.repeatingQuestId))
+            }
         }
     }
 
     override fun canHandle(action: Action) =
-        action is EditRepeatingQuestAction.Save
+        action == EditRepeatingQuestAction.Save
+            || action is RepeatingQuestAction.Remove
 }
 
 class BuyPredefinedChallengeSideEffect : AppSideEffect() {
