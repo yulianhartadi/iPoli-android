@@ -190,7 +190,7 @@
                 android:text="@string/history"
                 android:textColor="?attr/colorAccent" />
 
-            <mypoli.android.common.view.widget.chart.StreakChart
+            <mypoli.android.common.view.widget.chart.HistoryChart
                 android:id="@+id/repeating_quest_history"
                 android:layout_width="match_parent"
                 android:layout_height="364dp" />

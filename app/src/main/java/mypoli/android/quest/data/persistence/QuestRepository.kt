@@ -21,7 +21,7 @@ interface QuestRepository : CollectionRepository<Quest> {
 
     fun listenForScheduledAt(date: LocalDate): ReceiveChannel<List<Quest>>
     fun findScheduledAt(date: LocalDate): List<Quest>
-    fun findForRepeatingQuestBetween(
+    fun findScheduledForRepeatingQuestBetween(
         repeatingQuestId: String,
         start: LocalDate,
         end: LocalDate
@@ -43,11 +43,17 @@ interface QuestRepository : CollectionRepository<Quest> {
         currentDate: LocalDate
     ): Quest?
 
-    fun findCompletedForRepeatingQuestInPeriod(
+    fun findCompletedCountForRepeatingQuestInPeriod(
         repeatingQuestId: String,
         start: LocalDate,
         end: LocalDate
     ): Int
+
+    fun findCompletedForRepeatingQuestInPeriod(
+        repeatingQuestId: String,
+        start: LocalDate,
+        end: LocalDate
+    ): List<Quest>
 
     fun purgeAllNotCompletedForRepeating(
         repeatingQuestId: String,
@@ -111,6 +117,7 @@ class FirestoreQuestRepository(
     sharedPreferences
 ), QuestRepository {
 
+
     override fun purgeAllNotCompletedForRepeating(repeatingQuestId: String, startDate: LocalDate) {
         collectionReference
             .whereEqualTo("repeatingQuestId", repeatingQuestId)
@@ -127,12 +134,23 @@ class FirestoreQuestRepository(
         repeatingQuestId: String,
         start: LocalDate,
         end: LocalDate
+    ) = createCompletedForRepeatingInPeriodQuery(repeatingQuestId, start, end).entities
+
+    override fun findCompletedCountForRepeatingQuestInPeriod(
+        repeatingQuestId: String,
+        start: LocalDate,
+        end: LocalDate
+    ) = createCompletedForRepeatingInPeriodQuery(repeatingQuestId, start, end).documents.size
+
+    private fun createCompletedForRepeatingInPeriodQuery(
+        repeatingQuestId: String,
+        start: LocalDate,
+        end: LocalDate
     ) =
         collectionReference
             .whereEqualTo("repeatingQuestId", repeatingQuestId)
             .whereGreaterThanOrEqualTo("completedAtDate", start.startOfDayUTC())
             .whereLessThanOrEqualTo("completedAtDate", end.startOfDayUTC())
-            .documents.size
 
     override fun findNextScheduledForRepeatingQuest(
         repeatingQuestId: String,
@@ -181,7 +199,7 @@ class FirestoreQuestRepository(
             .orderBy("startMinute")
             .entities
 
-    override fun findForRepeatingQuestBetween(
+    override fun findScheduledForRepeatingQuestBetween(
         repeatingQuestId: String,
         start: LocalDate,
         end: LocalDate

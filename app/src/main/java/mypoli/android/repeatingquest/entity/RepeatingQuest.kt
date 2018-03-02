@@ -177,6 +177,10 @@ sealed class RepeatingPattern(
         }
     }
 
+    abstract val periodCount: Int
+    abstract fun periodRangeFor(date: LocalDate): PeriodRange
+    protected abstract fun nextDateWithoutRange(from: LocalDate): LocalDate
+
     fun nextDate(from: LocalDate) =
         when {
             end != null && from.isAfter(end) -> null
@@ -184,9 +188,7 @@ sealed class RepeatingPattern(
             else -> nextDateWithoutRange(from)
         }
 
-    abstract val periodCount: Int
-    abstract fun periodRangeFor(date: LocalDate): PeriodRange
-    protected abstract fun nextDateWithoutRange(from: LocalDate): LocalDate
+    fun shouldScheduleOn(date: LocalDate) = date.isEqual(nextDate(date))
 }
 
 data class PeriodRange(val start: LocalDate, val end: LocalDate)

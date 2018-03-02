@@ -24,7 +24,7 @@ import org.threeten.bp.temporal.TemporalAdjusters
  * Created by Venelin Valkov <venelin@mypoli.fun>
  * on 02/23/2018.
  */
-class StreakChart @JvmOverloads constructor(
+class HistoryChart @JvmOverloads constructor(
     context: Context, attrs: AttributeSet? = null, defStyleAttr: Int = 0
 ) : View(context, attrs, defStyleAttr) {
 

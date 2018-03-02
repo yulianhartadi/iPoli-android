@@ -19,7 +19,7 @@ class FindPeriodProgressForRepeatingQuestUseCase(
         val periodRange = rq.repeatingPattern.periodRangeFor(parameters.currentDate)
         return rq.copy(
             periodProgress = PeriodProgress(
-                completedCount = questRepository.findCompletedForRepeatingQuestInPeriod(
+                completedCount = questRepository.findCompletedCountForRepeatingQuestInPeriod(
                     rq.id,
                     periodRange.start,
                     periodRange.end
