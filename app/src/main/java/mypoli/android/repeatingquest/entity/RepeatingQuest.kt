@@ -26,7 +26,7 @@ sealed class RepeatingPattern(
         override fun periodRangeFor(date: LocalDate) =
             PeriodRange(
                 start = date.with(TemporalAdjusters.previousOrSame(DateUtils.firstDayOfWeek)),
-                end = date.with(DateUtils.lastDayOfWeek)
+                end = date.with(TemporalAdjusters.nextOrSame(DateUtils.lastDayOfWeek))
             )
 
         override val periodCount get() = DayOfWeek.values().size
@@ -65,7 +65,7 @@ sealed class RepeatingPattern(
         override fun periodRangeFor(date: LocalDate) =
             PeriodRange(
                 start = date.with(TemporalAdjusters.previousOrSame(DateUtils.firstDayOfWeek)),
-                end = date.with(DateUtils.lastDayOfWeek)
+                end = date.with(TemporalAdjusters.nextOrSame(DateUtils.lastDayOfWeek))
             )
 
         override val periodCount get() = daysOfWeek.size
@@ -122,7 +122,7 @@ sealed class RepeatingPattern(
             override fun periodRangeFor(date: LocalDate) =
                 PeriodRange(
                     start = date.with(TemporalAdjusters.previousOrSame(DateUtils.firstDayOfWeek)),
-                    end = date.with(DateUtils.lastDayOfWeek)
+                    end = date.with(TemporalAdjusters.nextOrSame(DateUtils.lastDayOfWeek))
                 )
 
             override val periodCount get() = timesPerWeek
