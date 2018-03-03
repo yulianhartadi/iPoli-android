@@ -118,7 +118,8 @@ class DayViewReducer(namespace: String) : NamespaceViewStateReducer<DayViewState
                     icon = vm.icon?.let {
                         Icon.valueOf(it.name)
                     },
-                    reminder = vm.reminder
+                    reminder = vm.reminder,
+                    repeatingQuestId = vm.repeatingQuestId
                 )
             }
 
@@ -134,7 +135,8 @@ class DayViewReducer(namespace: String) : NamespaceViewStateReducer<DayViewState
                         Icon.valueOf(it.name)
                     },
                     reminder = vm.reminder,
-                    startTime = null
+                    startTime = null,
+                    repeatingQuestId = vm.repeatingQuestId
                 )
             }
 
@@ -271,7 +273,8 @@ class DayViewReducer(namespace: String) : NamespaceViewStateReducer<DayViewState
             duration = null,
             color = null,
             reminder = null,
-            icon = null
+            icon = null,
+            repeatingQuestId = null
         )
 }
 
@@ -288,7 +291,8 @@ data class DayViewState(
     val duration: Int?,
     val color: Color?,
     val reminder: ReminderViewModel?,
-    val icon: Icon?
+    val icon: Icon?,
+    val repeatingQuestId: String?
 ) : ViewState {
 
     enum class StateType {

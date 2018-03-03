@@ -205,7 +205,7 @@ class DayViewController :
             EVENT_REMOVED -> {
                 PetMessagePopup(
                     stringRes(R.string.remove_quest_undo_message),
-                    { dispatch(DayViewAction.UndoRemoveQuest(state.removedEventId))}
+                    { dispatch(DayViewAction.UndoRemoveQuest(state.removedEventId)) }
                 ).show(view.context)
             }
 
@@ -499,7 +499,8 @@ class DayViewController :
         @ColorRes val textColor: Int,
         val reminder: ReminderViewModel?,
         val isCompleted: Boolean,
-        val isStarted: Boolean
+        val isStarted: Boolean,
+        val repeatingQuestId: String?
     ) : CalendarEvent
 
     inner class QuestScheduledEventsAdapter(
@@ -698,7 +699,8 @@ class DayViewController :
         @ColorRes val textColor: Int,
         val isCompleted: Boolean,
         val isStarted: Boolean,
-        val reminder: ReminderViewModel? = null
+        val reminder: ReminderViewModel? = null,
+        val repeatingQuestId: String?
     ) : UnscheduledEvent
 
     inner class UnscheduledQuestsAdapter(
@@ -794,14 +796,15 @@ class DayViewController :
         get() = schedule!!.unscheduled.map {
             val color = it.color.androidColor
             DayViewController.UnscheduledQuestViewModel(
-                it.id,
-                it.name,
-                it.duration,
-                it.icon?.androidIcon,
-                color,
-                color.color900,
-                it.isCompleted,
-                it.isStarted
+                id = it.id,
+                name = it.name,
+                duration = it.duration,
+                icon = it.icon?.androidIcon,
+                backgroundColor = color,
+                textColor = color.color900,
+                isCompleted = it.isCompleted,
+                isStarted = it.isStarted,
+                repeatingQuestId = it.repeatingQuestId
             )
         }
 
@@ -814,18 +817,19 @@ class DayViewController :
             }
 
             DayViewController.QuestViewModel(
-                q.id,
-                q.name,
-                q.duration,
-                q.startTime!!.toMinuteOfDay(),
-                q.startTime.toString(),
-                q.endTime.toString(),
-                q.icon?.androidIcon,
-                color,
-                color.color900,
-                reminder,
-                q.isCompleted,
-                q.isStarted
+                id = q.id,
+                name = q.name,
+                duration = q.duration,
+                startMinute = q.startTime!!.toMinuteOfDay(),
+                startTime = q.startTime.toString(),
+                endTime = q.endTime.toString(),
+                icon = q.icon?.androidIcon,
+                backgroundColor = color,
+                textColor = color.color900,
+                reminder = reminder,
+                isCompleted = q.isCompleted,
+                isStarted = q.isStarted,
+                repeatingQuestId = q.repeatingQuestId
             )
         }
 }

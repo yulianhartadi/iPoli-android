@@ -185,7 +185,8 @@ class DayViewSideEffect : AppSideEffect() {
             scheduledDate = scheduledDate,
             startTime = dayViewState.startTime,
             duration = dayViewState.duration!!,
-            reminder = reminder
+            reminder = reminder,
+            repeatingQuestId = dayViewState.repeatingQuestId
         )
         val result = saveQuestUseCase.execute(questParams)
 
