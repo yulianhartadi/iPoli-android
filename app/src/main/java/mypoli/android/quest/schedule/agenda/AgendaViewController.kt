@@ -188,7 +188,8 @@ class AgendaViewController(args: Bundle? = null) :
         val icon: IIcon,
         val isCompleted: Boolean,
         val showDivider: Boolean = true,
-        val isRepeating: Boolean
+        val isRepeating: Boolean,
+        val isPlaceholder: Boolean
     ) : AgendaViewModel
 
     data class DateHeaderViewModel(val text: String) : AgendaViewModel
@@ -199,7 +200,7 @@ class AgendaViewController(args: Bundle? = null) :
     data class WeekHeaderViewModel(val text: String) : AgendaViewModel
 
     enum class ItemType {
-        QUEST, COMPLETED_QUEST, DATE_HEADER, MONTH_DIVIDER, WEEK_HEADER
+        QUEST_PLACEHOLDER, QUEST, COMPLETED_QUEST, DATE_HEADER, MONTH_DIVIDER, WEEK_HEADER
     }
 
     inner class AgendaAdapter(private var viewModels: MutableList<AgendaViewModel> = mutableListOf()) :
@@ -211,6 +212,10 @@ class AgendaViewController(args: Bundle? = null) :
 
             val type = ItemType.values()[getItemViewType(position)]
             when (type) {
+                ItemType.QUEST_PLACEHOLDER -> bindPlaceholderViewModel(
+                    itemView,
+                    vm as QuestViewModel
+                )
                 ItemType.QUEST -> bindQuestViewModel(itemView, vm as QuestViewModel)
                 ItemType.COMPLETED_QUEST -> bindCompleteQuestViewModel(
                     itemView,
@@ -226,6 +231,15 @@ class AgendaViewController(args: Bundle? = null) :
                     vm as WeekHeaderViewModel
                 )
             }
+        }
+
+        private fun bindPlaceholderViewModel(
+            view: View,
+            vm: QuestViewModel
+        ) {
+            view.setOnClickListener(null)
+            view.questName.text = vm.name
+            bindQuest(view, vm)
         }
 
         private fun bindWeekHeaderViewModel(
@@ -302,6 +316,19 @@ class AgendaViewController(args: Bundle? = null) :
 
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int) =
             when (viewType) {
+
+                ItemType.QUEST_PLACEHOLDER.ordinal -> {
+                    val view = LayoutInflater.from(parent.context).inflate(
+                        R.layout.item_agenda_quest,
+                        parent,
+                        false
+                    )
+                    view.layoutParams.width = parent.width
+                    QuestPlaceholderViewHolder(
+                        view
+                    )
+                }
+
                 ItemType.QUEST.ordinal -> {
                     val view = LayoutInflater.from(parent.context).inflate(
                         R.layout.item_agenda_quest,
@@ -350,6 +377,7 @@ class AgendaViewController(args: Bundle? = null) :
                 }
             }
 
+        inner class QuestPlaceholderViewHolder(view: View) : RecyclerView.ViewHolder(view)
         inner class QuestViewHolder(view: View) : RecyclerView.ViewHolder(view)
         inner class CompletedQuestViewHolder(view: View) : RecyclerView.ViewHolder(view)
         inner class DateHeaderViewHolder(view: View) : RecyclerView.ViewHolder(view)
@@ -358,8 +386,11 @@ class AgendaViewController(args: Bundle? = null) :
 
         override fun getItemViewType(position: Int) =
             when (viewModels[position]) {
+
                 is QuestViewModel -> if ((viewModels[position] as QuestViewModel).isCompleted)
                     ItemType.COMPLETED_QUEST.ordinal
+                else if ((viewModels[position] as QuestViewModel).isPlaceholder)
+                    ItemType.QUEST_PLACEHOLDER.ordinal
                 else
                     ItemType.QUEST.ordinal
                 is DateHeaderViewModel -> ItemType.DATE_HEADER.ordinal

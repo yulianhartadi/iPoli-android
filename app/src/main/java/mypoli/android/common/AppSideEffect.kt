@@ -349,6 +349,7 @@ class AgendaSideEffect : AppSideEffect() {
     private val createAgendaItemsUseCase by required { createAgendaItemsUseCase }
     private val questRepository by required { questRepository }
     private val completeTimeRangeUseCase by required { completeTimeRangeUseCase }
+    private val createPlaceholderQuestsForRepeatingQuestsUseCase by required { createPlaceholderQuestsForRepeatingQuestsUseCase }
 
     private var agendaItemsChannel: ReceiveChannel<List<Quest>>? = null
 
@@ -461,14 +462,25 @@ class AgendaSideEffect : AppSideEffect() {
             )
             agendaItemsChannel!!.consumeEach {
                 launch(CommonPool) {
+
+                    val placeholderQuests =
+                        createPlaceholderQuestsForRepeatingQuestsUseCase.execute(
+                            CreatePlaceholderQuestsForRepeatingQuestsUseCase.Params(
+                                startDate = start,
+                                endDate = end
+                            )
+                        )
+
                     val agendaItems = createAgendaItemsUseCase.execute(
                         CreateAgendaItemsUseCase.Params(
                             agendaDate,
-                            it,
+                            it + placeholderQuests,
                             AgendaReducer.ITEMS_BEFORE_COUNT,
                             AgendaReducer.ITEMS_AFTER_COUNT
                         )
                     )
+
+
                     dispatch(
                         DataLoadedAction.AgendaItemsChanged(
                             start = start,
