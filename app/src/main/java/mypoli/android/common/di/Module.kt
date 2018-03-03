@@ -333,6 +333,11 @@ class MainUseCaseModule : UseCaseModule, Injects<Module> {
             questRepository,
             repeatingQuestRepository
         )
+    override val createPlaceholderQuestsForRepeatingQuestsUseCase
+        get() = CreatePlaceholderQuestsForRepeatingQuestsUseCase(
+            questRepository,
+            repeatingQuestRepository
+        )
 }
 
 interface UseCaseModule {
@@ -382,6 +387,7 @@ interface UseCaseModule {
     val saveQuestsForRepeatingQuestUseCase: SaveQuestsForRepeatingQuestUseCase
     val removeRepeatingQuestUseCase: RemoveRepeatingQuestUseCase
     val repeatingQuestHistoryUseCase: RepeatingQuestHistoryUseCase
+    val createPlaceholderQuestsForRepeatingQuestsUseCase: CreatePlaceholderQuestsForRepeatingQuestsUseCase
 }
 
 interface PresenterModule {

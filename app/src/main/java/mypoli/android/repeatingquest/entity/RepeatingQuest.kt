@@ -247,4 +247,10 @@ data class RepeatingQuest(
         get() = startTime?.let {
             startTime.plus(duration)
         }
+
+    val isFlexible: Boolean
+        get() = repeatingPattern is RepeatingPattern.Flexible
+
+    val isFixed: Boolean
+        get() = !isFlexible
 }

@@ -40,7 +40,8 @@ class SaveQuestUseCase(
         val startTime: Time? = null,
         val scheduledDate: LocalDate,
         val duration: Int,
-        val reminder: Reminder? = null
+        val reminder: Reminder? = null,
+        val repeatingQuestId : String? = null
     )
 
     override fun execute(parameters: Parameters): Result {

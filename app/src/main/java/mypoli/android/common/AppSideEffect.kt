@@ -87,6 +87,7 @@ class DayViewSideEffect : AppSideEffect() {
     private val removeQuestUseCase by required { removeQuestUseCase }
     private val loadScheduleForDateUseCase by required { loadScheduleForDateUseCase }
     private val undoRemoveQuestUseCase by required { undoRemoveQuestUseCase }
+    private val createPlaceholderQuestsForRepeatingQuestsUseCase by required { createPlaceholderQuestsForRepeatingQuestsUseCase }
 
     private var scheduledQuestsChannel: ReceiveChannel<List<Quest>>? = null
 
@@ -133,12 +134,20 @@ class DayViewSideEffect : AppSideEffect() {
             scheduledQuestsChannel =
                 questRepository.listenForScheduledBetween(startDate!!, endDate!!)
             scheduledQuestsChannel!!.consumeEach {
+//                val placeholderQuests = createPlaceholderQuestsForRepeatingQuestsUseCase.execute(
+//                    CreatePlaceholderQuestsForRepeatingQuestsUseCase.Params(
+//                        startDate = startDate!!,
+//                        endDate = endDate!!
+//                    )
+//                )
+                val placeholderQuests = listOf<Quest>()
+
                 val schedule =
                     loadScheduleForDateUseCase.execute(
                         LoadScheduleForDateUseCase.Params(
                             startDate = startDate!!,
                             endDate = endDate!!,
-                            quests = it
+                            quests = it + placeholderQuests
                         )
                     )
                 dispatch(DataLoadedAction.CalendarScheduledChanged(schedule))
