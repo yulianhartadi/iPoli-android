@@ -474,8 +474,8 @@ class DayViewController :
 
     private fun showColorPicker(selectedColor: AndroidColor?) {
         ColorPickerDialogController(object : ColorPickerDialogController.ColorPickedListener {
-            override fun onColorPicked(androidColor: AndroidColor) {
-                dispatch(DayViewAction.ColorPicked(androidColor.color))
+            override fun onColorPicked(color: AndroidColor) {
+                dispatch(DayViewAction.ColorPicked(color.color))
             }
 
         }, selectedColor)
