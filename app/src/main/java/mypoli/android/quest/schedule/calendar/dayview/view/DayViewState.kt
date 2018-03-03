@@ -60,7 +60,7 @@ class DayViewReducer(namespace: String) : NamespaceViewStateReducer<DayViewState
         }
 
         return when (action) {
-            is DataLoadedAction.ScheduledQuestsChanged -> {
+            is DataLoadedAction.CalendarScheduledChanged -> {
                 val scheduleData = action.schedule
 
                 if (!scheduleData.containsKey(subState.currentDate)) {
@@ -88,7 +88,7 @@ class DayViewReducer(namespace: String) : NamespaceViewStateReducer<DayViewState
     ): DayViewState {
         return when (action) {
             is DayViewAction.Load -> {
-                val scheduleData = state.dataState.schedule
+                val scheduleData = state.dataState.calendarSchedule
                 if (!scheduleData.containsKey(action.currentDate)) {
                     subState.copy(
                         type = LOADING,

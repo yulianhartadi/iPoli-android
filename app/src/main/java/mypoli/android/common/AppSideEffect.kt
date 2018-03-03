@@ -8,6 +8,7 @@ import mypoli.android.challenge.category.list.ChallengeListForCategoryAction
 import mypoli.android.challenge.usecase.BuyChallengeUseCase
 import mypoli.android.common.DataLoadedAction.PlayerChanged
 import mypoli.android.common.datetime.Time
+import mypoli.android.common.datetime.isBetween
 import mypoli.android.common.di.Module
 import mypoli.android.common.redux.Action
 import mypoli.android.common.redux.Dispatcher
@@ -96,67 +97,51 @@ class DayViewSideEffect : AppSideEffect() {
         val a = (action as? NamespaceAction)?.source ?: action
         when (a) {
 
-            is LoadDataAction.All -> {
-                val today = state.dataState.today
-                startDate = today.minusDays(2)
-                endDate = today.plusDays(2)
-                scheduledQuestsChannel?.cancel()
-                launch(UI) {
-                    scheduledQuestsChannel =
-                        questRepository.listenForScheduledBetween(startDate!!, endDate!!)
-                    scheduledQuestsChannel!!.consumeEach {
-                        val schedule =
-                            loadScheduleForDateUseCase.execute(
-                                LoadScheduleForDateUseCase.Params(
-                                    startDate = startDate!!,
-                                    endDate = endDate!!,
-                                    quests = it
-                                )
-                            )
-                        dispatch(DataLoadedAction.ScheduledQuestsChanged(schedule))
-                    }
-                }
-            }
+            is LoadDataAction.All ->
+                startListenForCalendarQuests(state.dataState.today)
 
-            DayViewAction.AddQuest -> {
+            DayViewAction.AddQuest ->
                 saveQuest(state, action)
-            }
 
-            DayViewAction.EditQuest -> {
+            DayViewAction.EditQuest ->
                 saveQuest(state, action)
-            }
 
-            DayViewAction.EditUnscheduledQuest -> {
+            DayViewAction.EditUnscheduledQuest ->
                 saveQuest(state, action)
-            }
 
-            is DayViewAction.RemoveQuest -> {
+            is DayViewAction.RemoveQuest ->
                 removeQuestUseCase.execute(a.questId)
-            }
 
-            is DayViewAction.UndoRemoveQuest -> {
+            is DayViewAction.UndoRemoveQuest ->
                 undoRemoveQuestUseCase.execute(a.questId)
-            }
 
             is DayViewAction.Load -> {
-//                val scheduleDate = state.stateFor(ScheduleViewState::class.java).currentDate
-//                Timber.d("AAA $scheduleDate ${a.currentDate}")
-//                if (scheduleDate.isEqual(a.currentDate)) {
-//                    launch(UI) {
-//                        scheduledQuestsChannel?.cancel()
-//                        scheduledQuestsChannel = questRepository.listenForScheduledAt(scheduleDate)
-//                        scheduledQuestsChannel!!.consumeEach {
-//                            val schedule =
-//                                loadScheduleForDateUseCase.execute(
-//                                    LoadScheduleForDateUseCase.Params(
-//                                        date = scheduleDate,
-//                                        quests = it
-//                                    )
-//                                )
-//                            dispatch(DataLoadedAction.ScheduledQuestsChanged(schedule))
-//                        }
-//                    }
-//                }
+
+                if (a.currentDate.isBetween(startDate, endDate)) {
+                    return
+                }
+                startListenForCalendarQuests(a.currentDate)
+            }
+        }
+    }
+
+    private fun startListenForCalendarQuests(currentDate: LocalDate) {
+        startDate = currentDate.minusDays(2)
+        endDate = currentDate.plusDays(2)
+        scheduledQuestsChannel?.cancel()
+        launch(UI) {
+            scheduledQuestsChannel =
+                questRepository.listenForScheduledBetween(startDate!!, endDate!!)
+            scheduledQuestsChannel!!.consumeEach {
+                val schedule =
+                    loadScheduleForDateUseCase.execute(
+                        LoadScheduleForDateUseCase.Params(
+                            startDate = startDate!!,
+                            endDate = endDate!!,
+                            quests = it
+                        )
+                    )
+                dispatch(DataLoadedAction.CalendarScheduledChanged(schedule))
             }
         }
     }
