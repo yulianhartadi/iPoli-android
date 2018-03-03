@@ -28,7 +28,7 @@ sealed class DataLoadedAction : Action {
         val currentAgendaItemDate: LocalDate?
     ) : DataLoadedAction()
 
-    data class ScheduledQuestsChanged(val schedule: Schedule) :
+    data class ScheduledQuestsChanged(val schedule: Map<LocalDate, Schedule>) :
         DataLoadedAction()
 }
 
@@ -36,7 +36,7 @@ data class AppDataState(
     val today: LocalDate,
     val player: Player?,
     val todayQuests: List<Quest>,
-    val schedule: Schedule?,
+    val schedule: Map<LocalDate, Schedule>,
     val repeatingQuests: List<RepeatingQuest>,
     val agendaItems: List<CreateAgendaItemsUseCase.AgendaItem>
 ) : State
@@ -82,7 +82,7 @@ object AppDataReducer : Reducer<AppState, AppDataState> {
             today = LocalDate.now(),
             player = null,
             todayQuests = listOf(),
-            schedule = null,
+            schedule = mapOf(),
             repeatingQuests = listOf(),
             agendaItems = listOf()
         )

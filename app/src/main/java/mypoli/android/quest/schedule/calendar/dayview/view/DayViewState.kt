@@ -61,15 +61,18 @@ class DayViewReducer(namespace: String) : NamespaceViewStateReducer<DayViewState
 
         return when (action) {
             is DataLoadedAction.ScheduledQuestsChanged -> {
-                val schedule = action.schedule
+                val scheduleData = action.schedule
 
-                if (schedule.date.isEqual(subState.currentDate)) {
+                if (!scheduleData.containsKey(subState.currentDate)) {
+                    subState.copy(
+                        type = LOADING
+                    )
+                } else {
+                    val schedule = scheduleData[subState.currentDate]!!
                     subState.copy(
                         type = SCHEDULE_LOADED,
                         schedule = schedule
                     )
-                } else {
-                    subState
                 }
             }
 
@@ -85,19 +88,21 @@ class DayViewReducer(namespace: String) : NamespaceViewStateReducer<DayViewState
     ): DayViewState {
         return when (action) {
             is DayViewAction.Load -> {
-                val schedule = state.dataState.schedule
-                if (schedule != null && schedule.date.isEqual(action.currentDate)) {
+                val scheduleData = state.dataState.schedule
+                if (!scheduleData.containsKey(action.currentDate)) {
+                    subState.copy(
+                        type = LOADING,
+                        currentDate = action.currentDate
+                    )
+                } else {
+                    val schedule = scheduleData[action.currentDate]!!
                     subState.copy(
                         type = SCHEDULE_LOADED,
                         schedule = schedule,
                         currentDate = action.currentDate
                     )
-                } else {
-                    subState.copy(
-                        type = LOADING,
-                        currentDate = action.currentDate
-                    )
                 }
+
             }
 
             is DayViewAction.StartEditScheduledQuest -> {

@@ -82,12 +82,42 @@ abstract class AppSideEffect : SideEffect<AppState>,
 
 class DayViewSideEffect : AppSideEffect() {
     private val saveQuestUseCase by required { saveQuestUseCase }
+    private val questRepository by required { questRepository }
     private val removeQuestUseCase by required { removeQuestUseCase }
+    private val loadScheduleForDateUseCase by required { loadScheduleForDateUseCase }
     private val undoRemoveQuestUseCase by required { undoRemoveQuestUseCase }
+
+    private var scheduledQuestsChannel: ReceiveChannel<List<Quest>>? = null
+
+    private var startDate: LocalDate? = null
+    private var endDate: LocalDate? = null
 
     override suspend fun doExecute(action: Action, state: AppState) {
         val a = (action as? NamespaceAction)?.source ?: action
         when (a) {
+
+            is LoadDataAction.All -> {
+                val today = state.dataState.today
+                startDate = today.minusDays(2)
+                endDate = today.plusDays(2)
+                scheduledQuestsChannel?.cancel()
+                launch(UI) {
+                    scheduledQuestsChannel =
+                        questRepository.listenForScheduledBetween(startDate!!, endDate!!)
+                    scheduledQuestsChannel!!.consumeEach {
+                        val schedule =
+                            loadScheduleForDateUseCase.execute(
+                                LoadScheduleForDateUseCase.Params(
+                                    startDate = startDate!!,
+                                    endDate = endDate!!,
+                                    quests = it
+                                )
+                            )
+                        dispatch(DataLoadedAction.ScheduledQuestsChanged(schedule))
+                    }
+                }
+            }
+
             DayViewAction.AddQuest -> {
                 saveQuest(state, action)
             }
@@ -106,6 +136,27 @@ class DayViewSideEffect : AppSideEffect() {
 
             is DayViewAction.UndoRemoveQuest -> {
                 undoRemoveQuestUseCase.execute(a.questId)
+            }
+
+            is DayViewAction.Load -> {
+//                val scheduleDate = state.stateFor(ScheduleViewState::class.java).currentDate
+//                Timber.d("AAA $scheduleDate ${a.currentDate}")
+//                if (scheduleDate.isEqual(a.currentDate)) {
+//                    launch(UI) {
+//                        scheduledQuestsChannel?.cancel()
+//                        scheduledQuestsChannel = questRepository.listenForScheduledAt(scheduleDate)
+//                        scheduledQuestsChannel!!.consumeEach {
+//                            val schedule =
+//                                loadScheduleForDateUseCase.execute(
+//                                    LoadScheduleForDateUseCase.Params(
+//                                        date = scheduleDate,
+//                                        quests = it
+//                                    )
+//                                )
+//                            dispatch(DataLoadedAction.ScheduledQuestsChanged(schedule))
+//                        }
+//                    }
+//                }
             }
         }
     }
@@ -175,7 +226,7 @@ class DayViewSideEffect : AppSideEffect() {
 
     override fun canHandle(action: Action): Boolean {
         val a = (action as? NamespaceAction)?.source ?: action
-        return a is DayViewAction
+        return a is DayViewAction || a is LoadDataAction.All
     }
 }
 
@@ -319,7 +370,7 @@ class AgendaSideEffect : AppSideEffect() {
     private val createAgendaItemsUseCase by required { createAgendaItemsUseCase }
     private val questRepository by required { questRepository }
 
-    private var scheduledQuestsChannel: ReceiveChannel<List<Quest>>? = null
+    private var agendaItemsChannel: ReceiveChannel<List<Quest>>? = null
 
     override suspend fun doExecute(action: Action, state: AppState) {
 
@@ -417,12 +468,12 @@ class AgendaSideEffect : AppSideEffect() {
 
         var isFirstData = true
         launch(UI) {
-            scheduledQuestsChannel?.cancel()
-            scheduledQuestsChannel = questRepository.listenForScheduledBetween(
+            agendaItemsChannel?.cancel()
+            agendaItemsChannel = questRepository.listenForScheduledBetween(
                 start,
                 end
             )
-            scheduledQuestsChannel!!.consumeEach {
+            agendaItemsChannel!!.consumeEach {
                 val agendaItems = createAgendaItemsUseCase.execute(
                     CreateAgendaItemsUseCase.Params(
                         agendaDate,
@@ -474,13 +525,11 @@ class LoadAllDataSideEffect : AppSideEffect() {
     private val questRepository by required { questRepository }
     private val repeatingQuestRepository by required { repeatingQuestRepository }
     private val findQuestsForRepeatingQuestUseCase by required { saveQuestsForRepeatingQuestUseCase }
-    private val loadScheduleForDateUseCase by required { loadScheduleForDateUseCase }
     private val findNextDateForRepeatingQuestUseCase by required { findNextDateForRepeatingQuestUseCase }
     private val findPeriodProgressForRepeatingQuestUseCase by required { findPeriodProgressForRepeatingQuestUseCase }
 
     private var playerChannel: ReceiveChannel<Player?>? = null
     private var todayQuestsChannel: ReceiveChannel<List<Quest>>? = null
-    private var scheduledQuestsChannel: ReceiveChannel<List<Quest>>? = null
     private var repeatingQuestsChannel: ReceiveChannel<List<RepeatingQuest>>? = null
 
     override suspend fun doExecute(action: Action, state: AppState) {
@@ -554,22 +603,6 @@ class LoadAllDataSideEffect : AppSideEffect() {
             todayQuestsChannel!!.consumeEach {
                 updateWidgets()
                 dispatch(DataLoadedAction.TodayQuestsChanged(it))
-            }
-        }
-
-        launch(UI) {
-            scheduledQuestsChannel?.cancel()
-            val today = LocalDate.now()
-            scheduledQuestsChannel = questRepository.listenForScheduledAt(today)
-            scheduledQuestsChannel!!.consumeEach {
-                val schedule =
-                    loadScheduleForDateUseCase.execute(
-                        LoadScheduleForDateUseCase.Params(
-                            date = today,
-                            quests = it
-                        )
-                    )
-                dispatch(DataLoadedAction.ScheduledQuestsChanged(schedule))
             }
         }
     }
