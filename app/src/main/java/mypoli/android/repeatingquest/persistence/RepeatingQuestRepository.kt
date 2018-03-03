@@ -16,6 +16,7 @@ import mypoli.android.quest.data.persistence.DbReminder
 import mypoli.android.repeatingquest.entity.RepeatingPattern
 import mypoli.android.repeatingquest.entity.RepeatingQuest
 import org.threeten.bp.DayOfWeek
+import org.threeten.bp.LocalDate
 import org.threeten.bp.Month
 import kotlin.coroutines.experimental.CoroutineContext
 
@@ -23,7 +24,9 @@ import kotlin.coroutines.experimental.CoroutineContext
  * Created by Polina Zhelyazkova <polina@ipoli.io>
  * on 2/16/18.
  */
-interface RepeatingQuestRepository : CollectionRepository<RepeatingQuest>
+interface RepeatingQuestRepository : CollectionRepository<RepeatingQuest> {
+    fun findAllActive(currentDate: LocalDate = LocalDate.now()): List<RepeatingQuest>
+}
 
 
 data class DbRepeatingQuest(override val map: MutableMap<String, Any?> = mutableMapOf()) :
@@ -72,6 +75,19 @@ class FirestoreRepeatingQuestRepository(
 
     override val collectionReference: CollectionReference
         get() = database.collection("players").document(playerId).collection("repeatingQuests")
+
+    override fun findAllActive(currentDate: LocalDate): List<RepeatingQuest> {
+        val rqsWithEndDate = collectionReference
+            .whereGreaterThanOrEqualTo("repeatingPattern.end", currentDate.startOfDayUTC())
+            .entities
+
+        val rqsWithoutEndDate = collectionReference
+            .whereEqualTo("repeatingPattern.end", null)
+            .entities
+
+        return rqsWithEndDate + rqsWithoutEndDate
+    }
+
 
     override fun toEntityObject(dataMap: MutableMap<String, Any?>): RepeatingQuest {
         val rq = DbRepeatingQuest(dataMap.withDefault {
