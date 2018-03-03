@@ -37,7 +37,8 @@ data class AppDataState(
     val player: Player?,
     val todayQuests: List<Quest>,
     val schedule: Schedule?,
-    val repeatingQuests: List<RepeatingQuest>
+    val repeatingQuests: List<RepeatingQuest>,
+    val agendaItems: List<CreateAgendaItemsUseCase.AgendaItem>
 ) : State
 
 object AppDataReducer : Reducer<AppState, AppDataState> {
@@ -67,6 +68,12 @@ object AppDataReducer : Reducer<AppState, AppDataState> {
                 subState.copy(
                     repeatingQuests = action.repeatingQuests
                 )
+
+            is DataLoadedAction.AgendaItemsChanged ->
+                subState.copy(
+                    agendaItems = action.agendaItems
+                )
+
             else -> subState
         }
 
@@ -76,7 +83,8 @@ object AppDataReducer : Reducer<AppState, AppDataState> {
             player = null,
             todayQuests = listOf(),
             schedule = null,
-            repeatingQuests = listOf()
+            repeatingQuests = listOf(),
+            agendaItems = listOf()
         )
     }
 

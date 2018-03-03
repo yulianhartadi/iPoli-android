@@ -53,7 +53,7 @@ class ScheduleViewController(args: Bundle? = null) :
 
         initAddQuest(view)
 
-        setChildController(view.contentContainer, CalendarViewController())
+        setChildController(view.contentContainer, CalendarViewController(LocalDate.now()))
 
         return view
     }
@@ -304,9 +304,9 @@ class ScheduleViewController(args: Bundle? = null) :
                 val childRouter = getChildRouter(view.contentContainer, null)
                 val newController =
                     if (state.viewMode == ScheduleViewState.ViewMode.CALENDAR)
-                        CalendarViewController()
+                        CalendarViewController(state.currentDate)
                     else
-                        AgendaViewController()
+                        AgendaViewController(state.currentDate)
                 childRouter.popCurrentController()
                 childRouter.setRoot(
                     RouterTransaction.with(newController)

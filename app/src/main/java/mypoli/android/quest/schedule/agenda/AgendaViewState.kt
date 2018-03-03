@@ -25,6 +25,7 @@ import java.util.*
  */
 
 sealed class AgendaAction : Action {
+    data class Load(val startDate: LocalDate) : AgendaAction()
     data class LoadBefore(val itemPosition: Int) : AgendaAction()
     data class LoadAfter(val itemPosition: Int) : AgendaAction()
     data class CompleteQuest(val itemPosition: Int) : AgendaAction()
@@ -36,13 +37,40 @@ object AgendaReducer : BaseViewStateReducer<AgendaViewState>() {
 
     override val stateKey = key<AgendaViewState>()
 
-
     override fun reduce(
         state: AppState,
         subState: AgendaViewState,
         action: Action
     ): AgendaViewState {
         return when (action) {
+
+            is AgendaAction.Load -> {
+
+                val agendaItems = state.dataState.agendaItems
+
+                if (agendaItems.isEmpty()) {
+                    return subState.copy(type = AgendaViewState.StateType.LOADING)
+                }
+
+                val userScrolledToPosition =
+                    if (subState.userScrollPosition != null) {
+                        val userDate =
+                            subState.agendaItems[subState.userScrollPosition].startDate()
+                        findItemPositionToScrollTo(userDate, agendaItems)
+                    } else null
+
+                subState.copy(
+                    type = AgendaViewState.StateType.DATA_CHANGED,
+                    agendaItems = agendaItems,
+                    scrollToPosition = findItemPositionToScrollTo(
+                        action.startDate,
+                        agendaItems
+                    ),
+                    userScrollPosition = userScrolledToPosition,
+                    shouldScrollToUserPosition = false
+                )
+            }
+
             is DataLoadedAction.AgendaItemsChanged -> {
                 val userScrolledToPosition =
                     if (subState.userScrollPosition != null) {

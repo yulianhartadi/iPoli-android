@@ -26,6 +26,7 @@ import mypoli.android.common.view.*
 import mypoli.android.quest.CompletedQuestViewController
 import mypoli.android.quest.schedule.agenda.widget.SwipeToCompleteCallback
 import mypoli.android.timer.TimerViewController
+import org.threeten.bp.LocalDate
 
 /**
  * Created by Polina Zhelyazkova <polina@ipoli.io>
@@ -37,6 +38,12 @@ class AgendaViewController(args: Bundle? = null) :
     override val reducer = AgendaReducer
 
     private lateinit var scrollToPositionListener: RecyclerView.OnScrollListener
+
+    private lateinit var startDate: LocalDate
+
+    constructor(startDate: LocalDate) : this() {
+        this.startDate = startDate
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -79,6 +86,8 @@ class AgendaViewController(args: Bundle? = null) :
 
         return view
     }
+
+    override fun onCreateLoadAction() = AgendaAction.Load(startDate)
 
     override fun onDetach(view: View) {
         view.agendaList.clearOnScrollListeners()

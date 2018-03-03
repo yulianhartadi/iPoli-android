@@ -23,6 +23,13 @@ object CalendarReducer : BaseViewStateReducer<CalendarViewState>() {
     ): CalendarViewState {
 
         return when (action) {
+
+            is CalendarAction.Load -> {
+                subState.copy(
+                    currentDate = action.startDate
+                )
+            }
+
             is CalendarAction.SwipeChangeDate -> {
 
                 val currentPos = subState.adapterPosition
@@ -65,6 +72,7 @@ object CalendarReducer : BaseViewStateReducer<CalendarViewState>() {
 sealed class CalendarAction : Action {
     data class SwipeChangeDate(val adapterPosition: Int) : CalendarAction()
     data class ChangeVisibleDate(val date: LocalDate) : CalendarAction()
+    data class Load(val startDate: LocalDate) : CalendarAction()
 }
 
 data class CalendarViewState(

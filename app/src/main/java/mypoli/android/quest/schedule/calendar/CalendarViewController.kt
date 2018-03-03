@@ -40,6 +40,12 @@ class CalendarViewController(args: Bundle? = null) :
         override fun getCount() = 0
     }
 
+    private lateinit var startDate: LocalDate
+
+    constructor(startDate: LocalDate) : this() {
+        this.startDate = startDate
+    }
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup,
@@ -65,6 +71,8 @@ class CalendarViewController(args: Bundle? = null) :
             }
         }
     }
+
+    override fun onCreateLoadAction() = CalendarAction.Load(startDate)
 
     private fun removeDayViewPagerAdapter(view: View) {
         view.pager.removeOnPageChangeListener(pageChangeListener)
