@@ -35,7 +35,6 @@ import mypoli.android.quest.schedule.calendar.CalendarViewState
 import mypoli.android.quest.schedule.calendar.dayview.view.DayViewAction
 import mypoli.android.quest.schedule.calendar.dayview.view.DayViewState
 import mypoli.android.quest.usecase.CompleteQuestUseCase
-import mypoli.android.quest.usecase.CompleteQuestUseCase.Params.WithQuest
 import mypoli.android.quest.usecase.LoadScheduleForDateUseCase
 import mypoli.android.quest.usecase.Result
 import mypoli.android.quest.usecase.SaveQuestUseCase
@@ -86,6 +85,9 @@ class DayViewSideEffect : AppSideEffect() {
     private val loadScheduleForDateUseCase by required { loadScheduleForDateUseCase }
     private val undoRemoveQuestUseCase by required { undoRemoveQuestUseCase }
     private val createPlaceholderQuestsForRepeatingQuestsUseCase by required { createPlaceholderQuestsForRepeatingQuestsUseCase }
+    private val completeTimeRangeUseCase by required { completeTimeRangeUseCase }
+    private val completeQuestUseCase by required { completeQuestUseCase }
+    private val undoCompletedQuestUseCase by required { undoCompletedQuestUseCase }
 
     private var scheduledQuestsChannel: ReceiveChannel<List<Quest>>? = null
 
@@ -120,6 +122,19 @@ class DayViewSideEffect : AppSideEffect() {
                     return
                 }
                 startListenForCalendarQuests(a.currentDate)
+            }
+
+            is DayViewAction.CompleteQuest -> {
+                val questId = a.questId
+                if (a.isStarted) {
+                    completeTimeRangeUseCase.execute(CompleteTimeRangeUseCase.Params(questId))
+                } else {
+                    completeQuestUseCase.execute(CompleteQuestUseCase.Params.WithQuestId(questId))
+                }
+            }
+
+            is DayViewAction.UndoCompleteQuest -> {
+                undoCompletedQuestUseCase.execute(a.questId)
             }
         }
     }
@@ -222,37 +237,6 @@ class DayViewSideEffect : AppSideEffect() {
     override fun canHandle(action: Action): Boolean {
         val a = (action as? NamespaceAction)?.source ?: action
         return a is DayViewAction || a is LoadDataAction.All
-    }
-}
-
-class CompleteQuestSideEffect : AppSideEffect() {
-
-    private val completeTimeRangeUseCase by required { completeTimeRangeUseCase }
-    private val completeQuestUseCase by required { completeQuestUseCase }
-    private val undoCompletedQuestUseCase by required { undoCompletedQuestUseCase }
-
-    override suspend fun doExecute(action: Action, state: AppState) {
-        when (action) {
-            is DayViewAction.CompleteQuest -> {
-                val questId = action.questId
-                if (action.isStarted) {
-                    completeTimeRangeUseCase.execute(CompleteTimeRangeUseCase.Params(questId))
-                } else {
-                    completeQuestUseCase.execute(CompleteQuestUseCase.Params.WithQuestId(questId))
-                }
-            }
-
-            is DayViewAction.UndoCompleteQuest -> {
-                undoCompletedQuestUseCase.execute(action.questId)
-            }
-        }
-
-    }
-
-    override fun canHandle(action: Action): Boolean {
-        val a = (action as? NamespaceAction)?.source ?: action
-        return a is DayViewAction.CompleteQuest
-            || a is DayViewAction.UndoCompleteQuest
     }
 }
 
@@ -364,6 +348,7 @@ class AgendaSideEffect : AppSideEffect() {
     private val findAgendaDatesUseCase by required { findAgendaDatesUseCase }
     private val createAgendaItemsUseCase by required { createAgendaItemsUseCase }
     private val questRepository by required { questRepository }
+    private val completeTimeRangeUseCase by required { completeTimeRangeUseCase }
 
     private var agendaItemsChannel: ReceiveChannel<List<Quest>>? = null
 
@@ -411,7 +396,13 @@ class AgendaSideEffect : AppSideEffect() {
                 val agendaState = state.stateFor(AgendaViewState::class.java)
                 val questItem =
                     agendaState.agendaItems[adapterPos] as CreateAgendaItemsUseCase.AgendaItem.QuestItem
-                completeQuestUseCase.execute(WithQuest(questItem.quest))
+
+                val quest = questItem.quest
+                if (quest.isStarted) {
+                    completeTimeRangeUseCase.execute(CompleteTimeRangeUseCase.Params(quest.id))
+                } else {
+                    completeQuestUseCase.execute(CompleteQuestUseCase.Params.WithQuest(quest))
+                }
             }
 
             is AgendaAction.UndoCompleteQuest -> {
@@ -509,11 +500,9 @@ class AgendaSideEffect : AppSideEffect() {
 
     override fun canHandle(action: Action) =
         action == LoadDataAction.All
-            || action is AgendaAction.LoadBefore
-            || action is AgendaAction.LoadAfter
+            || action is AgendaAction
             || action is ScheduleAction.ScheduleChangeDate
             || action is CalendarAction.SwipeChangeDate
-
 }
 
 class LoadAllDataSideEffect : AppSideEffect() {
