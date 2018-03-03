@@ -51,61 +51,39 @@ object AgendaReducer : BaseViewStateReducer<AgendaViewState>() {
                 if (agendaItems.isEmpty()) {
                     return subState.copy(type = AgendaViewState.StateType.LOADING)
                 }
-
-                val userScrolledToPosition =
-                    if (subState.userScrollPosition != null) {
-                        val userDate =
-                            subState.agendaItems[subState.userScrollPosition].startDate()
-                        findItemPositionToScrollTo(userDate, agendaItems)
-                    } else null
-
                 subState.copy(
                     type = AgendaViewState.StateType.DATA_CHANGED,
                     agendaItems = agendaItems,
                     scrollToPosition = findItemPositionToScrollTo(
                         action.startDate,
                         agendaItems
-                    ),
-                    userScrollPosition = userScrolledToPosition,
-                    shouldScrollToUserPosition = false
+                    )
                 )
             }
 
             is DataLoadedAction.AgendaItemsChanged -> {
-                val userScrolledToPosition =
-                    if (subState.userScrollPosition != null) {
-                        val userDate =
-                            subState.agendaItems[subState.userScrollPosition].startDate()
-                        findItemPositionToScrollTo(userDate, action.agendaItems)
-                    } else null
-
                 subState.copy(
                     type = AgendaViewState.StateType.DATA_CHANGED,
                     agendaItems = action.agendaItems,
                     scrollToPosition = findItemPositionToScrollTo(
                         action.currentAgendaItemDate,
                         action.agendaItems
-                    ),
-                    userScrollPosition = userScrolledToPosition,
-                    shouldScrollToUserPosition = false
+                    )
                 )
             }
             is AgendaAction.LoadBefore -> {
                 subState.copy(
-                    type = AgendaViewState.StateType.SHOW_TOP_LOADER,
-                    userScrollPosition = action.itemPosition
+                    type = AgendaViewState.StateType.SHOW_TOP_LOADER
                 )
             }
             is AgendaAction.LoadAfter -> {
                 subState.copy(
-                    type = AgendaViewState.StateType.SHOW_BOTTOM_LOADER,
-                    userScrollPosition = action.itemPosition
+                    type = AgendaViewState.StateType.SHOW_BOTTOM_LOADER
                 )
             }
             is AgendaAction.FirstVisibleItemChanged -> {
                 subState.copy(
-                    type = AgendaViewState.StateType.IDLE,
-                    userScrollPosition = action.itemPosition
+                    type = AgendaViewState.StateType.IDLE
                 )
             }
             else -> subState
@@ -137,9 +115,7 @@ object AgendaReducer : BaseViewStateReducer<AgendaViewState>() {
     override fun defaultState() = AgendaViewState(
         type = AgendaViewState.StateType.LOADING,
         agendaItems = listOf(),
-        scrollToPosition = null,
-        userScrollPosition = null,
-        shouldScrollToUserPosition = true
+        scrollToPosition = null
     )
 
     const val ITEMS_BEFORE_COUNT = 25
@@ -148,9 +124,7 @@ object AgendaReducer : BaseViewStateReducer<AgendaViewState>() {
 
 data class AgendaViewState(
     val type: AgendaViewState.StateType,
-    val userScrollPosition: Int?,
     val scrollToPosition: Int?,
-    val shouldScrollToUserPosition: Boolean,
     val agendaItems: List<CreateAgendaItemsUseCase.AgendaItem>
 ) : ViewState {
 

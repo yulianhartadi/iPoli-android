@@ -27,6 +27,7 @@ import mypoli.android.quest.CompletedQuestViewController
 import mypoli.android.quest.schedule.agenda.widget.SwipeToCompleteCallback
 import mypoli.android.timer.TimerViewController
 import org.threeten.bp.LocalDate
+import timber.log.Timber
 
 /**
  * Created by Polina Zhelyazkova <polina@ipoli.io>
@@ -119,6 +120,8 @@ class AgendaViewController(args: Bundle? = null) :
         agendaList: RecyclerView,
         state: AgendaViewState
     ) {
+
+        Timber.d("AAA scrolltoposition ${state.scrollToPosition}")
         val endlessRecyclerViewScrollListener =
             EndlessRecyclerViewScrollListener(
                 agendaList.layoutManager as LinearLayoutManager,
@@ -154,12 +157,12 @@ class AgendaViewController(args: Bundle? = null) :
                 state.scrollToPosition,
                 0
             )
-        } else if (state.shouldScrollToUserPosition && state.userScrollPosition != null) {
-            agendaList.addOnScrollListener(scrollToPositionListener)
-            (agendaList.layoutManager as LinearLayoutManager).scrollToPositionWithOffset(
-                state.userScrollPosition,
-                0
-            )
+//        } else if (state.shouldScrollToUserPosition && state.userScrollPosition != null) {
+//            agendaList.addOnScrollListener(scrollToPositionListener)
+//            (agendaList.layoutManager as LinearLayoutManager).scrollToPositionWithOffset(
+//                state.userScrollPosition,
+//                0
+//            )
         } else {
             agendaList.addOnScrollListener(endlessRecyclerViewScrollListener)
             agendaList.addOnScrollListener(changeItemScrollListener)
