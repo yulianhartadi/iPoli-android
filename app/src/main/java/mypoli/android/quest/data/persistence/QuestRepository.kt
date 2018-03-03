@@ -210,6 +210,7 @@ class FirestoreQuestRepository(
         end: LocalDate
     ) =
         collectionReference
+            .whereEqualTo("repeatingQuestId", repeatingQuestId)
             .whereGreaterThan("scheduledDate", start.startOfDayUTC() - 1)
             .whereLessThanOrEqualTo("scheduledDate", end.startOfDayUTC()).entities
 

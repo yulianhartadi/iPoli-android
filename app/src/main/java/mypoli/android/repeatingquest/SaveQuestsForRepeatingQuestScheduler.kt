@@ -27,7 +27,7 @@ class SaveQuestsForRepeatingQuestJob : Job(), Injects<Module> {
     }
 
     companion object {
-        val TAG = "save_quests_for_repeating_quest_tag"
+        const val TAG = "save_quests_for_repeating_quest_tag"
     }
 }
 
