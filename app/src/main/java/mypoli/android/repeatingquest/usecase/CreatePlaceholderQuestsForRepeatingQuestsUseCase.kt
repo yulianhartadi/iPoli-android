@@ -30,6 +30,7 @@ class CreatePlaceholderQuestsForRepeatingQuestsUseCase(
         }
 
         val rqs = repeatingQuestRepository.findAllActive(currentDate)
+
         return rqs.filter { it.isFixed }.map {
             val scheduleDates = when (it.repeatingPattern) {
 

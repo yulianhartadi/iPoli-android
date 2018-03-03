@@ -1,5 +1,6 @@
 package mypoli.android.common
 
+import kotlinx.coroutines.experimental.CommonPool
 import kotlinx.coroutines.experimental.android.UI
 import kotlinx.coroutines.experimental.channels.ReceiveChannel
 import kotlinx.coroutines.experimental.channels.consumeEach
@@ -43,10 +44,7 @@ import mypoli.android.repeatingquest.edit.EditRepeatingQuestAction
 import mypoli.android.repeatingquest.edit.EditRepeatingQuestViewState
 import mypoli.android.repeatingquest.entity.RepeatingQuest
 import mypoli.android.repeatingquest.show.RepeatingQuestAction
-import mypoli.android.repeatingquest.usecase.FindNextDateForRepeatingQuestUseCase
-import mypoli.android.repeatingquest.usecase.FindPeriodProgressForRepeatingQuestUseCase
-import mypoli.android.repeatingquest.usecase.RemoveRepeatingQuestUseCase
-import mypoli.android.repeatingquest.usecase.SaveRepeatingQuestUseCase
+import mypoli.android.repeatingquest.usecase.*
 import mypoli.android.timer.usecase.CompleteTimeRangeUseCase
 import org.threeten.bp.LocalDate
 import org.threeten.bp.LocalDateTime
@@ -134,23 +132,25 @@ class DayViewSideEffect : AppSideEffect() {
             scheduledQuestsChannel =
                 questRepository.listenForScheduledBetween(startDate!!, endDate!!)
             scheduledQuestsChannel!!.consumeEach {
-//                val placeholderQuests = createPlaceholderQuestsForRepeatingQuestsUseCase.execute(
-//                    CreatePlaceholderQuestsForRepeatingQuestsUseCase.Params(
-//                        startDate = startDate!!,
-//                        endDate = endDate!!
-//                    )
-//                )
-                val placeholderQuests = listOf<Quest>()
-
-                val schedule =
-                    loadScheduleForDateUseCase.execute(
-                        LoadScheduleForDateUseCase.Params(
-                            startDate = startDate!!,
-                            endDate = endDate!!,
-                            quests = it + placeholderQuests
+                launch(CommonPool) {
+                    val placeholderQuests =
+                        createPlaceholderQuestsForRepeatingQuestsUseCase.execute(
+                            CreatePlaceholderQuestsForRepeatingQuestsUseCase.Params(
+                                startDate = startDate!!,
+                                endDate = endDate!!
+                            )
                         )
-                    )
-                dispatch(DataLoadedAction.CalendarScheduledChanged(schedule))
+
+                    val schedule =
+                        loadScheduleForDateUseCase.execute(
+                            LoadScheduleForDateUseCase.Params(
+                                startDate = startDate!!,
+                                endDate = endDate!!,
+                                quests = it + placeholderQuests
+                            )
+                        )
+                    dispatch(DataLoadedAction.CalendarScheduledChanged(schedule))
+                }
             }
         }
     }
@@ -468,23 +468,25 @@ class AgendaSideEffect : AppSideEffect() {
                 end
             )
             agendaItemsChannel!!.consumeEach {
-                val agendaItems = createAgendaItemsUseCase.execute(
-                    CreateAgendaItemsUseCase.Params(
-                        agendaDate,
-                        it,
-                        AgendaReducer.ITEMS_BEFORE_COUNT,
-                        AgendaReducer.ITEMS_AFTER_COUNT
+                launch(CommonPool) {
+                    val agendaItems = createAgendaItemsUseCase.execute(
+                        CreateAgendaItemsUseCase.Params(
+                            agendaDate,
+                            it,
+                            AgendaReducer.ITEMS_BEFORE_COUNT,
+                            AgendaReducer.ITEMS_AFTER_COUNT
+                        )
                     )
-                )
-                dispatch(
-                    DataLoadedAction.AgendaItemsChanged(
-                        start = start,
-                        end = end,
-                        agendaItems = agendaItems,
-                        currentAgendaItemDate = if (changeCurrentAgendaItem && isFirstData) agendaDate else null
+                    dispatch(
+                        DataLoadedAction.AgendaItemsChanged(
+                            start = start,
+                            end = end,
+                            agendaItems = agendaItems,
+                            currentAgendaItemDate = if (changeCurrentAgendaItem && isFirstData) agendaDate else null
+                        )
                     )
-                )
-                isFirstData = false
+                    isFirstData = false
+                }
             }
         }
     }
