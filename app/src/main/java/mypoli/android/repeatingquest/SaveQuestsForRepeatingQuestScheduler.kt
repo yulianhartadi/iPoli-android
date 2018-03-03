@@ -52,7 +52,7 @@ class AndroidSaveQuestsForRepeatingQuestScheduler : SaveQuestsForRepeatingQuestS
     override fun schedule() {
 
         DailyJob.schedule(
-            JobRequest.Builder(SaveQuestsForRepeatingQuestJob.TAG),
+            JobRequest.Builder(SaveQuestsForRepeatingQuestJob.TAG).setUpdateCurrent(true),
             0,
             TimeUnit.HOURS.toMillis(1)
         )

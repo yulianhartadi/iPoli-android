@@ -414,12 +414,7 @@ class AndroidPresenterModule : PresenterModule, Injects<Module> {
 
     private val questRepository by required { questRepository }
     private val playerRepository by required { playerRepository }
-    private val loadScheduleForDateUseCase by required { loadScheduleForDateUseCase }
     private val saveQuestUseCase by required { saveQuestUseCase }
-    private val removeQuestUseCase by required { removeQuestUseCase }
-    private val undoRemoveQuestUseCase by required { undoRemoveQuestUseCase }
-    private val completeQuestUseCase by required { completeQuestUseCase }
-    private val undoCompleteQuestUseCase by required { undoCompletedQuestUseCase }
     private val listenForPlayerChangesUseCase by required { listenForPlayerChangesUseCase }
     private val revivePetUseCase by required { revivePetUseCase }
     private val feedPetUseCase by required { feedPetUseCase }
