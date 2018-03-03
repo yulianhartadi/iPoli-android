@@ -16,6 +16,7 @@ import mypoli.android.repeatingquest.entity.RepeatingQuest
 import mypoli.android.repeatingquest.show.RepeatingQuestViewState.Changed.ProgressModel.COMPLETE
 import mypoli.android.repeatingquest.show.RepeatingQuestViewState.Changed.ProgressModel.INCOMPLETE
 import mypoli.android.repeatingquest.show.RepeatingQuestViewState.Changed.RepeatType.*
+import mypoli.android.repeatingquest.usecase.RepeatingQuestHistoryUseCase
 import org.threeten.bp.LocalDate
 
 /**
@@ -34,6 +35,11 @@ sealed class RepeatingQuestViewState(open val id: String) : ViewState {
         RepeatingQuestViewState(id)
 
     object Removed : RepeatingQuestViewState("")
+
+    data class HistoryChanged(
+        override val id: String,
+        val history: Map<LocalDate, RepeatingQuestHistoryUseCase.QuestState>
+    ) : RepeatingQuestViewState(id)
 
     data class Changed(
         override val id: String,
@@ -83,6 +89,10 @@ object RepeatingQuestReducer : BaseViewStateReducer<RepeatingQuestViewState>() {
                 rq?.let {
                     createChangedState(it)
                 } ?: RepeatingQuestViewState.Removed
+            }
+
+            is DataLoadedAction.RepeatingQuestHistoryChanged -> {
+
             }
 
             is RepeatingQuestAction.Remove -> {

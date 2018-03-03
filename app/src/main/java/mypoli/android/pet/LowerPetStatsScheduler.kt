@@ -32,7 +32,7 @@ class LowerPetStatsJob : Job(), Injects<Module> {
     }
 
     companion object {
-        val TAG = "job_lower_pet_stats_tag"
+        const val TAG = "job_lower_pet_stats_tag"
     }
 }
 
