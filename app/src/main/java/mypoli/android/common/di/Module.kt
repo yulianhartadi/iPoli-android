@@ -57,6 +57,7 @@ import mypoli.android.repeatingquest.AndroidSaveQuestsForRepeatingQuestScheduler
 import mypoli.android.repeatingquest.SaveQuestsForRepeatingQuestScheduler
 import mypoli.android.repeatingquest.persistence.FirestoreRepeatingQuestRepository
 import mypoli.android.repeatingquest.persistence.RepeatingQuestRepository
+import mypoli.android.repeatingquest.sideeffect.RepeatingQuestSideEffect
 import mypoli.android.repeatingquest.usecase.*
 
 import mypoli.android.store.GemStorePresenter

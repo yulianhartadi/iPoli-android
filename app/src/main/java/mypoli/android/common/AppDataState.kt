@@ -8,6 +8,7 @@ import mypoli.android.quest.Quest
 import mypoli.android.quest.schedule.agenda.usecase.CreateAgendaItemsUseCase
 import mypoli.android.quest.usecase.Schedule
 import mypoli.android.repeatingquest.entity.RepeatingQuest
+import mypoli.android.repeatingquest.usecase.RepeatingQuestHistoryUseCase
 import org.threeten.bp.LocalDate
 
 /**
@@ -30,6 +31,11 @@ sealed class DataLoadedAction : Action {
 
     data class CalendarScheduledChanged(val schedule: Map<LocalDate, Schedule>) :
         DataLoadedAction()
+
+    data class RepeatingQuestHistoryChanged(
+        val repeatingQuestId: String,
+        val history: Map<LocalDate, RepeatingQuestHistoryUseCase.QuestState>
+    ) : DataLoadedAction()
 }
 
 data class AppDataState(
