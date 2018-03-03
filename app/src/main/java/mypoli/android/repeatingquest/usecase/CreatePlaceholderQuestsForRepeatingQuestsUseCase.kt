@@ -32,31 +32,45 @@ class CreatePlaceholderQuestsForRepeatingQuestsUseCase(
         val rqs = repeatingQuestRepository.findAllActive(currentDate)
 
         return rqs.filter { it.isFixed }.map {
+            val rqStart = it.start
+            if (end.isBefore(rqStart)) {
+                return listOf()
+            }
+
+            val rqEnd = it.end
+            if (rqEnd != null && start.isAfter(rqEnd)) {
+                return listOf()
+            }
+
+            val currStart = if (start.isBefore(rqStart)) rqStart else start
+            val currEnd = if (rqEnd != null && rqEnd.isBefore(end)) rqEnd else end
+
+
             val scheduleDates = when (it.repeatingPattern) {
 
-                is RepeatingPattern.Daily -> start.datesBetween(end).toSet()
+                is RepeatingPattern.Daily -> currStart.datesBetween(currEnd).toSet()
 
 
                 is RepeatingPattern.Weekly ->
                     weeklyDatesToScheduleInPeriod(
                         it.repeatingPattern,
-                        start,
-                        end
+                        currStart,
+                        currEnd
                     )
 
                 is RepeatingPattern.Monthly ->
                     monthlyDatesToScheduleInPeriod(
                         it.repeatingPattern,
-                        start,
-                        end
+                        currStart,
+                        currEnd
                     )
 
 
                 is RepeatingPattern.Yearly ->
                     yearlyDatesToScheduleInPeriod(
                         it.repeatingPattern,
-                        start,
-                        end
+                        currStart,
+                        currEnd
                     )
 
                 else -> throw IllegalArgumentException("Cannot create placeholders for $it")
@@ -64,7 +78,7 @@ class CreatePlaceholderQuestsForRepeatingQuestsUseCase(
 
             if (scheduleDates.isNotEmpty()) {
                 val scheduledQuests =
-                    questRepository.findScheduledForRepeatingQuestBetween(it.id, start, end)
+                    questRepository.findScheduledForRepeatingQuestBetween(it.id, currStart, currEnd)
 
                 val (removed, existing) = scheduledQuests.partition { it.isRemoved }
                 val scheduledDateToQuest =

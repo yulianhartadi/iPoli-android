@@ -475,7 +475,6 @@ class LoadAllDataSideEffect : AppSideEffect() {
     private val playerRepository by required { playerRepository }
     private val questRepository by required { questRepository }
     private val repeatingQuestRepository by required { repeatingQuestRepository }
-    private val findQuestsForRepeatingQuestUseCase by required { saveQuestsForRepeatingQuestUseCase }
     private val findNextDateForRepeatingQuestUseCase by required { findNextDateForRepeatingQuestUseCase }
     private val findPeriodProgressForRepeatingQuestUseCase by required { findPeriodProgressForRepeatingQuestUseCase }
 
@@ -522,23 +521,6 @@ class LoadAllDataSideEffect : AppSideEffect() {
                                 FindPeriodProgressForRepeatingQuestUseCase.Params(it)
                             )
                         }
-//
-//                    val scheduledQuests = rqs.map {
-//                        saveQuestsForRepeatingQuestUseCase.execute(
-//                            SaveQuestsForRepeatingQuestUseCase.Params(
-//                                it,
-//                                LocalDate.now(),
-//                                LocalDate.now()
-//                            )
-//                        ).quests
-//                    }
-//
-//                    scheduledQuests.forEach {
-//                        it.forEach {
-//                            Timber.d("AAA ${it.scheduledDate}")
-//                        }
-//
-//                    }
                     dispatch(DataLoadedAction.RepeatingQuestsChanged(rqs))
                 }
             }
