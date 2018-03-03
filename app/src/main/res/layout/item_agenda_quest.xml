@@ -56,16 +56,27 @@
 
     <TextView
         android:id="@+id/questStartTime"
-        android:layout_width="0dp"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginBottom="8dp"
-        android:layout_marginEnd="16dp"
         android:layout_marginStart="16dp"
         android:textAppearance="@style/TextAppearance.AppCompat.Body1"
         android:textColor="@color/md_dark_text_54"
         app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/questIcon"
+        app:layout_constraintTop_toBottomOf="@+id/questName"
+        tools:text="12:00 - 13:00" />
+
+    <ImageView
+        android:id="@+id/questRepeatIndicator"
+        android:layout_width="16dp"
+        android:layout_height="16dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginStart="8dp"
+        app:layout_constraintBottom_toBottomOf="@+id/questStartTime"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toEndOf="@+id/questIcon"
-        app:layout_constraintTop_toBottomOf="@+id/questName" />
+        app:layout_constraintStart_toEndOf="@+id/questStartTime"
+        app:layout_constraintTop_toTopOf="@+id/questStartTime"
+        app:srcCompat="@drawable/ic_repeat_black_24dp" />
 </android.support.constraint.ConstraintLayout>

@@ -187,7 +187,8 @@ class AgendaViewController(args: Bundle? = null) :
         @ColorRes val color: Int,
         val icon: IIcon,
         val isCompleted: Boolean,
-        val showDivider: Boolean = true
+        val showDivider: Boolean = true,
+        val isRepeating : Boolean
     ) : AgendaViewModel
 
     data class DateHeaderViewModel(val text: String) : AgendaViewModel

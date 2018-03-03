@@ -195,7 +195,8 @@ private fun toAgendaViewModel(
                 icon = quest.icon?.let { AndroidIcon.valueOf(it.name).icon }
                     ?: Ionicons.Icon.ion_android_clipboard,
                 isCompleted = quest.isCompleted,
-                showDivider = showDivider
+                showDivider = showDivider,
+                isRepeating = false
             )
         }
         is CreateAgendaItemsUseCase.AgendaItem.Date -> {

@@ -23,7 +23,7 @@ import kotlinx.android.synthetic.main.calendar_hour_cell.view.*
 import kotlinx.android.synthetic.main.controller_day_view.view.*
 import kotlinx.android.synthetic.main.item_calendar_drag.view.*
 import kotlinx.android.synthetic.main.item_calendar_quest.view.*
-import kotlinx.android.synthetic.main.unscheduled_quest_item.view.*
+import kotlinx.android.synthetic.main.item_unscheduled_quest.view.*
 import kotlinx.android.synthetic.main.view_calendar_day.view.*
 import mypoli.android.Constants
 import mypoli.android.R
@@ -502,7 +502,10 @@ class DayViewController :
         val isStarted: Boolean,
         val repeatingQuestId: String?,
         val isPlaceholder: Boolean
-    ) : CalendarEvent
+    ) : CalendarEvent {
+        val isRepeating: Boolean
+            get() = repeatingQuestId != null && repeatingQuestId.isNotEmpty()
+    }
 
     inner class QuestScheduledEventsAdapter(
         context: Context,
@@ -588,7 +591,10 @@ class DayViewController :
                         showQuest(vm.id)
                     }
                 }
+
             }
+
+            view.repeatIndicator.visible = vm.isRepeating
 
             view.checkBox.setOnCheckedChangeListener { cb, checked ->
                 if (checked) {
@@ -710,14 +716,17 @@ class DayViewController :
         val reminder: ReminderViewModel? = null,
         val repeatingQuestId: String?,
         val isPlaceholder: Boolean
-    ) : UnscheduledEvent
+    ) : UnscheduledEvent {
+        val isRepeating: Boolean
+            get() = repeatingQuestId != null && repeatingQuestId.isNotEmpty()
+    }
 
     inner class UnscheduledQuestsAdapter(
         items: List<UnscheduledQuestViewModel>,
         calendarDayView: CalendarDayView
     ) :
         UnscheduledEventsAdapter<UnscheduledQuestViewModel>
-            (R.layout.unscheduled_quest_item, items.toMutableList(), calendarDayView) {
+            (R.layout.item_unscheduled_quest, items.toMutableList(), calendarDayView) {
 
         override fun ViewHolder.bind(
             viewModel: UnscheduledQuestViewModel,
@@ -785,6 +794,8 @@ class DayViewController :
                 }
 
             }
+
+            itemView.unscheduledQuestRepeatIndicator.visible = viewModel.isRepeating
 
             itemView.unscheduledCheckBox.setOnCheckedChangeListener { _, checked ->
                 if (checked) {
