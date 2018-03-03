@@ -65,12 +65,12 @@ object RepeatingPatternReducer : BaseViewStateReducer<RepeatingPatternViewState>
                 subState.copy(
                     type = DATA_LOADED,
                     repeatType = repeatType,
-                    repeatTypeIndex = frequencyIndexFor(repeatType),
+                    repeatTypeIndex = repeatTypeIndexFor(repeatType),
                     weekDaysCountIndex = weekDaysCountIndex,
                     monthDaysCountIndex = monthDaysCountIndex,
                     selectedWeekDays = selectedWeekDays,
                     selectedMonthDays = selectedMonthDays,
-                    isFlexible = pattern is RepeatingPattern.Flexible,
+                    isFlexible = isFlexible(repeatType, subState),
                     startDate = startDate,
                     endDate = endDate,
                     pickerEndDate = endDate ?: subState.pickerEndDate,
@@ -83,7 +83,7 @@ object RepeatingPatternReducer : BaseViewStateReducer<RepeatingPatternViewState>
                 subState.copy(
                     type = REPEAT_TYPE_CHANGED,
                     repeatType = repeatType,
-                    repeatTypeIndex = frequencyIndexFor(repeatType),
+                    repeatTypeIndex = repeatTypeIndexFor(repeatType),
                     isFlexible = isFlexible(repeatType, subState)
                 )
             }
@@ -240,7 +240,7 @@ object RepeatingPatternReducer : BaseViewStateReducer<RepeatingPatternViewState>
     private fun repeatTypeForIndex(index: Int) =
         RepeatType.values()[index]
 
-    private fun frequencyIndexFor(repeatType: RepeatType) =
+    private fun repeatTypeIndexFor(repeatType: RepeatType) =
         repeatType.ordinal
 
     private fun selectedWeekDaysFor(pattern: RepeatingPattern): Set<DayOfWeek> =
@@ -260,15 +260,15 @@ object RepeatingPatternReducer : BaseViewStateReducer<RepeatingPatternViewState>
     override fun defaultState() =
         RepeatingPatternViewState(
             LOADING,
-            RepeatType.DAILY,
-            repeatTypeIndex = 0,
+            RepeatType.WEEKLY,
+            repeatTypeIndex = repeatTypeIndexFor(RepeatType.WEEKLY),
             weekDaysCountIndex = 0,
             monthDaysCountIndex = 0,
             selectedWeekDays = setOf(),
             selectedMonthDays = setOf(),
             weekCountValues = (1..6).toList(),
             monthCountValues = (1..31).toList(),
-            isFlexible = false,
+            isFlexible = true,
             dayOfYear = LocalDate.now(),
             startDate = LocalDate.now(),
             endDate = null,
