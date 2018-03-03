@@ -7,7 +7,7 @@
     android:foreground="?attr/selectableItemBackground">
 
     <CheckBox
-        android:id="@+id/unscheduledDone"
+        android:id="@+id/unscheduledCheckBox"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_centerVertical="true"
@@ -42,7 +42,7 @@
         android:layout_height="24dp"
         android:layout_marginStart="16dp"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/unscheduledDone"
+        app:layout_constraintStart_toEndOf="@+id/unscheduledCheckBox"
         app:layout_constraintTop_toTopOf="parent"
         android:visibility="gone"/>
 

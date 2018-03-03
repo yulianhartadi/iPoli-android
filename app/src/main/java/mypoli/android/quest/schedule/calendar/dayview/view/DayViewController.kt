@@ -500,7 +500,8 @@ class DayViewController :
         val reminder: ReminderViewModel?,
         val isCompleted: Boolean,
         val isStarted: Boolean,
-        val repeatingQuestId: String?
+        val repeatingQuestId: String?,
+        val isPlaceholder: Boolean
     ) : CalendarEvent
 
     inner class QuestScheduledEventsAdapter(
@@ -577,8 +578,15 @@ class DayViewController :
                     tintList(vm.backgroundColor.color200)
                 view.completedBackgroundView.visibility = View.INVISIBLE
 
-                view.setOnClickListener {
-                    showQuest(vm.id)
+                if (vm.isPlaceholder) {
+                    view.setOnClickListener(null)
+                    view.checkBox.visible = false
+                } else {
+
+                    view.checkBox.visible = true
+                    view.setOnClickListener {
+                        showQuest(vm.id)
+                    }
                 }
             }
 
@@ -700,7 +708,8 @@ class DayViewController :
         val isCompleted: Boolean,
         val isStarted: Boolean,
         val reminder: ReminderViewModel? = null,
-        val repeatingQuestId: String?
+        val repeatingQuestId: String?,
+        val isPlaceholder: Boolean
     ) : UnscheduledEvent
 
     inner class UnscheduledQuestsAdapter(
@@ -711,29 +720,29 @@ class DayViewController :
             (R.layout.unscheduled_quest_item, items.toMutableList(), calendarDayView) {
 
         override fun ViewHolder.bind(
-            event: UnscheduledQuestViewModel,
+            viewModel: UnscheduledQuestViewModel,
             calendarDayView: CalendarDayView
         ) {
             itemView.setOnLongClickListener {
-                if (event.isStarted) {
+                if (viewModel.isStarted) {
                     showShortToast(R.string.validation_timer_running)
                 } else {
-                    dispatch(DayViewAction.StartEditUnscheduledQuest(event))
+                    dispatch(DayViewAction.StartEditUnscheduledQuest(viewModel))
                     calendarDayView.startEventRescheduling(events[adapterPosition])
                 }
                 true
             }
 
-            (itemView.unscheduledDone as TintableCompoundButton).supportButtonTintList =
-                tintList(event.backgroundColor.color500, itemView.context)
+            (itemView.unscheduledCheckBox as TintableCompoundButton).supportButtonTintList =
+                tintList(viewModel.backgroundColor.color500, itemView.context)
 
-            if (event.isCompleted) {
-                val span = SpannableString(event.name)
-                span.setSpan(StrikethroughSpan(), 0, event.name.length, 0)
+            if (viewModel.isCompleted) {
+                val span = SpannableString(viewModel.name)
+                span.setSpan(StrikethroughSpan(), 0, viewModel.name.length, 0)
                 itemView.unscheduledQuestName.text = span
-                itemView.unscheduledDone.isChecked = true
+                itemView.unscheduledCheckBox.isChecked = true
 
-                event.icon?.let {
+                viewModel.icon?.let {
                     val icon = IconicsDrawable(itemView.context)
                         .icon(it.icon)
                         .colorRes(R.color.md_dark_text_26)
@@ -743,19 +752,19 @@ class DayViewController :
                 }
 
                 itemView.setOnClickListener {
-                    showCompletedQuest(event.id)
+                    showCompletedQuest(viewModel.id)
                 }
 
             } else {
-                itemView.unscheduledQuestName.text = event.name
+                itemView.unscheduledQuestName.text = viewModel.name
                 itemView.unscheduledQuestName.setTextColor(
                     ContextCompat.getColor(
                         itemView.context,
-                        event.textColor
+                        viewModel.textColor
                     )
                 )
 
-                event.icon?.let {
+                viewModel.icon?.let {
                     val icon = IconicsDrawable(itemView.context)
                         .icon(it.icon)
                         .colorRes(it.color)
@@ -764,17 +773,24 @@ class DayViewController :
                     itemView.unscheduledQuestIcon.setImageDrawable(icon)
                 }
 
-                itemView.setOnClickListener {
-                    showQuest(event.id)
+                if (viewModel.isPlaceholder) {
+                    itemView.setOnClickListener(null)
+                    itemView.unscheduledCheckBox.visible = false
+                } else {
+
+                    itemView.unscheduledCheckBox.visible = true
+                    itemView.setOnClickListener {
+                        showQuest(viewModel.id)
+                    }
                 }
 
             }
 
-            itemView.unscheduledDone.setOnCheckedChangeListener { _, checked ->
+            itemView.unscheduledCheckBox.setOnCheckedChangeListener { _, checked ->
                 if (checked) {
-                    dispatch(DayViewAction.CompleteQuest(event.id, event.isStarted))
+                    dispatch(DayViewAction.CompleteQuest(viewModel.id, viewModel.isStarted))
                 } else {
-                    dispatch(DayViewAction.UndoCompleteQuest(event.id))
+                    dispatch(DayViewAction.UndoCompleteQuest(viewModel.id))
                 }
 
             }
@@ -804,7 +820,8 @@ class DayViewController :
                 textColor = color.color900,
                 isCompleted = it.isCompleted,
                 isStarted = it.isStarted,
-                repeatingQuestId = it.repeatingQuestId
+                repeatingQuestId = it.repeatingQuestId,
+                isPlaceholder = it.id.isEmpty()
             )
         }
 
@@ -829,7 +846,8 @@ class DayViewController :
                 reminder = reminder,
                 isCompleted = q.isCompleted,
                 isStarted = q.isStarted,
-                repeatingQuestId = q.repeatingQuestId
+                repeatingQuestId = q.repeatingQuestId,
+                isPlaceholder = q.id.isEmpty()
             )
         }
 }

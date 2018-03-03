@@ -42,7 +42,7 @@ abstract class UnscheduledEventsAdapter<E : UnscheduledEvent>(
     val events: List<E>
         get() = items
 
-    abstract fun ViewHolder.bind(event: E, calendarDayView: CalendarDayView)
+    abstract fun ViewHolder.bind(viewModel: E, calendarDayView: CalendarDayView)
 
     class ViewHolder(view: View) : RecyclerView.ViewHolder(view)
 
