@@ -105,7 +105,7 @@ class HistoryChart @JvmOverloads constructor(
         val shouldSplitBottom = lastOfMonth.isBefore(nextWeekFirst)
 
         val firstWeekLast =
-            today.minusWeeks(3).with(DateUtils.lastDayOfWeek)
+            today.minusWeeks(3).with(TemporalAdjusters.nextOrSame(DateUtils.lastDayOfWeek))
 
         val firstOfMonth = today.with(TemporalAdjusters.firstDayOfMonth())
 
@@ -238,7 +238,7 @@ class HistoryChart @JvmOverloads constructor(
             cells.add(Cell(firstOfWeekDayOfMonth + it, Cell.CellType.NONE))
         }
 
-        val lastOfWeek = firstOfMonth.with(DateUtils.lastDayOfWeek)
+        val lastOfWeek = firstOfMonth.with(TemporalAdjusters.nextOrSame(DateUtils.lastDayOfWeek))
 
         val cellCount = (firstOfMonth.daysUntil(lastOfWeek) + 1).toInt()
 
