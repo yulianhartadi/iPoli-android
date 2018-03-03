@@ -188,7 +188,7 @@ class AgendaViewController(args: Bundle? = null) :
         val icon: IIcon,
         val isCompleted: Boolean,
         val showDivider: Boolean = true,
-        val isRepeating : Boolean
+        val isRepeating: Boolean
     ) : AgendaViewModel
 
     data class DateHeaderViewModel(val text: String) : AgendaViewModel
@@ -294,6 +294,8 @@ class AgendaViewController(args: Bundle? = null) :
             )
             view.questStartTime.text = vm.startTime
             view.divider.visible = vm.showDivider
+
+            view.questRepeatIndicator.visible = vm.isRepeating
         }
 
         override fun getItemCount() = viewModels.size

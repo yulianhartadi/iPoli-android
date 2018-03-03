@@ -195,7 +195,7 @@ data class Quest(
 
     fun hasCompletedAllTimeRanges() = timeRanges.sumBy { it.duration } >= duration
 
-
+    val isFromRepeatingQuest = repeatingQuestId != null
 }
 
 data class TimeRange(
