@@ -27,7 +27,7 @@ object CalendarReducer : BaseViewStateReducer<CalendarViewState>() {
 
                 val currentPos = subState.adapterPosition
                 val newPos = action.adapterPosition
-                val currentDate = state.dataState.visibleDate
+                val currentDate = subState.currentDate
                 val newDate = if (newPos < currentPos)
                     currentDate.minusDays(1)
                 else
