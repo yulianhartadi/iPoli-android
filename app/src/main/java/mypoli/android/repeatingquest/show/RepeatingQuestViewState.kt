@@ -92,7 +92,7 @@ object RepeatingQuestReducer : BaseViewStateReducer<RepeatingQuestViewState>() {
             }
 
             is DataLoadedAction.RepeatingQuestHistoryChanged -> {
-
+                subState
             }
 
             is RepeatingQuestAction.Remove -> {
