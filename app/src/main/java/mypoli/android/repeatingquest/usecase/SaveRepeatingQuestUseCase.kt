@@ -1,7 +1,6 @@
 package mypoli.android.repeatingquest.usecase
 
 import mypoli.android.common.UseCase
-import mypoli.android.common.Validator.Companion.validate
 import mypoli.android.common.datetime.Time
 import mypoli.android.quest.Category
 import mypoli.android.quest.Color
@@ -21,18 +20,12 @@ class SaveRepeatingQuestUseCase(
     private val questRepository: QuestRepository,
     private val repeatingQuestRepository: RepeatingQuestRepository,
     private val saveQuestsForRepeatingQuestUseCase: SaveQuestsForRepeatingQuestUseCase
-) : UseCase<SaveRepeatingQuestUseCase.Params, SaveRepeatingQuestUseCase.Result> {
+) : UseCase<SaveRepeatingQuestUseCase.Params, RepeatingQuest> {
 
-    override fun execute(parameters: Params): Result {
-        val errors = validate(parameters).check<Result.ValidationError> {
-            "name" {
-                given { name.isEmpty() } addError Result.ValidationError.EMPTY_NAME
-            }
-        }
+    override fun execute(parameters: Params): RepeatingQuest {
 
-        if (errors.isNotEmpty()) {
-            return Result.Invalid(errors.first())
-        }
+        require(parameters.name.isNotEmpty())
+
         val repeatingQuest = if (parameters.id.isEmpty()) {
             RepeatingQuest(
                 name = parameters.name,
@@ -69,7 +62,7 @@ class SaveRepeatingQuestUseCase(
             saveQuestsFor(rq)
         }
 
-        return Result.Added(rq)
+        return rq
     }
 
     private fun saveQuestsFor(repeatingQuest: RepeatingQuest) {
@@ -96,14 +89,4 @@ class SaveRepeatingQuestUseCase(
         val reminder: Reminder? = null,
         val repeatingPattern: RepeatingPattern
     )
-
-    sealed class Result {
-
-        enum class ValidationError {
-            EMPTY_NAME
-        }
-
-        data class Added(val repeatingQuest: RepeatingQuest) : Result()
-        data class Invalid(val error: ValidationError) : Result()
-    }
 }

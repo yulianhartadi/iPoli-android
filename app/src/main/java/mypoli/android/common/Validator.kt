@@ -27,13 +27,12 @@ class Validator<in Value, out Error>(private val rules: Map<String, PropertyVali
         }.flatten()
     }
 
-
     class Builder<Value, Error> {
         private val propertyValidators: MutableMap<String, PropertyValidator<Value, Error>> =
             mutableMapOf()
 
         operator fun String.invoke(init: PropertyValidator<Value, Error>.() -> Unit) {
-            propertyValidators.put(this, PropertyValidator<Value, Error>().apply(init))
+            propertyValidators[this] = PropertyValidator<Value, Error>().apply(init)
         }
 
         fun build(): Validator<Value, Error> {

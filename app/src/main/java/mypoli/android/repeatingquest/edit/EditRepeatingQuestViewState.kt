@@ -15,7 +15,7 @@ import mypoli.android.repeatingquest.edit.EditRepeatingQuestViewState.StateType.
 import mypoli.android.repeatingquest.entity.RepeatType
 import mypoli.android.repeatingquest.entity.RepeatingPattern
 import mypoli.android.repeatingquest.entity.repeatType
-import mypoli.android.repeatingquest.usecase.SaveRepeatingQuestUseCase
+import mypoli.android.repeatingquest.sideeffect.RepeatingQuestSideEffect
 
 /**
  * Created by Polina Zhelyazkova <polina@ipoli.io>
@@ -35,7 +35,7 @@ sealed class EditRepeatingQuestAction : Action {
     data class ChangeColor(val color: Color) : EditRepeatingQuestAction()
     data class ChangeIcon(val icon: Icon?) : EditRepeatingQuestAction()
     object QuestSaved : EditRepeatingQuestAction()
-    data class SaveInvalidQuest(val error: SaveRepeatingQuestUseCase.Result.Invalid) :
+    data class SaveInvalidQuest(val error: RepeatingQuestSideEffect.ValidationError) :
         EditRepeatingQuestAction()
 }
 

@@ -129,7 +129,7 @@ class EditRepeatingQuestViewController(args: Bundle? = null) :
             }
 
             VALIDATION_ERROR_EMPTY_NAME -> {
-                view.questName.error = "Think of a name"
+                view.questNameLayout.error = "Think of a name"
             }
 
             QUEST_SAVED -> {

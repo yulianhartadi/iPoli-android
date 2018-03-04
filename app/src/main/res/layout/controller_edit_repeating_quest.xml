@@ -30,8 +30,9 @@
             <android.support.design.widget.TextInputLayout
                 android:id="@+id/questNameLayout"
                 android:layout_width="match_parent"
-                android:layout_height="136dp"
+                android:layout_height="wrap_content"
                 android:layout_gravity="center_horizontal"
+                android:layout_marginBottom="16dp"
                 android:layout_marginEnd="16dp"
                 android:layout_marginStart="24dp"
                 android:paddingTop="?attr/actionBarSize"
@@ -44,7 +45,8 @@
                     android:hint="@string/add_quest_name_hint"
                     android:imeOptions="actionDone"
                     android:inputType="textCapSentences"
-                    android:maxLines="2" />
+                    android:maxLines="2"
+                    android:textColorHint="@color/md_light_text_54" />
 
             </android.support.design.widget.TextInputLayout>
 
@@ -227,18 +229,18 @@
                     android:layout_toEndOf="@id/questRemindersIcon"
                     android:orientation="vertical">
 
-                <TextView
-                    android:id="@+id/questRemindersQuestion"
-                    style="@style/TextAppearance.AppCompat.Body1"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/quest_duration_question" />
+                    <TextView
+                        android:id="@+id/questRemindersQuestion"
+                        style="@style/TextAppearance.AppCompat.Body1"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/quest_duration_question" />
 
-                <TextView
-                    android:id="@+id/questReminderValue"
-                    style="@style/TextAppearance.AppCompat.Caption"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content" />
+                    <TextView
+                        android:id="@+id/questReminderValue"
+                        style="@style/TextAppearance.AppCompat.Caption"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content" />
 
                 </LinearLayout>
             </RelativeLayout>
@@ -267,8 +269,8 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_centerVertical="true"
-                    android:text="@string/quest_color_question"
-                    android:layout_toEndOf="@id/questColorIcon" />
+                    android:layout_toEndOf="@id/questColorIcon"
+                    android:text="@string/quest_color_question" />
 
             </RelativeLayout>
 
@@ -296,8 +298,8 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_centerVertical="true"
-                    android:text="@string/quest_icon_question"
-                    android:layout_toEndOf="@id/questIconIcon" />
+                    android:layout_toEndOf="@id/questIconIcon"
+                    android:text="@string/quest_icon_question" />
 
             </RelativeLayout>
 

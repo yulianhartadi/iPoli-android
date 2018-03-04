@@ -1,6 +1,7 @@
 package mypoli.android.quest.schedule.addquest
 
 import mypoli.android.Constants
+import mypoli.android.common.Validator
 import mypoli.android.common.datetime.Time
 import mypoli.android.common.mvi.BaseMviPresenter
 import mypoli.android.common.mvi.ViewStateRenderer
@@ -11,6 +12,7 @@ import mypoli.android.quest.schedule.addquest.StateType.*
 import mypoli.android.quest.usecase.Result
 import mypoli.android.quest.usecase.SaveQuestUseCase
 import mypoli.android.reminder.view.picker.ReminderViewModel
+import mypoli.android.repeatingquest.sideeffect.RepeatingQuestSideEffect
 import mypoli.android.repeatingquest.usecase.SaveRepeatingQuestUseCase
 import org.threeten.bp.LocalDate
 import org.threeten.bp.LocalDateTime
@@ -120,17 +122,26 @@ class AddQuestPresenter(
                         reminder = reminder,
                         repeatingPattern = state.repeatingPattern!!
                     )
-                    val result = saveRepeatingQuestUseCase.execute(rqParams)
-                    when (result) {
-                        is SaveRepeatingQuestUseCase.Result.Invalid ->
-                            state.copy(type = VALIDATION_ERROR_EMPTY_NAME)
-                        is SaveRepeatingQuestUseCase.Result.Added ->
-                            AddQuestViewState(
-                                type = QUEST_SAVED,
-                                originalDate = state.originalDate,
-                                date = state.originalDate
-                            )
+
+                    saveRepeatingQuestUseCase.execute(rqParams)
+
+                    val errors = Validator.validate(rqParams)
+                        .check<RepeatingQuestSideEffect.ValidationError> {
+                            "name" {
+                                given { name.isEmpty() } addError RepeatingQuestSideEffect.ValidationError.EMPTY_NAME
+                            }
+                        }
+
+                    if (errors.isNotEmpty()) {
+                        state.copy(type = VALIDATION_ERROR_EMPTY_NAME)
+                    } else {
+                        AddQuestViewState(
+                            type = QUEST_SAVED,
+                            originalDate = state.originalDate,
+                            date = state.originalDate
+                        )
                     }
+
                 } else {
 
                     val questParams = SaveQuestUseCase.Parameters(

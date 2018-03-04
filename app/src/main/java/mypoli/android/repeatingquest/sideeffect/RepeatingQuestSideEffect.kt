@@ -3,6 +3,7 @@ package mypoli.android.repeatingquest.sideeffect
 import mypoli.android.common.AppSideEffect
 import mypoli.android.common.AppState
 import mypoli.android.common.DataLoadedAction
+import mypoli.android.common.Validator
 import mypoli.android.common.datetime.DateUtils
 import mypoli.android.common.redux.Action
 import mypoli.android.quest.Category
@@ -60,12 +61,18 @@ class RepeatingQuestSideEffect : AppSideEffect() {
                     reminder = rqState.reminder,
                     repeatingPattern = rqState.repeatingPattern
                 )
-                val result = saveRepeatingQuestUseCase.execute(rqParams)
-                when (result) {
-                    is SaveRepeatingQuestUseCase.Result.Invalid ->
-                        dispatch(EditRepeatingQuestAction.SaveInvalidQuest(result))
-                    is SaveRepeatingQuestUseCase.Result.Added ->
-                        dispatch(EditRepeatingQuestAction.QuestSaved)
+
+                val errors = Validator.validate(rqParams).check<ValidationError> {
+                    "name" {
+                        given { name.isEmpty() } addError ValidationError.EMPTY_NAME
+                    }
+                }
+
+                if (errors.isNotEmpty()) {
+                    dispatch(EditRepeatingQuestAction.SaveInvalidQuest(errors.first()))
+                } else {
+                    dispatch(EditRepeatingQuestAction.QuestSaved)
+                    saveRepeatingQuestUseCase.execute(rqParams)
                 }
             }
 
@@ -74,6 +81,11 @@ class RepeatingQuestSideEffect : AppSideEffect() {
             }
         }
     }
+
+    enum class ValidationError {
+        EMPTY_NAME
+    }
+
 
     override fun canHandle(action: Action) =
         action == EditRepeatingQuestAction.Save
