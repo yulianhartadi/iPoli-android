@@ -2,7 +2,6 @@ package mypoli.android.common.view.widget.chart
 
 import android.content.Context
 import android.graphics.Canvas
-import android.graphics.Color
 import android.graphics.Paint
 import android.graphics.Rect
 import android.support.annotation.ColorRes
@@ -338,7 +337,7 @@ class HistoryChart @JvmOverloads constructor(
         todayPaint.strokeWidth = ViewUtils.dpToPx(3f, context)
         todayPaint.style = Paint.Style.STROKE
 
-        monthPaint.color = Color.BLACK
+        monthPaint.color = ContextCompat.getColor(context, R.color.md_dark_text_87)
         monthPaint.isAntiAlias = true
         monthPaint.textAlign = Paint.Align.CENTER
         monthPaint.textSize = ViewUtils.spToPx(18, context).toFloat()
@@ -346,7 +345,7 @@ class HistoryChart @JvmOverloads constructor(
         dayPaintLight = createTextPaint(context, R.color.md_light_text_87, 14)
         dayPaintDark = createTextPaint(context, R.color.md_dark_text_87, 14)
 
-        dayOfWeekPaint.color = Color.BLACK
+        dayOfWeekPaint.color = ContextCompat.getColor(context, R.color.md_dark_text_87)
         dayOfWeekPaint.isAntiAlias = true
         dayOfWeekPaint.textAlign = Paint.Align.CENTER
         dayOfWeekPaint.textSize = ViewUtils.spToPx(12, context).toFloat()
