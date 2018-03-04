@@ -4,7 +4,7 @@ import android.graphics.drawable.GradientDrawable
 import android.os.Bundle
 import android.support.annotation.ColorInt
 import android.support.annotation.LayoutRes
-import android.support.v4.view.ViewCompat
+import android.support.design.widget.AppBarLayout
 import android.view.*
 import com.bluelinelabs.conductor.RouterTransaction
 import com.bluelinelabs.conductor.changehandler.FadeChangeHandler
@@ -31,6 +31,42 @@ class RepeatingQuestViewController :
 
     private lateinit var repeatingQuestId: String
 
+    abstract class AppBarStateChangeListener : AppBarLayout.OnOffsetChangedListener {
+
+        private var currentState = State.IDLE
+
+        enum class State {
+            EXPANDED,
+            COLLAPSED,
+            IDLE
+        }
+
+        override fun onOffsetChanged(appBarLayout: AppBarLayout, verticalOffset: Int) {
+            when {
+                verticalOffset == 0 -> {
+                    if (currentState != State.EXPANDED) {
+                        onStateChanged(appBarLayout, State.EXPANDED)
+                    }
+                    currentState = State.EXPANDED
+                }
+                Math.abs(verticalOffset) >= appBarLayout.totalScrollRange -> {
+                    if (currentState != State.COLLAPSED) {
+                        onStateChanged(appBarLayout, State.COLLAPSED)
+                    }
+                    currentState = State.COLLAPSED
+                }
+                else -> {
+                    if (currentState != State.IDLE) {
+                        onStateChanged(appBarLayout, State.IDLE)
+                    }
+                    currentState = State.IDLE
+                }
+            }
+        }
+
+        abstract fun onStateChanged(appBarLayout: AppBarLayout, state: State)
+    }
+
     constructor(args: Bundle? = null) : super(args)
 
     constructor(
@@ -54,13 +90,19 @@ class RepeatingQuestViewController :
         val collapsingToolbar = view.collapsingToolbarContainer
         collapsingToolbar.isTitleEnabled = false
 
-        view.appbar.addOnOffsetChangedListener({ _, verticalOffset ->
-            val showTitleThreshold = 2 * ViewCompat.getMinimumHeight(collapsingToolbar)
-            val supportActionBar = (activity as MainActivity).supportActionBar
-            if (collapsingToolbar.height + verticalOffset < showTitleThreshold) {
-                supportActionBar?.setDisplayShowTitleEnabled(true)
-            } else {
-                supportActionBar?.setDisplayShowTitleEnabled(false)
+        view.appbar.addOnOffsetChangedListener(object : AppBarStateChangeListener() {
+            override fun onStateChanged(appBarLayout: AppBarLayout, state: State) {
+
+                appBarLayout.post {
+                    if (state == State.EXPANDED) {
+                        val supportActionBar = (activity as MainActivity).supportActionBar
+                        supportActionBar?.setDisplayShowTitleEnabled(false)
+                    } else if (state == State.COLLAPSED) {
+                        val supportActionBar = (activity as MainActivity).supportActionBar
+                        supportActionBar?.setDisplayShowTitleEnabled(true)
+                    }
+                }
+
             }
         })
 
