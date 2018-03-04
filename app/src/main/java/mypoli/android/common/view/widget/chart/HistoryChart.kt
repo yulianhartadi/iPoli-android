@@ -44,6 +44,9 @@ class HistoryChart @JvmOverloads constructor(
 
     private val textBounds = Rect()
 
+    private val cellRadius = ViewUtils.dpToPx(16f, context)
+    private val rowPadding = ViewUtils.dpToPx(8f, context)
+
     private val rowData: MutableList<RowData> = mutableListOf()
 
     private val monthFormatter = DateTimeFormatter.ofPattern("MMMM")
@@ -376,9 +379,6 @@ class HistoryChart @JvmOverloads constructor(
     override fun onDraw(canvas: Canvas) {
         super.onDraw(canvas)
 
-        val cellRadius = ViewUtils.dpToPx(16f, context)
-        val rowPadding = ViewUtils.dpToPx(8f, context)
-
         val totalWidth = measuredWidth
 
         val cxs = (1..DAYS_IN_A_WEEK).map { it * (totalWidth / 8) }
@@ -410,75 +410,72 @@ class HistoryChart @JvmOverloads constructor(
                 }
 
                 is RowData.CellRow -> {
-
-                    rowData.cells.forEachIndexed { j, cell ->
-
-                        val x = cxs[j].toFloat()
-
-                        val dayOfMonth = cell.dayOfMonth.toString()
-
-                        when (cell.state) {
-
-                            DONE_ON_SCHEDULE -> {
-                                canvas.drawCell(cellRadius, completedPaint, x, y)
-                                canvas.drawDayOfMonth(dayOfMonth, dayPaintLight, x, y)
-                            }
-
-                            DONE_NOT_ON_SCHEDULE -> {
-                                canvas.drawCell(cellRadius, doneNotOnSchedulePaint, x, y)
-                                canvas.drawDayOfMonth(dayOfMonth, dayPaintLight, x, y)
-                            }
-
-                            SKIPPED -> {
-                                canvas.drawCell(cellRadius, skippedPaint, x, y)
-                                canvas.drawDayOfMonth(dayOfMonth, dayPaintLight, x, y)
-                            }
-
-                            FAILED -> {
-                                canvas.drawCell(cellRadius, failedPaint, x, y)
-                                canvas.drawDayOfMonth(dayOfMonth, dayPaintLight, x, y)
-                            }
-
-                            TODAY -> {
-                                canvas.drawCell(
-                                    cellRadius,
-                                    todayPaint,
-                                    x,
-                                    y
-                                )
-                                canvas.drawDayOfMonth(dayOfMonth, dayPaintDark, x, y)
-                            }
-
-                            BEFORE_START, AFTER_END, EMPTY -> {
-                                canvas.drawCell(cellRadius, nonePaint, x, y)
-                                canvas.drawDayOfMonth(dayOfMonth, dayPaintLight, x, y)
-                            }
-
-                            TODO -> {
-                                canvas.drawCell(
-                                    cellRadius,
-                                    todoPaint,
-                                    x,
-                                    y
-                                )
-                                canvas.drawDayOfMonth(dayOfMonth, dayPaintDark, x, y)
-                            }
-
-                            else -> canvas.drawCell(cellRadius, nonePaint, x, y)
-                        }
-                    }
+                    drawCellRow(rowData, canvas, cxs, y)
                 }
             }
         }
 
     }
 
+    private fun drawCellRow(
+        rowData: RowData.CellRow,
+        canvas: Canvas,
+        xs: List<Int>,
+        y: Float
+    ) {
+        rowData.cells.forEachIndexed { i, cell ->
+
+            val x = xs[i].toFloat()
+
+            val dayOfMonth = cell.dayOfMonth.toString()
+
+            when (cell.state) {
+
+                DONE_ON_SCHEDULE -> {
+                    canvas.drawCell(completedPaint, x, y)
+                    canvas.drawDayOfMonth(dayOfMonth, dayPaintLight, x, y)
+                }
+
+                DONE_NOT_ON_SCHEDULE -> {
+                    canvas.drawCell(doneNotOnSchedulePaint, x, y)
+                    canvas.drawDayOfMonth(dayOfMonth, dayPaintLight, x, y)
+                }
+
+                SKIPPED -> {
+                    canvas.drawCell(skippedPaint, x, y)
+                    canvas.drawDayOfMonth(dayOfMonth, dayPaintLight, x, y)
+                }
+
+                FAILED -> {
+                    canvas.drawCell(failedPaint, x, y)
+                    canvas.drawDayOfMonth(dayOfMonth, dayPaintLight, x, y)
+                }
+
+                TODAY -> {
+                    canvas.drawCell(todayPaint, x, y)
+                    canvas.drawDayOfMonth(dayOfMonth, dayPaintDark, x, y)
+                }
+
+                BEFORE_START, AFTER_END, EMPTY -> {
+                    canvas.drawCell(nonePaint, x, y)
+                    canvas.drawDayOfMonth(dayOfMonth, dayPaintLight, x, y)
+                }
+
+                TODO -> {
+                    canvas.drawCell(todoPaint, x, y)
+                    canvas.drawDayOfMonth(dayOfMonth, dayPaintDark, x, y)
+                }
+
+                else -> canvas.drawCell(nonePaint, x, y)
+            }
+        }
+    }
+
     private fun Canvas.drawCell(
-        radius: Float,
         paint: Paint,
         x: Float,
         y: Float
-    ) = drawCircle(x, y, radius, paint)
+    ) = drawCircle(x, y, cellRadius, paint)
 
     private fun Canvas.drawDayOfMonth(
         dayOfMonth: String,
