@@ -102,6 +102,11 @@ class RepeatingQuestViewController :
         showBackButton()
     }
 
+    override fun onDetach(view: View) {
+        (activity as MainActivity).supportActionBar?.setDisplayShowTitleEnabled(true)
+        super.onDetach(view)
+    }
+
     override fun render(state: RepeatingQuestViewState, view: View) {
         when (state) {
             is RepeatingQuestViewState.Changed -> {
