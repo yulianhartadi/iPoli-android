@@ -26,6 +26,7 @@ object CalendarReducer : BaseViewStateReducer<CalendarViewState>() {
 
             is CalendarAction.Load -> {
                 subState.copy(
+                    type = CalendarViewState.StateType.IDLE,
                     currentDate = action.startDate
                 )
             }
@@ -82,6 +83,6 @@ data class CalendarViewState(
     val adapterMidPosition: Int
 ) : ViewState {
     enum class StateType {
-        INITIAL, CALENDAR_DATE_CHANGED, SWIPE_DATE_CHANGED
+        INITIAL, CALENDAR_DATE_CHANGED, SWIPE_DATE_CHANGED, IDLE
     }
 }

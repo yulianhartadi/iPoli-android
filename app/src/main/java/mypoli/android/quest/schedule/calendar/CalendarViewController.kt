@@ -52,8 +52,7 @@ class CalendarViewController(args: Bundle? = null) :
         savedViewState: Bundle?
     ): View = inflater.inflate(R.layout.controller_calendar, container, false)
 
-    override fun render(state: CalendarViewState, view: View) {
-
+    override fun render(state: CalendarViewState, view: View) =
         when (state.type) {
             CalendarViewState.StateType.INITIAL -> {
                 removeDayViewPagerAdapter(view)
@@ -69,8 +68,9 @@ class CalendarViewController(args: Bundle? = null) :
                 updateDayViewPagerAdapter(state)
                 dispatch(CalendarAction.ChangeVisibleDate(state.currentDate))
             }
+
+            else -> { }
         }
-    }
 
     override fun onCreateLoadAction() = CalendarAction.Load(startDate)
 
