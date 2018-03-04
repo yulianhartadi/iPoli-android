@@ -165,7 +165,12 @@ class HomeViewController(args: Bundle? = null) :
     }
 
     override fun onNavigationItemSelected(item: MenuItem): Boolean {
-        navigationItemSelected = item;
+        navigationItemSelected = when {
+            // do not allow re-selecting the same item (creates same Controller again)
+            view!!.navigationView.menu.findItem(item.itemId).isChecked -> null
+            else -> item
+        }
+
         view!!.drawerLayout.closeDrawer(GravityCompat.START)
         return false;
     }
