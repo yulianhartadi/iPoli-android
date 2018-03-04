@@ -1,4 +1,4 @@
-package mypoli.android.challenge
+package mypoli.android.challenge.predefined
 
 import android.os.Bundle
 import android.support.annotation.ColorRes
@@ -8,10 +8,10 @@ import android.view.*
 import kotlinx.android.synthetic.main.controller_personalize_challenge.view.*
 import kotlinx.android.synthetic.main.item_challenge_quest.view.*
 import mypoli.android.R
-import mypoli.android.challenge.PersonalizeChallengeViewState.StateType.*
-import mypoli.android.challenge.data.AndroidPredefinedChallenge
-import mypoli.android.challenge.data.Challenge
-import mypoli.android.challenge.data.PredefinedChallenge
+import mypoli.android.challenge.predefined.PersonalizeChallengeViewState.StateType.*
+import mypoli.android.challenge.predefined.entity.AndroidPredefinedChallenge
+import mypoli.android.challenge.predefined.entity.PredefinedChallenge
+import mypoli.android.challenge.predefined.entity.PredefinedChallengeData
 import mypoli.android.common.mvi.MviViewController
 import mypoli.android.common.view.*
 import space.traversal.kapsule.required
@@ -52,7 +52,11 @@ class PersonalizeChallengeViewController :
 
         view.challengeQuestList.adapter = ChallengeQuestAdapter()
         setToolbar(view.toolbar)
-        view.acceptChallenge.sendOnClick(PersonalizeChallengeIntent.AcceptChallenge(challenge))
+        view.acceptChallenge.sendOnClick(
+            PersonalizeChallengeIntent.AcceptChallenge(
+                challenge
+            )
+        )
         return view
     }
 
@@ -108,7 +112,7 @@ class PersonalizeChallengeViewController :
     data class ChallengeQuestViewModel(
         val name: String,
         val isSelected: Boolean,
-        val quest: Challenge.Quest
+        val quest: PredefinedChallengeData.Quest
     )
 
     inner class ChallengeQuestAdapter(private var viewModels: List<ChallengeQuestViewModel> = listOf()) :
@@ -118,14 +122,22 @@ class PersonalizeChallengeViewController :
             val itemView = holder.itemView
 
             itemView.setOnClickListener {
-                send(PersonalizeChallengeIntent.ToggleSelected(vm))
+                send(
+                    PersonalizeChallengeIntent.ToggleSelected(
+                        vm
+                    )
+                )
                 itemView.challengeQuestCheckbox.isChecked =
                     !itemView.challengeQuestCheckbox.isChecked
             }
 
             itemView.challengeQuestCheckbox.isChecked = vm.isSelected
             itemView.challengeQuestCheckbox.setOnCheckedChangeListener { _, _ ->
-                send(PersonalizeChallengeIntent.ToggleSelected(vm))
+                send(
+                    PersonalizeChallengeIntent.ToggleSelected(
+                        vm
+                    )
+                )
             }
             itemView.challengeQuestName.text = vm.name
         }

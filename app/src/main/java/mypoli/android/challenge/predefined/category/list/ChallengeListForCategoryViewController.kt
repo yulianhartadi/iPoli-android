@@ -1,4 +1,4 @@
-package mypoli.android.challenge.category.list
+package mypoli.android.challenge.predefined.category.list
 
 import android.os.Bundle
 import android.support.annotation.ColorRes
@@ -18,11 +18,11 @@ import kotlinx.android.synthetic.main.controller_challenge_list_for_category.vie
 import kotlinx.android.synthetic.main.item_buy_challenge.view.*
 import kotlinx.android.synthetic.main.view_inventory_toolbar.view.*
 import mypoli.android.R
-import mypoli.android.challenge.PersonalizeChallengeViewController
-import mypoli.android.challenge.category.list.ChallengeListForCategoryViewState.StateType.*
-import mypoli.android.challenge.data.AndroidPredefinedChallenge
-import mypoli.android.challenge.data.Challenge
-import mypoli.android.challenge.data.PredefinedChallenge
+import mypoli.android.challenge.predefined.PersonalizeChallengeViewController
+import mypoli.android.challenge.predefined.category.list.ChallengeListForCategoryViewState.StateType.*
+import mypoli.android.challenge.predefined.entity.AndroidPredefinedChallenge
+import mypoli.android.challenge.predefined.entity.PredefinedChallengeData
+import mypoli.android.challenge.predefined.entity.PredefinedChallenge
 import mypoli.android.common.redux.android.ReduxViewController
 import mypoli.android.common.view.*
 import mypoli.android.player.inventory.GemInventoryViewController
@@ -36,9 +36,9 @@ class ChallengeListForCategoryViewController :
 
     override val reducer = ChallengeListForCategoryReducer
 
-    private lateinit var challengeCategory: Challenge.Category
+    private lateinit var challengeCategory: PredefinedChallengeData.Category
 
-    constructor(challengeCategory: Challenge.Category) : this() {
+    constructor(challengeCategory: PredefinedChallengeData.Category) : this() {
         this.challengeCategory = challengeCategory
     }
 

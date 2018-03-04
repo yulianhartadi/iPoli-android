@@ -1,8 +1,8 @@
-package mypoli.android.challenge.category.list
+package mypoli.android.challenge.predefined.category.list
 
-import mypoli.android.challenge.data.AndroidPredefinedChallenge
-import mypoli.android.challenge.data.Challenge
-import mypoli.android.challenge.data.PredefinedChallenge
+import mypoli.android.challenge.predefined.entity.AndroidPredefinedChallenge
+import mypoli.android.challenge.predefined.entity.PredefinedChallengeData
+import mypoli.android.challenge.predefined.entity.PredefinedChallenge
 import mypoli.android.common.AppState
 import mypoli.android.common.BaseViewStateReducer
 import mypoli.android.common.DataLoadedAction
@@ -16,7 +16,7 @@ import mypoli.android.common.redux.Action
 
 sealed class ChallengeListForCategoryAction : Action {
 
-    data class LoadData(val challengeCategory: Challenge.Category) :
+    data class LoadData(val challengeCategory: PredefinedChallengeData.Category) :
         ChallengeListForCategoryAction()
 
     data class BuyChallenge(val challenge: PredefinedChallenge) : ChallengeListForCategoryAction()
@@ -102,7 +102,7 @@ object ChallengeListForCategoryReducer : BaseViewStateReducer<ChallengeListForCa
 
 data class ChallengeListForCategoryViewState(
     val type: StateType,
-    val challengeCategory: Challenge.Category? = null,
+    val challengeCategory: PredefinedChallengeData.Category? = null,
     val playerGems: Int = 0,
     val challenges: List<ChallengeModel> = listOf()
 ) : ViewState {

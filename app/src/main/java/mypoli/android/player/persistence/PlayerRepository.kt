@@ -11,7 +11,7 @@ import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.ListenerRegistration
 import kotlinx.coroutines.experimental.runBlocking
 import mypoli.android.Constants
-import mypoli.android.challenge.data.PredefinedChallenge
+import mypoli.android.challenge.predefined.entity.PredefinedChallenge
 import mypoli.android.common.persistence.BaseEntityFirestoreRepository
 import mypoli.android.common.persistence.EntityRepository
 import mypoli.android.pet.*

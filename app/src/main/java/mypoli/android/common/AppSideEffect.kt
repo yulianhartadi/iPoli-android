@@ -5,7 +5,7 @@ import kotlinx.coroutines.experimental.android.UI
 import kotlinx.coroutines.experimental.channels.ReceiveChannel
 import kotlinx.coroutines.experimental.channels.consumeEach
 import kotlinx.coroutines.experimental.launch
-import mypoli.android.challenge.category.list.ChallengeListForCategoryAction
+import mypoli.android.challenge.predefined.category.list.ChallengeListForCategoryAction
 import mypoli.android.challenge.usecase.BuyChallengeUseCase
 import mypoli.android.common.DataLoadedAction.PlayerChanged
 import mypoli.android.common.datetime.Time

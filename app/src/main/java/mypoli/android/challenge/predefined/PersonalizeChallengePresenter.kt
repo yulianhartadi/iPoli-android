@@ -1,7 +1,7 @@
-package mypoli.android.challenge
+package mypoli.android.challenge.predefined
 
-import mypoli.android.challenge.PersonalizeChallengeViewState.StateType.*
-import mypoli.android.challenge.data.Challenge
+import mypoli.android.challenge.predefined.PersonalizeChallengeViewState.StateType.*
+import mypoli.android.challenge.predefined.entity.PredefinedChallengeData
 import mypoli.android.challenge.usecase.ScheduleChallengeUseCase
 import mypoli.android.common.mvi.BaseMviPresenter
 import mypoli.android.common.mvi.ViewStateRenderer
@@ -27,7 +27,7 @@ class PersonalizeChallengePresenter(
 
                 val vms = intent.challenge.quests.map {
                     when (it) {
-                        is Challenge.Quest.OneTime -> {
+                        is PredefinedChallengeData.Quest.OneTime -> {
                             PersonalizeChallengeViewController.ChallengeQuestViewModel(
                                 it.text,
                                 it.selected,
@@ -35,7 +35,7 @@ class PersonalizeChallengePresenter(
                             )
                         }
 
-                        is Challenge.Quest.Repeating -> {
+                        is PredefinedChallengeData.Quest.Repeating -> {
                             PersonalizeChallengeViewController.ChallengeQuestViewModel(
                                 it.text,
                                 it.selected,
@@ -74,11 +74,12 @@ class PersonalizeChallengePresenter(
                         type = NO_QUESTS_SELECTED
                     )
                 } else {
-                    val challenge = Challenge(
-                        predefinedChallenge.category,
-                        quests,
-                        predefinedChallenge.durationDays
-                    )
+                    val challenge =
+                        PredefinedChallengeData(
+                            predefinedChallenge.category,
+                            quests,
+                            predefinedChallenge.durationDays
+                        )
                     scheduleChallengeUseCase.execute(ScheduleChallengeUseCase.Params(challenge))
                     state.copy(
                         type = CHALLENGE_ACCEPTED

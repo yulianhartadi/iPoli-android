@@ -25,7 +25,7 @@ import mypoli.android.Constants
 import mypoli.android.MainActivity
 import mypoli.android.R
 import mypoli.android.auth.AuthViewController
-import mypoli.android.challenge.category.ChallengeCategoryListViewController
+import mypoli.android.challenge.predefined.category.ChallengeCategoryListViewController
 import mypoli.android.common.EmailUtils
 import mypoli.android.common.redux.android.ReduxViewController
 import mypoli.android.common.view.*

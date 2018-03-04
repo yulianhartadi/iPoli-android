@@ -1,6 +1,6 @@
 package mypoli.android.challenge.usecase
 
-import mypoli.android.challenge.data.Challenge
+import mypoli.android.challenge.predefined.entity.PredefinedChallengeData
 import mypoli.android.common.UseCase
 import mypoli.android.common.datetime.datesBetween
 import mypoli.android.common.datetime.daysUntil
@@ -32,7 +32,7 @@ class ScheduleChallengeUseCase(private val questRepository: QuestRepository) :
 
         val quests = challenge.quests.map { q ->
             when (q) {
-                is Challenge.Quest.Repeating -> {
+                is PredefinedChallengeData.Quest.Repeating -> {
 
                     startDate
                         .datesBetween(endDate)
@@ -48,7 +48,7 @@ class ScheduleChallengeUseCase(private val questRepository: QuestRepository) :
                         }
                 }
 
-                is Challenge.Quest.OneTime -> {
+                is PredefinedChallengeData.Quest.OneTime -> {
 
                     val scheduledDate = if (q.startAtDay != null) {
                         val startDay = startDate.plusDays((q.startAtDay - 1).toLong())
@@ -93,8 +93,8 @@ class ScheduleChallengeUseCase(private val questRepository: QuestRepository) :
     }
 
     private fun createFromOneTime(
-        it: Challenge.Quest.OneTime,
-        challenge: Challenge,
+        it: PredefinedChallengeData.Quest.OneTime,
+        challenge: PredefinedChallengeData,
         scheduledDate: LocalDate
     ) =
         Quest(
@@ -108,8 +108,8 @@ class ScheduleChallengeUseCase(private val questRepository: QuestRepository) :
         )
 
     private fun createFromRepeating(
-        it: Challenge.Quest.Repeating,
-        challenge: Challenge,
+        it: PredefinedChallengeData.Quest.Repeating,
+        challenge: PredefinedChallengeData,
         scheduledDate: LocalDate
     ) =
         Quest(
@@ -124,7 +124,7 @@ class ScheduleChallengeUseCase(private val questRepository: QuestRepository) :
 
 
     data class Params(
-        val challenge: Challenge,
+        val challenge: PredefinedChallengeData,
         val startDate: LocalDate = LocalDate.now(),
         val randomSeed: Long? = null
     )

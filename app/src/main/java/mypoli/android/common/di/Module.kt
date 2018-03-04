@@ -9,8 +9,8 @@ import com.couchbase.lite.DatabaseConfiguration
 import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.experimental.CommonPool
 import kotlinx.coroutines.experimental.Job
-import mypoli.android.challenge.PersonalizeChallengePresenter
-import mypoli.android.challenge.category.ChallengeCategoryListPresenter
+import mypoli.android.challenge.predefined.PersonalizeChallengePresenter
+import mypoli.android.challenge.predefined.category.ChallengeCategoryListPresenter
 import mypoli.android.challenge.usecase.BuyChallengeUseCase
 import mypoli.android.challenge.usecase.ScheduleChallengeUseCase
 import mypoli.android.common.*

@@ -1,7 +1,7 @@
 package mypoli.android.challenge.usecase
 
 import mypoli.android.TestUtil
-import mypoli.android.challenge.data.Challenge
+import mypoli.android.challenge.predefined.entity.PredefinedChallengeData
 import org.amshove.kluent.`should be equal to`
 import org.amshove.kluent.`should equal`
 import org.amshove.kluent.shouldThrow
@@ -19,12 +19,14 @@ class ScheduleChallengeUseCaseSpek : Spek({
 
     describe("ScheduleChallengeUseCase") {
 
-        val challenge = Challenge(
-            Challenge.Category.HEALTH_AND_FITNESS, listOf(), durationDays = 1
+        val challenge = PredefinedChallengeData(
+            PredefinedChallengeData.Category.HEALTH_AND_FITNESS,
+            listOf(),
+            durationDays = 1
         )
 
         fun executeUseCase(
-            challenge: Challenge,
+            challenge: PredefinedChallengeData,
             startDate: LocalDate = LocalDate.now(),
             randomSeed: Long? = null
         ) =
@@ -38,7 +40,12 @@ class ScheduleChallengeUseCaseSpek : Spek({
 
         it("should not accept Challenge without Quests") {
             val exec =
-                { executeUseCase(Challenge(Challenge.Category.HEALTH_AND_FITNESS, listOf())) }
+                { executeUseCase(
+                    PredefinedChallengeData(
+                        PredefinedChallengeData.Category.HEALTH_AND_FITNESS,
+                        listOf()
+                    )
+                ) }
             exec shouldThrow IllegalArgumentException::class
         }
 
@@ -50,7 +57,7 @@ class ScheduleChallengeUseCaseSpek : Spek({
                     challenge.copy(
                         durationDays = 1,
                         quests = listOf(
-                            Challenge.Quest.Repeating(
+                            PredefinedChallengeData.Quest.Repeating(
                                 "", "", 1, weekDays = DayOfWeek.values().toList()
                             )
                         )
@@ -67,7 +74,7 @@ class ScheduleChallengeUseCaseSpek : Spek({
                     challenge.copy(
                         durationDays = 7,
                         quests = listOf(
-                            Challenge.Quest.Repeating(
+                            PredefinedChallengeData.Quest.Repeating(
                                 "", "", 1, weekDays = DayOfWeek.values().toList()
                             )
                         )
@@ -87,7 +94,7 @@ class ScheduleChallengeUseCaseSpek : Spek({
                     challenge.copy(
                         durationDays = 7,
                         quests = listOf(
-                            Challenge.Quest.Repeating(
+                            PredefinedChallengeData.Quest.Repeating(
                                 "",
                                 "",
                                 1,
@@ -109,7 +116,7 @@ class ScheduleChallengeUseCaseSpek : Spek({
                     challenge.copy(
                         durationDays = 7,
                         quests = listOf(
-                            Challenge.Quest.Repeating(
+                            PredefinedChallengeData.Quest.Repeating(
                                 "",
                                 "",
                                 1,
@@ -133,7 +140,7 @@ class ScheduleChallengeUseCaseSpek : Spek({
                     challenge.copy(
                         durationDays = 7,
                         quests = listOf(
-                            Challenge.Quest.OneTime(
+                            PredefinedChallengeData.Quest.OneTime(
                                 "", "", 1, preferredDayOfWeek = DayOfWeek.SATURDAY
                             )
                         )
@@ -150,7 +157,7 @@ class ScheduleChallengeUseCaseSpek : Spek({
                     challenge.copy(
                         durationDays = 1,
                         quests = listOf(
-                            Challenge.Quest.OneTime(
+                            PredefinedChallengeData.Quest.OneTime(
                                 "", "", 1, preferredDayOfWeek = DayOfWeek.SATURDAY
                             )
                         )
@@ -168,7 +175,7 @@ class ScheduleChallengeUseCaseSpek : Spek({
                     challenge.copy(
                         durationDays = 14,
                         quests = listOf(
-                            Challenge.Quest.OneTime(
+                            PredefinedChallengeData.Quest.OneTime(
                                 "",
                                 "",
                                 1,
@@ -192,7 +199,7 @@ class ScheduleChallengeUseCaseSpek : Spek({
                     challenge.copy(
                         durationDays = 5,
                         quests = listOf(
-                            Challenge.Quest.OneTime(
+                            PredefinedChallengeData.Quest.OneTime(
                                 "",
                                 "",
                                 1,
@@ -216,7 +223,7 @@ class ScheduleChallengeUseCaseSpek : Spek({
                     challenge.copy(
                         durationDays = 10,
                         quests = listOf(
-                            Challenge.Quest.OneTime(
+                            PredefinedChallengeData.Quest.OneTime(
                                 "",
                                 "",
                                 1,

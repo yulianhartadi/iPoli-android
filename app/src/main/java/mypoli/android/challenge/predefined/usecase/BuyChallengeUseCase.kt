@@ -1,6 +1,6 @@
 package mypoli.android.challenge.usecase
 
-import mypoli.android.challenge.data.PredefinedChallenge
+import mypoli.android.challenge.predefined.entity.PredefinedChallenge
 import mypoli.android.common.UseCase
 import mypoli.android.player.Player
 import mypoli.android.player.persistence.PlayerRepository

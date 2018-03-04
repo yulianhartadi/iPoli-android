@@ -1,7 +1,7 @@
 package mypoli.android.player.usecase
 
 import mypoli.android.TestUtil
-import mypoli.android.challenge.data.PredefinedChallenge
+import mypoli.android.challenge.predefined.entity.PredefinedChallenge
 import mypoli.android.challenge.usecase.BuyChallengeUseCase
 import mypoli.android.player.Inventory
 import mypoli.android.player.Player

@@ -1,7 +1,7 @@
-package mypoli.android.challenge
+package mypoli.android.challenge.predefined
 
-import mypoli.android.challenge.PersonalizeChallengeViewController.ChallengeQuestViewModel
-import mypoli.android.challenge.data.PredefinedChallenge
+import mypoli.android.challenge.predefined.PersonalizeChallengeViewController.ChallengeQuestViewModel
+import mypoli.android.challenge.predefined.entity.PredefinedChallenge
 import mypoli.android.common.mvi.Intent
 import mypoli.android.common.mvi.ViewState
 

@@ -2,7 +2,7 @@ package mypoli.android.player
 
 import android.net.Uri
 import mypoli.android.Constants
-import mypoli.android.challenge.data.PredefinedChallenge
+import mypoli.android.challenge.predefined.entity.PredefinedChallenge
 import mypoli.android.pet.Food
 import mypoli.android.pet.Pet
 import mypoli.android.pet.PetAvatar

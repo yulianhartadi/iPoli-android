@@ -1,11 +1,11 @@
-package mypoli.android.challenge.data
+package mypoli.android.challenge.predefined.entity
 
 import android.support.annotation.ColorRes
 import android.support.annotation.DrawableRes
 import android.support.annotation.StringRes
 import mypoli.android.R
-import mypoli.android.challenge.data.Challenge.Quest.OneTime
-import mypoli.android.challenge.data.Challenge.Quest.Repeating
+import mypoli.android.challenge.predefined.entity.PredefinedChallengeData.Quest.OneTime
+import mypoli.android.challenge.predefined.entity.PredefinedChallengeData.Quest.Repeating
 import mypoli.android.common.datetime.Time
 import mypoli.android.quest.Color
 import mypoli.android.quest.Icon
@@ -16,7 +16,7 @@ import org.threeten.bp.DayOfWeek
  * on 12/29/17.
  */
 
-data class Challenge(
+data class PredefinedChallengeData(
     val category: Category,
     val quests: List<Quest>,
     val durationDays: Int = 30
@@ -58,14 +58,14 @@ data class Challenge(
 }
 
 enum class PredefinedChallenge(
-    val category: Challenge.Category,
+    val category: PredefinedChallengeData.Category,
     val gemPrice: Int,
-    val quests: List<Challenge.Quest>,
+    val quests: List<PredefinedChallengeData.Quest>,
     val durationDays: Int = 30
 ) {
 
     STRESS_FREE_MIND(
-        Challenge.Category.HEALTH_AND_FITNESS,
+        PredefinedChallengeData.Category.HEALTH_AND_FITNESS,
         0,
         listOf(
             Repeating(
@@ -119,7 +119,7 @@ enum class PredefinedChallenge(
         )
     ),
     WEIGHT_CUTTER(
-        Challenge.Category.HEALTH_AND_FITNESS,
+        PredefinedChallengeData.Category.HEALTH_AND_FITNESS,
         5,
         listOf(
             OneTime(
@@ -182,7 +182,7 @@ enum class PredefinedChallenge(
         )
     ),
     HEALTHY_FIT(
-        Challenge.Category.HEALTH_AND_FITNESS,
+        PredefinedChallengeData.Category.HEALTH_AND_FITNESS,
         5,
         listOf(
             Repeating(
@@ -253,7 +253,7 @@ enum class PredefinedChallenge(
         )
     ),
     ENGLISH_JEDI(
-        Challenge.Category.BUILD_SKILL,
+        PredefinedChallengeData.Category.BUILD_SKILL,
         5,
         listOf(
             OneTime(
@@ -326,7 +326,7 @@ enum class PredefinedChallenge(
         )
     ),
     CODING_NINJA(
-        Challenge.Category.BUILD_SKILL,
+        PredefinedChallengeData.Category.BUILD_SKILL,
         5,
         listOf(
             OneTime(
@@ -384,7 +384,7 @@ enum class PredefinedChallenge(
         )
     ),
     FAMOUS_WRITER(
-        Challenge.Category.BUILD_SKILL,
+        PredefinedChallengeData.Category.BUILD_SKILL,
         0,
         listOf(
             OneTime(
@@ -438,7 +438,7 @@ enum class PredefinedChallenge(
         )
     ),
     MASTER_COMMUNICATOR(
-        Challenge.Category.DEEP_WORK,
+        PredefinedChallengeData.Category.DEEP_WORK,
         0,
         listOf(
             OneTime(
@@ -499,7 +499,7 @@ enum class PredefinedChallenge(
         10
     ),
     FOCUSED_WORK(
-        Challenge.Category.DEEP_WORK,
+        PredefinedChallengeData.Category.DEEP_WORK,
         5,
         listOf(
             OneTime(
@@ -549,7 +549,7 @@ enum class PredefinedChallenge(
         )
     ),
     JOB_INTERVIEW(
-        Challenge.Category.DEEP_WORK,
+        PredefinedChallengeData.Category.DEEP_WORK,
         5,
         listOf(
             OneTime(
@@ -602,7 +602,7 @@ enum class PredefinedChallenge(
         durationDays = 14
     ),
     FRIENDS_BLAST(
-        Challenge.Category.ME_TIME,
+        PredefinedChallengeData.Category.ME_TIME,
         4,
         listOf(
             Repeating(
@@ -653,7 +653,7 @@ enum class PredefinedChallenge(
         )
     ),
     JUST_HAVE_FUN(
-        Challenge.Category.ME_TIME,
+        PredefinedChallengeData.Category.ME_TIME,
         4,
         listOf(
             Repeating(
@@ -699,7 +699,7 @@ enum class PredefinedChallenge(
         )
     ),
     FAMILY_TIME(
-        Challenge.Category.ME_TIME,
+        PredefinedChallengeData.Category.ME_TIME,
         0,
         listOf(
             Repeating(
@@ -764,7 +764,7 @@ enum class PredefinedChallenge(
         )
     ),
     KEEP_THINGS_TIDY(
-        Challenge.Category.ORGANIZE_MY_LIFE,
+        PredefinedChallengeData.Category.ORGANIZE_MY_LIFE,
         3,
         listOf(
             Repeating(
@@ -844,7 +844,7 @@ enum class PredefinedChallenge(
         )
     ),
     ORGANIZE_MY_DAY(
-        Challenge.Category.ORGANIZE_MY_LIFE,
+        PredefinedChallengeData.Category.ORGANIZE_MY_LIFE,
         3,
         listOf(
             Repeating(
@@ -902,7 +902,7 @@ enum class PredefinedChallenge(
         )
     ),
     STAY_ON_TOP_OF_THINGS(
-        Challenge.Category.ORGANIZE_MY_LIFE,
+        PredefinedChallengeData.Category.ORGANIZE_MY_LIFE,
         3,
         listOf(
             Repeating(
