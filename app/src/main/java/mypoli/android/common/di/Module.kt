@@ -329,8 +329,8 @@ class MainUseCaseModule : UseCaseModule, Injects<Module> {
             questRepository,
             repeatingQuestRepository
         )
-    override val repeatingQuestHistoryUseCase
-        get() = RepeatingQuestHistoryUseCase(
+    override val createRepeatingQuestHistoryUseCase
+        get() = CreateRepeatingQuestHistoryUseCase(
             questRepository,
             repeatingQuestRepository
         )
@@ -387,7 +387,7 @@ interface UseCaseModule {
     val findPeriodProgressForRepeatingQuestUseCase: FindPeriodProgressForRepeatingQuestUseCase
     val saveQuestsForRepeatingQuestUseCase: SaveQuestsForRepeatingQuestUseCase
     val removeRepeatingQuestUseCase: RemoveRepeatingQuestUseCase
-    val repeatingQuestHistoryUseCase: RepeatingQuestHistoryUseCase
+    val createRepeatingQuestHistoryUseCase: CreateRepeatingQuestHistoryUseCase
     val createPlaceholderQuestsForRepeatingQuestsUseCase: CreatePlaceholderQuestsForRepeatingQuestsUseCase
 }
 

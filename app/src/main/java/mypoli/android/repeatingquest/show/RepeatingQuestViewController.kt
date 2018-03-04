@@ -63,8 +63,6 @@ class RepeatingQuestViewController :
             }
         })
 
-//        view.repeating_quest_history.populateWithRandomData()
-
         return view
     }
 
@@ -115,6 +113,9 @@ class RepeatingQuestViewController :
 
             RepeatingQuestViewState.Removed ->
                 router.popCurrentController()
+
+            is RepeatingQuestViewState.HistoryChanged ->
+                view.historyChart.updateData(state.history)
         }
     }
 

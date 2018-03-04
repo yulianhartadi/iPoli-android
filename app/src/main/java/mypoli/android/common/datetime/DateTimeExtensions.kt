@@ -46,6 +46,9 @@ fun LocalDate.datesBetween(date: LocalDate): List<LocalDate> {
 fun LocalDate.daysUntil(date: LocalDate) =
     this.until(date, ChronoUnit.DAYS)
 
+fun LocalDate.weeksUntil(date: LocalDate) =
+    this.until(date, ChronoUnit.WEEKS)
+
 fun LocalDateTime.toMillis(zoneId: ZoneId) = atZone(zoneId).toInstant().toEpochMilli()
 
 fun LocalDateTime.toMillis() = atZone(ZoneId.systemDefault()).toInstant().toEpochMilli()

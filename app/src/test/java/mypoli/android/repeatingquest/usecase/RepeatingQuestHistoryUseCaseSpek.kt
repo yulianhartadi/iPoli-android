@@ -8,7 +8,6 @@ import mypoli.android.quest.Quest
 import mypoli.android.quest.data.persistence.QuestRepository
 import mypoli.android.repeatingquest.entity.RepeatingPattern
 import mypoli.android.repeatingquest.entity.RepeatingQuest
-import org.amshove.kluent.`should equal`
 import org.amshove.kluent.shouldThrow
 import org.jetbrains.spek.api.Spek
 import org.jetbrains.spek.api.dsl.describe
@@ -22,18 +21,18 @@ import org.threeten.bp.LocalDate
  */
 class RepeatingQuestHistoryUseCaseSpek : Spek({
 
-    describe("RepeatingQuestHistoryUseCase") {
+    describe("CreateRepeatingQuestHistoryUseCase") {
 
         fun executeUseCase(
             questRepo: QuestRepository,
             repeatingQuest: RepeatingQuest,
             start: LocalDate, end: LocalDate
         ) =
-            RepeatingQuestHistoryUseCase(questRepo,
+            CreateRepeatingQuestHistoryUseCase(questRepo,
                 mock {
                     on { findById(any()) } doReturn repeatingQuest
                 }).execute(
-                RepeatingQuestHistoryUseCase.Params(
+                CreateRepeatingQuestHistoryUseCase.Params(
                     "",
                     start,
                     end
@@ -72,7 +71,7 @@ class RepeatingQuestHistoryUseCaseSpek : Spek({
                     repeatingPattern = RepeatingPattern.Daily()
                 ), date, date
             )
-            result[date].`should equal`(RepeatingQuestHistoryUseCase.QuestState.COMPLETED_ON_SCHEDULE)
+            result[date].`should equal`(CreateRepeatingQuestHistoryUseCase.DateHistory.DONE_ON_SCHEDULE)
         }
 
         it("should return not completed") {
@@ -91,7 +90,7 @@ class RepeatingQuestHistoryUseCaseSpek : Spek({
                     repeatingPattern = RepeatingPattern.Daily()
                 ), date, date
             )
-            result[date].`should equal`(RepeatingQuestHistoryUseCase.QuestState.NOT_COMPLETED)
+            result[date].`should equal`(CreateRepeatingQuestHistoryUseCase.DateHistory.FAILED)
         }
 
         it("should return empty") {
@@ -110,7 +109,7 @@ class RepeatingQuestHistoryUseCaseSpek : Spek({
                     repeatingPattern = RepeatingPattern.Weekly(setOf(DayOfWeek.MONDAY))
                 ), date, date
             )
-            result[date].`should equal`(RepeatingQuestHistoryUseCase.QuestState.EMPTY)
+            result[date].`should equal`(CreateRepeatingQuestHistoryUseCase.DateHistory.EMPTY)
         }
 
         it("should return completed not on schedule") {
@@ -133,7 +132,7 @@ class RepeatingQuestHistoryUseCaseSpek : Spek({
                     repeatingPattern = RepeatingPattern.Weekly(setOf(DayOfWeek.MONDAY))
                 ), date, date
             )
-            result[date].`should equal`(RepeatingQuestHistoryUseCase.QuestState.COMPLETED_NOT_ON_SCHEDULE)
+            result[date].`should equal`(CreateRepeatingQuestHistoryUseCase.DateHistory.DONE_NOT_ON_SCHEDULE)
         }
 
         it("should return completed not on schedule after repeating quest end") {
@@ -157,7 +156,7 @@ class RepeatingQuestHistoryUseCaseSpek : Spek({
                     repeatingPattern = RepeatingPattern.Daily(today.minusDays(1), today)
                 ), tomorrow, tomorrow
             )
-            result[tomorrow].`should equal`(RepeatingQuestHistoryUseCase.QuestState.COMPLETED_NOT_ON_SCHEDULE)
+            result[tomorrow].`should equal`(CreateRepeatingQuestHistoryUseCase.DateHistory.DONE_NOT_ON_SCHEDULE)
         }
 
         it("should return states for 2 dates") {
@@ -182,8 +181,8 @@ class RepeatingQuestHistoryUseCaseSpek : Spek({
                 ), today, tomorrow
             )
             result.size.`should equal`(2)
-            result[today].`should equal`(RepeatingQuestHistoryUseCase.QuestState.NOT_COMPLETED)
-            result[tomorrow].`should equal`(RepeatingQuestHistoryUseCase.QuestState.COMPLETED_ON_SCHEDULE)
+            result[today].`should equal`(CreateRepeatingQuestHistoryUseCase.DateHistory.FAILED)
+            result[tomorrow].`should equal`(CreateRepeatingQuestHistoryUseCase.DateHistory.DONE_ON_SCHEDULE)
         }
     }
 })
