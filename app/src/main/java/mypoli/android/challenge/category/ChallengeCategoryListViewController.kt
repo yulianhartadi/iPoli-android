@@ -12,6 +12,7 @@ import mypoli.android.challenge.category.list.ChallengeListForCategoryViewContro
 import mypoli.android.challenge.data.Challenge
 import mypoli.android.challenge.data.Challenge.Category.*
 import mypoli.android.common.mvi.MviViewController
+import mypoli.android.common.view.rootRouter
 import mypoli.android.common.view.stringRes
 import mypoli.android.common.view.toolbarTitle
 import space.traversal.kapsule.required
@@ -46,7 +47,7 @@ class ChallengeCategoryListViewController(args: Bundle? = null) :
 
     private fun showChallengeList(category: Challenge.Category) {
         val handler = FadeChangeHandler()
-        router.pushController(
+        rootRouter.pushController(
             RouterTransaction
                 .with(ChallengeListForCategoryViewController(category))
                 .pushChangeHandler(handler)
