@@ -510,7 +510,7 @@ class LoadAllDataSideEffect : AppSideEffect() {
             repeatingQuestsChannel?.cancel()
             repeatingQuestsChannel = repeatingQuestRepository.listenForAll()
             repeatingQuestsChannel!!.consumeEach {
-                launch {
+                launch(CommonPool) {
                     val rqs = it
                         .map {
                             findNextDateForRepeatingQuestUseCase.execute(
@@ -535,7 +535,9 @@ class LoadAllDataSideEffect : AppSideEffect() {
             todayQuestsChannel = questRepository.listenForScheduledAt(state.dataState.today)
             todayQuestsChannel!!.consumeEach {
                 updateWidgets()
-                dispatch(DataLoadedAction.TodayQuestsChanged(it))
+                launch(CommonPool) {
+                    dispatch(DataLoadedAction.TodayQuestsChanged(it))
+                }
             }
         }
     }
@@ -549,7 +551,9 @@ class LoadAllDataSideEffect : AppSideEffect() {
             playerChannel?.cancel()
             playerChannel = playerRepository.listen()
             playerChannel!!.consumeEach {
-                dispatch(PlayerChanged(it!!))
+                launch(CommonPool) {
+                    dispatch(PlayerChanged(it!!))
+                }
             }
         }
     }
