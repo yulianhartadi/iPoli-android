@@ -60,12 +60,13 @@
                 <TextView
                     android:id="@+id/nextText"
                     style="@style/TextAppearance.AppCompat.Subhead"
-                    android:layout_width="match_parent"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="16dp"
                     android:layout_marginTop="16dp"
-                    android:gravity="center_horizontal"
-                    android:text="Next: Today for 1 h" />
+                    android:layout_gravity="center_horizontal"
+                    android:drawableStart="@drawable/ic_event_white_24dp"
+                    android:drawablePadding="8dp" />
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -160,7 +161,7 @@
                             android:src="@drawable/ic_streak_white_24dp" />
 
                         <TextView
-                            android:id="@+id/quest_streak"
+                            android:id="@+id/questStreak"
                             style="@style/TextAppearance.AppCompat.Body1"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"

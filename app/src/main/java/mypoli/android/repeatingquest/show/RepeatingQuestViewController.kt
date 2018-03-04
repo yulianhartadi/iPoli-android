@@ -15,6 +15,7 @@ import mypoli.android.common.ViewUtils
 import mypoli.android.common.datetime.Time
 import mypoli.android.common.redux.android.ReduxViewController
 import mypoli.android.common.text.DateFormatter
+import mypoli.android.common.text.DurationFormatter
 import mypoli.android.common.view.*
 import mypoli.android.repeatingquest.edit.EditRepeatingQuestViewController
 
@@ -123,11 +124,12 @@ class RepeatingQuestViewController :
         view: View,
         state: RepeatingQuestViewState.Changed
     ) {
-        view.categoryName.text = state.category.name
-        view.categoryImage.setImageResource(R.drawable.ic_context_chores_white)
-        view.totalTimeSpent.text = state.timeSpentText
-        view.nextScheduledDate.text = state.nextScheduledDateText
-        view.quest_streak.text = state.currentStreak.toString()
+        view.nextText.text = state.nextScheduledDateText
+//        view.categoryName.text = state.category.name
+//        view.categoryImage.setImageResource(R.drawable.ic_context_chores_white)
+//        view.totalTimeSpent.text = state.timeSpentText
+//        view.nextScheduledDate.text = state.nextScheduledDateText
+//        view.questStreak.text = state.currentStreak.toString()
     }
 
     private fun renderName(
@@ -206,10 +208,34 @@ class RepeatingQuestViewController :
         get() = Time.of(totalDuration.intValue).toString()
 
     private val RepeatingQuestViewState.Changed.nextScheduledDateText
-        get() = if (nextScheduledDate != null) DateFormatter.format(
-            view!!.context,
-            nextScheduledDate
-        ) else stringRes(R.string.unscheduled)
+        get() = when {
+            isCompleted -> stringRes(R.string.completed)
+            nextScheduledDate != null -> {
+                var res = stringRes(
+                    R.string.repeating_quest_next,
+                    DateFormatter.format(view!!.context, nextScheduledDate)
+                )
+                res += if (startTime != null) {
+                    " $startTime - $endTime"
+                } else {
+                    " " + stringRes(
+                        R.string.quest_for_time,
+                        DurationFormatter.formatShort(view!!.context, duration)
+                    )
+                }
+                res
+            }
+            else -> stringRes(
+                R.string.repeating_quest_next,
+                stringRes(R.string.unscheduled)
+            )
+        }
+
+
+//    if (nextScheduledDate != null) DateFormatter.format(
+//            view!!.context,
+//            nextScheduledDate
+//        ) else stringRes(R.string.unscheduled)
 
     private val RepeatingQuestViewState.Changed.frequencyText
         get() = when (repeat) {

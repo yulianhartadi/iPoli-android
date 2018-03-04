@@ -5,6 +5,7 @@ import mypoli.android.common.BaseViewStateReducer
 import mypoli.android.common.DataLoadedAction
 import mypoli.android.common.datetime.Duration
 import mypoli.android.common.datetime.Minute
+import mypoli.android.common.datetime.Time
 import mypoli.android.common.datetime.minutes
 import mypoli.android.common.mvi.ViewState
 import mypoli.android.common.redux.Action
@@ -50,7 +51,11 @@ sealed class RepeatingQuestViewState(open val id: String) : ViewState {
         val totalDuration: Duration<Minute>,
         val currentStreak: Int,
         val repeat: RepeatType,
-        val progress: List<ProgressModel>
+        val progress: List<ProgressModel>,
+        val startTime: Time?,
+        val endTime: Time?,
+        val duration: Int,
+        val isCompleted: Boolean
     ) : RepeatingQuestViewState(id) {
 
         enum class ProgressModel {
@@ -115,7 +120,11 @@ object RepeatingQuestReducer : BaseViewStateReducer<RepeatingQuestViewState>() {
             totalDuration = 180.minutes,
             currentStreak = 10,
             repeat = repeatTypeFor(rq.repeatingPattern),
-            progress = progressFor(rq.periodProgress!!)
+            progress = progressFor(rq.periodProgress!!),
+            startTime = rq.startTime,
+            endTime = rq.endTime,
+            duration = rq.duration,
+            isCompleted = rq.isCompleted
         )
     }
 
