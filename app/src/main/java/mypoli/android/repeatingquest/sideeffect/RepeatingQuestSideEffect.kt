@@ -10,8 +10,8 @@ import mypoli.android.quest.Color
 import mypoli.android.repeatingquest.edit.EditRepeatingQuestAction
 import mypoli.android.repeatingquest.edit.EditRepeatingQuestViewState
 import mypoli.android.repeatingquest.show.RepeatingQuestAction
+import mypoli.android.repeatingquest.usecase.CreateRepeatingQuestHistoryUseCase
 import mypoli.android.repeatingquest.usecase.RemoveRepeatingQuestUseCase
-import mypoli.android.repeatingquest.usecase.RepeatingQuestHistoryUseCase
 import mypoli.android.repeatingquest.usecase.SaveRepeatingQuestUseCase
 import org.threeten.bp.LocalDate
 import org.threeten.bp.temporal.TemporalAdjusters
@@ -24,21 +24,26 @@ import space.traversal.kapsule.required
 class RepeatingQuestSideEffect : AppSideEffect() {
     private val saveRepeatingQuestUseCase by required { saveRepeatingQuestUseCase }
     private val removeRepeatingQuestUseCase by required { removeRepeatingQuestUseCase }
-    private val repeatingQuestHistoryUseCase by required { repeatingQuestHistoryUseCase }
+    private val createRepeatingQuestHistoryUseCase by required { createRepeatingQuestHistoryUseCase }
 
     override suspend fun doExecute(action: Action, state: AppState) {
         when (action) {
             is RepeatingQuestAction.Load -> {
                 val today = LocalDate.now()
-                val history = repeatingQuestHistoryUseCase.execute(
-                    RepeatingQuestHistoryUseCase.Params(
+                val history = createRepeatingQuestHistoryUseCase.execute(
+                    CreateRepeatingQuestHistoryUseCase.Params(
                         action.repeatingQuestId,
                         today.minusWeeks(3).with(TemporalAdjusters.previousOrSame(DateUtils.firstDayOfWeek)),
                         today.plusWeeks(1).with(TemporalAdjusters.nextOrSame(DateUtils.lastDayOfWeek))
                     )
                 )
 
-                DataLoadedAction.RepeatingQuestHistoryChanged(action.repeatingQuestId, history)
+                dispatch(
+                    DataLoadedAction.RepeatingQuestHistoryChanged(
+                        action.repeatingQuestId,
+                        history
+                    )
+                )
             }
 
             EditRepeatingQuestAction.Save -> {
