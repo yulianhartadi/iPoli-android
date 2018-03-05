@@ -4,6 +4,7 @@ import mypoli.android.common.AppState
 import mypoli.android.common.BaseViewStateReducer
 import mypoli.android.common.mvi.ViewState
 import mypoli.android.common.redux.Action
+import mypoli.android.quest.Color
 
 /**
  * Created by Venelin Valkov <venelin@mypoli.fun>
@@ -22,16 +23,34 @@ object ChallengeReducer : BaseViewStateReducer<ChallengeViewState>() {
     ): ChallengeViewState {
         return when (action) {
             is ChallengeAction.Load -> {
-                subState
+                ChallengeViewState.Changed(
+                    id = action.challengeId,
+                    name = "Welcome to the World",
+                    color = Color.GREEN,
+                    completedCount = 7,
+                    totalCount = 35,
+                    progressPercent = ((7.0 / 35) * 100).toInt()
+                )
             }
             else -> subState
         }
     }
 
-    override fun defaultState() = ChallengeViewState("")
+    override fun defaultState() = ChallengeViewState.Loading("")
 
     override val stateKey = key<ChallengeViewState>()
-
 }
 
-data class ChallengeViewState(val name: String) : ViewState
+sealed class ChallengeViewState(open val id: String) : ViewState {
+
+    data class Loading(override val id: String) : ChallengeViewState(id)
+
+    data class Changed(
+        override val id: String,
+        val name: String,
+        val color: Color,
+        val completedCount: Int,
+        val totalCount: Int,
+        val progressPercent: Int
+    ) : ChallengeViewState(id)
+}

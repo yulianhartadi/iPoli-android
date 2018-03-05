@@ -29,7 +29,7 @@
                 android:orientation="vertical">
 
                 <TextView
-                    android:id="@+id/challenge_name"
+                    android:id="@+id/name"
                     style="@style/TextAppearance.AppCompat.Headline"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -43,46 +43,45 @@
 
                 <RelativeLayout
                     android:layout_width="match_parent"
-                    android:layout_height="180dp"
-                    android:layout_marginTop="16dp">
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="32dp"
+                    android:layout_marginTop="32dp">
 
+                    <TextView
+                        android:id="@+id/progressLabel"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_above="@+id/progress"
+                        android:layout_alignParentStart="true"
+                        android:layout_alignParentTop="true"
+                        android:layout_marginBottom="8dp"
+                        android:layout_marginStart="32dp"
+                        android:text="Progress"
+                        android:textAppearance="@style/TextAppearance.AppCompat.Subhead"
+                        android:textColor="@color/md_light_text_87" />
+
+                    <TextView
+                        android:id="@+id/progressText"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentEnd="true"
+                        android:layout_alignParentTop="true"
+                        android:layout_marginBottom="8dp"
+                        android:layout_marginEnd="32dp"
+                        android:textAppearance="@style/TextAppearance.AppCompat.Body1"
+                        android:textColor="@color/md_light_text_87" />
 
                     <ProgressBar
-                        android:id="@+id/challenge_progress"
+                        android:id="@+id/progress"
                         style="?android:attr/progressBarStyleHorizontal"
-                        android:layout_width="180dp"
-                        android:layout_height="match_parent"
-                        android:layout_centerHorizontal="true"
-                        android:background="@drawable/challenge_progress_background"
-                        android:clickable="false"
-                        android:max="100"
-                        android:progressDrawable="@drawable/challenge_progress" />
-
-                    <android.support.v4.widget.Space
-                        android:id="@+id/mid_text"
                         android:layout_width="match_parent"
-                        android:layout_height="1dp"
-                        android:layout_centerInParent="true" />
+                        android:layout_height="8dp"
+                        android:layout_below="@+id/progressText"
+                        android:layout_marginEnd="32dp"
+                        android:layout_marginStart="32dp"
+                        android:clickable="false"
+                        android:progressDrawable="@drawable/repeating_quest_item_progress" />
 
-                    <TextView
-                        android:id="@+id/challenge_progress_fraction"
-                        style="@style/TextAppearance.AppCompat.Title"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_above="@id/mid_text"
-                        android:layout_centerInParent="true"
-                        android:layout_marginBottom="4dp"
-                        android:textColor="@color/md_light_text_87" />
-
-                    <TextView
-                        android:id="@+id/challenge_progress_percent"
-                        style="@style/TextAppearance.AppCompat.Body1"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_below="@id/mid_text"
-                        android:layout_centerInParent="true"
-                        android:layout_marginTop="4dp"
-                        android:textColor="@color/md_light_text_87" />
 
                 </RelativeLayout>
 
@@ -208,12 +207,12 @@
 
     <android.support.v4.widget.NestedScrollView
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="match_parent"
         app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_height="wrap_content"
             android:orientation="vertical"
             android:paddingBottom="60dp"
             android:paddingTop="16dp">
