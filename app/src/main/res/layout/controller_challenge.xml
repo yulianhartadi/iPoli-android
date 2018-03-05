@@ -41,6 +41,22 @@
                     android:maxLines="3"
                     android:paddingTop="?attr/actionBarSize" />
 
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
+                    android:text="Next: Today at 12:30"
+                    android:textAlignment="center"
+                    android:textAppearance="@style/TextAppearance.AppCompat.Subhead" />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:text="Ends: 12 September"
+                    android:textAlignment="center"
+                    android:textAppearance="@style/TextAppearance.AppCompat.Subhead" />
+
                 <RelativeLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -57,7 +73,7 @@
                         android:layout_marginBottom="8dp"
                         android:layout_marginStart="32dp"
                         android:text="Progress"
-                        android:textAppearance="@style/TextAppearance.AppCompat.Subhead"
+                        android:textAppearance="@style/TextAppearance.AppCompat.Body2"
                         android:textColor="@color/md_light_text_87" />
 
                     <TextView
