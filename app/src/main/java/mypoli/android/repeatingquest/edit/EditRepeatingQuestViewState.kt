@@ -10,7 +10,7 @@ import mypoli.android.quest.Color
 import mypoli.android.quest.Icon
 import mypoli.android.quest.Reminder
 import mypoli.android.quest.toMinutesFromStart
-import mypoli.android.reminder.view.picker.ReminderViewModel
+import mypoli.android.quest.reminder.picker.ReminderViewModel
 import mypoli.android.repeatingquest.edit.EditRepeatingQuestViewState.StateType.*
 import mypoli.android.repeatingquest.entity.RepeatType
 import mypoli.android.repeatingquest.entity.RepeatingPattern

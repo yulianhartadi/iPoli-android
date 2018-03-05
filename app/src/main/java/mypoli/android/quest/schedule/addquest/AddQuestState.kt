@@ -5,7 +5,7 @@ import mypoli.android.common.mvi.Intent
 import mypoli.android.common.mvi.ViewState
 import mypoli.android.quest.Color
 import mypoli.android.quest.Icon
-import mypoli.android.reminder.view.picker.ReminderViewModel
+import mypoli.android.quest.reminder.picker.ReminderViewModel
 import mypoli.android.repeatingquest.entity.RepeatingPattern
 import org.threeten.bp.LocalDate
 

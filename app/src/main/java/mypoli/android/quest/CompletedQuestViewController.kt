@@ -22,7 +22,7 @@ import mypoli.android.common.text.DurationFormatter
 import mypoli.android.common.view.*
 import mypoli.android.quest.CompletedQuestViewState.StateType.DATA_LOADED
 import mypoli.android.quest.CompletedQuestViewState.Timer
-import mypoli.android.timer.TimerViewController
+import mypoli.android.quest.timer.TimerViewController
 import space.traversal.kapsule.required
 
 /**

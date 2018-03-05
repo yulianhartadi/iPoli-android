@@ -3,7 +3,7 @@ package mypoli.android.quest.usecase
 import mypoli.android.common.UseCase
 import mypoli.android.quest.data.persistence.QuestRepository
 import mypoli.android.quest.job.ReminderScheduler
-import mypoli.android.timer.job.TimerCompleteScheduler
+import mypoli.android.quest.timer.job.TimerCompleteScheduler
 
 /**
  * Created by Polina Zhelyazkova <polina@mypoli.fun>

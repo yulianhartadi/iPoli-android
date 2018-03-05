@@ -6,8 +6,8 @@ import com.google.firebase.auth.FirebaseAuthProvider
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.auth.GoogleAuthProvider
 import mypoli.android.Constants
-import mypoli.android.auth.AuthAction
-import mypoli.android.auth.AuthViewState
+import mypoli.android.player.auth.AuthAction
+import mypoli.android.player.auth.AuthViewState
 import mypoli.android.common.AppSideEffect
 import mypoli.android.common.AppState
 import mypoli.android.common.LoadDataAction

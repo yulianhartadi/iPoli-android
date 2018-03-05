@@ -22,8 +22,8 @@ import mypoli.android.common.view.*
 import mypoli.android.quest.Color
 import mypoli.android.quest.Icon
 import mypoli.android.quest.schedule.addquest.StateType.*
-import mypoli.android.reminder.view.picker.ReminderPickerDialogController
-import mypoli.android.reminder.view.picker.ReminderViewModel
+import mypoli.android.quest.reminder.picker.ReminderPickerDialogController
+import mypoli.android.quest.reminder.picker.ReminderViewModel
 import mypoli.android.repeatingquest.edit.picker.RepeatingPatternPickerDialogController
 import org.threeten.bp.LocalDate
 import space.traversal.kapsule.required

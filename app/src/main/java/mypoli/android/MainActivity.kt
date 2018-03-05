@@ -16,13 +16,13 @@ import com.bluelinelabs.conductor.RouterTransaction
 import kotlinx.coroutines.experimental.CommonPool
 import kotlinx.coroutines.experimental.android.UI
 import kotlinx.coroutines.experimental.launch
-import mypoli.android.auth.AuthViewController
+import mypoli.android.player.auth.AuthViewController
 import mypoli.android.common.LoadDataAction
 import mypoli.android.common.LoaderDialogController
 import mypoli.android.common.di.Module
 import mypoli.android.common.view.playerTheme
 import mypoli.android.home.HomeViewController
-import mypoli.android.timer.TimerViewController
+import mypoli.android.quest.timer.TimerViewController
 import space.traversal.kapsule.Injects
 import space.traversal.kapsule.inject
 import space.traversal.kapsule.required

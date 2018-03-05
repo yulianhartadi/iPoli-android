@@ -11,7 +11,7 @@ import mypoli.android.quest.Icon
 import mypoli.android.quest.schedule.calendar.dayview.view.DayViewState.StateType.*
 import mypoli.android.quest.usecase.Result
 import mypoli.android.quest.usecase.Schedule
-import mypoli.android.reminder.view.picker.ReminderViewModel
+import mypoli.android.quest.reminder.picker.ReminderViewModel
 import org.threeten.bp.LocalDate
 
 /**

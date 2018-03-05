@@ -11,7 +11,7 @@ import mypoli.android.quest.Quest
 import mypoli.android.quest.data.persistence.QuestRepository
 import mypoli.android.quest.job.QuestCompleteScheduler
 import mypoli.android.quest.job.ReminderScheduler
-import mypoli.android.rate.RatePopupScheduler
+import mypoli.android.common.rate.RatePopupScheduler
 import org.threeten.bp.LocalDate
 import java.util.*
 

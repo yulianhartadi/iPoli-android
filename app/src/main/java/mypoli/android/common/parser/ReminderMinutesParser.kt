@@ -1,6 +1,6 @@
 package mypoli.android.common.parser
 
-import mypoli.android.reminder.view.picker.TimeUnit
+import mypoli.android.quest.reminder.picker.TimeUnit
 
 /**
  * Created by Venelin Valkov <venelin@mypoli.fun>

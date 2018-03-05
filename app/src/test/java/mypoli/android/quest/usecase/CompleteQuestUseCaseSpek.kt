@@ -18,7 +18,7 @@ import mypoli.android.quest.data.persistence.QuestRepository
 import mypoli.android.quest.job.QuestCompleteScheduler
 import mypoli.android.quest.job.ReminderScheduler
 import mypoli.android.quest.usecase.CompleteQuestUseCase.Params.WithQuestId
-import mypoli.android.rate.RatePopupScheduler
+import mypoli.android.common.rate.RatePopupScheduler
 import org.amshove.kluent.*
 import org.jetbrains.spek.api.Spek
 import org.jetbrains.spek.api.dsl.describe

@@ -40,9 +40,9 @@ import mypoli.android.quest.schedule.calendar.CalendarViewController
 import mypoli.android.quest.schedule.calendar.dayview.view.DayViewState.StateType.*
 import mypoli.android.quest.schedule.calendar.dayview.view.widget.*
 import mypoli.android.quest.toMinutesFromStart
-import mypoli.android.reminder.view.picker.ReminderPickerDialogController
-import mypoli.android.reminder.view.picker.ReminderViewModel
-import mypoli.android.timer.TimerViewController
+import mypoli.android.quest.reminder.picker.ReminderPickerDialogController
+import mypoli.android.quest.reminder.picker.ReminderViewModel
+import mypoli.android.quest.timer.TimerViewController
 import org.threeten.bp.LocalDate
 import java.util.*
 

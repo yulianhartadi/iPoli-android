@@ -6,7 +6,7 @@ import com.google.firebase.auth.AuthResult
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseAuthProvider
 import kotlinx.coroutines.experimental.runBlocking
-import mypoli.android.auth.error.SignInError
+import mypoli.android.player.auth.error.SignInError
 import mypoli.android.common.datetime.Time
 import mypoli.android.common.datetime.instant
 import mypoli.android.common.datetime.startOfDayUTC

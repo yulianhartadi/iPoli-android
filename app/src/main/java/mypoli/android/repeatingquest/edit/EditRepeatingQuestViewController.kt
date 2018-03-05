@@ -15,8 +15,8 @@ import mypoli.android.common.datetime.Time
 import mypoli.android.common.redux.android.ReduxViewController
 import mypoli.android.common.text.DurationFormatter
 import mypoli.android.common.view.*
-import mypoli.android.reminder.view.picker.ReminderPickerDialogController
-import mypoli.android.reminder.view.picker.ReminderViewModel
+import mypoli.android.quest.reminder.picker.ReminderPickerDialogController
+import mypoli.android.quest.reminder.picker.ReminderViewModel
 import mypoli.android.repeatingquest.edit.EditRepeatingQuestViewState.StateType.*
 import mypoli.android.repeatingquest.edit.picker.RepeatingPatternPickerDialogController
 

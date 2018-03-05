@@ -24,7 +24,7 @@ import kotlinx.android.synthetic.main.drawer_header_home.view.*
 import mypoli.android.Constants
 import mypoli.android.MainActivity
 import mypoli.android.R
-import mypoli.android.auth.AuthViewController
+import mypoli.android.player.auth.AuthViewController
 import mypoli.android.challenge.list.ChallengeListViewController
 import mypoli.android.common.EmailUtils
 import mypoli.android.common.redux.android.ReduxViewController

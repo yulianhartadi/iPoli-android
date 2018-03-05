@@ -21,8 +21,8 @@ import mypoli.android.common.di.Module
 import mypoli.android.common.view.asThemedWrapper
 import mypoli.android.myPoliApp
 import mypoli.android.quest.Quest
-import mypoli.android.reminder.view.ReminderNotificationPopup
-import mypoli.android.reminder.view.ReminderNotificationViewModel
+import mypoli.android.quest.reminder.ReminderNotificationPopup
+import mypoli.android.quest.reminder.ReminderNotificationViewModel
 import org.threeten.bp.Instant
 import org.threeten.bp.LocalDate
 import org.threeten.bp.LocalDateTime

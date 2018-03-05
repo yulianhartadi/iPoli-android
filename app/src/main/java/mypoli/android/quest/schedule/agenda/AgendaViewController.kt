@@ -25,7 +25,7 @@ import mypoli.android.common.redux.android.ReduxViewController
 import mypoli.android.common.view.*
 import mypoli.android.quest.CompletedQuestViewController
 import mypoli.android.quest.schedule.agenda.widget.SwipeToCompleteCallback
-import mypoli.android.timer.TimerViewController
+import mypoli.android.quest.timer.TimerViewController
 import org.threeten.bp.LocalDate
 
 /**

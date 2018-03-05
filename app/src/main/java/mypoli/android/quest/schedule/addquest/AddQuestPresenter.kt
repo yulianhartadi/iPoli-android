@@ -11,7 +11,7 @@ import mypoli.android.quest.Reminder
 import mypoli.android.quest.schedule.addquest.StateType.*
 import mypoli.android.quest.usecase.Result
 import mypoli.android.quest.usecase.SaveQuestUseCase
-import mypoli.android.reminder.view.picker.ReminderViewModel
+import mypoli.android.quest.reminder.picker.ReminderViewModel
 import mypoli.android.repeatingquest.sideeffect.RepeatingQuestSideEffect
 import mypoli.android.repeatingquest.usecase.SaveRepeatingQuestUseCase
 import org.threeten.bp.LocalDate

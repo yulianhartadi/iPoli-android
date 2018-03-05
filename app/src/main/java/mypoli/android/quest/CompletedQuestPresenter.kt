@@ -9,9 +9,9 @@ import mypoli.android.player.persistence.PlayerRepository
 import mypoli.android.quest.CompletedQuestViewState.StateType.DATA_LOADED
 import mypoli.android.quest.CompletedQuestViewState.StateType.LOADING
 import mypoli.android.quest.data.persistence.QuestRepository
-import mypoli.android.timer.usecase.SplitDurationForPomodoroTimerUseCase
-import mypoli.android.timer.usecase.SplitDurationForPomodoroTimerUseCase.Result.DurationNotSplit
-import mypoli.android.timer.usecase.SplitDurationForPomodoroTimerUseCase.Result.DurationSplit
+import mypoli.android.quest.timer.usecase.SplitDurationForPomodoroTimerUseCase
+import mypoli.android.quest.timer.usecase.SplitDurationForPomodoroTimerUseCase.Result.DurationNotSplit
+import mypoli.android.quest.timer.usecase.SplitDurationForPomodoroTimerUseCase.Result.DurationSplit
 import kotlin.coroutines.experimental.CoroutineContext
 
 /**

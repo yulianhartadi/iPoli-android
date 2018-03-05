@@ -6,9 +6,9 @@ import mypoli.android.pet.LowerPetStatsJob
 import mypoli.android.player.LevelUpJob
 import mypoli.android.quest.job.QuestCompleteJob
 import mypoli.android.quest.job.ReminderNotificationJob
-import mypoli.android.rate.RatePopupJob
+import mypoli.android.common.rate.RatePopupJob
 import mypoli.android.repeatingquest.SaveQuestsForRepeatingQuestJob
-import mypoli.android.timer.job.TimerCompleteNotificationJob
+import mypoli.android.quest.timer.job.TimerCompleteNotificationJob
 
 /**
  * Created by Venelin Valkov <venelin@mypoli.fun>
