@@ -27,9 +27,9 @@ object ChallengeReducer : BaseViewStateReducer<ChallengeViewState>() {
                     id = action.challengeId,
                     name = "Welcome to the World",
                     color = Color.GREEN,
-                    completedCount = 7,
+                    completedCount = 18,
                     totalCount = 35,
-                    progressPercent = ((7.0 / 35) * 100).toInt()
+                    progressPercent = ((18.0 / 35) * 100).toInt()
                 )
             }
             else -> subState

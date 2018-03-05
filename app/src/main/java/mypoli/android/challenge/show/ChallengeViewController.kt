@@ -122,6 +122,6 @@ class ChallengeViewController(args: Bundle? = null) :
         get() = color.androidColor.color700
 
     private val ChallengeViewState.Changed.progressText
-        get() = "$completedCount of $totalCount ($progressPercent %) done"
+        get() = "$completedCount of $totalCount ($progressPercent%) done"
 
 }
