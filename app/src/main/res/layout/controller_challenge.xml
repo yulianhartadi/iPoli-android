@@ -58,7 +58,8 @@
                         android:layout_marginStart="32dp"
                         android:text="Progress"
                         android:textAppearance="@style/TextAppearance.AppCompat.Body2"
-                        android:textColor="@color/md_light_text_87" />
+                        android:textColor="@color/md_light_text_87"
+                        android:textSize="16sp" />
 
                     <TextView
                         android:id="@+id/progressText"
@@ -97,6 +98,7 @@
                         android:orientation="vertical">
 
                         <TextView
+                            android:id="@+id/endDate"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_gravity="center_horizontal"
@@ -115,7 +117,8 @@
                             android:layout_marginTop="16dp"
                             android:text="End Date"
                             android:textAllCaps="true"
-                            android:textAppearance="@style/TextAppearance.AppCompat.Body1" />
+                            android:textAppearance="@style/TextAppearance.AppCompat.Body1"
+                            android:textColor="@color/md_light_text_87" />
                     </LinearLayout>
 
                     <LinearLayout
@@ -143,7 +146,8 @@
                             android:layout_marginTop="16dp"
                             android:text="Next Date"
                             android:textAllCaps="true"
-                            android:textAppearance="@style/TextAppearance.AppCompat.Body1" />
+                            android:textAppearance="@style/TextAppearance.AppCompat.Body1"
+                            android:textColor="@color/md_light_text_87" />
                     </LinearLayout>
                 </LinearLayout>
 

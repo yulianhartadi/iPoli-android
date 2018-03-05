@@ -5,6 +5,8 @@ import android.support.design.widget.AppBarLayout
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import com.mikepenz.iconics.IconicsDrawable
+import com.mikepenz.material_design_iconic_typeface_library.MaterialDesignIconic
 import kotlinx.android.synthetic.main.controller_challenge.view.*
 import mypoli.android.MainActivity
 import mypoli.android.R
@@ -91,6 +93,14 @@ class ChallengeViewController(args: Bundle? = null) :
                 view.progress.max = state.totalCount
 
                 view.progressText.text = state.progressText
+
+                view.endDate.setCompoundDrawablesWithIntrinsicBounds(
+                    IconicsDrawable(view.context)
+                        .icon(MaterialDesignIconic.Icon.gmi_hourglass_alt)
+                        .colorRes(R.color.md_white)
+                        .sizeDp(24),
+                    null, null, null
+                )
             }
             else -> {
             }
