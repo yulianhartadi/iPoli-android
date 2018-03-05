@@ -26,66 +26,55 @@
         app:layout_constraintStart_toStartOf="parent" />
 
     <ImageView
-        android:id="@+id/scheduleDate"
-        android:layout_width="40dp"
-        android:layout_height="24dp"
-        android:layout_marginBottom="8dp"
-        android:background="?selectableItemBackgroundBorderless"
-        android:paddingEnd="8dp"
-        android:paddingStart="8dp"
-        android:src="@drawable/ic_event_white_24dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_goneMarginStart="8dp" />
-
-    <ImageView
         android:id="@+id/startTime"
         android:layout_width="40dp"
         android:layout_height="24dp"
-        android:layout_marginBottom="8dp"
+        android:layout_marginStart="8dp"
         android:background="?selectableItemBackgroundBorderless"
         android:paddingEnd="8dp"
         android:paddingStart="8dp"
         android:src="@drawable/ic_clock_white_24dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/scheduleDate" />
+        app:layout_constraintBottom_toBottomOf="@+id/scheduleDate"
+        app:layout_constraintStart_toEndOf="@+id/repeatingPattern"
+        app:layout_constraintTop_toTopOf="@+id/scheduleDate" />
 
     <ImageView
         android:id="@+id/duration"
         android:layout_width="40dp"
         android:layout_height="24dp"
-        android:layout_marginBottom="8dp"
         android:background="?selectableItemBackgroundBorderless"
         android:paddingEnd="8dp"
         android:paddingStart="8dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/startTime" />
+        app:layout_constraintBottom_toBottomOf="@+id/scheduleDate"
+        app:layout_constraintStart_toEndOf="@+id/startTime"
+        app:layout_constraintTop_toTopOf="@+id/scheduleDate" />
 
     <ImageView
         android:id="@+id/color"
         android:layout_width="40dp"
         android:layout_height="24dp"
-        android:layout_marginBottom="8dp"
         android:background="?selectableItemBackgroundBorderless"
         android:paddingEnd="8dp"
         android:paddingStart="8dp"
         android:src="@drawable/ic_color_palette_white_24dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/duration" />
+        app:layout_constraintBottom_toBottomOf="@+id/scheduleDate"
+        app:layout_constraintStart_toEndOf="@+id/duration"
+        app:layout_constraintTop_toTopOf="@+id/scheduleDate" />
 
     <ImageView
         android:id="@+id/reminder"
         android:layout_width="40dp"
         android:layout_height="24dp"
-        android:layout_marginBottom="8dp"
+        android:layout_marginEnd="8dp"
         android:background="?selectableItemBackgroundBorderless"
         android:paddingEnd="8dp"
         android:paddingStart="8dp"
         android:src="@drawable/ic_reminder_white_24dp"
-        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintBottom_toBottomOf="@+id/scheduleDate"
         app:layout_constraintEnd_toStartOf="@+id/done"
         app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toEndOf="@+id/icon" />
+        app:layout_constraintStart_toEndOf="@+id/icon"
+        app:layout_constraintTop_toTopOf="@+id/scheduleDate" />
 
     <ImageView
         android:id="@+id/done"
@@ -104,11 +93,37 @@
         android:id="@+id/icon"
         android:layout_width="40dp"
         android:layout_height="24dp"
-        android:layout_marginBottom="8dp"
         android:background="?selectableItemBackgroundBorderless"
         android:paddingEnd="8dp"
         android:paddingStart="8dp"
-        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintBottom_toBottomOf="@+id/scheduleDate"
         app:layout_constraintStart_toEndOf="@+id/color"
+        app:layout_constraintTop_toTopOf="@+id/scheduleDate"
         app:srcCompat="@drawable/ic_icon_white_24dp" />
+
+    <ImageView
+        android:id="@+id/scheduleDate"
+        android:layout_width="40dp"
+        android:layout_height="28dp"
+        android:layout_marginBottom="8dp"
+        android:layout_marginStart="8dp"
+        android:background="@drawable/quest_type_left_solid_background"
+        android:foreground="?attr/selectableItemBackground"
+        android:padding="2dp"
+        android:src="@drawable/ic_event_white_24dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <ImageView
+        android:id="@+id/repeatingPattern"
+        android:layout_width="40dp"
+        android:layout_height="28dp"
+        android:layout_marginBottom="8dp"
+        android:background="@drawable/quest_type_right_bordered_background"
+        android:foreground="?attr/selectableItemBackground"
+        android:padding="2dp"
+        android:src="@drawable/ic_repeat_white_24dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/scheduleDate" />
+
 </android.support.constraint.ConstraintLayout>

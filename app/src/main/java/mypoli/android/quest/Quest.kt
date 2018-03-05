@@ -6,6 +6,7 @@ import org.threeten.bp.Instant
 import org.threeten.bp.LocalDate
 import org.threeten.bp.LocalDateTime
 import org.threeten.bp.LocalTime
+import org.threeten.bp.temporal.ChronoUnit
 
 /**
  * Created by Venelin Valkov <venelin@mypoli.fun>
@@ -21,7 +22,7 @@ interface Entity {
 data class Reminder(
     val message: String,
     val remindTime: Time,
-    val remindDate: LocalDate
+    val remindDate: LocalDate?
 ) {
     fun toMillis() =
         LocalDateTime.of(
@@ -30,6 +31,15 @@ data class Reminder(
         ).toMillis()
 
 }
+
+fun Reminder.toMinutesFromStart(startDate: LocalDate, startTime: Time): Long {
+    val daysDiff = ChronoUnit.DAYS.between(startDate, remindDate)
+    val minutesDiff = startTime.toMinuteOfDay() - remindTime.toMinuteOfDay()
+    return minutesDiff + Time.MINUTES_IN_A_DAY * daysDiff
+}
+
+fun Reminder.toMinutesFromStart(startTime: Time) =
+    startTime.toMinuteOfDay() - remindTime.toMinuteOfDay()
 
 data class Category(
     val name: String,
@@ -107,9 +117,10 @@ data class Quest(
     val icon: Icon? = null,
     val category: Category,
     val startTime: Time? = null,
-    val scheduledDate: LocalDate,
     val duration: Int,
     val reminder: Reminder? = null,
+    val scheduledDate: LocalDate,
+    val originalScheduledDate: LocalDate = scheduledDate,
     val timeRanges: List<TimeRange> = listOf(),
     override val createdAt: Instant = Instant.now(),
     override val updatedAt: Instant = Instant.now(),
@@ -118,7 +129,9 @@ data class Quest(
     val completedAt: Instant? = null,
     val experience: Int? = null,
     val coins: Int? = null,
-    val bounty: Bounty? = null
+    val bounty: Bounty? = null,
+    val isRemoved: Boolean = false,
+    val repeatingQuestId: String? = null
 ) : Entity {
 
     sealed class Bounty {
@@ -182,7 +195,7 @@ data class Quest(
 
     fun hasCompletedAllTimeRanges() = timeRanges.sumBy { it.duration } >= duration
 
-
+    val isFromRepeatingQuest = repeatingQuestId != null
 }
 
 data class TimeRange(

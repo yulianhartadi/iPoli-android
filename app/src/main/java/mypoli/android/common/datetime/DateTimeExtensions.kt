@@ -36,15 +36,21 @@ fun LocalDate.isBetween(start: LocalDate?, end: LocalDate?): Boolean {
     } else !isBefore(start) && !isAfter(end)
 }
 
+fun LocalDate.isBeforeOrEqual(date: LocalDate) = !isAfter(date)
+fun LocalDate.isAfterOrEqual(date: LocalDate) = !isBefore(date)
+
 fun LocalDate.isNotEqual(otherDate: LocalDate) = !isEqual(otherDate)
 
-fun LocalDate.datesUntil(date: LocalDate): List<LocalDate> {
+fun LocalDate.datesBetween(date: LocalDate): List<LocalDate> {
     val days = ChronoUnit.DAYS.between(this, date)
     return (0..days).map { this.plusDays(it) }
 }
 
 fun LocalDate.daysUntil(date: LocalDate) =
     this.until(date, ChronoUnit.DAYS)
+
+fun LocalDate.weeksUntil(date: LocalDate) =
+    this.until(date, ChronoUnit.WEEKS)
 
 fun LocalDateTime.toMillis(zoneId: ZoneId) = atZone(zoneId).toInstant().toEpochMilli()
 
@@ -64,4 +70,4 @@ val Instant.milliseconds get() = toEpochMilli().milliseconds
 
 val Long.instant: Instant get() = Instant.ofEpochMilli(this)
 
-val Long.startOfDayUtc: LocalDate get() = DateUtils.fromMillis(this)
+val Long.startOfDayUTC: LocalDate get() = DateUtils.fromMillis(this)

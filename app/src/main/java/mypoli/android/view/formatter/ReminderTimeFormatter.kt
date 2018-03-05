@@ -11,16 +11,16 @@ import java.util.concurrent.TimeUnit
  */
 public class ReminderTimeFormatter(private val context: Context) {
 
-    fun format(minutes: Long): String {
+    fun format(minutes: Int): String {
         if (minutes < 0) {
             return ""
         }
 
-        if (minutes == 0L) {
+        if (minutes == 0) {
             return context.getString(R.string.reminder_at_start)
         }
 
-        val hours = TimeUnit.MINUTES.toHours(minutes)
+        val hours = TimeUnit.MINUTES.toHours(minutes.toLong())
         val mins = minutes - hours * 60
 
         if (hours > 0 && mins > 0) {
@@ -43,7 +43,7 @@ public class ReminderTimeFormatter(private val context: Context) {
     val predefinedTimes: List<String>
         get() {
             val predefinedTimes = Constants.REMINDER_PREDEFINED_MINUTES.map {
-                format(it.toLong())
+                format(it)
             }
             return predefinedTimes + context.getString(R.string.custom)
         }

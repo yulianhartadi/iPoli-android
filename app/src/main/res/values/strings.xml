@@ -105,8 +105,8 @@
 
     <string name="drawer_close">Navigation Closed</string>
     <string name="drawer_open">Navigation Opened</string>
-    <string name="repeating_quests">Repeating Quests</string>
-    <string name="challenges">Challenges</string>
+    <string name="drawer_repeating_quests">Repeating Quests</string>
+    <string name="drawer_challenges">Challenges</string>
     <string name="growth">Growth</string>
     <string name="rewards">Rewards</string>
     <string name="title_fragment_challenges">Challenges</string>
@@ -125,8 +125,8 @@
     <string name="empty_text_rewards">What a shame! No rewards here! Add one?</string>
     <string name="empty_overview_text">Your adventure is empty! Start it by adding a quest?</string>
     <string name="empty_inbox_text">Your inbox is empty</string>
-    <string name="empty_repeating_quests_text">No repeating quests? Add repeating task or habit?</string>
-    <string name="nav_drawer_player_xp">XP: %s</string>
+    <string name="empty_repeating_quests_title">No repeating quests?</string>
+    <string name="empty_repeating_quests_text">Start organizing your tasks better by using repeating quests</string>
     <string name="help_dialog_growth_title">What is growth all about?</string>
     <string name="help_dialog_growth_daily_progress">Monitor your daily progress</string>
     <string name="help_dialog_growth_time_spent_chart">The time spent chart shows you which quest contexts take most of your time</string>
@@ -215,6 +215,7 @@
     <string name="name_validation">Please, add name</string>
 
     <string name="calendar">Calendar</string>
+    <string name="agenda">Agenda</string>
     <string name="overview">Journey Ahead</string>
     <string name="do_today">Do today</string>
     <string name="snooze_for_tomorrow">Snooze for tomorrow</string>
@@ -428,7 +429,7 @@
     <string name="tap_to_add_note">Tap to add a note</string>
     <string name="times_per_period_single">%d time</string>
     <string name="times_per_period_multiple">%d times</string>
-    <string name="player_level">Level %d</string>
+    <string name="player_level">Level %1$d: %2$s</string>
 
     <string name="move_to_inbox">Move to inbox</string>
     <string name="pick_time">Pick time</string>
@@ -649,7 +650,7 @@
     <string name="challenge8_rq4_raw_text">Go out with friends 2 times a week</string>
     <string name="challenge8_rq4_name">Go out with friends</string>
 
-    <string name="fragment_store_title">Store</string>
+    <string name="drawer_store">Store</string>
     <string name="power_up_dialog_not_enough_coins">Unfortunately, you don\'t have enough coins to enable this power-up. Become premium member to enable all power-ups at once!</string>
 
     <string name="pet_seal">Modern Tail</string>
@@ -1113,6 +1114,14 @@
         <item>Titan</item>
     </string-array>
 
+    <string-array name="repeating_quest_picker_frequencies">
+        <item>Day</item>
+        <item>Week</item>
+        <item>Month</item>
+        <item>Year</item>
+    </string-array>
+
+
     <string-array name="repeating_quest_frequencies">
         <item>Daily</item>
         <item>Weekly</item>
@@ -1137,4 +1146,8 @@
     <string name="login_error_contact_us_message">Something went really wrong</string>
     <string name="help_me_login">Help me login</string>
     <string name="welcome_back_hero">Welcome back, Hero!</string>
+    <string name="every">Every</string>
+    <string name="times">times</string>
+    <string name="quest_color_question">What color?</string>
+    <string name="quest_icon_question">Want an icon?</string>
 </resources>

@@ -8,29 +8,39 @@ import com.bluelinelabs.conductor.RestoreViewOnCreateController
 import kotlinx.coroutines.experimental.android.UI
 import kotlinx.coroutines.experimental.launch
 import mypoli.android.common.AppState
+import mypoli.android.common.NamespaceAction
+import mypoli.android.common.UIAction
 import mypoli.android.common.di.Module
 import mypoli.android.common.mvi.ViewState
 import mypoli.android.common.redux.Action
 import mypoli.android.common.redux.StateStore
+import mypoli.android.common.redux.ViewStateReducer
+import mypoli.android.common.view.AndroidColor
+import mypoli.android.common.view.AndroidIcon
 import mypoli.android.myPoliApp
+import mypoli.android.quest.Color
+import mypoli.android.quest.Icon
 import space.traversal.kapsule.Injects
 import space.traversal.kapsule.inject
 import space.traversal.kapsule.required
-import timber.log.Timber
 
 /**
  * Created by Venelin Valkov <venelin@mypoli.fun>
  * on 1/18/18.
  */
-abstract class ReduxViewController<in A : Action, VS : ViewState, out P : AndroidStatePresenter<AppState, VS>> protected constructor(
+abstract class ReduxViewController<A : Action, VS : ViewState, out R : ViewStateReducer<AppState, VS>> protected constructor(
     args: Bundle? = null
-) :
-    RestoreViewOnCreateController(args), Injects<Module>,
-    StateStore.StateChangeSubscriber<AppState, VS> {
+) : RestoreViewOnCreateController(args), Injects<Module>,
+    StateStore.StateChangeSubscriber<AppState> {
 
     private val stateStore by required { stateStore }
 
-    protected abstract val presenter: P
+    protected open var namespace: String? = null
+
+    protected abstract val reducer: R
+
+    @Volatile
+    private var currentState: VS? = null
 
     override fun onContextAvailable(context: Context) {
         inject(myPoliApp.module(context))
@@ -39,36 +49,53 @@ abstract class ReduxViewController<in A : Action, VS : ViewState, out P : Androi
     init {
         val lifecycleListener = object : LifecycleListener() {
 
+            override fun postCreateView(controller: Controller, view: View) {
+                stateStore.dispatch(UIAction.Attach(reducer))
+            }
+
             override fun postAttach(controller: Controller, view: View) {
                 stateStore.subscribe(this@ReduxViewController)
+                onCreateLoadAction()?.let {
+                    dispatch(it)
+                }
             }
 
             override fun preDetach(controller: Controller, view: View) {
                 stateStore.unsubscribe(this@ReduxViewController)
             }
+
+            override fun preDestroyView(controller: Controller, view: View) {
+                stateStore.dispatch(UIAction.Detach(reducer))
+                currentState = null
+            }
         }
         addLifecycleListener(lifecycleListener)
     }
 
-    override val transformer: StateStore.StateChangeSubscriber.StateTransformer<AppState, VS>
-        get() = object : StateStore.StateChangeSubscriber.StateTransformer<AppState, VS> {
-
-            override fun transformInitial(state: AppState): VS =
-                presenter.presentInitial(presenter.present(state, activity!!))
-
-            override fun transform(state: AppState): VS =
-                presenter.present(state, activity!!)
-        }
-
     fun dispatch(action: A) {
-        stateStore.dispatch(action)
+        val a = namespace?.let {
+
+            NamespaceAction(action, it)
+        } ?: action
+        stateStore.dispatch(a)
     }
 
-    override fun onStateChanged(newState: VS) {
-        launch(UI) {
-            Timber.d("AAA render $this")
-            render(newState, view!!)
+    override fun onStateChanged(newState: AppState) {
+        val viewState = newState.stateFor<VS>(reducer.stateKey)
+        if (viewState != currentState) {
+            currentState = viewState
+            launch(UI) {
+                onRenderViewState(viewState)
+            }
         }
+    }
+
+    protected open fun onRenderViewState(state: VS) {
+        render(state, view!!)
+    }
+
+    protected open fun onCreateLoadAction(): A? {
+        return null
     }
 
     abstract fun render(state: VS, view: View)
@@ -83,4 +110,16 @@ abstract class ReduxViewController<in A : Action, VS : ViewState, out P : Androi
             block()
         }
     }
+
+    protected val Color.androidColor: AndroidColor
+        get() = AndroidColor.valueOf(this.name)
+
+    protected val AndroidColor.color: Color
+        get() = Color.valueOf(this.name)
+
+    protected val Icon.androidIcon: AndroidIcon
+        get() = AndroidIcon.valueOf(this.name)
+
+    protected val AndroidIcon.toIcon: Icon
+        get() = Icon.valueOf(this.name)
 }

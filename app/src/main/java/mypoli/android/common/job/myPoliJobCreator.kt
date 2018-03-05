@@ -7,6 +7,7 @@ import mypoli.android.player.LevelUpJob
 import mypoli.android.quest.job.QuestCompleteJob
 import mypoli.android.quest.job.ReminderNotificationJob
 import mypoli.android.rate.RatePopupJob
+import mypoli.android.repeatingquest.SaveQuestsForRepeatingQuestJob
 import mypoli.android.timer.job.TimerCompleteNotificationJob
 
 /**
@@ -22,6 +23,7 @@ class myPoliJobCreator : JobCreator {
             RatePopupJob.TAG -> RatePopupJob()
             LowerPetStatsJob.TAG -> LowerPetStatsJob()
             TimerCompleteNotificationJob.TAG -> TimerCompleteNotificationJob()
+            SaveQuestsForRepeatingQuestJob.TAG -> SaveQuestsForRepeatingQuestJob()
             else -> null
         }
 }

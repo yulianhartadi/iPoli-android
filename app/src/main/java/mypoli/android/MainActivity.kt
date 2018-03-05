@@ -39,6 +39,7 @@ class MainActivity : AppCompatActivity(), Injects<Module> {
 
     private val playerRepository by required { playerRepository }
     private val petStatsChangeScheduler by required { lowerPetStatsScheduler }
+    private val saveQuestsForRepeatingQuestScheduler by required { saveQuestsForRepeatingQuestScheduler }
     private val stateStore by required { stateStore }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -56,7 +57,7 @@ class MainActivity : AppCompatActivity(), Injects<Module> {
             if (!Settings.canDrawOverlays(this)) {
                 val intent = Intent(
                     Settings.ACTION_MANAGE_OVERLAY_PERMISSION,
-                    Uri.parse("package:" + packageName)
+                    Uri.parse("package:$packageName")
                 )
                 startActivityForResult(intent, 0)
             }
@@ -96,12 +97,15 @@ class MainActivity : AppCompatActivity(), Injects<Module> {
                     loader?.dismissDialog()
                     stateStore.dispatch(LoadDataAction.All)
                     petStatsChangeScheduler.schedule()
+                    saveQuestsForRepeatingQuestScheduler.schedule()
                     val startIntent = intent
                     if (startIntent != null && startIntent.action == ACTION_SHOW_TIMER) {
                         val questId = intent.getStringExtra(Constants.QUEST_ID_EXTRA_KEY)
                         router.setRoot(RouterTransaction.with(TimerViewController(questId)))
                     } else if (!router.hasRootController()) {
+//                        router.setRoot(RouterTransaction.with(RepeatingQuestViewController("")))
                         router.setRoot(RouterTransaction.with(HomeViewController()))
+//                        router.setRoot(RouterTransaction.with(EditRepeatingQuestViewController("")))
                     }
                 }
 

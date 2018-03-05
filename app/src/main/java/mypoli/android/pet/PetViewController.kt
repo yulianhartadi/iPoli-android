@@ -336,20 +336,20 @@ class PetViewController(args: Bundle? = null) :
     }
 
     private fun renderItemCategoryFabs(view: View, state: PetViewState) {
-        view.fabHatItems.backgroundTintList = ColorStateList.valueOf(attr(R.attr.colorPrimary))
-        view.fabMaskItems.backgroundTintList = ColorStateList.valueOf(attr(R.attr.colorPrimary))
+        view.fabHatItems.backgroundTintList = ColorStateList.valueOf(attrData(R.attr.colorPrimary))
+        view.fabMaskItems.backgroundTintList = ColorStateList.valueOf(attrData(R.attr.colorPrimary))
         view.fabBodyArmorItems.backgroundTintList =
-            ColorStateList.valueOf(attr(R.attr.colorPrimary))
+            ColorStateList.valueOf(attrData(R.attr.colorPrimary))
 
         val itemsType = state.comparedItemsType!!
 
         when (itemsType) {
             PetItemType.HAT -> view.fabHatItems.backgroundTintList =
-                ColorStateList.valueOf(attr(R.attr.colorAccent))
+                ColorStateList.valueOf(attrData(R.attr.colorAccent))
             PetItemType.MASK -> view.fabMaskItems.backgroundTintList =
-                ColorStateList.valueOf(attr(R.attr.colorAccent))
+                ColorStateList.valueOf(attrData(R.attr.colorAccent))
             PetItemType.BODY_ARMOR -> view.fabBodyArmorItems.backgroundTintList =
-                ColorStateList.valueOf(attr(R.attr.colorAccent))
+                ColorStateList.valueOf(attrData(R.attr.colorAccent))
         }
     }
 
@@ -912,7 +912,7 @@ class PetViewController(args: Bundle? = null) :
                     price.setCompoundDrawablesWithIntrinsicBounds(
                         IconicsDrawable(holder.itemView.context)
                             .icon(Ionicons.Icon.ion_android_done)
-                            .color(attr(R.attr.colorAccent))
+                            .color(attrData(R.attr.colorAccent))
                             .sizeDp(16),
                         null, null, null
                     )

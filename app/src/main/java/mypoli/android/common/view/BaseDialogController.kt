@@ -17,7 +17,11 @@ import com.bluelinelabs.conductor.Router
 import com.bluelinelabs.conductor.RouterTransaction
 import com.bluelinelabs.conductor.changehandler.SimpleSwapChangeHandler
 import mypoli.android.R
+import mypoli.android.common.AppState
 import mypoli.android.common.mvi.*
+import mypoli.android.common.redux.Action
+import mypoli.android.common.redux.ViewStateReducer
+import mypoli.android.common.redux.android.ReduxViewController
 
 /**
  * A controller that displays a dialog window, floating on top of its activity's window.
@@ -136,6 +140,164 @@ abstract class BaseDialogController : RestoreViewOnCreateController {
         }
         router.popController(this)
         dismissed = true
+    }
+
+    companion object {
+
+        private val SAVED_DIALOG_STATE_TAG = "android:savedDialogState"
+    }
+}
+
+abstract class ReduxDialogController<A : Action, VS : ViewState, out R : ViewStateReducer<AppState, VS>>(
+    args: Bundle? = null
+) : ReduxViewController<A, VS, R>(args) {
+
+    protected lateinit var dialog: AlertDialog
+    private lateinit var contentView: View
+    private var dismissed: Boolean = false
+
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup,
+        savedViewState: Bundle?
+    ): View {
+
+        val headerView = createHeaderView(inflater)
+        onHeaderViewCreated(headerView)
+        contentView = onCreateContentView(inflater, savedViewState)
+
+        val dialogBuilder = AlertDialog.Builder(activity!!)
+            .setView(contentView)
+            .setCustomTitle(headerView)
+        dialog = onCreateDialog(dialogBuilder, contentView, savedViewState)
+        onDialogCreated(dialog, contentView)
+
+        dialog.ownerActivity = activity!!
+        dialog.setOnDismissListener { dismissDialog() }
+        if (savedViewState != null) {
+            val dialogState = savedViewState.getBundle(SAVED_DIALOG_STATE_TAG)
+            if (dialogState != null) {
+                dialog.onRestoreInstanceState(dialogState)
+            }
+        }
+        return View(activity)
+    }
+
+    protected open fun createHeaderView(inflater: LayoutInflater): View =
+        inflater.inflate(mypoli.android.R.layout.view_dialog_header, null)
+
+    protected open fun onHeaderViewCreated(headerView: View) {
+
+    }
+
+    protected abstract fun onCreateContentView(
+        inflater: LayoutInflater,
+        savedViewState: Bundle?
+    ): View
+
+    protected abstract fun onCreateDialog(
+        dialogBuilder: AlertDialog.Builder,
+        contentView: View,
+        savedViewState: Bundle?
+    ): AlertDialog
+
+    protected open fun onDialogCreated(dialog: AlertDialog, contentView: View) {
+
+    }
+
+    override fun onSaveViewState(view: View, outState: Bundle) {
+        super.onSaveViewState(view, outState)
+        val dialogState = dialog.onSaveInstanceState()
+        outState.putBundle(SAVED_DIALOG_STATE_TAG, dialogState)
+    }
+
+    override fun onAttach(view: View) {
+        super.onAttach(view)
+        dialog.show()
+    }
+
+    override fun onDetach(view: View) {
+        super.onDetach(view)
+        dialog.hide()
+    }
+
+    override fun onDestroyView(view: View) {
+        super.onDestroyView(view)
+        dialog.setOnDismissListener(null)
+        dialog.dismiss()
+    }
+
+    /**
+     * Display the dialog, create a transaction and pushing the controller.
+     * @param router The router on which the transaction will be applied
+     * @param tag The tag for this controller
+     */
+    fun showDialog(router: Router, tag: String?) {
+        dismissed = false
+        router.pushController(
+            RouterTransaction.with(this)
+                .pushChangeHandler(SimpleSwapChangeHandler(false))
+                .popChangeHandler(SimpleSwapChangeHandler(false))
+                .tag(tag)
+        )
+    }
+
+    /**
+     * Dismiss the dialog and pop this controller
+     */
+    fun dismissDialog() {
+        if (dismissed) {
+            return
+        }
+        router.popController(this)
+        dismissed = true
+    }
+
+    override fun onRenderViewState(state: VS) {
+        render(state, contentView)
+    }
+
+    protected fun changeIcon(@DrawableRes icon: Int) {
+        val headerIcon = dialog.findViewById<ImageView>(mypoli.android.R.id.dialogHeaderIcon)
+        headerIcon?.setImageResource(icon)
+    }
+
+    protected fun changeTitle(@StringRes title: Int) {
+        val headerTitle = dialog.findViewById<TextView>(mypoli.android.R.id.dialogHeaderTitle)
+        headerTitle?.setText(title)
+    }
+
+    protected fun changeNeutralButtonText(@StringRes text: Int) {
+        dialog.getButton(DialogInterface.BUTTON_NEUTRAL).setText(text)
+    }
+
+    protected fun changePositiveButtonText(@StringRes text: Int) {
+        dialog.getButton(DialogInterface.BUTTON_POSITIVE).setText(text)
+    }
+
+    protected fun changeNegativeButtonText(@StringRes text: Int) {
+        dialog.getButton(DialogInterface.BUTTON_NEGATIVE).setText(text)
+    }
+
+    protected fun setNeutralButtonListener(listener: (() -> Unit)?) {
+        dialog.getButton(DialogInterface.BUTTON_NEUTRAL).setOnClickListener {
+            if (listener != null) listener()
+            else dismissDialog()
+        }
+    }
+
+    protected fun setPositiveButtonListener(listener: (() -> Unit)?) {
+        dialog.getButton(DialogInterface.BUTTON_POSITIVE).setOnClickListener {
+            if (listener != null) listener()
+            else dismissDialog()
+        }
+    }
+
+    protected fun setNegativeButtonListener(listener: (() -> Unit)?) {
+        dialog.getButton(DialogInterface.BUTTON_NEGATIVE).setOnClickListener {
+            if (listener != null) listener()
+            else dismissDialog()
+        }
     }
 
     companion object {

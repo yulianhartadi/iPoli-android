@@ -19,8 +19,8 @@ import mypoli.android.common.ViewUtils
 import mypoli.android.common.redux.android.ReduxViewController
 import mypoli.android.common.view.*
 import mypoli.android.common.view.changehandler.CircularRevealChangeHandler
-import mypoli.android.quest.schedule.ScheduleState.StateType.*
 import mypoli.android.quest.schedule.ScheduleViewState.DatePickerState.*
+import mypoli.android.quest.schedule.ScheduleViewState.StateType.*
 import mypoli.android.quest.schedule.addquest.AddQuestViewController
 import mypoli.android.quest.schedule.agenda.AgendaViewController
 import mypoli.android.quest.schedule.calendar.CalendarViewController
@@ -32,9 +32,9 @@ import sun.bob.mcalendarview.listeners.OnMonthScrollListener
 import sun.bob.mcalendarview.vo.DateData
 
 class ScheduleViewController(args: Bundle? = null) :
-    ReduxViewController<ScheduleAction, ScheduleViewState, SchedulePresenter>(args) {
+    ReduxViewController<ScheduleAction, ScheduleViewState, ScheduleReducer>(args) {
 
-    override val presenter get() = SchedulePresenter()
+    override val reducer = ScheduleReducer
 
     private lateinit var calendarToolbar: ViewGroup
 
@@ -53,16 +53,13 @@ class ScheduleViewController(args: Bundle? = null) :
 
         initAddQuest(view)
 
-        setChildController(view.contentContainer, CalendarViewController())
+        setChildController(view.contentContainer, CalendarViewController(LocalDate.now()))
 
-        return view
-    }
-
-    override fun onAttach(view: View) {
-        super.onAttach(view)
         calendarToolbar = addToolbarView(R.layout.view_calendar_toolbar) as ViewGroup
 
         initDayPicker(view, calendarToolbar)
+
+        return view
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
@@ -186,8 +183,8 @@ class ScheduleViewController(args: Bundle? = null) :
         val duration = view!!.resources.getInteger(android.R.integer.config_shortAnimTime).toLong()
         val fabTranslation = ObjectAnimator.ofFloat(fab, "x", x)
 
-        val fabColor = attr(R.attr.colorAccent)
-        val primaryColor = attr(R.attr.colorPrimary)
+        val fabColor = attrData(R.attr.colorAccent)
+        val primaryColor = attrData(R.attr.colorPrimary)
 
         val startColor = if (reverse) primaryColor else fabColor
         val endColor = if (reverse) fabColor else primaryColor
@@ -212,7 +209,7 @@ class ScheduleViewController(args: Bundle? = null) :
     private fun initDayPicker(view: View, calendarToolbar: ViewGroup) {
         view.datePickerContainer.visibility = View.GONE
 
-        view.datePicker.setMarkedStyle(MarkStyle.BACKGROUND, attr(R.attr.colorAccent))
+        view.datePicker.setMarkedStyle(MarkStyle.BACKGROUND, attrData(R.attr.colorAccent))
 
         val currentDate = LocalDate.now()
 
@@ -234,9 +231,11 @@ class ScheduleViewController(args: Bundle? = null) :
             override fun onDateClick(v: View, date: DateData) {
                 dispatch(
                     ScheduleAction.ScheduleChangeDate(
-                        date.year,
-                        date.month,
-                        date.day
+                        LocalDate.of(
+                            date.year,
+                            date.month,
+                            date.day
+                        )
                     )
                 )
             }
@@ -255,10 +254,8 @@ class ScheduleViewController(args: Bundle? = null) :
 
     override fun render(state: ScheduleViewState, view: View) {
 
-        val levelProgress = view.levelProgress
-
-        calendarToolbar.day.text = state.dayText
-        calendarToolbar.date.text = state.dateText
+        calendarToolbar.day.text = state.dayText(activity!!)
+        calendarToolbar.date.text = state.dateText(activity!!)
         view.currentMonth.text = state.monthText
 
         view.addQuest.setOnClickListener {
@@ -267,51 +264,11 @@ class ScheduleViewController(args: Bundle? = null) :
 
         when (state.type) {
 
-            LOADING -> levelProgress.visible = false
-
-            XP_AND_COINS_CHANGED -> {
-                levelProgress.visible = true
-                val animator = ObjectAnimator.ofInt(
-                    levelProgress,
-                    "progress",
-                    levelProgress.progress,
-                    state.progress
-                )
-                animator.duration = shortAnimTime
-                animator.start()
-                calendarToolbar.playerGems.text = state.coins.toString()
-            }
-
-            LEVEL_CHANGED -> {
-                levelProgress.max = state.maxProgress
-                levelProgress.progress = state.progress
-                calendarToolbar.playerLevel.text =
-                    resources!!.getString(R.string.player_level, state.level)
-            }
-
             DATE_PICKER_CHANGED -> renderDatePicker(
                 state.datePickerState,
                 view,
                 state.currentDate
             )
-
-            INITIAL -> {
-                levelProgress.visible = true
-                levelProgress.max = state.maxProgress
-                levelProgress.progress = state.progress
-                calendarToolbar.playerLevel.text =
-                    resources!!.getString(R.string.player_level, state.level)
-                calendarToolbar.playerGems.text = state.coins.toString()
-            }
-
-            DATA_CHANGED -> {
-                levelProgress.visible = true
-                levelProgress.max = state.maxProgress
-                levelProgress.progress = state.progress
-                calendarToolbar.playerLevel.text =
-                    resources!!.getString(R.string.player_level, state.level)
-                calendarToolbar.playerGems.text = state.coins.toString()
-            }
 
             DATE_AUTO_CHANGED -> {
                 val dateData = DateData(
@@ -343,16 +300,17 @@ class ScheduleViewController(args: Bundle? = null) :
                 val handler = FadeChangeHandler()
                 val childRouter = getChildRouter(view.contentContainer, null)
                 val newController =
-                    if (state.viewMode == ScheduleState.ViewMode.CALENDAR)
-                        CalendarViewController()
+                    if (state.viewMode == ScheduleViewState.ViewMode.CALENDAR)
+                        CalendarViewController(state.currentDate)
                     else
-                        AgendaViewController()
+                        AgendaViewController(state.currentDate)
                 childRouter.popCurrentController()
                 childRouter.setRoot(
                     RouterTransaction.with(newController)
                         .pushChangeHandler(handler)
                         .popChangeHandler(handler)
                 )
+
                 viewModeIcon = state.viewModeIcon
                 viewModeTitle = state.viewModeTitle
                 activity?.invalidateOptionsMenu()

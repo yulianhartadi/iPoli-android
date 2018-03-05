@@ -1,6 +1,5 @@
 package mypoli.android.common.redux
 
-import kotlinx.coroutines.experimental.runBlocking
 import mypoli.android.common.redux.MiddleWare.Result.Continue
 import mypoli.android.common.redux.MiddleWare.Result.Stop
 import org.amshove.kluent.`should be equal to`
@@ -57,7 +56,7 @@ object MiddlewareSpek : Spek({
         it("should call all middleware") {
 
             val m = CompositeMiddleware(
-                listOf(
+                setOf(
                     CountExecutionsMiddleware(),
                     CountExecutionsMiddleware()
                 )
@@ -70,7 +69,7 @@ object MiddlewareSpek : Spek({
         it("should stop after first middleware") {
 
             val m = CompositeMiddleware(
-                listOf(
+                setOf(
                     CountExecutionsMiddleware(),
                     StopMiddleware()
                 )
@@ -83,7 +82,7 @@ object MiddlewareSpek : Spek({
         it("should stop at first middleware") {
 
             val m = CompositeMiddleware(
-                listOf(
+                setOf(
                     StopMiddleware(),
                     CountExecutionsMiddleware()
                 )
@@ -93,59 +92,5 @@ object MiddlewareSpek : Spek({
             result.`should be`(Stop)
         }
     }
-
-    describe("SagaMiddleware") {
-
-        var asyncExecutes = 0
-
-        class TestSideEffect : SideEffect<TestState> {
-            override fun canHandle(action: Action) = action is TestAction
-
-            override suspend fun execute(action: Action, state: TestState, dispatcher: Dispatcher) {
-                asyncExecutes++
-            }
-        }
-
-        beforeEachTest {
-            asyncExecutes = 0
-        }
-
-        it("should execute saga") {
-
-            runBlocking {
-                executeMiddleware(
-                    SagaMiddleware<TestState>(
-                        sideEffects = listOf(TestSideEffect()),
-                        coroutineContext = coroutineContext
-                    ),
-                    TestAction()
-                )
-            }
-            asyncExecutes.`should be equal to`(1)
-        }
-
-        it("should not execute saga") {
-
-            class NoExecuteSideEffect : SideEffect<TestState> {
-                override fun canHandle(action: Action) = false
-
-                override suspend fun execute(action: Action, state: TestState, dispatcher: Dispatcher) {
-                    asyncExecutes++
-                }
-            }
-
-            runBlocking {
-                executeMiddleware(
-                    SagaMiddleware<TestState>(
-                        sideEffects = listOf(NoExecuteSideEffect()),
-                        coroutineContext = coroutineContext
-                    ),
-                    TestAction()
-                )
-            }
-            asyncExecutes.`should be equal to`(0)
-        }
-    }
-
 })
 

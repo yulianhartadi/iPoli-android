@@ -26,17 +26,24 @@ import mypoli.android.common.view.*
 import mypoli.android.quest.CompletedQuestViewController
 import mypoli.android.quest.schedule.agenda.widget.SwipeToCompleteCallback
 import mypoli.android.timer.TimerViewController
+import org.threeten.bp.LocalDate
 
 /**
  * Created by Polina Zhelyazkova <polina@ipoli.io>
  * on 1/26/18.
  */
 class AgendaViewController(args: Bundle? = null) :
-    ReduxViewController<AgendaAction, AgendaViewState, AgendaPresenter>(args) {
+    ReduxViewController<AgendaAction, AgendaViewState, AgendaReducer>(args) {
 
+    override val reducer = AgendaReducer
 
-    override val presenter get() = AgendaPresenter()
     private lateinit var scrollToPositionListener: RecyclerView.OnScrollListener
+
+    private lateinit var startDate: LocalDate
+
+    constructor(startDate: LocalDate) : this() {
+        this.startDate = startDate
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -80,6 +87,8 @@ class AgendaViewController(args: Bundle? = null) :
         return view
     }
 
+    override fun onCreateLoadAction() = AgendaAction.Load(startDate)
+
     override fun onDetach(view: View) {
         view.agendaList.clearOnScrollListeners()
         super.onDetach(view)
@@ -88,19 +97,19 @@ class AgendaViewController(args: Bundle? = null) :
     override fun render(state: AgendaViewState, view: View) {
 
         when (state.type) {
-            AgendaState.StateType.DATA_CHANGED -> {
+            AgendaViewState.StateType.DATA_CHANGED -> {
                 ViewUtils.goneViews(view.topLoader, view.bottomLoader)
                 val agendaList = view.agendaList
                 agendaList.clearOnScrollListeners()
-                (agendaList.adapter as AgendaAdapter).updateAll(state.agendaItems)
+                (agendaList.adapter as AgendaAdapter).updateAll(state.toAgendaItemViewModels())
                 addScrollListeners(agendaList, state)
             }
 
-            AgendaState.StateType.SHOW_TOP_LOADER -> {
+            AgendaViewState.StateType.SHOW_TOP_LOADER -> {
                 ViewUtils.showViews(view.topLoader)
             }
 
-            AgendaState.StateType.SHOW_BOTTOM_LOADER -> {
+            AgendaViewState.StateType.SHOW_BOTTOM_LOADER -> {
                 ViewUtils.showViews(view.bottomLoader)
             }
         }
@@ -110,6 +119,7 @@ class AgendaViewController(args: Bundle? = null) :
         agendaList: RecyclerView,
         state: AgendaViewState
     ) {
+
         val endlessRecyclerViewScrollListener =
             EndlessRecyclerViewScrollListener(
                 agendaList.layoutManager as LinearLayoutManager,
@@ -145,12 +155,6 @@ class AgendaViewController(args: Bundle? = null) :
                 state.scrollToPosition,
                 0
             )
-        } else if (state.shouldScrollToUserPosition && state.userScrollPosition != null) {
-            agendaList.addOnScrollListener(scrollToPositionListener)
-            (agendaList.layoutManager as LinearLayoutManager).scrollToPositionWithOffset(
-                state.userScrollPosition,
-                0
-            )
         } else {
             agendaList.addOnScrollListener(endlessRecyclerViewScrollListener)
             agendaList.addOnScrollListener(changeItemScrollListener)
@@ -178,7 +182,9 @@ class AgendaViewController(args: Bundle? = null) :
         @ColorRes val color: Int,
         val icon: IIcon,
         val isCompleted: Boolean,
-        val showDivider: Boolean = true
+        val showDivider: Boolean = true,
+        val isRepeating: Boolean,
+        val isPlaceholder: Boolean
     ) : AgendaViewModel
 
     data class DateHeaderViewModel(val text: String) : AgendaViewModel
@@ -189,7 +195,7 @@ class AgendaViewController(args: Bundle? = null) :
     data class WeekHeaderViewModel(val text: String) : AgendaViewModel
 
     enum class ItemType {
-        QUEST, COMPLETED_QUEST, DATE_HEADER, MONTH_DIVIDER, WEEK_HEADER
+        QUEST_PLACEHOLDER, QUEST, COMPLETED_QUEST, DATE_HEADER, MONTH_DIVIDER, WEEK_HEADER
     }
 
     inner class AgendaAdapter(private var viewModels: MutableList<AgendaViewModel> = mutableListOf()) :
@@ -201,6 +207,10 @@ class AgendaViewController(args: Bundle? = null) :
 
             val type = ItemType.values()[getItemViewType(position)]
             when (type) {
+                ItemType.QUEST_PLACEHOLDER -> bindPlaceholderViewModel(
+                    itemView,
+                    vm as QuestViewModel
+                )
                 ItemType.QUEST -> bindQuestViewModel(itemView, vm as QuestViewModel)
                 ItemType.COMPLETED_QUEST -> bindCompleteQuestViewModel(
                     itemView,
@@ -216,6 +226,15 @@ class AgendaViewController(args: Bundle? = null) :
                     vm as WeekHeaderViewModel
                 )
             }
+        }
+
+        private fun bindPlaceholderViewModel(
+            view: View,
+            vm: QuestViewModel
+        ) {
+            view.setOnClickListener(null)
+            view.questName.text = vm.name
+            bindQuest(view, vm)
         }
 
         private fun bindWeekHeaderViewModel(
@@ -284,12 +303,27 @@ class AgendaViewController(args: Bundle? = null) :
             )
             view.questStartTime.text = vm.startTime
             view.divider.visible = vm.showDivider
+
+            view.questRepeatIndicator.visible = vm.isRepeating
         }
 
         override fun getItemCount() = viewModels.size
 
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int) =
             when (viewType) {
+
+                ItemType.QUEST_PLACEHOLDER.ordinal -> {
+                    val view = LayoutInflater.from(parent.context).inflate(
+                        R.layout.item_agenda_quest,
+                        parent,
+                        false
+                    )
+                    view.layoutParams.width = parent.width
+                    QuestPlaceholderViewHolder(
+                        view
+                    )
+                }
+
                 ItemType.QUEST.ordinal -> {
                     val view = LayoutInflater.from(parent.context).inflate(
                         R.layout.item_agenda_quest,
@@ -333,9 +367,12 @@ class AgendaViewController(args: Bundle? = null) :
                         false
                     )
                 )
-                else -> null
+                else -> {
+                    throw IllegalArgumentException("Unknown viewType $viewType")
+                }
             }
 
+        inner class QuestPlaceholderViewHolder(view: View) : RecyclerView.ViewHolder(view)
         inner class QuestViewHolder(view: View) : RecyclerView.ViewHolder(view)
         inner class CompletedQuestViewHolder(view: View) : RecyclerView.ViewHolder(view)
         inner class DateHeaderViewHolder(view: View) : RecyclerView.ViewHolder(view)
@@ -344,8 +381,11 @@ class AgendaViewController(args: Bundle? = null) :
 
         override fun getItemViewType(position: Int) =
             when (viewModels[position]) {
+
                 is QuestViewModel -> if ((viewModels[position] as QuestViewModel).isCompleted)
                     ItemType.COMPLETED_QUEST.ordinal
+                else if ((viewModels[position] as QuestViewModel).isPlaceholder)
+                    ItemType.QUEST_PLACEHOLDER.ordinal
                 else
                     ItemType.QUEST.ordinal
                 is DateHeaderViewModel -> ItemType.DATE_HEADER.ordinal

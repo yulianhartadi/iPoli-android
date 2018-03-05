@@ -47,11 +47,10 @@
     <TextView
         android:id="@+id/questSchedule"
         style="@style/Calendar.Quest.StartTime"
-        android:layout_width="0dp"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="@+id/questName"
         app:layout_constraintHorizontal_chainStyle="packed"
         app:layout_constraintStart_toStartOf="@+id/questName"
         app:layout_constraintTop_toBottomOf="@+id/questName"
@@ -82,5 +81,17 @@
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toEndOf="@+id/questName"
         app:layout_constraintTop_toTopOf="parent" />
+
+    <ImageView
+        android:id="@+id/repeatIndicator"
+        android:layout_width="16dp"
+        android:layout_height="16dp"
+        android:layout_marginStart="8dp"
+        app:layout_constraintBottom_toBottomOf="@+id/questSchedule"
+        app:layout_constraintEnd_toEndOf="@+id/questName"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toEndOf="@+id/questSchedule"
+        app:layout_constraintTop_toTopOf="@+id/questSchedule"
+        app:srcCompat="@drawable/ic_repeat_white_24dp" />
 
 </android.support.constraint.ConstraintLayout>

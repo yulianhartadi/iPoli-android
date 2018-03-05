@@ -1,5 +1,6 @@
 package mypoli.android.common
 
+import kotlinx.coroutines.experimental.CommonPool
 import kotlinx.coroutines.experimental.android.UI
 import kotlinx.coroutines.experimental.channels.ReceiveChannel
 import kotlinx.coroutines.experimental.channels.consumeEach
@@ -7,23 +8,45 @@ import kotlinx.coroutines.experimental.launch
 import mypoli.android.challenge.category.list.ChallengeListForCategoryAction
 import mypoli.android.challenge.usecase.BuyChallengeUseCase
 import mypoli.android.common.DataLoadedAction.PlayerChanged
+import mypoli.android.common.datetime.Time
+import mypoli.android.common.datetime.isBetween
 import mypoli.android.common.di.Module
 import mypoli.android.common.redux.Action
 import mypoli.android.common.redux.Dispatcher
 import mypoli.android.common.redux.SideEffect
+import mypoli.android.common.view.AppWidgetUtil
 import mypoli.android.myPoliApp
 import mypoli.android.pet.store.PetStoreAction
 import mypoli.android.pet.usecase.BuyPetUseCase
 import mypoli.android.player.Player
+import mypoli.android.quest.Category
+import mypoli.android.quest.Color
 import mypoli.android.quest.Quest
+import mypoli.android.quest.Reminder
 import mypoli.android.quest.schedule.ScheduleAction
+import mypoli.android.quest.schedule.ScheduleViewState
 import mypoli.android.quest.schedule.agenda.AgendaAction
 import mypoli.android.quest.schedule.agenda.AgendaReducer
+import mypoli.android.quest.schedule.agenda.AgendaViewState
 import mypoli.android.quest.schedule.agenda.usecase.CreateAgendaItemsUseCase
 import mypoli.android.quest.schedule.agenda.usecase.FindAgendaDatesUseCase
 import mypoli.android.quest.schedule.calendar.CalendarAction
-import mypoli.android.quest.usecase.CompleteQuestUseCase.Params.WithQuest
+import mypoli.android.quest.schedule.calendar.CalendarViewState
+import mypoli.android.quest.schedule.calendar.dayview.view.DayViewAction
+import mypoli.android.quest.schedule.calendar.dayview.view.DayViewState
+import mypoli.android.quest.usecase.CompleteQuestUseCase
+import mypoli.android.quest.usecase.LoadScheduleForDateUseCase
+import mypoli.android.quest.usecase.Result
+import mypoli.android.quest.usecase.SaveQuestUseCase
+import mypoli.android.reminder.view.picker.ReminderViewModel
+import mypoli.android.repeatingquest.entity.RepeatingQuest
+import mypoli.android.repeatingquest.usecase.CreatePlaceholderQuestsForRepeatingQuestsUseCase
+import mypoli.android.repeatingquest.usecase.FindNextDateForRepeatingQuestUseCase
+import mypoli.android.repeatingquest.usecase.FindPeriodProgressForRepeatingQuestUseCase
+import mypoli.android.timer.usecase.CompleteTimeRangeUseCase
 import org.threeten.bp.LocalDate
+import org.threeten.bp.LocalDateTime
+import org.threeten.bp.LocalTime
 import space.traversal.kapsule.Injects
 import space.traversal.kapsule.inject
 import space.traversal.kapsule.required
@@ -33,34 +56,201 @@ import space.traversal.kapsule.required
  * on 01/27/2018.
  */
 
-interface AppSideEffect : SideEffect<AppState>, Injects<Module> {
+abstract class AppSideEffect : SideEffect<AppState>,
+    Injects<Module> {
+
+    private var dispatcher: Dispatcher? = null
+
     override suspend fun execute(action: Action, state: AppState, dispatcher: Dispatcher) {
         inject(myPoliApp.module(myPoliApp.instance))
-        doExecute(action, state, dispatcher)
+        this.dispatcher = dispatcher
+        doExecute(action, state)
     }
 
-    suspend fun doExecute(
+    abstract suspend fun doExecute(
         action: Action,
-        state: AppState,
-        dispatcher: Dispatcher
+        state: AppState
     )
+
+    fun dispatch(action: Action) {
+        dispatcher!!.dispatch(action)
+    }
 }
 
-class BuyPredefinedChallengeSideEffect : SideEffect<AppState>, Injects<Module> {
+class DayViewSideEffect : AppSideEffect() {
+    private val saveQuestUseCase by required { saveQuestUseCase }
+    private val questRepository by required { questRepository }
+    private val removeQuestUseCase by required { removeQuestUseCase }
+    private val loadScheduleForDateUseCase by required { loadScheduleForDateUseCase }
+    private val undoRemoveQuestUseCase by required { undoRemoveQuestUseCase }
+    private val createPlaceholderQuestsForRepeatingQuestsUseCase by required { createPlaceholderQuestsForRepeatingQuestsUseCase }
+    private val completeTimeRangeUseCase by required { completeTimeRangeUseCase }
+    private val completeQuestUseCase by required { completeQuestUseCase }
+    private val undoCompletedQuestUseCase by required { undoCompletedQuestUseCase }
 
-    private val buyChallengeUseCase by required { buyChallengeUseCase }
+    private var scheduledQuestsChannel: ReceiveChannel<List<Quest>>? = null
 
-    override suspend fun execute(action: Action, state: AppState, dispatcher: Dispatcher) {
-        inject(myPoliApp.module(myPoliApp.instance))
+    private var startDate: LocalDate? = null
+    private var endDate: LocalDate? = null
+
+    override suspend fun doExecute(action: Action, state: AppState) {
+        val a = (action as? NamespaceAction)?.source ?: action
+        when (a) {
+
+            is LoadDataAction.All ->
+                startListenForCalendarQuests(state.dataState.today)
+
+            DayViewAction.AddQuest ->
+                saveQuest(state, action)
+
+            DayViewAction.EditQuest ->
+                saveQuest(state, action)
+
+            DayViewAction.EditUnscheduledQuest ->
+                saveQuest(state, action)
+
+            is DayViewAction.RemoveQuest ->
+                removeQuestUseCase.execute(a.questId)
+
+            is DayViewAction.UndoRemoveQuest ->
+                undoRemoveQuestUseCase.execute(a.questId)
+
+            is DayViewAction.Load -> {
+
+                if (a.currentDate.isBetween(startDate, endDate)) {
+                    return
+                }
+                startListenForCalendarQuests(a.currentDate)
+            }
+
+            is DayViewAction.CompleteQuest -> {
+                val questId = a.questId
+                if (a.isStarted) {
+                    completeTimeRangeUseCase.execute(CompleteTimeRangeUseCase.Params(questId))
+                } else {
+                    completeQuestUseCase.execute(CompleteQuestUseCase.Params.WithQuestId(questId))
+                }
+            }
+
+            is DayViewAction.UndoCompleteQuest -> {
+                undoCompletedQuestUseCase.execute(a.questId)
+            }
+        }
+    }
+
+    private fun startListenForCalendarQuests(currentDate: LocalDate) {
+        startDate = currentDate.minusDays(2)
+        endDate = currentDate.plusDays(2)
+        scheduledQuestsChannel?.cancel()
+        launch(UI) {
+            scheduledQuestsChannel =
+                questRepository.listenForScheduledBetween(startDate!!, endDate!!)
+            scheduledQuestsChannel!!.consumeEach {
+                launch(CommonPool) {
+                    val placeholderQuests =
+                        createPlaceholderQuestsForRepeatingQuestsUseCase.execute(
+                            CreatePlaceholderQuestsForRepeatingQuestsUseCase.Params(
+                                startDate = startDate!!,
+                                endDate = endDate!!
+                            )
+                        )
+
+                    val schedule =
+                        loadScheduleForDateUseCase.execute(
+                            LoadScheduleForDateUseCase.Params(
+                                startDate = startDate!!,
+                                endDate = endDate!!,
+                                quests = it + placeholderQuests
+                            )
+                        )
+                    dispatch(DataLoadedAction.CalendarScheduledChanged(schedule))
+                }
+            }
+        }
+    }
+
+    private fun saveQuest(
+        state: AppState,
+        action: Action
+    ) {
+        val dayViewState: DayViewState = state.stateFor(
+            "${(action as NamespaceAction).namespace}/${DayViewState::class.java.simpleName}"
+        )
+
+        val scheduledDate = dayViewState.scheduledDate ?: dayViewState.currentDate
+        val reminder = if (dayViewState.startTime != null && dayViewState.reminder != null) {
+            createQuestReminder(
+                dayViewState.reminder,
+                scheduledDate,
+                dayViewState.startTime.toMinuteOfDay()
+            )
+        } else if (dayViewState.editId.isEmpty()) {
+            createDefaultReminder(scheduledDate, dayViewState.startTime!!.toMinuteOfDay())
+        } else {
+            null
+        }
+
+        val questParams = SaveQuestUseCase.Parameters(
+            id = dayViewState.editId,
+            name = dayViewState.name,
+            color = dayViewState.color!!,
+            icon = dayViewState.icon,
+            category = Category("WELLNESS", Color.GREEN),
+            scheduledDate = scheduledDate,
+            startTime = dayViewState.startTime,
+            duration = dayViewState.duration!!,
+            reminder = reminder,
+            repeatingQuestId = dayViewState.repeatingQuestId
+        )
+        val result = saveQuestUseCase.execute(questParams)
+
+        when (result) {
+            is Result.Invalid -> {
+                dispatch(DayViewAction.SaveInvalidQuest(result))
+            }
+            else -> dispatch(DayViewAction.QuestSaved)
+        }
+    }
+
+    private fun createDefaultReminder(scheduledDate: LocalDate, startMinute: Int) =
+        Reminder("", Time.of(startMinute), scheduledDate)
+
+    private fun createQuestReminder(
+        reminder: ReminderViewModel?,
+        scheduledDate: LocalDate,
+        eventStartMinute: Int
+    ) =
+        reminder?.let {
+            val time = Time.of(eventStartMinute)
+            val questDateTime =
+                LocalDateTime.of(scheduledDate, LocalTime.of(time.hours, time.getMinutes()))
+            val reminderDateTime = questDateTime.minusMinutes(it.minutesFromStart)
+            val toLocalTime = reminderDateTime.toLocalTime()
+            Reminder(
+                it.message,
+                Time.at(toLocalTime.hour, toLocalTime.minute),
+                reminderDateTime.toLocalDate()
+            )
+        }
+
+    override fun canHandle(action: Action): Boolean {
+        val a = (action as? NamespaceAction)?.source ?: action
+        return a is DayViewAction || a is LoadDataAction.All
+    }
+}
+
+class BuyPredefinedChallengeSideEffect : AppSideEffect() {
+
+    override suspend fun doExecute(action: Action, state: AppState) {
         val challenge = (action as ChallengeListForCategoryAction.BuyChallenge).challenge
         val result = buyChallengeUseCase.execute(BuyChallengeUseCase.Params(challenge))
         when (result) {
             is BuyChallengeUseCase.Result.ChallengeBought -> {
-                dispatcher.dispatch(ChallengeListForCategoryAction.ChallengeBought(challenge))
+                dispatch(ChallengeListForCategoryAction.ChallengeBought(challenge))
             }
 
             BuyChallengeUseCase.Result.TooExpensive -> {
-                dispatcher.dispatch(
+                dispatch(
                     ChallengeListForCategoryAction.ChallengeTooExpensive(
                         challenge
                     )
@@ -69,34 +259,34 @@ class BuyPredefinedChallengeSideEffect : SideEffect<AppState>, Injects<Module> {
         }
     }
 
+    private val buyChallengeUseCase by required { buyChallengeUseCase }
+
     override fun canHandle(action: Action) = action is ChallengeListForCategoryAction.BuyChallenge
 }
 
-class ChangePetSideEffect : SideEffect<AppState>, Injects<Module> {
+class ChangePetSideEffect : AppSideEffect() {
 
     private val changePetUseCase by required { changePetUseCase }
 
-    override suspend fun execute(action: Action, state: AppState, dispatcher: Dispatcher) {
-        inject(myPoliApp.module(myPoliApp.instance))
+    override suspend fun doExecute(action: Action, state: AppState) {
         changePetUseCase.execute((action as PetStoreAction.ChangePet).pet)
     }
 
     override fun canHandle(action: Action) = action is PetStoreAction.ChangePet
-
 }
 
-class BuyPetSideEffect : SideEffect<AppState>, Injects<Module> {
+class BuyPetSideEffect : AppSideEffect() {
+
     private val buyPetUseCase by required { buyPetUseCase }
 
-    override suspend fun execute(action: Action, state: AppState, dispatcher: Dispatcher) {
-        inject(myPoliApp.module(myPoliApp.instance))
+    override suspend fun doExecute(action: Action, state: AppState) {
         val result = buyPetUseCase.execute((action as PetStoreAction.BuyPet).pet)
         when (result) {
             is BuyPetUseCase.Result.PetBought -> {
-                dispatcher.dispatch(PetStoreAction.PetBought)
+                dispatch(PetStoreAction.PetBought)
             }
             BuyPetUseCase.Result.TooExpensive -> {
-                dispatcher.dispatch(PetStoreAction.PetTooExpensive)
+                dispatch(PetStoreAction.PetTooExpensive)
             }
         }
     }
@@ -104,55 +294,23 @@ class BuyPetSideEffect : SideEffect<AppState>, Injects<Module> {
     override fun canHandle(action: Action) = action is PetStoreAction.BuyPet
 }
 
-class CompleteQuestSideEffect : SideEffect<AppState>, Injects<Module> {
+class AgendaSideEffect : AppSideEffect() {
 
     private val completeQuestUseCase by required { completeQuestUseCase }
-
-    override suspend fun execute(action: Action, state: AppState, dispatcher: Dispatcher) {
-        inject(myPoliApp.module(myPoliApp.instance))
-        if (action is AgendaAction.CompleteQuest) {
-            val adapterPos = action.itemPosition
-            val questItem =
-                state.agendaState.agendaItems[adapterPos] as CreateAgendaItemsUseCase.AgendaItem.QuestItem
-            completeQuestUseCase.execute(WithQuest(questItem.quest))
-        }
-    }
-
-    override fun canHandle(action: Action) = action is AgendaAction.CompleteQuest
-}
-
-class UndoCompletedQuestSideEffect : SideEffect<AppState>, Injects<Module> {
-
     private val undoCompletedQuestUseCase by required { undoCompletedQuestUseCase }
-
-    override suspend fun execute(action: Action, state: AppState, dispatcher: Dispatcher) {
-        inject(myPoliApp.module(myPoliApp.instance))
-        if (action is AgendaAction.UndoCompleteQuest) {
-            val adapterPos = action.itemPosition
-            val questItem =
-                state.agendaState.agendaItems[adapterPos] as CreateAgendaItemsUseCase.AgendaItem.QuestItem
-            undoCompletedQuestUseCase.execute(questItem.quest.id)
-        }
-    }
-
-    override fun canHandle(action: Action) = action is AgendaAction.UndoCompleteQuest
-}
-
-class AgendaSideEffect : SideEffect<AppState>, Injects<Module> {
-
     private val findAgendaDatesUseCase by required { findAgendaDatesUseCase }
     private val createAgendaItemsUseCase by required { createAgendaItemsUseCase }
     private val questRepository by required { questRepository }
+    private val completeTimeRangeUseCase by required { completeTimeRangeUseCase }
+    private val createPlaceholderQuestsForRepeatingQuestsUseCase by required { createPlaceholderQuestsForRepeatingQuestsUseCase }
 
-    private var scheduledQuestsChannel: ReceiveChannel<List<Quest>>? = null
+    private var agendaItemsChannel: ReceiveChannel<List<Quest>>? = null
 
-    override suspend fun execute(action: Action, state: AppState, dispatcher: Dispatcher) {
-        inject(myPoliApp.module(myPoliApp.instance))
-
-        val agendaItems = state.agendaState.agendaItems
+    override suspend fun doExecute(action: Action, state: AppState) {
 
         when (action) {
             is AgendaAction.LoadBefore -> {
+                val agendaItems = state.stateFor(AgendaViewState::class.java).agendaItems
                 val position = action.itemPosition
                 val agendaItem = agendaItems[position]
                 val agendaDate = agendaItem.startDate()
@@ -168,9 +326,10 @@ class AgendaSideEffect : SideEffect<AppState>, Injects<Module> {
                 }
                 val end =
                     agendaItems[position + AgendaReducer.ITEMS_AFTER_COUNT - 1].startDate()
-                listenForAgendaItems(start, end, dispatcher, agendaDate, false)
+                listenForAgendaItems(start, end, agendaDate, false)
             }
             is AgendaAction.LoadAfter -> {
+                val agendaItems = state.stateFor(AgendaViewState::class.java).agendaItems
                 val position = action.itemPosition
                 val agendaItem = agendaItems[position]
                 val agendaDate = agendaItem.startDate()
@@ -183,27 +342,51 @@ class AgendaSideEffect : SideEffect<AppState>, Injects<Module> {
                     end = it
                 }
 
-                listenForAgendaItems(start, end, dispatcher, agendaDate, false)
+                listenForAgendaItems(start, end, agendaDate, false)
             }
+
+            is AgendaAction.CompleteQuest -> {
+                val adapterPos = action.itemPosition
+                val agendaState = state.stateFor(AgendaViewState::class.java)
+                val questItem =
+                    agendaState.agendaItems[adapterPos] as CreateAgendaItemsUseCase.AgendaItem.QuestItem
+
+                val quest = questItem.quest
+                if (quest.isStarted) {
+                    completeTimeRangeUseCase.execute(CompleteTimeRangeUseCase.Params(quest.id))
+                } else {
+                    completeQuestUseCase.execute(CompleteQuestUseCase.Params.WithQuest(quest))
+                }
+            }
+
+            is AgendaAction.UndoCompleteQuest -> {
+                val agendaItems = state.stateFor(AgendaViewState::class.java).agendaItems
+                val adapterPos = action.itemPosition
+                val questItem =
+                    agendaItems[adapterPos] as CreateAgendaItemsUseCase.AgendaItem.QuestItem
+                undoCompletedQuestUseCase.execute(questItem.quest.id)
+            }
+
             is LoadDataAction.All -> {
-                val agendaDate = state.appDataState.today
+                val agendaDate = state.dataState.today
                 val pair = findAllAgendaDates(agendaDate)
                 val start = pair.first
                 val end = pair.second
 
-                listenForAgendaItems(start, end, dispatcher, agendaDate, true)
+                listenForAgendaItems(start, end, agendaDate, true)
             }
             is ScheduleAction.ScheduleChangeDate -> {
-                val agendaDate = LocalDate.of(action.year, action.month, action.day)
-                val pair = findAllAgendaDates(agendaDate)
+                val pair = findAllAgendaDates(action.date)
                 val start = pair.first
                 val end = pair.second
-                listenForAgendaItems(start, end, dispatcher, agendaDate, true)
+                listenForAgendaItems(start, end, action.date, true)
             }
             is CalendarAction.SwipeChangeDate -> {
-                val currentPos = state.calendarState.adapterPosition
+                val calendarState = state.stateFor(CalendarViewState::class.java)
+                val currentPos = calendarState.adapterPosition
                 val newPos = action.adapterPosition
-                val curDate = state.scheduleState.currentDate
+                val scheduleState = state.stateFor(ScheduleViewState::class.java)
+                val curDate = scheduleState.currentDate
                 val agendaDate = if (newPos < currentPos)
                     curDate.minusDays(1)
                 else
@@ -211,7 +394,7 @@ class AgendaSideEffect : SideEffect<AppState>, Injects<Module> {
                 val pair = findAllAgendaDates(agendaDate)
                 val start = pair.first
                 val end = pair.second
-                listenForAgendaItems(start, end, dispatcher, agendaDate, true)
+                listenForAgendaItems(start, end, agendaDate, true)
             }
         }
     }
@@ -219,36 +402,48 @@ class AgendaSideEffect : SideEffect<AppState>, Injects<Module> {
     private fun listenForAgendaItems(
         start: LocalDate,
         end: LocalDate,
-        dispatcher: Dispatcher,
         agendaDate: LocalDate,
         changeCurrentAgendaItem: Boolean
     ) {
 
         var isFirstData = true
         launch(UI) {
-            scheduledQuestsChannel?.cancel()
-            scheduledQuestsChannel = questRepository.listenForScheduledBetween(
+            agendaItemsChannel?.cancel()
+            agendaItemsChannel = questRepository.listenForScheduledBetween(
                 start,
                 end
             )
-            scheduledQuestsChannel!!.consumeEach {
-                val agendaItems = createAgendaItemsUseCase.execute(
-                    CreateAgendaItemsUseCase.Params(
-                        agendaDate,
-                        it,
-                        AgendaReducer.ITEMS_BEFORE_COUNT,
-                        AgendaReducer.ITEMS_AFTER_COUNT
+            agendaItemsChannel!!.consumeEach {
+                launch(CommonPool) {
+
+                    val placeholderQuests =
+                        createPlaceholderQuestsForRepeatingQuestsUseCase.execute(
+                            CreatePlaceholderQuestsForRepeatingQuestsUseCase.Params(
+                                startDate = start,
+                                endDate = end
+                            )
+                        )
+
+                    val agendaItems = createAgendaItemsUseCase.execute(
+                        CreateAgendaItemsUseCase.Params(
+                            agendaDate,
+                            it + placeholderQuests,
+                            AgendaReducer.ITEMS_BEFORE_COUNT,
+                            AgendaReducer.ITEMS_AFTER_COUNT
+                        )
                     )
-                )
-                dispatcher.dispatch(
-                    DataLoadedAction.AgendaItemsChanged(
-                        start = start,
-                        end = end,
-                        agendaItems = agendaItems,
-                        currentAgendaItemDate = if (changeCurrentAgendaItem && isFirstData) agendaDate else null
+
+
+                    dispatch(
+                        DataLoadedAction.AgendaItemsChanged(
+                            start = start,
+                            end = end,
+                            agendaItems = agendaItems,
+                            currentAgendaItemDate = if (changeCurrentAgendaItem && isFirstData) agendaDate else null
+                        )
                     )
-                )
-                isFirstData = false
+                    isFirstData = false
+                }
             }
         }
     }
@@ -270,61 +465,95 @@ class AgendaSideEffect : SideEffect<AppState>, Injects<Module> {
 
     override fun canHandle(action: Action) =
         action == LoadDataAction.All
-            || action is AgendaAction.LoadBefore
-            || action is AgendaAction.LoadAfter
+            || action is AgendaAction
             || action is ScheduleAction.ScheduleChangeDate
             || action is CalendarAction.SwipeChangeDate
-
 }
 
-class LoadAllDataSideEffect : SideEffect<AppState>, Injects<Module> {
+class LoadAllDataSideEffect : AppSideEffect() {
 
     private val playerRepository by required { playerRepository }
     private val questRepository by required { questRepository }
+    private val repeatingQuestRepository by required { repeatingQuestRepository }
+    private val findNextDateForRepeatingQuestUseCase by required { findNextDateForRepeatingQuestUseCase }
+    private val findPeriodProgressForRepeatingQuestUseCase by required { findPeriodProgressForRepeatingQuestUseCase }
 
     private var playerChannel: ReceiveChannel<Player?>? = null
-    private var scheduledQuestsChannel: ReceiveChannel<List<Quest>>? = null
+    private var todayQuestsChannel: ReceiveChannel<List<Quest>>? = null
+    private var repeatingQuestsChannel: ReceiveChannel<List<RepeatingQuest>>? = null
 
-    override suspend fun execute(action: Action, state: AppState, dispatcher: Dispatcher) {
-        inject(myPoliApp.module(myPoliApp.instance))
+    override suspend fun doExecute(action: Action, state: AppState) {
 
         if (action is LoadDataAction.ChangePlayer) {
             playerChannel?.cancel()
-            scheduledQuestsChannel?.cancel()
+            todayQuestsChannel?.cancel()
+            repeatingQuestsChannel?.cancel()
+
             playerChannel = null
-            scheduledQuestsChannel = null
+            todayQuestsChannel = null
+            repeatingQuestsChannel = null
+
             playerRepository.purge(action.oldPlayerId)
-            listenForPlayer(dispatcher)
-            listenForQuests(state, dispatcher)
+            listenForPlayer()
+            listenForQuests(state)
         }
 
         if (action == LoadDataAction.All) {
-            listenForPlayer(dispatcher)
-            listenForQuests(state, dispatcher)
+            listenForPlayer()
+            listenForQuests(state)
+            listenForRepeatingQuests()
         }
-
     }
 
-    private fun listenForQuests(
-        state: AppState,
-        dispatcher: Dispatcher
-    ) {
+    private fun listenForRepeatingQuests() {
         launch(UI) {
-            scheduledQuestsChannel?.cancel()
-            scheduledQuestsChannel =
-                questRepository.listenForScheduledAt(state.appDataState.today)
-            scheduledQuestsChannel!!.consumeEach {
-                dispatcher.dispatch(DataLoadedAction.TodayQuestsChanged(it))
+            repeatingQuestsChannel?.cancel()
+            repeatingQuestsChannel = repeatingQuestRepository.listenForAll()
+            repeatingQuestsChannel!!.consumeEach {
+                launch(CommonPool) {
+                    val rqs = it
+                        .map {
+                            findNextDateForRepeatingQuestUseCase.execute(
+                                FindNextDateForRepeatingQuestUseCase.Params(it)
+                            )
+                        }.map {
+                            findPeriodProgressForRepeatingQuestUseCase.execute(
+                                FindPeriodProgressForRepeatingQuestUseCase.Params(it)
+                            )
+                        }
+                    dispatch(DataLoadedAction.RepeatingQuestsChanged(rqs))
+                }
             }
         }
     }
 
-    private fun listenForPlayer(dispatcher: Dispatcher) {
+    private fun listenForQuests(
+        state: AppState
+    ) {
+        launch(UI) {
+            todayQuestsChannel?.cancel()
+            todayQuestsChannel = questRepository.listenForScheduledAt(state.dataState.today)
+            todayQuestsChannel!!.consumeEach {
+                updateWidgets()
+                launch(CommonPool) {
+                    dispatch(DataLoadedAction.TodayQuestsChanged(it))
+                }
+            }
+        }
+    }
+
+    private fun updateWidgets() {
+        AppWidgetUtil.updateAgendaWidget(myPoliApp.instance)
+    }
+
+    private fun listenForPlayer() {
         launch(UI) {
             playerChannel?.cancel()
             playerChannel = playerRepository.listen()
             playerChannel!!.consumeEach {
-                dispatcher.dispatch(PlayerChanged(it!!))
+                launch(CommonPool) {
+                    dispatch(PlayerChanged(it!!))
+                }
             }
         }
     }

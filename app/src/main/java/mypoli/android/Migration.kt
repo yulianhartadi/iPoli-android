@@ -9,7 +9,7 @@ import kotlinx.coroutines.experimental.runBlocking
 import mypoli.android.auth.error.SignInError
 import mypoli.android.common.datetime.Time
 import mypoli.android.common.datetime.instant
-import mypoli.android.common.datetime.startOfDayUtc
+import mypoli.android.common.datetime.startOfDayUTC
 import mypoli.android.common.di.Module
 import mypoli.android.pet.Food
 import mypoli.android.quest.*
@@ -177,7 +177,7 @@ class Migration : Injects<Module> {
             null
         })
 
-        val plannedDate = cq.scheduledDate.startOfDayUtc
+        val plannedDate = cq.scheduledDate.startOfDayUTC
         val plannedTime = cq.startMinute?.let { Time.of(it.toInt()) }
 
         return Quest(
@@ -201,13 +201,13 @@ class Migration : Injects<Module> {
                     else -> null
                 }
             },
-            completedAtDate = cq.completedAtDate?.startOfDayUtc,
+            completedAtDate = cq.completedAtDate?.startOfDayUTC,
             completedAtTime = cq.completedAtMinute?.let {
                 Time.of(it.toInt())
             },
             reminder = cq.reminder?.let {
                 val cr = DbReminder(it)
-                Reminder(cr.message, Time.of(cr.minute), cr.date.startOfDayUtc)
+                Reminder(cr.message, Time.of(cr.minute), cr.date?.startOfDayUTC)
             },
             timeRanges = cq.timeRanges.map {
                 val ctr = DbTimeRange(it)

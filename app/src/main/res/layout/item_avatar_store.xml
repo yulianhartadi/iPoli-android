@@ -2,7 +2,7 @@
 <android.support.v7.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:fancy="http://schemas.android.com/apk/res-auto"
-    android:id="@+id/avatar_container"
+    android:id="@+id/avatarContainer"
     android:layout_width="match_parent"
     android:layout_height="240dp"
     android:layout_margin="4dp"

@@ -3,13 +3,13 @@
     android:color="?attr/colorControlHighlight">
     <item android:id="@android:id/mask">
         <shape android:shape="oval">
-            <solid android:color="@color/md_black" />
+            <solid android:color="@color/md_white" />
         </shape>
     </item>
 
     <item>
         <shape android:shape="oval">
-            <solid android:color="@color/md_grey_500" />
+            <stroke android:color="?attr/colorAccent" android:width="1.5dp"/>
         </shape>
     </item>
 </ripple>

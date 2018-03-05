@@ -1,9 +1,8 @@
 package mypoli.android.quest.usecase
 
-import kotlinx.coroutines.experimental.channels.map
-import mypoli.android.common.StreamingUseCase
+import mypoli.android.common.UseCase
+import mypoli.android.common.datetime.datesBetween
 import mypoli.android.quest.Quest
-import mypoli.android.quest.data.persistence.QuestRepository
 import org.threeten.bp.LocalDate
 
 /**
@@ -12,11 +11,34 @@ import org.threeten.bp.LocalDate
  */
 data class Schedule(val date: LocalDate, val scheduled: List<Quest>, val unscheduled: List<Quest>)
 
-class LoadScheduleForDateUseCase(private val questRepository: QuestRepository) :
-    StreamingUseCase<LocalDate, Schedule> {
-    override fun execute(parameters: LocalDate) =
-        questRepository.listenForScheduledAt(parameters).map {
-            val (scheduled, unscheduled) = it.partition { it.isScheduled }
-            Schedule(parameters, scheduled, unscheduled.sortedBy { it.isCompleted })
+class LoadScheduleForDateUseCase :
+    UseCase<LoadScheduleForDateUseCase.Params, Map<LocalDate, Schedule>> {
+
+    override fun execute(parameters: Params): Map<LocalDate, Schedule> {
+
+        val data = parameters.startDate.datesBetween(parameters.endDate).map {
+            it to Pair<MutableList<Quest>, MutableList<Quest>>(mutableListOf(), mutableListOf())
+        }.toMap().toMutableMap()
+
+        for (q in parameters.quests) {
+
+            val key = q.scheduledDate
+
+            if (q.isScheduled) {
+                data[key]!!.first.add(q)
+            } else {
+                data[key]!!.second.add(q)
+            }
         }
+
+        return data.map {
+            it.key to Schedule(it.key, it.value.first, it.value.second)
+        }.toMap()
+    }
+
+    data class Params(
+        val startDate: LocalDate,
+        val endDate: LocalDate,
+        val quests: List<Quest>
+    )
 }

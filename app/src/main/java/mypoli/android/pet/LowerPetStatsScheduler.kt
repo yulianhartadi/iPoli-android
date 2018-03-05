@@ -32,7 +32,7 @@ class LowerPetStatsJob : Job(), Injects<Module> {
     }
 
     companion object {
-        val TAG = "job_lower_pet_stats_tag"
+        const val TAG = "job_lower_pet_stats_tag"
     }
 }
 
@@ -53,6 +53,7 @@ class AndroidJobLowerPetStatsScheduler : LowerPetStatsScheduler {
         bundle.putInt("lowerStatsTime", lowerStatsTime.toMinuteOfDay())
         JobRequest.Builder(LowerPetStatsJob.TAG)
             .setExtras(bundle)
+            .setUpdateCurrent(true)
             .setExact(TimeUnit.MINUTES.toMillis(currentTime.minutesTo(lowerStatsTime).toLong()))
             .build()
             .schedule()

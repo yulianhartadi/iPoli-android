@@ -5,6 +5,7 @@ apply plugin: 'kotlin-kapt'
 apply plugin: 'com.getkeepsafe.dexcount'
 apply plugin: 'io.fabric'
 apply plugin: "de.mannodermaus.android-junit5"
+apply plugin: 'jacoco'
 
 repositories {
     maven { url 'https://maven.fabric.io/public' }
@@ -45,6 +46,19 @@ android {
                     include 'spek'
                 }
             }
+
+            jacocoOptions {
+                excludedClasses += []
+                excludedSources += []
+
+                taskGenerationEnabled = true
+
+                onlyGenerateTasksForVariants "debug"
+
+                html {
+                    enabled true
+                }
+            }
         }
     }
 }
@@ -63,41 +77,40 @@ dependencies {
     implementation 'com.google.firebase:firebase-database:11.8.0'
     implementation 'com.google.firebase:firebase-auth:11.8.0'
     implementation 'com.google.firebase:firebase-firestore:11.8.0'
-    implementation "com.github.SUPERCILEX.FirebaseUI-Android:firebase-ui-auth:fa824262ab"
+    implementation "com.github.SUPERCILEX.FirebaseUI-Android:firebase-ui-auth:6a56930af6"
     implementation 'com.facebook.android:facebook-login:4.30.0'
     implementation 'com.bluelinelabs:conductor:2.1.4'
     implementation 'com.bluelinelabs:conductor-support:2.1.4'
-    implementation 'com.jakewharton.timber:timber:4.6.0'
+    implementation 'com.jakewharton.timber:timber:4.6.1'
     implementation 'com.jakewharton.threetenabp:threetenabp:1.0.5'
     implementation('org.mnode.ical4j:ical4j:2.0.3') {
         ['org.codehaus.groovy', 'commons-codec', 'org.apache.commons', 'biz.aQute.bnd', 'org.threeten'].each {
             exclude group: it
         }
     }
-    implementation('com.crashlytics.sdk.android:crashlytics:2.8.0@aar') {
+    implementation('com.crashlytics.sdk.android:crashlytics:2.9.1@aar') {
         transitive = true
     }
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jre7:$kotlin_version"
 
-    implementation 'com.mikepenz:iconics-core:2.9.5@aar'
+    implementation 'com.mikepenz:iconics-core:3.0.3@aar'
     implementation 'com.mikepenz:ionicons-typeface:2.0.1.4@aar'
     implementation 'com.mikepenz:entypo-typeface:1.0.0.4@aar'
     implementation 'com.mikepenz:google-material-typeface:3.0.1.2.original@aar'
-    implementation 'de.hdodenhof:circleimageview:2.1.0'
     implementation 'com.lnikkila:extendedtouchview:0.1.1'
     implementation 'sun.bob:mcalendarview:1.1.0'
     implementation "space.traversal.kapsule:kapsule-core:0.3"
 
-    implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-android:0.22.2'
+    implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-android:0.22.3'
     implementation 'com.couchbase.lite:couchbase-lite-android:2.0.0-288'
 
     implementation 'com.evernote:android-job:1.2.4'
-    implementation 'com.amplitude:android-sdk:2.16.0'
+    implementation 'com.amplitude:android-sdk:2.17.0'
     implementation 'com.sdsmdg.harjot:croller:1.0.7'
     implementation 'org.solovyev.android:checkout:1.2.1'
 
     implementation 'com.github.bumptech.glide:glide:4.6.1'
-    annotationProcessor 'com.github.bumptech.glide:compiler:4.6.1'
+    kapt 'com.github.bumptech.glide:compiler:4.6.1'
 
 //    debugImplementation "com.github.brianPlummer:tinydancer:0.1.1"
 //    implementation "com.github.brianPlummer:tinydancer-noop:0.1.1"
@@ -125,6 +138,7 @@ dependencies {
     testImplementation 'com.android.support.test:rules:1.0.1'
     testImplementation 'junit:junit:4.12'
     testImplementation junit5.unitTests()
+    testCompileOnly junit5.unitTestsRuntime()
 
     testImplementation('org.jetbrains.spek:spek-api:1.1.5') {
         exclude group: "org.jetbrains.kotlin"
@@ -134,7 +148,7 @@ dependencies {
         exclude group: "org.jetbrains.kotlin"
     }
     testImplementation 'com.nhaarman:mockito-kotlin-kt1.1:1.5.0'
-    testCompile 'org.amshove.kluent:kluent:1.34'
+    testImplementation 'org.amshove.kluent:kluent:1.34'
     testImplementation 'org.amshove.kluent:kluent-android:1.34'
     testImplementation "org.jetbrains.kotlin:kotlin-reflect:$kotlin_version"
 }

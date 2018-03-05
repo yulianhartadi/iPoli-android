@@ -14,7 +14,6 @@ import kotlinx.android.synthetic.main.controller_calendar.view.*
 import mypoli.android.R
 import mypoli.android.common.redux.android.ReduxViewController
 import mypoli.android.quest.schedule.ScheduleViewController
-import mypoli.android.quest.schedule.calendar.CalendarState.StateType.*
 import mypoli.android.quest.schedule.calendar.dayview.view.DayViewController
 import org.threeten.bp.LocalDate
 
@@ -23,13 +22,14 @@ import org.threeten.bp.LocalDate
  * on 01/31/2018.
  */
 class CalendarViewController(args: Bundle? = null) :
-    ReduxViewController<CalendarAction, CalendarViewState, CalendarPresenter>(args) {
+    ReduxViewController<CalendarAction, CalendarViewState, CalendarReducer>(args) {
 
-    override val presenter get() = CalendarPresenter()
+    override val reducer = CalendarReducer
 
     private var dayViewPagerAdapter: DayViewPagerAdapter? = null
 
     private val pageChangeListener = object : ViewPager.SimpleOnPageChangeListener() {
+
         override fun onPageSelected(position: Int) {
             dispatch(CalendarAction.SwipeChangeDate(position))
         }
@@ -40,30 +40,39 @@ class CalendarViewController(args: Bundle? = null) :
         override fun getCount() = 0
     }
 
+    private lateinit var startDate: LocalDate
+
+    constructor(startDate: LocalDate) : this() {
+        this.startDate = startDate
+    }
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup,
         savedViewState: Bundle?
     ): View = inflater.inflate(R.layout.controller_calendar, container, false)
 
-    override fun render(state: CalendarViewState, view: View) {
-
+    override fun render(state: CalendarViewState, view: View) =
         when (state.type) {
-            INITIAL -> {
+            CalendarViewState.StateType.INITIAL -> {
                 removeDayViewPagerAdapter(view)
                 createDayViewPagerAdapter(state, view)
             }
 
-            CALENDAR_DATE_CHANGED -> {
+            CalendarViewState.StateType.CALENDAR_DATE_CHANGED -> {
                 removeDayViewPagerAdapter(view)
                 createDayViewPagerAdapter(state, view)
             }
 
-            SWIPE_DATE_CHANGED -> {
+            CalendarViewState.StateType.SWIPE_DATE_CHANGED -> {
                 updateDayViewPagerAdapter(state)
+                dispatch(CalendarAction.ChangeVisibleDate(state.currentDate))
             }
+
+            else -> { }
         }
-    }
+
+    override fun onCreateLoadAction() = CalendarAction.Load(startDate)
 
     private fun removeDayViewPagerAdapter(view: View) {
         view.pager.removeOnPageChangeListener(pageChangeListener)

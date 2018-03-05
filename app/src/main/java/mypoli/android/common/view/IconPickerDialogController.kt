@@ -268,11 +268,11 @@ class IconPickerDialogController :
 
             if (vm.isSelected) {
                 iconView.setBackgroundResource(R.drawable.oval_background)
-                iconView.backgroundTintList = ColorStateList.valueOf(attr(R.attr.colorAccent))
+                iconView.backgroundTintList = ColorStateList.valueOf(attrData(R.attr.colorAccent))
                 view.lockedIcon.visibility = View.GONE
             } else if (vm.isLocked) {
                 view.lockedIcon.visibility = View.VISIBLE
-                view.lockedIcon.imageTintList = ColorStateList.valueOf(attr(R.attr.colorAccent))
+                view.lockedIcon.imageTintList = ColorStateList.valueOf(attrData(R.attr.colorAccent))
             } else {
                 iconView.background = null
                 view.lockedIcon.visibility = View.GONE
