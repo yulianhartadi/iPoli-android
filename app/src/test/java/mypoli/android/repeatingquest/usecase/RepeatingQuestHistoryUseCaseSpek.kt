@@ -8,6 +8,7 @@ import mypoli.android.quest.Quest
 import mypoli.android.quest.data.persistence.QuestRepository
 import mypoli.android.repeatingquest.entity.RepeatingPattern
 import mypoli.android.repeatingquest.entity.RepeatingQuest
+import org.amshove.kluent.`should equal`
 import org.amshove.kluent.shouldThrow
 import org.jetbrains.spek.api.Spek
 import org.jetbrains.spek.api.dsl.describe
@@ -70,7 +71,7 @@ class RepeatingQuestHistoryUseCaseSpek : Spek({
                 questRepoMock, TestUtil.repeatingQuest.copy(
                     repeatingPattern = RepeatingPattern.Daily()
                 ), date, date
-            )
+            ).data
             result[date].`should equal`(CreateRepeatingQuestHistoryUseCase.DateHistory.DONE_ON_SCHEDULE)
         }
 
@@ -89,7 +90,7 @@ class RepeatingQuestHistoryUseCaseSpek : Spek({
                 questRepoMock, TestUtil.repeatingQuest.copy(
                     repeatingPattern = RepeatingPattern.Daily()
                 ), date, date
-            )
+            ).data
             result[date].`should equal`(CreateRepeatingQuestHistoryUseCase.DateHistory.FAILED)
         }
 
@@ -108,7 +109,7 @@ class RepeatingQuestHistoryUseCaseSpek : Spek({
                 questRepoMock, TestUtil.repeatingQuest.copy(
                     repeatingPattern = RepeatingPattern.Weekly(setOf(DayOfWeek.MONDAY))
                 ), date, date
-            )
+            ).data
             result[date].`should equal`(CreateRepeatingQuestHistoryUseCase.DateHistory.EMPTY)
         }
 
@@ -131,7 +132,7 @@ class RepeatingQuestHistoryUseCaseSpek : Spek({
                 questRepoMock, TestUtil.repeatingQuest.copy(
                     repeatingPattern = RepeatingPattern.Weekly(setOf(DayOfWeek.MONDAY))
                 ), date, date
-            )
+            ).data
             result[date].`should equal`(CreateRepeatingQuestHistoryUseCase.DateHistory.DONE_NOT_ON_SCHEDULE)
         }
 
@@ -155,7 +156,7 @@ class RepeatingQuestHistoryUseCaseSpek : Spek({
                 questRepoMock, TestUtil.repeatingQuest.copy(
                     repeatingPattern = RepeatingPattern.Daily(today.minusDays(1), today)
                 ), tomorrow, tomorrow
-            )
+            ).data
             result[tomorrow].`should equal`(CreateRepeatingQuestHistoryUseCase.DateHistory.DONE_NOT_ON_SCHEDULE)
         }
 
@@ -179,7 +180,7 @@ class RepeatingQuestHistoryUseCaseSpek : Spek({
                 questRepoMock, TestUtil.repeatingQuest.copy(
                     repeatingPattern = RepeatingPattern.Daily()
                 ), today, tomorrow
-            )
+            ).data
             result.size.`should equal`(2)
             result[today].`should equal`(CreateRepeatingQuestHistoryUseCase.DateHistory.FAILED)
             result[tomorrow].`should equal`(CreateRepeatingQuestHistoryUseCase.DateHistory.DONE_ON_SCHEDULE)
