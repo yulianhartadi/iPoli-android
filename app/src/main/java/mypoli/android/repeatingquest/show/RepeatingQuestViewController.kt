@@ -24,8 +24,8 @@ import mypoli.android.repeatingquest.edit.EditRepeatingQuestViewController
  * Created by Venelin Valkov <venelin@mypoli.fun>
  * on 02/21/2018.
  */
-class RepeatingQuestViewController :
-    ReduxViewController<RepeatingQuestAction, RepeatingQuestViewState, RepeatingQuestReducer> {
+class RepeatingQuestViewController(args: Bundle? = null) :
+    ReduxViewController<RepeatingQuestAction, RepeatingQuestViewState, RepeatingQuestReducer>(args) {
 
     override val reducer = RepeatingQuestReducer
 
@@ -66,8 +66,6 @@ class RepeatingQuestViewController :
 
         abstract fun onStateChanged(appBarLayout: AppBarLayout, state: State)
     }
-
-    constructor(args: Bundle? = null) : super(args)
 
     constructor(
         repeatingQuestId: String

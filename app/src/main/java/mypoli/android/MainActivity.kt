@@ -16,6 +16,7 @@ import com.bluelinelabs.conductor.RouterTransaction
 import kotlinx.coroutines.experimental.CommonPool
 import kotlinx.coroutines.experimental.android.UI
 import kotlinx.coroutines.experimental.launch
+import mypoli.android.challenge.show.ChallengeViewController
 import mypoli.android.player.auth.AuthViewController
 import mypoli.android.common.LoadDataAction
 import mypoli.android.common.LoaderDialogController
@@ -23,6 +24,7 @@ import mypoli.android.common.di.Module
 import mypoli.android.common.view.playerTheme
 import mypoli.android.home.HomeViewController
 import mypoli.android.quest.timer.TimerViewController
+import mypoli.android.repeatingquest.edit.EditRepeatingQuestViewController
 import space.traversal.kapsule.Injects
 import space.traversal.kapsule.inject
 import space.traversal.kapsule.required
@@ -104,8 +106,8 @@ class MainActivity : AppCompatActivity(), Injects<Module> {
                         router.setRoot(RouterTransaction.with(TimerViewController(questId)))
                     } else if (!router.hasRootController()) {
 //                        router.setRoot(RouterTransaction.with(RepeatingQuestViewController("")))
-                        router.setRoot(RouterTransaction.with(HomeViewController()))
-//                        router.setRoot(RouterTransaction.with(EditRepeatingQuestViewController("")))
+//                        router.setRoot(RouterTransaction.with(HomeViewController()))
+                        router.setRoot(RouterTransaction.with(ChallengeViewController("")))
                     }
                 }
 

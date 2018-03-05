@@ -7,7 +7,6 @@ import mypoli.android.common.parser.ReminderMinutesParser
 import mypoli.android.pet.usecase.FindPetUseCase
 import mypoli.android.quest.reminder.formatter.ReminderTimeFormatter
 import mypoli.android.quest.reminder.formatter.TimeUnitFormatter
-import mypoli.android.reminder.view.picker.*
 import mypoli.android.quest.reminder.picker.ReminderPickerViewState.StateType.*
 import kotlin.coroutines.experimental.CoroutineContext
 
