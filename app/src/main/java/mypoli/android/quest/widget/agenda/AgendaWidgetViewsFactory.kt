@@ -22,7 +22,6 @@ import org.threeten.bp.LocalDate
 import space.traversal.kapsule.Injects
 import space.traversal.kapsule.inject
 import space.traversal.kapsule.required
-import timber.log.Timber
 import java.util.concurrent.CopyOnWriteArrayList
 
 
@@ -46,7 +45,6 @@ class AgendaWidgetViewsFactory(private val context: Context) :
     override fun getItemId(position: Int): Long = position.toLong()
 
     override fun onDataSetChanged() {
-        Timber.d("AAA onDataSetChanged")
         quests.clear()
         quests.addAll(questRepository.findScheduledAt(LocalDate.now()).filter { !it.isCompleted })
     }

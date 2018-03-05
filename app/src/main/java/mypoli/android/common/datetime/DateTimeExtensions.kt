@@ -36,6 +36,9 @@ fun LocalDate.isBetween(start: LocalDate?, end: LocalDate?): Boolean {
     } else !isBefore(start) && !isAfter(end)
 }
 
+fun LocalDate.isBeforeOrEqual(date: LocalDate) = !isAfter(date)
+fun LocalDate.isAfterOrEqual(date: LocalDate) = !isBefore(date)
+
 fun LocalDate.isNotEqual(otherDate: LocalDate) = !isEqual(otherDate)
 
 fun LocalDate.datesBetween(date: LocalDate): List<LocalDate> {

@@ -59,7 +59,6 @@ import mypoli.android.repeatingquest.persistence.FirestoreRepeatingQuestReposito
 import mypoli.android.repeatingquest.persistence.RepeatingQuestRepository
 import mypoli.android.repeatingquest.sideeffect.RepeatingQuestSideEffect
 import mypoli.android.repeatingquest.usecase.*
-
 import mypoli.android.store.GemStorePresenter
 import mypoli.android.store.theme.ThemeStorePresenter
 import mypoli.android.store.theme.usecase.BuyThemeUseCase

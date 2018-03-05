@@ -25,7 +25,7 @@ import mypoli.android.Constants
 import mypoli.android.MainActivity
 import mypoli.android.R
 import mypoli.android.auth.AuthViewController
-import mypoli.android.challenge.predefined.category.ChallengeCategoryListViewController
+import mypoli.android.challenge.list.ChallengeListViewController
 import mypoli.android.common.EmailUtils
 import mypoli.android.common.redux.android.ReduxViewController
 import mypoli.android.common.view.*
@@ -113,7 +113,7 @@ class HomeViewController(args: Bundle? = null) :
                 changeChildController(RepeatingQuestListViewController())
 
             R.id.challenges ->
-                changeChildController(ChallengeCategoryListViewController())
+                changeChildController(ChallengeListViewController())
 
             R.id.store -> {
                 router.pushController(
@@ -166,7 +166,7 @@ class HomeViewController(args: Bundle? = null) :
 
     override fun onNavigationItemSelected(item: MenuItem): Boolean {
         navigationItemSelected = when {
-            // do not allow re-selecting the same item (creates same Controller again)
+        // do not allow re-selecting the same item (creates same Controller again)
             view!!.navigationView.menu.findItem(item.itemId).isChecked -> null
             else -> item
         }

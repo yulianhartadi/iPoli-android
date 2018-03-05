@@ -155,12 +155,6 @@ class AgendaViewController(args: Bundle? = null) :
                 state.scrollToPosition,
                 0
             )
-//        } else if (state.shouldScrollToUserPosition && state.userScrollPosition != null) {
-//            agendaList.addOnScrollListener(scrollToPositionListener)
-//            (agendaList.layoutManager as LinearLayoutManager).scrollToPositionWithOffset(
-//                state.userScrollPosition,
-//                0
-//            )
         } else {
             agendaList.addOnScrollListener(endlessRecyclerViewScrollListener)
             agendaList.addOnScrollListener(changeItemScrollListener)

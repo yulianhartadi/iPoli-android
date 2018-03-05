@@ -2,6 +2,7 @@ package mypoli.android.repeatingquest.usecase
 
 import mypoli.android.common.UseCase
 import mypoli.android.common.datetime.datesBetween
+import mypoli.android.common.datetime.isBeforeOrEqual
 import mypoli.android.quest.data.persistence.QuestRepository
 import mypoli.android.repeatingquest.persistence.RepeatingQuestRepository
 import org.threeten.bp.LocalDate
@@ -33,10 +34,10 @@ class CreateRepeatingQuestHistoryUseCase(
             val state = when {
                 shouldBeCompleted && isCompleted -> DateHistory.DONE_ON_SCHEDULE
                 !shouldBeCompleted && isCompleted -> DateHistory.DONE_NOT_ON_SCHEDULE
-                it.isEqual(parameters.currentDate) -> DateHistory.TODAY
                 it.isBefore(rq.start) -> DateHistory.BEFORE_START
                 rq.end != null && it.isAfter(rq.end) -> DateHistory.AFTER_END
-                shouldBeCompleted && !isCompleted && it.isBefore(parameters.currentDate) -> DateHistory.FAILED
+                shouldBeCompleted && !isCompleted && it.isBeforeOrEqual(parameters.currentDate) -> DateHistory.FAILED
+                it.isEqual(parameters.currentDate) -> DateHistory.TODAY
                 it.isBefore(parameters.currentDate) -> DateHistory.SKIPPED
                 shouldBeCompleted && !isCompleted -> DateHistory.TODO
                 else -> DateHistory.EMPTY

@@ -21,8 +21,8 @@ import mypoli.android.R
 import mypoli.android.challenge.predefined.PersonalizeChallengeViewController
 import mypoli.android.challenge.predefined.category.list.ChallengeListForCategoryViewState.StateType.*
 import mypoli.android.challenge.predefined.entity.AndroidPredefinedChallenge
-import mypoli.android.challenge.predefined.entity.PredefinedChallengeData
 import mypoli.android.challenge.predefined.entity.PredefinedChallenge
+import mypoli.android.challenge.predefined.entity.PredefinedChallengeData
 import mypoli.android.common.redux.android.ReduxViewController
 import mypoli.android.common.view.*
 import mypoli.android.player.inventory.GemInventoryViewController

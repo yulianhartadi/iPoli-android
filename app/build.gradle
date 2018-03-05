@@ -5,6 +5,7 @@ apply plugin: 'kotlin-kapt'
 apply plugin: 'com.getkeepsafe.dexcount'
 apply plugin: 'io.fabric'
 apply plugin: "de.mannodermaus.android-junit5"
+apply plugin: 'jacoco'
 
 repositories {
     maven { url 'https://maven.fabric.io/public' }
@@ -43,6 +44,19 @@ android {
             filters {
                 engines {
                     include 'spek'
+                }
+            }
+
+            jacocoOptions {
+                excludedClasses += []
+                excludedSources += []
+
+                taskGenerationEnabled = true
+
+                onlyGenerateTasksForVariants "debug"
+
+                html {
+                    enabled true
                 }
             }
         }
