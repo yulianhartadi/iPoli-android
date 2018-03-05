@@ -16,7 +16,6 @@ import mypoli.android.common.ViewUtils
 import mypoli.android.common.view.MviDialogController
 import mypoli.android.common.view.stringRes
 import mypoli.android.pet.AndroidPetAvatar
-import mypoli.android.reminder.view.picker.*
 import space.traversal.kapsule.required
 
 typealias TimeUnitConverter = java.util.concurrent.TimeUnit
