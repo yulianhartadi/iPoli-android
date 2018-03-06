@@ -1,5 +1,6 @@
 package mypoli.android.repeatingquest.sideeffect
 
+import mypoli.android.Constants
 import mypoli.android.common.AppSideEffect
 import mypoli.android.common.AppState
 import mypoli.android.common.DataLoadedAction
@@ -8,6 +9,10 @@ import mypoli.android.common.datetime.DateUtils
 import mypoli.android.common.redux.Action
 import mypoli.android.quest.Category
 import mypoli.android.quest.Color
+import mypoli.android.quest.Reminder
+import mypoli.android.quest.schedule.addquest.AddQuestAction
+import mypoli.android.quest.schedule.addquest.AddQuestViewState
+import mypoli.android.reminder.view.picker.ReminderViewModel
 import mypoli.android.repeatingquest.edit.EditRepeatingQuestAction
 import mypoli.android.repeatingquest.edit.EditRepeatingQuestViewState
 import mypoli.android.repeatingquest.show.RepeatingQuestAction
@@ -45,6 +50,39 @@ class RepeatingQuestSideEffect : AppSideEffect() {
                         history
                     )
                 )
+            }
+
+            is AddQuestAction.SaveRepeatingQuest -> {
+                val rqState = state.stateFor(AddQuestViewState::class.java)
+                val r: ReminderViewModel? = rqState.reminder
+                val reminder = if (rqState.time == null || r == null) {
+                    null
+                } else {
+                    Reminder(r.message, rqState.time.minus(r.minutesFromStart.toInt()), null)
+                }
+                val rqParams = SaveRepeatingQuestUseCase.Params(
+                    name = action.name,
+                    color = rqState.color ?: Color.GREEN,
+                    icon = rqState.icon,
+                    category = Category("WELLNESS", Color.GREEN),
+                    startTime = rqState.time,
+                    duration = rqState.duration ?: Constants.QUEST_MIN_DURATION,
+                    reminder = reminder,
+                    repeatingPattern = rqState.repeatingPattern!!
+                )
+
+                val errors = Validator.validate(rqParams).check<ValidationError> {
+                    "name" {
+                        given { name.isEmpty() } addError ValidationError.EMPTY_NAME
+                    }
+                }
+
+                if (errors.isNotEmpty()) {
+                    dispatch(AddQuestAction.SaveInvalidRepeatingQuest(errors.first()))
+                } else {
+                    dispatch(AddQuestAction.RepeatingQuestSaved)
+                    saveRepeatingQuestUseCase.execute(rqParams)
+                }
             }
 
             EditRepeatingQuestAction.Save -> {
@@ -89,6 +127,7 @@ class RepeatingQuestSideEffect : AppSideEffect() {
 
     override fun canHandle(action: Action) =
         action == EditRepeatingQuestAction.Save
+            || action is AddQuestAction.SaveRepeatingQuest
             || action is RepeatingQuestAction.Remove
             || action is RepeatingQuestAction.Load
 }

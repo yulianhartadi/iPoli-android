@@ -17,27 +17,23 @@ import mypoli.android.Constants
 import mypoli.android.R
 import mypoli.android.common.ViewUtils
 import mypoli.android.common.datetime.Time
-import mypoli.android.common.mvi.MviViewController
+import mypoli.android.common.redux.android.ReduxViewController
 import mypoli.android.common.view.*
-import mypoli.android.quest.Color
-import mypoli.android.quest.Icon
 import mypoli.android.quest.schedule.addquest.StateType.*
 import mypoli.android.reminder.view.picker.ReminderPickerDialogController
 import mypoli.android.reminder.view.picker.ReminderViewModel
 import mypoli.android.repeatingquest.edit.picker.RepeatingPatternPickerDialogController
 import org.threeten.bp.LocalDate
-import space.traversal.kapsule.required
 
 /**
  * Created by Polina Zhelyazkova <polina@mypoli.fun>
  * on 11/2/17.
  */
 class AddQuestViewController(args: Bundle? = null) :
-    MviViewController<AddQuestViewState, AddQuestViewController, AddQuestPresenter, AddQuestIntent>(
+    ReduxViewController<AddQuestAction, AddQuestViewState, AddQuestReducer>(
         args
     ) {
-
-    private val presenter by required { addQuestPresenter }
+    override val reducer = AddQuestReducer
 
     private var closeListener: () -> Unit = {}
 
@@ -47,8 +43,6 @@ class AddQuestViewController(args: Bundle? = null) :
         this.closeListener = closeListener
         this.currentDate = currentDate
     }
-
-    override fun createPresenter() = presenter
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -67,7 +61,7 @@ class AddQuestViewController(args: Bundle? = null) :
 
         view.questName.setOnEditorActionListener { _, actionId, _ ->
             if (actionId == EditorInfo.IME_ACTION_DONE) {
-                send(AddQuestIntent.SaveQuest(view.questName.text.toString()))
+                dispatch(AddQuestAction.Save(view.questName.text.toString()))
             }
             true
         }
@@ -79,39 +73,24 @@ class AddQuestViewController(args: Bundle? = null) :
                 .sizeDp(22)
         )
 
-        view.scheduleDate.sendOnClickAndExec(AddQuestIntent.PickDate, {
+        view.scheduleDate.dispatchOnClickAndExec(AddQuestAction.PickDate, {
             selectScheduleDate(view)
         })
-
-        view.startTime.setOnClickListener {
-            send(AddQuestIntent.PickTime)
-        }
-
-        view.duration.setOnClickListener {
-            send(AddQuestIntent.PickDuration)
-        }
-
-        view.color.setOnClickListener {
-            send(AddQuestIntent.PickColor)
-        }
-
-        view.icon.setOnClickListener {
-            send(AddQuestIntent.PickIcon)
-        }
-
-        view.reminder.setOnClickListener {
-            send(AddQuestIntent.PickReminder)
-        }
-
-        view.done.setOnClickListener {
-            send(AddQuestIntent.SaveQuest(view.questName.text.toString()))
-        }
-
-        view.repeatingPattern.sendOnClickAndExec(AddQuestIntent.PickRepeatingPattern, {
+        view.repeatingPattern.dispatchOnClickAndExec(AddQuestAction.PickRepeatingPattern, {
             selectRepeatingPattern(view)
         })
+
+        view.startTime.dispatchOnClick(AddQuestAction.PickTime)
+        view.duration.dispatchOnClick(AddQuestAction.PickDuration)
+        view.color.dispatchOnClick(AddQuestAction.PickColor)
+        view.icon.dispatchOnClick(AddQuestAction.PickIcon)
+        view.reminder.dispatchOnClick(AddQuestAction.PickReminder)
+        view.done.setOnClickListener {  dispatch(AddQuestAction.Save(view.questName.text.toString()))}
+
         return view
     }
+
+    override fun onCreateLoadAction() = AddQuestAction.Load(currentDate)
 
     private fun selectRepeatingPattern(view: View) {
         TransitionManager.beginDelayedTransition(view as ViewGroup)
@@ -134,11 +113,11 @@ class AddQuestViewController(args: Bundle? = null) :
                 val datePickerDialog = DatePickerDialog(
                     view.context, R.style.Theme_myPoli_AlertDialog,
                     DatePickerDialog.OnDateSetListener { _, year, month, dayOfMonth ->
-                        send(AddQuestIntent.DatePicked(year, month + 1, dayOfMonth))
+                        dispatch(AddQuestAction.DatePicked(LocalDate.of(year, month + 1, dayOfMonth)))
                     }, date.year, date.month.value - 1, date.dayOfMonth
                 )
                 datePickerDialog.setOnCancelListener {
-                    send(AddQuestIntent.DatePickerCanceled)
+                    dispatch(AddQuestAction.DatePickerCanceled)
                 }
                 datePickerDialog.show()
             }
@@ -147,14 +126,14 @@ class AddQuestViewController(args: Bundle? = null) :
                 val startTime = state.time ?: Time.now()
                 val dialog = TimePickerDialog(view.context,
                     TimePickerDialog.OnTimeSetListener { _, hour, minute ->
-                        send(AddQuestIntent.TimePicked(Time.at(hour, minute)))
+                        dispatch(AddQuestAction.TimePicked(Time.at(hour, minute)))
                     }, startTime.hours, startTime.getMinutes(), false
                 )
                 dialog.setButton(
                     Dialog.BUTTON_NEUTRAL,
                     view.context.getString(R.string.do_not_know),
                     { _, _ ->
-                        send(AddQuestIntent.TimePicked(null))
+                        dispatch(AddQuestAction.TimePicked(null))
                     })
                 dialog.show()
             }
@@ -163,7 +142,7 @@ class AddQuestViewController(args: Bundle? = null) :
                 DurationPickerDialogController(object :
                     DurationPickerDialogController.DurationPickedListener {
                     override fun onDurationPicked(minutes: Int) {
-                        send(AddQuestIntent.DurationPicked(minutes))
+                        dispatch(AddQuestAction.DurationPicked(minutes))
                     }
 
                 }, state.duration).showDialog(router, "pick_duration_tag")
@@ -172,18 +151,18 @@ class AddQuestViewController(args: Bundle? = null) :
                 ColorPickerDialogController(object :
                     ColorPickerDialogController.ColorPickedListener {
                     override fun onColorPicked(color: AndroidColor) {
-                        send(AddQuestIntent.ColorPicked(Color.valueOf(color.name)))
+                        dispatch(AddQuestAction.ColorPicked(color.color))
                     }
 
-                }, state.color?.let { AndroidColor.valueOf(it.name) }).showDialog(
+                }, state.color?.androidColor).showDialog(
                     router,
                     "pick_color_tag"
                 )
 
             PICK_ICON ->
                 IconPickerDialogController({ icon ->
-                    send(AddQuestIntent.IconPicked(icon?.let { Icon.valueOf(it.name) }))
-                }, state.icon?.let { AndroidIcon.valueOf(it.name) }).showDialog(
+                    dispatch(AddQuestAction.IconPicked(icon))
+                }, state.icon?.androidIcon).showDialog(
                     router,
                     "pick_icon_tag"
                 )
@@ -192,15 +171,15 @@ class AddQuestViewController(args: Bundle? = null) :
                 ReminderPickerDialogController(object :
                     ReminderPickerDialogController.ReminderPickedListener {
                     override fun onReminderPicked(reminder: ReminderViewModel?) {
-                        send(AddQuestIntent.ReminderPicked(reminder))
+                        dispatch(AddQuestAction.ReminderPicked(reminder))
                     }
                 }, state.reminder).showDialog(router, "pick_reminder_tag")
 
             PICK_REPEATING_PATTERN -> {
                 RepeatingPatternPickerDialogController(
                     state.repeatingPattern,
-                    { send(AddQuestIntent.RepeatingPatternPicked(it)) },
-                    { send(AddQuestIntent.RepeatingPatterPickerCanceled) }
+                    { dispatch(AddQuestAction.RepeatingPatternPicked(it)) },
+                    { dispatch(AddQuestAction.RepeatingPatterPickerCanceled) }
                 )
                 .showDialog(router, "pick_repeating_pattern_tag")
             }
@@ -220,7 +199,7 @@ class AddQuestViewController(args: Bundle? = null) :
                 resetForm(view)
             }
 
-            DEFAULT -> {
+            DATA_LOADED -> {
             }
 
         }
@@ -283,6 +262,5 @@ class AddQuestViewController(args: Bundle? = null) :
             view.questName.requestFocus()
             ViewUtils.showKeyboard(view.questName.context, view.questName)
         }, shortAnimTime)
-        send(AddQuestIntent.LoadData(currentDate))
     }
 }
