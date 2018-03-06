@@ -38,6 +38,7 @@ import mypoli.android.store.GemStoreViewController
 import mypoli.android.store.theme.ThemeStoreViewController
 import org.json.JSONObject
 import space.traversal.kapsule.required
+import timber.log.Timber
 
 
 /**
@@ -176,7 +177,9 @@ class HomeViewController(args: Bundle? = null) :
     }
 
     override fun onAttach(view: View) {
+        Timber.d("AAA HVC before")
         super.onAttach(view)
+        Timber.d("AAA HVC after")
         val childRouter = getChildRouter(view.controllerContainer, null)
         if (!childRouter.hasRootController()) {
             childRouter.setRoot(
