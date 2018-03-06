@@ -2,9 +2,12 @@ package mypoli.android.challenge.show
 
 import mypoli.android.common.AppState
 import mypoli.android.common.BaseViewStateReducer
+import mypoli.android.common.datetime.datesBetween
 import mypoli.android.common.mvi.ViewState
 import mypoli.android.common.redux.Action
 import mypoli.android.quest.Color
+import org.threeten.bp.LocalDate
+import java.util.*
 
 /**
  * Created by Venelin Valkov <venelin@mypoli.fun>
@@ -29,7 +32,11 @@ object ChallengeReducer : BaseViewStateReducer<ChallengeViewState>() {
                     color = Color.GREEN,
                     completedCount = 18,
                     totalCount = 35,
-                    progressPercent = ((18.0 / 35) * 100).toInt()
+                    progressPercent = ((18.0 / 35) * 100).toInt(),
+                    xAxisLabelCount = 5,
+                    chartData = LocalDate.now().minusDays(30).datesBetween(LocalDate.now()).map {
+                        it to 5
+                    }.toMap().toSortedMap()
                 )
             }
             else -> subState
@@ -51,6 +58,8 @@ sealed class ChallengeViewState(open val id: String) : ViewState {
         val color: Color,
         val completedCount: Int,
         val totalCount: Int,
-        val progressPercent: Int
+        val progressPercent: Int,
+        val xAxisLabelCount: Int,
+        val chartData: SortedMap<LocalDate, Int>
     ) : ChallengeViewState(id)
 }

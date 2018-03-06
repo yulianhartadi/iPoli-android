@@ -294,7 +294,7 @@
                 android:textColor="?attr/colorAccent" />
 
             <com.github.mikephil.charting.charts.LineChart
-                android:id="@+id/historyChart"
+                android:id="@+id/progressChart"
                 android:layout_width="match_parent"
                 android:layout_height="320dp" />
 

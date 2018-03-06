@@ -7,10 +7,12 @@ import android.view.View
 import android.view.ViewGroup
 import com.github.mikephil.charting.animation.Easing
 import com.github.mikephil.charting.charts.LineChart
+import com.github.mikephil.charting.components.AxisBase
 import com.github.mikephil.charting.components.YAxis
 import com.github.mikephil.charting.data.Entry
 import com.github.mikephil.charting.data.LineData
 import com.github.mikephil.charting.data.LineDataSet
+import com.github.mikephil.charting.formatter.IndexAxisValueFormatter
 import com.mikepenz.iconics.IconicsDrawable
 import com.mikepenz.material_design_iconic_typeface_library.MaterialDesignIconic
 import kotlinx.android.synthetic.main.controller_challenge.view.*
@@ -18,9 +20,10 @@ import mypoli.android.MainActivity
 import mypoli.android.R
 import mypoli.android.common.ViewUtils
 import mypoli.android.common.redux.android.ReduxViewController
+import mypoli.android.common.text.DateFormatter
 import mypoli.android.common.view.*
 import mypoli.android.repeatingquest.show.RepeatingQuestViewController
-import kotlin.math.roundToInt
+import timber.log.Timber
 
 
 /**
@@ -34,12 +37,12 @@ class ChallengeViewController(args: Bundle? = null) :
 
     private lateinit var challengeId: String
 
-    private val yData = createYData()
-
-    private fun createYData() =
-        (0 until 30).map {
-            getRandom(6f, 0f)
-        }
+//    private val yData = createYData()
+//
+//    private fun createYData() =
+//        (0 until 30).map {
+//            getRandom(5f, 0f)
+//        }
 
     constructor(
         challengeId: String
@@ -59,7 +62,7 @@ class ChallengeViewController(args: Bundle? = null) :
 
         setupAppBar(view)
 
-        setupHistoryChart(view.historyChart)
+        setupHistoryChart(view.progressChart)
 
         return view
     }
@@ -106,118 +109,16 @@ class ChallengeViewController(args: Bundle? = null) :
 
             axisLeft.isEnabled = false
 
-            xAxis.setLabelCount(4, true)
-            xAxis.yOffset = ViewUtils.dpToPx(4f, activity!!)
 
-            val values = mapOf<Int, String>(
-                0 to "10 Feb",
-                10 to "17 Feb",
-                19 to "24 Feb",
-                29 to "03 Mar"
-            )
-            xAxis.setValueFormatter { value, _ ->
-                values[value.roundToInt()]!!.toString()
-            }
+            xAxis.yOffset = ViewUtils.dpToPx(4f, activity!!)
+            xAxis.isGranularityEnabled = true
+            xAxis.granularity = 1f
 
             legend.isEnabled = false
 
-//            val data = CombinedData()
-////            data.setData(createBarData())
-//            data.setData(createLineData())
-
-            data = createLineData()
-            invalidate()
-            animateX(1400, Easing.EasingOption.EaseInOutQuart)
 
         }
 
-    }
-
-//    private fun createBarData(): BarData {
-//        val entries = ArrayList<BarEntry>()
-//        //            val entries2 = ArrayList<BarEntry>()
-//
-//        yData.forEachIndexed { index, y ->
-//            entries.add(BarEntry(index.toFloat(), y.toFloat()))
-//        }
-//
-////        for (index in 0 until 30) {
-////            entries.add(BarEntry(index.toFloat(), getRandom(3f, 0f).toFloat()))
-////
-////            // stacked
-////            //                entries2.add(BarEntry(0f, floatArrayOf(getRandom(13f, 12f), getRandom(13f, 12f))))
-////        }
-//
-//        //            val set1 = BarDataSet(entries1, "Bar 1")
-//        //            set1.color = Color.rgb(60, 220, 78)
-//        //            set1.valueTextColor = Color.rgb(60, 220, 78)
-//        //            set1.valueTextSize = 10f
-//        //            set1.axisDependency = YAxis.AxisDependency.LEFT
-//        //
-//        //            val set2 = BarDataSet(entries2, "")
-//        //            set2.stackLabels = arrayOf("Stack 1", "Stack 2")
-//        //            set2.setColors(*intArrayOf(Color.rgb(61, 165, 255), Color.rgb(23, 197, 255)))
-//        //            set2.valueTextColor = Color.rgb(61, 165, 255)
-//        //            set2.valueTextSize = 10f
-//        //            set2.axisDependency = YAxis.AxisDependency.LEFT
-//
-//        val groupSpace = 0.06f
-//        val barSpace = 0.02f // x2 dataset
-//        val barWidth = 0.45f // x2 dataset
-//        // (0.45 + 0.02) * 2 + 0.06 = 1.00 -> interval per "group"
-//
-//        val dataSet = BarDataSet(entries, "")
-//
-//        dataSet.color = colorRes(R.color.md_green_500)
-//        dataSet.barShadowColor = Color.TRANSPARENT
-//        dataSet.valueTextColor = Color.WHITE
-//
-//        val d = BarData(dataSet)
-//        d.barWidth = barWidth
-//        // make this BarData object grouped
-//        //            d.groupBars(0f, groupSpace, barSpace) // start at x = 0
-//        return d
-//    }
-
-    private fun createLineData(): LineData {
-
-        val entries = ArrayList<Entry>()
-
-        var sum = 25f
-        yData.forEachIndexed { index, y ->
-            entries.add(Entry(index.toFloat(), sum))
-            sum += y
-        }
-
-//        var sum = 0f
-//        for (index in 0 until 30) {
-//            val newVal = getRandom(2f, 0f)
-//            sum += newVal
-//            entries.add(Entry(index.toFloat(), sum))
-//        }
-
-        val set = LineDataSet(entries, "Line DataSet")
-//        set.color = Color.rgb(240, 238, 70)
-        set.color = attrData(R.attr.colorAccent)
-        set.lineWidth = ViewUtils.dpToPx(1f, activity!!)
-        set.setDrawCircles(false)
-        set.setDrawFilled(true)
-        set.fillColor = attrData(R.attr.colorAccent)
-        set.fillAlpha = 160
-//        set.setCircleColor(Color.rgb(240, 238, 70))
-//        set.circleRadius = 5f
-//        set.fillColor = Color.rgb(240, 238, 70)
-        set.mode = LineDataSet.Mode.HORIZONTAL_BEZIER
-        set.setDrawValues(false)
-//        set.valueTextSize = 10f
-//        set.valueTextColor = Color.rgb(240, 238, 70)
-
-        set.axisDependency = YAxis.AxisDependency.RIGHT
-
-        val d = LineData()
-        d.addDataSet(set)
-
-        return d
     }
 
     override fun onCreateLoadAction() = ChallengeAction.Load(challengeId)
@@ -230,6 +131,17 @@ class ChallengeViewController(args: Bundle? = null) :
     override fun onDetach(view: View) {
         (activity as MainActivity).supportActionBar?.setDisplayShowTitleEnabled(true)
         super.onDetach(view)
+    }
+
+    class XAxisValueFormatter(private val labels: List<String>) : IndexAxisValueFormatter(labels) {
+
+        override fun getFormattedValue(value: Float, axis: AxisBase): String {
+            val idx = value.toInt()
+            Timber.d("AAA $value")
+            return if (idx < 0 || idx >= labels.size) {
+                ""
+            } else labels[idx]
+        }
     }
 
     override fun render(state: ChallengeViewState, view: View) =
@@ -252,10 +164,38 @@ class ChallengeViewController(args: Bundle? = null) :
                         .sizeDp(24),
                     null, null, null
                 )
+
+                view.progressChart.xAxis.setLabelCount(state.xAxisLabelCount, true)
+
+                view.progressChart.xAxis.valueFormatter = XAxisValueFormatter(state.xAxisLabels)
+
+                view.progressChart.data = createLineData(state.chartEntries)
+                view.progressChart.invalidate()
+                view.progressChart.animateX(1400, Easing.EasingOption.EaseInOutQuart)
             }
             else -> {
             }
         }
+
+    private fun createLineData(entries: List<Entry>): LineData {
+
+        val set = LineDataSet(entries, "")
+        set.color = attrData(R.attr.colorAccent)
+        set.lineWidth = ViewUtils.dpToPx(1f, activity!!)
+        set.setDrawCircles(false)
+        set.setDrawFilled(true)
+        set.fillColor = attrData(R.attr.colorAccent)
+        set.fillAlpha = 160
+        set.mode = LineDataSet.Mode.HORIZONTAL_BEZIER
+        set.setDrawValues(false)
+
+        set.axisDependency = YAxis.AxisDependency.RIGHT
+
+        val d = LineData()
+        d.addDataSet(set)
+
+        return d
+    }
 
     private fun colorLayout(
         state: ChallengeViewState.Changed,
@@ -275,6 +215,16 @@ class ChallengeViewController(args: Bundle? = null) :
         toolbarTitle = name
         view.name.text = name
     }
+
+    private val ChallengeViewState.Changed.xAxisLabels
+        get() = chartData.keys.map {
+            DateFormatter.formatWithoutYear(activity!!, it)
+        }
+
+    private val ChallengeViewState.Changed.chartEntries
+        get() = chartData.values.mapIndexed { i, value ->
+            Entry(i.toFloat(), value.toFloat())
+        }
 
     private val ChallengeViewState.Changed.color500
         get() = color.androidColor.color500
