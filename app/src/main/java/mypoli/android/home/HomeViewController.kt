@@ -167,7 +167,7 @@ class HomeViewController(args: Bundle? = null) :
 
     override fun onNavigationItemSelected(item: MenuItem): Boolean {
         navigationItemSelected = when {
-            // do not allow re-selecting the same item (creates same Controller again)
+        // do not allow re-selecting the same item (creates same Controller again)
             view!!.navigationView.menu.findItem(item.itemId).isChecked -> null
             else -> item
         }
@@ -180,7 +180,7 @@ class HomeViewController(args: Bundle? = null) :
         Timber.d("AAA HVC before")
         super.onAttach(view)
         Timber.d("AAA HVC after")
-        val childRouter = getChildRouter(view.controllerContainer, null)
+        val childRouter = getChildRouter(view.childControllerContainer, null)
         if (!childRouter.hasRootController()) {
             childRouter.setRoot(
                 RouterTransaction.with(ScheduleViewController())
@@ -191,7 +191,7 @@ class HomeViewController(args: Bundle? = null) :
     }
 
     private fun changeChildController(controller: Controller) {
-        val childRouter = getChildRouter(view!!.controllerContainer, null)
+        val childRouter = getChildRouter(view!!.childControllerContainer, null)
         childRouter.setRoot(
             RouterTransaction.with(controller)
                 .pushChangeHandler(fadeChangeHandler)
