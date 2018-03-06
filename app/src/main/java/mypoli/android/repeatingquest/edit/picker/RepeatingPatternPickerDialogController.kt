@@ -4,6 +4,7 @@ import android.app.DatePickerDialog
 import android.os.Bundle
 import android.support.annotation.ColorRes
 import android.support.annotation.DrawableRes
+import android.support.transition.ChangeBounds
 import android.support.transition.TransitionManager
 import android.support.v4.content.ContextCompat
 import android.support.v7.app.AlertDialog
@@ -24,9 +25,9 @@ import mypoli.android.common.ViewUtils
 import mypoli.android.common.datetime.DateUtils
 import mypoli.android.common.text.DateFormatter
 import mypoli.android.common.view.*
+import mypoli.android.repeatingquest.edit.picker.RepeatingPatternViewState.StateType.*
 import mypoli.android.repeatingquest.entity.RepeatType
 import mypoli.android.repeatingquest.entity.RepeatingPattern
-import mypoli.android.repeatingquest.edit.picker.RepeatingPatternViewState.StateType.*
 import org.threeten.bp.DayOfWeek
 import org.threeten.bp.LocalDate
 import org.threeten.bp.format.TextStyle
@@ -94,7 +95,7 @@ class RepeatingPatternPickerDialogController :
             }
 
             REPEAT_TYPE_CHANGED -> {
-                TransitionManager.beginDelayedTransition(view as ViewGroup)
+                TransitionManager.beginDelayedTransition(view.contentLayout as ViewGroup, ChangeBounds())
                 renderForRepeatType(state, view)
             }
 
