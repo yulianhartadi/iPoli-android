@@ -57,6 +57,9 @@ class PetStoreViewController(args: Bundle? = null) :
         return view
     }
 
+    override fun onCreateLoadAction() =
+        PetStoreAction.Load
+
     override fun onAttach(view: View) {
         showBackButton()
         super.onAttach(view)
