@@ -13,6 +13,7 @@ import com.github.mikephil.charting.data.Entry
 import com.github.mikephil.charting.data.LineData
 import com.github.mikephil.charting.data.LineDataSet
 import com.github.mikephil.charting.formatter.IndexAxisValueFormatter
+import com.mikepenz.google_material_typeface_library.GoogleMaterial
 import com.mikepenz.iconics.IconicsDrawable
 import com.mikepenz.material_design_iconic_typeface_library.MaterialDesignIconic
 import kotlinx.android.synthetic.main.controller_challenge.view.*
@@ -157,25 +158,37 @@ class ChallengeViewController(args: Bundle? = null) :
 
                 view.progressText.text = state.progressText
 
-                view.endDate.setCompoundDrawablesWithIntrinsicBounds(
+                view.difficulty.setCompoundDrawablesWithIntrinsicBounds(
                     IconicsDrawable(view.context)
-                        .icon(MaterialDesignIconic.Icon.gmi_hourglass_alt)
+                        .icon(GoogleMaterial.Icon.gmd_fitness_center)
                         .colorRes(R.color.md_white)
                         .sizeDp(24),
                     null, null, null
                 )
 
-                view.progressChart.xAxis.setLabelCount(state.xAxisLabelCount, true)
+                view.endDate.setCompoundDrawablesWithIntrinsicBounds(
+                    IconicsDrawable(view.context)
+                        .icon(MaterialDesignIconic.Icon.gmi_hourglass_outline)
+                        .colorRes(R.color.md_white)
+                        .sizeDp(24),
+                    null, null, null
+                )
 
-                view.progressChart.xAxis.valueFormatter = XAxisValueFormatter(state.xAxisLabels)
-
-                view.progressChart.data = createLineData(state.chartEntries)
-                view.progressChart.invalidate()
-                view.progressChart.animateX(1400, Easing.EasingOption.EaseInOutQuart)
+                renderChart(state, view)
             }
             else -> {
             }
         }
+
+    private fun renderChart(state: ChallengeViewState.Changed, view: View) {
+        view.progressChart.xAxis.setLabelCount(state.xAxisLabelCount, true)
+
+        view.progressChart.xAxis.valueFormatter = XAxisValueFormatter(state.xAxisLabels)
+
+        view.progressChart.data = createLineData(state.chartEntries)
+        view.progressChart.invalidate()
+        view.progressChart.animateX(1400, Easing.EasingOption.EaseInOutQuart)
+    }
 
     private fun createLineData(entries: List<Entry>): LineData {
 

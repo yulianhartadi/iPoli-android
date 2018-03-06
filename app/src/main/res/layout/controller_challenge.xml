@@ -89,7 +89,35 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="16dp"
-                    android:weightSum="2">
+                    android:weightSum="3">
+
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:orientation="vertical">
+
+                        <TextView
+                            android:id="@+id/difficulty"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center_horizontal"
+                            android:drawablePadding="8dp"
+                            android:gravity="center_vertical"
+                            android:includeFontPadding="false"
+                            android:text="Hard"
+                            android:textAppearance="@style/TextAppearance.AppCompat.Body2" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center_horizontal"
+                            android:layout_marginTop="16dp"
+                            android:text="Difficulty"
+                            android:textAllCaps="true"
+                            android:textAppearance="@style/TextAppearance.AppCompat.Caption"
+                            android:textColor="@color/md_light_text_87" />
+                    </LinearLayout>
 
                     <LinearLayout
                         android:layout_width="0dp"
@@ -103,12 +131,10 @@
                             android:layout_height="wrap_content"
                             android:layout_gravity="center_horizontal"
                             android:drawablePadding="8dp"
-                            android:drawableStart="@drawable/ic_due_date_white_24dp"
                             android:gravity="center_vertical"
                             android:includeFontPadding="false"
                             android:text="Sep 12th"
-                            android:textAppearance="@style/TextAppearance.AppCompat.Body2"
-                            android:textSize="16sp" />
+                            android:textAppearance="@style/TextAppearance.AppCompat.Body2" />
 
                         <TextView
                             android:layout_width="wrap_content"
@@ -117,7 +143,7 @@
                             android:layout_marginTop="16dp"
                             android:text="End Date"
                             android:textAllCaps="true"
-                            android:textAppearance="@style/TextAppearance.AppCompat.Body1"
+                            android:textAppearance="@style/TextAppearance.AppCompat.Caption"
                             android:textColor="@color/md_light_text_87" />
                     </LinearLayout>
 
@@ -135,9 +161,8 @@
                             android:drawableStart="@drawable/ic_event_white_24dp"
                             android:gravity="center_vertical"
                             android:includeFontPadding="false"
-                            android:text="Today at 12:30"
-                            android:textAppearance="@style/TextAppearance.AppCompat.Body2"
-                            android:textSize="16sp" />
+                            android:text="Today"
+                            android:textAppearance="@style/TextAppearance.AppCompat.Body2" />
 
                         <TextView
                             android:layout_width="wrap_content"
@@ -146,9 +171,11 @@
                             android:layout_marginTop="16dp"
                             android:text="Next Date"
                             android:textAllCaps="true"
-                            android:textAppearance="@style/TextAppearance.AppCompat.Body1"
+                            android:textAppearance="@style/TextAppearance.AppCompat.Caption"
                             android:textColor="@color/md_light_text_87" />
                     </LinearLayout>
+
+
                 </LinearLayout>
 
                 <LinearLayout
