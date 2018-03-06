@@ -290,8 +290,13 @@
                 android:layout_height="48dp"
                 android:layout_marginStart="16dp"
                 android:gravity="center_vertical"
-                android:text="@string/history"
+                android:text="Progress over time"
                 android:textColor="?attr/colorAccent" />
+
+            <com.github.mikephil.charting.charts.LineChart
+                android:id="@+id/historyChart"
+                android:layout_width="match_parent"
+                android:layout_height="320dp" />
 
         </LinearLayout>
 
