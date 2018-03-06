@@ -27,7 +27,8 @@ class RepeatingQuestHistoryUseCaseSpek : Spek({
         fun executeUseCase(
             questRepo: QuestRepository,
             repeatingQuest: RepeatingQuest,
-            start: LocalDate, end: LocalDate
+            start: LocalDate, end: LocalDate,
+            currentDate: LocalDate = LocalDate.now()
         ) =
             CreateRepeatingQuestHistoryUseCase(questRepo,
                 mock {
@@ -36,7 +37,8 @@ class RepeatingQuestHistoryUseCaseSpek : Spek({
                 CreateRepeatingQuestHistoryUseCase.Params(
                     "",
                     start,
-                    end
+                    end,
+                    currentDate
                 )
             )
 
@@ -108,7 +110,7 @@ class RepeatingQuestHistoryUseCaseSpek : Spek({
             val result = executeUseCase(
                 questRepoMock, TestUtil.repeatingQuest.copy(
                     repeatingPattern = RepeatingPattern.Weekly(setOf(DayOfWeek.MONDAY))
-                ), date, date
+                ), date, date, date.minusDays(1)
             ).data
             result[date].`should equal`(CreateRepeatingQuestHistoryUseCase.DateHistory.EMPTY)
         }
