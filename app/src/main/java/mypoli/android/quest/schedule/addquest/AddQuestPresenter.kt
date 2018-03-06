@@ -123,7 +123,6 @@ class AddQuestPresenter(
                         repeatingPattern = state.repeatingPattern!!
                     )
 
-                    saveRepeatingQuestUseCase.execute(rqParams)
 
                     val errors = Validator.validate(rqParams)
                         .check<RepeatingQuestSideEffect.ValidationError> {
@@ -135,6 +134,7 @@ class AddQuestPresenter(
                     if (errors.isNotEmpty()) {
                         state.copy(type = VALIDATION_ERROR_EMPTY_NAME)
                     } else {
+                        saveRepeatingQuestUseCase.execute(rqParams)
                         AddQuestViewState(
                             type = QUEST_SAVED,
                             originalDate = state.originalDate,
