@@ -180,14 +180,20 @@ class HomeViewController(args: Bundle? = null) :
         Timber.d("AAA HVC before")
         super.onAttach(view)
         Timber.d("AAA HVC after")
+        view.navigationView.bringToFront()
         val childRouter = getChildRouter(view.childControllerContainer, null)
         if (!childRouter.hasRootController()) {
             childRouter.setRoot(
-                RouterTransaction.with(ScheduleViewController())
+                RouterTransaction.with(RepeatingQuestListViewController())
                     .pushChangeHandler(fadeChangeHandler)
                     .popChangeHandler(fadeChangeHandler)
             )
         }
+    }
+
+    override fun onDetach(view: View) {
+        view.rootCoordinator.bringToFront()
+        super.onDetach(view)
     }
 
     private fun changeChildController(controller: Controller) {
