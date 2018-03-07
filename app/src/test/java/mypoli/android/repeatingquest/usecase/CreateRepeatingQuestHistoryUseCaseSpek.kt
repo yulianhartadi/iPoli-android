@@ -110,7 +110,7 @@ class CreateRepeatingQuestHistoryUseCaseSpek : Spek({
             }
             val result = executeUseCase(
                 questRepoMock, TestUtil.repeatingQuest.copy(
-                    repeatingPattern = RepeatingPattern.Weekly(setOf(DayOfWeek.MONDAY))
+                    repeatingPattern = RepeatingPattern.Weekly(setOf(DayOfWeek.MONDAY), date)
                 ), date, date, date.minusDays(1)
             ).data
             result[date].`should equal`(CreateRepeatingQuestHistoryUseCase.DateHistory.EMPTY)
