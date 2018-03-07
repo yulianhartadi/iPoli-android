@@ -459,7 +459,6 @@ class AgendaSideEffect : AppSideEffect() {
         changeCurrentAgendaItem: Boolean
     ) {
 
-        var isFirstData = true
         launch(UI) {
             agendaItemsChannel?.cancel()
             agendaItemsChannel = questRepository.listenForScheduledBetween(
@@ -492,10 +491,9 @@ class AgendaSideEffect : AppSideEffect() {
                             start = start,
                             end = end,
                             agendaItems = agendaItems,
-                            currentAgendaItemDate = if (changeCurrentAgendaItem && isFirstData) agendaDate else null
+                            currentAgendaItemDate = if (changeCurrentAgendaItem) agendaDate else null
                         )
                     )
-                    isFirstData = false
                 }
             }
         }
