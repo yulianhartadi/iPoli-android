@@ -1,7 +1,6 @@
 package mypoli.android.quest.schedule
 
 import android.content.Context
-import mypoli.android.R
 import mypoli.android.common.AppState
 import mypoli.android.common.BaseViewStateReducer
 import mypoli.android.common.mvi.ViewState
@@ -151,11 +150,6 @@ data class ScheduleViewState(
     }
 }
 
-val ScheduleViewState.viewModeIcon
-    get() = if (viewMode == ScheduleViewState.ViewMode.CALENDAR)
-        R.drawable.ic_format_list_bulleted_white_24dp
-    else
-        R.drawable.ic_event_white_24dp
 
 val ScheduleViewState.viewModeTitle
     get() = if (viewMode == ScheduleViewState.ViewMode.CALENDAR) "Agenda" else "Calendar"

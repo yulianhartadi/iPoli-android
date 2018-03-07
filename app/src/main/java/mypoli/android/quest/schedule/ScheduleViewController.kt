@@ -6,12 +6,16 @@ import android.animation.AnimatorSet
 import android.animation.ObjectAnimator
 import android.content.res.ColorStateList
 import android.os.Bundle
-import android.support.annotation.DrawableRes
 import android.support.design.widget.FloatingActionButton
 import android.view.*
 import android.view.animation.AccelerateDecelerateInterpolator
 import com.bluelinelabs.conductor.RouterTransaction
 import com.bluelinelabs.conductor.changehandler.FadeChangeHandler
+import com.mikepenz.entypo_typeface_library.Entypo
+import com.mikepenz.google_material_typeface_library.GoogleMaterial
+import com.mikepenz.iconics.IconicsDrawable
+import com.mikepenz.iconics.typeface.IIcon
+import com.mikepenz.ionicons_typeface_library.Ionicons
 import kotlinx.android.synthetic.main.controller_schedule.view.*
 import kotlinx.android.synthetic.main.view_calendar_toolbar.view.*
 import mypoli.android.R
@@ -38,8 +42,7 @@ class ScheduleViewController(args: Bundle? = null) :
 
     private lateinit var calendarToolbar: ViewGroup
 
-    @DrawableRes
-    private var viewModeIcon = R.drawable.ic_format_list_bulleted_white_24dp
+    private var viewModeIcon: IIcon = Entypo.Icon.ent_text_document
 
     private var viewModeTitle = "Agenda"
 
@@ -71,7 +74,12 @@ class ScheduleViewController(args: Bundle? = null) :
     }
 
     override fun onPrepareOptionsMenu(menu: Menu) {
-        menu.findItem(R.id.actionViewMode).setIcon(viewModeIcon).setTitle(viewModeTitle)
+        menu.findItem(R.id.actionViewMode).setIcon(
+            IconicsDrawable(view!!.context)
+                .icon(viewModeIcon)
+                .colorRes(R.color.md_white)
+                .sizeDp(24)
+        ).setTitle(viewModeTitle)
         super.onPrepareOptionsMenu(menu)
     }
 
@@ -388,4 +396,10 @@ class ScheduleViewController(args: Bundle? = null) :
     fun onStopEdit() {
         view!!.addQuest.visible = true
     }
+
+    private val ScheduleViewState.viewModeIcon : IIcon
+        get() = if (viewMode == ScheduleViewState.ViewMode.CALENDAR)
+            Entypo.Icon.ent_text_document
+        else
+            GoogleMaterial.Icon.gmd_event
 }
