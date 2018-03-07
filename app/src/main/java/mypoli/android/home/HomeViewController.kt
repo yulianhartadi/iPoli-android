@@ -68,7 +68,7 @@ class HomeViewController(args: Bundle? = null) :
         setHasOptionsMenu(true)
 
         val contentView = inflater.inflate(R.layout.controller_home, container, false)
-        setToolbar(contentView.toolbar)
+
 
         contentView.navigationView.setNavigationItemSelectedListener(this)
         contentView.navigationView.menu.findItem(R.id.signIn).isVisible = showSignIn
@@ -95,9 +95,7 @@ class HomeViewController(args: Bundle? = null) :
 
         contentView.drawerLayout.addDrawerListener(actionBarDrawerToggle)
 
-        val actionBar = (activity as MainActivity).supportActionBar
-        actionBar?.setDisplayHomeAsUpEnabled(true)
-        actionBarDrawerToggle.syncState()
+
 
         return contentView
     }
@@ -177,10 +175,19 @@ class HomeViewController(args: Bundle? = null) :
     }
 
     override fun onAttach(view: View) {
+
+
+        setToolbar(view.toolbar)
+        val actionBar = (activity as MainActivity).supportActionBar
+        actionBar?.setDisplayHomeAsUpEnabled(true)
+        actionBarDrawerToggle.syncState()
+
         Timber.d("AAA HVC before")
         super.onAttach(view)
         Timber.d("AAA HVC after")
         view.navigationView.bringToFront()
+
+
         val childRouter = getChildRouter(view.childControllerContainer, null)
         if (!childRouter.hasRootController()) {
             childRouter.setRoot(

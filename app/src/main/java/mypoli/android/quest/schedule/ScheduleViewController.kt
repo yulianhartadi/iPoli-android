@@ -55,11 +55,14 @@ class ScheduleViewController(args: Bundle? = null) :
 
         setChildController(view.contentContainer, CalendarViewController(LocalDate.now()))
 
+        return view
+    }
+
+    override fun onAttach(view: View) {
+        super.onAttach(view)
         calendarToolbar = addToolbarView(R.layout.view_calendar_toolbar) as ViewGroup
 
         initDayPicker(view, calendarToolbar)
-
-        return view
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {

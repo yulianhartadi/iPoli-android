@@ -43,7 +43,7 @@ class RepeatingQuestListViewController(args: Bundle? = null) :
         container: ViewGroup,
         savedViewState: Bundle?
     ): View {
-        toolbarTitle = stringRes(R.string.drawer_repeating_quests)
+
         val view = inflater.inflate(
             R.layout.controller_repeating_quest_list, container, false
         )
@@ -60,6 +60,7 @@ class RepeatingQuestListViewController(args: Bundle? = null) :
         Timber.d("AAA RQL before")
         super.onAttach(view)
         Timber.d("AAA RQL after")
+        toolbarTitle = stringRes(R.string.drawer_repeating_quests)
         activity?.window?.navigationBarColor = attrData(R.attr.colorPrimary)
         activity?.window?.statusBarColor = attrData(R.attr.colorPrimaryDark)
     }
