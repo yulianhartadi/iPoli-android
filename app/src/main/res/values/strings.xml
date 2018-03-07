@@ -1150,4 +1150,8 @@
     <string name="times">times</string>
     <string name="quest_color_question">What color?</string>
     <string name="quest_icon_question">Want an icon?</string>
+    <string name="pattern_picker_flexible_weekly_no_selected_days">I\'ll schedule it at the perfect days of the week</string>
+    <string name="pattern_picker_flexible_weekly_selected_days">I\'ll schedule it at your preferred days of the week</string>
+    <string name="pattern_picker_flexible_monthly_no_selected_days">I\'ll schedule it at the perfect days of the month</string>
+    <string name="pattern_picker_flexible_monthly_selected_days">I\'ll schedule it at your preferred days of the month</string>
 </resources>

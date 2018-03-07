@@ -19,7 +19,7 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <ImageView
-        android:id="@+id/dialogHeaderIcon"
+        android:id="@+id/rateDialogHeaderIcon"
         android:layout_width="48dp"
         android:layout_height="48dp"
         android:layout_gravity="center_vertical"
@@ -34,7 +34,7 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
-        android:id="@+id/dialogHeaderTitle"
+        android:id="@+id/rateDialogHeaderTitle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center_vertical"
@@ -47,7 +47,7 @@
         app:layout_constraintBottom_toBottomOf="@+id/view"
         app:layout_constraintEnd_toEndOf="@+id/view"
         app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toEndOf="@+id/dialogHeaderIcon"
+        app:layout_constraintStart_toEndOf="@+id/rateDialogHeaderIcon"
         app:layout_constraintTop_toTopOf="parent"
         tools:text="Hi hero" />
 
