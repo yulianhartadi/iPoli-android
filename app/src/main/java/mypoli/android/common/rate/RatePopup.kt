@@ -28,11 +28,6 @@ import org.json.JSONObject
 import space.traversal.kapsule.required
 import kotlin.coroutines.experimental.CoroutineContext
 
-
-/**
- * Created by vini on 12/20/17.
- */
-
 sealed class RateIntent : Intent {
     object LoadData : RateIntent()
     data class ChangePlayer(val player: Player) : RateIntent()
@@ -121,7 +116,7 @@ class RatePopup :
 
         when (state.type) {
             DATA_CHANGED -> {
-                view.dialogHeaderIcon.setImageResource(AndroidPetAvatar.valueOf(state.petAvatar!!.name).headImage)
+                view.rateDialogHeaderIcon.setImageResource(AndroidPetAvatar.valueOf(state.petAvatar!!.name).headImage)
                 neutral.visibility = View.VISIBLE
 
                 positive.setOnClickListener {
@@ -196,7 +191,7 @@ class RatePopup :
     }
 
     private fun changeTitle(view: View, @StringRes title: Int) {
-        view.dialogHeaderTitle.setText(title)
+        view.rateDialogHeaderTitle.setText(title)
     }
 
     private fun saveDoNotShowAgainPref(context: Context) {

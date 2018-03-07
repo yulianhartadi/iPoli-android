@@ -16,14 +16,11 @@ import mypoli.android.player.Player
  * on 12/4/17.
  */
 sealed class PetStoreAction : Action {
+    object Load : PetStoreAction()
     data class BuyPet(val pet: PetAvatar) : PetStoreAction()
-
     data class UnlockPet(val pet: PetAvatar) : PetStoreAction()
-
     data class ChangePet(val pet: PetAvatar) : PetStoreAction()
-
     object PetBought : PetStoreAction()
-
     object PetTooExpensive : PetStoreAction()
 }
 
@@ -40,12 +37,14 @@ object PetStoreReducer : BaseViewStateReducer<PetStoreViewState>() {
             playerGems = state.dataState.player?.gems ?: 0
         )
         return when (action) {
+            PetStoreAction.Load -> {
+                state.dataState.player?.let {
+                    createDataChangedState(petStoreState, it)
+                } ?: petStoreState
+            }
+
             is DataLoadedAction.PlayerChanged -> {
-                val player = action.player
-                petStoreState.copy(
-                    type = PetStoreViewState.StateType.DATA_CHANGED,
-                    pets = createPetModels(player)
-                )
+                createDataChangedState(petStoreState, action.player)
             }
 
             is PetStoreAction.BuyPet -> {
@@ -78,6 +77,16 @@ object PetStoreReducer : BaseViewStateReducer<PetStoreViewState>() {
             }
             else -> petStoreState
         }
+    }
+
+    private fun createDataChangedState(
+        petStoreState: PetStoreViewState,
+        player: Player
+    ): PetStoreViewState {
+        return petStoreState.copy(
+            type = PetStoreViewState.StateType.DATA_CHANGED,
+            pets = createPetModels(player)
+        )
     }
 
     private fun createPetModels(player: Player) =

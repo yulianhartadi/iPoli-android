@@ -7,6 +7,7 @@
 
     <android.support.constraint.ConstraintLayout
         android:layout_width="match_parent"
+        android:id="@+id/contentLayout"
         android:layout_height="wrap_content">
 
 
@@ -106,7 +107,7 @@
             app:layout_constraintTop_toBottomOf="@+id/rpEvery" />
 
         <TextView
-            android:id="@+id/rpMessage"
+            android:id="@+id/rpPetSchedulingHint"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginEnd="16dp"
@@ -178,7 +179,7 @@
             android:layout_marginStart="24dp"
             android:layout_marginTop="24dp"
             app:layout_constraintStart_toEndOf="@+id/textView6"
-            app:layout_constraintTop_toBottomOf="@+id/rpMessage"
+            app:layout_constraintTop_toBottomOf="@+id/rpPetSchedulingHint"
             tools:text="Today" />
 
         <Button

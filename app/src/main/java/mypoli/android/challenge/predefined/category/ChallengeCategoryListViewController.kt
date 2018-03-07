@@ -35,7 +35,7 @@ class ChallengeCategoryListViewController(args: Bundle? = null) :
         container: ViewGroup,
         savedViewState: Bundle?
     ): View {
-        toolbarTitle = stringRes(R.string.drawer_challenges)
+
         val view = inflater.inflate(R.layout.controller_challenge_category_list, container, false)
         view.healthAndFitness.setOnClickListener { showChallengeList(HEALTH_AND_FITNESS) }
         view.buildSkill.setOnClickListener { showChallengeList(BUILD_SKILL) }
@@ -43,6 +43,11 @@ class ChallengeCategoryListViewController(args: Bundle? = null) :
         view.meTime.setOnClickListener { showChallengeList(ME_TIME) }
         view.organizeLife.setOnClickListener { showChallengeList(ORGANIZE_MY_LIFE) }
         return view
+    }
+
+    override fun onAttach(view: View) {
+        toolbarTitle = stringRes(R.string.drawer_challenges)
+        super.onAttach(view)
     }
 
     private fun showChallengeList(category: PredefinedChallengeData.Category) {

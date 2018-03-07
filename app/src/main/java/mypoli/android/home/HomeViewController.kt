@@ -67,7 +67,7 @@ class HomeViewController(args: Bundle? = null) :
         setHasOptionsMenu(true)
 
         val contentView = inflater.inflate(R.layout.controller_home, container, false)
-        setToolbar(contentView.toolbar)
+
 
         contentView.navigationView.setNavigationItemSelectedListener(this)
         contentView.navigationView.menu.findItem(R.id.signIn).isVisible = showSignIn
@@ -94,9 +94,7 @@ class HomeViewController(args: Bundle? = null) :
 
         contentView.drawerLayout.addDrawerListener(actionBarDrawerToggle)
 
-        val actionBar = (activity as MainActivity).supportActionBar
-        actionBar?.setDisplayHomeAsUpEnabled(true)
-        actionBarDrawerToggle.syncState()
+
 
         return contentView
     }
@@ -172,12 +170,20 @@ class HomeViewController(args: Bundle? = null) :
         }
 
         view!!.drawerLayout.closeDrawer(GravityCompat.START)
-        return false;
+        return false
     }
 
     override fun onAttach(view: View) {
+        setToolbar(view.toolbar)
+        val actionBar = (activity as MainActivity).supportActionBar
+        actionBar?.setDisplayHomeAsUpEnabled(true)
+        actionBarDrawerToggle.syncState()
+
         super.onAttach(view)
-        val childRouter = getChildRouter(view.controllerContainer, null)
+        view.navigationView.bringToFront()
+
+
+        val childRouter = getChildRouter(view.childControllerContainer, null)
         if (!childRouter.hasRootController()) {
             childRouter.setRoot(
                 RouterTransaction.with(ScheduleViewController())
@@ -187,8 +193,13 @@ class HomeViewController(args: Bundle? = null) :
         }
     }
 
+    override fun onDetach(view: View) {
+        view.rootCoordinator.bringToFront()
+        super.onDetach(view)
+    }
+
     private fun changeChildController(controller: Controller) {
-        val childRouter = getChildRouter(view!!.controllerContainer, null)
+        val childRouter = getChildRouter(view!!.childControllerContainer, null)
         childRouter.setRoot(
             RouterTransaction.with(controller)
                 .pushChangeHandler(fadeChangeHandler)

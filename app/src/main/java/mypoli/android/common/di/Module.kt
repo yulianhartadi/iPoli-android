@@ -42,7 +42,6 @@ import mypoli.android.quest.job.AndroidJobQuestCompleteScheduler
 import mypoli.android.quest.job.AndroidJobReminderScheduler
 import mypoli.android.quest.job.QuestCompleteScheduler
 import mypoli.android.quest.job.ReminderScheduler
-import mypoli.android.quest.schedule.addquest.AddQuestPresenter
 import mypoli.android.quest.schedule.agenda.usecase.CreateAgendaItemsUseCase
 import mypoli.android.quest.schedule.agenda.usecase.FindAgendaDatesUseCase
 import mypoli.android.quest.usecase.*
@@ -392,7 +391,6 @@ interface UseCaseModule {
 
 interface PresenterModule {
     val reminderPickerPresenter: ReminderPickerDialogPresenter
-    val addQuestPresenter: AddQuestPresenter
     val petPresenter: PetPresenter
     val petDialogPresenter: PetDialogPresenter
     val themeStorePresenter: ThemeStorePresenter
@@ -449,12 +447,7 @@ class AndroidPresenterModule : PresenterModule, Injects<Module> {
             findPetUseCase,
             job
         )
-    override val addQuestPresenter
-        get() = AddQuestPresenter(
-            saveQuestUseCase,
-            saveRepeatingQuestUseCase,
-            job
-        )
+
     override val petPresenter
         get() = PetPresenter(
             listenForPlayerChangesUseCase,
@@ -562,7 +555,8 @@ class AndroidStateStoreModule : StateStoreModule, Injects<Module> {
                 ChangePetSideEffect(),
                 BuyPetSideEffect(),
                 DayViewSideEffect(),
-                RepeatingQuestSideEffect()
+                RepeatingQuestSideEffect(),
+                AddQuestSideEffect()
             ),
             sideEffectExecutor = CoroutineSideEffectExecutor(job + CommonPool)
         )

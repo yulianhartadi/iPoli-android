@@ -5,6 +5,7 @@ import kotlinx.coroutines.experimental.android.UI
 import kotlinx.coroutines.experimental.channels.ReceiveChannel
 import kotlinx.coroutines.experimental.channels.consumeEach
 import kotlinx.coroutines.experimental.launch
+import mypoli.android.Constants
 import mypoli.android.challenge.predefined.category.list.ChallengeListForCategoryAction
 import mypoli.android.challenge.usecase.BuyChallengeUseCase
 import mypoli.android.common.DataLoadedAction.PlayerChanged
@@ -23,8 +24,11 @@ import mypoli.android.quest.Category
 import mypoli.android.quest.Color
 import mypoli.android.quest.Quest
 import mypoli.android.quest.Reminder
+import mypoli.android.quest.reminder.picker.ReminderViewModel
 import mypoli.android.quest.schedule.ScheduleAction
 import mypoli.android.quest.schedule.ScheduleViewState
+import mypoli.android.quest.schedule.addquest.AddQuestAction
+import mypoli.android.quest.schedule.addquest.AddQuestViewState
 import mypoli.android.quest.schedule.agenda.AgendaAction
 import mypoli.android.quest.schedule.agenda.AgendaReducer
 import mypoli.android.quest.schedule.agenda.AgendaViewState
@@ -34,16 +38,15 @@ import mypoli.android.quest.schedule.calendar.CalendarAction
 import mypoli.android.quest.schedule.calendar.CalendarViewState
 import mypoli.android.quest.schedule.calendar.dayview.view.DayViewAction
 import mypoli.android.quest.schedule.calendar.dayview.view.DayViewState
+import mypoli.android.quest.timer.usecase.CompleteTimeRangeUseCase
 import mypoli.android.quest.usecase.CompleteQuestUseCase
 import mypoli.android.quest.usecase.LoadScheduleForDateUseCase
 import mypoli.android.quest.usecase.Result
 import mypoli.android.quest.usecase.SaveQuestUseCase
-import mypoli.android.quest.reminder.picker.ReminderViewModel
 import mypoli.android.repeatingquest.entity.RepeatingQuest
 import mypoli.android.repeatingquest.usecase.CreatePlaceholderQuestsForRepeatingQuestsUseCase
 import mypoli.android.repeatingquest.usecase.FindNextDateForRepeatingQuestUseCase
 import mypoli.android.repeatingquest.usecase.FindPeriodProgressForRepeatingQuestUseCase
-import mypoli.android.quest.timer.usecase.CompleteTimeRangeUseCase
 import org.threeten.bp.LocalDate
 import org.threeten.bp.LocalDateTime
 import org.threeten.bp.LocalTime
@@ -212,32 +215,82 @@ class DayViewSideEffect : AppSideEffect() {
         }
     }
 
-    private fun createDefaultReminder(scheduledDate: LocalDate, startMinute: Int) =
-        Reminder("", Time.of(startMinute), scheduledDate)
-
-    private fun createQuestReminder(
-        reminder: ReminderViewModel?,
-        scheduledDate: LocalDate,
-        eventStartMinute: Int
-    ) =
-        reminder?.let {
-            val time = Time.of(eventStartMinute)
-            val questDateTime =
-                LocalDateTime.of(scheduledDate, LocalTime.of(time.hours, time.getMinutes()))
-            val reminderDateTime = questDateTime.minusMinutes(it.minutesFromStart)
-            val toLocalTime = reminderDateTime.toLocalTime()
-            Reminder(
-                it.message,
-                Time.at(toLocalTime.hour, toLocalTime.minute),
-                reminderDateTime.toLocalDate()
-            )
-        }
-
     override fun canHandle(action: Action): Boolean {
         val a = (action as? NamespaceAction)?.source ?: action
         return a is DayViewAction || a is LoadDataAction.All
     }
 }
+
+class AddQuestSideEffect : AppSideEffect() {
+
+    private val saveQuestUseCase by required { saveQuestUseCase }
+
+    override suspend fun doExecute(action: Action, state: AppState) {
+        if (action is AddQuestAction.Save) {
+            val addQuestState = state.stateFor(AddQuestViewState::class.java)
+            if (addQuestState.isRepeating) {
+                dispatch(AddQuestAction.SaveRepeatingQuest(action.name))
+            } else {
+                val scheduledDate = addQuestState.date ?: LocalDate.now()
+                val reminder = addQuestState.time?.let {
+                    if (addQuestState.reminder != null) {
+                        createQuestReminder(
+                            addQuestState.reminder,
+                            scheduledDate,
+                            it.toMinuteOfDay()
+                        )
+                    } else {
+                        createDefaultReminder(scheduledDate, it.toMinuteOfDay())
+                    }
+                }
+                val questParams = SaveQuestUseCase.Parameters(
+                    name = action.name,
+                    color = addQuestState.color ?: Color.GREEN,
+                    icon = addQuestState.icon,
+                    category = Category("WELLNESS", Color.GREEN),
+                    scheduledDate = scheduledDate,
+                    startTime = addQuestState.time,
+                    duration = addQuestState.duration ?: Constants.QUEST_MIN_DURATION,
+                    reminder = reminder
+                )
+
+                val result = saveQuestUseCase.execute(questParams)
+
+                when (result) {
+                    is Result.Invalid -> {
+                        dispatch(AddQuestAction.SaveInvalidQuest(result.error))
+                    }
+                    else -> dispatch(AddQuestAction.QuestSaved)
+                }
+            }
+        }
+    }
+
+    override fun canHandle(action: Action) =
+        action is AddQuestAction
+
+}
+
+fun createDefaultReminder(scheduledDate: LocalDate, startMinute: Int) =
+    Reminder("", Time.of(startMinute), scheduledDate)
+
+fun createQuestReminder(
+    reminder: ReminderViewModel?,
+    scheduledDate: LocalDate,
+    eventStartMinute: Int
+) =
+    reminder?.let {
+        val time = Time.of(eventStartMinute)
+        val questDateTime =
+            LocalDateTime.of(scheduledDate, LocalTime.of(time.hours, time.getMinutes()))
+        val reminderDateTime = questDateTime.minusMinutes(it.minutesFromStart)
+        val toLocalTime = reminderDateTime.toLocalTime()
+        Reminder(
+            it.message,
+            Time.at(toLocalTime.hour, toLocalTime.minute),
+            reminderDateTime.toLocalDate()
+        )
+    }
 
 class BuyPredefinedChallengeSideEffect : AppSideEffect() {
 
@@ -406,7 +459,6 @@ class AgendaSideEffect : AppSideEffect() {
         changeCurrentAgendaItem: Boolean
     ) {
 
-        var isFirstData = true
         launch(UI) {
             agendaItemsChannel?.cancel()
             agendaItemsChannel = questRepository.listenForScheduledBetween(
@@ -439,10 +491,9 @@ class AgendaSideEffect : AppSideEffect() {
                             start = start,
                             end = end,
                             agendaItems = agendaItems,
-                            currentAgendaItemDate = if (changeCurrentAgendaItem && isFirstData) agendaDate else null
+                            currentAgendaItemDate = if (changeCurrentAgendaItem) agendaDate else null
                         )
                     )
-                    isFirstData = false
                 }
             }
         }

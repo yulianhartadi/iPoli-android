@@ -2,8 +2,9 @@ package mypoli.android.repeatingquest.edit.picker
 
 import android.app.DatePickerDialog
 import android.os.Bundle
-import android.support.annotation.ColorRes
+import android.support.annotation.ColorInt
 import android.support.annotation.DrawableRes
+import android.support.transition.ChangeBounds
 import android.support.transition.TransitionManager
 import android.support.v4.content.ContextCompat
 import android.support.v7.app.AlertDialog
@@ -18,15 +19,15 @@ import android.widget.ArrayAdapter
 import android.widget.Button
 import android.widget.TextView
 import kotlinx.android.synthetic.main.dialog_repeating_picker.view.*
-import kotlinx.android.synthetic.main.popup_rate.view.*
+import kotlinx.android.synthetic.main.view_dialog_header.view.*
 import mypoli.android.R
 import mypoli.android.common.ViewUtils
 import mypoli.android.common.datetime.DateUtils
 import mypoli.android.common.text.DateFormatter
 import mypoli.android.common.view.*
+import mypoli.android.repeatingquest.edit.picker.RepeatingPatternViewState.StateType.*
 import mypoli.android.repeatingquest.entity.RepeatType
 import mypoli.android.repeatingquest.entity.RepeatingPattern
-import mypoli.android.repeatingquest.edit.picker.RepeatingPatternViewState.StateType.*
 import org.threeten.bp.DayOfWeek
 import org.threeten.bp.LocalDate
 import org.threeten.bp.format.TextStyle
@@ -85,7 +86,7 @@ class RepeatingPatternPickerDialogController :
 
                 renderForRepeatType(state, view)
 
-                view.rpMessage.setCompoundDrawablesWithIntrinsicBounds(
+                view.rpPetSchedulingHint.setCompoundDrawablesWithIntrinsicBounds(
                     ContextCompat.getDrawable(view.context, state.petAvatar!!),
                     null,
                     null,
@@ -94,7 +95,10 @@ class RepeatingPatternPickerDialogController :
             }
 
             REPEAT_TYPE_CHANGED -> {
-                TransitionManager.beginDelayedTransition(view as ViewGroup)
+                TransitionManager.beginDelayedTransition(
+                    view.contentLayout as ViewGroup,
+                    ChangeBounds()
+                )
                 renderForRepeatType(state, view)
             }
 
@@ -308,10 +312,12 @@ class RepeatingPatternPickerDialogController :
         view: View,
         state: RepeatingPatternViewState
     ) {
-        if (state.isFlexible) {
-            ViewUtils.showViews(view.rpMessage)
+        if (state.petSchedulingHint == null) {
+            ViewUtils.goneViews(view.rpPetSchedulingHint)
+
         } else {
-            ViewUtils.goneViews(view.rpMessage)
+            ViewUtils.showViews(view.rpPetSchedulingHint)
+            view.rpPetSchedulingHint.text = state.petSchedulingHint
         }
     }
 
@@ -406,7 +412,7 @@ class RepeatingPatternPickerDialogController :
                     }
 
                 }
-            }
+        }
 
     }
 
@@ -441,7 +447,7 @@ class RepeatingPatternPickerDialogController :
     data class WeekDayViewModel(
         val text: String,
         @DrawableRes val background: Int,
-        @ColorRes val textColor: Int,
+        @ColorInt val textColor: Int,
         val isSelected: Boolean,
         val weekDay: DayOfWeek
     )
@@ -454,13 +460,9 @@ class RepeatingPatternPickerDialogController :
             val vm = viewModels[position]
             val button = holder.itemView as Button
             button.text = vm.text
-            val (background, textColor) = if (vm.isSelected)
-                Pair(R.drawable.circle_accent, colorRes(R.color.md_white))
-            else
-                Pair(R.drawable.circle_normal, attrData(R.attr.colorAccent))
 
-            button.setBackgroundResource(background)
-            button.setTextColor(textColor)
+            button.setBackgroundResource(vm.background)
+            button.setTextColor(vm.textColor)
             button.dispatchOnClick(RepeatingPatternAction.ToggleWeekDay(vm.weekDay))
         }
 
@@ -485,7 +487,7 @@ class RepeatingPatternPickerDialogController :
     data class MonthDayViewModel(
         val text: String,
         @DrawableRes val background: Int,
-        val isSelected: Boolean, val day: Int
+        @ColorInt val textColor: Int, val isSelected: Boolean, val day: Int
     )
 
     inner class MonthDayAdapter(private var viewModels: List<MonthDayViewModel> = listOf()) :
@@ -496,6 +498,7 @@ class RepeatingPatternPickerDialogController :
             val vm = viewModels[position]
             val view = holder.itemView as TextView
             view.text = vm.text
+            view.setTextColor(vm.textColor)
             view.setBackgroundResource(vm.background)
             view.dispatchOnClick(RepeatingPatternAction.ToggleMonthDay(vm.day))
         }
@@ -513,7 +516,6 @@ class RepeatingPatternPickerDialogController :
                     false
                 )
             )
-
     }
 
     private fun RepeatingPatternViewState.weekDaysViewModels() =
@@ -541,16 +543,45 @@ class RepeatingPatternPickerDialogController :
         (1..31).map {
             val isSelected = selectedMonthDays.contains(it)
             val background = if (isSelected)
-                R.drawable.bordered_circle_accent_background
+                R.drawable.circle_accent
             else
                 attrResourceId(android.R.attr.selectableItemBackgroundBorderless)
+
+            val textColor = if (isSelected)
+                R.color.md_white
+            else
+                R.color.md_dark_text_54
 
             RepeatingPatternPickerDialogController.MonthDayViewModel(
                 text = it.toString(),
                 background = background,
                 isSelected = isSelected,
+                textColor = colorRes(textColor),
                 day = it
             )
+        }
+
+    private val RepeatingPatternViewState.petSchedulingHint: String?
+        get() {
+            if (!isFlexible) {
+                return null
+            }
+
+            if (repeatType == RepeatType.WEEKLY) {
+                return if (selectedWeekDays.isEmpty()) {
+                    stringRes(R.string.pattern_picker_flexible_weekly_no_selected_days)
+                } else {
+                    stringRes(R.string.pattern_picker_flexible_weekly_selected_days)
+                }
+            } else if (repeatType == RepeatType.MONTHLY) {
+                return if (selectedMonthDays.isEmpty()) {
+                    stringRes(R.string.pattern_picker_flexible_monthly_no_selected_days)
+                } else {
+                    stringRes(R.string.pattern_picker_flexible_monthly_selected_days)
+                }
+            }
+
+            throw IllegalArgumentException("Unknown flexible repeat type $repeatType")
         }
 
     private val RepeatingPatternViewState.formattedDayOfYear
@@ -565,7 +596,4 @@ class RepeatingPatternPickerDialogController :
                 stringRes(R.string.end_of_time)
             else
                 DateFormatter.format(view!!.context, endDate)
-
-
-
 }
