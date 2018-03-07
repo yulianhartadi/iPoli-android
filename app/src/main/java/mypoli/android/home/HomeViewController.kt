@@ -38,7 +38,6 @@ import mypoli.android.store.GemStoreViewController
 import mypoli.android.store.theme.ThemeStoreViewController
 import org.json.JSONObject
 import space.traversal.kapsule.required
-import timber.log.Timber
 
 
 /**
@@ -175,16 +174,12 @@ class HomeViewController(args: Bundle? = null) :
     }
 
     override fun onAttach(view: View) {
-
-
         setToolbar(view.toolbar)
         val actionBar = (activity as MainActivity).supportActionBar
         actionBar?.setDisplayHomeAsUpEnabled(true)
         actionBarDrawerToggle.syncState()
 
-        Timber.d("AAA HVC before")
         super.onAttach(view)
-        Timber.d("AAA HVC after")
         view.navigationView.bringToFront()
 
 

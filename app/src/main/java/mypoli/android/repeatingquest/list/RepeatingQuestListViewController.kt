@@ -25,7 +25,6 @@ import mypoli.android.common.view.*
 import mypoli.android.repeatingquest.entity.repeatType
 import mypoli.android.repeatingquest.list.RepeatingQuestListViewState.StateType.CHANGED
 import mypoli.android.repeatingquest.show.RepeatingQuestViewController
-import timber.log.Timber
 
 /**
  * Created by Polina Zhelyazkova <polina@ipoli.io>
@@ -57,9 +56,7 @@ class RepeatingQuestListViewController(args: Bundle? = null) :
         RepeatingQuestListAction.LoadData
 
     override fun onAttach(view: View) {
-        Timber.d("AAA RQL before")
         super.onAttach(view)
-        Timber.d("AAA RQL after")
         toolbarTitle = stringRes(R.string.drawer_repeating_quests)
         activity?.window?.navigationBarColor = attrData(R.attr.colorPrimary)
         activity?.window?.statusBarColor = attrData(R.attr.colorPrimaryDark)
