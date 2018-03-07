@@ -173,7 +173,7 @@ class HomeViewController(args: Bundle? = null) :
         }
 
         view!!.drawerLayout.closeDrawer(GravityCompat.START)
-        return false;
+        return false
     }
 
     override fun onAttach(view: View) {
@@ -184,7 +184,7 @@ class HomeViewController(args: Bundle? = null) :
         val childRouter = getChildRouter(view.childControllerContainer, null)
         if (!childRouter.hasRootController()) {
             childRouter.setRoot(
-                RouterTransaction.with(RepeatingQuestListViewController())
+                RouterTransaction.with(ScheduleViewController())
                     .pushChangeHandler(fadeChangeHandler)
                     .popChangeHandler(fadeChangeHandler)
             )
