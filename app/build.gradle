@@ -21,8 +21,8 @@ android {
         applicationId "mypoli.android"
         minSdkVersion 21
         targetSdkVersion 27
-        versionCode 26
-        versionName "Repeat those Quests"
+        versionCode 27
+        versionName "Create Your Challenges"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
 
