@@ -2,19 +2,19 @@ package mypoli.android.challenge.predefined.category
 
 import android.os.Bundle
 import android.view.LayoutInflater
+import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
 import com.bluelinelabs.conductor.RouterTransaction
 import com.bluelinelabs.conductor.changehandler.FadeChangeHandler
 import kotlinx.android.synthetic.main.controller_challenge_category_list.view.*
+import kotlinx.android.synthetic.main.view_default_toolbar.view.*
 import mypoli.android.R
 import mypoli.android.challenge.predefined.category.list.ChallengeListForCategoryViewController
 import mypoli.android.challenge.predefined.entity.PredefinedChallengeData
 import mypoli.android.challenge.predefined.entity.PredefinedChallengeData.Category.*
 import mypoli.android.common.mvi.MviViewController
-import mypoli.android.common.view.rootRouter
-import mypoli.android.common.view.stringRes
-import mypoli.android.common.view.toolbarTitle
+import mypoli.android.common.view.*
 import space.traversal.kapsule.required
 
 /**
@@ -35,8 +35,11 @@ class ChallengeCategoryListViewController(args: Bundle? = null) :
         container: ViewGroup,
         savedViewState: Bundle?
     ): View {
-
+        setHasOptionsMenu(true)
         val view = inflater.inflate(R.layout.controller_challenge_category_list, container, false)
+        setToolbar(view.toolbar)
+        toolbarTitle = stringRes(R.string.predefined_challenges_title)
+
         view.healthAndFitness.setOnClickListener { showChallengeList(HEALTH_AND_FITNESS) }
         view.buildSkill.setOnClickListener { showChallengeList(BUILD_SKILL) }
         view.deepWork.setOnClickListener { showChallengeList(DEEP_WORK) }
@@ -46,8 +49,16 @@ class ChallengeCategoryListViewController(args: Bundle? = null) :
     }
 
     override fun onAttach(view: View) {
-        toolbarTitle = stringRes(R.string.drawer_challenges)
         super.onAttach(view)
+        showBackButton()
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        if (item.itemId == android.R.id.home) {
+            router.popCurrentController()
+            return true
+        }
+        return super.onOptionsItemSelected(item)
     }
 
     private fun showChallengeList(category: PredefinedChallengeData.Category) {

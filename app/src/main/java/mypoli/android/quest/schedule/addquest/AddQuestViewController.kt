@@ -19,9 +19,9 @@ import mypoli.android.common.ViewUtils
 import mypoli.android.common.datetime.Time
 import mypoli.android.common.redux.android.ReduxViewController
 import mypoli.android.common.view.*
-import mypoli.android.quest.schedule.addquest.StateType.*
 import mypoli.android.quest.reminder.picker.ReminderPickerDialogController
 import mypoli.android.quest.reminder.picker.ReminderViewModel
+import mypoli.android.quest.schedule.addquest.StateType.*
 import mypoli.android.repeatingquest.edit.picker.RepeatingPatternPickerDialogController
 import org.threeten.bp.LocalDate
 
@@ -148,12 +148,8 @@ class AddQuestViewController(args: Bundle? = null) :
                 }, state.duration).showDialog(router, "pick_duration_tag")
 
             PICK_COLOR ->
-                ColorPickerDialogController(object :
-                    ColorPickerDialogController.ColorPickedListener {
-                    override fun onColorPicked(color: AndroidColor) {
-                        dispatch(AddQuestAction.ColorPicked(color.color))
-                    }
-
+                ColorPickerDialogController({
+                    dispatch(AddQuestAction.ColorPicked(it.color))
                 }, state.color?.androidColor).showDialog(
                     router,
                     "pick_color_tag"

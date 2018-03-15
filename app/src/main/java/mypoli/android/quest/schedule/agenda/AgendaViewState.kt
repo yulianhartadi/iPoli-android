@@ -171,6 +171,7 @@ private fun toAgendaViewModel(
                 isCompleted = quest.isCompleted,
                 showDivider = showDivider,
                 isRepeating = quest.isFromRepeatingQuest,
+                isFromChallenge = quest.isFromChallenge,
                 isPlaceholder = quest.id.isEmpty()
             )
         }

@@ -9,7 +9,7 @@ import mypoli.android.Constants
 
 
 /**
- * Created by Polina Zhelyazkova <polina@ipoli.io>
+ * Created by Polina Zhelyazkova <polina@mypoli.fun>
  * on 2/13/18.
  */
 class EmailUtils {

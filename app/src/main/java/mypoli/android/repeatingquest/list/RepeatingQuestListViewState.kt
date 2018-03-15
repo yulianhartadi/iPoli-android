@@ -5,12 +5,12 @@ import mypoli.android.common.BaseViewStateReducer
 import mypoli.android.common.DataLoadedAction
 import mypoli.android.common.mvi.ViewState
 import mypoli.android.common.redux.Action
-import mypoli.android.repeatingquest.entity.RepeatingQuest
+import mypoli.android.quest.RepeatingQuest
 import mypoli.android.repeatingquest.list.RepeatingQuestListViewState.StateType.CHANGED
 import mypoli.android.repeatingquest.list.RepeatingQuestListViewState.StateType.LOADING
 
 /**
- * Created by Polina Zhelyazkova <polina@ipoli.io>
+ * Created by Polina Zhelyazkova <polina@mypoli.fun>
  * on 2/14/18.
  */
 sealed class RepeatingQuestListAction : Action {

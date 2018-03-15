@@ -7,10 +7,9 @@ import mypoli.android.TestUtil
 import mypoli.android.TestUtil.firstDateOfWeek
 import mypoli.android.TestUtil.lastDateOfWeek
 import mypoli.android.quest.Quest
+import mypoli.android.quest.RepeatingQuest
 import mypoli.android.quest.data.persistence.QuestRepository
 import mypoli.android.repeatingquest.entity.RepeatingPattern
-import mypoli.android.repeatingquest.entity.RepeatingQuest
-import mypoli.android.repeatingquest.persistence.RepeatingQuestRepository
 import org.amshove.kluent.*
 import org.jetbrains.spek.api.Spek
 import org.jetbrains.spek.api.dsl.describe
@@ -34,10 +33,9 @@ class SaveQuestsForRepeatingQuestUseCaseSpek : Spek({
             quest: RepeatingQuest,
             start: LocalDate,
             end: LocalDate,
-            questRepo: QuestRepository = TestUtil.questRepoMock(),
-            rqRepo: RepeatingQuestRepository = TestUtil.repeatingQuestRepoMock()
+            questRepo: QuestRepository = TestUtil.questRepoMock()
         ) =
-            SaveQuestsForRepeatingQuestUseCase(questRepo, rqRepo).execute(
+            SaveQuestsForRepeatingQuestUseCase(questRepo).execute(
                 SaveQuestsForRepeatingQuestUseCase.Params(
                     repeatingQuest = quest,
                     start = start,
@@ -52,17 +50,15 @@ class SaveQuestsForRepeatingQuestUseCaseSpek : Spek({
             quest: RepeatingQuest,
             start: LocalDate,
             end: LocalDate,
-            questRepo: QuestRepository = TestUtil.questRepoMock(),
-            rqRepo: RepeatingQuestRepository = TestUtil.repeatingQuestRepoMock()
-        ) = doExecuteUseCase(quest, start, end, questRepo, rqRepo).repeatingQuest
+            questRepo: QuestRepository = TestUtil.questRepoMock()
+        ) = doExecuteUseCase(quest, start, end, questRepo).repeatingQuest
 
         fun executeUseCase(
             quest: RepeatingQuest,
             start: LocalDate,
             end: LocalDate,
-            questRepo: QuestRepository = TestUtil.questRepoMock(),
-            rqRepo: RepeatingQuestRepository = TestUtil.repeatingQuestRepoMock()
-        ) = doExecuteUseCase(quest, start, end, questRepo, rqRepo).quests
+            questRepo: QuestRepository = TestUtil.questRepoMock()
+        ) = doExecuteUseCase(quest, start, end, questRepo).quests
 
 
         fun mockQuestsForRepeatingQuest(quests: List<Quest> = listOf()) =

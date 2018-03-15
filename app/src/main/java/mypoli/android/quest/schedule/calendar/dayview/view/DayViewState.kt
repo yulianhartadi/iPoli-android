@@ -8,10 +8,10 @@ import mypoli.android.common.mvi.ViewState
 import mypoli.android.common.redux.Action
 import mypoli.android.quest.Color
 import mypoli.android.quest.Icon
+import mypoli.android.quest.reminder.picker.ReminderViewModel
 import mypoli.android.quest.schedule.calendar.dayview.view.DayViewState.StateType.*
 import mypoli.android.quest.usecase.Result
 import mypoli.android.quest.usecase.Schedule
-import mypoli.android.quest.reminder.picker.ReminderViewModel
 import org.threeten.bp.LocalDate
 
 /**
@@ -23,7 +23,7 @@ sealed class DayViewAction : Action {
     data class Load(val currentDate: LocalDate) :
         DayViewAction()
 
-    data class StartEditScheduledQuest(val questViewModel: DayViewController.QuestViewModel) :
+    data class StartEditScheduledQuest(val questViewModel: DayViewController.ScheduledEventViewModel.Quest) :
         DayViewAction()
 
     data class CompleteQuest(val questId: String, val isStarted: Boolean) : DayViewAction()
@@ -60,7 +60,7 @@ class DayViewReducer(namespace: String) : NamespaceViewStateReducer<DayViewState
         }
 
         return when (action) {
-            is DataLoadedAction.CalendarScheduledChanged -> {
+            is DataLoadedAction.CalendarScheduleChanged -> {
                 val scheduleData = action.schedule
 
                 if (!scheduleData.containsKey(subState.currentDate)) {

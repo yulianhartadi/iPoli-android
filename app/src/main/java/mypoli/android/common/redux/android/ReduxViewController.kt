@@ -17,6 +17,7 @@ import mypoli.android.common.redux.StateStore
 import mypoli.android.common.redux.ViewStateReducer
 import mypoli.android.common.view.AndroidColor
 import mypoli.android.common.view.AndroidIcon
+import mypoli.android.common.view.attrData
 import mypoli.android.myPoliApp
 import mypoli.android.quest.Color
 import mypoli.android.quest.Icon
@@ -42,10 +43,6 @@ abstract class ReduxViewController<A : Action, VS : ViewState, out R : ViewState
     @Volatile
     private var currentState: VS? = null
 
-    override fun onContextAvailable(context: Context) {
-        inject(myPoliApp.module(context))
-    }
-
     init {
         val lifecycleListener = object : LifecycleListener() {
 
@@ -70,6 +67,20 @@ abstract class ReduxViewController<A : Action, VS : ViewState, out R : ViewState
             }
         }
         addLifecycleListener(lifecycleListener)
+    }
+
+    override fun onContextAvailable(context: Context) {
+        inject(myPoliApp.module(context))
+    }
+
+    override fun onAttach(view: View) {
+        colorLayoutBars()
+        super.onAttach(view)
+    }
+
+    protected open fun colorLayoutBars() {
+        activity?.window?.navigationBarColor = attrData(mypoli.android.R.attr.colorPrimary)
+        activity?.window?.statusBarColor = attrData(mypoli.android.R.attr.colorPrimaryDark)
     }
 
     fun dispatch(action: A) {

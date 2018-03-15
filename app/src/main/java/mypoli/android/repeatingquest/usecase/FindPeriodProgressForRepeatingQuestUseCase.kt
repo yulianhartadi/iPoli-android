@@ -1,13 +1,13 @@
 package mypoli.android.repeatingquest.usecase
 
 import mypoli.android.common.UseCase
+import mypoli.android.quest.RepeatingQuest
 import mypoli.android.quest.data.persistence.QuestRepository
 import mypoli.android.repeatingquest.entity.PeriodProgress
-import mypoli.android.repeatingquest.entity.RepeatingQuest
 import org.threeten.bp.LocalDate
 
 /**
- * Created by Polina Zhelyazkova <polina@ipoli.io>
+ * Created by Polina Zhelyazkova <polina@mypoli.fun>
  * on 2/26/18.
  */
 class FindPeriodProgressForRepeatingQuestUseCase(

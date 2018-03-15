@@ -32,7 +32,7 @@ import mypoli.android.home.HomeViewController
 
 
 /**
- * Created by Polina Zhelyazkova <polina@ipoli.io>
+ * Created by Polina Zhelyazkova <polina@mypoli.fun>
  * on 2/5/18.
  */
 class AuthViewController(args: Bundle? = null) :

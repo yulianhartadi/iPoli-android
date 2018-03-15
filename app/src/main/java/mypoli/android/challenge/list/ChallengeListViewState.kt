@@ -1,8 +1,10 @@
 package mypoli.android.challenge.list
 
 import mypoli.android.challenge.entity.Challenge
+import mypoli.android.challenge.list.ChallengeListViewState.ChallengeItem.*
 import mypoli.android.common.AppState
 import mypoli.android.common.BaseViewStateReducer
+import mypoli.android.common.DataLoadedAction
 import mypoli.android.common.mvi.ViewState
 import mypoli.android.common.redux.Action
 
@@ -12,38 +14,61 @@ import mypoli.android.common.redux.Action
  */
 
 sealed class ChallengeListAction : Action {
-    object LoadData : ChallengeListAction()
+    object Load : ChallengeListAction()
 }
 
 object ChallengeListReducer : BaseViewStateReducer<ChallengeListViewState>() {
+
     override fun reduce(
         state: AppState,
         subState: ChallengeListViewState,
         action: Action
-    ) = when (action) {
-        is ChallengeListAction.LoadData -> {
-            subState
+    ) =
+        when (action) {
+            is ChallengeListAction.Load ->
+                createState(state.dataState.challenges)
+
+            is DataLoadedAction.ChallengesChanged ->
+                createState(action.challenges)
+
+            else -> subState
         }
-        else -> subState
+
+    private fun createState(challenges: List<Challenge>) =
+        when {
+            challenges.isEmpty() -> ChallengeListViewState.Empty
+            else -> ChallengeListViewState.Changed(createChallengeItems(challenges))
+        }
+
+    private fun createChallengeItems(challenges: List<Challenge>): List<ChallengeListViewState.ChallengeItem> {
+        val (incomplete, complete) = challenges.partition { it.completedAtDate == null }
+
+        val incompleteItems = incomplete.map { Incomplete(it) }
+        return when {
+            complete.isEmpty() -> incompleteItems
+            else -> incompleteItems +
+                CompleteLabel +
+                complete.sortedByDescending { it.completedAtDate!! }.map { Complete(it) }
+        }
     }
 
-    override fun defaultState() =
-        ChallengeListViewState(
-            type = ChallengeListViewState.StateType.LOADING,
-            challenges = listOf(),
-            showEmptyView = false
-        )
+    override fun defaultState() = ChallengeListViewState.Loading
 
     override val stateKey = key<ChallengeListViewState>()
 }
 
-data class ChallengeListViewState(
-    val type: StateType,
-    val challenges: List<Challenge>,
-    val showEmptyView: Boolean
-) : ViewState {
-    enum class StateType {
-        LOADING,
-        CHANGED
+sealed class ChallengeListViewState : ViewState {
+    object Loading : ChallengeListViewState()
+    object Empty : ChallengeListViewState()
+
+    data class Changed(val challenges: List<ChallengeItem>) : ChallengeListViewState()
+
+    sealed class ChallengeItem {
+
+        data class Incomplete(val challenge: Challenge) : ChallengeItem()
+
+        object CompleteLabel : ChallengeItem()
+
+        data class Complete(val challenge: Challenge) : ChallengeItem()
     }
 }

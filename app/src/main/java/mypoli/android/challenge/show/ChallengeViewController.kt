@@ -1,10 +1,16 @@
 package mypoli.android.challenge.show
 
+import android.animation.ObjectAnimator
+import android.content.res.ColorStateList
 import android.os.Bundle
+import android.support.annotation.ColorRes
 import android.support.design.widget.AppBarLayout
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
+import android.support.v7.widget.LinearLayoutManager
+import android.support.v7.widget.RecyclerView
+import android.support.v7.widget.helper.ItemTouchHelper
+import android.view.*
+import com.bluelinelabs.conductor.RouterTransaction
+import com.bluelinelabs.conductor.changehandler.FadeChangeHandler
 import com.github.mikephil.charting.animation.Easing
 import com.github.mikephil.charting.charts.LineChart
 import com.github.mikephil.charting.components.AxisBase
@@ -12,19 +18,26 @@ import com.github.mikephil.charting.components.YAxis
 import com.github.mikephil.charting.data.Entry
 import com.github.mikephil.charting.data.LineData
 import com.github.mikephil.charting.data.LineDataSet
-import com.github.mikephil.charting.formatter.IndexAxisValueFormatter
+import com.github.mikephil.charting.formatter.IAxisValueFormatter
 import com.mikepenz.google_material_typeface_library.GoogleMaterial
 import com.mikepenz.iconics.IconicsDrawable
+import com.mikepenz.iconics.typeface.IIcon
 import com.mikepenz.material_design_iconic_typeface_library.MaterialDesignIconic
 import kotlinx.android.synthetic.main.controller_challenge.view.*
+import kotlinx.android.synthetic.main.item_challenge_quest.view.*
 import mypoli.android.MainActivity
 import mypoli.android.R
+import mypoli.android.challenge.QuestPickerViewController
+import mypoli.android.challenge.edit.EditChallengeViewController
 import mypoli.android.common.ViewUtils
 import mypoli.android.common.redux.android.ReduxViewController
 import mypoli.android.common.text.DateFormatter
 import mypoli.android.common.view.*
+import mypoli.android.common.view.recyclerview.SimpleViewHolder
+import mypoli.android.quest.Quest
+import mypoli.android.quest.RepeatingQuest
+import mypoli.android.quest.schedule.agenda.widget.SwipeToCompleteCallback
 import mypoli.android.repeatingquest.show.RepeatingQuestViewController
-import timber.log.Timber
 
 
 /**
@@ -37,13 +50,8 @@ class ChallengeViewController(args: Bundle? = null) :
     override val reducer = ChallengeReducer
 
     private lateinit var challengeId: String
-
-//    private val yData = createYData()
-//
-//    private fun createYData() =
-//        (0 until 30).map {
-//            getRandom(5f, 0f)
-//        }
+    private var showEdit = true
+    private var showComplete = true
 
     constructor(
         challengeId: String
@@ -64,6 +72,40 @@ class ChallengeViewController(args: Bundle? = null) :
         setupAppBar(view)
 
         setupHistoryChart(view.progressChart)
+
+        view.questList.layoutManager =
+            LinearLayoutManager(container.context, LinearLayoutManager.VERTICAL, false)
+        view.questList.adapter = QuestAdapter()
+
+        val swipeHandler = object : SwipeToCompleteCallback(
+            view.context,
+            R.drawable.ic_done_white_24dp,
+            R.color.md_green_500,
+            R.drawable.ic_delete_white_24dp,
+            R.color.md_red_500
+        ) {
+            override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
+                if (direction == ItemTouchHelper.START) {
+                    dispatch(ChallengeAction.RemoveQuestFromChallenge(viewHolder.adapterPosition))
+                }
+            }
+
+            override fun getSwipeDirs(
+                recyclerView: RecyclerView,
+                viewHolder: RecyclerView.ViewHolder
+            ) = ItemTouchHelper.START
+        }
+        val itemTouchHelper = ItemTouchHelper(swipeHandler)
+        itemTouchHelper.attachToRecyclerView(view.questList)
+
+        view.addQuests.setOnClickListener {
+            val changeHandler = FadeChangeHandler()
+            rootRouter.pushController(
+                RouterTransaction.with(QuestPickerViewController(challengeId))
+                    .pushChangeHandler(changeHandler)
+                    .popChangeHandler(changeHandler)
+            )
+        }
 
         return view
     }
@@ -87,42 +129,77 @@ class ChallengeViewController(args: Bundle? = null) :
         })
     }
 
-    protected fun getRandom(range: Float, startsfrom: Float): Int {
-        return ((Math.random() * range).toFloat() + startsfrom).toInt()
-    }
-
     private fun setupHistoryChart(chart: LineChart) {
         with(chart) {
             description = null
             setTouchEnabled(false)
             setPinchZoom(false)
-            extraBottomOffset = 20f
-            extraTopOffset = 20f
+            extraTopOffset = 16f
+            extraBottomOffset = 16f
+            extraLeftOffset = 28f
 
             setDrawGridBackground(false)
-//            setDrawBarShadow(true)
-//            setDrawValueAboveBar(false)
 
             axisRight.axisMinimum = 0f
             axisRight.axisMaximum = 100f
             axisRight.spaceTop = 0f
+            axisRight.textSize = ViewUtils.spToPx(5, activity!!).toFloat()
+            axisRight.textColor = colorRes(R.color.md_dark_text_87)
             axisRight.setValueFormatter { value, axis -> "${value.toInt()}%" }
 
             axisLeft.isEnabled = false
 
-
             xAxis.yOffset = ViewUtils.dpToPx(4f, activity!!)
             xAxis.isGranularityEnabled = true
             xAxis.granularity = 1f
+            xAxis.textSize = ViewUtils.spToPx(5, activity!!).toFloat()
+            xAxis.textColor = colorRes(R.color.md_dark_text_87)
 
             legend.isEnabled = false
-
 
         }
 
     }
 
     override fun onCreateLoadAction() = ChallengeAction.Load(challengeId)
+
+    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+        super.onCreateOptionsMenu(menu, inflater)
+        inflater.inflate(R.menu.challenge_menu, menu)
+    }
+
+    override fun onPrepareOptionsMenu(menu: Menu) {
+        menu.findItem(R.id.actionComplete).isVisible = showComplete
+        menu.findItem(R.id.actionEdit).isVisible = showEdit
+        super.onPrepareOptionsMenu(menu)
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem) =
+        when (item.itemId) {
+
+            android.R.id.home ->
+                router.handleBack()
+
+            R.id.actionComplete -> {
+                dispatch(ChallengeAction.Complete(challengeId))
+                router.handleBack()
+            }
+
+            R.id.actionEdit -> {
+                val changeHandler = FadeChangeHandler()
+                rootRouter.pushController(
+                    RouterTransaction.with(EditChallengeViewController(challengeId))
+                        .pushChangeHandler(changeHandler)
+                        .popChangeHandler(changeHandler)
+                )
+                true
+            }
+            R.id.actionDelete -> {
+                dispatch(ChallengeAction.Remove(challengeId))
+                router.handleBack()
+            }
+            else -> super.onOptionsItemSelected(item)
+        }
 
     override fun onAttach(view: View) {
         super.onAttach(view)
@@ -134,27 +211,31 @@ class ChallengeViewController(args: Bundle? = null) :
         super.onDetach(view)
     }
 
-    class XAxisValueFormatter(private val labels: List<String>) : IndexAxisValueFormatter(labels) {
+    class XAxisValueFormatter(private val labels: List<String>) : IAxisValueFormatter {
 
         override fun getFormattedValue(value: Float, axis: AxisBase): String {
             val idx = value.toInt()
-            Timber.d("AAA $value")
             return if (idx < 0 || idx >= labels.size) {
                 ""
             } else labels[idx]
         }
     }
 
-    override fun render(state: ChallengeViewState, view: View) =
+    override fun render(state: ChallengeViewState, view: View) {
         when (state) {
             is ChallengeViewState.Changed -> {
+                showComplete = state.canComplete
+                showEdit = state.canEdit
+                activity!!.invalidateOptionsMenu()
+
                 colorLayout(state, view)
 
                 renderName(state.name, view)
 
-                view.progress.progress = state.completedCount
-                view.progress.secondaryProgress = state.completedCount
-                view.progress.max = state.totalCount
+                val animator =
+                    ObjectAnimator.ofInt(view.progress, "progress", 0, state.progressPercent)
+                animator.duration = intRes(android.R.integer.config_mediumAnimTime).toLong()
+                animator.start()
 
                 view.progressText.text = state.progressText
 
@@ -166,6 +247,8 @@ class ChallengeViewController(args: Bundle? = null) :
                     null, null, null
                 )
 
+                view.difficulty.text = state.difficulty
+
                 view.endDate.setCompoundDrawablesWithIntrinsicBounds(
                     IconicsDrawable(view.context)
                         .icon(MaterialDesignIconic.Icon.gmi_hourglass_outline)
@@ -174,20 +257,46 @@ class ChallengeViewController(args: Bundle? = null) :
                     null, null, null
                 )
 
+                view.endDate.text = state.endText
+                view.nextDate.text = state.nextText
+
                 renderChart(state, view)
+                renderMotivations(state, view)
+                renderQuests(state, view)
             }
+
+            ChallengeViewState.Removed ->
+                router.handleBack()
+
             else -> {
             }
         }
+    }
 
     private fun renderChart(state: ChallengeViewState.Changed, view: View) {
         view.progressChart.xAxis.setLabelCount(state.xAxisLabelCount, true)
 
         view.progressChart.xAxis.valueFormatter = XAxisValueFormatter(state.xAxisLabels)
 
+        view.progressChart.axisRight.axisMaximum = state.yAxisMax.toFloat()
+
         view.progressChart.data = createLineData(state.chartEntries)
         view.progressChart.invalidate()
         view.progressChart.animateX(1400, Easing.EasingOption.EaseInOutQuart)
+    }
+
+    private fun renderMotivations(state: ChallengeViewState.Changed, view: View) {
+        val motivationsViews = listOf(view.motivation1, view.motivation2, view.motivation3)
+        motivationsViews.forEach { it.gone() }
+        state.motivations.forEachIndexed { index, text ->
+            val mView = motivationsViews[index]
+            mView.visible()
+            mView.text = "${index + 1}. $text"
+        }
+    }
+
+    private fun renderQuests(state: ChallengeViewState.Changed, view: View) {
+        (view.questList.adapter as QuestAdapter).updateAll(state.questViewModels)
     }
 
     private fun createLineData(entries: List<Entry>): LineData {
@@ -229,6 +338,53 @@ class ChallengeViewController(args: Bundle? = null) :
         view.name.text = name
     }
 
+    data class QuestViewModel(
+        val id: String,
+        val name: String,
+        @ColorRes val color: Int,
+        @ColorRes val textColor: Int,
+        val icon: IIcon,
+        val isRepeating: Boolean,
+        val isCompleted: Boolean
+    )
+
+    inner class QuestAdapter(private var viewModels: List<QuestViewModel> = listOf()) :
+        RecyclerView.Adapter<SimpleViewHolder>() {
+        override fun getItemCount() = viewModels.size
+
+        override fun onBindViewHolder(holder: SimpleViewHolder, position: Int) {
+            val vm = viewModels[position]
+            val view = holder.itemView
+            view.questName.text = vm.name
+            view.questName.setTextColor(colorRes(vm.textColor))
+
+            view.questIcon.backgroundTintList =
+                ColorStateList.valueOf(colorRes(vm.color))
+            view.questIcon.setImageDrawable(
+                IconicsDrawable(view.context)
+                    .icon(vm.icon)
+                    .colorRes(R.color.md_white)
+                    .sizeDp(22)
+            )
+            view.questRepeatIndicator.visible = vm.isRepeating
+        }
+
+        fun updateAll(viewModels: List<QuestViewModel>) {
+            this.viewModels = viewModels
+            notifyDataSetChanged()
+        }
+
+        override fun onCreateViewHolder(parent: ViewGroup, viewType: Int) =
+            SimpleViewHolder(
+                LayoutInflater.from(parent.context).inflate(
+                    R.layout.item_challenge_quest,
+                    parent,
+                    false
+                )
+            )
+
+    }
+
     private val ChallengeViewState.Changed.xAxisLabels
         get() = chartData.keys.map {
             DateFormatter.formatWithoutYear(activity!!, it)
@@ -236,7 +392,7 @@ class ChallengeViewController(args: Bundle? = null) :
 
     private val ChallengeViewState.Changed.chartEntries
         get() = chartData.values.mapIndexed { i, value ->
-            Entry(i.toFloat(), value.toFloat())
+            Entry(i.toFloat(), value)
         }
 
     private val ChallengeViewState.Changed.color500
@@ -247,5 +403,37 @@ class ChallengeViewController(args: Bundle? = null) :
 
     private val ChallengeViewState.Changed.progressText
         get() = "$completedCount of $totalCount ($progressPercent%) done"
+
+    private val ChallengeViewState.Changed.endText
+        get() = DateFormatter.formatWithoutYear(activity!!, endDate)
+
+    private val ChallengeViewState.Changed.nextText
+        get() = nextDate?.let { DateFormatter.formatWithoutYear(activity!!, it) }
+            ?: stringRes(R.string.unscheduled)
+
+    private val ChallengeViewState.Changed.questViewModels
+        get() = quests.map {
+            when (it) {
+                is Quest -> QuestViewModel(
+                    id = it.id,
+                    name = it.name,
+                    color = if (it.isCompleted) R.color.md_grey_300 else it.color.androidColor.color500,
+                    textColor = if (it.isCompleted) R.color.md_dark_text_26 else R.color.md_dark_text_54,
+                    icon = it.icon?.androidIcon?.icon ?: GoogleMaterial.Icon.gmd_local_florist,
+                    isRepeating = false,
+                    isCompleted = it.isCompleted
+                )
+                is RepeatingQuest -> QuestViewModel(
+                    id = it.id,
+                    name = it.name,
+                    color = it.color.androidColor.color500,
+                    textColor = if (it.isCompleted) R.color.md_dark_text_26 else R.color.md_dark_text_54,
+                    icon = it.icon?.androidIcon?.icon ?: GoogleMaterial.Icon.gmd_local_florist,
+                    isRepeating = true,
+                    isCompleted = it.isCompleted
+                )
+            }
+
+        }
 
 }

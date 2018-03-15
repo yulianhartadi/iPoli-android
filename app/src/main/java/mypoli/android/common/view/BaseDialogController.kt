@@ -232,7 +232,7 @@ abstract class ReduxDialogController<A : Action, VS : ViewState, out R : ViewSta
      * @param router The router on which the transaction will be applied
      * @param tag The tag for this controller
      */
-    fun showDialog(router: Router, tag: String?) {
+    fun showDialog(router: Router, tag: String? = null) {
         dismissed = false
         router.pushController(
             RouterTransaction.with(this)
@@ -301,8 +301,7 @@ abstract class ReduxDialogController<A : Action, VS : ViewState, out R : ViewSta
     }
 
     companion object {
-
-        private val SAVED_DIALOG_STATE_TAG = "android:savedDialogState"
+        private const val SAVED_DIALOG_STATE_TAG = "android:savedDialogState"
     }
 }
 

@@ -6,7 +6,7 @@ import mypoli.android.quest.Quest
 import mypoli.android.quest.TimeRange
 
 /**
- * Created by Polina Zhelyazkova <polina@ipoli.io>
+ * Created by Polina Zhelyazkova <polina@mypoli.fun>
  * on 1/16/18.
  */
 open class SplitDurationForPomodoroTimerUseCase :

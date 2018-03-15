@@ -194,7 +194,7 @@ abstract class BaseCollectionFirestoreRepository<E, out T>(
         return c
     }
 
-    protected fun listenForChanges(query: Query): ReceiveChannel<List<E>> {
+    private fun listen(query: Query): ReceiveChannel<List<E>> {
         val c = Channel<List<E>>()
         var registration: ListenerRegistration? = null
         registration = query
@@ -220,11 +220,10 @@ abstract class BaseCollectionFirestoreRepository<E, out T>(
         return c
     }
 
-    override fun listenForAll() = listenForChanges(collectionReference)
+    override fun listenForAll() = collectionReference.listenForChanges()
 
-    override fun remove(entity: E) {
+    override fun remove(entity: E) =
         remove(entity.id)
-    }
 
     override fun remove(id: String) {
         val updates = mapOf(
@@ -241,4 +240,8 @@ abstract class BaseCollectionFirestoreRepository<E, out T>(
     }
 
     protected fun documentReference(id: String) = collectionReference.document(id)
+
+    protected fun Query.listenForChanges(): ReceiveChannel<List<E>> {
+        return listen(this)
+    }
 }

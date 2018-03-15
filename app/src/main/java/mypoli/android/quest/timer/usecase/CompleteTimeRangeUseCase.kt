@@ -12,7 +12,7 @@ import mypoli.android.quest.timer.job.TimerCompleteScheduler
 import org.threeten.bp.Instant
 
 /**
- * Created by Polina Zhelyazkova <polina@ipoli.io>
+ * Created by Polina Zhelyazkova <polina@mypoli.fun>
  * on 1/18/18.
  */
 class CompleteTimeRangeUseCase(

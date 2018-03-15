@@ -6,8 +6,12 @@ import kotlinx.coroutines.experimental.channels.ReceiveChannel
 import kotlinx.coroutines.experimental.channels.consumeEach
 import kotlinx.coroutines.experimental.launch
 import mypoli.android.Constants
+import mypoli.android.challenge.entity.Challenge
 import mypoli.android.challenge.predefined.category.list.ChallengeListForCategoryAction
 import mypoli.android.challenge.usecase.BuyChallengeUseCase
+import mypoli.android.challenge.usecase.FindChallengeProgressUseCase
+import mypoli.android.challenge.usecase.FindNextDateForChallengeUseCase
+import mypoli.android.challenge.usecase.FindQuestsForChallengeUseCase
 import mypoli.android.common.DataLoadedAction.PlayerChanged
 import mypoli.android.common.datetime.Time
 import mypoli.android.common.datetime.isBetween
@@ -16,14 +20,12 @@ import mypoli.android.common.redux.Action
 import mypoli.android.common.redux.Dispatcher
 import mypoli.android.common.redux.SideEffect
 import mypoli.android.common.view.AppWidgetUtil
+import mypoli.android.event.Event
 import mypoli.android.myPoliApp
 import mypoli.android.pet.store.PetStoreAction
 import mypoli.android.pet.usecase.BuyPetUseCase
 import mypoli.android.player.Player
-import mypoli.android.quest.Category
-import mypoli.android.quest.Color
-import mypoli.android.quest.Quest
-import mypoli.android.quest.Reminder
+import mypoli.android.quest.*
 import mypoli.android.quest.reminder.picker.ReminderViewModel
 import mypoli.android.quest.schedule.ScheduleAction
 import mypoli.android.quest.schedule.ScheduleViewState
@@ -43,7 +45,6 @@ import mypoli.android.quest.usecase.CompleteQuestUseCase
 import mypoli.android.quest.usecase.LoadScheduleForDateUseCase
 import mypoli.android.quest.usecase.Result
 import mypoli.android.quest.usecase.SaveQuestUseCase
-import mypoli.android.repeatingquest.entity.RepeatingQuest
 import mypoli.android.repeatingquest.usecase.CreatePlaceholderQuestsForRepeatingQuestsUseCase
 import mypoli.android.repeatingquest.usecase.FindNextDateForRepeatingQuestUseCase
 import mypoli.android.repeatingquest.usecase.FindPeriodProgressForRepeatingQuestUseCase
@@ -83,6 +84,7 @@ abstract class AppSideEffect : SideEffect<AppState>,
 class DayViewSideEffect : AppSideEffect() {
     private val saveQuestUseCase by required { saveQuestUseCase }
     private val questRepository by required { questRepository }
+    private val eventRepository by required { eventRepository }
     private val removeQuestUseCase by required { removeQuestUseCase }
     private val loadScheduleForDateUseCase by required { loadScheduleForDateUseCase }
     private val undoRemoveQuestUseCase by required { undoRemoveQuestUseCase }
@@ -158,15 +160,24 @@ class DayViewSideEffect : AppSideEffect() {
                             )
                         )
 
+//                    val events = eventRepository.findScheduledBetween(
+//                        calendarIds = setOf(3),
+//                        start = startDate!!,
+//                        end = endDate!!
+//                    )
+
+                    val events = listOf<Event>()
+
                     val schedule =
                         loadScheduleForDateUseCase.execute(
                             LoadScheduleForDateUseCase.Params(
                                 startDate = startDate!!,
                                 endDate = endDate!!,
-                                quests = it + placeholderQuests
+                                quests = it + placeholderQuests,
+                                events = events
                             )
                         )
-                    dispatch(DataLoadedAction.CalendarScheduledChanged(schedule))
+                    dispatch(DataLoadedAction.CalendarScheduleChanged(schedule))
                 }
             }
         }
@@ -525,13 +536,18 @@ class LoadAllDataSideEffect : AppSideEffect() {
 
     private val playerRepository by required { playerRepository }
     private val questRepository by required { questRepository }
+    private val challengeRepository by required { challengeRepository }
     private val repeatingQuestRepository by required { repeatingQuestRepository }
     private val findNextDateForRepeatingQuestUseCase by required { findNextDateForRepeatingQuestUseCase }
     private val findPeriodProgressForRepeatingQuestUseCase by required { findPeriodProgressForRepeatingQuestUseCase }
+    private val findQuestsForChallengeUseCase by required { findQuestsForChallengeUseCase }
+    private val findNextDateForChallengeUseCase by required { findNextDateForChallengeUseCase }
+    private val findChallengeProgressUseCase by required { findChallengeProgressUseCase }
 
     private var playerChannel: ReceiveChannel<Player?>? = null
     private var todayQuestsChannel: ReceiveChannel<List<Quest>>? = null
     private var repeatingQuestsChannel: ReceiveChannel<List<RepeatingQuest>>? = null
+    private var challengesChannel: ReceiveChannel<List<Challenge>>? = null
 
     override suspend fun doExecute(action: Action, state: AppState) {
 
@@ -539,10 +555,12 @@ class LoadAllDataSideEffect : AppSideEffect() {
             playerChannel?.cancel()
             todayQuestsChannel?.cancel()
             repeatingQuestsChannel?.cancel()
+            challengesChannel?.cancel()
 
             playerChannel = null
             todayQuestsChannel = null
             repeatingQuestsChannel = null
+            challengesChannel = null
 
             playerRepository.purge(action.oldPlayerId)
             listenForPlayer()
@@ -553,6 +571,34 @@ class LoadAllDataSideEffect : AppSideEffect() {
             listenForPlayer()
             listenForQuests(state)
             listenForRepeatingQuests()
+            listenForChallenges()
+        }
+    }
+
+    private fun listenForChallenges() {
+        launch(UI) {
+            challengesChannel?.cancel()
+            challengesChannel = challengeRepository.listenForAll()
+            challengesChannel!!.consumeEach {
+                launch(CommonPool) {
+                    val challenges = it.map {
+                        findQuestsForChallengeUseCase.execute(FindQuestsForChallengeUseCase.Params(it))
+                    }.map {
+                        findNextDateForChallengeUseCase.execute(
+                            FindNextDateForChallengeUseCase.Params(
+                                it
+                            )
+                        )
+                    }.map {
+                        findChallengeProgressUseCase.execute(
+                            FindChallengeProgressUseCase.Params(
+                                it
+                            )
+                        )
+                    }
+                    dispatch(DataLoadedAction.ChallengesChanged(challenges))
+                }
+            }
         }
     }
 

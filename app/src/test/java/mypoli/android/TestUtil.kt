@@ -4,17 +4,16 @@ import com.nhaarman.mockito_kotlin.any
 import com.nhaarman.mockito_kotlin.doAnswer
 import com.nhaarman.mockito_kotlin.doReturn
 import com.nhaarman.mockito_kotlin.mock
+import mypoli.android.challenge.entity.Challenge
+import mypoli.android.challenge.persistence.ChallengeRepository
 import mypoli.android.pet.Pet
 import mypoli.android.pet.PetAvatar
 import mypoli.android.player.AuthProvider
 import mypoli.android.player.Player
 import mypoli.android.player.persistence.PlayerRepository
-import mypoli.android.quest.Category
-import mypoli.android.quest.Color
-import mypoli.android.quest.Quest
+import mypoli.android.quest.*
 import mypoli.android.quest.data.persistence.QuestRepository
 import mypoli.android.repeatingquest.entity.RepeatingPattern
-import mypoli.android.repeatingquest.entity.RepeatingQuest
 import mypoli.android.repeatingquest.persistence.RepeatingQuestRepository
 import org.threeten.bp.DayOfWeek
 import org.threeten.bp.LocalDate
@@ -59,6 +58,12 @@ object TestUtil {
         }
     }
 
+    fun challengeRepoMock() = mock<ChallengeRepository> {
+        on { save(any()) } doAnswer { invocation ->
+            invocation.getArgument(0)
+        }
+    }
+
     val firstDateOfWeek: LocalDate = LocalDate.now().with(DayOfWeek.MONDAY)
     val lastDateOfWeek: LocalDate = LocalDate.now().with(DayOfWeek.SUNDAY)
 
@@ -76,5 +81,15 @@ object TestUtil {
         color = Color.BLUE,
         category = Category("test", Color.BLUE),
         duration = 60
+    )
+
+    val challenge = Challenge(
+        name = "Test",
+        color = Color.BLUE,
+        icon = Icon.STAR,
+        difficulty = Challenge.Difficulty.NORMAL,
+        start = LocalDate.now(),
+        end = LocalDate.now(),
+        motivations = listOf()
     )
 }

@@ -29,7 +29,7 @@ import mypoli.android.quest.timer.TimerViewController
 import org.threeten.bp.LocalDate
 
 /**
- * Created by Polina Zhelyazkova <polina@ipoli.io>
+ * Created by Polina Zhelyazkova <polina@mypoli.fun>
  * on 1/26/18.
  */
 class AgendaViewController(args: Bundle? = null) :
@@ -184,6 +184,7 @@ class AgendaViewController(args: Bundle? = null) :
         val isCompleted: Boolean,
         val showDivider: Boolean = true,
         val isRepeating: Boolean,
+        val isFromChallenge: Boolean,
         val isPlaceholder: Boolean
     ) : AgendaViewModel
 
@@ -304,7 +305,8 @@ class AgendaViewController(args: Bundle? = null) :
             view.questStartTime.text = vm.startTime
             view.divider.visible = vm.showDivider
 
-            view.questRepeatIndicator.visible = vm.isRepeating
+            view.questRepeatIndicator.visibility = if(vm.isRepeating) View.VISIBLE else View.GONE
+            view.questChallengeIndicator.visibility = if(vm.isFromChallenge) View.VISIBLE else View.GONE
         }
 
         override fun getItemCount() = viewModels.size

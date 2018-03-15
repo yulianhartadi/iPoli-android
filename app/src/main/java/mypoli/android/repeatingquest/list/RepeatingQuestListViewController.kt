@@ -16,18 +16,21 @@ import com.mikepenz.iconics.typeface.IIcon
 import com.mikepenz.ionicons_typeface_library.Ionicons
 import kotlinx.android.synthetic.main.controller_repeating_quest_list.view.*
 import kotlinx.android.synthetic.main.item_repeating_quest.view.*
+import kotlinx.android.synthetic.main.view_empty_list.view.*
+import kotlinx.android.synthetic.main.view_loader.view.*
 import mypoli.android.R
 import mypoli.android.common.ViewUtils
 import mypoli.android.common.redux.android.ReduxViewController
 import mypoli.android.common.text.DateFormatter
 import mypoli.android.common.text.DurationFormatter
 import mypoli.android.common.view.*
+import mypoli.android.common.view.recyclerview.SimpleViewHolder
 import mypoli.android.repeatingquest.entity.repeatType
 import mypoli.android.repeatingquest.list.RepeatingQuestListViewState.StateType.CHANGED
 import mypoli.android.repeatingquest.show.RepeatingQuestViewController
 
 /**
- * Created by Polina Zhelyazkova <polina@ipoli.io>
+ * Created by Polina Zhelyazkova <polina@mypoli.fun>
  * on 2/14/18.
  */
 class RepeatingQuestListViewController(args: Bundle? = null) :
@@ -58,15 +61,23 @@ class RepeatingQuestListViewController(args: Bundle? = null) :
     override fun onAttach(view: View) {
         super.onAttach(view)
         toolbarTitle = stringRes(R.string.drawer_repeating_quests)
-        activity?.window?.navigationBarColor = attrData(R.attr.colorPrimary)
-        activity?.window?.statusBarColor = attrData(R.attr.colorPrimaryDark)
     }
 
     override fun render(state: RepeatingQuestListViewState, view: View) {
         when (state.type) {
             CHANGED -> {
                 view.loader.visible = false
-                view.emptyGroup.visible = state.showEmptyView
+
+                if (state.showEmptyView) {
+                    view.repeatingQuestList.visible = false
+                    view.emptyContainer.visible = true
+                    view.emptyImage.setImageResource(R.drawable.rq_list_empty_state)
+                    view.emptyTitle.setText(R.string.empty_repeating_quests_title)
+                    view.emptyText.setText(R.string.empty_repeating_quests_text)
+                } else {
+                    view.repeatingQuestList.visible = true
+                    view.emptyContainer.visible = false
+                }
 
                 (view.repeatingQuestList.adapter as RepeatingQuestAdapter).updateAll(
                     state.toViewModels(
@@ -90,10 +101,10 @@ class RepeatingQuestListViewController(args: Bundle? = null) :
     )
 
     inner class RepeatingQuestAdapter(private var viewModels: List<RepeatingQuestViewModel> = listOf()) :
-        RecyclerView.Adapter<RepeatingQuestAdapter.ViewHolder>() {
+        RecyclerView.Adapter<SimpleViewHolder>() {
 
         override fun onBindViewHolder(
-            holder: RepeatingQuestAdapter.ViewHolder,
+            holder: SimpleViewHolder,
             position: Int
         ) {
             val vm = viewModels[position]
@@ -132,14 +143,13 @@ class RepeatingQuestListViewController(args: Bundle? = null) :
                         .popChangeHandler(changeHandler)
                 )
             }
-
         }
 
         override fun onCreateViewHolder(
             parent: ViewGroup,
             viewType: Int
-        ): RepeatingQuestAdapter.ViewHolder =
-            ViewHolder(
+        ): SimpleViewHolder =
+            SimpleViewHolder(
                 LayoutInflater.from(parent.context).inflate(
                     R.layout.item_repeating_quest,
                     parent,
@@ -149,12 +159,11 @@ class RepeatingQuestListViewController(args: Bundle? = null) :
 
         override fun getItemCount() = viewModels.size
 
-        inner class ViewHolder(view: View) : RecyclerView.ViewHolder(view)
-
         fun updateAll(viewModels: List<RepeatingQuestViewModel>) {
             this.viewModels = viewModels
             notifyDataSetChanged()
         }
+
 
     }
 

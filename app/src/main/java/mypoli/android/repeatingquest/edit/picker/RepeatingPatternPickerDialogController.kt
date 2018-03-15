@@ -34,7 +34,7 @@ import org.threeten.bp.format.TextStyle
 
 
 /**
- * Created by Polina Zhelyazkova <polina@ipoli.io>
+ * Created by Polina Zhelyazkova <polina@mypoli.fun>
  * on 2/16/18.
  */
 class RepeatingPatternPickerDialogController :

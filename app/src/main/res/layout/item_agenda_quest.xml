@@ -71,12 +71,22 @@
         android:id="@+id/questRepeatIndicator"
         android:layout_width="16dp"
         android:layout_height="16dp"
+        android:layout_marginStart="8dp"
+        app:layout_constraintBottom_toBottomOf="@+id/questStartTime"
+        app:layout_constraintStart_toEndOf="@+id/questStartTime"
+        app:layout_constraintTop_toTopOf="@+id/questStartTime"
+        app:srcCompat="@drawable/ic_repeat_black_24dp" />
+
+    <ImageView
+        android:id="@+id/questChallengeIndicator"
+        android:layout_width="16dp"
+        android:layout_height="16dp"
         android:layout_marginEnd="16dp"
         android:layout_marginStart="8dp"
         app:layout_constraintBottom_toBottomOf="@+id/questStartTime"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toEndOf="@+id/questStartTime"
+        app:layout_constraintStart_toEndOf="@+id/questRepeatIndicator"
         app:layout_constraintTop_toTopOf="@+id/questStartTime"
-        app:srcCompat="@drawable/ic_repeat_black_24dp" />
+        app:srcCompat="@drawable/ic_sword_black_24dp" />
 </android.support.constraint.ConstraintLayout>

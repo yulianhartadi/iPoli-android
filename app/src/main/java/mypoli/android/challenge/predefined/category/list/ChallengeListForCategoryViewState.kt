@@ -1,8 +1,8 @@
 package mypoli.android.challenge.predefined.category.list
 
 import mypoli.android.challenge.predefined.entity.AndroidPredefinedChallenge
-import mypoli.android.challenge.predefined.entity.PredefinedChallengeData
 import mypoli.android.challenge.predefined.entity.PredefinedChallenge
+import mypoli.android.challenge.predefined.entity.PredefinedChallengeData
 import mypoli.android.common.AppState
 import mypoli.android.common.BaseViewStateReducer
 import mypoli.android.common.DataLoadedAction
@@ -55,7 +55,8 @@ object ChallengeListForCategoryReducer : BaseViewStateReducer<ChallengeListForCa
                             it.gemPrice,
                             player?.hasChallenge(it) ?: false
                         )
-                    }
+                    },
+                    challengeCategory = action.challengeCategory
                 )
             }
 

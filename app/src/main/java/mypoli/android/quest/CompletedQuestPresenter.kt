@@ -15,7 +15,7 @@ import mypoli.android.quest.timer.usecase.SplitDurationForPomodoroTimerUseCase.R
 import kotlin.coroutines.experimental.CoroutineContext
 
 /**
- * Created by Polina Zhelyazkova <polina@ipoli.io>
+ * Created by Polina Zhelyazkova <polina@mypoli.fun>
  * on 1/24/18.
  */
 class CompletedQuestPresenter(

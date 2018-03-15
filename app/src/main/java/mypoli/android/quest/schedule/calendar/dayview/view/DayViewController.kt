@@ -36,13 +36,13 @@ import mypoli.android.common.redux.android.ReduxViewController
 import mypoli.android.common.view.*
 import mypoli.android.quest.CompletedQuestViewController
 import mypoli.android.quest.Icon
+import mypoli.android.quest.reminder.picker.ReminderPickerDialogController
+import mypoli.android.quest.reminder.picker.ReminderViewModel
 import mypoli.android.quest.schedule.calendar.CalendarViewController
 import mypoli.android.quest.schedule.calendar.dayview.view.DayViewState.StateType.*
 import mypoli.android.quest.schedule.calendar.dayview.view.widget.*
-import mypoli.android.quest.toMinutesFromStart
-import mypoli.android.quest.reminder.picker.ReminderPickerDialogController
-import mypoli.android.quest.reminder.picker.ReminderViewModel
 import mypoli.android.quest.timer.TimerViewController
+import mypoli.android.quest.toMinutesFromStart
 import org.threeten.bp.LocalDate
 import java.util.*
 
@@ -473,11 +473,8 @@ class DayViewController :
     }
 
     private fun showColorPicker(selectedColor: AndroidColor?) {
-        ColorPickerDialogController(object : ColorPickerDialogController.ColorPickedListener {
-            override fun onColorPicked(color: AndroidColor) {
-                dispatch(DayViewAction.ColorPicked(color.color))
-            }
-
+        ColorPickerDialogController({
+            dispatch(DayViewAction.ColorPicked(it.color))
         }, selectedColor)
             .showDialog(router, "pick_color_tag")
     }
@@ -487,32 +484,50 @@ class DayViewController :
         actionMode?.finish()
     }
 
-    data class QuestViewModel(
-        override val id: String,
-        val name: String,
-        override val duration: Int,
-        override val startMinute: Int,
-        val startTime: String,
-        val endTime: String,
-        val icon: AndroidIcon?,
-        val backgroundColor: AndroidColor,
-        @ColorRes val textColor: Int,
-        val reminder: ReminderViewModel?,
-        val isCompleted: Boolean,
-        val isStarted: Boolean,
-        val repeatingQuestId: String?,
-        val isPlaceholder: Boolean
-    ) : CalendarEvent {
-        val isRepeating: Boolean
-            get() = repeatingQuestId != null && repeatingQuestId.isNotEmpty()
+    sealed class ScheduledEventViewModel : CalendarEvent {
+
+
+        data class Quest(
+            override val id: String,
+            val name: String,
+            override val duration: Int,
+            override val startMinute: Int,
+            val startTime: String,
+            val endTime: String,
+            val icon: AndroidIcon?,
+            val backgroundColor: AndroidColor,
+            val reminder: ReminderViewModel?,
+            val isCompleted: Boolean,
+            val isStarted: Boolean,
+            val repeatingQuestId: String?,
+            val challengeId: String?,
+            val isPlaceholder: Boolean
+        ) : ScheduledEventViewModel() {
+            val isRepeating: Boolean
+                get() = repeatingQuestId != null && repeatingQuestId.isNotEmpty()
+
+            val isFromChallenge : Boolean
+                get() = challengeId != null && challengeId.isNotEmpty()
+        }
+
+        data class Event(
+            override val id: String,
+            val name: String,
+            override val duration: Int,
+            override val startMinute: Int,
+            val startTime: String,
+            val endTime: String,
+            val backgroundColor: Int,
+            val isRepeating: Boolean
+        ) : ScheduledEventViewModel()
     }
 
     inner class QuestScheduledEventsAdapter(
         context: Context,
-        events: List<QuestViewModel>,
+        events: List<ScheduledEventViewModel>,
         private val calendarDayView: CalendarDayView
     ) :
-        ScheduledEventsAdapter<QuestViewModel>(
+        ScheduledEventsAdapter<ScheduledEventViewModel>(
             context,
             R.layout.item_calendar_quest,
             events.toMutableList()
@@ -520,6 +535,37 @@ class DayViewController :
 
         override fun bindView(view: View, position: Int) {
             val vm = getItem(position)
+            when (vm) {
+                is ScheduledEventViewModel.Quest ->
+                    showQuest(view, vm)
+                is ScheduledEventViewModel.Event ->
+                    showEvent(view, vm)
+            }
+        }
+
+        private fun showEvent(
+            view: View,
+            vm: ScheduledEventViewModel.Event
+        ) {
+            view.checkBox.gone()
+
+            view.questSchedule.text = "${vm.startTime} - ${vm.endTime}"
+            view.backgroundView.setBackgroundColor(vm.backgroundColor)
+
+            view.questName.text = vm.name
+
+            view.questSchedule.setTextColor(colorRes(R.color.md_light_text_87))
+            view.questName.setTextColor(colorRes(R.color.md_white))
+
+            view.repeatIndicator.visible = vm.isRepeating
+        }
+
+        private fun showQuest(
+            view: View,
+            vm: ScheduledEventViewModel.Quest
+        ) {
+
+            view.checkBox.visible()
 
             view.setOnLongClickListener {
 
@@ -594,7 +640,8 @@ class DayViewController :
 
             }
 
-            view.repeatIndicator.visible = vm.isRepeating
+            view.repeatIndicator.visibility = if(vm.isRepeating) View.VISIBLE else View.GONE
+            view.challengeIndicator.visibility = if(vm.isFromChallenge) View.VISIBLE else View.GONE
 
             view.checkBox.setOnCheckedChangeListener { cb, checked ->
                 if (checked) {
@@ -653,7 +700,7 @@ class DayViewController :
         }
 
         override fun rescheduleEvent(position: Int, startTime: Time, duration: Int) {
-            val vm = getItem(position)
+            val vm = getItem(position) as ScheduledEventViewModel.Quest
             events[position] = vm.copy(
                 startMinute = startTime.toMinuteOfDay(),
                 startTime = startTime.toString(),
@@ -715,10 +762,14 @@ class DayViewController :
         val isStarted: Boolean,
         val reminder: ReminderViewModel? = null,
         val repeatingQuestId: String?,
+        val challengeId: String?,
         val isPlaceholder: Boolean
     ) : UnscheduledEvent {
         val isRepeating: Boolean
             get() = repeatingQuestId != null && repeatingQuestId.isNotEmpty()
+
+        val isFromChallenge: Boolean
+            get() = challengeId != null && challengeId.isNotEmpty()
     }
 
     inner class UnscheduledQuestsAdapter(
@@ -795,7 +846,11 @@ class DayViewController :
 
             }
 
-            itemView.unscheduledQuestRepeatIndicator.visible = viewModel.isRepeating
+            itemView.unscheduledQuestRepeatIndicator.visibility =
+                if (viewModel.isRepeating) View.VISIBLE else View.GONE
+
+            itemView.unscheduledQuestChallengeIndicator.visibility =
+                if (viewModel.isFromChallenge) View.VISIBLE else View.GONE
 
             itemView.unscheduledCheckBox.setOnCheckedChangeListener { _, checked ->
                 if (checked) {
@@ -820,7 +875,7 @@ class DayViewController :
     }
 
     private val DayViewState.unscheduledQuests
-        get() = schedule!!.unscheduled.map {
+        get() = schedule!!.unscheduledQuests.map {
             val color = it.color.androidColor
             DayViewController.UnscheduledQuestViewModel(
                 id = it.id,
@@ -832,33 +887,54 @@ class DayViewController :
                 isCompleted = it.isCompleted,
                 isStarted = it.isStarted,
                 repeatingQuestId = it.repeatingQuestId,
+                challengeId = it.challengeId,
                 isPlaceholder = it.id.isEmpty()
             )
         }
 
-    private val DayViewState.scheduledQuests
-        get() = schedule!!.scheduled.map { q ->
-            val color = q.color.androidColor
+    private val DayViewState.scheduledQuests: List<ScheduledEventViewModel>
+        get() {
+            val questVms = schedule!!.scheduledQuests.map { q ->
+                val color = q.color.androidColor
 
-            val reminder = q.reminder?.let {
-                ReminderViewModel(it.message, it.toMinutesFromStart(q.scheduledDate, q.startTime!!))
+                val reminder = q.reminder?.let {
+                    ReminderViewModel(
+                        it.message,
+                        it.toMinutesFromStart(q.scheduledDate, q.startTime!!)
+                    )
+                }
+
+                DayViewController.ScheduledEventViewModel.Quest(
+                    id = q.id,
+                    name = q.name,
+                    duration = q.duration,
+                    startMinute = q.startTime!!.toMinuteOfDay(),
+                    startTime = q.startTime.toString(),
+                    endTime = q.endTime.toString(),
+                    icon = q.icon?.androidIcon,
+                    backgroundColor = color,
+                    reminder = reminder,
+                    isCompleted = q.isCompleted,
+                    isStarted = q.isStarted,
+                    repeatingQuestId = q.repeatingQuestId,
+                    challengeId = q.challengeId,
+                    isPlaceholder = q.id.isEmpty()
+                )
             }
 
-            DayViewController.QuestViewModel(
-                id = q.id,
-                name = q.name,
-                duration = q.duration,
-                startMinute = q.startTime!!.toMinuteOfDay(),
-                startTime = q.startTime.toString(),
-                endTime = q.endTime.toString(),
-                icon = q.icon?.androidIcon,
-                backgroundColor = color,
-                textColor = color.color900,
-                reminder = reminder,
-                isCompleted = q.isCompleted,
-                isStarted = q.isStarted,
-                repeatingQuestId = q.repeatingQuestId,
-                isPlaceholder = q.id.isEmpty()
-            )
+            val eventVms = schedule.events.map { e ->
+                DayViewController.ScheduledEventViewModel.Event(
+                    id = e.id,
+                    name = e.name,
+                    duration = e.duration.intValue,
+                    startMinute = e.startTime.toMinuteOfDay(),
+                    startTime = e.startTime.toString(),
+                    endTime = e.endTime.toString(),
+                    backgroundColor = e.color,
+                    isRepeating = e.isRepeating
+                )
+            }
+
+            return questVms + eventVms
         }
 }

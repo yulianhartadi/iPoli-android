@@ -10,7 +10,7 @@ import mypoli.android.common.mvi.ViewState
 import mypoli.android.common.redux.Action
 
 /**
- * Created by Polina Zhelyazkova <polina@ipoli.io>
+ * Created by Polina Zhelyazkova <polina@mypoli.fun>
  * on 2/5/18.
  */
 sealed class AuthAction : Action {

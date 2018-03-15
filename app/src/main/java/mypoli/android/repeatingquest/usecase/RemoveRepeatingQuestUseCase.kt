@@ -5,7 +5,7 @@ import mypoli.android.quest.data.persistence.QuestRepository
 import mypoli.android.repeatingquest.persistence.RepeatingQuestRepository
 
 /**
- * Created by Polina Zhelyazkova <polina@ipoli.io>
+ * Created by Polina Zhelyazkova <polina@mypoli.fun>
  * on 3/2/18.
  */
 class RemoveRepeatingQuestUseCase(

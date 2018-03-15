@@ -133,19 +133,19 @@ data class Time constructor(private val minutesAfterMidnight: Int) {
     }
 
     operator fun plus(minutes: Int): Time {
-        return Time(this.minutesAfterMidnight + minutes)
+        return Time((this.minutesAfterMidnight + minutes) % MINUTES_IN_A_DAY)
     }
 
     operator fun plus(time: Time): Time {
-        return Time(minutesAfterMidnight + time.minutesAfterMidnight)
+        return Time((minutesAfterMidnight + time.minutesAfterMidnight) % MINUTES_IN_A_DAY)
     }
 
     operator fun minus(time: Time): Time {
-        return Time(minutesAfterMidnight - time.minutesAfterMidnight)
+        return Time((minutesAfterMidnight - time.minutesAfterMidnight) % MINUTES_IN_A_DAY)
     }
 
     operator fun minus(minutes: Int): Time {
-        return Time(this.minutesAfterMidnight - minutes)
+        return Time((this.minutesAfterMidnight - minutes) % MINUTES_IN_A_DAY)
     }
 
     operator fun compareTo(time: Time) =

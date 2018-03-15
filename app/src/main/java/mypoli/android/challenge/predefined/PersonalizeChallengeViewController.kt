@@ -6,7 +6,7 @@ import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
 import android.view.*
 import kotlinx.android.synthetic.main.controller_personalize_challenge.view.*
-import kotlinx.android.synthetic.main.item_challenge_quest.view.*
+import kotlinx.android.synthetic.main.item_predefeined_challenge_quest.view.*
 import mypoli.android.R
 import mypoli.android.challenge.predefined.PersonalizeChallengeViewState.StateType.*
 import mypoli.android.challenge.predefined.entity.AndroidPredefinedChallenge
@@ -147,7 +147,7 @@ class PersonalizeChallengeViewController :
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int) =
             ViewHolder(
                 LayoutInflater.from(parent.context).inflate(
-                    R.layout.item_challenge_quest,
+                    R.layout.item_predefeined_challenge_quest,
                     parent,
                     false
                 )

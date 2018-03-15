@@ -141,16 +141,12 @@ class ColorPickerPresenter(
 class ColorPickerDialogController :
     MviDialogController<ColorPickerViewState, ColorPickerDialogController, ColorPickerPresenter, ColorPickerIntent> {
 
-    interface ColorPickedListener {
-        fun onColorPicked(color: AndroidColor)
-    }
-
-    private var listener: ColorPickedListener? = null
+    private var listener: ((AndroidColor) -> Unit)? = null
     private var selectedColor: AndroidColor? = null
 
     private val presenter by required { colorPickerPresenter }
 
-    constructor(listener: ColorPickedListener, selectedColor: AndroidColor? = null) : this() {
+    constructor(listener: (AndroidColor) -> Unit, selectedColor: AndroidColor? = null) : this() {
         this.listener = listener
         this.selectedColor = selectedColor
     }
@@ -284,7 +280,7 @@ class ColorPickerDialogController :
             }
             if (!vm.isLocked) {
                 iv.setOnClickListener {
-                    listener?.onColorPicked(androidColor)
+                    listener?.invoke(androidColor)
                     dismissDialog()
                 }
             } else {

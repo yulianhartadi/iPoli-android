@@ -106,8 +106,7 @@ class MainActivity : AppCompatActivity(), Injects<Module> {
                         router.setRoot(RouterTransaction.with(TimerViewController(questId)))
                     } else if (!router.hasRootController()) {
 //                        router.setRoot(RouterTransaction.with(RepeatingQuestViewController("")))
-//                        router.setRoot(RouterTransaction.with(HomeViewController()))
-                        router.setRoot(RouterTransaction.with(ChallengeViewController("")))
+                        router.setRoot(RouterTransaction.with(HomeViewController()))
                     }
                 }
 

@@ -4,9 +4,9 @@ import com.nhaarman.mockito_kotlin.any
 import com.nhaarman.mockito_kotlin.doReturn
 import com.nhaarman.mockito_kotlin.mock
 import mypoli.android.TestUtil
+import mypoli.android.quest.RepeatingQuest
 import mypoli.android.quest.data.persistence.QuestRepository
 import mypoli.android.repeatingquest.entity.RepeatingPattern
-import mypoli.android.repeatingquest.entity.RepeatingQuest
 import org.amshove.kluent.`should be true`
 import org.jetbrains.spek.api.Spek
 import org.jetbrains.spek.api.dsl.describe
@@ -16,7 +16,7 @@ import org.threeten.bp.LocalDate
 import org.threeten.bp.temporal.TemporalAdjusters
 
 /**
- * Created by Polina Zhelyazkova <polina@ipoli.io>
+ * Created by Polina Zhelyazkova <polina@mypoli.fun>
  * on 2/25/18.
  */
 class FindNextDateForRepeatingQuestUseCaseSpek : Spek({
@@ -63,9 +63,11 @@ class FindNextDateForRepeatingQuestUseCaseSpek : Spek({
                 on { findOriginalScheduledForRepeatingQuestAtDate(any(), any()) } doReturn quest
             }
 
-            val rq = executeUseCase(questRepoMock, TestUtil.repeatingQuest.copy(
-                repeatingPattern = RepeatingPattern.Daily(start = today)
-            ))
+            val rq = executeUseCase(
+                questRepoMock, TestUtil.repeatingQuest.copy(
+                    repeatingPattern = RepeatingPattern.Daily(start = today)
+                )
+            )
             shouldHaveNextDate(rq, tomorrow)
         }
 
@@ -81,7 +83,12 @@ class FindNextDateForRepeatingQuestUseCaseSpek : Spek({
         it("should find Friday for weekly pattern MON, WED, FRI when today is TUE and WED is removed & FRI is not scheduled") {
             val today = LocalDate.now().with(TemporalAdjusters.previousOrSame(DayOfWeek.TUESDAY))
             val questRepoMock = mock<QuestRepository> {
-                on { findOriginalScheduledForRepeatingQuestAtDate("", today.with(DayOfWeek.WEDNESDAY)) } doReturn TestUtil.quest.copy(
+                on {
+                    findOriginalScheduledForRepeatingQuestAtDate(
+                        "",
+                        today.with(DayOfWeek.WEDNESDAY)
+                    )
+                } doReturn TestUtil.quest.copy(
                     originalScheduledDate = today.with(DayOfWeek.WEDNESDAY),
                     isRemoved = true
                 )
@@ -113,7 +120,12 @@ class FindNextDateForRepeatingQuestUseCaseSpek : Spek({
 
             val questRepoMock = mock<QuestRepository> {
 
-                on { findOriginalScheduledForRepeatingQuestAtDate("", today.with(DayOfWeek.WEDNESDAY)) } doReturn quest
+                on {
+                    findOriginalScheduledForRepeatingQuestAtDate(
+                        "",
+                        today.with(DayOfWeek.WEDNESDAY)
+                    )
+                } doReturn quest
 
                 on { findNextScheduledForRepeatingQuest(any(), any()) } doReturn quest
             }

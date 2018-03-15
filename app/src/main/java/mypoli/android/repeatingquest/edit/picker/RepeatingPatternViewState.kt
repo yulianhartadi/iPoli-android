@@ -14,7 +14,7 @@ import org.threeten.bp.DayOfWeek
 import org.threeten.bp.LocalDate
 
 /**
- * Created by Polina Zhelyazkova <polina@ipoli.io>
+ * Created by Polina Zhelyazkova <polina@mypoli.fun>
  * on 2/21/18.
  */
 sealed class RepeatingPatternAction : Action {

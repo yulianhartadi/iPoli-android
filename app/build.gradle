@@ -114,6 +114,8 @@ dependencies {
     implementation 'com.github.bumptech.glide:glide:4.6.1'
     kapt 'com.github.bumptech.glide:compiler:4.6.1'
 
+    implementation 'com.airbnb.android:lottie:2.5.1'
+
 //    debugImplementation "com.github.brianPlummer:tinydancer:0.1.1"
 //    implementation "com.github.brianPlummer:tinydancer-noop:0.1.1"
 //    testImplementation "com.github.brianPlummer:tinydancer-noop:0.1.1"

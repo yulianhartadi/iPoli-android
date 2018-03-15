@@ -3,7 +3,7 @@ package mypoli.android.quest.timer
 import mypoli.android.Constants
 
 /**
- * Created by Polina Zhelyazkova <polina@ipoli.io>
+ * Created by Polina Zhelyazkova <polina@mypoli.fun>
  * on 1/18/18.
  */
 fun Int.pomodoros() =

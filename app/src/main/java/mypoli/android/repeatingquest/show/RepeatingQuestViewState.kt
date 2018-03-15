@@ -11,9 +11,9 @@ import mypoli.android.common.mvi.ViewState
 import mypoli.android.common.redux.Action
 import mypoli.android.quest.Category
 import mypoli.android.quest.Color
+import mypoli.android.quest.RepeatingQuest
 import mypoli.android.repeatingquest.entity.PeriodProgress
 import mypoli.android.repeatingquest.entity.RepeatingPattern
-import mypoli.android.repeatingquest.entity.RepeatingQuest
 import mypoli.android.repeatingquest.show.RepeatingQuestViewState.Changed.ProgressModel.COMPLETE
 import mypoli.android.repeatingquest.show.RepeatingQuestViewState.Changed.ProgressModel.INCOMPLETE
 import mypoli.android.repeatingquest.show.RepeatingQuestViewState.Changed.RepeatType.*

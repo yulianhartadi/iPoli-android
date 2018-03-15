@@ -127,6 +127,8 @@
     <string name="empty_inbox_text">Your inbox is empty</string>
     <string name="empty_repeating_quests_title">No repeating quests?</string>
     <string name="empty_repeating_quests_text">Start organizing your tasks better by using repeating quests</string>
+    <string name="empty_challenges_title">Ready to achieve your goals?</string>
+    <string name="empty_challenges_text">Create your first Challenge, set deadline and make your dreams reality!</string>
     <string name="help_dialog_growth_title">What is growth all about?</string>
     <string name="help_dialog_growth_daily_progress">Monitor your daily progress</string>
     <string name="help_dialog_growth_time_spent_chart">The time spent chart shows you which quest contexts take most of your time</string>
@@ -315,6 +317,9 @@
     <string name="add_challenge_reason1_hint">1st reason</string>
     <string name="add_challenge_reason2_hint">2nd reason</string>
     <string name="add_challenge_reason3_hint">3rd reason</string>
+    <string name="add_challenge_motivation1_hint">1st motivation</string>
+    <string name="add_challenge_motivation2_hint">2nd motivation</string>
+    <string name="add_challenge_motivation3_hint">3rd motivation</string>
     <string name="title_fragment_wizard_challenge_reasons">Why will you do it?</string>
     <string name="title_fragment_wizard_challenge_end_date">Achieve it in</string>
     <string name="one_month">1 month</string>
@@ -1134,6 +1139,13 @@
         <item>Monthly</item>
     </string-array>
 
+    <string-array name="difficulties">
+        <item>Easy</item>
+        <item>Normal</item>
+        <item>Hard</item>
+        <item>Hell</item>
+    </string-array>
+
     <string name="facebook_application_id" translatable="false">1826884640679057</string>
     <string name="facebook_login_protocol_scheme" translatable="false">fb1826884640679057</string>
 
@@ -1141,8 +1153,8 @@
     <string name="fb_login_protocol_scheme">fb1826884640679057</string>
     <string name="login_no_existing_user_error">There is no user with this account</string>
     <string name="login_anonymous_no_existing_user_error">Please, register account</string>
-    <string name="loading">Loading...</string>
-    <string name="please_wait">Please wait ...</string>
+    <string name="loading">Loading…</string>
+    <string name="please_wait">Please wait…</string>
     <string name="login_error_contact_us_message">Something went really wrong</string>
     <string name="help_me_login">Help me login</string>
     <string name="welcome_back_hero">Welcome back, Hero!</string>
@@ -1154,4 +1166,19 @@
     <string name="pattern_picker_flexible_weekly_selected_days">I\'ll schedule it at your preferred days of the week</string>
     <string name="pattern_picker_flexible_monthly_no_selected_days">I\'ll schedule it at the perfect days of the month</string>
     <string name="pattern_picker_flexible_monthly_selected_days">I\'ll schedule it at your preferred days of the month</string>
+    <string name="add_challenge_no_quests">No quests for now</string>
+    <string name="ends_today">Ends Today</string>
+    <string name="ends_in_days">Ends in %d days</string>
+    <string name="ends_at_date">Ends at %s</string>
+    <string name="started_at_date">Started: %s</string>
+    <string name="completed_at_date">Completed: %s</string>
+    <string name="calendar_picker_title">Which Calendars to sync?</string>
+    <string name="sync_selected">Sync selected</string>
+    <string name="challenge_motivations_question">Motivate yourself</string>
+    <string name="predefined_challenges_title">Planned Challenges</string>
+    <string name="empty_state_quest_picker_title">No quests found</string>
+    <string name="empty_state_quest_picker_text">Go add some quests to challenge you</string>
+    <string name="complete">Complete</string>
+    <string name="you_are_amazing">You are amazing!!!</string>
+    <string name="complete_challenge_popup_message">You just completed your challenge! Your bounty is:</string>
 </resources>

@@ -1,13 +1,16 @@
 package mypoli.android.common
 
+import mypoli.android.challenge.entity.Challenge
 import mypoli.android.common.redux.Action
 import mypoli.android.common.redux.Reducer
 import mypoli.android.common.redux.State
+import mypoli.android.event.Calendar
+import mypoli.android.event.Event
 import mypoli.android.player.Player
 import mypoli.android.quest.Quest
+import mypoli.android.quest.RepeatingQuest
 import mypoli.android.quest.schedule.agenda.usecase.CreateAgendaItemsUseCase
 import mypoli.android.quest.usecase.Schedule
-import mypoli.android.repeatingquest.entity.RepeatingQuest
 import mypoli.android.repeatingquest.usecase.CreateRepeatingQuestHistoryUseCase
 import org.threeten.bp.LocalDate
 
@@ -22,6 +25,9 @@ sealed class DataLoadedAction : Action {
     data class RepeatingQuestsChanged(val repeatingQuests: List<RepeatingQuest>) :
         DataLoadedAction()
 
+    data class ChallengesChanged(val challenges: List<Challenge>) :
+        DataLoadedAction()
+
     data class AgendaItemsChanged(
         val start: LocalDate,
         val end: LocalDate,
@@ -29,13 +35,16 @@ sealed class DataLoadedAction : Action {
         val currentAgendaItemDate: LocalDate?
     ) : DataLoadedAction()
 
-    data class CalendarScheduledChanged(val schedule: Map<LocalDate, Schedule>) :
+    data class CalendarScheduleChanged(val schedule: Map<LocalDate, Schedule>) :
         DataLoadedAction()
 
     data class RepeatingQuestHistoryChanged(
         val repeatingQuestId: String,
         val history: CreateRepeatingQuestHistoryUseCase.History
     ) : DataLoadedAction()
+
+    data class EventsChanged(val events: List<Event>) : DataLoadedAction()
+    data class CalendarsChanged(val calendars: List<Calendar>) : DataLoadedAction()
 }
 
 data class AppDataState(
@@ -44,7 +53,9 @@ data class AppDataState(
     val todayQuests: List<Quest>,
     val calendarSchedule: Map<LocalDate, Schedule>,
     val repeatingQuests: List<RepeatingQuest>,
-    val agendaItems: List<CreateAgendaItemsUseCase.AgendaItem>
+    val challenges: List<Challenge>,
+    val agendaItems: List<CreateAgendaItemsUseCase.AgendaItem>,
+    val events: List<Event>
 ) : State
 
 object AppDataReducer : Reducer<AppState, AppDataState> {
@@ -60,7 +71,7 @@ object AppDataReducer : Reducer<AppState, AppDataState> {
                 )
             }
 
-            is DataLoadedAction.CalendarScheduledChanged ->
+            is DataLoadedAction.CalendarScheduleChanged ->
                 subState.copy(
                     calendarSchedule = action.schedule
                 )
@@ -80,6 +91,16 @@ object AppDataReducer : Reducer<AppState, AppDataState> {
                     agendaItems = action.agendaItems
                 )
 
+            is DataLoadedAction.ChallengesChanged ->
+                subState.copy(
+                    challenges = action.challenges
+                )
+
+            is DataLoadedAction.EventsChanged ->
+                subState.copy(
+                    events = action.events
+                )
+
             else -> subState
         }
 
@@ -90,7 +111,9 @@ object AppDataReducer : Reducer<AppState, AppDataState> {
             todayQuests = listOf(),
             calendarSchedule = mapOf(),
             repeatingQuests = listOf(),
-            agendaItems = listOf()
+            challenges = listOf(),
+            agendaItems = listOf(),
+            events = listOf()
         )
     }
 

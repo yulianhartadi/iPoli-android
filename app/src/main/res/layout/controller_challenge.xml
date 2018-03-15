@@ -81,6 +81,7 @@
                         android:layout_marginEnd="32dp"
                         android:layout_marginStart="32dp"
                         android:clickable="false"
+                        android:max="100"
                         android:progressDrawable="@drawable/repeating_quest_item_progress" />
 
                 </RelativeLayout>
@@ -88,7 +89,8 @@
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginBottom="16dp"
+                    android:layout_marginBottom="24dp"
+                    android:layout_marginTop="8dp"
                     android:weightSum="3">
 
                     <LinearLayout
@@ -105,16 +107,14 @@
                             android:drawablePadding="8dp"
                             android:gravity="center_vertical"
                             android:includeFontPadding="false"
-                            android:text="Hard"
                             android:textAppearance="@style/TextAppearance.AppCompat.Body2" />
 
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_gravity="center_horizontal"
-                            android:layout_marginTop="16dp"
+                            android:layout_marginTop="8dp"
                             android:text="Difficulty"
-                            android:textAllCaps="true"
                             android:textAppearance="@style/TextAppearance.AppCompat.Caption"
                             android:textColor="@color/md_light_text_87" />
                     </LinearLayout>
@@ -133,16 +133,14 @@
                             android:drawablePadding="8dp"
                             android:gravity="center_vertical"
                             android:includeFontPadding="false"
-                            android:text="Sep 12th"
                             android:textAppearance="@style/TextAppearance.AppCompat.Body2" />
 
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_gravity="center_horizontal"
-                            android:layout_marginTop="16dp"
-                            android:text="End Date"
-                            android:textAllCaps="true"
+                            android:layout_marginTop="8dp"
+                            android:text="End date"
                             android:textAppearance="@style/TextAppearance.AppCompat.Caption"
                             android:textColor="@color/md_light_text_87" />
                     </LinearLayout>
@@ -154,6 +152,7 @@
                         android:orientation="vertical">
 
                         <TextView
+                            android:id="@+id/nextDate"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_gravity="center_horizontal"
@@ -161,130 +160,19 @@
                             android:drawableStart="@drawable/ic_event_white_24dp"
                             android:gravity="center_vertical"
                             android:includeFontPadding="false"
-                            android:text="Today"
                             android:textAppearance="@style/TextAppearance.AppCompat.Body2" />
 
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_gravity="center_horizontal"
-                            android:layout_marginTop="16dp"
-                            android:text="Next Date"
-                            android:textAllCaps="true"
+                            android:layout_marginTop="8dp"
+                            android:text="Next date"
                             android:textAppearance="@style/TextAppearance.AppCompat.Caption"
                             android:textColor="@color/md_light_text_87" />
                     </LinearLayout>
 
 
-                </LinearLayout>
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="72dp"
-                    android:layout_marginEnd="24dp"
-                    android:layout_marginStart="24dp"
-                    android:layout_marginTop="8dp"
-                    android:baselineAligned="false"
-                    android:orientation="horizontal"
-                    android:visibility="gone"
-                    android:weightSum="4">
-
-                    <LinearLayout
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="center_vertical"
-                        android:layout_weight="1"
-                        android:orientation="vertical">
-
-                        <ImageView
-                            android:id="@+id/challenge_category_image"
-                            android:layout_width="24dp"
-                            android:layout_height="24dp"
-                            android:layout_gravity="center_horizontal"
-                            android:src="@drawable/ic_context_learning_white_24dp" />
-
-                        <TextView
-                            android:id="@+id/challenge_category_name"
-                            style="@style/TextAppearance.AppCompat.Body1"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_gravity="center_horizontal"
-                            android:layout_marginTop="4dp"
-                            android:text="Learning"
-                            android:textColor="@color/md_light_text_87" />
-                    </LinearLayout>
-
-                    <LinearLayout
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="center_vertical"
-                        android:layout_weight="1"
-                        android:orientation="vertical">
-
-                        <ImageView
-                            android:layout_width="24dp"
-                            android:layout_height="24dp"
-                            android:layout_gravity="center_horizontal"
-                            android:src="@drawable/ic_timer_white_24dp" />
-
-                        <TextView
-                            android:id="@+id/challenge_total_time_spent"
-                            style="@style/TextAppearance.AppCompat.Body1"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_gravity="center_horizontal"
-                            android:layout_marginTop="4dp"
-                            android:text="15h 30m"
-                            android:textColor="@color/md_light_text_87" />
-                    </LinearLayout>
-
-                    <LinearLayout
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="center_vertical"
-                        android:layout_weight="1"
-                        android:orientation="vertical">
-
-                        <ImageView
-                            android:layout_width="24dp"
-                            android:layout_height="24dp"
-                            android:layout_gravity="center_horizontal"
-                            android:src="@drawable/ic_event_white_24dp" />
-
-                        <TextView
-                            android:id="@+id/challenge_next_scheduled_date"
-                            style="@style/TextAppearance.AppCompat.Body1"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_gravity="center_horizontal"
-                            android:layout_marginTop="4dp"
-                            android:text="Tomorrow"
-                            android:textColor="@color/md_light_text_87" />
-                    </LinearLayout>
-
-                    <LinearLayout
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="center_vertical"
-                        android:layout_weight="1"
-                        android:orientation="vertical">
-
-                        <ImageView
-                            android:layout_width="24dp"
-                            android:layout_height="24dp"
-                            android:layout_gravity="center_horizontal"
-                            android:src="@drawable/ic_due_date_white_24dp" />
-
-                        <TextView
-                            android:id="@+id/challenge_due_date"
-                            style="@style/TextAppearance.AppCompat.Body1"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_gravity="center_horizontal"
-                            android:layout_marginTop="4dp"
-                            android:text="30 Sep"
-                            android:textColor="@color/md_light_text_87" />
-                    </LinearLayout>
                 </LinearLayout>
             </LinearLayout>
 
@@ -312,12 +200,12 @@
             android:paddingTop="16dp">
 
             <TextView
-                style="@style/TextAppearance.AppCompat.Subhead"
                 android:layout_width="match_parent"
                 android:layout_height="48dp"
                 android:layout_marginStart="16dp"
                 android:gravity="center_vertical"
-                android:text="Progress over time"
+                android:text="Progress over the last 30 days"
+                android:textAppearance="@style/TextAppearance.AppCompat.Subhead"
                 android:textColor="?attr/colorAccent" />
 
             <com.github.mikephil.charting.charts.LineChart
@@ -325,12 +213,65 @@
                 android:layout_width="match_parent"
                 android:layout_height="320dp" />
 
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="48dp"
+                android:layout_marginStart="16dp"
+                android:gravity="center_vertical"
+                android:text="Why will I do it?"
+                android:textAppearance="@style/TextAppearance.AppCompat.Subhead"
+                android:textColor="?attr/colorAccent" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="32dp"
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/motivation1"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center_vertical"
+                    android:textAppearance="@style/TextAppearance.AppCompat.Body1" />
+
+                <TextView
+                    android:id="@+id/motivation2"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
+                    android:gravity="center_vertical"
+                    android:textAppearance="@style/TextAppearance.AppCompat.Body1" />
+
+                <TextView
+                    android:id="@+id/motivation3"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
+                    android:gravity="center_vertical"
+                    android:textAppearance="@style/TextAppearance.AppCompat.Body1" />
+            </LinearLayout>
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="48dp"
+                android:layout_marginStart="16dp"
+                android:gravity="center_vertical"
+                android:text="Quests"
+                android:textAppearance="@style/TextAppearance.AppCompat.Subhead"
+                android:textColor="?attr/colorAccent" />
+
+            <android.support.v7.widget.RecyclerView
+                android:id="@+id/questList"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+
         </LinearLayout>
 
     </android.support.v4.widget.NestedScrollView>
 
     <android.support.design.widget.FloatingActionButton
-        android:id="@+id/add_quests"
+        android:id="@+id/addQuests"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="bottom|end"

@@ -24,7 +24,6 @@ import kotlinx.android.synthetic.main.drawer_header_home.view.*
 import mypoli.android.Constants
 import mypoli.android.MainActivity
 import mypoli.android.R
-import mypoli.android.player.auth.AuthViewController
 import mypoli.android.challenge.list.ChallengeListViewController
 import mypoli.android.common.EmailUtils
 import mypoli.android.common.redux.android.ReduxViewController
@@ -32,6 +31,7 @@ import mypoli.android.common.view.*
 import mypoli.android.pet.AndroidPetAvatar
 import mypoli.android.pet.AndroidPetMood
 import mypoli.android.pet.PetViewController
+import mypoli.android.player.auth.AuthViewController
 import mypoli.android.quest.schedule.ScheduleViewController
 import mypoli.android.repeatingquest.list.RepeatingQuestListViewController
 import mypoli.android.store.GemStoreViewController
@@ -93,8 +93,6 @@ class HomeViewController(args: Bundle? = null) :
         }
 
         contentView.drawerLayout.addDrawerListener(actionBarDrawerToggle)
-
-
 
         return contentView
     }

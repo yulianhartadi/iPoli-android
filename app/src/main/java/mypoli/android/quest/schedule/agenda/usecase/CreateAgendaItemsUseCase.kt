@@ -133,7 +133,7 @@ class CreateAgendaItemsUseCase :
         }
 
         data class Month(val month: YearMonth) : AgendaItem() {
-            override fun startDate() = LocalDate.of(month.year, month.month, 1)
+            override fun startDate(): LocalDate = LocalDate.of(month.year, month.month, 1)
         }
 
 

@@ -18,7 +18,7 @@ import mypoli.android.repeatingquest.entity.repeatType
 import mypoli.android.repeatingquest.sideeffect.RepeatingQuestSideEffect
 
 /**
- * Created by Polina Zhelyazkova <polina@ipoli.io>
+ * Created by Polina Zhelyazkova <polina@mypoli.fun>
  * on 2/26/18.
  */
 

@@ -1,70 +1,93 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:id="@+id/content_layout"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="72dp"
-    android:background="?android:attr/selectableItemBackground"
+    android:layout_height="80dp"
+    android:background="?attr/selectableItemBackground"
     android:clickable="true"
     android:focusable="true">
 
-    <LinearLayout
-        android:id="@+id/challenge_category_container"
-        android:layout_width="40dp"
-        android:layout_height="40dp"
-        android:layout_alignParentStart="true"
-        android:layout_centerVertical="true"
-        android:layout_marginStart="16dp">
-
-        <ImageView
-            android:id="@+id/categoryImage"
-            android:layout_width="24dp"
-            android:layout_height="24dp"
-            android:layout_gravity="center"
-            android:scaleType="fitXY" />
-    </LinearLayout>
+    <View
+        android:id="@+id/divider"
+        android:layout_width="match_parent"
+        android:layout_height="1.5dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginStart="74dp"
+        android:background="@color/md_dark_text_26"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/cIcon" />
 
     <TextView
-        android:id="@+id/name"
-        android:layout_width="wrap_content"
+        android:id="@+id/cName"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_alignParentStart="true"
-        android:layout_centerVertical="true"
-        android:layout_marginStart="72dp"
-        android:layout_toStartOf="@+id/dueDate"
+        android:layout_gravity="center_vertical"
+        android:layout_marginStart="16dp"
         android:ellipsize="end"
         android:maxLines="2"
-        android:textColor="@color/md_dark_text_87"
-        android:textSize="16sp" />
+        android:textAppearance="@style/TextAppearance.AppCompat.Title"
+        android:textColor="@color/md_dark_text_54"
+        app:layout_constraintBottom_toTopOf="@+id/cNext"
+        app:layout_constraintStart_toEndOf="@+id/cProgress"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_chainStyle="packed"
+        tools:text="Name" />
+
+    <ImageView
+        android:id="@+id/cIcon"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:layout_marginBottom="8dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="8dp"
+        android:adjustViewBounds="true"
+        android:background="@drawable/oval_background"
+        android:scaleType="centerInside"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <ProgressBar
+        android:id="@+id/cProgress"
+        style="?android:attr/progressBarStyleHorizontal"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:adjustViewBounds="true"
+        android:background="@drawable/item_challenge_progress_background"
+        android:clickable="false"
+        android:progressDrawable="@drawable/item_challenge_progress"
+        app:layout_constraintBottom_toBottomOf="@+id/cIcon"
+        app:layout_constraintEnd_toEndOf="@+id/cIcon"
+        app:layout_constraintStart_toStartOf="@+id/cIcon"
+        app:layout_constraintTop_toTopOf="@+id/cIcon" />
 
     <TextView
-        android:id="@id/dueDate"
-        style="@style/TextAppearance.AppCompat.Caption"
-        android:layout_width="wrap_content"
+        android:id="@+id/cNext"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_centerVertical="true"
-        android:layout_marginStart="16dp"
-        android:layout_toStartOf="@+id/challenge_more_menu_container" />
+        android:layout_marginTop="4dp"
+        android:textAppearance="@style/TextAppearance.AppCompat.Body1"
+        android:textColor="@color/md_dark_text_54"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="@+id/cName"
+        app:layout_constraintTop_toBottomOf="@+id/cName"
+        tools:text="Next: Today" />
 
-    <com.lnikkila.extendedtouchview.ExtendedTouchView
-        android:id="@+id/challenge_more_menu_container"
+    <TextView
+        android:id="@+id/cEnd"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentEnd="true"
-        android:layout_centerVertical="true"
         android:layout_marginEnd="16dp"
-        android:layout_marginStart="16dp"
-        app:touchHeight="@dimen/extended_touch_height"
-        app:touchWidth="@dimen/extended_touch_width">
+        android:layout_marginStart="8dp"
+        android:textAppearance="@style/TextAppearance.AppCompat.Body1"
+        android:textColor="@color/md_dark_text_54"
+        app:layout_constraintBottom_toBottomOf="@+id/cNext"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="1.0"
+        app:layout_constraintStart_toEndOf="@+id/cNext"
+        app:layout_constraintTop_toTopOf="@+id/cNext"
+        tools:text="Ends in 2 days" />
 
-        <ImageButton
-            android:id="@+id/moreMenu"
-            android:layout_width="24dp"
-            android:layout_height="24dp"
-            android:background="?android:attr/selectableItemBackground"
-            android:clickable="true"
-            android:scaleType="fitXY"
-            android:src="@drawable/ic_more_vert_black_24dp" />
-    </com.lnikkila.extendedtouchview.ExtendedTouchView>
-
-</RelativeLayout>
+</android.support.constraint.ConstraintLayout>

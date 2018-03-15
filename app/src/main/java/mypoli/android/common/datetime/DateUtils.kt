@@ -177,4 +177,20 @@ object DateUtils {
 
     val today: LocalDate
         get() = LocalDate.now()
+
+    fun max(date1: LocalDate, date2: LocalDate): LocalDate {
+        if (date1.isAfter(date2)) {
+            return date1
+        }
+
+        return date2
+    }
+
+    fun min(date1: LocalDate, date2: LocalDate): LocalDate {
+        if (date1.isBefore(date2)) {
+            return date1
+        }
+
+        return date2
+    }
 }

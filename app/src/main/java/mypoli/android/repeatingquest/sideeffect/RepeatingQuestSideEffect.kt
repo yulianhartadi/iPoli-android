@@ -114,9 +114,8 @@ class RepeatingQuestSideEffect : AppSideEffect() {
                 }
             }
 
-            is RepeatingQuestAction.Remove -> {
+            is RepeatingQuestAction.Remove ->
                 removeRepeatingQuestUseCase.execute(RemoveRepeatingQuestUseCase.Params(action.repeatingQuestId))
-            }
         }
     }
 

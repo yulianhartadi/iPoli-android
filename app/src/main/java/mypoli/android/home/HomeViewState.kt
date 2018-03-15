@@ -10,7 +10,7 @@ import mypoli.android.pet.PetMood
 import mypoli.android.player.Player
 
 /**
- * Created by Polina Zhelyazkova <polina@ipoli.io>
+ * Created by Polina Zhelyazkova <polina@mypoli.fun>
  * on 2/12/18.
  */
 sealed class HomeAction : Action {

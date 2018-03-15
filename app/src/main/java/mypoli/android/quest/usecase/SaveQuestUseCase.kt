@@ -47,7 +47,7 @@ class SaveQuestUseCase(
     override fun execute(parameters: Parameters): Result {
         val errors = validate(parameters).check<ValidationError> {
             "name" {
-                given { name.isEmpty() } addError EMPTY_NAME
+                given { name.isBlank() } addError EMPTY_NAME
             }
         }
 
@@ -56,7 +56,7 @@ class SaveQuestUseCase(
         }
         val quest = if (parameters.id.isEmpty()) {
             Quest(
-                name = parameters.name,
+                name = parameters.name.trim(),
                 icon = parameters.icon,
                 color = parameters.color,
                 category = parameters.category,
@@ -75,7 +75,7 @@ class SaveQuestUseCase(
             }
 
             quest.copy(
-                name = parameters.name,
+                name = parameters.name.trim(),
                 icon = parameters.icon,
                 color = parameters.color,
                 category = parameters.category,

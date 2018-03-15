@@ -4,6 +4,7 @@ import android.support.annotation.ColorRes
 import android.support.annotation.DrawableRes
 import android.support.annotation.StringRes
 import mypoli.android.R
+import mypoli.android.challenge.entity.Challenge
 import mypoli.android.challenge.predefined.entity.PredefinedChallengeData.Quest.OneTime
 import mypoli.android.challenge.predefined.entity.PredefinedChallengeData.Quest.Repeating
 import mypoli.android.common.datetime.Time
@@ -58,6 +59,11 @@ data class PredefinedChallengeData(
 }
 
 enum class PredefinedChallenge(
+    val title: String,
+    val color: Color,
+    val icon: Icon?,
+    val difficulty: Challenge.Difficulty,
+    val motivations: List<String>,
     val category: PredefinedChallengeData.Category,
     val gemPrice: Int,
     val quests: List<PredefinedChallengeData.Quest>,
@@ -65,9 +71,14 @@ enum class PredefinedChallenge(
 ) {
 
     STRESS_FREE_MIND(
-        PredefinedChallengeData.Category.HEALTH_AND_FITNESS,
-        0,
-        listOf(
+        title = "Stress-Free Mind",
+        color = Color.GREEN,
+        icon = Icon.TREE,
+        difficulty = Challenge.Difficulty.NORMAL,
+        motivations = listOf("Be more focused", "Be relaxed", "Be healthy"),
+        category = PredefinedChallengeData.Category.HEALTH_AND_FITNESS,
+        gemPrice = 0,
+        quests = listOf(
             Repeating(
                 "Meditate every day for 20 min",
                 "Meditate",
@@ -119,9 +130,14 @@ enum class PredefinedChallenge(
         )
     ),
     WEIGHT_CUTTER(
-        PredefinedChallengeData.Category.HEALTH_AND_FITNESS,
-        5,
-        listOf(
+        title = "Weight Cutter",
+        color = Color.GREEN,
+        icon = Icon.FITNESS,
+        difficulty = Challenge.Difficulty.HARD,
+        motivations = listOf("Feel great", "Become more confident", "Become healthier"),
+        category = PredefinedChallengeData.Category.HEALTH_AND_FITNESS,
+        gemPrice = 5,
+        quests = listOf(
             OneTime(
                 "Sign up for a gym club card",
                 "Sign up for a gym club card",
@@ -182,9 +198,14 @@ enum class PredefinedChallenge(
         )
     ),
     HEALTHY_FIT(
-        PredefinedChallengeData.Category.HEALTH_AND_FITNESS,
-        5,
-        listOf(
+        title = "Healthy & Fit",
+        color = Color.GREEN,
+        icon = Icon.RUN,
+        difficulty = Challenge.Difficulty.NORMAL,
+        motivations = listOf("Be healthier", "Stay fit", "Feel great"),
+        category = PredefinedChallengeData.Category.HEALTH_AND_FITNESS,
+        gemPrice = 5,
+        quests = listOf(
             Repeating(
                 "Drink 1 big bottle of water every day",
                 "Drink 1 big bottle of water",
@@ -253,9 +274,14 @@ enum class PredefinedChallenge(
         )
     ),
     ENGLISH_JEDI(
-        PredefinedChallengeData.Category.BUILD_SKILL,
-        5,
-        listOf(
+        title = "English Jedi",
+        color = Color.BLUE,
+        icon = Icon.BOOK,
+        difficulty = Challenge.Difficulty.HARD,
+        motivations = listOf("Learn to read great books", "Participate in conversations", "Meet & speak with new people"),
+        category = PredefinedChallengeData.Category.BUILD_SKILL,
+        gemPrice = 5,
+        quests = listOf(
             OneTime(
                 "Sign up at Duolingo",
                 "Sign up at Duolingo",
@@ -326,9 +352,14 @@ enum class PredefinedChallenge(
         )
     ),
     CODING_NINJA(
-        PredefinedChallengeData.Category.BUILD_SKILL,
-        5,
-        listOf(
+        title = "Coding Ninja",
+        color = Color.BLUE,
+        icon = Icon.LIGHT_BULB,
+        difficulty = Challenge.Difficulty.HARD,
+        motivations = listOf("Learn to command my computer", "Understand technologies better", "Find new job"),
+        category = PredefinedChallengeData.Category.BUILD_SKILL,
+        gemPrice = 5,
+        quests = listOf(
             OneTime(
                 "Sign up at freeCodeCamp",
                 "Sign up at freeCodeCamp",
@@ -384,9 +415,14 @@ enum class PredefinedChallenge(
         )
     ),
     FAMOUS_WRITER(
-        PredefinedChallengeData.Category.BUILD_SKILL,
-        0,
-        listOf(
+        title = "Famous writer",
+        color = Color.BLUE,
+        icon = Icon.BOOK,
+        difficulty = Challenge.Difficulty.HARD,
+        motivations = listOf("Better present my ideas", "Become more confident", "Meet new people"),
+        category = PredefinedChallengeData.Category.BUILD_SKILL,
+        gemPrice = 0,
+        quests = listOf(
             OneTime(
                 "Create blog on Medium.com",
                 "Create blog on Medium.com",
@@ -438,9 +474,14 @@ enum class PredefinedChallenge(
         )
     ),
     MASTER_COMMUNICATOR(
-        PredefinedChallengeData.Category.DEEP_WORK,
-        0,
-        listOf(
+        title = "Master Presenter",
+        color = Color.RED,
+        icon = Icon.STAR,
+        difficulty = Challenge.Difficulty.NORMAL,
+        motivations = listOf("Better present my ideas", "Become more confident", "Explain better"),
+        category = PredefinedChallengeData.Category.DEEP_WORK,
+        gemPrice = 0,
+        quests = listOf(
             OneTime(
                 "Research how to give great presentation",
                 "Research how to give great presentation",
@@ -496,12 +537,17 @@ enum class PredefinedChallenge(
                 10
             )
         ),
-        10
+        durationDays = 10
     ),
     FOCUSED_WORK(
-        PredefinedChallengeData.Category.DEEP_WORK,
-        5,
-        listOf(
+        title = "Focused work",
+        color = Color.RED,
+        icon = Icon.BRIEFCASE,
+        difficulty = Challenge.Difficulty.HARD,
+        motivations = listOf("Be more productive", "Achieve more"),
+        category = PredefinedChallengeData.Category.DEEP_WORK,
+        gemPrice = 5,
+        quests = listOf(
             OneTime(
                 "Prepare a special place for doing my work for 1 hour",
                 "Prepare a special place for doing my work",
@@ -549,9 +595,14 @@ enum class PredefinedChallenge(
         )
     ),
     JOB_INTERVIEW(
-        PredefinedChallengeData.Category.DEEP_WORK,
-        5,
-        listOf(
+        title = "Job interview",
+        color = Color.RED,
+        icon = Icon.MONEY,
+        difficulty = Challenge.Difficulty.NORMAL,
+        motivations = listOf("Find better job", "Work something more interesting"),
+        category = PredefinedChallengeData.Category.DEEP_WORK,
+        gemPrice = 5,
+        quests = listOf(
             OneTime(
                 "Compare the job requirements with my skill set",
                 "Compare the job requirements with my skill set",
@@ -602,9 +653,14 @@ enum class PredefinedChallenge(
         durationDays = 14
     ),
     FRIENDS_BLAST(
-        PredefinedChallengeData.Category.ME_TIME,
-        4,
-        listOf(
+        title = "Friends blast",
+        color = Color.PURPLE,
+        icon = Icon.FRIENDS,
+        difficulty = Challenge.Difficulty.NORMAL,
+        motivations = listOf("Feel more connected to others", "Have more fun"),
+        category = PredefinedChallengeData.Category.ME_TIME,
+        gemPrice = 4,
+        quests = listOf(
             Repeating(
                 "Call a friend 2 times a week",
                 "Call a friend",
@@ -653,9 +709,14 @@ enum class PredefinedChallenge(
         )
     ),
     JUST_HAVE_FUN(
-        PredefinedChallengeData.Category.ME_TIME,
-        4,
-        listOf(
+        title = "Just have fun",
+        color = Color.PURPLE,
+        icon = Icon.GAME_CONTROLLER,
+        difficulty = Challenge.Difficulty.EASY,
+        motivations = listOf("Be healthier and happier"),
+        category = PredefinedChallengeData.Category.ME_TIME,
+        gemPrice = 4,
+        quests = listOf(
             Repeating(
                 "Play my favorite game 3 times a week for 1 hour",
                 "Play my favorite game",
@@ -699,9 +760,14 @@ enum class PredefinedChallenge(
         )
     ),
     FAMILY_TIME(
-        PredefinedChallengeData.Category.ME_TIME,
-        0,
-        listOf(
+        title = "Family time",
+        color = Color.PURPLE,
+        icon = Icon.FRIENDS,
+        difficulty = Challenge.Difficulty.NORMAL,
+        motivations = listOf("Stay close with family"),
+        category = PredefinedChallengeData.Category.ME_TIME,
+        gemPrice = 0,
+        quests = listOf(
             Repeating(
                 "Call my parents every week",
                 "Call my parents",
@@ -764,9 +830,14 @@ enum class PredefinedChallenge(
         )
     ),
     KEEP_THINGS_TIDY(
-        PredefinedChallengeData.Category.ORGANIZE_MY_LIFE,
-        3,
-        listOf(
+        title = "Keep things tidy",
+        color = Color.TEAL,
+        icon = Icon.HOME,
+        difficulty = Challenge.Difficulty.NORMAL,
+        motivations = listOf("Live healthier", "Be more organized"),
+        category = PredefinedChallengeData.Category.ORGANIZE_MY_LIFE,
+        gemPrice = 3,
+        quests = listOf(
             Repeating(
                 "Use the vacuum cleaner every weekend",
                 "Use the vacuum cleaner",
@@ -844,9 +915,14 @@ enum class PredefinedChallenge(
         )
     ),
     ORGANIZE_MY_DAY(
-        PredefinedChallengeData.Category.ORGANIZE_MY_LIFE,
-        3,
-        listOf(
+        title = "Organize my day",
+        color = Color.TEAL,
+        icon = Icon.STAR,
+        difficulty = Challenge.Difficulty.NORMAL,
+        motivations = listOf("Be more organized", "Achieve more in less time"),
+        category = PredefinedChallengeData.Category.ORGANIZE_MY_LIFE,
+        gemPrice = 3,
+        quests = listOf(
             Repeating(
                 "Plan my schedule for the day every morning",
                 "Plan my schedule for the day",
@@ -902,9 +978,14 @@ enum class PredefinedChallenge(
         )
     ),
     STAY_ON_TOP_OF_THINGS(
-        PredefinedChallengeData.Category.ORGANIZE_MY_LIFE,
-        3,
-        listOf(
+        title = "Stay on top of things",
+        color = Color.TEAL,
+        icon = Icon.HOME,
+        difficulty = Challenge.Difficulty.NORMAL,
+        motivations = listOf("Be more organized", "Do not forget important things"),
+        category = PredefinedChallengeData.Category.ORGANIZE_MY_LIFE,
+        gemPrice = 3,
+        quests = listOf(
             Repeating(
                 "Shop for food and household cleaning products every week",
                 "Shop for food and household cleaning products",

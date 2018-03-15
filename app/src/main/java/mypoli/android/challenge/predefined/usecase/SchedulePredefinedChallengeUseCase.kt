@@ -1,12 +1,13 @@
-package mypoli.android.challenge.usecase
+package mypoli.android.challenge.predefined.usecase
 
 import mypoli.android.challenge.predefined.entity.PredefinedChallengeData
 import mypoli.android.common.UseCase
 import mypoli.android.common.datetime.datesBetween
-import mypoli.android.common.datetime.daysUntil
+import mypoli.android.quest.BaseQuest
 import mypoli.android.quest.Category
 import mypoli.android.quest.Quest
-import mypoli.android.quest.data.persistence.QuestRepository
+import mypoli.android.quest.RepeatingQuest
+import mypoli.android.repeatingquest.entity.RepeatingPattern
 import org.threeten.bp.LocalDate
 import org.threeten.bp.temporal.TemporalAdjusters
 import java.util.*
@@ -15,13 +16,13 @@ import java.util.*
  * Created by Venelin Valkov <venelin@mypoli.fun>
  * on 12/29/17.
  */
-class ScheduleChallengeUseCase(private val questRepository: QuestRepository) :
-    UseCase<ScheduleChallengeUseCase.Params, List<Quest>> {
+class SchedulePredefinedChallengeUseCase :
+    UseCase<SchedulePredefinedChallengeUseCase.Params, List<BaseQuest>> {
 
     private lateinit var startDate: LocalDate
     private lateinit var endDate: LocalDate
 
-    override fun execute(parameters: Params): List<Quest> {
+    override fun execute(parameters: Params): List<BaseQuest> {
         val challenge = parameters.challenge
 
         require(challenge.quests.isNotEmpty(), { "Challenge must contain quests" })
@@ -30,22 +31,27 @@ class ScheduleChallengeUseCase(private val questRepository: QuestRepository) :
         endDate = startDate.plusDays((challenge.durationDays - 1).toLong())
         val randomSeed = parameters.randomSeed
 
-        val quests = challenge.quests.map { q ->
+        return challenge.quests.map { q ->
             when (q) {
                 is PredefinedChallengeData.Quest.Repeating -> {
-
-                    startDate
-                        .datesBetween(endDate)
-                        .filter { date ->
-                            val shouldScheduleForDay = q.weekDays.contains(date.dayOfWeek)
-                            val isAfterStartDay = q.startAtDay?.let {
-                                isAfterStartDay(date, it)
-                            } ?: true
-                            shouldScheduleForDay && isAfterStartDay
+                    val rq = RepeatingQuest(
+                        name = q.name,
+                        color = q.color,
+                        icon = q.icon,
+                        startTime = q.startTime,
+                        category = Category(challenge.category.name, q.color),
+                        duration = q.duration,
+                        repeatingPattern = if (q.weekDays.isEmpty()) {
+                            RepeatingPattern.Daily(startDate, endDate)
+                        } else {
+                            RepeatingPattern.Weekly(
+                                daysOfWeek = q.weekDays.toSet(),
+                                start = startDate,
+                                end = endDate
+                            )
                         }
-                        .map {
-                            createFromRepeating(q, challenge, it)
-                        }
+                    )
+                    listOf<BaseQuest>(rq)
                 }
 
                 is PredefinedChallengeData.Quest.OneTime -> {
@@ -69,12 +75,10 @@ class ScheduleChallengeUseCase(private val questRepository: QuestRepository) :
                         chooseRandomScheduledDate(randomSeed)
                     }
 
-                    listOf(createFromOneTime(q, challenge, scheduledDate))
+                    listOf<BaseQuest>(createFromOneTime(q, challenge, scheduledDate))
                 }
             }
         }.flatten()
-
-        return quests.map { questRepository.save(it) }
     }
 
     private fun chooseRandomScheduledDate(randomSeed: Long?): LocalDate {
@@ -85,11 +89,6 @@ class ScheduleChallengeUseCase(private val questRepository: QuestRepository) :
         } ?: Random()
 
         return dates[random.nextInt(dates.size)]
-    }
-
-    private fun isAfterStartDay(date: LocalDate, startAtDay: Int): Boolean {
-        val s = startDate.daysUntil(date) + 1
-        return s + 1 >= startAtDay
     }
 
     private fun createFromOneTime(
@@ -106,22 +105,6 @@ class ScheduleChallengeUseCase(private val questRepository: QuestRepository) :
             duration = it.duration,
             scheduledDate = scheduledDate
         )
-
-    private fun createFromRepeating(
-        it: PredefinedChallengeData.Quest.Repeating,
-        challenge: PredefinedChallengeData,
-        scheduledDate: LocalDate
-    ) =
-        Quest(
-            name = it.name,
-            color = it.color,
-            icon = it.icon,
-            startTime = it.startTime,
-            category = Category(challenge.category.name, it.color),
-            duration = it.duration,
-            scheduledDate = scheduledDate
-        )
-
 
     data class Params(
         val challenge: PredefinedChallengeData,

@@ -6,7 +6,7 @@ import mypoli.android.quest.data.persistence.QuestRepository
 import mypoli.android.quest.timer.job.TimerCompleteScheduler
 
 /**
- * Created by Polina Zhelyazkova <polina@ipoli.io>
+ * Created by Polina Zhelyazkova <polina@mypoli.fun>
  * on 1/18/18.
  */
 open class CancelTimerUseCase(

@@ -2,9 +2,11 @@ package mypoli.android.challenge.predefined
 
 import mypoli.android.challenge.predefined.PersonalizeChallengeViewState.StateType.*
 import mypoli.android.challenge.predefined.entity.PredefinedChallengeData
-import mypoli.android.challenge.usecase.ScheduleChallengeUseCase
+import mypoli.android.challenge.usecase.SaveChallengeUseCase
+import mypoli.android.challenge.predefined.usecase.SchedulePredefinedChallengeUseCase
 import mypoli.android.common.mvi.BaseMviPresenter
 import mypoli.android.common.mvi.ViewStateRenderer
+import org.threeten.bp.LocalDate
 import kotlin.coroutines.experimental.CoroutineContext
 
 /**
@@ -12,7 +14,8 @@ import kotlin.coroutines.experimental.CoroutineContext
  * on 12/29/17.
  */
 class PersonalizeChallengePresenter(
-    private val scheduleChallengeUseCase: ScheduleChallengeUseCase,
+    private val schedulePredefinedChallengeUseCase: SchedulePredefinedChallengeUseCase,
+    private val saveChallengeUseCase: SaveChallengeUseCase,
     coroutineContext: CoroutineContext
 ) : BaseMviPresenter<ViewStateRenderer<PersonalizeChallengeViewState>, PersonalizeChallengeViewState, PersonalizeChallengeIntent>(
     PersonalizeChallengeViewState(LOADING), coroutineContext
@@ -24,7 +27,6 @@ class PersonalizeChallengePresenter(
         return when (intent) {
 
             is PersonalizeChallengeIntent.LoadData -> {
-
                 val vms = intent.challenge.quests.map {
                     when (it) {
                         is PredefinedChallengeData.Quest.OneTime -> {
@@ -80,7 +82,22 @@ class PersonalizeChallengePresenter(
                             quests,
                             predefinedChallenge.durationDays
                         )
-                    scheduleChallengeUseCase.execute(ScheduleChallengeUseCase.Params(challenge))
+                    val baseQuests = schedulePredefinedChallengeUseCase.execute(
+                        SchedulePredefinedChallengeUseCase.Params(challenge)
+                    )
+                    saveChallengeUseCase.execute(
+                        SaveChallengeUseCase.Params.WithNewQuests(
+                            id = "",
+                            name = predefinedChallenge.title,
+                            color = predefinedChallenge.color,
+                            icon = predefinedChallenge.icon,
+                            difficulty = predefinedChallenge.difficulty,
+                            motivations = predefinedChallenge.motivations,
+                            end = LocalDate.now().plusDays((predefinedChallenge.durationDays - 1).toLong()),
+                            quests = baseQuests
+                        )
+                    )
+
                     state.copy(
                         type = CHALLENGE_ACCEPTED
                     )

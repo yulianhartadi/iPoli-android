@@ -1,33 +1,36 @@
 package mypoli.android.repeatingquest.persistence
 
 import android.content.SharedPreferences
-import com.google.firebase.firestore.CollectionReference
 import com.google.firebase.firestore.FirebaseFirestore
 import mypoli.android.common.datetime.Time
+import mypoli.android.common.datetime.instant
 import mypoli.android.common.datetime.startOfDayUTC
 import mypoli.android.common.persistence.BaseCollectionFirestoreRepository
 import mypoli.android.common.persistence.CollectionRepository
 import mypoli.android.common.persistence.FirestoreModel
-import mypoli.android.quest.Category
-import mypoli.android.quest.Color
-import mypoli.android.quest.Icon
-import mypoli.android.quest.Reminder
+import mypoli.android.quest.*
 import mypoli.android.quest.data.persistence.DbReminder
 import mypoli.android.repeatingquest.entity.RepeatingPattern
-import mypoli.android.repeatingquest.entity.RepeatingQuest
 import org.threeten.bp.DayOfWeek
 import org.threeten.bp.LocalDate
 import org.threeten.bp.Month
 import kotlin.coroutines.experimental.CoroutineContext
 
 /**
- * Created by Polina Zhelyazkova <polina@ipoli.io>
+ * Created by Polina Zhelyazkova <polina@mypoli.fun>
  * on 2/16/18.
  */
 interface RepeatingQuestRepository : CollectionRepository<RepeatingQuest> {
     fun findAllActive(currentDate: LocalDate = LocalDate.now()): List<RepeatingQuest>
-}
+    fun findActiveNotForChallenge(
+        challengeId: String,
+        currentDate: LocalDate = LocalDate.now()
+    ): List<RepeatingQuest>
 
+    fun findAllForChallenge(challengeId: String): List<RepeatingQuest>
+    fun generateId(): String
+    fun purge(id: String)
+}
 
 data class DbRepeatingQuest(override val map: MutableMap<String, Any?> = mutableMapOf()) :
     FirestoreModel {
@@ -40,6 +43,7 @@ data class DbRepeatingQuest(override val map: MutableMap<String, Any?> = mutable
     var duration: Int by map
     var reminder: MutableMap<String, Any?>? by map
     var repeatingPattern: MutableMap<String, Any?> by map
+    var challengeId: String? by map
     override var createdAt: Long by map
     override var updatedAt: Long by map
     override var removedAt: Long? by map
@@ -56,7 +60,7 @@ data class DbRepeatingPattern(val map: MutableMap<String, Any?> = mutableMapOf()
     var timesPerWeek: Int by map
     var timesPerMonth: Int by map
     var preferredDays: List<String> by map
-    var scheduledPeriods: MutableMap<Long, List<Long>> by map
+    var scheduledPeriods: MutableMap<String, List<Long>> by map
 }
 
 enum class DbRepeatingPatternType {
@@ -72,8 +76,16 @@ class FirestoreRepeatingQuestRepository(
     coroutineContext,
     sharedPreferences
 ), RepeatingQuestRepository {
+    override fun purge(id: String) {
+        collectionReference.document(id).delete()
+    }
 
-    override val collectionReference: CollectionReference
+    override fun findActiveNotForChallenge(
+        challengeId: String,
+        currentDate: LocalDate
+    ) = findAllActive(currentDate).filter { it.challengeId != challengeId }
+
+    override val collectionReference
         get() = database.collection("players").document(playerId).collection("repeatingQuests")
 
     override fun findAllActive(currentDate: LocalDate): List<RepeatingQuest> {
@@ -88,6 +100,12 @@ class FirestoreRepeatingQuestRepository(
         return rqsWithEndDate + rqsWithoutEndDate
     }
 
+    override fun findAllForChallenge(challengeId: String) =
+        collectionReference
+            .whereEqualTo("challengeId", challengeId)
+            .entities
+
+    override fun generateId() = collectionReference.document().id
 
     override fun toEntityObject(dataMap: MutableMap<String, Any?>): RepeatingQuest {
         val rq = DbRepeatingQuest(dataMap.withDefault {
@@ -109,7 +127,10 @@ class FirestoreRepeatingQuestRepository(
                 val cr = DbReminder(it)
                 Reminder(cr.message, Time.of(cr.minute), cr.date?.startOfDayUTC)
             },
-            repeatingPattern = createRepeatingPattern(DbRepeatingPattern(rq.repeatingPattern))
+            repeatingPattern = createRepeatingPattern(DbRepeatingPattern(rq.repeatingPattern)),
+            challengeId = rq.challengeId,
+            updatedAt = rq.updatedAt.instant,
+            createdAt = rq.createdAt.instant
         )
     }
 
@@ -152,7 +173,7 @@ class FirestoreRepeatingQuestRepository(
                     timesPerWeek = rp.timesPerWeek,
                     preferredDays = rp.preferredDays.map { DayOfWeek.valueOf(it) }.toSet(),
                     scheduledPeriods = rp.scheduledPeriods.entries
-                        .associate { it.key.startOfDayUTC to it.value.map { it.startOfDayUTC } },
+                        .associate { it.key.toLong().startOfDayUTC to it.value.map { it.startOfDayUTC } },
                     start = rp.start.startOfDayUTC,
                     end = rp.end?.startOfDayUTC
                 )
@@ -163,7 +184,7 @@ class FirestoreRepeatingQuestRepository(
                     timesPerMonth = rp.timesPerMonth,
                     preferredDays = rp.preferredDays.map { it.toInt() }.toSet(),
                     scheduledPeriods = rp.scheduledPeriods.entries
-                        .associate { it.key.startOfDayUTC to it.value.map { it.startOfDayUTC } },
+                        .associate { it.key.toLong().startOfDayUTC to it.value.map { it.startOfDayUTC } },
                     start = rp.start.startOfDayUTC,
                     end = rp.end?.startOfDayUTC
                 )
@@ -184,6 +205,9 @@ class FirestoreRepeatingQuestRepository(
             createDbReminder(it).map
         }
         rq.repeatingPattern = createDbRepeatingPattern(entity.repeatingPattern).map
+        rq.challengeId = entity.challengeId
+        rq.updatedAt = entity.updatedAt.toEpochMilli()
+        rq.createdAt = entity.createdAt.toEpochMilli()
         return rq
     }
 
@@ -218,7 +242,7 @@ class FirestoreRepeatingQuestRepository(
                     it.name
                 }
                 rp.scheduledPeriods = repeatingPattern.scheduledPeriods.entries
-                    .associate { it.key.startOfDayUTC() to it.value.map { it.startOfDayUTC() } }
+                    .associate { it.key.startOfDayUTC().toString() to it.value.map { it.startOfDayUTC() } }
                     .toMutableMap()
             }
             is RepeatingPattern.Flexible.Monthly -> {

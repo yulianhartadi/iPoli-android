@@ -26,7 +26,7 @@ import mypoli.android.quest.timer.TimerViewController
 import space.traversal.kapsule.required
 
 /**
- * Created by Polina Zhelyazkova <polina@ipoli.io>
+ * Created by Polina Zhelyazkova <polina@mypoli.fun>
  * on 1/24/18.
  */
 class CompletedQuestViewController :

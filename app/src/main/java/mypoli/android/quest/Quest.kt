@@ -2,6 +2,8 @@ package mypoli.android.quest
 
 import mypoli.android.common.datetime.*
 import mypoli.android.common.sumByLong
+import mypoli.android.repeatingquest.entity.PeriodProgress
+import mypoli.android.repeatingquest.entity.RepeatingPattern
 import org.threeten.bp.Instant
 import org.threeten.bp.LocalDate
 import org.threeten.bp.LocalDateTime
@@ -110,6 +112,8 @@ enum class IconPack(val gemPrice: Int) {
     BASIC(6)
 }
 
+sealed class BaseQuest(open val id: String)
+
 data class Quest(
     override val id: String = "",
     val name: String,
@@ -131,8 +135,9 @@ data class Quest(
     val coins: Int? = null,
     val bounty: Bounty? = null,
     val isRemoved: Boolean = false,
-    val repeatingQuestId: String? = null
-) : Entity {
+    val repeatingQuestId: String? = null,
+    val challengeId: String? = null
+) : BaseQuest(id), Entity {
 
     sealed class Bounty {
         object None : Bounty()
@@ -141,7 +146,7 @@ data class Quest(
 
     val isCompleted = completedAtDate != null
     val endTime: Time?
-        get() = startTime?.let { Time.of(it.toMinuteOfDay() + duration) }
+        get() = startTime?.plus(duration)
     val isScheduled = startTime != null
 
     val actualStart: Instant?
@@ -196,6 +201,8 @@ data class Quest(
     fun hasCompletedAllTimeRanges() = timeRanges.sumBy { it.duration } >= duration
 
     val isFromRepeatingQuest = repeatingQuestId != null
+
+    val isFromChallenge = challengeId != null
 }
 
 data class TimeRange(
@@ -217,4 +224,39 @@ data class TimeRange(
         }
         return duration.minutes.asSeconds
     }
+}
+
+data class RepeatingQuest(
+    override val id: String = "",
+    val name: String,
+    val color: Color,
+    val icon: Icon? = null,
+    val category: Category,
+    val startTime: Time? = null,
+    val duration: Int,
+    val reminder: Reminder? = null,
+    val repeatingPattern: RepeatingPattern,
+    val nextDate: LocalDate? = null,
+    val periodProgress: PeriodProgress? = null,
+    val challengeId: String? = null,
+    override val createdAt: Instant = Instant.now(),
+    override val updatedAt: Instant = Instant.now()
+) : BaseQuest(id), Entity {
+    val start
+        get() = repeatingPattern.start
+
+    val end
+        get() = repeatingPattern.end
+
+    val isCompleted
+        get() = if (end == null) false else LocalDate.now().isAfter(end)
+
+    val endTime: Time?
+        get() = startTime?.plus(duration)
+
+    val isFlexible: Boolean
+        get() = repeatingPattern is RepeatingPattern.Flexible
+
+    val isFixed: Boolean
+        get() = !isFlexible
 }

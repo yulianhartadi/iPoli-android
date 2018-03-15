@@ -5,9 +5,9 @@ import com.nhaarman.mockito_kotlin.doReturn
 import com.nhaarman.mockito_kotlin.mock
 import mypoli.android.TestUtil
 import mypoli.android.quest.Quest
+import mypoli.android.quest.RepeatingQuest
 import mypoli.android.quest.data.persistence.QuestRepository
 import mypoli.android.repeatingquest.entity.RepeatingPattern
-import mypoli.android.repeatingquest.entity.RepeatingQuest
 import org.amshove.kluent.`should equal`
 import org.amshove.kluent.shouldThrow
 import org.jetbrains.spek.api.Spek
@@ -15,9 +15,10 @@ import org.jetbrains.spek.api.dsl.describe
 import org.jetbrains.spek.api.dsl.it
 import org.threeten.bp.DayOfWeek
 import org.threeten.bp.LocalDate
+import org.threeten.bp.temporal.TemporalAdjusters
 
 /**
- * Created by Polina Zhelyazkova <polina@ipoli.io>
+ * Created by Polina Zhelyazkova <polina@mypoli.fun>
  * on 3/2/18.
  */
 class CreateRepeatingQuestHistoryUseCaseSpek : Spek({
@@ -98,7 +99,7 @@ class CreateRepeatingQuestHistoryUseCaseSpek : Spek({
         }
 
         it("should return empty") {
-            val date = LocalDate.now().with(DayOfWeek.TUESDAY)
+            val date = LocalDate.now().with(TemporalAdjusters.nextOrSame(DayOfWeek.WEDNESDAY))
             val questRepoMock = mock<QuestRepository> {
                 on {
                     findCompletedForRepeatingQuestInPeriod(
@@ -110,7 +111,10 @@ class CreateRepeatingQuestHistoryUseCaseSpek : Spek({
             }
             val result = executeUseCase(
                 questRepoMock, TestUtil.repeatingQuest.copy(
-                    repeatingPattern = RepeatingPattern.Weekly(setOf(DayOfWeek.MONDAY), date)
+                    repeatingPattern = RepeatingPattern.Weekly(
+                        setOf(DayOfWeek.MONDAY),
+                        date.minusDays(1)
+                    )
                 ), date, date, date.minusDays(1)
             ).data
             result[date].`should equal`(CreateRepeatingQuestHistoryUseCase.DateHistory.EMPTY)

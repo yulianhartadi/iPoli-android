@@ -1,10 +1,8 @@
 package mypoli.android.repeatingquest.entity
 
 import mypoli.android.common.datetime.DateUtils
-import mypoli.android.common.datetime.Time
-import mypoli.android.quest.*
+import mypoli.android.common.datetime.isBetween
 import org.threeten.bp.DayOfWeek
-import org.threeten.bp.Instant
 import org.threeten.bp.LocalDate
 import org.threeten.bp.Month
 import org.threeten.bp.temporal.TemporalAdjusters
@@ -48,7 +46,7 @@ sealed class RepeatingPattern(
 
         override val periodCount get() = 1
 
-        override fun nextDateWithoutRange(from: LocalDate): LocalDate =
+        override fun nextDateWithoutRange(from: LocalDate) =
             LocalDate.of(from.year, month, dayOfMonth).let {
                 when {
                     it.isBefore(from) -> it.plusYears(1)
@@ -70,7 +68,7 @@ sealed class RepeatingPattern(
 
         override val periodCount get() = daysOfWeek.size
 
-        override fun nextDateWithoutRange(from: LocalDate): LocalDate {
+        override fun nextDateWithoutRange(from: LocalDate): LocalDate? {
             require(daysOfWeek.isNotEmpty())
             var nextDate = from
             while (true) {
@@ -95,7 +93,7 @@ sealed class RepeatingPattern(
 
         override val periodCount get() = daysOfMonth.size
 
-        override fun nextDateWithoutRange(from: LocalDate): LocalDate {
+        override fun nextDateWithoutRange(from: LocalDate): LocalDate? {
             require(daysOfMonth.isNotEmpty())
             var nextDate = from
             while (true) {
@@ -127,7 +125,7 @@ sealed class RepeatingPattern(
 
             override val periodCount get() = timesPerWeek
 
-            override fun nextDateWithoutRange(from: LocalDate): LocalDate {
+            override fun nextDateWithoutRange(from: LocalDate): LocalDate? {
                 require(scheduledPeriods.isNotEmpty())
 
                 val periodStart =
@@ -138,9 +136,11 @@ sealed class RepeatingPattern(
                 return nextDate ?: firstDateForNextPeriod(periodStart)
             }
 
-            private fun firstDateForNextPeriod(periodStart: LocalDate): LocalDate {
+            private fun firstDateForNextPeriod(periodStart: LocalDate): LocalDate? {
                 val nextPeriodStart = periodStart.plusWeeks(1)
-                require(scheduledPeriods.contains(nextPeriodStart))
+                if (!scheduledPeriods.containsKey(nextPeriodStart)) {
+                    return null
+                }
                 return scheduledPeriods[nextPeriodStart]!!.first()
             }
         }
@@ -160,7 +160,7 @@ sealed class RepeatingPattern(
 
             override val periodCount get() = timesPerMonth
 
-            override fun nextDateWithoutRange(from: LocalDate): LocalDate {
+            override fun nextDateWithoutRange(from: LocalDate): LocalDate? {
                 require(scheduledPeriods.isNotEmpty())
                 val periodStart = from.with(TemporalAdjusters.firstDayOfMonth())
                 require(scheduledPeriods.contains(periodStart))
@@ -169,9 +169,11 @@ sealed class RepeatingPattern(
                 return nextDate ?: firstDateFromNextPeriod(periodStart)
             }
 
-            private fun firstDateFromNextPeriod(periodStart: LocalDate): LocalDate {
+            private fun firstDateFromNextPeriod(periodStart: LocalDate): LocalDate? {
                 val nextPeriodStart = periodStart.plusMonths(1)
-                require(scheduledPeriods.contains(nextPeriodStart))
+                if (!scheduledPeriods.containsKey(nextPeriodStart)) {
+                    return null
+                }
                 return scheduledPeriods[nextPeriodStart]!!.first()
             }
         }
@@ -179,7 +181,7 @@ sealed class RepeatingPattern(
 
     abstract val periodCount: Int
     abstract fun periodRangeFor(date: LocalDate): PeriodRange
-    protected abstract fun nextDateWithoutRange(from: LocalDate): LocalDate
+    protected abstract fun nextDateWithoutRange(from: LocalDate): LocalDate?
 
     fun nextDate(from: LocalDate) =
         when {
@@ -195,11 +197,121 @@ sealed class RepeatingPattern(
         }
         return date.isEqual(nextDate)
     }
+
+    companion object {
+        fun findWeeklyPeriods(
+            start: LocalDate,
+            end: LocalDate,
+            lastDayOfWeek: DayOfWeek
+        ): List<Period> {
+
+            val periods = mutableListOf<Period>()
+            val firstDayOfWeek = lastDayOfWeek.minus(6)
+
+            var periodStart = start.with(TemporalAdjusters.previousOrSame(firstDayOfWeek))
+            val dayAfterEnd = end.plusDays(1)
+            while (periodStart.isBefore(dayAfterEnd)) {
+                val periodEnd = periodStart.with(TemporalAdjusters.nextOrSame(lastDayOfWeek))
+                periods.add(Period(periodStart, periodEnd))
+                periodStart = periodEnd.plusDays(1)
+            }
+
+            return periods
+        }
+
+        fun findMonthlyPeriods(
+            start: LocalDate,
+            end: LocalDate
+        ): List<Period> {
+            val periods = mutableListOf<Period>()
+
+            var periodStart = start.with(TemporalAdjusters.firstDayOfMonth())
+            val dayAfterEnd = end.plusDays(1)
+            while (periodStart.isBefore(dayAfterEnd)) {
+                val periodEnd = periodStart.with(TemporalAdjusters.lastDayOfMonth())
+                periods.add(Period(periodStart, periodEnd))
+                periodStart = periodEnd.plusDays(1)
+            }
+
+            return periods
+        }
+
+        fun monthlyDatesToScheduleInPeriod(
+            repeatingPattern: RepeatingPattern.Monthly,
+            start: LocalDate,
+            end: LocalDate
+        ): List<LocalDate> {
+
+            var date = start
+            val dates = mutableListOf<LocalDate>()
+            while (date.isBefore(end.plusDays(1))) {
+                if (date.dayOfMonth in repeatingPattern.daysOfMonth) {
+                    dates.add(date)
+                }
+                date = date.plusDays(1)
+            }
+            return dates
+
+        }
+
+        fun weeklyDatesToScheduleInPeriod(
+            repeatingPattern: RepeatingPattern.Weekly,
+            start: LocalDate,
+            end: LocalDate
+        ): List<LocalDate> {
+
+            var date = start
+            val dates = mutableListOf<LocalDate>()
+            while (date.isBefore(end.plusDays(1))) {
+                if (date.dayOfWeek in repeatingPattern.daysOfWeek) {
+                    dates.add(date)
+                }
+                date = date.plusDays(1)
+            }
+            return dates
+
+        }
+
+        fun yearlyDatesToScheduleInPeriod(
+            repeatingPattern: RepeatingPattern.Yearly,
+            start: LocalDate,
+            end: LocalDate
+        ): List<LocalDate> {
+            if (start.year == end.year) {
+                val date = LocalDate.of(
+                    start.year,
+                    repeatingPattern.month,
+                    repeatingPattern.dayOfMonth
+                )
+                return listOf(date).filter { it.isBetween(start, end) }
+            }
+
+            var startPeriodDate = start
+            val dates = mutableListOf<LocalDate>()
+            while (startPeriodDate <= end) {
+                val lastDayOfYear = LocalDate.of(startPeriodDate.year, 12, 31)
+                val date = LocalDate.of(
+                    startPeriodDate.year,
+                    repeatingPattern.month,
+                    repeatingPattern.dayOfMonth
+                )
+                val endPeriodDate = if (end.isBefore(lastDayOfYear)) end else lastDayOfYear
+                if (date.isBetween(startPeriodDate, endPeriodDate)) {
+                    dates.add(date)
+                }
+                startPeriodDate = LocalDate.of(startPeriodDate.year + 1, 1, 1)
+            }
+            return dates
+
+        }
+    }
 }
 
 data class PeriodRange(val start: LocalDate, val end: LocalDate)
 
 data class PeriodProgress(val completedCount: Int, val allCount: Int)
+
+data class Period(val start: LocalDate, val end: LocalDate)
 
 enum class RepeatType {
     DAILY,
@@ -217,40 +329,3 @@ val RepeatingPattern.repeatType: RepeatType
         is RepeatingPattern.Flexible.Monthly -> RepeatType.MONTHLY
         is RepeatingPattern.Yearly -> RepeatType.YEARLY
     }
-
-
-data class RepeatingQuest(
-    override val id: String = "",
-    val name: String,
-    val color: Color,
-    val icon: Icon? = null,
-    val category: Category,
-    val startTime: Time? = null,
-    val duration: Int,
-    val reminder: Reminder? = null,
-    val repeatingPattern: RepeatingPattern,
-    val nextDate: LocalDate? = null,
-    val periodProgress: PeriodProgress? = null,
-    override val createdAt: Instant = Instant.now(),
-    override val updatedAt: Instant = Instant.now()
-) : Entity {
-    val start
-        get() = repeatingPattern.start
-
-    val end
-        get() = repeatingPattern.end
-
-    val isCompleted
-        get() = if (end == null) false else LocalDate.now().isAfter(end)
-
-    val endTime: Time?
-        get() = startTime?.let {
-            startTime.plus(duration)
-        }
-
-    val isFlexible: Boolean
-        get() = repeatingPattern is RepeatingPattern.Flexible
-
-    val isFixed: Boolean
-        get() = !isFlexible
-}

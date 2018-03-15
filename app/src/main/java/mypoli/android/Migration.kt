@@ -6,12 +6,12 @@ import com.google.firebase.auth.AuthResult
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseAuthProvider
 import kotlinx.coroutines.experimental.runBlocking
-import mypoli.android.player.auth.error.SignInError
 import mypoli.android.common.datetime.Time
 import mypoli.android.common.datetime.instant
 import mypoli.android.common.datetime.startOfDayUTC
 import mypoli.android.common.di.Module
 import mypoli.android.pet.Food
+import mypoli.android.player.auth.error.SignInError
 import mypoli.android.quest.*
 import mypoli.android.quest.data.persistence.DbBounty
 import mypoli.android.quest.data.persistence.DbQuest
@@ -24,7 +24,7 @@ import space.traversal.kapsule.required
 import kotlin.coroutines.experimental.suspendCoroutine
 
 /**
- * Created by Polina Zhelyazkova <polina@ipoli.io>
+ * Created by Polina Zhelyazkova <polina@mypoli.fun>
  * on 12/22/17.
  */
 class Migration : Injects<Module> {

@@ -44,7 +44,7 @@ import space.traversal.kapsule.required
 import kotlin.coroutines.experimental.CoroutineContext
 
 /**
- * Created by Polina Zhelyazkova <polina@ipoli.io>
+ * Created by Polina Zhelyazkova <polina@mypoli.fun>
  * on 12/21/17.
  */
 
