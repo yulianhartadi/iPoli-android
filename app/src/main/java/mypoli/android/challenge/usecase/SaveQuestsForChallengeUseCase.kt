@@ -44,9 +44,9 @@ open class SaveQuestsForChallengeUseCase(
             }
         }
 
-        quests.forEach {
-            questRepository.save((it as Quest).copy(challengeId = challengeId))
-        }
+        quests
+            .map { (it as Quest).copy(challengeId = challengeId) }
+            .let { questRepository.save(it) }
 
         when (parameters) {
             is Params.WithNewQuests -> {
@@ -68,12 +68,18 @@ open class SaveQuestsForChallengeUseCase(
                 }
             }
             is Params.WithExistingQuests -> {
-                repeatingQuests.forEach {
-                    repeatingQuestRepository.save((it as RepeatingQuest).copy(challengeId = challengeId))
-                    questRepository.findAllForRepeatingQuestAfterDate(it.id, true).forEach {
-                        questRepository.save(it.copy(challengeId = challengeId))
-                    }
-                }
+
+                repeatingQuests
+                    .map { (it as RepeatingQuest).copy(challengeId = challengeId) }
+                    .let { repeatingQuestRepository.save(it) }
+
+                val rqIds = repeatingQuests.map { it.id }
+
+                rqIds
+                    .map { questRepository.findAllForRepeatingQuestAfterDate(it, true) }
+                    .flatten()
+                    .map { it.copy(challengeId = challengeId) }
+                    .let { questRepository.save(it) }
             }
         }
     }

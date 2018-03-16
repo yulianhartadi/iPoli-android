@@ -119,6 +119,10 @@ class AndroidCalendarEventRepository : EventRepository {
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 
+    override fun save(entities: List<Event>): List<Event> {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    }
+
     override fun findById(id: String): Event? {
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
