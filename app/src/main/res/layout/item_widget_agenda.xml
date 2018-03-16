@@ -3,7 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="60dp"
-    android:background="#8A303030">
+    android:background="#BF303030"> <!-- BF = 75%  https://stackoverflow.com/a/11019879/ -->
 
     <TextView
         android:id="@+id/widgetSelectableBackground"

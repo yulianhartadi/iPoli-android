@@ -163,8 +163,6 @@ class RepeatingQuestListViewController(args: Bundle? = null) :
             this.viewModels = viewModels
             notifyDataSetChanged()
         }
-
-
     }
 
     private fun RepeatingQuestListViewState.toViewModels(context: Context): List<RepeatingQuestViewModel> {
@@ -175,7 +173,7 @@ class RepeatingQuestListViewController(args: Bundle? = null) :
                 it.nextDate != null -> {
                     var res = stringRes(
                         R.string.repeating_quest_next,
-                        DateFormatter.format(context, it.nextDate)
+                        DateFormatter.formatWithoutYear(context, it.nextDate)
                     )
                     res += if (it.startTime != null) {
                         " ${it.startTime} - ${it.endTime}"

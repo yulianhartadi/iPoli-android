@@ -44,7 +44,7 @@ class FindNextDateForRepeatingQuestUseCaseSpek : Spek({
                 originalScheduledDate = today
             )
             val questRepoMock = mock<QuestRepository> {
-                on { findNextScheduledForRepeatingQuest(any(), any()) } doReturn quest
+                on { findNextScheduledNotCompletedForRepeatingQuest(any(), any()) } doReturn quest
             }
 
             val rq = executeUseCase(questRepoMock, TestUtil.repeatingQuest)
@@ -59,7 +59,7 @@ class FindNextDateForRepeatingQuestUseCaseSpek : Spek({
                 scheduledDate = tomorrow
             )
             val questRepoMock = mock<QuestRepository> {
-                on { findNextScheduledForRepeatingQuest(any(), any()) } doReturn quest
+                on { findNextScheduledNotCompletedForRepeatingQuest(any(), any()) } doReturn quest
                 on { findOriginalScheduledForRepeatingQuestAtDate(any(), any()) } doReturn quest
             }
 
@@ -127,7 +127,7 @@ class FindNextDateForRepeatingQuestUseCaseSpek : Spek({
                     )
                 } doReturn quest
 
-                on { findNextScheduledForRepeatingQuest(any(), any()) } doReturn quest
+                on { findNextScheduledNotCompletedForRepeatingQuest(any(), any()) } doReturn quest
             }
 
             val rq = executeUseCase(
