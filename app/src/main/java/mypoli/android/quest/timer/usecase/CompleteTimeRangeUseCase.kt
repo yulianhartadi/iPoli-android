@@ -6,9 +6,9 @@ import mypoli.android.common.datetime.minutes
 import mypoli.android.quest.Quest
 import mypoli.android.quest.TimeRange
 import mypoli.android.quest.data.persistence.QuestRepository
+import mypoli.android.quest.timer.job.TimerCompleteScheduler
 import mypoli.android.quest.usecase.CompleteQuestUseCase
 import mypoli.android.quest.usecase.CompleteQuestUseCase.Params.WithQuest
-import mypoli.android.quest.timer.job.TimerCompleteScheduler
 import org.threeten.bp.Instant
 
 /**
@@ -29,9 +29,13 @@ class CompleteTimeRangeUseCase(
 
         timerCompleteScheduler.cancelAll()
 
+        if(!quest!!.hasTimer) {
+            return completeQuestUseCase.execute(WithQuest(quest))
+        }
+
         val time = parameters.time
 
-        if (quest!!.hasCountDownTimer) {
+        if (quest.hasCountDownTimer) {
             val newQuest = questRepository.save(endLastTimeRange(quest, time))
             return completeQuestUseCase.execute(WithQuest(newQuest))
         }
@@ -40,7 +44,10 @@ class CompleteTimeRangeUseCase(
             .execute(SplitDurationForPomodoroTimerUseCase.Params(quest))
 
         if (splitResult == SplitDurationForPomodoroTimerUseCase.Result.DurationNotSplit) {
-            val newQuest = questRepository.save(endLastTimeRange(quest, time))
+            val newQuest = if (quest.timeRanges.isNotEmpty()) {
+                questRepository.save(endLastTimeRange(quest, time))
+            } else quest
+
             return completeQuestUseCase.execute(WithQuest(newQuest))
         }
 
