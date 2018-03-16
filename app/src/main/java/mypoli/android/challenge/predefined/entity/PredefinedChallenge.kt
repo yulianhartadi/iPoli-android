@@ -31,7 +31,7 @@ data class PredefinedChallengeData(
         HEALTH_AND_FITNESS
     }
 
-    sealed class Quest {
+    sealed class Quest(open val isSelected: Boolean) {
         data class OneTime(
             val text: String,
             val name: String,
@@ -41,8 +41,8 @@ data class PredefinedChallengeData(
             val icon: Icon = Icon.STAR,
             val startAtDay: Int? = null,
             val preferredDayOfWeek: DayOfWeek? = null,
-            val selected: Boolean = true
-        ) : Quest()
+            override val isSelected: Boolean = true
+        ) : Quest(isSelected)
 
         data class Repeating(
             val text: String,
@@ -53,8 +53,8 @@ data class PredefinedChallengeData(
             val icon: Icon = Icon.STAR,
             val startAtDay: Int? = null,
             val weekDays: List<DayOfWeek> = DayOfWeek.values().toList(),
-            val selected: Boolean = true
-        ) : Quest()
+            override val isSelected: Boolean = true
+        ) : Quest(isSelected)
     }
 }
 
@@ -1029,7 +1029,7 @@ enum class PredefinedChallenge(
                 Color.TEAL,
                 Icon.PAW,
                 null,
-                selected = false
+                isSelected = false
             ),
             Repeating(
                 "Prepare school lunch for the kids every morning",
@@ -1046,7 +1046,7 @@ enum class PredefinedChallenge(
                     DayOfWeek.THURSDAY,
                     DayOfWeek.FRIDAY
                 ),
-                selected = false
+                isSelected = false
             )
         )
     );

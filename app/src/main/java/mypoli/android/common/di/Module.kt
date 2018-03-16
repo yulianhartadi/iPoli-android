@@ -11,8 +11,6 @@ import kotlinx.coroutines.experimental.CommonPool
 import kotlinx.coroutines.experimental.Job
 import mypoli.android.challenge.persistence.ChallengeRepository
 import mypoli.android.challenge.persistence.FirestoreChallengeRepository
-import mypoli.android.challenge.predefined.PersonalizeChallengePresenter
-import mypoli.android.challenge.predefined.category.ChallengeCategoryListPresenter
 import mypoli.android.challenge.predefined.usecase.SchedulePredefinedChallengeUseCase
 import mypoli.android.challenge.sideeffect.ChallengeSideEffect
 import mypoli.android.challenge.usecase.*
@@ -475,8 +473,6 @@ interface PresenterModule {
     val iconPickerPresenter: IconPickerDialogPresenter
     val currencyConverterPresenter: CurrencyConverterPresenter
     val gemStorePresenter: GemStorePresenter
-    val challengeCategoryListPresenter: ChallengeCategoryListPresenter
-    val personalizeChallengePresenter: PersonalizeChallengePresenter
     val timerPresenter: TimerPresenter
     val petMessagePresenter: PetMessagePresenter
     val levelUpPresenter: LevelUpPresenter
@@ -566,16 +562,6 @@ class AndroidPresenterModule : PresenterModule, Injects<Module> {
         get() = GemStorePresenter(
             purchaseGemPackUseCase,
             listenForPlayerChangesUseCase,
-            job
-        )
-    override val challengeCategoryListPresenter
-        get() = ChallengeCategoryListPresenter(
-            job
-        )
-    override val personalizeChallengePresenter
-        get() = PersonalizeChallengePresenter(
-            scheduleChallengeUseCase,
-            saveChallengeUseCase,
             job
         )
     override val timerPresenter
