@@ -16,15 +16,13 @@ import com.bluelinelabs.conductor.RouterTransaction
 import kotlinx.coroutines.experimental.CommonPool
 import kotlinx.coroutines.experimental.android.UI
 import kotlinx.coroutines.experimental.launch
-import mypoli.android.challenge.show.ChallengeViewController
-import mypoli.android.player.auth.AuthViewController
 import mypoli.android.common.LoadDataAction
 import mypoli.android.common.LoaderDialogController
 import mypoli.android.common.di.Module
 import mypoli.android.common.view.playerTheme
 import mypoli.android.home.HomeViewController
+import mypoli.android.player.auth.AuthViewController
 import mypoli.android.quest.timer.TimerViewController
-import mypoli.android.repeatingquest.edit.EditRepeatingQuestViewController
 import space.traversal.kapsule.Injects
 import space.traversal.kapsule.inject
 import space.traversal.kapsule.required
@@ -103,7 +101,11 @@ class MainActivity : AppCompatActivity(), Injects<Module> {
                     val startIntent = intent
                     if (startIntent != null && startIntent.action == ACTION_SHOW_TIMER) {
                         val questId = intent.getStringExtra(Constants.QUEST_ID_EXTRA_KEY)
-                        router.setRoot(RouterTransaction.with(TimerViewController(questId)))
+                        router.setRoot(
+                            RouterTransaction
+                                .with(TimerViewController(questId))
+                                .tag(TimerViewController.TAG)
+                        )
                     } else if (!router.hasRootController()) {
 //                        router.setRoot(RouterTransaction.with(RepeatingQuestViewController("")))
                         router.setRoot(RouterTransaction.with(HomeViewController()))
@@ -134,6 +136,19 @@ class MainActivity : AppCompatActivity(), Injects<Module> {
         if (!router.hasRootController()) {
             finish()
         }
+    }
+
+    override fun onNewIntent(intent: Intent) {
+        if (ACTION_SHOW_TIMER == intent.action) {
+
+            val questId = intent.getStringExtra(Constants.QUEST_ID_EXTRA_KEY)
+            router.setRoot(
+                RouterTransaction
+                    .with(TimerViewController(questId))
+                    .tag(TimerViewController.TAG)
+            )
+        }
+        super.onNewIntent(intent)
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {

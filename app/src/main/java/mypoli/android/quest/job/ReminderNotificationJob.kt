@@ -3,7 +3,6 @@ package mypoli.android.quest.job
 import android.annotation.SuppressLint
 import android.app.NotificationManager
 import android.content.Context
-import android.content.Intent
 import android.support.v4.app.NotificationCompat
 import android.widget.Toast
 import com.evernote.android.job.Job
@@ -13,8 +12,8 @@ import com.evernote.android.job.util.support.PersistableBundleCompat
 import kotlinx.coroutines.experimental.android.UI
 import kotlinx.coroutines.experimental.launch
 import mypoli.android.Constants
-import mypoli.android.MainActivity
 import mypoli.android.R
+import mypoli.android.common.IntentUtil
 import mypoli.android.common.datetime.Time
 import mypoli.android.common.datetime.toMillis
 import mypoli.android.common.di.Module
@@ -95,10 +94,7 @@ class ReminderNotificationJob : Job(), Injects<Module> {
 
                         override fun onStart() {
                             notificationManager.cancel(notificationId)
-                            val intent = Intent(c, MainActivity::class.java)
-                            intent.action = MainActivity.ACTION_SHOW_TIMER
-                            intent.putExtra(Constants.QUEST_ID_EXTRA_KEY, it.id)
-                            c.startActivity(intent)
+                            c.startActivity(IntentUtil.showTimer(it.id, c))
                         }
                     }).show(c)
             }

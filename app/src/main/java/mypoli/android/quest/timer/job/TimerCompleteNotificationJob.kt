@@ -12,8 +12,8 @@ import com.evernote.android.job.JobManager
 import com.evernote.android.job.JobRequest
 import com.evernote.android.job.util.support.PersistableBundleCompat
 import mypoli.android.Constants
-import mypoli.android.MainActivity
 import mypoli.android.R
+import mypoli.android.common.IntentUtil
 import mypoli.android.common.datetime.Duration
 import mypoli.android.common.datetime.Second
 import mypoli.android.common.di.Module
@@ -129,14 +129,11 @@ class TimerCompleteNotificationJob : Job(), Injects<Module> {
     }
 
     private fun createContentIntent(questId: String): PendingIntent {
-        val contentIntent = Intent(context, MainActivity::class.java)
-        contentIntent.action = MainActivity.ACTION_SHOW_TIMER
-        contentIntent.putExtra(Constants.QUEST_ID_EXTRA_KEY, questId)
 
         return PendingIntent.getActivity(
             context,
             Random().nextInt(),
-            contentIntent,
+            IntentUtil.showTimer(questId, context),
             PendingIntent.FLAG_UPDATE_CURRENT
         )
     }

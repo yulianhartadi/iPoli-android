@@ -1,6 +1,5 @@
 package mypoli.android.store.theme
 
-import android.content.Intent
 import android.content.res.ColorStateList
 import android.os.Bundle
 import android.preference.PreferenceManager
@@ -16,11 +15,12 @@ import kotlinx.android.synthetic.main.controller_theme_store.view.*
 import kotlinx.android.synthetic.main.item_theme_store.view.*
 import kotlinx.android.synthetic.main.view_inventory_toolbar.view.*
 import mypoli.android.Constants
-import mypoli.android.MainActivity
 import mypoli.android.R
+import mypoli.android.common.IntentUtil
 import mypoli.android.common.ViewUtils
 import mypoli.android.common.mvi.MviViewController
 import mypoli.android.common.view.*
+import mypoli.android.myPoliApp
 import mypoli.android.player.Theme
 import mypoli.android.player.inventory.GemInventoryViewController
 import mypoli.android.quest.schedule.calendar.dayview.view.widget.CalendarDayView
@@ -89,9 +89,8 @@ class ThemeStoreViewController(args: Bundle? = null) :
                 val pm = PreferenceManager.getDefaultSharedPreferences(activity!!)
                 pm.registerOnSharedPreferenceChangeListener { _, key ->
                     if (key == Constants.KEY_THEME) {
-                        val intent = Intent(activity!!, MainActivity::class.java)
-                        activity!!.startActivity(intent)
                         activity!!.finish()
+                        myPoliApp.instance.startActivity(IntentUtil.startApp(myPoliApp.instance))
                     }
                 }
                 pm.edit().putString(Constants.KEY_THEME, state.theme!!.name).apply()

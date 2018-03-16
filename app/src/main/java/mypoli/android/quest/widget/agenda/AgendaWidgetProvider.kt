@@ -7,8 +7,8 @@ import android.content.Context
 import android.content.Intent
 import android.widget.RemoteViews
 import mypoli.android.Constants
-import mypoli.android.MainActivity
 import mypoli.android.R
+import mypoli.android.common.IntentUtil
 import mypoli.android.common.text.CalendarFormatter
 import mypoli.android.myPoliApp
 import mypoli.android.quest.receiver.CompleteQuestReceiver
@@ -41,12 +41,7 @@ class AgendaWidgetProvider : AppWidgetProvider() {
             val questAction = intent.getIntExtra(QUEST_ACTION_EXTRA_KEY, 0)
 
             if (questAction == QUEST_ACTION_VIEW) {
-
-                val i = Intent(context, MainActivity::class.java)
-                i.action = MainActivity.ACTION_SHOW_TIMER
-                i.putExtra(Constants.QUEST_ID_EXTRA_KEY, questId)
-                i.flags = Intent.FLAG_ACTIVITY_NEW_TASK
-                context.startActivity(i)
+                context.startActivity(IntentUtil.showTimer(questId, context))
 
             } else if (questAction == QUEST_ACTION_COMPLETE) {
                 onCompleteQuest(context, questId)
@@ -128,13 +123,10 @@ class AgendaWidgetProvider : AppWidgetProvider() {
     }
 
     private fun createStartAppIntent(context: Context): PendingIntent {
-        val intent = Intent(context, MainActivity::class.java).apply {
-            addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-        }
         return PendingIntent.getActivity(
             context,
             0,
-            intent,
+            IntentUtil.startApp(context),
             PendingIntent.FLAG_UPDATE_CURRENT
         )
     }

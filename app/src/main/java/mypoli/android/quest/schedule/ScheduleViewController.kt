@@ -15,7 +15,6 @@ import com.mikepenz.entypo_typeface_library.Entypo
 import com.mikepenz.google_material_typeface_library.GoogleMaterial
 import com.mikepenz.iconics.IconicsDrawable
 import com.mikepenz.iconics.typeface.IIcon
-import com.mikepenz.ionicons_typeface_library.Ionicons
 import kotlinx.android.synthetic.main.controller_schedule.view.*
 import kotlinx.android.synthetic.main.view_calendar_toolbar.view.*
 import mypoli.android.R
@@ -384,9 +383,9 @@ class ScheduleViewController(args: Bundle? = null) :
         )
     }
 
-    override fun onDestroy() {
+    override fun onDetach(view: View) {
         removeToolbarView(calendarToolbar)
-        super.onDestroy()
+        super.onDetach(view)
     }
 
     fun onStartEdit() {
@@ -397,7 +396,7 @@ class ScheduleViewController(args: Bundle? = null) :
         view!!.addQuest.visible = true
     }
 
-    private val ScheduleViewState.viewModeIcon : IIcon
+    private val ScheduleViewState.viewModeIcon: IIcon
         get() = if (viewMode == ScheduleViewState.ViewMode.CALENDAR)
             Entypo.Icon.ent_text_document
         else
