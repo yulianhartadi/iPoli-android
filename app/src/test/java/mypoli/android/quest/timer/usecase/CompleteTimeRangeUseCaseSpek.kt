@@ -8,9 +8,9 @@ import mypoli.android.Constants
 import mypoli.android.common.datetime.Time
 import mypoli.android.quest.*
 import mypoli.android.quest.data.persistence.QuestRepository
-import mypoli.android.quest.usecase.CompleteQuestUseCase
 import mypoli.android.quest.timer.pomodoros
 import mypoli.android.quest.timer.shortBreaks
+import mypoli.android.quest.usecase.CompleteQuestUseCase
 import org.amshove.kluent.*
 import org.jetbrains.spek.api.Spek
 import org.jetbrains.spek.api.dsl.describe
@@ -37,7 +37,7 @@ class CompleteTimeRangeUseCaseSpek : Spek({
         ): Quest {
             val questRepoMock = mock<QuestRepository> {
                 on { findById(any()) } doReturn quest
-                on { save(any()) } doAnswer { invocation ->
+                on { save(any<Quest>()) } doAnswer { invocation ->
                     invocation.getArgument(0)
                 }
             }

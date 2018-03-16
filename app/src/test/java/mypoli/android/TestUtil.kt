@@ -41,25 +41,25 @@ object TestUtil {
 
     fun playerRepoMock(player: Player) = mock<PlayerRepository> {
         on { find() } doReturn player
-        on { save(any()) } doAnswer { invocation ->
+        on { save(any<Player>()) } doAnswer { invocation ->
             invocation.getArgument(0)
         }
     }
 
     fun questRepoMock() = mock<QuestRepository> {
-        on { save(any()) } doAnswer { invocation ->
+        on { save(any<Quest>()) } doAnswer { invocation ->
             invocation.getArgument(0)
         }
     }
 
     fun repeatingQuestRepoMock() = mock<RepeatingQuestRepository> {
-        on { save(any()) } doAnswer { invocation ->
+        on { save(any<RepeatingQuest>()) } doAnswer { invocation ->
             invocation.getArgument(0)
         }
     }
 
     fun challengeRepoMock() = mock<ChallengeRepository> {
-        on { save(any()) } doAnswer { invocation ->
+        on { save(any<Challenge>()) } doAnswer { invocation ->
             invocation.getArgument(0)
         }
     }

@@ -32,7 +32,7 @@ class AddTimerToQuestUseCaseSpek : Spek({
         ): AddTimerToQuestUseCase.Result {
             val questRepoMock = mock<QuestRepository> {
                 on { findById(any()) } doReturn quest
-                on { save(any()) } doAnswer { invocation ->
+                on { save(any<Quest>()) } doAnswer { invocation ->
                     invocation.getArgument(0)
                 }
                 on { findStartedQuests() } doReturn startedQuests

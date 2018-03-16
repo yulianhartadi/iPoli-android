@@ -29,7 +29,7 @@ class CancelTimerUseCaseSpek : Spek({
         ): Quest {
             val questRepoMock = mock<QuestRepository> {
                 on { findById(any()) } doReturn quest
-                on { save(any()) } doAnswer { invocation ->
+                on { save(any<Quest>()) } doAnswer { invocation ->
                     invocation.getArgument(0)
                 }
             }
