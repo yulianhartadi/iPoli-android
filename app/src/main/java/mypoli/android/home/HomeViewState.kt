@@ -42,7 +42,7 @@ object HomeReducer : BaseViewStateReducer<HomeViewState>() {
 
     private fun createPlayerChangeState(player: Player): HomeViewState.PlayerChanged {
         return HomeViewState.PlayerChanged(
-            showSignIn = player.isLoggedIn(),
+            showSignIn = !player.isLoggedIn(),
             petAvatar = player.pet.avatar,
             petMood = player.pet.mood,
             gems = player.gems,
