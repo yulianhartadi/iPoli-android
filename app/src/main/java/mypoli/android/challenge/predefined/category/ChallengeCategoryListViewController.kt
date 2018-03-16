@@ -5,6 +5,7 @@ import android.view.LayoutInflater
 import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
+import com.bluelinelabs.conductor.RestoreViewOnCreateController
 import com.bluelinelabs.conductor.RouterTransaction
 import com.bluelinelabs.conductor.changehandler.FadeChangeHandler
 import kotlinx.android.synthetic.main.controller_challenge_category_list.view.*
@@ -13,22 +14,14 @@ import mypoli.android.R
 import mypoli.android.challenge.predefined.category.list.ChallengeListForCategoryViewController
 import mypoli.android.challenge.predefined.entity.PredefinedChallengeData
 import mypoli.android.challenge.predefined.entity.PredefinedChallengeData.Category.*
-import mypoli.android.common.mvi.MviViewController
 import mypoli.android.common.view.*
-import space.traversal.kapsule.required
 
 /**
  * Created by Venelin Valkov <venelin@mypoli.fun>
  * on 12/29/17.
  */
 class ChallengeCategoryListViewController(args: Bundle? = null) :
-    MviViewController<ChallengeCategoryListViewState, ChallengeCategoryListViewController, ChallengeCategoryListPresenter, ChallengeCategoryListIntent>(
-        args
-    ) {
-
-    private val presenter by required { challengeCategoryListPresenter }
-
-    override fun createPresenter() = presenter
+    RestoreViewOnCreateController(args) {
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -55,7 +48,7 @@ class ChallengeCategoryListViewController(args: Bundle? = null) :
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         if (item.itemId == android.R.id.home) {
-            router.popCurrentController()
+            router.handleBack()
             return true
         }
         return super.onOptionsItemSelected(item)
@@ -69,9 +62,5 @@ class ChallengeCategoryListViewController(args: Bundle? = null) :
                 .pushChangeHandler(handler)
                 .popChangeHandler(handler)
         )
-    }
-
-    override fun render(state: ChallengeCategoryListViewState, view: View) {
-
     }
 }

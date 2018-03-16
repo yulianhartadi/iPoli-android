@@ -12,29 +12,27 @@ import mypoli.android.challenge.predefined.PersonalizeChallengeViewState.StateTy
 import mypoli.android.challenge.predefined.entity.AndroidPredefinedChallenge
 import mypoli.android.challenge.predefined.entity.PredefinedChallenge
 import mypoli.android.challenge.predefined.entity.PredefinedChallengeData
-import mypoli.android.common.mvi.MviViewController
+import mypoli.android.common.redux.android.ReduxViewController
 import mypoli.android.common.view.*
-import space.traversal.kapsule.required
 
 
 /**
  * Created by Venelin Valkov <venelin@mypoli.fun>
  * on 12/29/17.
  */
-class PersonalizeChallengeViewController :
-    MviViewController<PersonalizeChallengeViewState, PersonalizeChallengeViewController, PersonalizeChallengePresenter, PersonalizeChallengeIntent> {
+class PersonalizeChallengeViewController(args: Bundle? = null) :
+    ReduxViewController<PersonalizeChallengeAction, PersonalizeChallengeViewState, PersonalizeChallengeReducer>(
+        args
+    ) {
+
+    override val reducer = PersonalizeChallengeReducer
 
     private lateinit var challenge: PredefinedChallenge
 
-    constructor(args: Bundle? = null) : super(args)
-
-    constructor(challenge: PredefinedChallenge) : super() {
+    constructor(challenge: PredefinedChallenge) : this() {
         this.challenge = challenge
     }
 
-    private val presenter by required { personalizeChallengePresenter }
-
-    override fun createPresenter() = presenter
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -52,17 +50,16 @@ class PersonalizeChallengeViewController :
 
         view.challengeQuestList.adapter = ChallengeQuestAdapter()
         setToolbar(view.toolbar)
-        view.acceptChallenge.sendOnClick(
-            PersonalizeChallengeIntent.AcceptChallenge(
-                challenge
-            )
-        )
+        view.acceptChallenge.dispatchOnClick(PersonalizeChallengeAction.Validate)
         return view
     }
 
+    override fun onCreateLoadAction() =
+        PersonalizeChallengeAction.Load(challenge)
+
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         if (item.itemId == android.R.id.home) {
-            router.popCurrentController()
+            router.handleBack()
             return true
         }
         return super.onOptionsItemSelected(item)
@@ -72,7 +69,6 @@ class PersonalizeChallengeViewController :
         showBackButton()
         colorStatusBar(android.R.color.transparent)
         super.onAttach(view)
-        send(PersonalizeChallengeIntent.LoadData(challenge))
     }
 
     private fun colorStatusBar(@ColorRes color: Int) {
@@ -95,12 +91,13 @@ class PersonalizeChallengeViewController :
                 (view.challengeQuestList.adapter as ChallengeQuestAdapter).updateAll(state.viewModels)
             }
 
-            CHALLENGE_ACCEPTED -> {
+            VALIDATION_SUCCESSFUL -> {
+                dispatch(PersonalizeChallengeAction.AcceptChallenge)
                 showShortToast(R.string.challenge_accepted)
                 router.popCurrentController()
             }
 
-            NO_QUESTS_SELECTED -> {
+            VALIDATION_ERROR_NO_QUESTS_SELECTED -> {
                 showShortToast(R.string.no_quest_selected)
             }
 
@@ -120,24 +117,18 @@ class PersonalizeChallengeViewController :
         override fun onBindViewHolder(holder: ViewHolder, position: Int) {
             val vm = viewModels[position]
             val itemView = holder.itemView
+            itemView.dispatchOnClickAndExec(
+                PersonalizeChallengeAction.ToggleSelected(vm.quest),
+                {
+                    itemView.challengeQuestCheckbox.isChecked =
+                        !itemView.challengeQuestCheckbox.isChecked
+                }
+            )
 
-            itemView.setOnClickListener {
-                send(
-                    PersonalizeChallengeIntent.ToggleSelected(
-                        vm
-                    )
-                )
-                itemView.challengeQuestCheckbox.isChecked =
-                    !itemView.challengeQuestCheckbox.isChecked
-            }
 
             itemView.challengeQuestCheckbox.isChecked = vm.isSelected
             itemView.challengeQuestCheckbox.setOnCheckedChangeListener { _, _ ->
-                send(
-                    PersonalizeChallengeIntent.ToggleSelected(
-                        vm
-                    )
-                )
+                dispatch(PersonalizeChallengeAction.ToggleSelected(vm.quest))
             }
             itemView.challengeQuestName.text = vm.name
         }
@@ -161,5 +152,26 @@ class PersonalizeChallengeViewController :
         }
 
     }
+
+    private val PersonalizeChallengeViewState.viewModels: List<ChallengeQuestViewModel>
+        get() = challenge!!.quests.map {
+            when (it) {
+                is PredefinedChallengeData.Quest.OneTime -> {
+                    PersonalizeChallengeViewController.ChallengeQuestViewModel(
+                        it.text,
+                        it.isSelected,
+                        it
+                    )
+                }
+
+                is PredefinedChallengeData.Quest.Repeating -> {
+                    PersonalizeChallengeViewController.ChallengeQuestViewModel(
+                        it.text,
+                        it.isSelected,
+                        it
+                    )
+                }
+            }
+        }
 
 }

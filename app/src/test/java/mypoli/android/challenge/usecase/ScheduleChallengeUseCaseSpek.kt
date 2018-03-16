@@ -104,7 +104,7 @@ class ScheduleChallengeUseCaseSpek : Spek({
                 quests.size.`should be equal to`(1)
             }
 
-            it("should schedule start at selected day & for selected days of week") {
+            it("should schedule start at selected day & for isSelected days of week") {
                 val startDate = LocalDate.now().with(DayOfWeek.MONDAY)
                 val weekDays = listOf(DayOfWeek.MONDAY, DayOfWeek.WEDNESDAY, DayOfWeek.FRIDAY)
                 val quests = executeUseCase(
