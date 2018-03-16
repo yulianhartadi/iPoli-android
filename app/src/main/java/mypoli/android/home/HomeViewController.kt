@@ -53,8 +53,6 @@ class HomeViewController(args: Bundle? = null) :
 
     override val reducer = HomeReducer
 
-    private var showSignIn = true
-
     private val fadeChangeHandler = FadeChangeHandler()
 
     private val sharedPreferences by required { sharedPreferences }
@@ -70,7 +68,6 @@ class HomeViewController(args: Bundle? = null) :
 
 
         contentView.navigationView.setNavigationItemSelectedListener(this)
-        contentView.navigationView.menu.findItem(R.id.signIn).isVisible = showSignIn
 
         actionBarDrawerToggle = object :
             ActionBarDrawerToggle(
@@ -248,7 +245,7 @@ class HomeViewController(args: Bundle? = null) :
     override fun render(state: HomeViewState, view: View) {
         when (state) {
             is HomeViewState.Initial -> {
-                showSignIn = state.showSignIn
+                renderSignIn(view, state.showSignIn)
             }
 
             is HomeViewState.PlayerChanged -> {
@@ -271,8 +268,16 @@ class HomeViewController(args: Bundle? = null) :
                 view.petContainer.setOnClickListener {
                     showPet()
                 }
+                renderSignIn(view, state.showSignIn)
             }
         }
+    }
+
+    private fun renderSignIn(
+        view: View,
+        showSignIn: Boolean
+    ) {
+        view.navigationView.menu.findItem(R.id.signIn).isVisible = showSignIn
     }
 
     private val HomeViewState.PlayerChanged.petHeadImage
