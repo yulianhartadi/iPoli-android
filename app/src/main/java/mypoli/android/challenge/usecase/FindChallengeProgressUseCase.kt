@@ -80,7 +80,7 @@ class FindChallengeProgressUseCase : UseCase<FindChallengeProgressUseCase.Params
 
         val increasePerQuest = (1f / allCount) * 100f
 
-        val historyData = parameters.currentDate.datesBetween(challenge.start).map {
+        val historyData = challenge.start.datesBetween(parameters.currentDate).map {
             it to 0f
         }.toMap().toMutableMap()
 
