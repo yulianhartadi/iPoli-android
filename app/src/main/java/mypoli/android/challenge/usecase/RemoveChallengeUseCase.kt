@@ -18,6 +18,9 @@ class RemoveChallengeUseCase(
     override fun execute(parameters: Params) {
         val c = challengeRepository.findById(parameters.challengeId)
         require(c != null)
+
+        val questsToPurge = mutableListOf<String>()
+
         questRepository
             .findAllForChallenge(c!!.id)
             .forEach {
@@ -29,15 +32,15 @@ class RemoveChallengeUseCase(
                         )
                     )
                 } else {
-                    questRepository.purge(it.id)
+                    questsToPurge.add(it.id)
                 }
             }
 
-        repeatingQuestRepository
+        questRepository.purge(questsToPurge)
+
+        val rqs = repeatingQuestRepository
             .findAllForChallenge(c.id)
-            .forEach {
-                repeatingQuestRepository.purge(it.id)
-            }
+        repeatingQuestRepository.purge(rqs.map { it.id })
         challengeRepository.remove(c)
     }
 
