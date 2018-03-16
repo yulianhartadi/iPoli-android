@@ -34,7 +34,7 @@ interface QuestRepository : CollectionRepository<Quest> {
     fun findStartedQuests(): List<Quest>
     fun findLastScheduledDate(currentDate: LocalDate, maxQuests: Int): LocalDate?
     fun findFirstScheduledDate(currentDate: LocalDate, maxQuests: Int): LocalDate?
-    fun findNextScheduledForRepeatingQuest(
+    fun findNextScheduledNotCompletedForRepeatingQuest(
         repeatingQuestId: String,
         currentDate: LocalDate
     ): Quest?
@@ -94,6 +94,7 @@ data class DbQuest(override val map: MutableMap<String, Any?> = mutableMapOf()) 
     var coins: Long? by map
     var bounty: MutableMap<String, Any?>? by map
     var scheduledDate: Long by map
+    var originalScheduledDate: Long by map
     var completedAtDate: Long? by map
     var completedAtMinute: Long? by map
     var timeRanges: List<MutableMap<String, Any?>> by map
@@ -236,13 +237,14 @@ class FirestoreQuestRepository(
         return ref
     }
 
-    override fun findNextScheduledForRepeatingQuest(
+    override fun findNextScheduledNotCompletedForRepeatingQuest(
         repeatingQuestId: String,
         currentDate: LocalDate
     ) =
         collectionReference
             .whereEqualTo("repeatingQuestId", repeatingQuestId)
             .whereGreaterThanOrEqualTo("scheduledDate", currentDate.startOfDayUTC())
+            .whereEqualTo("completedAtDate", null)
             .orderBy("scheduledDate", Query.Direction.ASCENDING)
             .limit(1)
             .entities.firstOrNull()
@@ -462,6 +464,7 @@ class FirestoreQuestRepository(
             },
             category = Category(cq.category, Color.GREEN),
             scheduledDate = plannedDate,
+            originalScheduledDate = cq.originalScheduledDate.startOfDayUTC,
             startTime = plannedTime,
             duration = cq.duration,
             experience = cq.experience?.toInt(),
@@ -505,6 +508,7 @@ class FirestoreQuestRepository(
         q.icon = entity.icon?.name
         q.duration = entity.duration
         q.scheduledDate = entity.scheduledDate.startOfDayUTC()
+        q.originalScheduledDate = entity.originalScheduledDate.startOfDayUTC()
         q.reminder = entity.reminder?.let {
             createDbReminder(it).map
         }
