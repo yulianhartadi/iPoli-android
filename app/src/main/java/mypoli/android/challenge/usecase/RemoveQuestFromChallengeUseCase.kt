@@ -22,7 +22,7 @@ class RemoveQuestFromChallengeUseCase(
                 require(parameters.id.isNotEmpty())
                 val quest = questRepository.findById(parameters.id)
                 require(quest != null)
-                Result.ChangedQuest(removeQuestFromChallenge(quest!!))
+                Result.ChangedQuest(questRepository.save(quest!!.copy(challengeId = null)))
             }
 
             is Params.WithRepeatingQuestId -> {
@@ -32,9 +32,8 @@ class RemoveQuestFromChallengeUseCase(
 
                 questRepository
                     .findAllForRepeatingQuest(rq!!.id)
-                    .forEach {
-                        removeQuestFromChallenge(it)
-                    }
+                    .map { it.copy(challengeId = null) }
+                    .let { questRepository.save(it) }
 
                 Result.ChangedRepeatingQuest(
                     repeatingQuestRepository.save(
@@ -45,13 +44,6 @@ class RemoveQuestFromChallengeUseCase(
                 )
             }
         }
-
-    private fun removeQuestFromChallenge(q: Quest) =
-        questRepository.save(
-            q.copy(
-                challengeId = null
-            )
-        )
 
 
     sealed class Params {
