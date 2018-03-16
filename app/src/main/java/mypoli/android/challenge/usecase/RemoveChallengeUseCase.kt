@@ -2,6 +2,7 @@ package mypoli.android.challenge.usecase
 
 import mypoli.android.challenge.persistence.ChallengeRepository
 import mypoli.android.common.UseCase
+import mypoli.android.quest.Quest
 import mypoli.android.quest.data.persistence.QuestRepository
 import mypoli.android.repeatingquest.persistence.RepeatingQuestRepository
 
@@ -19,24 +20,27 @@ class RemoveChallengeUseCase(
         val c = challengeRepository.findById(parameters.challengeId)
         require(c != null)
 
-        val questsToPurge = mutableListOf<String>()
+
+        val questsToUpdate = mutableListOf<Quest>()
+        val questsToPurge = mutableListOf<Quest>()
 
         questRepository
             .findAllForChallenge(c!!.id)
             .forEach {
                 if (it.isCompleted) {
-                    questRepository.save(
+                    questsToUpdate.add(
                         it.copy(
                             repeatingQuestId = null,
                             challengeId = null
                         )
                     )
                 } else {
-                    questsToPurge.add(it.id)
+                    questsToPurge.add(it)
                 }
             }
 
-        questRepository.purge(questsToPurge)
+        questRepository.save(questsToUpdate)
+        questRepository.purge(questsToPurge.map { it.id })
 
         val rqs = repeatingQuestRepository
             .findAllForChallenge(c.id)

@@ -95,6 +95,39 @@ abstract class BaseFirestoreRepository<E, out T>(
         return toEntityObject(entityData)
     }
 
+    override fun save(entities: List<E>): List<E> {
+
+        val batch = database.batch()
+
+        val result = mutableListOf<E>()
+
+        entities.forEach {
+            val entityData = toDatabaseObject(it).map.toMutableMap()
+
+            val ref = if (it.id.isEmpty()) {
+                val ref = collectionReference.document()
+                entityData["id"] = ref.id
+                entityData["removedAt"] = null
+                val now = Instant.now().toEpochMilli()
+                entityData["updatedAt"] = now
+                entityData["createdAt"] = now
+                ref
+            } else {
+                entityData["updatedAt"] = Instant.now().toEpochMilli()
+                entityData["removedAt"] = null
+                collectionReference
+                    .document(it.id)
+            }
+
+            batch.set(ref, entityData)
+
+            result.add(toEntityObject(entityData))
+        }
+
+        batch.commit()
+        return result
+    }
+
     protected abstract fun toEntityObject(dataMap: MutableMap<String, Any?>): E
 
     protected abstract fun toDatabaseObject(entity: E): T

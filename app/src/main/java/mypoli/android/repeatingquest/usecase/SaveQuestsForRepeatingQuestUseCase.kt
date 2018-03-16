@@ -136,16 +136,20 @@ class SaveQuestsForRepeatingQuestUseCase(
         val removedDates = removed.map { it.originalScheduledDate }
         val resultDates = scheduleDates - removedDates
 
+        val questsToSave = mutableListOf<Quest>()
+
         val quests = resultDates.map {
 
             if (scheduledDateToQuest.containsKey(it)) {
                 scheduledDateToQuest[it]!!
             } else {
                 val q = createQuest(rq, it)
-                questRepository.save(q)
+                questsToSave.add(q)
                 q
             }
         }
+
+        questRepository.save(questsToSave)
         return Result(quests, newRQ ?: rq)
     }
 

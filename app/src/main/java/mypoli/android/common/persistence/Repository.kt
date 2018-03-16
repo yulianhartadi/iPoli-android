@@ -9,6 +9,7 @@ import mypoli.android.quest.Entity
  */
 interface Repository<T> where T : Entity {
     fun save(entity: T): T
+    fun save(entities: List<T>): List<T>
 }
 
 interface EntityRepository<T> : Repository<T> where T : Entity {
