@@ -18,5 +18,5 @@ class RemoveRepeatingQuestUseCase(
         repeatingQuestRepository.remove(parameters.repeatingQuestId)
     }
 
-    data class Params(val repeatingQuestId : String)
+    data class Params(val repeatingQuestId: String)
 }

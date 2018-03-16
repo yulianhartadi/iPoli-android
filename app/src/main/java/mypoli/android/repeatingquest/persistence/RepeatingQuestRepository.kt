@@ -30,6 +30,7 @@ interface RepeatingQuestRepository : CollectionRepository<RepeatingQuest> {
     fun findAllForChallenge(challengeId: String): List<RepeatingQuest>
     fun generateId(): String
     fun purge(id: String)
+    fun purge(ids: List<String>)
 }
 
 data class DbRepeatingQuest(override val map: MutableMap<String, Any?> = mutableMapOf()) :
@@ -76,10 +77,6 @@ class FirestoreRepeatingQuestRepository(
     coroutineContext,
     sharedPreferences
 ), RepeatingQuestRepository {
-    override fun purge(id: String) {
-        collectionReference.document(id).delete()
-    }
-
     override fun findActiveNotForChallenge(
         challengeId: String,
         currentDate: LocalDate
@@ -106,6 +103,20 @@ class FirestoreRepeatingQuestRepository(
             .entities
 
     override fun generateId() = collectionReference.document().id
+
+    override fun purge(id: String) {
+        collectionReference.document(id).delete()
+    }
+
+    override fun purge(ids: List<String>) {
+        val batch = database.batch()
+        ids.forEach {
+            val ref = collectionReference.document(it)
+            batch.delete(ref)
+        }
+
+        batch.commit()
+    }
 
     override fun toEntityObject(dataMap: MutableMap<String, Any?>): RepeatingQuest {
         val rq = DbRepeatingQuest(dataMap.withDefault {

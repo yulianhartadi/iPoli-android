@@ -19,7 +19,6 @@ interface QuestRepository : CollectionRepository<Quest> {
         endDate: LocalDate
     ): ReceiveChannel<List<Quest>>
 
-    fun purge(questId: String)
     fun listenForScheduledAt(date: LocalDate): ReceiveChannel<List<Quest>>
     fun findScheduledAt(date: LocalDate): List<Quest>
     fun findScheduledForRepeatingQuestBetween(
@@ -29,6 +28,7 @@ interface QuestRepository : CollectionRepository<Quest> {
     ): List<Quest>
 
     fun findNextReminderTime(afterTime: ZonedDateTime = ZonedDateTime.now(ZoneId.systemDefault())): LocalDateTime?
+
     fun findQuestsToRemind(remindTime: LocalDateTime): List<Quest>
     fun findCompletedForDate(date: LocalDate): List<Quest>
     fun findStartedQuests(): List<Quest>
@@ -72,12 +72,17 @@ interface QuestRepository : CollectionRepository<Quest> {
     ): List<Quest>
 
     fun findAllForChallengeNotRepeating(challengeId: String): List<Quest>
+
     fun findAllForChallenge(challengeId: String): List<Quest>
     fun findAllForRepeatingQuestAfterDate(
         repeatingQuestId: String,
         includeRemoved: Boolean,
         currentDate: LocalDate = LocalDate.now()
     ): List<Quest>
+
+    fun purge(questId: String)
+
+    fun purge(questIds: List<String>)
 }
 
 data class DbQuest(override val map: MutableMap<String, Any?> = mutableMapOf()) :
@@ -137,10 +142,6 @@ class FirestoreQuestRepository(
     coroutineContext,
     sharedPreferences
 ), QuestRepository {
-    override fun purge(questId: String) {
-        deleteReminders(questId)
-        collectionReference.document(questId).delete()
-    }
 
     override fun findAllForRepeatingQuestAfterDate(
         repeatingQuestId: String,
@@ -191,18 +192,17 @@ class FirestoreQuestRepository(
     }
 
 
-    override fun purgeAllNotCompletedForRepeating(repeatingQuestId: String, startDate: LocalDate) {
-        val docs = collectionReference
+    override fun purgeAllNotCompletedForRepeating(
+        repeatingQuestId: String,
+        startDate: LocalDate
+    ) =
+        collectionReference
             .whereEqualTo("repeatingQuestId", repeatingQuestId)
             .whereEqualTo("completedAtDate", null)
             .whereGreaterThanOrEqualTo("scheduledDate", startDate.startOfDayUTC())
             .documents
-        docs
-            .forEach {
-                deleteReminders(it.id)
-                it.reference.delete()
-            }
-    }
+            .map { it.id }
+            .let { purge(it) }
 
     override fun findAllForChallengeNotRepeating(challengeId: String) =
         collectionReference
@@ -428,10 +428,14 @@ class FirestoreQuestRepository(
     }
 
     private fun deleteReminders(questId: String) {
+        val batch = database.batch()
+
         val query = remindersReference.whereEqualTo("questId", questId)
         query.documents.forEach {
-            remindersReference.document(it.id).delete()
+            val ref = remindersReference.document(it.id)
+            batch.delete(ref)
         }
+        batch.commit()
     }
 
     override fun remove(id: String) {
@@ -445,6 +449,31 @@ class FirestoreQuestRepository(
         quest.reminder?.let {
             addReminders(listOf(it), id)
         }
+    }
+
+    override fun purge(questId: String) {
+        deleteReminders(questId)
+        collectionReference.document(questId).delete()
+    }
+
+    override fun purge(questIds: List<String>) {
+        val batch = database.batch()
+        questIds.forEach {
+            val ref = collectionReference.document(it)
+            batch.delete(ref)
+        }
+        var allRemindersQuery: Query = remindersReference
+
+        questIds.forEach {
+            allRemindersQuery = allRemindersQuery.whereEqualTo("questId", it)
+        }
+
+        allRemindersQuery.documents.forEach {
+            val ref = remindersReference.document(it.id)
+            batch.delete(ref)
+        }
+
+        batch.commit()
     }
 
     override fun toEntityObject(dataMap: MutableMap<String, Any?>): Quest {
