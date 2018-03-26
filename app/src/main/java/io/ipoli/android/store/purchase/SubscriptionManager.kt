@@ -1,10 +1,10 @@
 package io.ipoli.android.store.purchase
 
-import kotlinx.coroutines.experimental.android.UI
-import kotlinx.coroutines.experimental.launch
 import io.ipoli.android.common.api.Api
 import io.ipoli.android.common.datetime.DateUtils
 import io.ipoli.android.store.membership.MembershipPlan
+import kotlinx.coroutines.experimental.android.UI
+import kotlinx.coroutines.experimental.launch
 import org.solovyev.android.checkout.*
 import org.solovyev.android.checkout.Purchase
 import org.threeten.bp.LocalDate
@@ -35,13 +35,7 @@ interface SubscriptionManager {
 class AndroidSubscriptionManager(private val checkout: UiCheckout) : SubscriptionManager {
 
     companion object {
-
-//        val SKUS =   MembershipPlan.values().map { it.sku }
-
-        val SKUS = listOf(
-            MembershipPlan.MONTHLY.sku,
-            MembershipPlan.YEARLY.sku
-        )
+        val SKUS = MembershipPlan.values().map { it.sku }
     }
 
     override fun loadInventory(productsListener: (Inventory.Product, Set<String>) -> Unit) {

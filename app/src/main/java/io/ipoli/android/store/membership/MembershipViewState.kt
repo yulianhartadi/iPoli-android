@@ -105,9 +105,9 @@ object MembershipReducer : BaseViewStateReducer<MembershipViewState>() {
 }
 
 enum class MembershipPlan(val sku: String) {
-    MONTHLY("test_sub"),
-    YEARLY("test_sub_yearly"),
-    QUARTERLY("test_sub")
+    MONTHLY("monthly_plan_70_percent"),
+    YEARLY("yearly_plan_70_percent"),
+    QUARTERLY("quarterly_plan_70_percent")
 }
 
 data class MembershipViewState(
