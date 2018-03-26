@@ -4,7 +4,7 @@
 [![Discord](https://img.shields.io/discord/367715831913906176.svg?style=flat-square)](https://discord.gg/7AMKs28)
 [![License](https://img.shields.io/github/license/iPoli/iPoli-android.svg?style=flat-square)](https://github.com/iPoli/iPoli-android/blob/master/LICENSE)
 
-# [myPoli](http://bit.ly/ipoli-android): AI-Powered Calendar & Habit Tracking for your Life!
+# [myPoli](http://bit.ly/io.ipoli-android): AI-Powered Calendar & Habit Tracking for your Life!
 
 <p align="center"><img src="./.github/icon.png" width="128px"/></p>
 
@@ -16,9 +16,9 @@ myPoli is a combination of Calendar, ToDo list and Habit tracking app, all in on
 
 # Download
 
-**myPoli** can be download on [Google Play](http://bit.ly/ipoli-android):
+**myPoli** can be download on [Google Play](http://bit.ly/io.ipoli-android):
 
-<a href="http://bit.ly/ipoli-android"><img alt="Get it on Google Play" src="https://play.google.com/intl/en_us/badges/images/generic/en-play-badge.png" height="80"/></a>
+<a href="http://bit.ly/io.ipoli-android"><img alt="Get it on Google Play" src="https://play.google.com/intl/en_us/badges/images/generic/en-play-badge.png" height="80"/></a>
 
 # Features
 
@@ -42,7 +42,7 @@ myPoli is a combination of Calendar, ToDo list and Habit tracking app, all in on
 
 # Have a question or just want to get in touch?
 
-Join the community on [Slack](https://slofile.com/slack/productivityhackers) or write us at [hi@ipoli.io](mailto:hi@ipoli.io)
+Join the community on [Slack](https://slofile.com/slack/productivityhackers) or write us at [hi@io.ipoli.io](mailto:hi@io.ipoli.io)
 
 # Contributing
 

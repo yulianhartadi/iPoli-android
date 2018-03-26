@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="mypoli.android">
+    package="io.ipoli.android">
 
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
@@ -13,7 +13,7 @@
     <uses-permission android:name="com.android.vending.BILLING" />
 
     <application
-        android:name=".myPoliApp"
+        android:name="io.ipoli.android.myPoliApp"
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
@@ -22,7 +22,7 @@
         android:theme="@style/Theme.myPoli.Red">
 
         <activity
-            android:name=".MainActivity"
+            android:name="io.ipoli.android.MainActivity"
             android:launchMode="singleTop"
             android:windowSoftInputMode="adjustResize">
             <intent-filter>
@@ -34,7 +34,7 @@
 
 
         <receiver
-            android:name=".quest.widget.agenda.AgendaWidgetProvider"
+            android:name="io.ipoli.android.quest.widget.agenda.AgendaWidgetProvider"
             android:label="@string/widget_journey_name">
             <intent-filter>
                 <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
@@ -45,18 +45,18 @@
                 android:resource="@xml/agenda_widget_info" />
         </receiver>
 
-        <receiver android:name=".common.BootCompleteReceiver">
+        <receiver android:name="io.ipoli.android.common.BootCompleteReceiver">
             <intent-filter>
                 <action android:name="android.intent.action.BOOT_COMPLETED" />
             </intent-filter>
         </receiver>
 
         <service
-            android:name=".quest.widget.agenda.AgendaWidgetService"
+            android:name="io.ipoli.android.quest.widget.agenda.AgendaWidgetService"
             android:permission="android.permission.BIND_REMOTEVIEWS" />
 
         <receiver
-            android:name=".quest.receiver.CompleteQuestReceiver"
+            android:name="io.ipoli.android.quest.receiver.CompleteQuestReceiver"
             android:exported="false" />
 
         <meta-data

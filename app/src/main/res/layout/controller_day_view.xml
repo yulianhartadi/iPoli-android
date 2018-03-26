@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<mypoli.android.quest.schedule.calendar.dayview.view.widget.CalendarDayView xmlns:android="http://schemas.android.com/apk/res/android"
+<io.ipoli.android.quest.schedule.calendar.dayview.view.widget.CalendarDayView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/calendar"
     android:layout_width="match_parent"

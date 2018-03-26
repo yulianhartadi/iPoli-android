@@ -18,7 +18,7 @@ android {
     buildToolsVersion '27.0.3'
 
     defaultConfig {
-        applicationId "mypoli.android"
+        applicationId "io.ipoli.android"
         minSdkVersion 21
         targetSdkVersion 27
         versionCode 28

@@ -202,7 +202,7 @@
                 android:text="@string/history"
                 android:textColor="?attr/colorAccent" />
 
-            <mypoli.android.common.view.widget.chart.HistoryChart
+            <io.ipoli.android.common.view.widget.chart.HistoryChart
                 android:id="@+id/historyChart"
                 android:layout_width="match_parent"
                 android:layout_height="364dp" />
