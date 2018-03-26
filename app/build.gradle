@@ -21,8 +21,8 @@ android {
         applicationId "io.ipoli.android"
         minSdkVersion 21
         targetSdkVersion 27
-        versionCode 28
-        versionName "Create Amazing Challenges"
+        versionCode 400
+        versionName "2.0-b1"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
 
