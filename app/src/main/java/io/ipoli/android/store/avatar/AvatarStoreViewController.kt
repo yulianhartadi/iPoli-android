@@ -1,14 +1,12 @@
 package io.ipoli.android.store.avatar
 
 import android.os.Bundle
+import android.support.annotation.ColorRes
 import android.support.annotation.DrawableRes
 import android.view.LayoutInflater
 import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
-import kotlinx.android.synthetic.main.controller_avatar_store.view.*
-import kotlinx.android.synthetic.main.item_store_avatar.view.*
-import kotlinx.android.synthetic.main.view_inventory_toolbar.view.*
 import io.ipoli.android.R
 import io.ipoli.android.common.ViewUtils
 import io.ipoli.android.common.redux.android.ReduxViewController
@@ -17,6 +15,9 @@ import io.ipoli.android.common.view.pager.BasePagerAdapter
 import io.ipoli.android.player.data.AndroidAvatar
 import io.ipoli.android.player.data.Avatar
 import io.ipoli.android.player.inventory.InventoryViewController
+import kotlinx.android.synthetic.main.controller_avatar_store.view.*
+import kotlinx.android.synthetic.main.item_store_avatar.view.*
+import kotlinx.android.synthetic.main.view_inventory_toolbar.view.*
 
 /**
  * Created by Venelin Valkov <venelin@mypoli.fun>
@@ -88,28 +89,32 @@ class AvatarStoreViewController(args: Bundle? = null) :
     sealed class AvatarViewModel(
         open val name: String,
         @DrawableRes open val image: Int,
-        open val gemPrice: Int
+        open val gemPrice: Int,
+        @ColorRes open val backgroundColor: Int
     ) {
 
         data class Current(
             override val name: String,
             @DrawableRes override val image: Int,
-            override val gemPrice: Int
-        ) : AvatarViewModel(name, image, gemPrice)
+            override val gemPrice: Int,
+            @ColorRes override val backgroundColor: Int
+        ) : AvatarViewModel(name, image, gemPrice, backgroundColor)
 
         data class Bought(
             val avatar: Avatar,
             override val name: String,
             @DrawableRes override val image: Int,
-            override val gemPrice: Int
-        ) : AvatarViewModel(name, image, gemPrice)
+            override val gemPrice: Int,
+            @ColorRes override val backgroundColor: Int
+        ) : AvatarViewModel(name, image, gemPrice, backgroundColor)
 
         data class ForSale(
             val avatar: Avatar,
             override val name: String,
             @DrawableRes override val image: Int,
-            override val gemPrice: Int
-        ) : AvatarViewModel(name, image, gemPrice)
+            override val gemPrice: Int,
+            @ColorRes override val backgroundColor: Int
+        ) : AvatarViewModel(name, image, gemPrice, backgroundColor)
     }
 
     inner class AvatarAdapter : BasePagerAdapter<AvatarViewModel>() {
@@ -120,6 +125,7 @@ class AvatarStoreViewController(args: Bundle? = null) :
         override fun bindItem(item: AvatarViewModel, view: View) {
 
             view.name.text = item.name
+            view.imageContainer.setCardBackgroundColor(colorRes(item.backgroundColor))
             view.image.setImageResource(item.image)
             view.price.text = item.gemPrice.toString()
 
@@ -152,7 +158,8 @@ class AvatarStoreViewController(args: Bundle? = null) :
                     AvatarViewModel.Current(
                         name = stringRes(androidAvatar.avatarName),
                         image = androidAvatar.image,
-                        gemPrice = avatar.gemPrice
+                        gemPrice = avatar.gemPrice,
+                        backgroundColor = androidAvatar.backgroundColor
                     )
 
                 is AvatarItem.Bought ->
@@ -160,7 +167,8 @@ class AvatarStoreViewController(args: Bundle? = null) :
                         avatar = avatar,
                         name = stringRes(androidAvatar.avatarName),
                         image = androidAvatar.image,
-                        gemPrice = avatar.gemPrice
+                        gemPrice = avatar.gemPrice,
+                        backgroundColor = androidAvatar.backgroundColor
                     )
 
                 is AvatarItem.ForSale ->
@@ -168,7 +176,8 @@ class AvatarStoreViewController(args: Bundle? = null) :
                         avatar = avatar,
                         name = stringRes(androidAvatar.avatarName),
                         image = androidAvatar.image,
-                        gemPrice = avatar.gemPrice
+                        gemPrice = avatar.gemPrice,
+                        backgroundColor = androidAvatar.backgroundColor
                     )
             }
         }
