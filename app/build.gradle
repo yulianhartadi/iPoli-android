@@ -77,8 +77,10 @@ dependencies {
     implementation 'com.google.firebase:firebase-database:11.8.0'
     implementation 'com.google.firebase:firebase-auth:11.8.0'
     implementation 'com.google.firebase:firebase-firestore:11.8.0'
+    implementation 'com.google.firebase:firebase-invites:11.8.0'
     implementation "com.github.SUPERCILEX.FirebaseUI-Android:firebase-ui-auth:6a56930af6"
     implementation 'com.facebook.android:facebook-login:4.31.0'
+    implementation 'com.facebook.android:facebook-share:4.31.0'
     implementation 'com.bluelinelabs:conductor:2.1.4'
     implementation 'com.bluelinelabs:conductor-support:2.1.4'
     implementation 'com.jakewharton.timber:timber:4.6.1'

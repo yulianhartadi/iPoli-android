@@ -18,13 +18,12 @@ import com.bluelinelabs.conductor.RouterTransaction
 import com.bluelinelabs.conductor.changehandler.FadeChangeHandler
 import com.bumptech.glide.Glide
 import com.bumptech.glide.request.RequestOptions
-import kotlinx.android.synthetic.main.controller_home.view.*
-import kotlinx.android.synthetic.main.drawer_header_home.view.*
 import io.ipoli.android.Constants
 import io.ipoli.android.MainActivity
 import io.ipoli.android.R
 import io.ipoli.android.challenge.list.ChallengeListViewController
 import io.ipoli.android.common.EmailUtils
+import io.ipoli.android.common.InviteFriendsDialogController
 import io.ipoli.android.common.redux.android.ReduxViewController
 import io.ipoli.android.common.view.*
 import io.ipoli.android.pet.AndroidPetAvatar
@@ -36,6 +35,8 @@ import io.ipoli.android.quest.schedule.ScheduleViewController
 import io.ipoli.android.repeatingquest.list.RepeatingQuestListViewController
 import io.ipoli.android.store.StoreViewController
 import io.ipoli.android.store.avatar.AvatarStoreViewController
+import kotlinx.android.synthetic.main.controller_home.view.*
+import kotlinx.android.synthetic.main.drawer_header_home.view.*
 import space.traversal.kapsule.required
 
 
@@ -114,6 +115,9 @@ class HomeViewController(args: Bundle? = null) :
             R.id.community ->
                 openCommunity()
 
+            R.id.inviteFriends ->
+                showInviteFriends()
+
             R.id.feedback ->
                 showFeedback()
 
@@ -131,6 +135,10 @@ class HomeViewController(args: Bundle? = null) :
         }
 
         view!!.navigationView.setCheckedItem(item.itemId)
+    }
+
+    private fun showInviteFriends() {
+        InviteFriendsDialogController().show(router)
     }
 
     private fun showFeedback() {

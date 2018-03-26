@@ -53,12 +53,12 @@
             android:title="@string/drawer_store" />
 
         <item
-            android:id="@+id/invite_friends"
+            android:id="@+id/inviteFriends"
             android:checkable="false"
             android:checked="false"
-            android:icon="@drawable/ic_invite_black_24dp"
-            android:title="@string/invite_friends"
-            android:visible="false" />
+            android:icon="@drawable/ic_person_add_white_24dp"
+            android:title="@string/invite_friends" />
+
         <item
             android:id="@+id/settings"
             android:checkable="false"
