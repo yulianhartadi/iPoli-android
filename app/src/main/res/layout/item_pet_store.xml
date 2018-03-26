@@ -98,6 +98,7 @@
             android:drawablePadding="8dp"
             android:drawableStart="@drawable/ic_gem_32dp"
             android:gravity="center_vertical"
+            android:includeFontPadding="false"
             android:textAppearance="@style/TextAppearance.AppCompat.Subhead"
             app:layout_constraintBottom_toTopOf="@+id/petAction"
             app:layout_constraintEnd_toEndOf="parent"

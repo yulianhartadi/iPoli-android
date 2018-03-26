@@ -27,7 +27,7 @@ enum class AndroidAvatar(
     @StringRes val avatarName: Int,
     @DrawableRes val image: Int
 ) {
-    IPOLI_CLASSIC(R.string.avatar_name_ipoli_classic, R.drawable.avatar_12),
+    IPOLI_CLASSIC(R.string.avatar_name_ipoli_classic, R.drawable.avatar_00),
     IPOLI_YELLOW_GLASSES(R.string.avatar_name_ipoli_yellow_glasses, R.drawable.avatar_11),
     MACARENA(R.string.avatar_name_macarena, R.drawable.avatar_10),
     MACARENA_MEXICAN(R.string.avatar_name_macarena_mexican, R.drawable.avatar_09),
