@@ -11,7 +11,7 @@
 myPoli is a combination of Calendar, ToDo list and Habit tracking app, all in one place! It's goal is to find time for the things that matter most in your life, make you stick to good habits and free you from the burden of scheduling tasks by yourself.
 
 <img src="./.github/screens/calendar.png" width="250px"/> &nbsp;&nbsp;&nbsp;
-<img src="./.github/screens/quest.png" width="250px"/> &nbsp;&nbsp;&nbsp;
+<img src="./.github/screens/challenges.png" width="250px"/> &nbsp;&nbsp;&nbsp;
 <img src="./.github/screens/pet.png" width="250px"/> &nbsp;&nbsp;&nbsp;
 
 # Download
