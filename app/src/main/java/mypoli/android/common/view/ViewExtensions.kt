@@ -2,6 +2,7 @@ package mypoli.android.common.view
 
 import android.support.constraint.Group
 import android.view.View
+import android.view.ViewGroup
 
 /**
  * Created by Venelin Valkov <venelin@mypoli.fun>
@@ -46,3 +47,11 @@ fun View.invisible() {
 fun View.visible() {
     visibility = View.VISIBLE
 }
+
+fun View.visibleOrGone(isVisible: Boolean) {
+    if (isVisible) visible()
+    else gone()
+}
+
+val ViewGroup.children: List<View>
+    get() = 0.until(childCount).map { getChildAt(it) }

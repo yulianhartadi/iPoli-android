@@ -3,12 +3,12 @@ package mypoli.android.store.theme
 import android.content.res.ColorStateList
 import android.os.Bundle
 import android.preference.PreferenceManager
-import android.support.v4.view.PagerAdapter
+import android.support.annotation.ColorInt
+import android.support.v4.view.ViewPager
 import android.view.LayoutInflater
 import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
 import kotlinx.android.synthetic.main.calendar_hour_cell.view.*
 import kotlinx.android.synthetic.main.calendar_time_line.view.*
 import kotlinx.android.synthetic.main.controller_theme_store.view.*
@@ -16,29 +16,39 @@ import kotlinx.android.synthetic.main.item_theme_store.view.*
 import kotlinx.android.synthetic.main.view_inventory_toolbar.view.*
 import mypoli.android.Constants
 import mypoli.android.R
-import mypoli.android.common.IntentUtil
 import mypoli.android.common.ViewUtils
-import mypoli.android.common.mvi.MviViewController
+import mypoli.android.common.redux.android.ReduxViewController
 import mypoli.android.common.view.*
-import mypoli.android.myPoliApp
+import mypoli.android.common.view.pager.BasePagerAdapter
 import mypoli.android.player.Theme
-import mypoli.android.player.inventory.GemInventoryViewController
+import mypoli.android.player.inventory.InventoryViewController
 import mypoli.android.quest.schedule.calendar.dayview.view.widget.CalendarDayView
-import mypoli.android.store.theme.ThemeStoreViewState.StateType.*
-import space.traversal.kapsule.required
 
 /**
  * Created by Venelin Valkov <venelin@mypoli.fun>
  * on 12/12/17.
  */
 class ThemeStoreViewController(args: Bundle? = null) :
-    MviViewController<ThemeStoreViewState, ThemeStoreViewController, ThemeStorePresenter, ThemeStoreIntent>(
-        args
-    ) {
+    ReduxViewController<ThemeStoreAction, ThemeStoreViewState, ThemeStoreReducer>(args) {
 
-    private val presenter by required { themeStorePresenter }
+    override val reducer = ThemeStoreReducer
 
-    override fun createPresenter() = presenter
+    private val onPageChangeListener = object : ViewPager.OnPageChangeListener {
+        override fun onPageScrollStateChanged(state: Int) {}
+
+        override fun onPageScrolled(
+            position: Int,
+            positionOffset: Float,
+            positionOffsetPixels: Int
+        ) {
+        }
+
+        override fun onPageSelected(position: Int) {
+            val vm =
+                (view!!.themePager.adapter as ThemePagerAdapter).itemAt(position)
+            colorLayout(vm)
+        }
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -49,127 +59,116 @@ class ThemeStoreViewController(args: Bundle? = null) :
         setHasOptionsMenu(true)
         val view = inflater.inflate(R.layout.controller_theme_store, container, false)
 
-        setToolbar(view.toolbar)
+        setChildController(
+            view.playerGems,
+            InventoryViewController()
+        )
 
-        view.toolbarTitle.setText(R.string.themes)
-
-        setChildController(view.playerGems, GemInventoryViewController())
+        view.themePager.addOnPageChangeListener(onPageChangeListener)
 
         view.themePager.clipToPadding = false
         view.themePager.pageMargin = ViewUtils.dpToPx(16f, view.context).toInt()
+
+        view.themePager.adapter = ThemePagerAdapter()
         return view
     }
 
+    override fun onCreateLoadAction() = ThemeStoreAction.Load
+
     override fun onAttach(view: View) {
-        showBackButton()
         super.onAttach(view)
-        send(LoadDataIntent)
+        setToolbar(view.toolbar)
+        showBackButton()
+        view.toolbarTitle.setText(R.string.themes)
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         if (item.itemId == android.R.id.home) {
-            router.popCurrentController()
-            return true
+            return router.handleBack()
         }
         return super.onOptionsItemSelected(item)
     }
 
+    override fun onDestroyView(view: View) {
+        view.themePager.removeOnPageChangeListener(onPageChangeListener)
+        super.onDestroyView(view)
+    }
+
+    private fun colorLayout(viewModel: ThemeViewModel) {
+        view!!.toolbar.setBackgroundColor(viewModel.primaryColor)
+        activity?.window?.navigationBarColor = viewModel.primaryColor
+        activity?.window?.statusBarColor = viewModel.primaryColorDark
+    }
+
     override fun render(state: ThemeStoreViewState, view: View) {
-        when (state.type) {
-            DATA_LOADED -> {
-                val themeAdapter = ThemePagerAdapter(state.viewModels)
-                view.themePager.adapter = themeAdapter
+        when (state) {
+
+            is ThemeStoreViewState.Changed -> {
+                val adapter = view.themePager.adapter as ThemePagerAdapter
+                adapter.updateAll(state.viewModels)
+                val vm = adapter.itemAt(view.themePager.currentItem)
+                colorLayout(vm)
             }
 
-            PLAYER_CHANGED -> {
-                (view.themePager.adapter as ThemePagerAdapter).updateAll(state.viewModels)
+            ThemeStoreViewState.ThemeBought ->
+                showLongToast(R.string.theme_bought)
+
+            ThemeStoreViewState.ThemeTooExpensive -> {
+                CurrencyConverterDialogController().showDialog(router, "currency-converter")
+                showShortToast(R.string.theme_too_expensive)
             }
 
-            THEME_CHANGED -> {
+            is ThemeStoreViewState.ThemeChanged -> {
                 val pm = PreferenceManager.getDefaultSharedPreferences(activity!!)
                 pm.registerOnSharedPreferenceChangeListener { _, key ->
                     if (key == Constants.KEY_THEME) {
-                        activity!!.finish()
-                        myPoliApp.instance.startActivity(IntentUtil.startApp(myPoliApp.instance))
+                        activity!!.setTheme(AndroidTheme.valueOf(state.theme.name).style)
                     }
                 }
-                pm.edit().putString(Constants.KEY_THEME, state.theme!!.name).apply()
-            }
-
-            THEME_BOUGHT -> {
-
-            }
-
-            THEME_TOO_EXPENSIVE -> {
-                CurrencyConverterDialogController().showDialog(router, "currency-converter")
-                Toast.makeText(view.context, "Theme too expensive", Toast.LENGTH_SHORT).show()
+                pm.edit().putString(Constants.KEY_THEME, state.theme.name).apply()
             }
         }
     }
 
-    inner class ThemePagerAdapter(private var viewModels: List<ThemeViewModel>) : PagerAdapter() {
+    inner class ThemePagerAdapter :
+        BasePagerAdapter<ThemeViewModel>() {
+        override fun layoutResourceFor(item: ThemeViewModel) =
+            R.layout.item_theme_store
 
-        override fun instantiateItem(container: ViewGroup, position: Int): Any {
-            val inflater = LayoutInflater.from(container.context)
-            val view = inflater.inflate(R.layout.item_theme_store, container, false)
-            val vm = viewModels[position]
+        override fun bindItem(item: ThemeViewModel, view: View) {
 
-            val theme = AndroidTheme.valueOf(vm.theme.name)
+            view.themeToolbar.setBackgroundColor(item.primaryColor)
+            view.themeNavigationBar.setBackgroundColor(item.primaryColor)
+            view.themeStatusBar.setBackgroundColor(item.primaryColorDark)
+            view.themeFab.backgroundTintList = ColorStateList.valueOf(item.accentColor)
 
-            val attrs = intArrayOf(
-                R.attr.colorPrimary,
-                R.attr.colorPrimaryDark,
-                R.attr.colorAccent
-            ).sortedArray()
-            val a = activity!!.theme.obtainStyledAttributes(
-                theme.style,
-                attrs
-            )
+            view.themeName.text = item.name
 
-            val primaryColor = a.getResourceId(a.getIndex(attrs.indexOf(R.attr.colorPrimary)), 0)
-            val primaryDarkColor =
-                a.getResourceId(a.getIndex(attrs.indexOf(R.attr.colorPrimaryDark)), 0)
-            val accentColor = a.getColor(a.getIndex(attrs.indexOf(R.attr.colorAccent)), 0)
-
-            a.recycle()
-
-            view.themeToolbar.setBackgroundResource(primaryColor)
-            view.themeNavigationBar.setBackgroundResource(primaryColor)
-            view.themeStatusBar.setBackgroundResource(primaryDarkColor)
-            view.themeFab.backgroundTintList = ColorStateList.valueOf(accentColor)
-
-            view.themeName.setText(theme.title)
-
-            view.themePrice.text = if (vm.theme.gemPrice == 0) {
+            view.themePrice.text = if (item.theme.gemPrice == 0) {
                 stringRes(R.string.free)
             } else {
-                vm.theme.gemPrice.toString()
+                item.theme.gemPrice.toString()
             }
 
             val action = view.themeAction
             val current = view.themeCurrent
 
             when {
-                vm.isCurrent -> {
+                item.isCurrent -> {
                     action.visible = false
                     current.visible = true
                 }
-                vm.isBought -> {
+                item.isBought -> {
                     action.visible = true
                     current.visible = false
-                    action.text = stringRes(R.string.store_theme_in_inventory)
-                    action.setOnClickListener {
-                        send(ChangeThemeIntent(vm.theme))
-                    }
+                    action.text = stringRes(R.string.pick_me)
+                    action.dispatchOnClick(ThemeStoreAction.Change(item.theme))
                 }
                 else -> {
                     action.visible = true
                     current.visible = false
                     action.text = stringRes(R.string.store_buy_theme)
-
-                    action.setOnClickListener {
-                        send(BuyThemeIntent(vm.theme))
-                    }
+                    action.dispatchOnClick(ThemeStoreAction.Buy(item.theme))
                 }
             }
 
@@ -181,36 +180,55 @@ class ThemeStoreViewController(args: Bundle? = null) :
                 }
             })
 
-            view.themeCalendar.timeLine.setBackgroundColor(accentColor)
+            view.themeCalendar.timeLine.setBackgroundColor(item.accentColor)
             view.themeCalendar.timeLineIndicator.backgroundTintList =
-                ColorStateList.valueOf(accentColor)
+                ColorStateList.valueOf(item.accentColor)
 
             view.themeCalendar.scrollToNow()
-
-            container.addView(view)
-            return view
-        }
-
-        override fun destroyItem(container: ViewGroup, position: Int, view: Any) {
-            container.removeView(view as View)
-        }
-
-        override fun isViewFromObject(view: View, `object`: Any) = view == `object`
-
-        override fun getCount() = viewModels.size
-
-        override fun getItemPosition(`object`: Any) = PagerAdapter.POSITION_NONE
-
-        fun updateAll(viewModels: List<ThemeViewModel>) {
-            this.viewModels = viewModels
-            notifyDataSetChanged()
         }
     }
+
+    private val ThemeStoreViewState.Changed.viewModels
+        get() = themes.map {
+
+            val at = AndroidTheme.valueOf(it.theme.name)
+
+            val attrs = intArrayOf(
+                R.attr.colorPrimary,
+                R.attr.colorPrimaryDark,
+                R.attr.colorAccent
+            ).sortedArray()
+            val a = activity!!.theme.obtainStyledAttributes(
+                at.style,
+                attrs
+            )
+
+            val primaryColor = a.getResourceId(a.getIndex(attrs.indexOf(R.attr.colorPrimary)), 0)
+            val primaryDarkColor =
+                a.getResourceId(a.getIndex(attrs.indexOf(R.attr.colorPrimaryDark)), 0)
+            val accentColor = a.getColor(a.getIndex(attrs.indexOf(R.attr.colorAccent)), 0)
+
+            a.recycle()
+
+            ThemeViewModel(
+                theme = it.theme,
+                name = stringRes(at.title),
+                primaryColor = colorRes(primaryColor),
+                primaryColorDark = colorRes(primaryDarkColor),
+                accentColor = accentColor,
+                isCurrent = it is ThemeItem.Current,
+                isBought = it is ThemeItem.Bought
+            )
+        }
 
 }
 
 data class ThemeViewModel(
     val theme: Theme,
+    val name: String,
+    @ColorInt val primaryColor: Int,
+    @ColorInt val primaryColorDark: Int,
+    @ColorInt val accentColor: Int,
     val isBought: Boolean = false,
     val isCurrent: Boolean = false
 )

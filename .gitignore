@@ -12,9 +12,11 @@ art/
 app/google-services.json
 app/google-services_prod.json
 app/google-services_dev.json
+*google-services.json
 *BillingConstants.kt
 *AnalyticsConstants.java
 *AnalyticsConstants.kt
 app/fabric.properties
 *ApiConstants.java
+*ApiConstants.kt
 secrets.tar

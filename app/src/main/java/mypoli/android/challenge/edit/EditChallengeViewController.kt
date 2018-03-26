@@ -225,7 +225,7 @@ class EditChallengeViewController(args : Bundle? = null) :
                 { m1, m2, m3 ->
                     dispatch(EditChallengeAction.ChangeMotivations(m1, m2, m3))
                 }
-            ).showDialog(router, "motivations")
+            ).show(router, "motivations")
         }
     }
 

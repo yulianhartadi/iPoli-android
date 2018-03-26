@@ -1,15 +1,12 @@
 package mypoli.android.common.mvi
 
 import android.support.annotation.MainThread
-import android.util.Log
-import com.amplitude.api.Amplitude
 import com.crashlytics.android.Crashlytics
 import kotlinx.coroutines.experimental.CommonPool
 import kotlinx.coroutines.experimental.android.UI
 import kotlinx.coroutines.experimental.channels.*
 import kotlinx.coroutines.experimental.launch
 import mypoli.android.common.StreamingUseCase
-import org.json.JSONObject
 import timber.log.Timber
 import kotlin.coroutines.experimental.CoroutineContext
 
@@ -76,31 +73,31 @@ abstract class BaseMviPresenter<in V : ViewStateRenderer<VS>, VS : ViewState, I 
                             )
                         )
 
-                        val data = JSONObject()
-                        data.put("message", e.message)
-                        data.put("stack_trace", Log.getStackTraceString(e))
-
-                        Amplitude.getInstance().logEvent("app_error", data)
+//                        val data = JSONObject()
+//                        data.put("message", e.message)
+//                        data.put("stack_trace", Log.getStackTraceString(e))
+//
+//                        Amplitude.getInstance().logEvent("app_error", data)
                     }
                 }
             }
         }
 
     private fun longIntentChange(oldState: VS, intent: I, state: VS) {
-        val data = JSONObject()
-        data.put("previous_state", oldState)
-        data.put("intent", intent)
-        data.put("new_state", state)
-        val eventType = "intent_${intent::class.java.name}"
-        Amplitude.getInstance().logEvent(eventType, data)
+//        val data = JSONObject()
+//        data.put("previous_state", oldState)
+//        data.put("intent", intent)
+//        data.put("new_state", state)
+//        val eventType = "intent_${intent::class.java.name}"
+//        Amplitude.getInstance().logEvent(eventType, data)
 
         Timber.d("Intent $intent new state $state")
     }
 
     private fun renderInitialState(view: V) {
-        val data = JSONObject()
-        data.put("initial", initialState)
-        Amplitude.getInstance().logEvent("change_state", data)
+//        val data = JSONObject()
+//        data.put("initial", initialState)
+//        Amplitude.getInstance().logEvent("change_state", data)
         Timber.d("initial state $initialState")
         view.render(initialState)
     }

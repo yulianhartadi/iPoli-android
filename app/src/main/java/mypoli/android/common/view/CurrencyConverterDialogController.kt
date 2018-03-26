@@ -32,7 +32,7 @@ import mypoli.android.pet.PetAvatar
 import mypoli.android.player.Player
 import mypoli.android.player.usecase.ConvertCoinsToGemsUseCase
 import mypoli.android.player.usecase.ListenForPlayerChangesUseCase
-import mypoli.android.store.GemStoreViewController
+import mypoli.android.store.gem.GemStoreViewController
 import mypoli.android.store.purchase.AndroidInAppPurchaseManager
 import mypoli.android.store.purchase.GemPack
 import mypoli.android.store.purchase.GemPackType

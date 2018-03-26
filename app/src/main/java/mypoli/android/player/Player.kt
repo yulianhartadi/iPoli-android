@@ -11,6 +11,7 @@ import mypoli.android.player.data.Avatar
 import mypoli.android.quest.ColorPack
 import mypoli.android.quest.Entity
 import mypoli.android.quest.IconPack
+import mypoli.android.store.powerup.PowerUp
 import org.threeten.bp.Instant
 
 data class Player(
@@ -24,6 +25,7 @@ data class Player(
     val experience: Long = Constants.DEFAULT_PLAYER_XP,
     val authProvider: AuthProvider,
     val avatar: Avatar = Avatar.IPOLI_CLASSIC,
+    val membership: Membership = Membership.NONE,
     override val createdAt: Instant = Instant.now(),
     override val updatedAt: Instant = Instant.now(),
     val currentTheme: Theme = Constants.DEFAULT_THEME,
@@ -35,6 +37,7 @@ data class Player(
         food = mapOf(
             Food.BANANA to 2
         ),
+        avatars = setOf(Avatar.IPOLI_CLASSIC),
         pets = setOf(InventoryPet.createFromPet(pet)),
         themes = setOf(currentTheme),
         colorPacks = setOf(ColorPack.FREE),
@@ -136,11 +139,13 @@ data class InventoryPet(
 
 data class Inventory(
     val food: Map<Food, Int> = mapOf(),
+    val avatars: Set<Avatar> = setOf(),
     val pets: Set<InventoryPet> = setOf(),
     val themes: Set<Theme> = setOf(),
     val colorPacks: Set<ColorPack> = setOf(),
     val iconPacks: Set<IconPack> = setOf(),
-    val challenges: Set<PredefinedChallenge> = setOf()
+    val challenges: Set<PredefinedChallenge> = setOf(),
+    val powerUps: List<PowerUp> = listOf()
 ) {
     fun addFood(food: Food, quantity: Int = 1): Inventory {
         val qty = this.food.let {
@@ -174,6 +179,10 @@ data class Inventory(
 
     fun getPet(petAvatar: PetAvatar) =
         pets.first { it.avatar == petAvatar }
+
+    fun hasAvatar(avatar: Avatar) = avatars.contains(avatar)
+
+    fun addAvatar(avatar: Avatar) = copy(avatars = this.avatars + avatar)
 
     fun hasTheme(theme: Theme) = themes.contains(theme)
 
@@ -218,11 +227,27 @@ data class Inventory(
     fun hasChallenge(challengeType: PredefinedChallenge) =
         challenges.contains(challengeType)
 
-    fun addChallenge(challenge: PredefinedChallenge): Inventory {
-        return copy(
-            challenges = this.challenges + challenge
-        )
+    fun addChallenge(challenge: PredefinedChallenge) =
+        copy(challenges = this.challenges + challenge)
+
+    fun addPowerUp(powerUp: PowerUp): Inventory {
+        require(!isPowerUpEnabled(powerUp.type))
+        return copy(powerUps = powerUps + powerUp)
     }
+
+    fun isPowerUpEnabled(powerUpType: PowerUp.Type) =
+        getPowerUp(powerUpType) != null
+
+    fun getPowerUp(powerUpType: PowerUp.Type) =
+        powerUps.firstOrNull { it.type == powerUpType }
+
+    fun removePowerUp(powerUp: PowerUp): Inventory {
+        require(isPowerUpEnabled(powerUp.type))
+        return copy(powerUps = powerUps - powerUp)
+    }
+
+    fun setPowerUps(powerUps: List<PowerUp>) =
+        copy(powerUps = powerUps)
 }
 
 sealed class AuthProvider {
@@ -243,4 +268,8 @@ sealed class AuthProvider {
     data class Guest(
         val userId: String
     ) : AuthProvider()
+}
+
+enum class Membership {
+    NONE, MONTHLY, QUARTERLY, YEARLY
 }

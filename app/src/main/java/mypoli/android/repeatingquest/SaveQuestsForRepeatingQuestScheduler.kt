@@ -20,7 +20,6 @@ class SaveQuestsForRepeatingQuestJob : DailyJob(), Injects<Module> {
 
     override fun onRunDailyJob(params: Params): DailyJobResult {
         val kap = Kapsule<Module>()
-        val saveQuestsForRepeatingQuestScheduler by kap.required { saveQuestsForRepeatingQuestScheduler }
         val repeatingQuestRepository by kap.required { repeatingQuestRepository }
         val saveQuestsForRepeatingQuestUseCase by kap.required { saveQuestsForRepeatingQuestUseCase }
         kap.inject(myPoliApp.module(context))
@@ -39,7 +38,6 @@ class SaveQuestsForRepeatingQuestJob : DailyJob(), Injects<Module> {
             )
         }
 
-        saveQuestsForRepeatingQuestScheduler.schedule()
         return DailyJobResult.SUCCESS
     }
 

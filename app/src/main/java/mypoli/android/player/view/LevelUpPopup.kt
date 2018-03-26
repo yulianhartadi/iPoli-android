@@ -4,11 +4,11 @@ import android.animation.Animator
 import android.animation.AnimatorListenerAdapter
 import android.animation.AnimatorSet
 import android.animation.ObjectAnimator
+import android.os.Bundle
 import android.support.v4.view.animation.LinearOutSlowInInterpolator
 import android.view.LayoutInflater
 import android.view.View
 import android.widget.ImageView
-import com.amplitude.api.Amplitude
 import com.bumptech.glide.Glide
 import kotlinx.android.synthetic.main.popup_level_up.view.*
 import kotlinx.coroutines.experimental.channels.consumeEach
@@ -26,7 +26,6 @@ import mypoli.android.pet.AndroidPetAvatar
 import mypoli.android.pet.PetAvatar
 import mypoli.android.player.Player
 import mypoli.android.player.usecase.ListenForPlayerChangesUseCase
-import org.json.JSONObject
 import space.traversal.kapsule.required
 import kotlin.coroutines.experimental.CoroutineContext
 
@@ -76,25 +75,27 @@ class LevelUpPopup(private val newLevel: Int) :
 
     private val presenter by required { levelUpPresenter }
 
+    private val eventLogger by required { eventLogger }
+
     override fun createPresenter() = presenter
 
     override fun render(state: LevelUpViewState, view: View) {
         state.avatar?.let {
             val androidAvatar = AndroidPetAvatar.valueOf(it.name)
             view.pet.setImageResource(androidAvatar.headImage)
-            val data = JSONObject()
-            data.put("level", state.level)
+            val params = Bundle()
+            params.putInt("level", state.level!!)
             view.positive.setOnClickListener {
-                data.put("sentiment", "positive")
-                Amplitude.getInstance().logEvent("reward_response", data)
+                params.putString("sentiment", "positive")
+                eventLogger.logEvent("reward_response", params)
                 hide()
             }
             view.negative.setOnClickListener {
-                data.put("sentiment", "negative")
-                Amplitude.getInstance().logEvent("reward_response", data)
+                params.putString("sentiment", "negative")
+                eventLogger.logEvent("reward_response", params)
                 hide()
             }
-            startTypingAnimation(view, state.level!!)
+            startTypingAnimation(view, state.level)
         }
     }
 

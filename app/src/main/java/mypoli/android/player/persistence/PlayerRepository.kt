@@ -12,6 +12,7 @@ import com.google.firebase.firestore.ListenerRegistration
 import kotlinx.coroutines.experimental.runBlocking
 import mypoli.android.Constants
 import mypoli.android.challenge.predefined.entity.PredefinedChallenge
+import mypoli.android.common.datetime.startOfDayUTC
 import mypoli.android.common.persistence.BaseEntityFirestoreRepository
 import mypoli.android.common.persistence.EntityRepository
 import mypoli.android.pet.*
@@ -20,6 +21,7 @@ import mypoli.android.player.data.Avatar
 import mypoli.android.player.persistence.model.*
 import mypoli.android.quest.ColorPack
 import mypoli.android.quest.IconPack
+import mypoli.android.store.powerup.PowerUp
 import org.threeten.bp.Instant
 import kotlin.coroutines.experimental.CoroutineContext
 import kotlin.coroutines.experimental.suspendCoroutine
@@ -165,6 +167,13 @@ class FirestorePlayerRepository(
         val ci = DbInventory(cp.inventory)
         val inventory = Inventory(
             food = ci.food.entries.associate { Food.valueOf(it.key) to it.value.toInt() },
+            avatars = ci.avatars.map { Avatar.valueOf(it) }.toSet(),
+            powerUps = ci.powerUps.map {
+                PowerUp.fromType(
+                    PowerUp.Type.valueOf(it.key),
+                    it.value.startOfDayUTC
+                )
+            },
             pets = ci.pets.map {
                 val cip = DbInventoryPet(it)
                 InventoryPet(
@@ -189,12 +198,13 @@ class FirestorePlayerRepository(
             gems = cp.gems,
             experience = cp.experience,
             authProvider = authProvider,
-            avatar = Avatar.fromCode(cp.avatarCode)!!,
+            avatar = Avatar.valueOf(cp.avatar),
             currentTheme = Theme.valueOf(cp.currentTheme),
             inventory = inventory,
             createdAt = Instant.ofEpochMilli(cp.createdAt),
             updatedAt = Instant.ofEpochMilli(cp.updatedAt),
-            pet = pet
+            pet = pet,
+            membership = Membership.valueOf(cp.membership)
         )
     }
 
@@ -215,12 +225,13 @@ class FirestorePlayerRepository(
             it.gems = entity.gems
             it.experience = entity.experience
             it.authProvider = createDbAuthProvider(entity.authProvider).map
-            it.avatarCode = entity.avatar.code
+            it.avatar = entity.avatar.name
             it.createdAt = entity.createdAt.toEpochMilli()
             it.updatedAt = entity.updatedAt.toEpochMilli()
             it.currentTheme = entity.currentTheme.name
             it.pet = createDbPet(entity.pet).map
             it.inventory = createDbInventory(entity.inventory).map
+            it.membership = entity.membership.name
         }
 
     private fun createDbPet(pet: Pet) =
@@ -278,6 +289,10 @@ class FirestorePlayerRepository(
         DbInventory().also {
             it.food = inventory.food.entries
                 .associate { it.key.name to it.value.toLong() }
+                .toMutableMap()
+            it.avatars = inventory.avatars.map { it.name }
+            it.powerUps = inventory.powerUps
+                .associate { it.type.name to it.expirationDate.startOfDayUTC() }
                 .toMutableMap()
             it.pets = inventory.pets
                 .map { createDbInventoryPet(it).map }

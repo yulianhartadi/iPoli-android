@@ -177,7 +177,7 @@ class AddQuestViewController(args: Bundle? = null) :
                     { dispatch(AddQuestAction.RepeatingPatternPicked(it)) },
                     { dispatch(AddQuestAction.RepeatingPatterPickerCanceled) }
                 )
-                .showDialog(router, "pick_repeating_pattern_tag")
+                .show(router, "pick_repeating_pattern_tag")
             }
 
             SWITCHED_TO_QUEST -> {

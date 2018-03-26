@@ -12,7 +12,7 @@ import mypoli.android.quest.reminder.picker.ReminderViewModel
 import mypoli.android.quest.schedule.agenda.AgendaReducer
 import mypoli.android.quest.usecase.Result
 import mypoli.android.repeatingquest.entity.RepeatingPattern
-import mypoli.android.repeatingquest.sideeffect.RepeatingQuestSideEffect
+import mypoli.android.repeatingquest.sideeffect.RepeatingQuestSideEffectHandler
 import org.threeten.bp.LocalDate
 
 /**
@@ -60,7 +60,7 @@ sealed class AddQuestAction : Action {
     object RepeatingPatterPickerCanceled : AddQuestAction()
     data class Load(val date: LocalDate) : AddQuestAction()
     data class SaveRepeatingQuest(val name: String) : AddQuestAction()
-    data class SaveInvalidRepeatingQuest(val error: RepeatingQuestSideEffect.ValidationError) :
+    data class SaveInvalidRepeatingQuest(val error: RepeatingQuestSideEffectHandler.ValidationError) :
         AddQuestAction()
 
     object RepeatingQuestSaved : AddQuestAction()

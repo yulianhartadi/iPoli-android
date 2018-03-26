@@ -24,7 +24,7 @@ import mypoli.android.common.view.visible
 import mypoli.android.pet.PetAvatar
 import mypoli.android.pet.store.PetStoreAction.*
 import mypoli.android.pet.store.PetStoreViewState.StateType.*
-import mypoli.android.store.GemStoreViewController
+import mypoli.android.store.gem.GemStoreViewController
 
 /**
  * Created by Polina Zhelyazkova <polina@mypoli.fun>

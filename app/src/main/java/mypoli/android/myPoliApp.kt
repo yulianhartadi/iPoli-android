@@ -12,6 +12,7 @@ import com.crashlytics.android.Crashlytics
 import com.evernote.android.job.JobManager
 import com.github.moduth.blockcanary.BlockCanary
 import com.github.moduth.blockcanary.BlockCanaryContext
+import com.google.firebase.analytics.FirebaseAnalytics
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.FirebaseFirestoreSettings
 import com.jakewharton.threetenabp.AndroidThreeTen
@@ -90,8 +91,10 @@ class myPoliApp : Application() {
             .build()
         db.firestoreSettings = settings
 
+        val analytics = FirebaseAnalytics.getInstance(this)
+
         module = Module(
-            androidModule = MainAndroidModule(this, db),
+            androidModule = MainAndroidModule(this, db, analytics),
             repositoryModule = FirestoreRepositoryModule(),
             useCaseModule = MainUseCaseModule(),
             presenterModule = AndroidPresenterModule(),

@@ -4,21 +4,23 @@ import android.content.Context
 import android.content.SharedPreferences
 import android.preference.PreferenceManager
 import android.view.LayoutInflater
-import com.couchbase.lite.Database
-import com.couchbase.lite.DatabaseConfiguration
+import com.google.firebase.analytics.FirebaseAnalytics
 import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.experimental.CommonPool
 import kotlinx.coroutines.experimental.Job
 import mypoli.android.challenge.persistence.ChallengeRepository
 import mypoli.android.challenge.persistence.FirestoreChallengeRepository
 import mypoli.android.challenge.predefined.usecase.SchedulePredefinedChallengeUseCase
-import mypoli.android.challenge.sideeffect.ChallengeSideEffect
+import mypoli.android.challenge.sideeffect.ChallengeSideEffectHandler
 import mypoli.android.challenge.usecase.*
 import mypoli.android.common.*
+import mypoli.android.common.analytics.EventLogger
+import mypoli.android.common.analytics.FirebaseEventLogger
+import mypoli.android.common.middleware.LogEventsMiddleWare
 import mypoli.android.common.rate.AndroidRatePopupScheduler
 import mypoli.android.common.rate.RatePopupScheduler
 import mypoli.android.common.rate.RatePresenter
-import mypoli.android.common.redux.CoroutineSideEffectExecutor
+import mypoli.android.common.redux.CoroutineSideEffectHandlerExecutor
 import mypoli.android.common.redux.StateStore
 import mypoli.android.common.text.CalendarFormatter
 import mypoli.android.common.view.ColorPickerPresenter
@@ -29,7 +31,7 @@ import mypoli.android.event.persistence.AndroidCalendarEventRepository
 import mypoli.android.event.persistence.AndroidCalendarRepository
 import mypoli.android.event.persistence.CalendarRepository
 import mypoli.android.event.persistence.EventRepository
-import mypoli.android.event.sideeffect.CalendarSideEffect
+import mypoli.android.event.sideeffect.CalendarSideEffectHandler
 import mypoli.android.pet.AndroidJobLowerPetStatsScheduler
 import mypoli.android.pet.LowerPetStatsScheduler
 import mypoli.android.pet.PetDialogPresenter
@@ -39,7 +41,7 @@ import mypoli.android.player.AndroidLevelDownScheduler
 import mypoli.android.player.AndroidLevelUpScheduler
 import mypoli.android.player.LevelDownScheduler
 import mypoli.android.player.LevelUpScheduler
-import mypoli.android.player.auth.saga.AuthSideEffect
+import mypoli.android.player.auth.saga.AuthSideEffectHandler
 import mypoli.android.player.persistence.FirestorePlayerRepository
 import mypoli.android.player.persistence.PlayerRepository
 import mypoli.android.player.usecase.*
@@ -54,11 +56,12 @@ import mypoli.android.quest.job.ReminderScheduler
 import mypoli.android.quest.reminder.formatter.ReminderTimeFormatter
 import mypoli.android.quest.reminder.formatter.TimeUnitFormatter
 import mypoli.android.quest.reminder.picker.ReminderPickerDialogPresenter
+import mypoli.android.quest.schedule.agenda.sideeffect.AgendaSideEffectHandler
 import mypoli.android.quest.schedule.agenda.usecase.CreateAgendaItemsUseCase
 import mypoli.android.quest.schedule.agenda.usecase.FindAgendaDatesUseCase
-import mypoli.android.quest.timer.TimerPresenter
 import mypoli.android.quest.timer.job.AndroidJobTimerCompleteScheduler
 import mypoli.android.quest.timer.job.TimerCompleteScheduler
+import mypoli.android.quest.timer.sideeffect.TimerSideEffectHandler
 import mypoli.android.quest.timer.usecase.*
 import mypoli.android.quest.usecase.*
 import mypoli.android.quest.view.QuestCompletePresenter
@@ -66,10 +69,26 @@ import mypoli.android.repeatingquest.AndroidSaveQuestsForRepeatingQuestScheduler
 import mypoli.android.repeatingquest.SaveQuestsForRepeatingQuestScheduler
 import mypoli.android.repeatingquest.persistence.FirestoreRepeatingQuestRepository
 import mypoli.android.repeatingquest.persistence.RepeatingQuestRepository
-import mypoli.android.repeatingquest.sideeffect.RepeatingQuestSideEffect
+import mypoli.android.repeatingquest.sideeffect.RepeatingQuestSideEffectHandler
 import mypoli.android.repeatingquest.usecase.*
-import mypoli.android.store.GemStorePresenter
-import mypoli.android.store.theme.ThemeStorePresenter
+import mypoli.android.store.avatar.sideeffect.AvatarSideEffectHandler
+import mypoli.android.store.avatar.usecase.BuyAvatarUseCase
+import mypoli.android.store.avatar.usecase.ChangeAvatarUseCase
+import mypoli.android.store.gem.GemStorePresenter
+import mypoli.android.store.membership.MembershipSideEffectHandler
+import mypoli.android.store.membership.job.AndroidCheckMembershipStatusScheduler
+import mypoli.android.store.membership.job.CheckMembershipStatusScheduler
+import mypoli.android.store.membership.usecase.CalculateMembershipPlanPriceUseCase
+import mypoli.android.store.membership.usecase.RemoveMembershipUseCase
+import mypoli.android.store.membership.usecase.UpdatePlayerMembershipUseCase
+import mypoli.android.store.powerup.job.AndroidRemoveExpiredPowerUpsScheduler
+import mypoli.android.store.powerup.job.RemoveExpiredPowerUpsScheduler
+import mypoli.android.store.powerup.middleware.CheckEnabledPowerUpMiddleWare
+import mypoli.android.store.powerup.sideeffect.PowerUpSideEffectHandler
+import mypoli.android.store.powerup.usecase.BuyPowerUpUseCase
+import mypoli.android.store.powerup.usecase.EnableAllPowerUpsUseCase
+import mypoli.android.store.powerup.usecase.RemoveExpiredPowerUpsUseCase
+import mypoli.android.store.theme.sideeffect.ThemeSideEffectHandler
 import mypoli.android.store.theme.usecase.BuyThemeUseCase
 import mypoli.android.store.theme.usecase.ChangeThemeUseCase
 import mypoli.android.store.usecase.PurchaseGemPackUseCase
@@ -94,7 +113,7 @@ class FirestoreRepositoryModule : RepositoryModule, Injects<Module> {
 
     override val questRepository by required {
         FirestoreQuestRepository(
-            firestoreDatabase,
+            database,
             job + CommonPool,
             sharedPreferences
         )
@@ -103,7 +122,7 @@ class FirestoreRepositoryModule : RepositoryModule, Injects<Module> {
     override val playerRepository
         by required {
             FirestorePlayerRepository(
-                firestoreDatabase,
+                database,
                 job + CommonPool,
                 sharedPreferences
             )
@@ -112,7 +131,7 @@ class FirestoreRepositoryModule : RepositoryModule, Injects<Module> {
     override val repeatingQuestRepository
         by required {
             FirestoreRepeatingQuestRepository(
-                firestoreDatabase,
+                database,
                 job + CommonPool,
                 sharedPreferences
             )
@@ -120,7 +139,7 @@ class FirestoreRepositoryModule : RepositoryModule, Injects<Module> {
 
     override val challengeRepository by required {
         FirestoreChallengeRepository(
-            firestoreDatabase,
+            database,
             job + CommonPool,
             sharedPreferences
         )
@@ -147,9 +166,9 @@ interface AndroidModule {
 
     val calendarFormatter: CalendarFormatter
 
-    val database: Database
+    val database: FirebaseFirestore
 
-    val firestoreDatabase: FirebaseFirestore
+    val eventLogger: EventLogger
 
     val reminderScheduler: ReminderScheduler
 
@@ -165,6 +184,10 @@ interface AndroidModule {
 
     val saveQuestsForRepeatingQuestScheduler: SaveQuestsForRepeatingQuestScheduler
 
+    val removeExpiredPowerUpsScheduler: RemoveExpiredPowerUpsScheduler
+
+    val checkMembershipStatusScheduler: CheckMembershipStatusScheduler
+
     val ratePopupScheduler: RatePopupScheduler
 
     val job: Job
@@ -172,7 +195,8 @@ interface AndroidModule {
 
 class MainAndroidModule(
     private val context: Context,
-    firestoreDb: FirebaseFirestore
+    firestore: FirebaseFirestore,
+    firebaseAnalytics: FirebaseAnalytics
 ) : AndroidModule {
     override val layoutInflater: LayoutInflater get() = LayoutInflater.from(context)
 
@@ -199,12 +223,16 @@ class MainAndroidModule(
 
     override val saveQuestsForRepeatingQuestScheduler get() = AndroidSaveQuestsForRepeatingQuestScheduler()
 
+    override val removeExpiredPowerUpsScheduler get() = AndroidRemoveExpiredPowerUpsScheduler()
+
+    override val checkMembershipStatusScheduler
+        get() = AndroidCheckMembershipStatusScheduler()
+
     override val ratePopupScheduler get() = AndroidRatePopupScheduler()
 
-    override val firestoreDatabase = firestoreDb
+    override val database = firestore
 
-    override val database: Database
-        get() = Database("myPoli", DatabaseConfiguration.Builder(context).build())
+    override val eventLogger = FirebaseEventLogger(firebaseAnalytics)
 
     override val job get() = Job()
 }
@@ -403,6 +431,33 @@ class MainUseCaseModule : UseCaseModule, Injects<Module> {
             challengeRepository,
             playerRepository
         )
+
+    override val buyPowerUpUseCase
+        get() = BuyPowerUpUseCase(playerRepository)
+
+    override val removeExpiredPowerUpsUseCase
+        get() = RemoveExpiredPowerUpsUseCase(playerRepository)
+
+    override val enableAllPowerUpsUseCase
+        get() = EnableAllPowerUpsUseCase(playerRepository)
+
+    override val updatePlayerMembershipUseCase
+        get() = UpdatePlayerMembershipUseCase(
+            playerRepository,
+            enableAllPowerUpsUseCase
+        )
+
+    override val calculateMembershipPlanPriceUseCase
+        get() = CalculateMembershipPlanPriceUseCase()
+
+    override val removeMembershipUseCase
+        get() = RemoveMembershipUseCase(playerRepository)
+
+    override val buyAvatarUseCase
+        get() = BuyAvatarUseCase(playerRepository)
+
+    override val changeAvatarUseCase
+        get() = ChangeAvatarUseCase(playerRepository)
 }
 
 interface UseCaseModule {
@@ -462,18 +517,24 @@ interface UseCaseModule {
     val findNextDateForChallengeUseCase: FindNextDateForChallengeUseCase
     val findChallengeProgressUseCase: FindChallengeProgressUseCase
     val completeChallengeUseCase: CompleteChallengeUseCase
+    val buyPowerUpUseCase: BuyPowerUpUseCase
+    val removeExpiredPowerUpsUseCase: RemoveExpiredPowerUpsUseCase
+    val enableAllPowerUpsUseCase: EnableAllPowerUpsUseCase
+    val updatePlayerMembershipUseCase: UpdatePlayerMembershipUseCase
+    val calculateMembershipPlanPriceUseCase: CalculateMembershipPlanPriceUseCase
+    val removeMembershipUseCase: RemoveMembershipUseCase
+    val buyAvatarUseCase: BuyAvatarUseCase
+    val changeAvatarUseCase: ChangeAvatarUseCase
 }
 
 interface PresenterModule {
     val reminderPickerPresenter: ReminderPickerDialogPresenter
     val petPresenter: PetPresenter
     val petDialogPresenter: PetDialogPresenter
-    val themeStorePresenter: ThemeStorePresenter
     val colorPickerPresenter: ColorPickerPresenter
     val iconPickerPresenter: IconPickerDialogPresenter
     val currencyConverterPresenter: CurrencyConverterPresenter
     val gemStorePresenter: GemStorePresenter
-    val timerPresenter: TimerPresenter
     val petMessagePresenter: PetMessagePresenter
     val levelUpPresenter: LevelUpPresenter
     val questCompletePresenter: QuestCompletePresenter
@@ -490,8 +551,6 @@ class AndroidPresenterModule : PresenterModule, Injects<Module> {
     private val feedPetUseCase by required { feedPetUseCase }
     private val findPetUseCase by required { findPetUseCase }
     private val renamePetUseCase by required { renamePetUseCase }
-    private val changeThemeUseCase by required { changeThemeUseCase }
-    private val buyThemeUseCase by required { buyThemeUseCase }
     private val reminderTimeFormatter by required { reminderTimeFormatter }
     private val timeUnitFormatter by required { timeUnitFormatter }
     private val buyIconPackUseCase by required { buyIconPackUseCase }
@@ -502,15 +561,7 @@ class AndroidPresenterModule : PresenterModule, Injects<Module> {
     private val equipPetItemUseCase by required { equipPetItemUseCase }
     private val takeOffPetItemUseCase by required { takeOffPetItemUseCase }
     private val purchaseGemPackUseCase by required { purchaseGemPackUseCase }
-    private val scheduleChallengeUseCase by required { schedulePredefinedChallengeUseCase }
     private val splitDurationForPomodoroTimerUseCase by required { splitDurationForPomodoroTimerUseCase }
-    private val listenForQuestChangeUseCase by required { listenForQuestChangeUseCase }
-    private val completeTimeRangeUseCase by required { completeTimeRangeUseCase }
-    private val cancelQuestTimerUseCase by required { cancelTimerUseCase }
-    private val addPomodoroUseCase by required { addPomodoroUseCase }
-    private val removePomodoroUseCase by required { removePomodoroUseCase }
-    private val addTimerToQuestUseCase by required { addTimerToQuestUseCase }
-    private val saveChallengeUseCase by required { saveChallengeUseCase }
     private val job by required { job }
     override val reminderPickerPresenter
         get() = ReminderPickerDialogPresenter(
@@ -533,13 +584,6 @@ class AndroidPresenterModule : PresenterModule, Injects<Module> {
             job
         )
     override val petDialogPresenter get() = PetDialogPresenter(findPetUseCase, job)
-    override val themeStorePresenter
-        get() = ThemeStorePresenter(
-            listenForPlayerChangesUseCase,
-            changeThemeUseCase,
-            buyThemeUseCase,
-            job
-        )
     override val colorPickerPresenter
         get() = ColorPickerPresenter(
             listenForPlayerChangesUseCase,
@@ -562,17 +606,6 @@ class AndroidPresenterModule : PresenterModule, Injects<Module> {
         get() = GemStorePresenter(
             purchaseGemPackUseCase,
             listenForPlayerChangesUseCase,
-            job
-        )
-    override val timerPresenter
-        get() = TimerPresenter(
-            splitDurationForPomodoroTimerUseCase,
-            listenForQuestChangeUseCase,
-            addTimerToQuestUseCase,
-            completeTimeRangeUseCase,
-            cancelQuestTimerUseCase,
-            addPomodoroUseCase,
-            removePomodoroUseCase,
             job
         )
 
@@ -610,20 +643,29 @@ class AndroidStateStoreModule : StateStoreModule, Injects<Module> {
             reducers = setOf(
                 AppDataReducer
             ),
-            sideEffects = setOf(
-                LoadAllDataSideEffect(),
-                AuthSideEffect(),
-                AgendaSideEffect(),
-                BuyPredefinedChallengeSideEffect(),
-                ChangePetSideEffect(),
-                BuyPetSideEffect(),
-                DayViewSideEffect(),
-                RepeatingQuestSideEffect(),
-                AddQuestSideEffect(),
-                ChallengeSideEffect(),
-                CalendarSideEffect()
+            sideEffectHandlers = setOf(
+                LoadAllDataSideEffectHandler(),
+                AuthSideEffectHandler(),
+                AgendaSideEffectHandler(),
+                BuyPredefinedChallengeSideEffectHandler(),
+                ChangePetSideEffectHandler(),
+                BuyPetSideEffectHandler(),
+                DayViewSideEffectHandler(),
+                RepeatingQuestSideEffectHandler(),
+                AddQuestSideEffectHandler(),
+                ChallengeSideEffectHandler(),
+                CalendarSideEffectHandler(),
+                MembershipSideEffectHandler(),
+                PowerUpSideEffectHandler(),
+                TimerSideEffectHandler(),
+                AvatarSideEffectHandler(),
+                ThemeSideEffectHandler()
             ),
-            sideEffectExecutor = CoroutineSideEffectExecutor(job + CommonPool)
+            sideEffectHandlerExecutor = CoroutineSideEffectHandlerExecutor(job + CommonPool),
+            middleware = setOf(
+                LogEventsMiddleWare(),
+                CheckEnabledPowerUpMiddleWare()
+            )
         )
     }
 }

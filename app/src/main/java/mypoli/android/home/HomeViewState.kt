@@ -5,9 +5,12 @@ import mypoli.android.common.BaseViewStateReducer
 import mypoli.android.common.DataLoadedAction
 import mypoli.android.common.mvi.ViewState
 import mypoli.android.common.redux.Action
+import mypoli.android.home.HomeViewState.Initial
+import mypoli.android.home.HomeViewState.PlayerChanged
 import mypoli.android.pet.PetAvatar
 import mypoli.android.pet.PetMood
 import mypoli.android.player.Player
+import mypoli.android.player.data.Avatar
 
 /**
  * Created by Polina Zhelyazkova <polina@mypoli.fun>
@@ -25,13 +28,9 @@ object HomeReducer : BaseViewStateReducer<HomeViewState>() {
         when (action) {
             is HomeAction.Load -> {
                 val player = state.dataState.player
-                if (player != null) {
-                    createPlayerChangeState(player)
-                } else {
-                    HomeViewState.Initial(
-                        showSignIn = true
-                    )
-                }
+                player?.let {
+                    createPlayerChangeState(it)
+                } ?: Initial(showSignIn = true)
             }
 
             is DataLoadedAction.PlayerChanged -> {
@@ -40,9 +39,10 @@ object HomeReducer : BaseViewStateReducer<HomeViewState>() {
             else -> subState
         }
 
-    private fun createPlayerChangeState(player: Player): HomeViewState.PlayerChanged {
-        return HomeViewState.PlayerChanged(
+    private fun createPlayerChangeState(player: Player) =
+        PlayerChanged(
             showSignIn = !player.isLoggedIn(),
+            avatar = player.avatar,
             petAvatar = player.pet.avatar,
             petMood = player.pet.mood,
             gems = player.gems,
@@ -53,18 +53,19 @@ object HomeReducer : BaseViewStateReducer<HomeViewState>() {
             progress = player.experienceProgressForLevel,
             maxProgress = player.experienceForNextLevel
         )
-    }
 
-    override fun defaultState() = HomeViewState.Initial(showSignIn = true)
+    override fun defaultState() = Initial(showSignIn = true)
 }
 
 sealed class HomeViewState : ViewState {
+
     data class Initial(val showSignIn: Boolean) : HomeViewState()
 
     data class PlayerChanged(
         val showSignIn: Boolean,
         val titleIndex: Int,
         val level: Int,
+        val avatar: Avatar,
         val petAvatar: PetAvatar,
         val petMood: PetMood,
         val gems: Int,

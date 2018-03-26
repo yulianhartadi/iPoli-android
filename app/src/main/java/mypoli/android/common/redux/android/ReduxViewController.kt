@@ -35,6 +35,7 @@ abstract class ReduxViewController<A : Action, VS : ViewState, out R : ViewState
     StateStore.StateChangeSubscriber<AppState> {
 
     private val stateStore by required { stateStore }
+    private val eventLogger by required { eventLogger }
 
     protected open var namespace: String? = null
 
@@ -51,6 +52,7 @@ abstract class ReduxViewController<A : Action, VS : ViewState, out R : ViewState
             }
 
             override fun postAttach(controller: Controller, view: View) {
+                eventLogger.logCurrentScreen(activity!!, javaClass.simpleName, javaClass)
                 stateStore.subscribe(this@ReduxViewController)
                 onCreateLoadAction()?.let {
                     dispatch(it)
@@ -111,13 +113,13 @@ abstract class ReduxViewController<A : Action, VS : ViewState, out R : ViewState
 
     abstract fun render(state: VS, view: View)
 
-    fun View.dispatchOnClick(intent: A) {
-        dispatchOnClickAndExec(intent, {})
+    fun View.dispatchOnClick(action: A) {
+        dispatchOnClickAndExec(action, {})
     }
 
-    fun View.dispatchOnClickAndExec(intent: A, block: () -> Unit) {
+    fun View.dispatchOnClickAndExec(action: A, block: () -> Unit) {
         setOnClickListener {
-            dispatch(intent)
+            dispatch(action)
             block()
         }
     }

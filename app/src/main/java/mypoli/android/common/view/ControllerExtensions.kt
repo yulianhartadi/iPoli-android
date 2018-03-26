@@ -84,8 +84,20 @@ fun Controller.removeToolbarView(view: View) {
     toolbar.removeView(view)
 }
 
+fun Controller.showShortToast(text: String) {
+    Toast.makeText(activity!!, text, Toast.LENGTH_SHORT).show()
+}
+
 fun Controller.showShortToast(@StringRes text: Int) {
     Toast.makeText(activity!!, text, Toast.LENGTH_SHORT).show()
+}
+
+fun Controller.showLongToast(text: String) {
+    Toast.makeText(activity!!, text, Toast.LENGTH_LONG).show()
+}
+
+fun Controller.showLongToast(@StringRes text: Int) {
+    Toast.makeText(activity!!, text, Toast.LENGTH_LONG).show()
 }
 
 fun Controller.enterFullScreen() {

@@ -34,7 +34,7 @@ import mypoli.android.common.mvi.MviViewController
 import mypoli.android.common.view.*
 import mypoli.android.pet.PetViewState.StateType.*
 import mypoli.android.pet.store.PetStoreViewController
-import mypoli.android.player.inventory.GemInventoryViewController
+import mypoli.android.player.inventory.InventoryViewController
 import space.traversal.kapsule.required
 
 
@@ -82,7 +82,7 @@ class PetViewController(args: Bundle? = null) :
         initList(view.itemList)
         initList(view.foodList)
 
-        setChildController(view.playerGems, GemInventoryViewController())
+        setChildController(view.playerGems, InventoryViewController())
 
         setToolbar(view.toolbar)
 

@@ -18,10 +18,11 @@ data class DbPlayer(override val map: MutableMap<String, Any?> = mutableMapOf())
     var gems: Int by map
     var experience: Long by map
     var authProvider: MutableMap<String, Any?> by map
-    var avatarCode: Int by map
+    var avatar: String by map
     var currentTheme: String by map
     var pet: MutableMap<String, Any?> by map
     var inventory: MutableMap<String, Any?> by map
+    var membership: String by map
     override var createdAt: Long by map
     override var updatedAt: Long by map
     override var removedAt: Long? by map
@@ -54,11 +55,13 @@ data class DbPetEquipment(val map: MutableMap<String, Any?> = mutableMapOf()) {
 
 data class DbInventory(val map: MutableMap<String, Any?> = mutableMapOf()) {
     var food: MutableMap<String, Long> by map
+    var avatars: List<String> by map
     var pets: List<MutableMap<String, Any?>> by map
     var themes: List<String> by map
     var colorPacks: List<String> by map
     var iconPacks: List<String> by map
     var challenges: List<String> by map
+    var powerUps: MutableMap<String, Long> by map
 }
 
 data class DbInventoryPet(val map: MutableMap<String, Any?> = mutableMapOf()) {

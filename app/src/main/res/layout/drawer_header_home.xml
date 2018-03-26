@@ -31,8 +31,7 @@
                 android:layout_marginEnd="16dp"
                 android:layout_marginStart="16dp"
                 android:background="@drawable/white_circular_background"
-                android:scaleType="fitCenter"
-                android:src="@drawable/avatar_01" />
+                android:scaleType="fitCenter" />
 
             <TextView
                 android:id="@+id/drawerPlayerTitle"
@@ -48,10 +47,10 @@
             <LinearLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginBottom="16dp"
                 android:layout_marginEnd="16dp"
                 android:layout_marginStart="16dp"
                 android:layout_marginTop="8dp"
-                android:layout_marginBottom="16dp"
                 android:orientation="horizontal">
 
                 <TextView

@@ -67,8 +67,8 @@ class PersonalizeChallengeViewController(args: Bundle? = null) :
 
     override fun onAttach(view: View) {
         showBackButton()
-        colorStatusBar(android.R.color.transparent)
         super.onAttach(view)
+        colorStatusBar(android.R.color.transparent)
     }
 
     private fun colorStatusBar(@ColorRes color: Int) {
@@ -77,12 +77,6 @@ class PersonalizeChallengeViewController(args: Bundle? = null) :
         window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS)
         window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS)
         window.statusBarColor = colorRes(color)
-    }
-
-    override fun onDetach(view: View) {
-        val window = activity!!.window
-        window.statusBarColor = attrData(R.attr.colorPrimaryDark)
-        super.onDetach(view)
     }
 
     override fun render(state: PersonalizeChallengeViewState, view: View) {

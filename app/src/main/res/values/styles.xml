@@ -252,6 +252,16 @@
         <item name="android:textColor">@color/md_light_text_87</item>
     </style>
 
+    <style name="StoreItemContainer">
+        <item name="android:layout_width">0dp</item>
+        <item name="android:layout_gravity">fill</item>
+        <item name="android:layout_margin">8dp</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:foreground">?android:selectableItemBackground</item>
+        <item name="cardCornerRadius">4dp</item>
+        <item name="cardElevation">4dp</item>
+    </style>
+
     <style name="LearningCheckbox">
         <item name="android:colorAccent">@color/md_blue_500</item>
         <item name="android:colorControlNormal">@color/md_blue_500</item>

@@ -25,7 +25,7 @@ import mypoli.android.challenge.predefined.entity.PredefinedChallenge
 import mypoli.android.challenge.predefined.entity.PredefinedChallengeData
 import mypoli.android.common.redux.android.ReduxViewController
 import mypoli.android.common.view.*
-import mypoli.android.player.inventory.GemInventoryViewController
+import mypoli.android.player.inventory.InventoryViewController
 
 /**
  * Created by Venelin Valkov <venelin@mypoli.fun>
@@ -62,7 +62,7 @@ class ChallengeListForCategoryViewController :
             LinearLayoutManager(container.context, LinearLayoutManager.VERTICAL, false)
         view.challengeList.adapter = ChallengeAdapter()
 
-        setChildController(view.playerGems, GemInventoryViewController())
+        setChildController(view.playerGems, InventoryViewController())
 
         return view
     }

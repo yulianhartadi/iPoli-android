@@ -55,14 +55,7 @@ class ChallengeListViewController(args: Bundle? = null) :
             LinearLayoutManager(container.context, LinearLayoutManager.VERTICAL, false)
         view.challengeList.adapter = ChallengeAdapter()
 
-        view.addChallenge.setOnClickListener {
-            val handler = FadeChangeHandler()
-            rootRouter.pushController(
-                RouterTransaction.with(AddChallengeViewController())
-                    .pushChangeHandler(handler)
-                    .popChangeHandler(handler)
-            )
-        }
+        view.addChallenge.dispatchOnClick(ChallengeListAction.AddChallenge)
         return view
     }
 
@@ -119,6 +112,15 @@ class ChallengeListViewController(args: Bundle? = null) :
                 view.emptyImage.setImageResource(R.drawable.challenge_list_empty_state)
                 view.emptyTitle.setText(R.string.empty_challenges_title)
                 view.emptyText.setText(R.string.empty_challenges_text)
+            }
+
+            ChallengeListViewState.ShowAdd -> {
+                val handler = FadeChangeHandler()
+                rootRouter.pushController(
+                    RouterTransaction.with(AddChallengeViewController())
+                        .pushChangeHandler(handler)
+                        .popChangeHandler(handler)
+                )
             }
         }
     }

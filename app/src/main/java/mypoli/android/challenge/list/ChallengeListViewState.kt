@@ -15,6 +15,7 @@ import mypoli.android.common.redux.Action
 
 sealed class ChallengeListAction : Action {
     object Load : ChallengeListAction()
+    object AddChallenge : ChallengeListAction()
 }
 
 object ChallengeListReducer : BaseViewStateReducer<ChallengeListViewState>() {
@@ -27,6 +28,9 @@ object ChallengeListReducer : BaseViewStateReducer<ChallengeListViewState>() {
         when (action) {
             is ChallengeListAction.Load ->
                 createState(state.dataState.challenges)
+
+            is ChallengeListAction.AddChallenge ->
+                ChallengeListViewState.ShowAdd
 
             is DataLoadedAction.ChallengesChanged ->
                 createState(action.challenges)
@@ -58,8 +62,10 @@ object ChallengeListReducer : BaseViewStateReducer<ChallengeListViewState>() {
 }
 
 sealed class ChallengeListViewState : ViewState {
+
     object Loading : ChallengeListViewState()
     object Empty : ChallengeListViewState()
+    object ShowAdd : ChallengeListViewState()
 
     data class Changed(val challenges: List<ChallengeItem>) : ChallengeListViewState()
 
@@ -68,7 +74,7 @@ sealed class ChallengeListViewState : ViewState {
         data class Incomplete(val challenge: Challenge) : ChallengeItem()
 
         object CompleteLabel : ChallengeItem()
-
         data class Complete(val challenge: Challenge) : ChallengeItem()
     }
+
 }

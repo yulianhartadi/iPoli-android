@@ -2,12 +2,12 @@ package mypoli.android.common.rate
 
 import android.content.Context
 import android.net.Uri
+import android.os.Bundle
 import android.preference.PreferenceManager
 import android.support.annotation.StringRes
 import android.view.LayoutInflater
 import android.view.View
 import android.widget.Toast
-import com.amplitude.api.Amplitude
 import kotlinx.android.synthetic.main.popup_rate.view.*
 import kotlinx.coroutines.experimental.channels.consumeEach
 import kotlinx.coroutines.experimental.launch
@@ -18,13 +18,12 @@ import mypoli.android.common.mvi.BaseMviPresenter
 import mypoli.android.common.mvi.Intent
 import mypoli.android.common.mvi.ViewState
 import mypoli.android.common.mvi.ViewStateRenderer
+import mypoli.android.common.rate.RateViewState.Type.*
 import mypoli.android.common.view.MviPopup
 import mypoli.android.pet.AndroidPetAvatar
 import mypoli.android.pet.PetAvatar
 import mypoli.android.player.Player
 import mypoli.android.player.usecase.ListenForPlayerChangesUseCase
-import mypoli.android.common.rate.RateViewState.Type.*
-import org.json.JSONObject
 import space.traversal.kapsule.required
 import kotlin.coroutines.experimental.CoroutineContext
 
@@ -102,6 +101,8 @@ class RatePopup :
     }
 
     private val presenter by required { ratePresenter }
+
+    private val eventLogger by required { eventLogger }
 
     override fun createPresenter() = presenter
 
@@ -184,9 +185,9 @@ class RatePopup :
     }
 
     private fun logEvent(name: String, paramName: String, paramValue: String) {
-        Amplitude.getInstance().logEvent(
+        eventLogger.logEvent(
             name,
-            JSONObject().put(paramName, paramValue)
+            Bundle().apply { putString(paramName, paramValue) }
         )
     }
 

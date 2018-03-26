@@ -13,7 +13,6 @@ import android.view.LayoutInflater
 import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
-import com.amplitude.api.Amplitude
 import com.bluelinelabs.conductor.Controller
 import com.bluelinelabs.conductor.RouterTransaction
 import com.bluelinelabs.conductor.changehandler.FadeChangeHandler
@@ -32,11 +31,11 @@ import mypoli.android.pet.AndroidPetAvatar
 import mypoli.android.pet.AndroidPetMood
 import mypoli.android.pet.PetViewController
 import mypoli.android.player.auth.AuthViewController
+import mypoli.android.player.data.AndroidAvatar
 import mypoli.android.quest.schedule.ScheduleViewController
 import mypoli.android.repeatingquest.list.RepeatingQuestListViewController
-import mypoli.android.store.GemStoreViewController
-import mypoli.android.store.theme.ThemeStoreViewController
-import org.json.JSONObject
+import mypoli.android.store.StoreViewController
+import mypoli.android.store.avatar.AvatarStoreViewController
 import space.traversal.kapsule.required
 
 
@@ -57,6 +56,8 @@ class HomeViewController(args: Bundle? = null) :
 
     private val sharedPreferences by required { sharedPreferences }
 
+    private val eventLogger by required { eventLogger }
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup,
@@ -65,7 +66,6 @@ class HomeViewController(args: Bundle? = null) :
         setHasOptionsMenu(true)
 
         val contentView = inflater.inflate(R.layout.controller_home, container, false)
-
 
         contentView.navigationView.setNavigationItemSelectedListener(this)
 
@@ -99,7 +99,7 @@ class HomeViewController(args: Bundle? = null) :
     private fun onItemSelectedFromDrawer(item: MenuItem) {
 
         when (item.itemId) {
-            R.id.agenda ->
+            R.id.calendar ->
                 changeChildController(ScheduleViewController())
 
             R.id.repeatingQuests ->
@@ -108,37 +108,14 @@ class HomeViewController(args: Bundle? = null) :
             R.id.challenges ->
                 changeChildController(ChallengeListViewController())
 
-            R.id.store -> {
-                router.pushController(
-                    RouterTransaction.with(GemStoreViewController())
-                        .pushChangeHandler(fadeChangeHandler)
-                        .popChangeHandler(fadeChangeHandler)
-                )
-            }
+            R.id.store ->
+                changeChildController(StoreViewController())
 
-            R.id.themes -> {
-                showThemes()
-            }
+            R.id.community ->
+                openCommunity()
 
-            R.id.feedback -> {
-                FeedbackDialogController(object : FeedbackDialogController.FeedbackListener {
-                    override fun onSendFeedback(feedback: String) {
-                        if (feedback.isNotEmpty()) {
-                            Amplitude.getInstance().logEvent(
-                                "feedback",
-                                JSONObject().put("feedback", feedback)
-                            )
-                            showShortToast(R.string.feedback_response)
-                        }
-                    }
-
-                    override fun onChatWithUs() {
-                        Amplitude.getInstance().logEvent("feedback_chat")
-                        val myIntent = Intent(ACTION_VIEW, Uri.parse(Constants.DISCORD_CHAT_LINK))
-                        startActivity(myIntent)
-                    }
-                }).showDialog(router, "feedback-dialog")
-            }
+            R.id.feedback ->
+                showFeedback()
 
             R.id.contactUs -> {
                 EmailUtils.send(
@@ -149,12 +126,35 @@ class HomeViewController(args: Bundle? = null) :
                 )
             }
 
-            R.id.signIn -> {
+            R.id.signIn ->
                 showAuth()
-            }
         }
 
         view!!.navigationView.setCheckedItem(item.itemId)
+    }
+
+    private fun showFeedback() {
+        FeedbackDialogController(object : FeedbackDialogController.FeedbackListener {
+            override fun onSendFeedback(feedback: String) {
+                if (feedback.isNotEmpty()) {
+                    eventLogger.logEvent(
+                        "feedback",
+                        Bundle().apply { putString("feedback", feedback) }
+                    )
+                    showShortToast(R.string.feedback_response)
+                }
+            }
+
+            override fun onChatWithUs() {
+                eventLogger.logEvent("feedback_chat")
+                openCommunity()
+            }
+        }).show(router, "feedback-dialog")
+    }
+
+    private fun openCommunity() {
+        val myIntent = Intent(ACTION_VIEW, Uri.parse(Constants.DISCORD_CHAT_LINK))
+        startActivity(myIntent)
     }
 
     override fun onNavigationItemSelected(item: MenuItem): Boolean {
@@ -214,31 +214,19 @@ class HomeViewController(args: Bundle? = null) :
         }
 
     private fun showAuth() {
-        val handler = FadeChangeHandler()
         router.pushController(
             RouterTransaction.with(AuthViewController())
-                .pushChangeHandler(handler)
-                .popChangeHandler(handler)
+                .pushChangeHandler(fadeChangeHandler)
+                .popChangeHandler(fadeChangeHandler)
         )
     }
 
 
     private fun showPet() {
-        val handler = FadeChangeHandler()
         router.pushController(
             RouterTransaction.with(PetViewController())
-                .pushChangeHandler(handler)
-                .popChangeHandler(handler)
-        )
-    }
-
-
-    private fun showThemes() {
-        val handler = FadeChangeHandler()
-        router.pushController(
-            RouterTransaction.with(ThemeStoreViewController())
-                .pushChangeHandler(handler)
-                .popChangeHandler(handler)
+                .pushChangeHandler(fadeChangeHandler)
+                .popChangeHandler(fadeChangeHandler)
         )
     }
 
@@ -249,15 +237,33 @@ class HomeViewController(args: Bundle? = null) :
             }
 
             is HomeViewState.PlayerChanged -> {
+
+                Glide.with(view.context).load(state.avatarImage)
+                    .apply(RequestOptions.circleCropTransform())
+                    .into(view.playerAvatar)
+
+                view.playerAvatar.setOnClickListener {
+                    router.pushController(
+                        RouterTransaction.with(AvatarStoreViewController())
+                            .pushChangeHandler(fadeChangeHandler)
+                            .popChangeHandler(fadeChangeHandler)
+                    )
+                }
+
+                Glide.with(view.context).load(state.petHeadImage)
+                    .apply(RequestOptions.circleCropTransform())
+                    .into(view.petHeadImage)
+
+
+                view.petContainer.setOnClickListener {
+                    showPet()
+                }
+
                 view.drawerPlayerGems.text = state.gemsText
                 view.drawerPlayerCoins.text = state.lifeCoinsText
                 view.drawerCurrentExperience.text = state.experienceText
 
                 view.drawerPlayerTitle.text = state.title(resources!!)
-
-                Glide.with(view.context).load(state.petHeadImage)
-                    .apply(RequestOptions.circleCropTransform())
-                    .into(view.petHeadImage)
 
                 val drawable = view.petMood.background as GradientDrawable
                 drawable.setColor(colorRes(state.petMoodColor))
@@ -265,9 +271,6 @@ class HomeViewController(args: Bundle? = null) :
                 view.levelProgress.max = state.maxProgress
                 view.levelProgress.progress = state.progress
 
-                view.petContainer.setOnClickListener {
-                    showPet()
-                }
                 renderSignIn(view, state.showSignIn)
             }
         }
@@ -279,6 +282,9 @@ class HomeViewController(args: Bundle? = null) :
     ) {
         view.navigationView.menu.findItem(R.id.signIn).isVisible = showSignIn
     }
+
+    private val HomeViewState.PlayerChanged.avatarImage
+        get() = AndroidAvatar.valueOf(avatar.name).image
 
     private val HomeViewState.PlayerChanged.petHeadImage
         get() = AndroidPetAvatar.valueOf(petAvatar.name).headImage

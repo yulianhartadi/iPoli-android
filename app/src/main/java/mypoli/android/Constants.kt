@@ -187,7 +187,8 @@ interface Constants {
         val PROFILES_FIRST_SCHEMA_VERSION = 7
 
         val POWER_UP_GRACE_PERIOD_DAYS = 7
-        val POWER_UPS_TRIAL_PERIOD_DAYS = 15
+        const val POWER_UPS_TRIAL_PERIOD_DAYS = 7
+        const val POWER_UP_PURCHASE_DURATION_DAYS = 30
 
         val SKU_SUBSCRIPTION_MONTHLY = "monthly_plan_70_percent"
         val SKU_SUBSCRIPTION_QUARTERLY = "quarterly_plan_70_percent"

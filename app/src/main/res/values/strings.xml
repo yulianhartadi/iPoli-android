@@ -683,17 +683,18 @@
     <string name="not_urgent">Not Urgent</string>
 
     <string name="power_up_price">%d life coins</string>
-    <string name="power_up_expires_on">Enabled until %s</string>
+    <string name="power_up_expires_on">Enabled for %1$d days (until %2$s)</string>
     <string name="fragment_avatar_store_title">Buy vm</string>
     <string name="fragment_pet_store_title">Buy pet</string>
-    <string name="fragment_power_up_store_title">Enable power-up</string>
-    <string name="power_up_successfully_bought">You can now enjoy %s for a month</string>
-    <string name="power_up_too_expensive">Not enough coins to buy %s</string>
+    <string name="controller_power_up_store_title">Power-Ups</string>
+    <string name="power_up_bought">Enjoy %s for 30 days</string>
+    <string name="power_up_too_expensive">Not enough coins to buy this</string>
     <string name="power_up_dialog_title">You\'ve discovered %s</string>
     <string name="go_premium">Go premium</string>
+    <string name="unlock_all">Unlock all</string>
     <string name="not_now">Not now</string>
     <string name="go_to_store">Go to Store</string>
-    <string name="fragment_membership_store_title">Premium membership</string>
+    <string name="membership_store_title">Premium membership</string>
     <string name="life_coins">Life coins</string>
     <string name="power_ups">Power-Ups</string>
     <string name="avatars">Avatars</string>
@@ -718,10 +719,12 @@
     <string name="avatar_name_green_eyes">Angel Eyes</string>
     <string name="avatar_name_pipilota">Butter Cup</string>
     <string name="avatar_name_old_pirate">Treasure guy</string>
-    <string name="avatar_name_beard_guy">Mr. Right</string>
+    <string name="avatar_beardy">Mr. Right</string>
     <string name="avatar_name_dwight">Muscle man</string>
-    <string name="avatar_name_michael">Bad boy</string>
+    <string name="avatar_name_michael">Smooth boy</string>
     <string name="avatar_name_tobby">Brainiac</string>
+
+    <string name="membership_benefit_enable_all_power_ups">Enable all power-ups (incl. all future ones)</string>
 
     <string name="power_up_challenges_sub_title">Set and achieve your goals</string>
     <string name="power_up_challenges_short_desc">Plan and achieve your short and long-term goals</string>
@@ -776,7 +779,7 @@
         Define steps, subtasks or even create shopping lists.
     </string>
 
-    <string name="power_up_reminders_sub_title">Never forget anything</string>
+    <string name="power_up_reminders_sub_title">Never forget anything again</string>
     <string name="power_up_reminders_short_desc">Let myPoli remind you when it\'s time for the next quest</string>
     <string name="power_up_reminders_long_desc">
         Add reminders to your quests. No need to look at your phone or watch all the time,
@@ -792,7 +795,7 @@
     </string>
 
     <string name="power_up_dialog_name">You\'ve discovered %s!</string>
-    <string name="power_up_dialog_price_message">Do you want to enable it now for %d of your life coins for a month?</string>
+    <string name="power_up_dialog_price_message">%1$d for %2$d days</string>
     <string name="enable">Enable</string>
     <string name="requires_power_up_message">Requires %s</string>
     <string name="reward_last_used_date">Last used: %s</string>
@@ -843,7 +846,7 @@
     <string name="too_expensive_reward_price_message">Too expensive, be more realistic</string>
     <string name="max_reward_price">max %d</string>
     <string name="min_reward_price">min %d</string>
-    <string name="ready_for_power_up">Ready for a power-up?</string>
+    <string name="ready_for_power_up">Ready for upgrade?</string>
     <string name="invite_request_update_facebook">Please install/update the Facebook app</string>
     <string name="no_more_suggestions">No more suggestions</string>
     <string name="suggestion_accepted">Suggestion accepted</string>
@@ -895,6 +898,8 @@
 
     <string name="trial_message">Surprise! All power-ups are FREE for you for %d days.</string>
     <string name="membership">Membership</string>
+    <string name="membership_benefit_free_trial">%d days FREE trial</string>
+    <string name="membership_benefit_cancellation">Cancel at any time</string>
     <string name="subscription_price_per_month">%s per month</string>
     <string name="enable_all_power_ups">Enable all power-ups</string>
     <string name="get_all_future_power_ups_for_free">Get all future power-ups for FREE</string>
@@ -988,6 +993,7 @@
     <string name="store_current_pet">I am your pet</string>
     <string name="store_pet_in_inventory">Take me with you</string>
     <string name="store_buy_pet">Buy me now</string>
+    <string name="store_current_avatar">I am your Avatar</string>
     <string name="text_picker_empty_error">Think of a name</string>
     <string name="themes">Themes</string>
     <string name="theme_store_title">Themes</string>
@@ -1000,7 +1006,7 @@
     <string name="theme_blue_grey">Silver Mist</string>
     <string name="store_current_theme">Current theme</string>
     <string name="store_buy_theme">Buy now</string>
-    <string name="store_theme_in_inventory">Pick me</string>
+    <string name="pick_me">Pick me</string>
     <string name="undo">Undo</string>
     <string name="remove_quest_undo_message">Quest removed</string>
     <string name="back">Back</string>
@@ -1181,4 +1187,17 @@
     <string name="complete">Complete</string>
     <string name="you_are_amazing">You are amazing!!!</string>
     <string name="complete_challenge_popup_message">You just completed your challenge! Your bounty is:</string>
+    <string name="challenges">Challenges</string>
+    <string name="premium_player">You are now premium player! :)</string>
+    <string name="upgrade_now">Upgrade now</string>
+    <string name="gems">Gems</string>
+    <string name="colors">Colors</string>
+    <string name="icons">Icons</string>
+    <string name="power_up_all_unlocked">All Unlocked! YaY!</string>
+    <string name="controller_avatar_store_title">Avatars</string>
+    <string name="avatar_bought">Enjoy your Avatar</string>
+    <string name="avatar_too_expensive">This Avatar is too expensive</string>
+    <string name="theme_too_expensive">Theme too expensive</string>
+    <string name="theme_bought">Enjoy your theme!</string>
+    <string name="community">Community</string>
 </resources>

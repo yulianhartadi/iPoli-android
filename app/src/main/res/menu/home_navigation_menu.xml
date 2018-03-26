@@ -4,10 +4,10 @@
         android:id="@+id/drawer_main_group"
         android:checkableBehavior="single">
         <item
-            android:id="@+id/agenda"
+            android:id="@+id/calendar"
             android:checked="true"
             android:icon="@drawable/ic_event_white_24dp"
-            android:title="@string/agenda" />
+            android:title="@string/calendar" />
 
         <item
             android:id="@+id/inbox"
@@ -48,17 +48,9 @@
         android:checkableBehavior="single">
         <item
             android:id="@+id/store"
-            android:checkable="false"
             android:checked="false"
             android:icon="@drawable/ic_shopping_basket_black_24dp"
             android:title="@string/drawer_store" />
-
-        <item
-            android:id="@+id/themes"
-            android:checkable="false"
-            android:checked="false"
-            android:icon="@drawable/ic_color_palette_white_24dp"
-            android:title="@string/themes" />
 
         <item
             android:id="@+id/invite_friends"
@@ -74,6 +66,14 @@
             android:icon="@drawable/ic_settings_black_24dp"
             android:title="@string/settings"
             android:visible="false" />
+
+        <item
+            android:id="@+id/community"
+            android:checkable="false"
+            android:checked="false"
+            android:icon="@drawable/ic_forum_black_24dp"
+            android:title="@string/community" />
+
         <item
             android:id="@+id/feedback"
             android:checkable="false"

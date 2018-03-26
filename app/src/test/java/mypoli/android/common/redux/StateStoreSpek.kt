@@ -26,15 +26,15 @@ object StateStoreSpek : Spek({
 
         class TestAction : Action
 
-        class TestSideEffectExecutor : SideEffectExecutor<TestState> {
+        class TestSideEffectHandlerExecutor : SideEffectHandlerExecutor<TestState> {
             override fun execute(
-                sideEffect: SideEffect<TestState>,
+                sideEffectHandler: SideEffectHandler<TestState>,
                 action: Action,
                 state: TestState,
                 dispatcher: Dispatcher
             ) {
                 runBlocking {
-                    sideEffect.execute(action, state, dispatcher)
+                    sideEffectHandler.execute(action, state, dispatcher)
                 }
 
             }
@@ -71,13 +71,13 @@ object StateStoreSpek : Spek({
 
         fun createStore(
             middleware: Set<MiddleWare<TestState>> = setOf(),
-            sideEffects: Set<SideEffect<TestState>> = setOf()
+            sideEffectHandlers: Set<SideEffectHandler<TestState>> = setOf()
         ) =
             StateStore(
                 initialState = TestState(mapOf(SubState::class.java.simpleName to SubState())),
                 reducers = setOf(testReducer),
-                sideEffects = sideEffects,
-                sideEffectExecutor = TestSideEffectExecutor(),
+                sideEffectHandlers = sideEffectHandlers,
+                sideEffectHandlerExecutor = TestSideEffectHandlerExecutor(),
                 middleware = middleware
             )
 
@@ -168,14 +168,14 @@ object StateStoreSpek : Spek({
             stateChangeCount.`should be equal to`(1)
         }
 
-        it("should call SideEffect") {
+        it("should call SideEffectHandler") {
 
 
             class SideEffectAction : Action
 
             var sideEffectCalls = 0
 
-            val sideEffect = object : SideEffect<TestState> {
+            val sideEffect = object : SideEffectHandler<TestState> {
                 override suspend fun execute(
                     action: Action,
                     state: TestState,
@@ -189,20 +189,20 @@ object StateStoreSpek : Spek({
 
             }
 
-            val store = createStore(sideEffects = setOf(sideEffect))
+            val store = createStore(sideEffectHandlers = setOf(sideEffect))
 
             store.dispatch(SideEffectAction())
 
             sideEffectCalls.`should be equal to`(1)
         }
 
-        it("should not call SideEffect when it can't handle Action") {
+        it("should not call SideEffectHandler when it can't handle Action") {
 
             class SideEffectAction : Action
 
             var sideEffectCalls = 0
 
-            val sideEffect = object : SideEffect<TestState> {
+            val sideEffect = object : SideEffectHandler<TestState> {
                 override suspend fun execute(
                     action: Action,
                     state: TestState,
@@ -215,7 +215,7 @@ object StateStoreSpek : Spek({
 
             }
 
-            val store = createStore(sideEffects = setOf(sideEffect))
+            val store = createStore(sideEffectHandlers = setOf(sideEffect))
 
             store.dispatch(SideEffectAction())
 

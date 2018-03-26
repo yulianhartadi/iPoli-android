@@ -65,7 +65,7 @@ abstract class BaseDialogController : RestoreViewOnCreateController {
         dialog = onCreateDialog(dialogBuilder, contentView, savedViewState)
 
         dialog.ownerActivity = activity!!
-        dialog.setOnDismissListener { dismissDialog() }
+        dialog.setOnDismissListener { dismiss() }
         if (savedViewState != null) {
             val dialogState = savedViewState.getBundle(SAVED_DIALOG_STATE_TAG)
             if (dialogState != null) {
@@ -121,7 +121,7 @@ abstract class BaseDialogController : RestoreViewOnCreateController {
      * @param router The router on which the transaction will be applied
      * @param tag The tag for this controller
      */
-    fun showDialog(router: Router, tag: String?) {
+    fun show(router: Router, tag: String? = null) {
         dismissed = false
         router.pushController(
             RouterTransaction.with(this)
@@ -134,7 +134,7 @@ abstract class BaseDialogController : RestoreViewOnCreateController {
     /**
      * Dismiss the dialog and pop this controller
      */
-    fun dismissDialog() {
+    fun dismiss() {
         if (dismissed) {
             return
         }
@@ -173,7 +173,7 @@ abstract class ReduxDialogController<A : Action, VS : ViewState, out R : ViewSta
         onDialogCreated(dialog, contentView)
 
         dialog.ownerActivity = activity!!
-        dialog.setOnDismissListener { dismissDialog() }
+        dialog.setOnDismissListener { dismiss() }
         if (savedViewState != null) {
             val dialogState = savedViewState.getBundle(SAVED_DIALOG_STATE_TAG)
             if (dialogState != null) {
@@ -232,7 +232,7 @@ abstract class ReduxDialogController<A : Action, VS : ViewState, out R : ViewSta
      * @param router The router on which the transaction will be applied
      * @param tag The tag for this controller
      */
-    fun showDialog(router: Router, tag: String? = null) {
+    fun show(router: Router, tag: String? = null) {
         dismissed = false
         router.pushController(
             RouterTransaction.with(this)
@@ -245,7 +245,7 @@ abstract class ReduxDialogController<A : Action, VS : ViewState, out R : ViewSta
     /**
      * Dismiss the dialog and pop this controller
      */
-    fun dismissDialog() {
+    fun dismiss() {
         if (dismissed) {
             return
         }
@@ -267,6 +267,13 @@ abstract class ReduxDialogController<A : Action, VS : ViewState, out R : ViewSta
         headerTitle?.setText(title)
     }
 
+    protected fun changeLifeCoins(lifeCoins: Int) {
+        val headerLifeCoins =
+            dialog.findViewById<TextView>(mypoli.android.R.id.dialogHeaderLifeCoins)
+        headerLifeCoins?.visible()
+        headerLifeCoins?.text = lifeCoins.toString()
+    }
+
     protected fun changeNeutralButtonText(@StringRes text: Int) {
         dialog.getButton(DialogInterface.BUTTON_NEUTRAL).setText(text)
     }
@@ -282,21 +289,21 @@ abstract class ReduxDialogController<A : Action, VS : ViewState, out R : ViewSta
     protected fun setNeutralButtonListener(listener: (() -> Unit)?) {
         dialog.getButton(DialogInterface.BUTTON_NEUTRAL).setOnClickListener {
             if (listener != null) listener()
-            else dismissDialog()
+            else dismiss()
         }
     }
 
     protected fun setPositiveButtonListener(listener: (() -> Unit)?) {
         dialog.getButton(DialogInterface.BUTTON_POSITIVE).setOnClickListener {
             if (listener != null) listener()
-            else dismissDialog()
+            else dismiss()
         }
     }
 
     protected fun setNegativeButtonListener(listener: (() -> Unit)?) {
         dialog.getButton(DialogInterface.BUTTON_NEGATIVE).setOnClickListener {
             if (listener != null) listener()
-            else dismissDialog()
+            else dismiss()
         }
     }
 

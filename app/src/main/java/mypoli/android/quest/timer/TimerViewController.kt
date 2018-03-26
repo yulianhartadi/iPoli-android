@@ -15,31 +15,27 @@ import kotlinx.android.synthetic.main.controller_timer.view.*
 import kotlinx.android.synthetic.main.item_timer_progress.view.*
 import mypoli.android.R
 import mypoli.android.common.ViewUtils
-import mypoli.android.common.mvi.MviViewController
+import mypoli.android.common.redux.android.ReduxViewController
 import mypoli.android.common.view.*
 import mypoli.android.quest.CompletedQuestViewController
-import space.traversal.kapsule.required
 
 /**
  * Created by Venelin Valkov <venelin@ipoli.io>
  * on 6.01.18.
  */
-class TimerViewController :
-    MviViewController<TimerViewState, TimerViewController, TimerPresenter, TimerIntent> {
+class TimerViewController : ReduxViewController<TimerAction, TimerViewState, TimerReducer> {
 
     private lateinit var questId: String
 
     private val handler = Handler(Looper.getMainLooper())
 
-    private val presenter by required { timerPresenter }
+    override val reducer = TimerReducer
 
     constructor(args: Bundle? = null) : super(args)
 
     constructor(questId: String) : super() {
         this.questId = questId
     }
-
-    override fun createPresenter() = presenter
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -85,10 +81,11 @@ class TimerViewController :
             false
         )
 
+    override fun onCreateLoadAction() = TimerAction.Load(questId)
+
     override fun onAttach(view: View) {
         super.onAttach(view)
         enterFullScreen()
-        send(TimerIntent.LoadData(questId))
     }
 
     override fun onDetach(view: View) {
@@ -109,16 +106,16 @@ class TimerViewController :
                 view.pomodoroIndicatorsGroup.visible = true
                 renderTimerIndicatorsProgress(view, state)
 
-                view.addPomodoro.sendOnClick(TimerIntent.AddPomodoro)
-                view.removePomodoro.sendOnClick(TimerIntent.RemovePomodoro)
-                view.startStop.sendOnClick(TimerIntent.Start)
+                view.addPomodoro.dispatchOnClick(TimerAction.AddPomodoro)
+                view.removePomodoro.dispatchOnClick(TimerAction.RemovePomodoro)
+                view.startStop.dispatchOnClick(TimerAction.Start)
                 view.complete.visibility = View.GONE
             }
 
             TimerViewState.StateType.SHOW_COUNTDOWN -> {
                 renderTimerProgress(view, state)
                 renderTypeSwitch(view, state)
-                view.startStop.sendOnClick(TimerIntent.Start)
+                view.startStop.dispatchOnClick(TimerAction.Start)
                 view.pomodoroIndicatorsGroup.visible = false
             }
 
@@ -135,7 +132,7 @@ class TimerViewController :
                 cancelAnimations(view)
 
                 renderTimerButton(view.startStop, TimerButton.START)
-                view.startStop.sendOnClick(TimerIntent.Start)
+                view.startStop.dispatchOnClick(TimerAction.Start)
                 view.setOnClickListener(null)
                 view.complete.visibility = View.GONE
             }
@@ -144,7 +141,7 @@ class TimerViewController :
                 view.timerProgress.progress = state.timerProgress
                 if (state.showCompletePomodoroButton) {
                     renderTimerButton(view.startStop, TimerButton.DONE)
-                    view.startStop.sendOnClick(TimerIntent.CompletePomodoro)
+                    view.startStop.dispatchOnClick(TimerAction.CompletePomodoro)
                 }
             }
 
@@ -180,8 +177,8 @@ class TimerViewController :
         view.timerType.visible = state.showTimerTypeSwitch
         view.timerType.isChecked = state.timerType == TimerViewState.TimerType.POMODORO
         view.timerType.setOnCheckedChangeListener { _, isChecked ->
-            if (isChecked) send(TimerIntent.ShowPomodoroTimer)
-            else send(TimerIntent.ShowCountDownTimer)
+            if (isChecked) dispatch(TimerAction.ShowPomodoroTimer)
+            else dispatch(TimerAction.ShowCountDownTimer)
         }
     }
 
@@ -197,14 +194,14 @@ class TimerViewController :
         var updateTimer = {}
 
         updateTimer = {
-            send(TimerIntent.Tick)
+            dispatch(TimerAction.Tick)
             handler.postDelayed(updateTimer, 1000)
         }
 
         handler.postDelayed(updateTimer, 1000)
 
         renderTimerButton(view.startStop, TimerButton.STOP)
-        view.startStop.sendOnClick(TimerIntent.Stop)
+        view.startStop.dispatchOnClick(TimerAction.Stop)
 
         if (state.timerType == TimerViewState.TimerType.POMODORO) {
             view.pomodoroIndicatorsGroup.visible = true
@@ -212,7 +209,7 @@ class TimerViewController :
         } else {
             view.complete.visibility = View.VISIBLE
             view.pomodoroIndicatorsGroup.visible = false
-            view.complete.sendOnClick(TimerIntent.CompleteQuest)
+            view.complete.dispatchOnClick(TimerAction.CompleteQuest)
         }
 
         view.setOnClickListener {

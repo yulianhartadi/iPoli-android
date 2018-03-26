@@ -130,7 +130,7 @@ class RepeatingPatternPickerDialogController :
 
             PATTERN_CREATED -> {
                 resultListener(state.resultPattern!!)
-                dismissDialog()
+                dismiss()
             }
         }
     }
@@ -434,7 +434,7 @@ class RepeatingPatternPickerDialogController :
             }
             setNegativeButtonListener {
                 cancelListener?.invoke()
-                dismissDialog()
+                dismiss()
             }
         }
     }

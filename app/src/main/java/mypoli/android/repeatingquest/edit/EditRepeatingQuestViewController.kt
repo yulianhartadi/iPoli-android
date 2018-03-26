@@ -259,7 +259,7 @@ class EditRepeatingQuestViewController(args: Bundle? = null) :
                 state.repeatingPattern,
                 {
                     dispatch(EditRepeatingQuestAction.ChangeRepeatingPattern(it))
-                }).showDialog(router, "repeating-pattern")
+                }).show(router, "repeating-pattern")
         }
     }
 

@@ -251,13 +251,13 @@ class AuthViewController(args: Bundle? = null) :
     }
 
     private fun hideLoader() {
-        loader?.dismissDialog()
+        loader?.dismiss()
         loader = null
     }
 
     private fun showLoader() {
         loader = createLoader()
-        loader!!.showDialog(router, "loader")
+        loader!!.show(router, "loader")
     }
 
     private fun renderSighUpViews(view: View, state: AuthViewState) {

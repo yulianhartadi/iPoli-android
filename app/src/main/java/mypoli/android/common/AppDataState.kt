@@ -45,6 +45,7 @@ sealed class DataLoadedAction : Action {
 
     data class EventsChanged(val events: List<Event>) : DataLoadedAction()
     data class CalendarsChanged(val calendars: List<Calendar>) : DataLoadedAction()
+    data class QuestChanged(val quest: Quest) : DataLoadedAction()
 }
 
 data class AppDataState(

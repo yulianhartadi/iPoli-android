@@ -1,0 +1,171 @@
+package mypoli.android.store.gem
+
+import android.content.Intent
+import android.os.Bundle
+import android.view.LayoutInflater
+import android.view.MenuItem
+import android.view.View
+import android.view.ViewGroup
+import android.widget.Toast
+import com.mikepenz.google_material_typeface_library.GoogleMaterial
+import com.mikepenz.iconics.IconicsDrawable
+import kotlinx.android.synthetic.main.controller_gem_store.view.*
+import kotlinx.android.synthetic.main.view_inventory_toolbar.view.*
+import mypoli.android.BillingConstants
+import mypoli.android.R
+import mypoli.android.common.mvi.MviViewController
+import mypoli.android.common.view.setChildController
+import mypoli.android.common.view.setToolbar
+import mypoli.android.common.view.showBackButton
+import mypoli.android.player.inventory.InventoryViewController
+import mypoli.android.store.gem.GemStoreViewState.StateType.*
+import mypoli.android.store.purchase.AndroidInAppPurchaseManager
+import mypoli.android.store.purchase.GemPackType
+import org.solovyev.android.checkout.Billing
+import org.solovyev.android.checkout.Checkout
+import org.solovyev.android.checkout.UiCheckout
+import space.traversal.kapsule.required
+
+/**
+ * Created by Venelin Valkov <venelin@ipoli.io>
+ * on 27.12.17.
+ */
+class GemStoreViewController(args: Bundle? = null) :
+    MviViewController<GemStoreViewState, GemStoreViewController, GemStorePresenter, GemStoreIntent>(
+        args
+    ) {
+
+    private val presenter by required { gemStorePresenter }
+
+    override fun createPresenter() = presenter
+
+    private lateinit var checkout: UiCheckout
+
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup,
+        savedViewState: Bundle?
+    ): View {
+        setHasOptionsMenu(true)
+        val view = inflater.inflate(R.layout.controller_gem_store, container, false)
+
+        setToolbar(view.toolbar)
+        view.toolbarTitle.setText(R.string.gem_store)
+
+        val billing = Billing(activity!!, object : Billing.DefaultConfiguration() {
+            override fun getPublicKey() =
+                BillingConstants.appPublicKey
+        })
+
+        setChildController(
+            view.playerGems,
+            InventoryViewController(showCurrencyConverter = false)
+        )
+
+        checkout = Checkout.forActivity(activity!!, billing)
+        checkout.start()
+        presenter.purchaseManager = AndroidInAppPurchaseManager(checkout, activity!!.resources)
+
+        registerForActivityResult(AndroidInAppPurchaseManager.PURCHASE_REQUEST_CODE)
+
+        view.mostPopular.setCompoundDrawablesWithIntrinsicBounds(
+            IconicsDrawable(view.context)
+                .icon(GoogleMaterial.Icon.gmd_favorite)
+                .colorRes(R.color.md_white)
+                .sizeDp(24),
+            null, null, null
+        )
+
+        return view
+    }
+
+    override fun onAttach(view: View) {
+        showBackButton()
+        super.onAttach(view)
+        send(GemStoreIntent.LoadData)
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        if (item.itemId == android.R.id.home) {
+            router.popCurrentController()
+            return true
+        }
+        return super.onOptionsItemSelected(item)
+    }
+
+    override fun onDestroy() {
+        checkout.stop()
+        super.onDestroy()
+    }
+
+    override fun render(state: GemStoreViewState, view: View) {
+        when (state.type) {
+            PLAYER_CHANGED -> {
+                if (state.isGiftPurchased) {
+                    showMostPopular(view)
+                }
+            }
+
+            GEM_PACKS_LOADED -> {
+                state.gemPacks.forEach {
+                    when (it.type) {
+                        GemPackType.BASIC -> {
+                            view.basicPackPrice.text = it.price
+                            view.basicPackTitle.text = it.title
+                            view.basicPackGems.text = "x ${it.gems}"
+                            view.basicPackBuy.sendOnClick(
+                                GemStoreIntent.BuyGemPack(
+                                    it
+                                )
+                            )
+                        }
+                        GemPackType.SMART -> {
+                            view.smartPackPrice.text = it.price
+                            view.smartPackTitle.text = it.title
+                            view.smartPackGems.text = "x ${it.gems}"
+                            view.smartPackBuy.sendOnClick(
+                                GemStoreIntent.BuyGemPack(
+                                    it
+                                )
+                            )
+                        }
+                        GemPackType.PLATINUM -> {
+                            view.platinumPackPrice.text = it.price
+                            view.platinumPackTitle.text = it.title
+                            view.platinumPackGems.text = "x ${it.gems}"
+                            view.platinumPackBuy.sendOnClick(
+                                GemStoreIntent.BuyGemPack(
+                                    it
+                                )
+                            )
+                        }
+                    }
+                }
+            }
+
+            GEM_PACK_PURCHASED -> {
+                Toast.makeText(view.context, R.string.gem_pack_purchased, Toast.LENGTH_LONG).show()
+            }
+
+            DOG_UNLOCKED -> {
+                showMostPopular(view)
+                Toast.makeText(view.context, R.string.gift_unlocked, Toast.LENGTH_LONG).show()
+            }
+
+            PURCHASE_FAILED -> {
+                Toast.makeText(view.context, R.string.purchase_failed, Toast.LENGTH_LONG).show()
+            }
+        }
+    }
+
+    private fun showMostPopular(view: View) {
+        view.giftContainer.visibility = View.GONE
+        view.mostPopular.visibility = View.VISIBLE
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        checkout.onActivityResult(requestCode, resultCode, data)
+    }
+
+}

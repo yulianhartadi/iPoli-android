@@ -6,23 +6,28 @@ import android.os.Bundle
 import android.preference.PreferenceManager
 import android.provider.Settings
 import android.support.v7.app.AppCompatActivity
-import android.util.Log
 import android.view.View
 import android.widget.Toast
-import com.amplitude.api.Amplitude
 import com.bluelinelabs.conductor.Conductor
 import com.bluelinelabs.conductor.Router
 import com.bluelinelabs.conductor.RouterTransaction
-import kotlinx.coroutines.experimental.CommonPool
+import com.bluelinelabs.conductor.changehandler.FadeChangeHandler
 import kotlinx.coroutines.experimental.android.UI
 import kotlinx.coroutines.experimental.launch
+import mypoli.android.common.AppState
 import mypoli.android.common.LoadDataAction
-import mypoli.android.common.LoaderDialogController
 import mypoli.android.common.di.Module
+import mypoli.android.common.redux.Action
+import mypoli.android.common.redux.Dispatcher
+import mypoli.android.common.redux.SideEffectHandler
 import mypoli.android.common.view.playerTheme
 import mypoli.android.home.HomeViewController
 import mypoli.android.player.auth.AuthViewController
 import mypoli.android.quest.timer.TimerViewController
+import mypoli.android.store.membership.MembershipViewController
+import mypoli.android.store.powerup.AndroidPowerUp
+import mypoli.android.store.powerup.buy.BuyPowerUpDialogController
+import mypoli.android.store.powerup.middleware.ShowBuyPowerUpAction
 import space.traversal.kapsule.Injects
 import space.traversal.kapsule.inject
 import space.traversal.kapsule.required
@@ -31,15 +36,12 @@ import space.traversal.kapsule.required
  * Created by Venelin Valkov <venelin@mypoli.fun>
  * on 7/6/17.
  */
-class MainActivity : AppCompatActivity(), Injects<Module> {
+class MainActivity : AppCompatActivity(), Injects<Module>, SideEffectHandler<AppState> {
 
     lateinit var router: Router
 
-    private val database by required { database }
-
     private val playerRepository by required { playerRepository }
-    private val petStatsChangeScheduler by required { lowerPetStatsScheduler }
-    private val saveQuestsForRepeatingQuestScheduler by required { saveQuestsForRepeatingQuestScheduler }
+
     private val stateStore by required { stateStore }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -47,12 +49,7 @@ class MainActivity : AppCompatActivity(), Injects<Module> {
         setTheme(playerTheme)
         setContentView(R.layout.activity_main)
 
-        val amplitudeClient =
-            Amplitude.getInstance().initialize(this, AnalyticsConstants.AMPLITUDE_KEY)
-        amplitudeClient.enableForegroundTracking(application)
         if (BuildConfig.DEBUG) {
-            Amplitude.getInstance().setLogLevel(Log.VERBOSE)
-            amplitudeClient.setOptOut(true)
 
             if (!Settings.canDrawOverlays(this)) {
                 val intent = Intent(
@@ -70,56 +67,30 @@ class MainActivity : AppCompatActivity(), Injects<Module> {
         router.setPopsLastView(true)
         inject(myPoliApp.module(this))
 
-        if (database.count > 0) {
-            startApp()
-        } else if (!playerRepository.hasPlayer()) {
+        if (!playerRepository.hasPlayer()) {
             router.setRoot(RouterTransaction.with(AuthViewController()))
-            return
         } else {
             startApp()
         }
-
-
     }
 
     private fun startApp() {
 
-        try {
-            var loader: LoaderDialogController? = null
-            launch(CommonPool) {
-                Migration().run({
-                    launch(UI) {
-                        loader = LoaderDialogController()
-                        loader!!.showDialog(router, "loader")
-                    }
-                })
-                launch(UI) {
-                    loader?.dismissDialog()
-                    stateStore.dispatch(LoadDataAction.All)
-                    petStatsChangeScheduler.schedule()
-                    saveQuestsForRepeatingQuestScheduler.schedule()
-                    val startIntent = intent
-                    if (startIntent != null && startIntent.action == ACTION_SHOW_TIMER) {
-                        val questId = intent.getStringExtra(Constants.QUEST_ID_EXTRA_KEY)
-                        router.setRoot(
-                            RouterTransaction
-                                .with(TimerViewController(questId))
-                                .tag(TimerViewController.TAG)
-                        )
-                    } else if (!router.hasRootController()) {
+        val startIntent = intent
+        if (startIntent != null && startIntent.action == ACTION_SHOW_TIMER) {
+            val questId = intent.getStringExtra(Constants.QUEST_ID_EXTRA_KEY)
+            router.setRoot(
+                RouterTransaction
+                    .with(TimerViewController(questId))
+                    .tag(TimerViewController.TAG)
+            )
+        } else if (!router.hasRootController()) {
 //                        router.setRoot(RouterTransaction.with(RepeatingQuestViewController("")))
-                        router.setRoot(RouterTransaction.with(HomeViewController()))
-                    }
-                }
-
-            }
-        } catch (e: Exception) {
-            Toast.makeText(
-                this@MainActivity,
-                R.string.sign_in_no_connection,
-                Toast.LENGTH_LONG
-            ).show()
+            router.setRoot(RouterTransaction.with(HomeViewController()))
+//                        router.setRoot(RouterTransaction.with(PowerUpStoreViewController()))
         }
+
+        stateStore.dispatch(LoadDataAction.All)
 
     }
 
@@ -127,6 +98,16 @@ class MainActivity : AppCompatActivity(), Injects<Module> {
         val pm = PreferenceManager.getDefaultSharedPreferences(this)
         val run = pm.getInt(Constants.KEY_APP_RUN_COUNT, 0)
         pm.edit().putInt(Constants.KEY_APP_RUN_COUNT, run + 1).apply()
+    }
+
+    override fun onResume() {
+        super.onResume()
+        stateStore.addSideEffectHandler(this)
+    }
+
+    override fun onPause() {
+        stateStore.removeSideEffectHandler(this)
+        super.onPause()
     }
 
     override fun onBackPressed() {
@@ -181,6 +162,50 @@ class MainActivity : AppCompatActivity(), Injects<Module> {
     fun exitFullScreen() {
         window.decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_VISIBLE
     }
+
+    override suspend fun execute(action: Action, state: AppState, dispatcher: Dispatcher) {
+        launch(UI) {
+            when (action) {
+                is ShowBuyPowerUpAction -> {
+                    showPowerUpDialog(action)
+                }
+            }
+        }
+    }
+
+    private fun showPowerUpDialog(action: ShowBuyPowerUpAction) {
+        BuyPowerUpDialogController(action.powerUp, { result ->
+            when (result) {
+                BuyPowerUpDialogController.Result.TooExpensive ->
+                    Toast.makeText(
+                        this,
+                        R.string.power_up_too_expensive,
+                        Toast.LENGTH_SHORT
+                    ).show()
+
+                is BuyPowerUpDialogController.Result.Bought ->
+                    Toast.makeText(
+                        this,
+                        getString(
+                            R.string.power_up_bought,
+                            getString(AndroidPowerUp.valueOf(result.powerUp.name).title)
+                        ),
+                        Toast.LENGTH_LONG
+                    ).show()
+
+                is BuyPowerUpDialogController.Result.UnlockAll ->
+                    router.pushController(
+                        RouterTransaction.with(
+                            MembershipViewController()
+                        )
+                            .pushChangeHandler(FadeChangeHandler())
+                            .popChangeHandler(FadeChangeHandler())
+                    )
+            }
+        }).show(router)
+    }
+
+    override fun canHandle(action: Action) = action is ShowBuyPowerUpAction
 
     companion object {
         const val ACTION_SHOW_TIMER = "mypoli.android.intent.action.SHOW_TIMER"

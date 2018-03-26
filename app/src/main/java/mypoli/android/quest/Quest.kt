@@ -126,6 +126,7 @@ data class Quest(
     val scheduledDate: LocalDate,
     val originalScheduledDate: LocalDate = scheduledDate,
     val timeRanges: List<TimeRange> = listOf(),
+    val timeRangesToComplete: List<TimeRange> = listOf(),
     override val createdAt: Instant = Instant.now(),
     override val updatedAt: Instant = Instant.now(),
     val completedAtDate: LocalDate? = null,
