@@ -24,7 +24,7 @@ data class Player(
     val gems: Int = Constants.DEFAULT_PLAYER_GEMS,
     val experience: Long = Constants.DEFAULT_PLAYER_XP,
     val authProvider: AuthProvider,
-    val avatar: Avatar = Avatar.IPOLI_CLASSIC,
+    val avatar: Avatar = Avatar.AVATAR_00,
     val membership: Membership = Membership.NONE,
     override val createdAt: Instant = Instant.now(),
     override val updatedAt: Instant = Instant.now(),
@@ -37,7 +37,7 @@ data class Player(
         food = mapOf(
             Food.BANANA to 2
         ),
-        avatars = setOf(Avatar.IPOLI_CLASSIC),
+        avatars = setOf(Avatar.AVATAR_00),
         pets = setOf(InventoryPet.createFromPet(pet)),
         themes = setOf(currentTheme),
         colorPacks = setOf(ColorPack.FREE),

@@ -9,34 +9,34 @@ import io.ipoli.android.R
  * on 8/21/17.
  */
 enum class Avatar(val gemPrice: Int) {
-    IPOLI_CLASSIC(0),
-    IPOLI_YELLOW_GLASSES(0),
-    MACARENA(8),
-    MACARENA_MEXICAN(8),
-    BLONDY(8),
-    GREEN_EYES(8),
-    PIPILOTA(8),
-    OLD_PIRATE(8),
-    BEARDY(8),
-    DWIGHT(8),
-    MICHAEL(8),
-    TOBBY(8);
+    AVATAR_00(0),
+    AVATAR_01(8),
+    AVATAR_02(8),
+    AVATAR_03(8),
+    AVATAR_04(8),
+    AVATAR_05(8),
+    AVATAR_06(8),
+    AVATAR_07(8),
+    AVATAR_08(8),
+    AVATAR_09(8),
+    AVATAR_10(8),
+    AVATAR_11(8);
 }
 
 enum class AndroidAvatar(
     @StringRes val avatarName: Int,
     @DrawableRes val image: Int
 ) {
-    IPOLI_CLASSIC(R.string.avatar_name_ipoli_classic, R.drawable.avatar_00),
-    IPOLI_YELLOW_GLASSES(R.string.avatar_name_ipoli_yellow_glasses, R.drawable.avatar_11),
-    MACARENA(R.string.avatar_name_macarena, R.drawable.avatar_10),
-    MACARENA_MEXICAN(R.string.avatar_name_macarena_mexican, R.drawable.avatar_09),
-    BLONDY(R.string.avatar_name_blondy, R.drawable.avatar_08),
-    GREEN_EYES(R.string.avatar_name_green_eyes, R.drawable.avatar_07),
-    PIPILOTA(R.string.avatar_name_pipilota, R.drawable.avatar_06),
-    OLD_PIRATE(R.string.avatar_name_old_pirate, R.drawable.avatar_05),
-    BEARDY(R.string.avatar_beardy, R.drawable.avatar_04),
-    DWIGHT(R.string.avatar_name_dwight, R.drawable.avatar_03),
-    MICHAEL(R.string.avatar_name_michael, R.drawable.avatar_02),
-    TOBBY(R.string.avatar_name_tobby, R.drawable.avatar_01);
+    AVATAR_00(R.string.avatar_name_00, R.drawable.avatar_00),
+    AVATAR_01(R.string.avatar_name_01, R.drawable.avatar_11),
+    AVATAR_02(R.string.avatar_name_02, R.drawable.avatar_10),
+    AVATAR_03(R.string.avatar_name_03, R.drawable.avatar_09),
+    AVATAR_04(R.string.avatar_name_04, R.drawable.avatar_08),
+    AVATAR_05(R.string.avatar_name_05, R.drawable.avatar_07),
+    AVATAR_06(R.string.avatar_name_06, R.drawable.avatar_06),
+    AVATAR_07(R.string.avatar_name_07, R.drawable.avatar_05),
+    AVATAR_08(R.string.avatar_name_08, R.drawable.avatar_04),
+    AVATAR_09(R.string.avatar_name_09, R.drawable.avatar_03),
+    AVATAR_10(R.string.avatar_name_10, R.drawable.avatar_02),
+    AVATAR_11(R.string.avatar_name_11, R.drawable.avatar_01);
 }
