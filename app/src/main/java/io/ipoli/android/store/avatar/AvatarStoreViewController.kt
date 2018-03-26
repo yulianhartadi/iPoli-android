@@ -127,7 +127,11 @@ class AvatarStoreViewController(args: Bundle? = null) :
             view.name.text = item.name
             view.imageContainer.setCardBackgroundColor(colorRes(item.backgroundColor))
             view.image.setImageResource(item.image)
-            view.price.text = item.gemPrice.toString()
+            view.price.text =
+                if (item.gemPrice == 0)
+                    stringRes(R.string.free)
+                else
+                    item.gemPrice.toString()
 
             when (item) {
 
