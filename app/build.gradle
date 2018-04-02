@@ -21,15 +21,14 @@ android {
         applicationId "io.ipoli.android"
         minSdkVersion 21
         targetSdkVersion 27
-        versionCode 400
-        versionName "2.0-b1"
+        versionCode 401
+        versionName "2.0-b2"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
 
     buildTypes {
 
         releaseCompile {
-            // @TODO Fix proguard rules
             minifyEnabled true
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
