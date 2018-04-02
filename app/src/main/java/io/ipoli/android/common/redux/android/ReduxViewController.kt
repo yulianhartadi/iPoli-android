@@ -2,14 +2,16 @@ package io.ipoli.android.common.redux.android
 
 import android.content.Context
 import android.os.Bundle
+import android.text.method.LinkMovementMethod
+import android.text.style.ForegroundColorSpan
 import android.view.View
+import android.widget.TextView
 import com.bluelinelabs.conductor.Controller
 import com.bluelinelabs.conductor.RestoreViewOnCreateController
-import kotlinx.coroutines.experimental.android.UI
-import kotlinx.coroutines.experimental.launch
 import io.ipoli.android.common.AppState
 import io.ipoli.android.common.NamespaceAction
 import io.ipoli.android.common.UIAction
+import io.ipoli.android.common.ViewUtils
 import io.ipoli.android.common.di.Module
 import io.ipoli.android.common.mvi.ViewState
 import io.ipoli.android.common.redux.Action
@@ -18,9 +20,18 @@ import io.ipoli.android.common.redux.ViewStateReducer
 import io.ipoli.android.common.view.AndroidColor
 import io.ipoli.android.common.view.AndroidIcon
 import io.ipoli.android.common.view.attrData
+import io.ipoli.android.common.view.colorRes
 import io.ipoli.android.myPoliApp
 import io.ipoli.android.quest.Color
 import io.ipoli.android.quest.Icon
+import kotlinx.coroutines.experimental.android.UI
+import kotlinx.coroutines.experimental.launch
+import org.commonmark.node.Heading
+import ru.noties.markwon.Markwon
+import ru.noties.markwon.SpannableBuilder
+import ru.noties.markwon.SpannableConfiguration
+import ru.noties.markwon.renderer.SpannableMarkdownVisitor
+import ru.noties.markwon.spans.SpannableTheme
 import space.traversal.kapsule.Injects
 import space.traversal.kapsule.inject
 import space.traversal.kapsule.required
@@ -30,7 +41,7 @@ import space.traversal.kapsule.required
  * on 1/18/18.
  */
 abstract class ReduxViewController<A : Action, VS : ViewState, out R : ViewStateReducer<AppState, VS>> protected constructor(
-    args: Bundle? = null
+    args: Bundle? = null, private val renderDuplicateStates: Boolean = false
 ) : RestoreViewOnCreateController(args), Injects<Module>,
     StateStore.StateChangeSubscriber<AppState> {
 
@@ -87,7 +98,6 @@ abstract class ReduxViewController<A : Action, VS : ViewState, out R : ViewState
 
     fun dispatch(action: A) {
         val a = namespace?.let {
-
             NamespaceAction(action, it)
         } ?: action
         stateStore.dispatch(a)
@@ -95,11 +105,18 @@ abstract class ReduxViewController<A : Action, VS : ViewState, out R : ViewState
 
     override fun onStateChanged(newState: AppState) {
         val viewState = newState.stateFor<VS>(reducer.stateKey)
-        if (viewState != currentState) {
+
+        if (renderDuplicateStates) {
+            renderViewState(viewState)
+        } else if (viewState != currentState) {
             currentState = viewState
-            launch(UI) {
-                onRenderViewState(viewState)
-            }
+            renderViewState(viewState)
+        }
+    }
+
+    private fun renderViewState(viewState: VS) {
+        launch(UI) {
+            onRenderViewState(viewState)
         }
     }
 
@@ -135,4 +152,61 @@ abstract class ReduxViewController<A : Action, VS : ViewState, out R : ViewState
 
     protected val AndroidIcon.toIcon: Icon
         get() = Icon.valueOf(this.name)
+
+    fun TextView.setMarkdown(markdown: String) {
+        val parser = Markwon.createParser()
+
+        val theme = SpannableTheme.builderWithDefaults(activity!!)
+            .headingBreakHeight(0)
+            .thematicBreakColor(attrData(io.ipoli.android.R.attr.colorAccent))
+            .listItemColor(attrData(io.ipoli.android.R.attr.colorAccent))
+            .linkColor(attrData(io.ipoli.android.R.attr.colorAccent))
+            .blockQuoteColor(attrData(io.ipoli.android.R.attr.colorAccent))
+            .codeBackgroundColor(colorRes(io.ipoli.android.R.color.sourceCodeBackground))
+            .codeTextColor(colorRes(io.ipoli.android.R.color.sourceCodeText))
+            .codeTextSize(ViewUtils.spToPx(14, activity!!))
+            .build()
+        val configuration = SpannableConfiguration.builder(activity!!)
+            .theme(theme)
+            .build()
+
+        val builder = SpannableBuilder()
+
+        val node = parser.parse(markdown)
+
+        val headlineVisitor = HeadlineColorVisitor(configuration, builder)
+
+        node.accept(headlineVisitor)
+
+        val text = builder.text()
+
+        movementMethod = LinkMovementMethod.getInstance()
+
+        Markwon.unscheduleDrawables(this)
+        Markwon.unscheduleTableRows(this)
+
+        setText(text)
+
+        Markwon.scheduleDrawables(this)
+        Markwon.scheduleTableRows(this)
+    }
+
+    inner class HeadlineColorVisitor(
+        config: SpannableConfiguration,
+        private val builder: SpannableBuilder
+    ) : SpannableMarkdownVisitor(config, builder) {
+
+        override fun visit(heading: Heading) {
+
+            val startLength = builder.length()
+
+            super.visit(heading)
+
+            builder.setSpan(
+                ForegroundColorSpan(attrData(io.ipoli.android.R.attr.colorAccent)),
+                startLength,
+                builder.length()
+            )
+        }
+    }
 }

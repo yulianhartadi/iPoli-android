@@ -40,7 +40,8 @@ class SaveChallengeUseCase(
                 icon = parameters.icon,
                 difficulty = parameters.difficulty,
                 end = parameters.end,
-                motivations = transformMotivations(parameters.motivations)
+                motivations = transformMotivations(parameters.motivations),
+                note = parameters.note
             )
         )
     }
@@ -54,7 +55,8 @@ class SaveChallengeUseCase(
                 difficulty = parameters.difficulty,
                 start = LocalDate.now(),
                 end = parameters.end,
-                motivations = transformMotivations(parameters.motivations)
+                motivations = transformMotivations(parameters.motivations),
+                note = parameters.note
             )
         )
 
@@ -85,7 +87,8 @@ class SaveChallengeUseCase(
         open val icon: Icon?,
         open val difficulty: Challenge.Difficulty,
         open val motivations: List<String>,
-        open val end: LocalDate
+        open val end: LocalDate,
+        open val note: String?
     ) {
         data class WithNewQuests(
             val quests: List<BaseQuest>,
@@ -95,9 +98,10 @@ class SaveChallengeUseCase(
             override val icon: Icon?,
             override val difficulty: Challenge.Difficulty,
             override val motivations: List<String>,
-            override val end: LocalDate
+            override val end: LocalDate,
+            override val note: String? = null
 
-        ) : Params(id, name, color, icon, difficulty, motivations, end)
+        ) : Params(id, name, color, icon, difficulty, motivations, end, note)
 
         data class WithExistingQuests(
             val allQuests: List<BaseQuest> = listOf(),
@@ -108,9 +112,10 @@ class SaveChallengeUseCase(
             override val icon: Icon?,
             override val difficulty: Challenge.Difficulty,
             override val motivations: List<String>,
-            override val end: LocalDate
+            override val end: LocalDate,
+            override val note: String? = null
 
-        ) : Params(id, name, color, icon, difficulty, motivations, end)
+        ) : Params(id, name, color, icon, difficulty, motivations, end, note)
     }
 
     private fun transformMotivations(motivations: List<String>) =

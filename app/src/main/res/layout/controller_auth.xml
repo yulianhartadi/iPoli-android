@@ -145,7 +145,7 @@
                 android:layout_marginStart="8dp"
                 android:layout_marginTop="32dp"
                 android:text="@string/continue_as_guest"
-                android:textColor="@color/md_light_text_54"
+                android:textColor="@color/md_light_text_50"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/facebookSignIn" />
@@ -160,7 +160,7 @@
                 android:text="@string/guest_sign_up_warning"
                 android:textAlignment="center"
                 android:textAppearance="@style/TextAppearance.AppCompat.Caption"
-                android:textColor="@color/md_light_text_54"
+                android:textColor="@color/md_light_text_50"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"

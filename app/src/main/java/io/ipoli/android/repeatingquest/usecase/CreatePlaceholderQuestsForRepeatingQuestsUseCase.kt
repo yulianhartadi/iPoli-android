@@ -110,7 +110,8 @@ class CreatePlaceholderQuestsForRepeatingQuestsUseCase(
             reminder = rq.reminder?.copy(
                 remindDate = scheduleDate
             ),
-            repeatingQuestId = rq.id
+            repeatingQuestId = rq.id,
+            note = rq.note
         )
 
     private fun monthlyDatesToScheduleInPeriod(

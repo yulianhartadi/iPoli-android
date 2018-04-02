@@ -10,6 +10,8 @@ import io.ipoli.android.common.persistence.CollectionRepository
 import io.ipoli.android.common.persistence.FirestoreModel
 import io.ipoli.android.quest.*
 import io.ipoli.android.quest.data.persistence.DbReminder
+import io.ipoli.android.quest.data.persistence.DbSubQuest
+import io.ipoli.android.quest.subquest.SubQuest
 import io.ipoli.android.repeatingquest.entity.RepeatingPattern
 import org.threeten.bp.DayOfWeek
 import org.threeten.bp.LocalDate
@@ -44,7 +46,9 @@ data class DbRepeatingQuest(override val map: MutableMap<String, Any?> = mutable
     var duration: Int by map
     var reminder: MutableMap<String, Any?>? by map
     var repeatingPattern: MutableMap<String, Any?> by map
+    var subQuests: List<MutableMap<String, Any?>> by map
     var challengeId: String? by map
+    var note: String? by map
     override var createdAt: Long by map
     override var updatedAt: Long by map
     override var removedAt: Long? by map
@@ -139,7 +143,16 @@ class FirestoreRepeatingQuestRepository(
                 Reminder(cr.message, Time.of(cr.minute), cr.date?.startOfDayUTC)
             },
             repeatingPattern = createRepeatingPattern(DbRepeatingPattern(rq.repeatingPattern)),
+            subQuests = rq.subQuests.map {
+                val dsq = DbSubQuest(it)
+                SubQuest(
+                    name = dsq.name,
+                    completedAtDate = dsq.completedAtDate?.startOfDayUTC,
+                    completedAtTime = dsq.completedAtTime?.let { Time.of(it.toInt()) }
+                )
+            },
             challengeId = rq.challengeId,
+            note = rq.note,
             updatedAt = rq.updatedAt.instant,
             createdAt = rq.createdAt.instant
         )
@@ -215,8 +228,16 @@ class FirestoreRepeatingQuestRepository(
         rq.reminder = entity.reminder?.let {
             createDbReminder(it).map
         }
+        rq.subQuests = entity.subQuests.map {
+            DbSubQuest().apply {
+                name = it.name
+                completedAtDate = it.completedAtDate?.startOfDayUTC()
+                completedAtTime = it.completedAtTime?.toMinuteOfDay()?.toLong()
+            }.map
+        }
         rq.repeatingPattern = createDbRepeatingPattern(entity.repeatingPattern).map
         rq.challengeId = entity.challengeId
+        rq.note = entity.note
         rq.updatedAt = entity.updatedAt.toEpochMilli()
         rq.createdAt = entity.createdAt.toEpochMilli()
         return rq

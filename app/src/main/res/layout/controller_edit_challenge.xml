@@ -275,6 +275,54 @@
 
             </RelativeLayout>
 
+            <RelativeLayout
+                android:id="@+id/questNoteContainer"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginBottom="16dp"
+                android:layout_marginTop="16dp"
+                android:background="?android:attr/selectableItemBackground"
+                android:clickable="true"
+                android:minHeight="60dp">
+
+
+                <ImageView
+                    android:id="@+id/questNoteIcon"
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:layout_alignParentStart="true"
+                    android:layout_marginEnd="24dp"
+                    android:layout_marginStart="24dp"
+                    android:src="@drawable/ic_note_black_24dp" />
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerVertical="true"
+                    android:layout_alignParentTop="true"
+                    android:layout_toEndOf="@id/questNoteIcon"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:id="@+id/questNoteQuestion"
+                        style="@style/TextAppearance.AppCompat.Body1"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/note" />
+
+                    <TextView
+                        android:id="@+id/questNoteValue"
+                        style="@style/TextAppearance.AppCompat.Caption"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginEnd="16dp"
+                        android:ellipsize="end"
+                        android:maxLines="3" />
+                </LinearLayout>
+
+            </RelativeLayout>
+
         </LinearLayout>
     </android.support.v4.widget.NestedScrollView>
 </android.support.design.widget.CoordinatorLayout>

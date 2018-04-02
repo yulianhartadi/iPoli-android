@@ -4,6 +4,7 @@ import io.ipoli.android.common.UseCase
 import io.ipoli.android.common.datetime.Time
 import io.ipoli.android.quest.*
 import io.ipoli.android.quest.data.persistence.QuestRepository
+import io.ipoli.android.quest.subquest.SubQuest
 import io.ipoli.android.repeatingquest.entity.RepeatingPattern
 import io.ipoli.android.repeatingquest.persistence.RepeatingQuestRepository
 import org.threeten.bp.Instant
@@ -24,6 +25,7 @@ class SaveRepeatingQuestUseCase(
         require(parameters.name.isNotBlank())
 
         val repeatingQuest = if (parameters.id.isEmpty()) {
+
             RepeatingQuest(
                 name = parameters.name.trim(),
                 icon = parameters.icon,
@@ -33,7 +35,9 @@ class SaveRepeatingQuestUseCase(
                 duration = parameters.duration,
                 reminder = parameters.reminder,
                 repeatingPattern = parameters.repeatingPattern,
-                challengeId = parameters.challengeId
+                subQuests = createSubQuests(parameters.subQuestNames),
+                challengeId = parameters.challengeId,
+                note = parameters.note
             )
         } else {
 
@@ -48,7 +52,9 @@ class SaveRepeatingQuestUseCase(
                 duration = parameters.duration,
                 reminder = parameters.reminder,
                 repeatingPattern = parameters.repeatingPattern,
-                challengeId = parameters.challengeId
+                subQuests = createSubQuests(parameters.subQuestNames),
+                challengeId = parameters.challengeId,
+                note = parameters.note
             )
         }
 
@@ -68,6 +74,17 @@ class SaveRepeatingQuestUseCase(
         return repeatingQuestRepository.save(rq)
     }
 
+    private fun createSubQuests(subQuestNames: List<String>) =
+        subQuestNames
+            .filter { it.isNotBlank() }
+            .map {
+                SubQuest(
+                    name = it.trim(),
+                    completedAtDate = null,
+                    completedAtTime = null
+                )
+            }
+
     private fun saveQuestsFor(repeatingQuest: RepeatingQuest): RepeatingQuest {
         val currentPeriod = repeatingQuest.repeatingPattern.periodRangeFor(LocalDate.now())
         val nextPeriodFirstDate = currentPeriod.end.plusDays(1)
@@ -84,6 +101,7 @@ class SaveRepeatingQuestUseCase(
     data class Params(
         val id: String = "",
         val name: String,
+        val subQuestNames: List<String>,
         val color: Color,
         val icon: Icon? = null,
         val category: Category,
@@ -91,6 +109,7 @@ class SaveRepeatingQuestUseCase(
         val duration: Int,
         val reminder: Reminder? = null,
         val repeatingPattern: RepeatingPattern,
-        val challengeId: String? = null
+        val challengeId: String? = null,
+        val note: String? = null
     )
 }

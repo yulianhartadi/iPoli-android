@@ -55,6 +55,7 @@ open class SaveQuestsForChallengeUseCase(
                     saveRepeatingQuestUseCase.execute(
                         SaveRepeatingQuestUseCase.Params(
                             name = rq.name,
+                            subQuestNames = rq.subQuests.map { it.name },
                             color = rq.color,
                             icon = rq.icon,
                             category = rq.category,

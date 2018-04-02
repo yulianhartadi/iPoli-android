@@ -133,7 +133,7 @@
     </style>
 
     <style name="TextAppearance.myPoli.EditText" parent="TextAppearance.AppCompat">
-        <item name="colorAccent">@color/md_light_text_87</item>
+        <item name="colorAccent">@color/md_light_text_70</item>
     </style>
 
     <style name="CategoryIndicator">
@@ -170,10 +170,10 @@
 
     <style name="WhiteEditTextTheme" parent="Base.TextAppearance.AppCompat.Small">
         <item name="android:singleLine">true</item>
-        <item name="android:textColor">@color/md_light_text_87</item>
-        <item name="colorControlNormal">@color/md_light_text_87</item>
-        <item name="colorControlActivated">@color/md_light_text_87</item>
-        <item name="android:textColorPrimary">@color/md_light_text_87</item>
+        <item name="android:textColor">@color/md_light_text_70</item>
+        <item name="colorControlNormal">@color/md_light_text_70</item>
+        <item name="colorControlActivated">@color/md_light_text_70</item>
+        <item name="android:textColorPrimary">@color/md_light_text_70</item>
     </style>
 
     <style name="SubQuestWhiteEditText">
@@ -182,11 +182,11 @@
 
     <style name="ChallengeWhiteEditTextTheme" parent="Base.TextAppearance.AppCompat.Title">
         <item name="android:singleLine">true</item>
-        <item name="android:textColor">@color/md_light_text_87</item>
-        <item name="colorControlNormal">@color/md_light_text_87</item>
-        <item name="android:textColorHint">@color/md_light_text_54</item>
-        <item name="colorControlActivated">@color/md_light_text_87</item>
-        <item name="android:textColorPrimary">@color/md_light_text_87</item>
+        <item name="android:textColor">@color/md_light_text_70</item>
+        <item name="colorControlNormal">@color/md_light_text_70</item>
+        <item name="android:textColorHint">@color/md_light_text_50</item>
+        <item name="colorControlActivated">@color/md_light_text_70</item>
+        <item name="android:textColorPrimary">@color/md_light_text_70</item>
         <item name="android:textColorHighlight">@color/md_red_500</item>
         <item name="android:textColorLink">@color/md_red_500</item>
     </style>
@@ -198,14 +198,14 @@
     <style name="ChallengeTextInputLayout" parent="Base.TextAppearance.AppCompat">
         <item name="android:layout_marginStart">16dp</item>
         <item name="android:layout_marginEnd">16dp</item>
-        <item name="android:textColorHint">@color/md_light_text_54</item>
-        <item name="colorAccent">@color/md_light_text_87</item>
-        <item name="colorControlNormal">@color/md_light_text_87</item>
-        <item name="colorControlActivated">@color/md_light_text_87</item>
+        <item name="android:textColorHint">@color/md_light_text_50</item>
+        <item name="colorAccent">@color/md_light_text_70</item>
+        <item name="colorControlNormal">@color/md_light_text_70</item>
+        <item name="colorControlActivated">@color/md_light_text_70</item>
     </style>
 
     <style name="TextAppearance.myPoli.Challenge.TextInputLayout" parent="Base.TextAppearance.AppCompat">
-        <item name="android:textColor">@color/md_light_text_54</item>
+        <item name="android:textColor">@color/md_light_text_50</item>
     </style>
 
     <style name="AppInviteListItem" parent="TextAppearance.AppCompat.Subhead">
@@ -249,7 +249,7 @@
         <item name="android:padding">0dp</item>
         <item name="android:textAlignment">center</item>
         <item name="android:inputType">textMultiLine|textCapSentences</item>
-        <item name="android:textColor">@color/md_light_text_87</item>
+        <item name="android:textColor">@color/md_light_text_70</item>
     </style>
 
     <style name="StoreItemContainer">
@@ -302,5 +302,13 @@
         <item name="android:colorControlNormal">@color/md_blue_grey_500</item>
         <item name="android:colorControlHighlight">@color/md_blue_grey_500</item>
         <item name="android:colorControlActivated">@color/md_blue_grey_500</item>
+    </style>
+
+    <style name="SectionTitle" parent="@style/TextAppearance.AppCompat.Subhead">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">48dp</item>
+        <item name="android:layout_marginStart">16dp</item>
+        <item name="android:gravity">center_vertical</item>
+        <item name="android:textColor">?attr/colorAccent</item>
     </style>
 </resources>

@@ -247,7 +247,6 @@
     <string name="pick_challenge">PICK CHALLENGE</string>
     <string name="challenge_accepted">Challenge accepted!</string>
     <string name="widget_agenda_empty">myPoli wants a quest!</string>
-    <string name="quests">Quests</string>
     <string name="quest_started">Quest started</string>
     <string name="quest_stopped">Quest stopped</string>
     <string name="reward_earned">%s earned! Enjoy!</string>
@@ -1219,4 +1218,10 @@
     <string name="theme_too_expensive">Theme too expensive</string>
     <string name="theme_bought">Enjoy your theme!</string>
     <string name="community">Community</string>
+    <string name="preview">preview</string>
+    <string name="quests">Quests</string>
+    <string name="motivation">Motivation</string>
+    <string name="empty_sub_quests">Divide your Quest into smaller ones</string>
+    <string name="empty_note_hint"># My awesome note\n Markdown notes are really amazing! Create yours now!</string>
+    <string name="note_hint">Something important</string>
 </resources>

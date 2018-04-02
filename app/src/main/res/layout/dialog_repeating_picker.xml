@@ -208,7 +208,7 @@
             android:layout_width="match_parent"
             android:layout_height="0dp"
             app:barrierDirection="bottom"
-            app:constraint_referenced_ids="rpMonthDayList,rpWeekDayList,rpDayOfYear" />
+            app:constraint_referenced_ids="rpMonthDayList,rpWeekDayList,rpDayOfYear, rpRepeatType" />
 
         <android.support.constraint.Group
             android:id="@+id/yearlyPatternGroup"

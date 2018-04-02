@@ -52,7 +52,6 @@ class ScheduleViewController(args: Bundle? = null) :
     ): View {
         setHasOptionsMenu(true)
         val view = inflater.inflate(R.layout.controller_schedule, container, false)
-
         initAddQuest(view)
 
         setChildController(view.contentContainer, CalendarViewController(LocalDate.now()))
@@ -78,7 +77,7 @@ class ScheduleViewController(args: Bundle? = null) :
                 .icon(viewModeIcon)
                 .colorRes(R.color.md_white)
                 .sizeDp(24)
-        ).setTitle(viewModeTitle)
+        ).title = viewModeTitle
         super.onPrepareOptionsMenu(menu)
     }
 

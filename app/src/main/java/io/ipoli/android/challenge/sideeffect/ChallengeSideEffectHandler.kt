@@ -1,7 +1,5 @@
 package io.ipoli.android.challenge.sideeffect
 
-import kotlinx.coroutines.experimental.android.UI
-import kotlinx.coroutines.experimental.launch
 import io.ipoli.android.challenge.QuestPickerAction
 import io.ipoli.android.challenge.QuestPickerViewState
 import io.ipoli.android.challenge.add.AddChallengeSummaryAction
@@ -23,6 +21,8 @@ import io.ipoli.android.common.view.asThemedWrapper
 import io.ipoli.android.myPoliApp
 import io.ipoli.android.quest.Quest
 import io.ipoli.android.quest.RepeatingQuest
+import kotlinx.coroutines.experimental.android.UI
+import kotlinx.coroutines.experimental.launch
 import org.threeten.bp.LocalDate
 import space.traversal.kapsule.required
 
@@ -79,7 +79,8 @@ class ChallengeSideEffectHandler : AppSideEffectHandler() {
                         end = s.end,
                         motivations = s.motivationList,
                         allQuests = s.allQuests,
-                        selectedQuestIds = s.selectedQuestIds
+                        selectedQuestIds = s.selectedQuestIds,
+                        note = s.note
                     )
                 )
             }
@@ -93,7 +94,8 @@ class ChallengeSideEffectHandler : AppSideEffectHandler() {
                         icon = s.icon,
                         difficulty = s.difficulty,
                         end = s.end,
-                        motivations = listOf(s.motivation1, s.motivation2, s.motivation3)
+                        motivations = listOf(s.motivation1, s.motivation2, s.motivation3),
+                        note = s.note
                     )
                 )
             }

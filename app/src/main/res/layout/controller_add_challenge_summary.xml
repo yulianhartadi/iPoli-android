@@ -62,7 +62,7 @@
         android:layout_width="0dp"
         android:layout_height="1dp"
         android:layout_marginTop="16dp"
-        android:background="@color/md_light_text_54"
+        android:background="@color/md_light_text_50"
         app:layout_constraintEnd_toEndOf="@+id/challengeName"
         app:layout_constraintStart_toStartOf="@+id/challengeName"
         app:layout_constraintTop_toBottomOf="@+id/challengeName" />
@@ -167,7 +167,7 @@
                 android:layout_width="0dp"
                 android:layout_height="1dp"
                 android:layout_marginTop="16dp"
-                android:background="@color/md_light_text_54"
+                android:background="@color/md_light_text_50"
                 app:layout_constraintEnd_toEndOf="@+id/challengePropsTitle"
                 app:layout_constraintHorizontal_bias="0.0"
                 app:layout_constraintStart_toStartOf="@+id/challengePropsTitle"
@@ -180,7 +180,7 @@
                 android:layout_marginEnd="48dp"
                 android:layout_marginStart="16dp"
                 android:layout_marginTop="16dp"
-                android:text="Motivation"
+                android:text="@string/motivation"
                 android:textAppearance="@style/TextAppearance.AppCompat.Title"
                 android:textColor="@color/md_white"
                 app:layout_constraintEnd_toEndOf="parent"
@@ -195,13 +195,13 @@
                 android:layout_marginEnd="48dp"
                 android:layout_marginStart="16dp"
                 android:layout_marginTop="16dp"
-                android:text="Quests"
+                android:text="@string/quests"
                 android:textAppearance="@style/TextAppearance.AppCompat.Title"
                 android:textColor="@color/md_white"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0.0"
                 app:layout_constraintStart_toEndOf="@+id/challengeIcon4"
-                app:layout_constraintTop_toBottomOf="@+id/view8" />
+                app:layout_constraintTop_toBottomOf="@+id/view9" />
 
             <TextView
                 android:id="@+id/challengeMotivation1"
@@ -210,7 +210,6 @@
                 android:layout_marginEnd="48dp"
                 android:layout_marginStart="16dp"
                 android:layout_marginTop="16dp"
-                android:text="Be healthier"
                 android:textAppearance="@style/TextAppearance.AppCompat.Subhead"
                 android:textColor="@color/md_white"
                 app:layout_constraintEnd_toEndOf="parent"
@@ -225,7 +224,6 @@
                 android:layout_marginEnd="48dp"
                 android:layout_marginStart="16dp"
                 android:layout_marginTop="16dp"
-                android:text="Be healthier"
                 android:textAppearance="@style/TextAppearance.AppCompat.Subhead"
                 android:textColor="@color/md_white"
                 app:layout_constraintEnd_toEndOf="parent"
@@ -240,7 +238,6 @@
                 android:layout_marginEnd="48dp"
                 android:layout_marginStart="16dp"
                 android:layout_marginTop="16dp"
-                android:text="Be healthier"
                 android:textAppearance="@style/TextAppearance.AppCompat.Subhead"
                 android:textColor="@color/md_white"
                 app:layout_constraintEnd_toEndOf="parent"
@@ -253,11 +250,67 @@
                 android:layout_width="0dp"
                 android:layout_height="1dp"
                 android:layout_marginTop="16dp"
-                android:background="@color/md_light_text_54"
+                android:background="@color/md_light_text_50"
                 app:layout_constraintEnd_toEndOf="@+id/challengePropsTitle"
                 app:layout_constraintHorizontal_bias="1.0"
                 app:layout_constraintStart_toStartOf="@+id/challengePropsTitle"
                 app:layout_constraintTop_toBottomOf="@+id/challengeMotivation3" />
+
+            <TextView
+                android:id="@+id/challengeNoteTitle"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="48dp"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="16dp"
+                android:text="@string/note"
+                android:textAppearance="@style/TextAppearance.AppCompat.Title"
+                android:textColor="@color/md_white"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.0"
+                app:layout_constraintStart_toEndOf="@+id/challengeIcon5"
+                app:layout_constraintTop_toBottomOf="@+id/view8" />
+
+            <ImageView
+                android:id="@+id/challengeIcon5"
+                android:layout_width="36dp"
+                android:layout_height="36dp"
+                android:layout_marginStart="48dp"
+                android:background="@drawable/bordered_circle_white_background"
+                android:padding="8dp"
+                app:layout_constraintBottom_toBottomOf="@+id/challengeNoteTitle"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="@+id/challengeNoteTitle"
+                app:srcCompat="@drawable/ic_note_white_24dp" />
+
+            <TextView
+                android:id="@+id/challengeNote"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="48dp"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="16dp"
+                android:background="?attr/selectableItemBackground"
+                android:textAppearance="@style/TextAppearance.AppCompat.Subhead"
+                android:textColor="@color/md_light_text_50"
+                android:text="@string/tap_to_add_note"
+                android:ellipsize="marquee"
+                android:maxLines="2"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.0"
+                app:layout_constraintStart_toStartOf="@+id/challengePropsTitle"
+                app:layout_constraintTop_toBottomOf="@+id/challengeNoteTitle" />
+
+            <View
+                android:id="@+id/view9"
+                android:layout_width="0dp"
+                android:layout_height="1dp"
+                android:layout_marginTop="16dp"
+                android:background="@color/md_light_text_50"
+                app:layout_constraintEnd_toEndOf="@+id/challengePropsTitle"
+                app:layout_constraintHorizontal_bias="1.0"
+                app:layout_constraintStart_toStartOf="@+id/challengePropsTitle"
+                app:layout_constraintTop_toBottomOf="@+id/challengeNote" />
 
             <android.support.v7.widget.RecyclerView
                 android:id="@+id/challengeQuests"
@@ -281,7 +334,7 @@
                 android:layout_marginTop="16dp"
                 android:text="@string/add_challenge_no_quests"
                 android:textAppearance="@style/TextAppearance.AppCompat.Subhead"
-                android:textColor="@color/md_light_text_54"
+                android:textColor="@color/md_light_text_50"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0.0"

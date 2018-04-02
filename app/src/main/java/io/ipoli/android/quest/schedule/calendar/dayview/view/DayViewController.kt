@@ -35,7 +35,7 @@ import io.ipoli.android.quest.reminder.picker.ReminderViewModel
 import io.ipoli.android.quest.schedule.calendar.CalendarViewController
 import io.ipoli.android.quest.schedule.calendar.dayview.view.DayViewState.StateType.*
 import io.ipoli.android.quest.schedule.calendar.dayview.view.widget.*
-import io.ipoli.android.quest.timer.TimerViewController
+import io.ipoli.android.quest.timer.QuestViewController
 import io.ipoli.android.quest.toMinutesFromStart
 import kotlinx.android.synthetic.main.calendar_hour_cell.view.*
 import kotlinx.android.synthetic.main.controller_day_view.view.*
@@ -554,7 +554,7 @@ class DayViewController :
 
             view.questName.text = vm.name
 
-            view.questSchedule.setTextColor(colorRes(R.color.md_light_text_87))
+            view.questSchedule.setTextColor(colorRes(R.color.md_light_text_70))
             view.questName.setTextColor(colorRes(R.color.md_white))
 
             view.repeatIndicator.visible = vm.isRepeating
@@ -597,7 +597,7 @@ class DayViewController :
                 vm.icon?.let {
                     val icon = IconicsDrawable(context)
                         .icon(it.icon)
-                        .colorRes(R.color.md_dark_text_26)
+                        .colorRes(R.color.md_dark_text_38)
                         .sizeDp(24)
                     view.questIcon.visible = true
                     view.questIcon.setImageDrawable(icon)
@@ -609,7 +609,7 @@ class DayViewController :
             } else {
 
                 view.questCategoryIndicator.setBackgroundResource(vm.backgroundColor.color900)
-                view.questSchedule.setTextColor(colorRes(R.color.md_light_text_87))
+                view.questSchedule.setTextColor(colorRes(R.color.md_light_text_70))
 
                 view.questName.text = vm.name
                 view.questName.setTextColor(colorRes(R.color.md_white))
@@ -805,7 +805,7 @@ class DayViewController :
                 viewModel.icon?.let {
                     val icon = IconicsDrawable(itemView.context)
                         .icon(it.icon)
-                        .colorRes(R.color.md_dark_text_26)
+                        .colorRes(R.color.md_dark_text_38)
                         .sizeDp(24)
                     itemView.unscheduledQuestIcon.visible = true
                     itemView.unscheduledQuestIcon.setImageDrawable(icon)
@@ -868,8 +868,8 @@ class DayViewController :
 
     private fun showQuest(questId: String) {
         pushWithRootRouter(
-            RouterTransaction.with(TimerViewController(questId)).tag(
-                TimerViewController.TAG
+            RouterTransaction.with(QuestViewController(questId)).tag(
+                QuestViewController.TAG
             )
         )
     }

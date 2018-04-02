@@ -252,6 +252,7 @@ class SaveQuestsForRepeatingQuestUseCase(
     ) =
         Quest(
             name = rq.name,
+            subQuests = rq.subQuests,
             color = rq.color,
             icon = rq.icon,
             category = rq.category,
@@ -262,7 +263,8 @@ class SaveQuestsForRepeatingQuestUseCase(
                 remindDate = scheduleDate
             ),
             repeatingQuestId = rq.id,
-            challengeId = rq.challengeId
+            challengeId = rq.challengeId,
+            note = rq.note
         )
 
     data class Result(val quests: List<Quest>, val repeatingQuest: RepeatingQuest)

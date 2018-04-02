@@ -5,6 +5,9 @@
     <color name="colorAccent">@color/md_indigo_A200</color>
     <color name="colorAccentDark">@color/md_red_A700</color>
 
+    <color name="sourceCodeBackground">#282c34</color>
+    <color name="sourceCodeText">@color/md_grey_300</color>
+
     <color name="md_white">#FFFFFF</color>
     <color name="md_black">#000000</color>
 
@@ -305,12 +308,11 @@
     <color name="md_dark_text_100">#FF000000</color>
     <color name="md_dark_text_87">#DE000000</color>
     <color name="md_dark_text_54">#8A000000</color>
-    <color name="md_dark_text_26">#42000000</color>
+    <color name="md_dark_text_38">#61000000</color>
     <color name="md_dark_text_12">#1F000000</color>
 
     <color name="md_light_text_100">#FFFFFFFF</color>
-    <color name="md_light_text_87">#DEFFFFFF</color>
-    <color name="md_light_text_54">#8AFFFFFF</color>
-    <color name="md_light_text_26">#42FFFFFF</color>
+    <color name="md_light_text_70">#B3FFFFFF</color>
+    <color name="md_light_text_50">#80FFFFFF</color>
     <color name="md_light_text_12">#1FFFFFFF</color>
 </resources>

@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:clickable="true"
+    android:focusable="true">
+
+    <ViewFlipper
+        android:id="@+id/switcher"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:inAnimation="@anim/fade_in"
+        android:outAnimation="@anim/fade_out"
+        app:layout_constraintBottom_toTopOf="@+id/bottomNavigation"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <include layout="@layout/controller_timer" />
+
+        <include layout="@layout/view_quest_sub_quests" />
+
+        <com.bluelinelabs.conductor.ChangeHandlerFrameLayout
+            android:id="@+id/noteContainer"
+            android:visibility="gone"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+
+    </ViewFlipper>
+
+    <android.support.design.widget.BottomNavigationView
+        android:id="@+id/bottomNavigation"
+        android:layout_width="match_parent"
+        android:layout_height="72dp"
+        app:itemIconTint="@drawable/navigation_bar_item"
+        app:itemTextColor="@drawable/navigation_bar_item"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:menu="@menu/quest_menu" />
+
+</android.support.constraint.ConstraintLayout>

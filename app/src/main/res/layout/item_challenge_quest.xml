@@ -31,7 +31,7 @@
         android:layout_width="0dp"
         android:layout_height="1.5dp"
         android:layout_marginEnd="16dp"
-        android:background="@color/md_dark_text_26"
+        android:background="@color/md_dark_text_38"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="@+id/questName" />

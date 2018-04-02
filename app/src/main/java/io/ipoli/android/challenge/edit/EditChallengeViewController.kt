@@ -8,12 +8,13 @@ import android.view.*
 import android.widget.AdapterView
 import android.widget.TextView
 import com.mikepenz.iconics.IconicsDrawable
-import kotlinx.android.synthetic.main.controller_edit_challenge.view.*
 import io.ipoli.android.R
 import io.ipoli.android.challenge.edit.EditChallengeViewState.StateType.*
 import io.ipoli.android.common.redux.android.ReduxViewController
 import io.ipoli.android.common.text.DateFormatter
 import io.ipoli.android.common.view.*
+import io.ipoli.android.note.NoteDialogViewController
+import kotlinx.android.synthetic.main.controller_edit_challenge.view.*
 import org.threeten.bp.LocalDate
 
 /**
@@ -86,6 +87,7 @@ class EditChallengeViewController(args : Bundle? = null) :
                 renderDifficulty(view, state)
                 renderIcon(view, state)
                 renderColor(view, state)
+                renderNote(view, state)
             }
 
             ICON_CHANGED -> {
@@ -104,6 +106,10 @@ class EditChallengeViewController(args : Bundle? = null) :
                 renderMotivations(view, state)
             }
 
+            NOTE_CHANGED -> {
+                renderNote(view, state)
+            }
+
             VALIDATION_ERROR_EMPTY_NAME -> {
                 view.challengeName.error = "Think of a name"
             }
@@ -112,6 +118,15 @@ class EditChallengeViewController(args : Bundle? = null) :
                 dispatch(EditChallengeAction.Save)
                 router.popCurrentController()
             }
+        }
+    }
+
+    private fun renderNote(view: View, state: EditChallengeViewState) {
+        view.questNoteValue.text = state.noteText
+        view.questNoteContainer.setOnClickListener {
+            NoteDialogViewController(state.note ?: "", { note ->
+                dispatch(EditChallengeAction.ChangeNote(note))
+            }).show(router)
         }
     }
 
@@ -265,4 +280,7 @@ class EditChallengeViewController(args : Bundle? = null) :
                     .colorRes(androidIcon.color)
                     .sizeDp(24)
             }
+
+    private val EditChallengeViewState.noteText: String
+        get() = note ?: stringRes(R.string.tap_to_add_note)
 }

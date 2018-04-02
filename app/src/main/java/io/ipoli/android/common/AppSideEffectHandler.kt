@@ -1,10 +1,5 @@
 package io.ipoli.android.common
 
-import kotlinx.coroutines.experimental.CommonPool
-import kotlinx.coroutines.experimental.android.UI
-import kotlinx.coroutines.experimental.channels.ReceiveChannel
-import kotlinx.coroutines.experimental.channels.consumeEach
-import kotlinx.coroutines.experimental.launch
 import io.ipoli.android.Constants
 import io.ipoli.android.challenge.entity.Challenge
 import io.ipoli.android.challenge.predefined.category.list.ChallengeListForCategoryAction
@@ -31,6 +26,7 @@ import io.ipoli.android.quest.schedule.addquest.AddQuestAction
 import io.ipoli.android.quest.schedule.addquest.AddQuestViewState
 import io.ipoli.android.quest.schedule.calendar.dayview.view.DayViewAction
 import io.ipoli.android.quest.schedule.calendar.dayview.view.DayViewState
+import io.ipoli.android.quest.subquest.SubQuest
 import io.ipoli.android.quest.timer.usecase.CompleteTimeRangeUseCase
 import io.ipoli.android.quest.usecase.CompleteQuestUseCase
 import io.ipoli.android.quest.usecase.LoadScheduleForDateUseCase
@@ -39,6 +35,11 @@ import io.ipoli.android.quest.usecase.SaveQuestUseCase
 import io.ipoli.android.repeatingquest.usecase.CreatePlaceholderQuestsForRepeatingQuestsUseCase
 import io.ipoli.android.repeatingquest.usecase.FindNextDateForRepeatingQuestUseCase
 import io.ipoli.android.repeatingquest.usecase.FindPeriodProgressForRepeatingQuestUseCase
+import kotlinx.coroutines.experimental.CommonPool
+import kotlinx.coroutines.experimental.android.UI
+import kotlinx.coroutines.experimental.channels.ReceiveChannel
+import kotlinx.coroutines.experimental.channels.consumeEach
+import kotlinx.coroutines.experimental.launch
 import org.threeten.bp.LocalDate
 import org.threeten.bp.LocalDateTime
 import org.threeten.bp.LocalTime
@@ -200,6 +201,7 @@ class DayViewSideEffectHandler : AppSideEffectHandler() {
         val questParams = SaveQuestUseCase.Parameters(
             id = dayViewState.editId,
             name = dayViewState.name,
+            subQuests = null,
             color = dayViewState.color!!,
             icon = dayViewState.icon,
             category = Category("WELLNESS", Color.GREEN),
@@ -231,9 +233,10 @@ class AddQuestSideEffectHandler : AppSideEffectHandler() {
 
     override suspend fun doExecute(action: Action, state: AppState) {
         if (action is AddQuestAction.Save) {
+
             val addQuestState = state.stateFor(AddQuestViewState::class.java)
             if (addQuestState.isRepeating) {
-                dispatch(AddQuestAction.SaveRepeatingQuest(action.name))
+                dispatch(AddQuestAction.SaveRepeatingQuest(action.name, action.subQuestNames))
             } else {
                 val scheduledDate = addQuestState.date ?: LocalDate.now()
                 val reminder = addQuestState.time?.let {
@@ -249,6 +252,13 @@ class AddQuestSideEffectHandler : AppSideEffectHandler() {
                 }
                 val questParams = SaveQuestUseCase.Parameters(
                     name = action.name,
+                    subQuests = action.subQuestNames.map {
+                        SubQuest(
+                            name = it,
+                            completedAtDate = null,
+                            completedAtTime = null
+                        )
+                    },
                     color = addQuestState.color ?: Color.GREEN,
                     icon = addQuestState.icon,
                     category = Category("WELLNESS", Color.GREEN),
@@ -401,7 +411,11 @@ class LoadAllDataSideEffectHandler : AppSideEffectHandler() {
             challengesChannel!!.consumeEach {
                 launch(CommonPool) {
                     val challenges = it.map {
-                        findQuestsForChallengeUseCase.execute(FindQuestsForChallengeUseCase.Params(it))
+                        findQuestsForChallengeUseCase.execute(
+                            FindQuestsForChallengeUseCase.Params(
+                                it
+                            )
+                        )
                     }.map {
                         findNextDateForChallengeUseCase.execute(
                             FindNextDateForChallengeUseCase.Params(

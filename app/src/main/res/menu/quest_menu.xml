@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/actionTimer"
+        android:icon="@drawable/ic_timer_black_24dp"
+        android:title="Timer" />
+    <item
+        android:id="@+id/actionSubquest"
+        android:icon="@drawable/ic_playlist_add_black_24dp"
+        android:title="Sub Quests" />
+    <item
+        android:id="@+id/actionNote"
+        android:icon="@drawable/ic_note_black_24dp"
+        android:title="Note" />
+</menu>

@@ -62,21 +62,21 @@
                     style="@style/TextAppearance.AppCompat.Subhead"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_gravity="center_horizontal"
                     android:layout_marginBottom="16dp"
                     android:layout_marginTop="16dp"
-                    android:layout_gravity="center_horizontal"
-                    android:drawableStart="@drawable/ic_event_white_24dp"
-                    android:drawablePadding="8dp" />
+                    android:drawablePadding="8dp"
+                    android:drawableStart="@drawable/ic_event_white_24dp" />
 
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="72dp"
-                    android:visibility="gone"
                     android:layout_marginEnd="24dp"
                     android:layout_marginStart="24dp"
                     android:layout_marginTop="16dp"
                     android:baselineAligned="false"
                     android:orientation="horizontal"
+                    android:visibility="gone"
                     android:weightSum="4">
 
                     <LinearLayout
@@ -194,18 +194,37 @@
             android:paddingTop="16dp">
 
             <TextView
-                style="@style/TextAppearance.AppCompat.Subhead"
-                android:layout_width="match_parent"
-                android:layout_height="48dp"
-                android:layout_marginStart="16dp"
-                android:gravity="center_vertical"
-                android:text="@string/history"
-                android:textColor="?attr/colorAccent" />
+                style="@style/SectionTitle"
+                android:text="@string/history" />
 
             <io.ipoli.android.common.view.widget.chart.HistoryChart
                 android:id="@+id/historyChart"
                 android:layout_width="match_parent"
-                android:layout_height="364dp" />
+                android:layout_height="348dp" />
+
+            <TextView
+                style="@style/SectionTitle"
+                android:text="@string/sub_quests" />
+
+            <android.support.v7.widget.RecyclerView
+                android:id="@+id/subQuestList"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp" />
+
+            <TextView
+                style="@style/SectionTitle"
+                android:text="@string/note" />
+
+            <TextView
+                android:id="@+id/note"
+                android:layout_marginStart="16dp"
+                android:layout_marginEnd="16dp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="?attr/selectableItemBackground"
+                android:gravity="center_vertical"
+                android:textAppearance="@style/TextAppearance.AppCompat.Body1" />
 
         </LinearLayout>
     </android.support.v4.widget.NestedScrollView>

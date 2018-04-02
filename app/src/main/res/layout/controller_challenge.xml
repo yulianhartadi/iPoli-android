@@ -58,7 +58,7 @@
                         android:layout_marginStart="32dp"
                         android:text="Progress"
                         android:textAppearance="@style/TextAppearance.AppCompat.Body2"
-                        android:textColor="@color/md_light_text_87"
+                        android:textColor="@color/md_light_text_70"
                         android:textSize="16sp" />
 
                     <TextView
@@ -70,7 +70,7 @@
                         android:layout_marginBottom="8dp"
                         android:layout_marginEnd="32dp"
                         android:textAppearance="@style/TextAppearance.AppCompat.Body1"
-                        android:textColor="@color/md_light_text_87" />
+                        android:textColor="@color/md_light_text_70" />
 
                     <ProgressBar
                         android:id="@+id/progress"
@@ -116,7 +116,7 @@
                             android:layout_marginTop="8dp"
                             android:text="Difficulty"
                             android:textAppearance="@style/TextAppearance.AppCompat.Caption"
-                            android:textColor="@color/md_light_text_87" />
+                            android:textColor="@color/md_light_text_70" />
                     </LinearLayout>
 
                     <LinearLayout
@@ -142,7 +142,7 @@
                             android:layout_marginTop="8dp"
                             android:text="End date"
                             android:textAppearance="@style/TextAppearance.AppCompat.Caption"
-                            android:textColor="@color/md_light_text_87" />
+                            android:textColor="@color/md_light_text_70" />
                     </LinearLayout>
 
                     <LinearLayout
@@ -169,7 +169,7 @@
                             android:layout_marginTop="8dp"
                             android:text="Next date"
                             android:textAppearance="@style/TextAppearance.AppCompat.Caption"
-                            android:textColor="@color/md_light_text_87" />
+                            android:textColor="@color/md_light_text_70" />
                     </LinearLayout>
 
 
@@ -214,13 +214,8 @@
                 android:layout_height="320dp" />
 
             <TextView
-                android:layout_width="match_parent"
-                android:layout_height="48dp"
-                android:layout_marginStart="16dp"
-                android:gravity="center_vertical"
-                android:text="Why will I do it?"
-                android:textAppearance="@style/TextAppearance.AppCompat.Subhead"
-                android:textColor="?attr/colorAccent" />
+                style="@style/SectionTitle"
+                android:text="Why will I do it?" />
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -253,13 +248,23 @@
             </LinearLayout>
 
             <TextView
-                android:layout_width="match_parent"
-                android:layout_height="48dp"
+                style="@style/SectionTitle"
+                android:text="@string/note" />
+
+            <TextView
+                android:id="@+id/note"
                 android:layout_marginStart="16dp"
+                android:layout_marginEnd="16dp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="?attr/selectableItemBackground"
                 android:gravity="center_vertical"
-                android:text="Quests"
-                android:textAppearance="@style/TextAppearance.AppCompat.Subhead"
-                android:textColor="?attr/colorAccent" />
+                android:textAppearance="@style/TextAppearance.AppCompat.Body1" />
+
+
+            <TextView
+                style="@style/SectionTitle"
+                android:text="@string/quests" />
 
             <android.support.v7.widget.RecyclerView
                 android:id="@+id/questList"

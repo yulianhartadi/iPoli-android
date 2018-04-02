@@ -1,14 +1,15 @@
 package io.ipoli.android.repeatingquest.show
 
+import android.content.res.ColorStateList
 import android.graphics.drawable.GradientDrawable
 import android.os.Bundle
 import android.support.annotation.ColorInt
 import android.support.annotation.LayoutRes
 import android.support.design.widget.AppBarLayout
+import android.support.v7.widget.LinearLayoutManager
 import android.view.*
 import com.bluelinelabs.conductor.RouterTransaction
 import com.bluelinelabs.conductor.changehandler.FadeChangeHandler
-import kotlinx.android.synthetic.main.controller_repeating_quest.view.*
 import io.ipoli.android.MainActivity
 import io.ipoli.android.R
 import io.ipoli.android.common.ViewUtils
@@ -17,7 +18,11 @@ import io.ipoli.android.common.redux.android.ReduxViewController
 import io.ipoli.android.common.text.DateFormatter
 import io.ipoli.android.common.text.DurationFormatter
 import io.ipoli.android.common.view.*
+import io.ipoli.android.common.view.recyclerview.BaseRecyclerViewAdapter
+import io.ipoli.android.common.view.recyclerview.SimpleViewHolder
 import io.ipoli.android.repeatingquest.edit.EditRepeatingQuestViewController
+import kotlinx.android.synthetic.main.controller_repeating_quest.view.*
+import kotlinx.android.synthetic.main.item_repeating_quest_sub_quest.view.*
 
 
 /**
@@ -104,6 +109,9 @@ class RepeatingQuestViewController(args: Bundle? = null) :
             }
         })
 
+        view.subQuestList.layoutManager = LinearLayoutManager(activity!!)
+        view.subQuestList.adapter = SubQuestsAdapter()
+
         return view
     }
 
@@ -122,12 +130,7 @@ class RepeatingQuestViewController(args: Bundle? = null) :
                 router.handleBack()
 
             R.id.actionEdit -> {
-                val changeHandler = FadeChangeHandler()
-                rootRouter.pushController(
-                    RouterTransaction.with(EditRepeatingQuestViewController(repeatingQuestId))
-                        .pushChangeHandler(changeHandler)
-                        .popChangeHandler(changeHandler)
-                )
+                showEdit()
                 true
             }
             R.id.actionDelete -> {
@@ -136,6 +139,15 @@ class RepeatingQuestViewController(args: Bundle? = null) :
             }
             else -> super.onOptionsItemSelected(item)
         }
+
+    private fun showEdit() {
+        val changeHandler = FadeChangeHandler()
+        rootRouter.pushController(
+            RouterTransaction.with(EditRepeatingQuestViewController(repeatingQuestId))
+                .pushChangeHandler(changeHandler)
+                .popChangeHandler(changeHandler)
+        )
+    }
 
     override fun onAttach(view: View) {
         super.onAttach(view)
@@ -150,11 +162,12 @@ class RepeatingQuestViewController(args: Bundle? = null) :
     override fun render(state: RepeatingQuestViewState, view: View) {
         when (state) {
             is RepeatingQuestViewState.Changed -> {
-                colorLayout(view, state)
-
+                colorLayout(state, view)
                 renderName(state, view)
-                renderProgress(view, state)
-                renderSummaryStats(view, state)
+                renderSubQuests(state, view)
+                renderProgress(state, view)
+                renderSummaryStats(state, view)
+                renderNote(state, view)
             }
 
             RepeatingQuestViewState.Removed ->
@@ -165,16 +178,28 @@ class RepeatingQuestViewController(args: Bundle? = null) :
         }
     }
 
+    private fun renderNote(
+        state: RepeatingQuestViewState.Changed,
+        view: View
+    ) {
+        if (state.note != null) {
+            view.note.setMarkdown(state.note)
+        } else {
+            view.note.setText(R.string.tap_to_add_note)
+            view.note.setTextColor(colorRes(R.color.md_dark_text_54))
+        }
+        view.note.setOnClickListener { showEdit() }
+    }
+
+    private fun renderSubQuests(state: RepeatingQuestViewState.Changed, view: View) {
+        (view.subQuestList.adapter as SubQuestsAdapter).updateAll(state.subQuestNames)
+    }
+
     private fun renderSummaryStats(
-        view: View,
-        state: RepeatingQuestViewState.Changed
+        state: RepeatingQuestViewState.Changed,
+        view: View
     ) {
         view.nextText.text = state.nextScheduledDateText
-//        view.categoryName.text = state.category.name
-//        view.categoryImage.setImageResource(R.drawable.ic_context_chores_white)
-//        view.totalTimeSpent.text = state.timeSpentText
-//        view.nextScheduledDate.text = state.nextScheduledDateText
-//        view.questStreak.text = state.currentStreak.toString()
     }
 
     private fun renderName(
@@ -186,8 +211,8 @@ class RepeatingQuestViewController(args: Bundle? = null) :
     }
 
     private fun renderProgress(
-        view: View,
-        state: RepeatingQuestViewState.Changed
+        state: RepeatingQuestViewState.Changed,
+        view: View
     ) {
         val inflater = LayoutInflater.from(view.context)
         view.progressContainer.removeAllViews()
@@ -214,14 +239,29 @@ class RepeatingQuestViewController(args: Bundle? = null) :
     }
 
     private fun colorLayout(
-        view: View,
-        state: RepeatingQuestViewState.Changed
+        state: RepeatingQuestViewState.Changed,
+        view: View
     ) {
         view.appbar.setBackgroundColor(colorRes(state.color500))
         view.toolbar.setBackgroundColor(colorRes(state.color500))
         view.collapsingToolbarContainer.setContentScrimColor(colorRes(state.color500))
         activity?.window?.navigationBarColor = colorRes(state.color500)
         activity?.window?.statusBarColor = colorRes(state.color700)
+    }
+
+    inner class SubQuestsAdapter :
+        BaseRecyclerViewAdapter<String>(
+            R.layout.item_repeating_quest_sub_quest
+        ) {
+        override fun onBindViewModel(
+            vm: String,
+            view: View,
+            holder: SimpleViewHolder
+        ) {
+            view.subQuestIndicator.backgroundTintList =
+                ColorStateList.valueOf(colorRes(R.color.md_dark_text_54))
+            view.subQuestName.text = vm
+        }
     }
 
     private val RepeatingQuestViewState.Changed.color500

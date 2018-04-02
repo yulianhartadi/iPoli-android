@@ -85,7 +85,7 @@
         android:id="@+id/addContainerBackground"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@color/md_dark_text_26"
+        android:background="@color/md_dark_text_38"
         android:clickable="true"
         android:elevation="3dp"
         android:focusable="true"

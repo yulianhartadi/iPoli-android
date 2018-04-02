@@ -95,10 +95,19 @@ object AddChallengeReducer : BaseViewStateReducer<AddChallengeViewState> () {
                 }
             }
 
+            is AddChallengeSummaryAction.UpdateNote -> {
+                val note = action.note.trim()
+                subState.copy(
+                    type = NOTE_CHANGED,
+                    note = if(note.isEmpty()) null else note
+                )
+            }
+
             AddChallengeSummaryAction.Save ->
                 subState.copy(
                     type = CLOSE
                 )
+
 
             else -> subState
     }
@@ -114,7 +123,8 @@ object AddChallengeReducer : BaseViewStateReducer<AddChallengeViewState> () {
             end = LocalDate.now(),
             motivationList = listOf(),
             allQuests = listOf(),
-            selectedQuestIds = setOf()
+            selectedQuestIds = setOf(),
+            note = null
         )
 }
 
@@ -129,13 +139,15 @@ data class AddChallengeViewState(
     val end: LocalDate,
     val motivationList: List<String>,
     val allQuests: List<BaseQuest>,
-    val selectedQuestIds: Set<String>
+    val selectedQuestIds: Set<String>,
+    val note: String?
 ) : ViewState {
     enum class StateType {
         INITIAL,
         DATA_CHANGED,
         CHANGE_PAGE,
         CLOSE,
-        COLOR_CHANGED
+        COLOR_CHANGED,
+        NOTE_CHANGED
     }
 }

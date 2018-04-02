@@ -30,7 +30,7 @@
             android:layout_height="wrap_content"
             android:ellipsize="end"
             android:maxLines="1"
-            android:textColor="@color/md_light_text_87"
+            android:textColor="@color/md_light_text_70"
             tools:text="Name" />
 
         <TextView
@@ -39,7 +39,7 @@
             android:layout_height="wrap_content"
             android:maxLines="1"
             android:textAppearance="@style/TextAppearance.AppCompat.Body1"
-            android:textColor="@color/md_light_text_54" />
+            android:textColor="@color/md_light_text_50" />
     </LinearLayout>
 
 

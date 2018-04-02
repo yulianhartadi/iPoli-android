@@ -1,16 +1,25 @@
 package io.ipoli.android.common.view.recyclerview
 
 import android.support.annotation.LayoutRes
+import android.support.v7.recyclerview.extensions.ListAdapter
+import android.support.v7.util.DiffUtil
 import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import kotlin.reflect.KClass
 
-abstract class BaseRecyclerViewAdapter<in VM>(
-    @LayoutRes private val itemLayout: Int,
-    private var viewModels: List<VM>
-) : RecyclerView.Adapter<SimpleViewHolder>() {
+private class DiffCallback<VM> : DiffUtil.ItemCallback<VM>() {
+    override fun areItemsTheSame(oldItem: VM?, newItem: VM?) = oldItem == newItem
+
+    override fun areContentsTheSame(oldItem: VM?, newItem: VM?) =
+        oldItem == newItem
+}
+
+
+abstract class BaseRecyclerViewAdapter<VM>(
+    @LayoutRes private val itemLayout: Int
+) : ListAdapter<VM, SimpleViewHolder>(DiffCallback<VM>()) {
 
     override fun onCreateViewHolder(
         parent: ViewGroup,
@@ -25,17 +34,40 @@ abstract class BaseRecyclerViewAdapter<in VM>(
         )
 
     override fun onBindViewHolder(holder: SimpleViewHolder, position: Int) {
-        onBindViewModel(viewModels[position], holder.itemView)
+        onBindViewModel(getItem(holder.adapterPosition), holder.itemView, holder)
     }
 
-    abstract fun onBindViewModel(vm: VM, view: View)
-
-    override fun getItemCount() = viewModels.size
+    abstract fun onBindViewModel(vm: VM, view: View, holder: SimpleViewHolder)
 
     fun updateAll(viewModels: List<VM>) {
-        this.viewModels = viewModels
-        notifyDataSetChanged()
+        submitList(viewModels)
     }
+
+    fun add(viewModel: VM) {
+        val vms = items
+        vms.add(viewModel)
+        updateAll(vms)
+    }
+
+    fun move(oldPosition: Int, newPosition: Int) {
+        val vms = items
+        val vm = vms[oldPosition]
+        vms.removeAt(oldPosition)
+        vms.add(newPosition, vm)
+        updateAll(vms)
+    }
+
+    fun removeAt(position: Int) {
+        val vms = items
+        vms.removeAt(position)
+        updateAll(vms)
+    }
+
+    private val items: MutableList<VM>
+        get() = 0.until(itemCount).map {
+            getItem(it)
+        }.toMutableList()
+
 }
 
 abstract class MultiViewRecyclerViewAdapter : RecyclerView.Adapter<SimpleViewHolder>() {

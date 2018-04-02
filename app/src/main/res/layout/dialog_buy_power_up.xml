@@ -24,6 +24,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
+        android:gravity="center_vertical"
         android:layout_marginTop="16dp"
         android:drawablePadding="4dp"
         android:drawableStart="@drawable/ic_life_coin_24dp"

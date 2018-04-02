@@ -60,6 +60,7 @@ class FirestoreChallengeRepository(
             completedAtTime = c.completedAtMinute?.let {
                 Time.of(it.toInt())
             },
+            note = c.note,
             createdAt = c.createdAt.instant,
             updatedAt = c.updatedAt.instant
         )
@@ -79,6 +80,7 @@ class FirestoreChallengeRepository(
         c.coins = entity.coins?.toLong()
         c.completedAtDate = entity.completedAtDate?.startOfDayUTC()
         c.completedAtMinute = entity.completedAtTime?.toMinuteOfDay()?.toLong()
+        c.note = entity.note
         c.updatedAt = entity.updatedAt.toEpochMilli()
         c.createdAt = entity.createdAt.toEpochMilli()
         return c
@@ -100,6 +102,7 @@ data class DbChallenge(override val map: MutableMap<String, Any?> = mutableMapOf
     var coins: Long? by map
     var completedAtDate: Long? by map
     var completedAtMinute: Long? by map
+    var note: String? by map
     override var createdAt: Long by map
     override var updatedAt: Long by map
     override var removedAt: Long? by map

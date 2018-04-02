@@ -9,8 +9,8 @@ import io.ipoli.android.common.redux.Action
 import io.ipoli.android.quest.Color
 import io.ipoli.android.quest.Icon
 import io.ipoli.android.quest.Reminder
-import io.ipoli.android.quest.toMinutesFromStart
 import io.ipoli.android.quest.reminder.picker.ReminderViewModel
+import io.ipoli.android.quest.toMinutesFromStart
 import io.ipoli.android.repeatingquest.edit.EditRepeatingQuestViewState.StateType.*
 import io.ipoli.android.repeatingquest.entity.RepeatType
 import io.ipoli.android.repeatingquest.entity.RepeatingPattern
@@ -30,10 +30,11 @@ sealed class EditRepeatingQuestAction : Action {
     data class ChangeStartTime(val time: Time?) : EditRepeatingQuestAction()
     data class ChangeDuration(val minutes: Int) : EditRepeatingQuestAction()
     data class ChangeReminder(val reminder: ReminderViewModel?) : EditRepeatingQuestAction()
-    data class ChangeName(val name: String) : EditRepeatingQuestAction()
-    object Save : EditRepeatingQuestAction()
+    data class Save(val name: String, val subQuestNames: List<String>) : EditRepeatingQuestAction()
     data class ChangeColor(val color: Color) : EditRepeatingQuestAction()
     data class ChangeIcon(val icon: Icon?) : EditRepeatingQuestAction()
+    data class ChangeNote(val note: String) : EditRepeatingQuestAction()
+    object AddSubQuest : EditRepeatingQuestAction()
     object QuestSaved : EditRepeatingQuestAction()
     data class SaveInvalidQuest(val error: RepeatingQuestSideEffectHandler.ValidationError) :
         EditRepeatingQuestAction()
@@ -58,13 +59,15 @@ object EditRepeatingQuestReducer : BaseViewStateReducer<EditRepeatingQuestViewSt
                     type = DATA_LOADED,
                     id = rq.id,
                     name = rq.name,
+                    subQuestNames = rq.subQuests.map { it.name },
                     startTime = rq.startTime,
                     repeatingPattern = rq.repeatingPattern,
                     repeatType = rq.repeatingPattern.repeatType,
                     duration = rq.duration,
                     reminder = rq.reminder,
                     icon = rq.icon,
-                    color = rq.color
+                    color = rq.color,
+                    note = rq.note
                 )
             }
 
@@ -103,13 +106,6 @@ object EditRepeatingQuestReducer : BaseViewStateReducer<EditRepeatingQuestViewSt
                 )
             }
 
-            is EditRepeatingQuestAction.ChangeName -> {
-                subState.copy(
-                    type = NAME_CHANGED,
-                    name = action.name
-                )
-            }
-
             is EditRepeatingQuestAction.ChangeColor -> {
                 subState.copy(
                     type = COLOR_CHANGED,
@@ -124,11 +120,24 @@ object EditRepeatingQuestReducer : BaseViewStateReducer<EditRepeatingQuestViewSt
                 )
             }
 
+            is EditRepeatingQuestAction.ChangeNote -> {
+                val note = action.note.trim()
+                subState.copy(
+                    type = NOTE_CHANGED,
+                    note = if (note.isEmpty()) null else note
+                )
+            }
+
             is EditRepeatingQuestAction.SaveInvalidQuest -> {
                 subState.copy(
                     type = VALIDATION_ERROR_EMPTY_NAME
                 )
             }
+
+            EditRepeatingQuestAction.AddSubQuest ->
+                subState.copy(
+                    type = SUB_QUEST_ADDED
+                )
 
             EditRepeatingQuestAction.QuestSaved -> {
                 subState.copy(
@@ -144,13 +153,15 @@ object EditRepeatingQuestReducer : BaseViewStateReducer<EditRepeatingQuestViewSt
             type = LOADING,
             id = "",
             name = "",
+            subQuestNames = listOf(),
             repeatingPattern = RepeatingPattern.Daily(),
             repeatType = RepeatType.DAILY,
             duration = Constants.QUEST_MIN_DURATION,
             startTime = null,
             reminder = null,
             icon = null,
-            color = Color.GREEN
+            color = Color.GREEN,
+            note = null
         )
 
 }
@@ -160,13 +171,15 @@ data class EditRepeatingQuestViewState(
     val type: EditRepeatingQuestViewState.StateType,
     val id: String,
     val name: String,
+    val subQuestNames: List<String>,
     val repeatingPattern: RepeatingPattern,
     val repeatType: RepeatType,
     val duration: Int,
     val startTime: Time?,
     val reminder: Reminder?,
     val icon: Icon?,
-    val color: Color
+    val color: Color,
+    val note: String?
 ) : ViewState {
     enum class StateType {
         LOADING,
@@ -175,11 +188,12 @@ data class EditRepeatingQuestViewState(
         START_TIME_CHANGED,
         DURATION_CHANGED,
         REMINDER_CHANGED,
-        NAME_CHANGED,
         COLOR_CHANGED,
         ICON_CHANGED,
+        NOTE_CHANGED,
         VALIDATION_ERROR_EMPTY_NAME,
-        QUEST_SAVED
+        QUEST_SAVED,
+        SUB_QUEST_ADDED
     }
 }
 

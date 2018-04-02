@@ -24,8 +24,8 @@ import io.ipoli.android.common.ViewUtils
 import io.ipoli.android.common.redux.android.ReduxViewController
 import io.ipoli.android.common.view.*
 import io.ipoli.android.quest.CompletedQuestViewController
-import io.ipoli.android.quest.schedule.agenda.widget.SwipeToCompleteCallback
-import io.ipoli.android.quest.timer.TimerViewController
+import io.ipoli.android.common.view.recyclerview.SwipeToCompleteCallback
+import io.ipoli.android.quest.timer.QuestViewController
 import org.threeten.bp.LocalDate
 
 /**
@@ -167,8 +167,8 @@ class AgendaViewController(args: Bundle? = null) :
 
     private fun showQuest(questId: String) {
         pushWithRootRouter(
-            RouterTransaction.with(TimerViewController(questId)).tag(
-                TimerViewController.TAG
+            RouterTransaction.with(QuestViewController(questId)).tag(
+                QuestViewController.TAG
             )
         )
     }

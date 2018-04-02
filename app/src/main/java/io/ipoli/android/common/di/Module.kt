@@ -6,8 +6,6 @@ import android.preference.PreferenceManager
 import android.view.LayoutInflater
 import com.google.firebase.analytics.FirebaseAnalytics
 import com.google.firebase.firestore.FirebaseFirestore
-import kotlinx.coroutines.experimental.CommonPool
-import kotlinx.coroutines.experimental.Job
 import io.ipoli.android.challenge.persistence.ChallengeRepository
 import io.ipoli.android.challenge.persistence.FirestoreChallengeRepository
 import io.ipoli.android.challenge.predefined.usecase.SchedulePredefinedChallengeUseCase
@@ -32,6 +30,7 @@ import io.ipoli.android.event.persistence.AndroidCalendarRepository
 import io.ipoli.android.event.persistence.CalendarRepository
 import io.ipoli.android.event.persistence.EventRepository
 import io.ipoli.android.event.sideeffect.CalendarSideEffectHandler
+import io.ipoli.android.note.usecase.SaveQuestNoteUseCase
 import io.ipoli.android.pet.AndroidJobLowerPetStatsScheduler
 import io.ipoli.android.pet.LowerPetStatsScheduler
 import io.ipoli.android.pet.PetDialogPresenter
@@ -59,9 +58,10 @@ import io.ipoli.android.quest.reminder.picker.ReminderPickerDialogPresenter
 import io.ipoli.android.quest.schedule.agenda.sideeffect.AgendaSideEffectHandler
 import io.ipoli.android.quest.schedule.agenda.usecase.CreateAgendaItemsUseCase
 import io.ipoli.android.quest.schedule.agenda.usecase.FindAgendaDatesUseCase
+import io.ipoli.android.quest.subquest.usecase.*
 import io.ipoli.android.quest.timer.job.AndroidJobTimerCompleteScheduler
 import io.ipoli.android.quest.timer.job.TimerCompleteScheduler
-import io.ipoli.android.quest.timer.sideeffect.TimerSideEffectHandler
+import io.ipoli.android.quest.timer.sideeffect.QuestSideEffectHandler
 import io.ipoli.android.quest.timer.usecase.*
 import io.ipoli.android.quest.usecase.*
 import io.ipoli.android.quest.view.QuestCompletePresenter
@@ -92,6 +92,8 @@ import io.ipoli.android.store.theme.sideeffect.ThemeSideEffectHandler
 import io.ipoli.android.store.theme.usecase.BuyThemeUseCase
 import io.ipoli.android.store.theme.usecase.ChangeThemeUseCase
 import io.ipoli.android.store.usecase.PurchaseGemPackUseCase
+import kotlinx.coroutines.experimental.CommonPool
+import kotlinx.coroutines.experimental.Job
 import space.traversal.kapsule.HasModules
 import space.traversal.kapsule.Injects
 import space.traversal.kapsule.required
@@ -458,6 +460,27 @@ class MainUseCaseModule : UseCaseModule, Injects<Module> {
 
     override val changeAvatarUseCase
         get() = ChangeAvatarUseCase(playerRepository)
+
+    override val completeSubQuestUseCase
+        get() = CompleteSubQuestUseCase(questRepository)
+
+    override val undoCompletedSubQuestUseCase
+        get() = UndoCompletedSubQuestUseCase(questRepository)
+
+    override val saveSubQuestNameUseCase
+        get() = SaveSubQuestNameUseCase(questRepository)
+
+    override val addSubQuestUseCase
+        get() = AddSubQuestUseCase(questRepository)
+
+    override val removeSubQuestUseCase
+        get() = RemoveSubQuestUseCase(questRepository)
+
+    override val reorderSubQuestUseCase
+        get() = ReorderSubQuestUseCase(questRepository)
+
+    override val saveQuestNoteUseCase
+        get() = SaveQuestNoteUseCase(questRepository)
 }
 
 interface UseCaseModule {
@@ -525,6 +548,13 @@ interface UseCaseModule {
     val removeMembershipUseCase: RemoveMembershipUseCase
     val buyAvatarUseCase: BuyAvatarUseCase
     val changeAvatarUseCase: ChangeAvatarUseCase
+    val completeSubQuestUseCase: CompleteSubQuestUseCase
+    val undoCompletedSubQuestUseCase: UndoCompletedSubQuestUseCase
+    val saveSubQuestNameUseCase: SaveSubQuestNameUseCase
+    val addSubQuestUseCase: AddSubQuestUseCase
+    val removeSubQuestUseCase: RemoveSubQuestUseCase
+    val reorderSubQuestUseCase: ReorderSubQuestUseCase
+    val saveQuestNoteUseCase: SaveQuestNoteUseCase
 }
 
 interface PresenterModule {
@@ -657,7 +687,7 @@ class AndroidStateStoreModule : StateStoreModule, Injects<Module> {
                 CalendarSideEffectHandler(),
                 MembershipSideEffectHandler(),
                 PowerUpSideEffectHandler(),
-                TimerSideEffectHandler(),
+                QuestSideEffectHandler(),
                 AvatarSideEffectHandler(),
                 ThemeSideEffectHandler()
             ),

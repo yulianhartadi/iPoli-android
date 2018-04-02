@@ -16,7 +16,7 @@
         android:layout_marginEnd="8dp"
         android:layout_marginStart="24dp"
         android:layout_marginTop="24dp"
-        android:textColor="@color/md_light_text_87"
+        android:textColor="@color/md_light_text_70"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintLeft_toLeftOf="parent"

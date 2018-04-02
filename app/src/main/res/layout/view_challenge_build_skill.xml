@@ -40,7 +40,7 @@
             android:text="@string/challenge_category_build_skill_description"
             android:textAlignment="viewEnd"
             android:textAppearance="@style/TextAppearance.AppCompat.Caption"
-            android:textColor="@color/md_light_text_54"
+            android:textColor="@color/md_light_text_50"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="@id/guideline10" />
@@ -62,7 +62,7 @@
             android:text="@string/challenge_category_build_skill_name"
             android:textAlignment="viewEnd"
             android:textAppearance="@style/TextAppearance.AppCompat.Title"
-            android:textColor="@color/md_light_text_87"
+            android:textColor="@color/md_light_text_70"
             app:layout_constraintBottom_toTopOf="@+id/buildSkillDesc"
             app:layout_constraintEnd_toEndOf="@+id/buildSkillBg"
             app:layout_constraintStart_toStartOf="@+id/guideline10" />

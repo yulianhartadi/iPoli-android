@@ -292,7 +292,7 @@ class CurrencyConverterDialogController :
         if (enabled) {
             view.convert.setTextColor(colorRes(R.color.md_white))
         } else {
-            view.convert.setTextColor(colorRes(R.color.md_dark_text_26))
+            view.convert.setTextColor(colorRes(R.color.md_dark_text_38))
         }
     }
 

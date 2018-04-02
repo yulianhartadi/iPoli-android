@@ -10,6 +10,7 @@ import android.support.v7.app.AlertDialog
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.WindowManager
 import android.widget.ImageView
 import android.widget.TextView
 import com.bluelinelabs.conductor.RestoreViewOnCreateController
@@ -170,6 +171,9 @@ abstract class ReduxDialogController<A : Action, VS : ViewState, out R : ViewSta
             .setView(contentView)
             .setCustomTitle(headerView)
         dialog = onCreateDialog(dialogBuilder, contentView, savedViewState)
+
+        dialog.window.addFlags(WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE);
+
         onDialogCreated(dialog, contentView)
 
         dialog.ownerActivity = activity!!
@@ -214,6 +218,12 @@ abstract class ReduxDialogController<A : Action, VS : ViewState, out R : ViewSta
     override fun onAttach(view: View) {
         super.onAttach(view)
         dialog.show()
+        dialog.window.decorView.systemUiVisibility =
+            dialog.ownerActivity.window.decorView.systemUiVisibility
+
+        dialog.window.clearFlags(
+            WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE
+        )
     }
 
     override fun onDetach(view: View) {
@@ -225,6 +235,10 @@ abstract class ReduxDialogController<A : Action, VS : ViewState, out R : ViewSta
         super.onDestroyView(view)
         dialog.setOnDismissListener(null)
         dialog.dismiss()
+    }
+
+    override fun colorLayoutBars() {
+
     }
 
     /**

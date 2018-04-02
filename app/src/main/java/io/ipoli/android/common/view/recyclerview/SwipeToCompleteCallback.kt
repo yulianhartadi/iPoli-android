@@ -1,4 +1,4 @@
-package io.ipoli.android.quest.schedule.agenda.widget
+package io.ipoli.android.common.view.recyclerview
 
 import android.content.Context
 import android.graphics.Canvas

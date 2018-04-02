@@ -7,8 +7,6 @@ import com.bluelinelabs.conductor.Controller
 import com.bluelinelabs.conductor.Router
 import com.bluelinelabs.conductor.RouterTransaction
 import com.bluelinelabs.conductor.support.RouterPagerAdapter
-import kotlinx.android.synthetic.main.controller_add_challenge.view.*
-import kotlinx.android.synthetic.main.view_no_elevation_toolbar.view.*
 import io.ipoli.android.R
 import io.ipoli.android.challenge.add.AddChallengeViewState.StateType.*
 import io.ipoli.android.common.redux.android.ReduxViewController
@@ -16,6 +14,8 @@ import io.ipoli.android.common.view.colorRes
 import io.ipoli.android.common.view.setToolbar
 import io.ipoli.android.common.view.showBackButton
 import io.ipoli.android.common.view.toolbarTitle
+import kotlinx.android.synthetic.main.controller_add_challenge.view.*
+import kotlinx.android.synthetic.main.view_no_elevation_toolbar.view.*
 
 /**
  * Created by Polina Zhelyazkova <polina@mypoli.fun>

@@ -24,7 +24,7 @@
         android:layout_marginStart="16dp"
         android:layout_toEndOf="@id/pet"
         android:textAppearance="@style/TextAppearance.AppCompat.Subhead"
-        android:textColor="@color/md_light_text_87" />
+        android:textColor="@color/md_light_text_70" />
 
     <TextView
         android:id="@+id/earnedXP"
@@ -37,7 +37,7 @@
         android:drawableStart="@drawable/ic_star_yellow_24dp"
         android:text="0"
         android:textAppearance="@style/TextAppearance.AppCompat.Subhead"
-        android:textColor="@color/md_light_text_87"
+        android:textColor="@color/md_light_text_70"
         android:visibility="invisible"
         tools:text="+64XP" />
 
@@ -52,7 +52,7 @@
         android:drawableStart="@drawable/ic_life_coin_24dp"
         android:text="0"
         android:textAppearance="@style/TextAppearance.AppCompat.Subhead"
-        android:textColor="@color/md_light_text_87"
+        android:textColor="@color/md_light_text_70"
         android:visibility="invisible"
         tools:text="+12 coins" />
 
@@ -75,7 +75,7 @@
         android:alpha="0"
         android:text="+1"
         android:textAppearance="@style/TextAppearance.AppCompat.Subhead"
-        android:textColor="@color/md_light_text_87"
+        android:textColor="@color/md_light_text_70"
         android:visibility="gone"
         tools:text="+1" />
 </RelativeLayout>

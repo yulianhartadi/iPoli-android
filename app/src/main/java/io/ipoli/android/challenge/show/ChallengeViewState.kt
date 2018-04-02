@@ -77,7 +77,8 @@ object ChallengeReducer : BaseViewStateReducer<ChallengeViewState>() {
             quests = challenge.baseQuests,
             canComplete = !challenge.isCompleted,
             canEdit = !challenge.isCompleted,
-            motivations = challenge.motivations
+            motivations = challenge.motivations,
+            note = challenge.note
         )
     }
 
@@ -106,7 +107,8 @@ sealed class ChallengeViewState(open val id: String = "") : ViewState {
         val quests: List<BaseQuest>,
         val canEdit: Boolean,
         val canComplete: Boolean,
-        val motivations: List<String>
+        val motivations: List<String>,
+        val note: String?
     ) : ChallengeViewState(id)
 
     object Removed : ChallengeViewState()

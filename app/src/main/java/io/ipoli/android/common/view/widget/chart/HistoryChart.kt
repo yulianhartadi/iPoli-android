@@ -345,7 +345,7 @@ class HistoryChart @JvmOverloads constructor(
         monthPaint.textAlign = Paint.Align.CENTER
         monthPaint.textSize = ViewUtils.spToPx(18, context).toFloat()
 
-        dayPaintLight = createTextPaint(context, R.color.md_light_text_87, 14)
+        dayPaintLight = createTextPaint(context, R.color.md_light_text_70, 14)
         dayPaintDark = createTextPaint(context, R.color.md_dark_text_87, 14)
 
         dayOfWeekPaint.color = ContextCompat.getColor(context, R.color.md_dark_text_87)

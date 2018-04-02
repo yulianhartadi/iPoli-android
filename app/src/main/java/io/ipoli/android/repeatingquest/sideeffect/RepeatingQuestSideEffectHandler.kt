@@ -63,13 +63,15 @@ class RepeatingQuestSideEffectHandler : AppSideEffectHandler() {
                 }
                 val rqParams = SaveRepeatingQuestUseCase.Params(
                     name = action.name,
+                    subQuestNames = action.subQuestNames,
                     color = rqState.color ?: Color.GREEN,
                     icon = rqState.icon,
                     category = Category("WELLNESS", Color.GREEN),
                     startTime = rqState.time,
                     duration = rqState.duration ?: Constants.QUEST_MIN_DURATION,
                     reminder = reminder,
-                    repeatingPattern = rqState.repeatingPattern!!
+                    repeatingPattern = rqState.repeatingPattern!!,
+                    note = rqState.note
                 )
 
                 val errors = Validator.validate(rqParams).check<ValidationError> {
@@ -86,12 +88,13 @@ class RepeatingQuestSideEffectHandler : AppSideEffectHandler() {
                 }
             }
 
-            EditRepeatingQuestAction.Save -> {
+            is EditRepeatingQuestAction.Save -> {
                 val rqState = state.stateFor(EditRepeatingQuestViewState::class.java)
 
                 val rqParams = SaveRepeatingQuestUseCase.Params(
                     id = rqState.id,
-                    name = rqState.name,
+                    name = action.name,
+                    subQuestNames = action.subQuestNames,
                     color = rqState.color,
                     icon = rqState.icon,
                     category = Category("WELLNESS", Color.GREEN),
@@ -126,7 +129,7 @@ class RepeatingQuestSideEffectHandler : AppSideEffectHandler() {
 
 
     override fun canHandle(action: Action) =
-        action == EditRepeatingQuestAction.Save
+        action is EditRepeatingQuestAction.Save
             || action is AddQuestAction.SaveRepeatingQuest
             || action is RepeatingQuestAction.Remove
             || action is RepeatingQuestAction.Load

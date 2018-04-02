@@ -2,6 +2,7 @@ package io.ipoli.android.quest
 
 import io.ipoli.android.common.datetime.*
 import io.ipoli.android.common.sumByLong
+import io.ipoli.android.quest.subquest.SubQuest
 import io.ipoli.android.repeatingquest.entity.PeriodProgress
 import io.ipoli.android.repeatingquest.entity.RepeatingPattern
 import org.threeten.bp.Instant
@@ -123,12 +124,11 @@ data class Quest(
     val startTime: Time? = null,
     val duration: Int,
     val reminder: Reminder? = null,
+    val subQuests: List<SubQuest> = listOf(),
     val scheduledDate: LocalDate,
     val originalScheduledDate: LocalDate = scheduledDate,
     val timeRanges: List<TimeRange> = listOf(),
     val timeRangesToComplete: List<TimeRange> = listOf(),
-    override val createdAt: Instant = Instant.now(),
-    override val updatedAt: Instant = Instant.now(),
     val completedAtDate: LocalDate? = null,
     val completedAtTime: Time? = null,
     val completedAt: Instant? = null,
@@ -137,7 +137,10 @@ data class Quest(
     val bounty: Bounty? = null,
     val isRemoved: Boolean = false,
     val repeatingQuestId: String? = null,
-    val challengeId: String? = null
+    val challengeId: String? = null,
+    val note: String? = null,
+    override val createdAt: Instant = Instant.now(),
+    override val updatedAt: Instant = Instant.now()
 ) : BaseQuest(id), Entity {
 
     sealed class Bounty {
@@ -237,9 +240,11 @@ data class RepeatingQuest(
     val duration: Int,
     val reminder: Reminder? = null,
     val repeatingPattern: RepeatingPattern,
+    val subQuests: List<SubQuest> = listOf(),
     val nextDate: LocalDate? = null,
     val periodProgress: PeriodProgress? = null,
     val challengeId: String? = null,
+    val note: String? = null,
     override val createdAt: Instant = Instant.now(),
     override val updatedAt: Instant = Instant.now()
 ) : BaseQuest(id), Entity {

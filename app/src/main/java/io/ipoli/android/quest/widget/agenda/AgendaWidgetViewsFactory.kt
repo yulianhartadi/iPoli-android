@@ -79,7 +79,7 @@ class AgendaWidgetViewsFactory(private val context: Context) :
         val checkboxIcon =
             IconicsDrawable(context)
                 .icon(Ionicons.Icon.ion_android_checkbox_outline_blank)
-                .colorRes(R.color.md_light_text_87)
+                .colorRes(R.color.md_light_text_70)
                 .sizeDp(24)
         rv.setImageViewBitmap(R.id.widgetQuestComplete, checkboxIcon.toBitmap())
         rv.setOnClickFillInIntent(R.id.widgetQuestComplete, createCompleteQuestIntent(q))

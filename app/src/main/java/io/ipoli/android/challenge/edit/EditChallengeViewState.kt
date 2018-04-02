@@ -25,6 +25,7 @@ sealed class EditChallengeAction : Action {
         val motivation2: String,
         val motivation3: String
     ) : EditChallengeAction()
+    data class ChangeNote(val note: String) : EditChallengeAction()
     data class Validate(val name: String, val selectedDifficultyPosition: Int) :
         EditChallengeAction()
 
@@ -53,7 +54,8 @@ object EditChallengeReducer : BaseViewStateReducer<EditChallengeViewState>() {
                     end = c.end,
                     motivation1 = c.motivation1,
                     motivation2 = c.motivation2,
-                    motivation3 = c.motivation3
+                    motivation3 = c.motivation3,
+                    note = c.note
                 )
             }
 
@@ -91,6 +93,14 @@ object EditChallengeReducer : BaseViewStateReducer<EditChallengeViewState>() {
                 }
             }
 
+            is EditChallengeAction.ChangeNote -> {
+                val note = action.note.trim()
+                subState.copy(
+                    type = NOTE_CHANGED,
+                    note = if (note.isEmpty()) null else note
+                )
+            }
+
             is EditChallengeAction.Validate -> {
                 val errors = Validator.validate(action).check<ValidationError> {
                     "name" {
@@ -121,7 +131,8 @@ object EditChallengeReducer : BaseViewStateReducer<EditChallengeViewState>() {
             end = LocalDate.now(),
             motivation1 = "",
             motivation2 = "",
-            motivation3 = ""
+            motivation3 = "",
+            note = null
         )
 
     enum class ValidationError {
@@ -139,13 +150,15 @@ data class EditChallengeViewState(
     val end: LocalDate,
     val motivation1: String,
     val motivation2: String,
-    val motivation3: String
+    val motivation3: String,
+    val note: String?
 ) : ViewState {
     enum class StateType {
         LOADING,
         DATA_LOADED,
         COLOR_CHANGED,
         ICON_CHANGED,
+        NOTE_CHANGED,
         VALIDATION_ERROR_EMPTY_NAME,
         VALIDATION_SUCCESSFUL,
         END_DATE_CHANGED,

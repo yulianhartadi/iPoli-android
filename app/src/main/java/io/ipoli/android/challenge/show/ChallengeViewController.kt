@@ -23,8 +23,6 @@ import com.mikepenz.google_material_typeface_library.GoogleMaterial
 import com.mikepenz.iconics.IconicsDrawable
 import com.mikepenz.iconics.typeface.IIcon
 import com.mikepenz.material_design_iconic_typeface_library.MaterialDesignIconic
-import kotlinx.android.synthetic.main.controller_challenge.view.*
-import kotlinx.android.synthetic.main.item_challenge_quest.view.*
 import io.ipoli.android.MainActivity
 import io.ipoli.android.R
 import io.ipoli.android.challenge.QuestPickerViewController
@@ -36,8 +34,10 @@ import io.ipoli.android.common.view.*
 import io.ipoli.android.common.view.recyclerview.SimpleViewHolder
 import io.ipoli.android.quest.Quest
 import io.ipoli.android.quest.RepeatingQuest
-import io.ipoli.android.quest.schedule.agenda.widget.SwipeToCompleteCallback
+import io.ipoli.android.common.view.recyclerview.SwipeToCompleteCallback
 import io.ipoli.android.repeatingquest.show.RepeatingQuestViewController
+import kotlinx.android.synthetic.main.controller_challenge.view.*
+import kotlinx.android.synthetic.main.item_challenge_quest.view.*
 
 
 /**
@@ -186,12 +186,7 @@ class ChallengeViewController(args: Bundle? = null) :
             }
 
             R.id.actionEdit -> {
-                val changeHandler = FadeChangeHandler()
-                rootRouter.pushController(
-                    RouterTransaction.with(EditChallengeViewController(challengeId))
-                        .pushChangeHandler(changeHandler)
-                        .popChangeHandler(changeHandler)
-                )
+                showEdit()
                 true
             }
             R.id.actionDelete -> {
@@ -200,6 +195,15 @@ class ChallengeViewController(args: Bundle? = null) :
             }
             else -> super.onOptionsItemSelected(item)
         }
+
+    private fun showEdit() {
+        val changeHandler = FadeChangeHandler()
+        rootRouter.pushController(
+            RouterTransaction.with(EditChallengeViewController(challengeId))
+                .pushChangeHandler(changeHandler)
+                .popChangeHandler(changeHandler)
+        )
+    }
 
     override fun onAttach(view: View) {
         super.onAttach(view)
@@ -263,6 +267,8 @@ class ChallengeViewController(args: Bundle? = null) :
                 renderChart(state, view)
                 renderMotivations(state, view)
                 renderQuests(state, view)
+
+                renderNote(state, view)
             }
 
             ChallengeViewState.Removed ->
@@ -271,6 +277,19 @@ class ChallengeViewController(args: Bundle? = null) :
             else -> {
             }
         }
+    }
+
+    private fun renderNote(
+        state: ChallengeViewState.Changed,
+        view: View
+    ) {
+        if (state.note != null) {
+            view.note.setMarkdown(state.note)
+        } else {
+            view.note.setText(R.string.tap_to_add_note)
+            view.note.setTextColor(colorRes(R.color.md_dark_text_54))
+        }
+        view.note.setOnClickListener { showEdit() }
     }
 
     private fun renderChart(state: ChallengeViewState.Changed, view: View) {
@@ -418,7 +437,7 @@ class ChallengeViewController(args: Bundle? = null) :
                     id = it.id,
                     name = it.name,
                     color = if (it.isCompleted) R.color.md_grey_300 else it.color.androidColor.color500,
-                    textColor = if (it.isCompleted) R.color.md_dark_text_26 else R.color.md_dark_text_54,
+                    textColor = if (it.isCompleted) R.color.md_dark_text_38 else R.color.md_dark_text_54,
                     icon = it.icon?.androidIcon?.icon ?: GoogleMaterial.Icon.gmd_local_florist,
                     isRepeating = false,
                     isCompleted = it.isCompleted
@@ -427,7 +446,7 @@ class ChallengeViewController(args: Bundle? = null) :
                     id = it.id,
                     name = it.name,
                     color = it.color.androidColor.color500,
-                    textColor = if (it.isCompleted) R.color.md_dark_text_26 else R.color.md_dark_text_54,
+                    textColor = if (it.isCompleted) R.color.md_dark_text_38 else R.color.md_dark_text_54,
                     icon = it.icon?.androidIcon?.icon ?: GoogleMaterial.Icon.gmd_local_florist,
                     isRepeating = true,
                     isCompleted = it.isCompleted
@@ -435,5 +454,4 @@ class ChallengeViewController(args: Bundle? = null) :
             }
 
         }
-
 }

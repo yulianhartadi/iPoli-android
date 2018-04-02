@@ -4,13 +4,14 @@ import android.content.SharedPreferences
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.Query
 import com.google.firebase.firestore.WriteBatch
-import kotlinx.coroutines.experimental.channels.ReceiveChannel
 import io.ipoli.android.common.datetime.*
 import io.ipoli.android.common.persistence.BaseCollectionFirestoreRepository
 import io.ipoli.android.common.persistence.CollectionRepository
 import io.ipoli.android.common.persistence.FirestoreModel
 import io.ipoli.android.pet.Food
 import io.ipoli.android.quest.*
+import io.ipoli.android.quest.subquest.SubQuest
+import kotlinx.coroutines.experimental.channels.ReceiveChannel
 import org.threeten.bp.*
 import kotlin.coroutines.experimental.CoroutineContext
 
@@ -103,13 +104,21 @@ data class DbQuest(override val map: MutableMap<String, Any?> = mutableMapOf()) 
     var originalScheduledDate: Long by map
     var completedAtDate: Long? by map
     var completedAtMinute: Long? by map
+    var subQuests: List<MutableMap<String, Any?>> by map
     var timeRanges: List<MutableMap<String, Any?>> by map
     var timeRangeCount: Int by map
     var repeatingQuestId: String? by map
     var challengeId: String? by map
+    var note: String? by map
     override var createdAt: Long by map
     override var updatedAt: Long by map
     override var removedAt: Long? by map
+}
+
+data class DbSubQuest(val map: MutableMap<String, Any?> = mutableMapOf()) {
+    var name: String by map
+    var completedAtDate: Long? by map
+    var completedAtTime: Long? by map
 }
 
 data class DbReminder(val map: MutableMap<String, Any?> = mutableMapOf()) {
@@ -550,6 +559,14 @@ class FirestoreQuestRepository(
                 val cr = DbReminder(it)
                 Reminder(cr.message, Time.of(cr.minute), cr.date?.startOfDayUTC)
             },
+            subQuests = cq.subQuests.map {
+                val dsq = DbSubQuest(it)
+                SubQuest(
+                    name = dsq.name,
+                    completedAtDate = dsq.completedAtDate?.startOfDayUTC,
+                    completedAtTime = dsq.completedAtTime?.let { Time.of(it.toInt()) }
+                )
+            },
             timeRanges = cq.timeRanges.map {
                 val ctr = DbTimeRange(it)
                 TimeRange(
@@ -560,7 +577,8 @@ class FirestoreQuestRepository(
                 )
             },
             repeatingQuestId = cq.repeatingQuestId,
-            challengeId = cq.challengeId
+            challengeId = cq.challengeId,
+            note = cq.note
         )
     }
 
@@ -576,6 +594,13 @@ class FirestoreQuestRepository(
         q.originalScheduledDate = entity.originalScheduledDate.startOfDayUTC()
         q.reminder = entity.reminder?.let {
             createDbReminder(it).map
+        }
+        q.subQuests = entity.subQuests.map {
+            DbSubQuest().apply {
+                name = it.name
+                completedAtDate = it.completedAtDate?.startOfDayUTC()
+                completedAtTime = it.completedAtTime?.toMinuteOfDay()?.toLong()
+            }.map
         }
         q.experience = entity.experience?.toLong()
         q.coins = entity.coins?.toLong()
@@ -602,6 +627,7 @@ class FirestoreQuestRepository(
         q.timeRangeCount = q.timeRanges.size
         q.repeatingQuestId = entity.repeatingQuestId
         q.challengeId = entity.challengeId
+        q.note = entity.note
         return q
     }
 

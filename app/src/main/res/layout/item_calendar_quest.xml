@@ -13,19 +13,46 @@
     <View
         android:id="@+id/backgroundView"
         android:layout_width="match_parent"
-        android:layout_height="match_parent" />
+        android:layout_height="match_parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <View
+        android:id="@+id/completedBackgroundView"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:background="@color/md_grey_400"
+        android:visibility="invisible"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="@+id/questCategoryIndicator"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/questSchedule"
+        style="@style/Calendar.Quest.StartTime"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="@+id/questName"
+        app:layout_constraintTop_toBottomOf="@+id/questName"
+        app:layout_constraintVertical_bias="0.0"
+        tools:text="10:30 - 12:45" />
 
     <View
         android:id="@+id/questCategoryIndicator"
         android:layout_width="4dp"
-        android:layout_height="match_parent" />
-
-    <View
-        android:id="@+id/completedBackgroundView"
-        android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:visibility="invisible"
-        android:background="@color/md_grey_400" />
+        android:layout_marginEnd="8dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/checkBox"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintHorizontal_chainStyle="spread_inside"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
         android:id="@+id/questName"
@@ -38,35 +65,25 @@
         app:layout_constraintBottom_toTopOf="@+id/questSchedule"
         app:layout_constraintEnd_toStartOf="@+id/questIcon"
         app:layout_constraintHorizontal_bias="0.5"
-        app:layout_constraintHorizontal_chainStyle="packed"
+        app:layout_constraintHorizontal_chainStyle="spread_inside"
         app:layout_constraintStart_toEndOf="@+id/checkBox"
         app:layout_constraintTop_toTopOf="@+id/completedBackgroundView"
         app:layout_constraintVertical_chainStyle="packed"
         tools:text="Workout" />
-
-    <TextView
-        android:id="@+id/questSchedule"
-        style="@style/Calendar.Quest.StartTime"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintHorizontal_chainStyle="packed"
-        app:layout_constraintStart_toStartOf="@+id/questName"
-        app:layout_constraintTop_toBottomOf="@+id/questName"
-        app:layout_constraintVertical_bias="0.0"
-        tools:text="10:30 - 12:45" />
 
     <CheckBox
         android:id="@+id/checkBox"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginBottom="8dp"
+        android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@+id/questName"
         app:layout_constraintHorizontal_bias="0.5"
-        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintHorizontal_chainStyle="spread_inside"
+        app:layout_constraintStart_toEndOf="@+id/questCategoryIndicator"
+        app:layout_constraintStart_toStartOf="@+id/questCategoryIndicator"
         app:layout_constraintTop_toTopOf="parent" />
 
     <ImageView
@@ -76,6 +93,7 @@
         android:layout_marginBottom="8dp"
         android:layout_marginEnd="16dp"
         android:layout_marginTop="8dp"
+        app:layout_constraintHorizontal_chainStyle="spread_inside"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"

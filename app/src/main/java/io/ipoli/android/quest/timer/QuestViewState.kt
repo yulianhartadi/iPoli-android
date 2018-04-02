@@ -9,6 +9,8 @@ import io.ipoli.android.common.mvi.ViewState
 import io.ipoli.android.common.redux.Action
 import io.ipoli.android.quest.Quest
 import io.ipoli.android.quest.TimeRange
+import io.ipoli.android.quest.subquest.SubQuest
+import io.ipoli.android.quest.timer.QuestViewState.StateType.*
 import io.ipoli.android.quest.timer.sideeffect.TimerStartedAction
 import io.ipoli.android.quest.timer.view.formatter.TimerFormatter
 import org.threeten.bp.Instant
@@ -18,31 +20,39 @@ import org.threeten.bp.Instant
  * on 6.01.18.
  */
 
-sealed class TimerAction : Action {
-    data class Load(val questId: String) : TimerAction()
-    data class Changed(val quest: Quest) : TimerAction()
-    object Start : TimerAction()
-    object Stop : TimerAction()
-    object Tick : TimerAction()
-    object CompletePomodoro : TimerAction()
-    object ShowCountDownTimer : TimerAction()
-    object ShowPomodoroTimer : TimerAction()
-    object CompleteQuest : TimerAction()
-    object AddPomodoro : TimerAction()
-    object RemovePomodoro : TimerAction()
+sealed class QuestAction : Action {
+    data class Load(val questId: String) : QuestAction()
+    data class Changed(val quest: Quest) : QuestAction()
+    data class CompleteSubQuest(val position: Int) : QuestAction()
+    data class UndoCompletedSubQuest(val position: Int) : QuestAction()
+    data class SaveSubQuestName(val name: String, val position: Int) : QuestAction()
+    data class AddSubQuest(val name: String) : QuestAction()
+    data class RemoveSubQuest(val position: Int) : QuestAction()
+    data class ReorderSubQuest(val oldPosition: Int, val newPosition: Int) : QuestAction()
+    data class SaveNote(val note: String) : QuestAction()
+
+    object Start : QuestAction()
+    object Stop : QuestAction()
+    object Tick : QuestAction()
+    object CompletePomodoro : QuestAction()
+    object ShowCountDownTimer : QuestAction()
+    object ShowPomodoroTimer : QuestAction()
+    object CompleteQuest : QuestAction()
+    object AddPomodoro : QuestAction()
+    object RemovePomodoro : QuestAction()
 }
 
-object TimerReducer : BaseViewStateReducer<TimerViewState>() {
+object QuestReducer : BaseViewStateReducer<QuestViewState>() {
 
-    override val stateKey = key<TimerViewState>()
+    override val stateKey = key<QuestViewState>()
 
-    override fun reduce(state: AppState, subState: TimerViewState, action: Action) =
+    override fun reduce(state: AppState, subState: QuestViewState, action: Action) =
         when (action) {
 
             is DataLoadedAction.QuestChanged -> {
                 if (action.quest.isCompleted) {
                     subState.copy(
-                        type = TimerViewState.StateType.QUEST_COMPLETED
+                        type = QUEST_COMPLETED
                     )
                 } else {
                     createQuestChangedState(subState.copy(quest = action.quest))
@@ -52,26 +62,26 @@ object TimerReducer : BaseViewStateReducer<TimerViewState>() {
             is TimerStartedAction -> {
                 val type =
                     if (action.otherTimerStopped)
-                        TimerViewState.StateType.TIMER_REPLACED
+                        TIMER_REPLACED
                     else
-                        TimerViewState.StateType.TIMER_STARTED
+                        TIMER_STARTED
                 subState.copy(
                     type = type
                 )
             }
 
-            TimerAction.Stop -> {
+            QuestAction.Stop -> {
                 subState.copy(
-                    type = TimerViewState.StateType.TIMER_STOPPED
+                    type = TIMER_STOPPED
                 )
             }
 
-            TimerAction.Tick -> {
+            QuestAction.Tick -> {
                 val remainingTime = subState.remainingTime!! - 1.seconds
                 val shouldShowCompletePomodoroButton =
-                    subState.timerType == TimerViewState.TimerType.POMODORO && remainingTime < 0.seconds
+                    subState.timerType == QuestViewState.TimerType.POMODORO && remainingTime < 0.seconds
                 subState.copy(
-                    type = TimerViewState.StateType.RUNNING,
+                    type = RUNNING,
                     timerProgress = subState.timerProgress + 1,
                     timerLabel = formatDuration(remainingTime),
                     remainingTime = remainingTime,
@@ -79,42 +89,48 @@ object TimerReducer : BaseViewStateReducer<TimerViewState>() {
                 )
             }
 
-            TimerAction.CompletePomodoro -> {
+            QuestAction.CompletePomodoro -> {
                 subState.copy(
-                    type = TimerViewState.StateType.TIMER_STOPPED
+                    type = TIMER_STOPPED
                 )
             }
 
-            TimerAction.ShowPomodoroTimer -> {
+            QuestAction.ShowPomodoroTimer -> {
                 createStateForInitialPomodoroTimer(subState, subState.quest!!)
             }
 
-            TimerAction.ShowCountDownTimer -> {
+            QuestAction.ShowCountDownTimer -> {
                 createStateForInitialCountDownTimer(subState, subState.quest!!)
             }
 
-            TimerAction.CompleteQuest -> {
+            QuestAction.CompleteQuest -> {
                 subState.copy(
-                    type = TimerViewState.StateType.TIMER_STOPPED
+                    type = TIMER_STOPPED
                 )
             }
 
-            TimerAction.AddPomodoro -> {
+            QuestAction.AddPomodoro -> {
                 subState.copy(
-                    type = TimerViewState.StateType.POMODORO_ADDED
+                    type = POMODORO_ADDED
                 )
             }
 
-            TimerAction.RemovePomodoro -> {
+            QuestAction.RemovePomodoro -> {
                 subState.copy(
-                    type = TimerViewState.StateType.POMODORO_REMOVED
+                    type = POMODORO_REMOVED
+                )
+            }
+
+            is QuestAction.AddSubQuest -> {
+                subState.copy(
+                    type = SUB_QUEST_ADDED
                 )
             }
 
             else -> subState
         }
 
-    override fun defaultState() = TimerViewState(TimerViewState.StateType.LOADING)
+    override fun defaultState() = QuestViewState(LOADING)
 
     private fun formatDuration(duration: Duration<Second>): String {
         return if (duration >= 0.seconds) {
@@ -125,32 +141,46 @@ object TimerReducer : BaseViewStateReducer<TimerViewState>() {
     }
 
     private fun createQuestChangedState(
-        state: TimerViewState
-    ): TimerViewState {
-        val quest = state.quest
-        if (quest!!.hasCountDownTimer) {
-            return createStateForRunningCountdownTimer(quest, state)
+        state: QuestViewState
+    ): QuestViewState {
+
+        val quest = state.quest!!
+
+        val completedSubQuestsCount = quest.subQuests.count { it.completedAtDate != null }
+
+        val hasSubQuests = quest.subQuests.isNotEmpty()
+
+        val newState = state.copy(
+            questName = quest.name,
+            subQuests = quest.subQuests,
+            subQuestListProgressPercent = ((completedSubQuestsCount.toFloat() / quest.subQuests.size) * 100).toInt(),
+            hasSubQuests = hasSubQuests,
+            allSubQuestsDone = hasSubQuests && completedSubQuestsCount == quest.subQuests.size
+        )
+
+
+        if (quest.hasCountDownTimer) {
+            return createStateForRunningCountdownTimer(quest, newState)
         }
 
         if (quest.hasPomodoroTimer) {
-            return createStateForRunningPomodoroTimer(quest, state)
+            return createStateForRunningPomodoroTimer(quest, newState)
         }
 
         return if (quest.duration < MIN_INITIAL_POMODORO_TIMER_DURATION) {
-            createStateForInitialCountDownTimer(state, quest)
+            createStateForInitialCountDownTimer(newState, quest)
         } else {
-            createStateForInitialPomodoroTimer(state, quest)
+            createStateForInitialPomodoroTimer(newState, quest)
         }
     }
 
     private fun createStateForInitialPomodoroTimer(
-        state: TimerViewState,
+        state: QuestViewState,
         quest: Quest
     ) =
         state.copy(
-            type = TimerViewState.StateType.SHOW_POMODORO,
-            questName = quest.name,
-            timerType = TimerViewState.TimerType.POMODORO,
+            type = SHOW_POMODORO,
+            timerType = QuestViewState.TimerType.POMODORO,
             showTimerTypeSwitch = true,
             pomodoroProgress = quest.timeRangesToComplete.map { createPomodoroProgress(it) },
             timerLabel = formatDuration(Constants.DEFAULT_POMODORO_WORK_DURATION.minutes.asSeconds),
@@ -161,13 +191,12 @@ object TimerReducer : BaseViewStateReducer<TimerViewState>() {
         )
 
     private fun createStateForInitialCountDownTimer(
-        state: TimerViewState,
+        state: QuestViewState,
         quest: Quest
     ) =
         state.copy(
-            type = TimerViewState.StateType.SHOW_COUNTDOWN,
-            questName = quest.name,
-            timerType = TimerViewState.TimerType.COUNTDOWN,
+            type = SHOW_COUNTDOWN,
+            timerType = QuestViewState.TimerType.COUNTDOWN,
             showTimerTypeSwitch = quest.duration >= MIN_POMODORO_TIMER_DURATION,
             timerLabel = formatDuration(quest.duration.minutes.asSeconds),
             remainingTime = quest.duration.minutes.asSeconds,
@@ -177,8 +206,8 @@ object TimerReducer : BaseViewStateReducer<TimerViewState>() {
 
     private fun createStateForRunningPomodoroTimer(
         quest: Quest,
-        state: TimerViewState
-    ): TimerViewState {
+        state: QuestViewState
+    ): QuestViewState {
         val currentProgressIndicator =
             findCurrentProgressIndicator(quest.timeRangesToComplete)
 
@@ -197,13 +226,12 @@ object TimerReducer : BaseViewStateReducer<TimerViewState>() {
         val remainingTime = duration.minutes - passed
 
         val type =
-            if (quest.timeRanges.last().end == null) TimerViewState.StateType.RESUMED
-            else TimerViewState.StateType.SHOW_POMODORO
+            if (quest.timeRanges.last().end == null) RESUMED
+            else SHOW_POMODORO
 
         return state.copy(
             type = type,
-            questName = quest.name,
-            timerType = TimerViewState.TimerType.POMODORO,
+            timerType = QuestViewState.TimerType.POMODORO,
             showTimerTypeSwitch = false,
             pomodoroProgress = quest.timeRangesToComplete.map { createPomodoroProgress(it) },
             timerLabel = formatDuration(remainingTime.asSeconds),
@@ -216,16 +244,15 @@ object TimerReducer : BaseViewStateReducer<TimerViewState>() {
 
     private fun createStateForRunningCountdownTimer(
         quest: Quest,
-        state: TimerViewState
-    ): TimerViewState {
+        state: QuestViewState
+    ): QuestViewState {
 
         val passed = Instant.now() - quest.actualStart!!
         val remainingTime =
             quest.duration.minutes - passed.milliseconds
         return state.copy(
-            type = TimerViewState.StateType.RESUMED,
-            questName = quest.name,
-            timerType = TimerViewState.TimerType.COUNTDOWN,
+            type = RESUMED,
+            timerType = QuestViewState.TimerType.COUNTDOWN,
             showTimerTypeSwitch = false,
             timerLabel = formatDuration(remainingTime.asSeconds),
             remainingTime = remainingTime.asSeconds,
@@ -274,7 +301,7 @@ object TimerReducer : BaseViewStateReducer<TimerViewState>() {
 
 }
 
-data class TimerViewState(
+data class QuestViewState(
     val type: StateType,
     val quest: Quest? = null,
     val showTimerTypeSwitch: Boolean = false,
@@ -282,6 +309,10 @@ data class TimerViewState(
     val remainingTime: Duration<Second>? = null,
     val timerType: TimerType = TimerType.COUNTDOWN,
     val questName: String = "",
+    val subQuests: List<SubQuest> = listOf(),
+    val subQuestListProgressPercent: Int = 0,
+    val hasSubQuests: Boolean = false,
+    val allSubQuestsDone: Boolean = false,
     val timerProgress: Int = 0,
     val maxTimerProgress: Int = 0,
     val pomodoroProgress: List<PomodoroProgress> = listOf(),
@@ -300,7 +331,8 @@ data class TimerViewState(
         RUNNING,
         POMODORO_ADDED,
         POMODORO_REMOVED,
-        QUEST_COMPLETED
+        QUEST_COMPLETED,
+        SUB_QUEST_ADDED
     }
 
     enum class TimerType {

@@ -12,8 +12,6 @@ import com.bluelinelabs.conductor.Conductor
 import com.bluelinelabs.conductor.Router
 import com.bluelinelabs.conductor.RouterTransaction
 import com.bluelinelabs.conductor.changehandler.FadeChangeHandler
-import kotlinx.coroutines.experimental.android.UI
-import kotlinx.coroutines.experimental.launch
 import io.ipoli.android.common.AppState
 import io.ipoli.android.common.LoadDataAction
 import io.ipoli.android.common.di.Module
@@ -23,11 +21,13 @@ import io.ipoli.android.common.redux.SideEffectHandler
 import io.ipoli.android.common.view.playerTheme
 import io.ipoli.android.home.HomeViewController
 import io.ipoli.android.player.auth.AuthViewController
-import io.ipoli.android.quest.timer.TimerViewController
+import io.ipoli.android.quest.timer.QuestViewController
 import io.ipoli.android.store.membership.MembershipViewController
 import io.ipoli.android.store.powerup.AndroidPowerUp
 import io.ipoli.android.store.powerup.buy.BuyPowerUpDialogController
 import io.ipoli.android.store.powerup.middleware.ShowBuyPowerUpAction
+import kotlinx.coroutines.experimental.android.UI
+import kotlinx.coroutines.experimental.launch
 import space.traversal.kapsule.Injects
 import space.traversal.kapsule.inject
 import space.traversal.kapsule.required
@@ -81,17 +81,17 @@ class MainActivity : AppCompatActivity(), Injects<Module>, SideEffectHandler<App
             val questId = intent.getStringExtra(Constants.QUEST_ID_EXTRA_KEY)
             router.setRoot(
                 RouterTransaction
-                    .with(TimerViewController(questId))
-                    .tag(TimerViewController.TAG)
+                    .with(QuestViewController(questId))
+                    .tag(QuestViewController.TAG)
             )
         } else if (!router.hasRootController()) {
 //                        router.setRoot(RouterTransaction.with(RepeatingQuestViewController("")))
             router.setRoot(RouterTransaction.with(HomeViewController()))
+//            router.setRoot(RouterTransaction.with(NoteDialogViewController(note = "")))
 //                        router.setRoot(RouterTransaction.with(PowerUpStoreViewController()))
         }
 
         stateStore.dispatch(LoadDataAction.All)
-
     }
 
     private fun incrementAppRun() {
@@ -125,8 +125,8 @@ class MainActivity : AppCompatActivity(), Injects<Module>, SideEffectHandler<App
             val questId = intent.getStringExtra(Constants.QUEST_ID_EXTRA_KEY)
             router.setRoot(
                 RouterTransaction
-                    .with(TimerViewController(questId))
-                    .tag(TimerViewController.TAG)
+                    .with(QuestViewController(questId))
+                    .tag(QuestViewController.TAG)
             )
         }
         super.onNewIntent(intent)

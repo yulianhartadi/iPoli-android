@@ -2,23 +2,31 @@ package io.ipoli.android.repeatingquest.edit
 
 import android.app.Dialog
 import android.app.TimePickerDialog
+import android.content.res.ColorStateList
 import android.graphics.drawable.Drawable
 import android.os.Bundle
 import android.support.v4.content.ContextCompat
-import android.text.Editable
-import android.text.TextWatcher
+import android.support.v7.widget.LinearLayoutManager
+import android.support.v7.widget.helper.ItemTouchHelper
 import android.view.*
 import com.mikepenz.iconics.IconicsDrawable
-import kotlinx.android.synthetic.main.controller_edit_repeating_quest.view.*
 import io.ipoli.android.R
+import io.ipoli.android.common.ViewUtils
 import io.ipoli.android.common.datetime.Time
 import io.ipoli.android.common.redux.android.ReduxViewController
 import io.ipoli.android.common.text.DurationFormatter
 import io.ipoli.android.common.view.*
+import io.ipoli.android.common.view.recyclerview.BaseRecyclerViewAdapter
+import io.ipoli.android.common.view.recyclerview.ReorderItemHelper
+import io.ipoli.android.common.view.recyclerview.SimpleViewHolder
+import io.ipoli.android.note.NoteDialogViewController
 import io.ipoli.android.quest.reminder.picker.ReminderPickerDialogController
 import io.ipoli.android.quest.reminder.picker.ReminderViewModel
 import io.ipoli.android.repeatingquest.edit.EditRepeatingQuestViewState.StateType.*
 import io.ipoli.android.repeatingquest.edit.picker.RepeatingPatternPickerDialogController
+import kotlinx.android.synthetic.main.controller_edit_repeating_quest.view.*
+import kotlinx.android.synthetic.main.item_edit_repeating_quest_sub_quest.view.*
+import java.util.*
 
 /**
  * Created by Polina Zhelyazkova <polina@mypoli.fun>
@@ -26,11 +34,13 @@ import io.ipoli.android.repeatingquest.edit.picker.RepeatingPatternPickerDialogC
  */
 class EditRepeatingQuestViewController(args: Bundle? = null) :
     ReduxViewController<EditRepeatingQuestAction, EditRepeatingQuestViewState, EditRepeatingQuestReducer>(
-        args
+        args, renderDuplicateStates = true
     ) {
     override val reducer = EditRepeatingQuestReducer
 
     private lateinit var repeatingQuestId: String
+
+    private lateinit var touchHelper: ItemTouchHelper
 
     constructor(
         repeatingQuestId: String
@@ -49,6 +59,20 @@ class EditRepeatingQuestViewController(args: Bundle? = null) :
         )
         setToolbar(view.toolbar)
         toolbarTitle = ""
+
+        view.subQuestList.layoutManager = LinearLayoutManager(activity!!)
+        view.subQuestList.adapter = SubQuestsAdapter()
+
+        val dragHelper =
+            ReorderItemHelper(
+                onItemMoved = { oldPosition, newPosition ->
+                    (view.subQuestList.adapter as SubQuestsAdapter).move(oldPosition, newPosition)
+                }
+            )
+
+        touchHelper = ItemTouchHelper(dragHelper)
+        touchHelper.attachToRecyclerView(view.subQuestList)
+
         return view
     }
 
@@ -67,7 +91,14 @@ class EditRepeatingQuestViewController(args: Bundle? = null) :
                 true
             }
             R.id.actionSave -> {
-                dispatch(EditRepeatingQuestAction.Save)
+
+                val name = view!!.questName.text.toString()
+
+                val subQuestNames = view!!.subQuestList.children.map {
+                    it.editSubQuestName.text.toString()
+                }
+
+                dispatch(EditRepeatingQuestAction.Save(name, subQuestNames))
                 true
             }
             else -> super.onOptionsItemSelected(item)
@@ -77,30 +108,6 @@ class EditRepeatingQuestViewController(args: Bundle? = null) :
         when (state.type) {
             DATA_LOADED -> {
                 view.questName.setText(state.name)
-                view.questName.addTextChangedListener(object : TextWatcher {
-                    override fun afterTextChanged(s: Editable?) {
-
-                    }
-
-                    override fun beforeTextChanged(
-                        s: CharSequence?,
-                        start: Int,
-                        count: Int,
-                        after: Int
-                    ) {
-
-                    }
-
-                    override fun onTextChanged(
-                        text: CharSequence?,
-                        start: Int,
-                        before: Int,
-                        count: Int
-                    ) {
-                        dispatch(EditRepeatingQuestAction.ChangeName(text.toString()))
-                    }
-
-                })
                 renderAll(view, state)
             }
 
@@ -128,8 +135,22 @@ class EditRepeatingQuestViewController(args: Bundle? = null) :
                 renderIcon(view, state)
             }
 
+            NOTE_CHANGED -> {
+                renderNote(view, state)
+            }
+
             VALIDATION_ERROR_EMPTY_NAME -> {
                 view.questNameLayout.error = "Think of a name"
+            }
+
+            SUB_QUEST_ADDED -> {
+                (view.subQuestList.adapter as SubQuestsAdapter).add(
+                    SubQuestViewModel(
+                        id = UUID.randomUUID().toString(),
+                        name = "",
+                        startInEdit = true
+                    )
+                )
             }
 
             QUEST_SAVED -> {
@@ -142,12 +163,29 @@ class EditRepeatingQuestViewController(args: Bundle? = null) :
         view: View,
         state: EditRepeatingQuestViewState
     ) {
+        renderSubQuests(view, state)
         renderRepeatType(view, state)
         renderStartTime(view, state)
         renderDuration(view, state)
         renderReminder(view, state)
         renderColor(view, state)
         renderIcon(view, state)
+        renderNote(view, state)
+    }
+
+    private fun renderNote(view: View, state: EditRepeatingQuestViewState) {
+        view.questNoteValue.text = state.noteText
+        view.questNoteContainer.setOnClickListener {
+            NoteDialogViewController(state.note ?: "", { note ->
+                dispatch(EditRepeatingQuestAction.ChangeNote(note))
+            }).show(router)
+        }
+    }
+
+    private fun renderSubQuests(view: View, state: EditRepeatingQuestViewState) {
+        val adapter = view.subQuestList.adapter as SubQuestsAdapter
+        adapter.updateAll(state.subQuestViewModels)
+        view.addSubQuest.dispatchOnClick(EditRepeatingQuestAction.AddSubQuest)
     }
 
     private fun colorLayout(
@@ -268,13 +306,71 @@ class EditRepeatingQuestViewController(args: Bundle? = null) :
         showBackButton()
     }
 
+    data class SubQuestViewModel(val id: String, val name: String, val startInEdit: Boolean = false)
+
+    inner class SubQuestsAdapter :
+        BaseRecyclerViewAdapter<SubQuestViewModel>(
+            R.layout.item_edit_repeating_quest_sub_quest
+        ) {
+        override fun onBindViewModel(
+            vm: SubQuestViewModel,
+            view: View,
+            holder: SimpleViewHolder
+        ) {
+            view.subQuestIndicator.backgroundTintList =
+                ColorStateList.valueOf(colorRes(R.color.md_dark_text_54))
+            view.editSubQuestName.setText(vm.name)
+
+            view.reorderButton.setOnTouchListener { v, event ->
+                if (event.actionMasked == MotionEvent.ACTION_DOWN) {
+                    touchHelper.startDrag(holder)
+                }
+                false
+            }
+
+            view.removeButton.setOnClickListener {
+                removeAt(holder.adapterPosition)
+            }
+
+            view.editSubQuestName.setOnFocusChangeListener { _, hasFocus ->
+                if (hasFocus) {
+                    startEdit(view)
+                }
+            }
+
+            if (vm.startInEdit) {
+                startEdit(view)
+            }
+        }
+
+        private fun startEdit(view: View) {
+            disableEditForAllSubQuests()
+            view.reorderButton.gone()
+            view.removeButton.visible()
+            view.editSubQuestName.requestFocus()
+            ViewUtils.showKeyboard(view.context, view.editSubQuestName)
+            view.editSubQuestName.setSelection(view.editSubQuestName.length())
+        }
+    }
+
+    private fun disableEditForAllSubQuests() {
+        view!!.subQuestList.children.forEach {
+            it.removeButton.gone()
+            it.reorderButton.visible()
+        }
+    }
+
+    private val EditRepeatingQuestViewState.subQuestViewModels: List<SubQuestViewModel>
+        get() = subQuestNames.map {
+            SubQuestViewModel(id = UUID.randomUUID().toString(), name = it, startInEdit = false)
+        }
+
     private val EditRepeatingQuestViewState.formattedDuration: String
         get() = DurationFormatter.formatReadable(view!!.context, duration)
 
     private val EditRepeatingQuestViewState.formattedStartTime: String
         get() =
-            if (startTime != null) startTime.toString()
-            else stringRes(R.string.do_not_know)
+            startTime?.toString() ?: stringRes(R.string.do_not_know)
 
     private val EditRepeatingQuestViewState.formattedRepeatType: String
         get() = stringsRes(R.array.repeating_quest_frequencies)[repeatType.ordinal]
@@ -305,4 +401,8 @@ class EditRepeatingQuestViewController(args: Bundle? = null) :
 
     private val EditRepeatingQuestViewState.color700: Int
         get() = color.androidColor.color700
+
+    private val EditRepeatingQuestViewState.noteText: String
+        get() = note ?: stringRes(R.string.tap_to_add_note)
 }
+

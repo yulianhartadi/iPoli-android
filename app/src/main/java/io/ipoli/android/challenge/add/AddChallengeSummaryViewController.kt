@@ -9,11 +9,8 @@ import android.view.ViewGroup
 import com.mikepenz.google_material_typeface_library.GoogleMaterial
 import com.mikepenz.iconics.IconicsDrawable
 import com.mikepenz.iconics.typeface.IIcon
-import kotlinx.android.synthetic.main.controller_add_challenge_summary.view.*
-import kotlinx.android.synthetic.main.item_challenge_summary_quest.view.*
 import io.ipoli.android.R
-import io.ipoli.android.challenge.add.AddChallengeSummaryViewState.StateType.DATA_CHANGED
-import io.ipoli.android.challenge.add.AddChallengeSummaryViewState.StateType.INITIAL
+import io.ipoli.android.challenge.add.AddChallengeSummaryViewState.StateType.*
 import io.ipoli.android.challenge.entity.Challenge
 import io.ipoli.android.common.AppState
 import io.ipoli.android.common.BaseViewStateReducer
@@ -21,11 +18,16 @@ import io.ipoli.android.common.mvi.ViewState
 import io.ipoli.android.common.redux.Action
 import io.ipoli.android.common.redux.android.ReduxViewController
 import io.ipoli.android.common.text.DateFormatter
+import io.ipoli.android.common.view.colorRes
+import io.ipoli.android.common.view.stringRes
 import io.ipoli.android.common.view.visible
+import io.ipoli.android.note.NoteDialogViewController
 import io.ipoli.android.quest.BaseQuest
 import io.ipoli.android.quest.Icon
 import io.ipoli.android.quest.Quest
 import io.ipoli.android.quest.RepeatingQuest
+import kotlinx.android.synthetic.main.controller_add_challenge_summary.view.*
+import kotlinx.android.synthetic.main.item_challenge_summary_quest.view.*
 import org.threeten.bp.LocalDate
 
 /**
@@ -33,6 +35,7 @@ import org.threeten.bp.LocalDate
  * on 3/10/18.
  */
 sealed class AddChallengeSummaryAction : Action {
+    data class UpdateNote(val note: String) : AddChallengeSummaryAction()
     object Save : AddChallengeSummaryAction()
 }
 
@@ -56,7 +59,16 @@ object AddChallengeSummaryReducer : BaseViewStateReducer<AddChallengeSummaryView
                 motivation1 = if (motivationList.isNotEmpty()) motivationList[0] else "",
                 motivation2 = if (motivationList.size > 1) motivationList[1] else "",
                 motivation3 = if (motivationList.size > 2) motivationList[2] else "",
-                quests = s.allQuests.filter { s.selectedQuestIds.contains(it.id) }
+                quests = s.allQuests.filter { s.selectedQuestIds.contains(it.id) },
+                note = s.note
+            )
+        }
+
+        is AddChallengeSummaryAction.UpdateNote -> {
+            val note = action.note.trim()
+            subState.copy(
+                type = NOTE_CHANGED,
+                note = if (note.isEmpty()) null else note
             )
         }
 
@@ -73,7 +85,8 @@ object AddChallengeSummaryReducer : BaseViewStateReducer<AddChallengeSummaryView
             quests = listOf(),
             motivation1 = "",
             motivation2 = "",
-            motivation3 = ""
+            motivation3 = "",
+            note = null
         )
 }
 
@@ -86,11 +99,13 @@ data class AddChallengeSummaryViewState(
     val motivation1: String,
     val motivation2: String,
     val motivation3: String,
-    val quests: List<BaseQuest>
+    val quests: List<BaseQuest>,
+    val note: String?
 ) : ViewState {
     enum class StateType {
         INITIAL,
-        DATA_CHANGED
+        DATA_CHANGED,
+        NOTE_CHANGED
     }
 }
 
@@ -127,25 +142,58 @@ class AddChallengeSummaryViewController(args: Bundle? = null) :
                 )
                 view.challengeDifficulty.text = state.difficultyText
                 view.challengeEnd.text = state.formattedEndDate
-                view.challengeMotivation1.text = state.motivation1
-                view.challengeMotivation1.visibility =
-                    if (state.motivation1.isNotEmpty()) View.VISIBLE else View.GONE
-                view.challengeMotivation2.text = state.motivation2
-                view.challengeMotivation2.visibility =
-                    if (state.motivation2.isNotEmpty()) View.VISIBLE else View.GONE
-                view.challengeMotivation3.text = state.motivation3
-                view.challengeMotivation3.visibility =
-                    if (state.motivation3.isNotEmpty()) View.VISIBLE else View.GONE
 
-                (view.challengeQuests.adapter as QuestAdapter).updateAll(state.questViewModels)
-                if (state.quests.isNotEmpty()) {
-                    view.challengeQuestsEmptyState.visibility = View.GONE
-                    view.challengeQuests.visibility = View.VISIBLE
-                } else {
-                    view.challengeQuestsEmptyState.visibility = View.VISIBLE
-                    view.challengeQuests.visibility = View.GONE
-                }
+                renderMotivation(view, state)
+                renderNote(view, state)
+                renderQuests(view, state)
             }
+
+            NOTE_CHANGED -> {
+                renderNote(view, state)
+            }
+        }
+    }
+
+    private fun renderNote(
+        view: View,
+        state: AddChallengeSummaryViewState
+    ) {
+        view.challengeNote.text = state.noteText
+        view.challengeNote.setTextColor(state.noteColor)
+
+        view.challengeNote.setOnClickListener {
+            NoteDialogViewController(state.note ?: "", { note ->
+                dispatch(AddChallengeSummaryAction.UpdateNote(note))
+            }).show(router)
+        }
+    }
+
+    private fun renderMotivation(
+        view: View,
+        state: AddChallengeSummaryViewState
+    ) {
+        view.challengeMotivation1.text = state.motivation1
+        view.challengeMotivation1.visibility =
+            if (state.motivation1.isNotEmpty()) View.VISIBLE else View.GONE
+        view.challengeMotivation2.text = state.motivation2
+        view.challengeMotivation2.visibility =
+            if (state.motivation2.isNotEmpty()) View.VISIBLE else View.GONE
+        view.challengeMotivation3.text = state.motivation3
+        view.challengeMotivation3.visibility =
+            if (state.motivation3.isNotEmpty()) View.VISIBLE else View.GONE
+    }
+
+    private fun renderQuests(
+        view: View,
+        state: AddChallengeSummaryViewState
+    ) {
+        (view.challengeQuests.adapter as QuestAdapter).updateAll(state.questViewModels)
+        if (state.quests.isNotEmpty()) {
+            view.challengeQuestsEmptyState.visibility = View.GONE
+            view.challengeQuests.visibility = View.VISIBLE
+        } else {
+            view.challengeQuestsEmptyState.visibility = View.VISIBLE
+            view.challengeQuests.visibility = View.GONE
         }
     }
 
@@ -215,4 +263,14 @@ class AddChallengeSummaryViewController(args: Bundle? = null) :
             }
 
         }
+
+    private val AddChallengeSummaryViewState.noteColor: Int
+        get() = if (note == null) {
+            colorRes(R.color.md_light_text_50)
+        } else {
+            colorRes(R.color.md_white)
+        }
+
+    private val AddChallengeSummaryViewState.noteText: String
+        get() = note ?: stringRes(R.string.tap_to_add_note)
 }

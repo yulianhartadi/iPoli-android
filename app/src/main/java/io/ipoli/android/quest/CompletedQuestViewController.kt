@@ -20,7 +20,7 @@ import io.ipoli.android.common.text.DurationFormatter
 import io.ipoli.android.common.view.*
 import io.ipoli.android.quest.CompletedQuestViewState.StateType.DATA_LOADED
 import io.ipoli.android.quest.CompletedQuestViewState.Timer
-import io.ipoli.android.quest.timer.TimerViewController
+import io.ipoli.android.quest.timer.QuestViewController
 import kotlinx.android.synthetic.main.controller_completed_quest.view.*
 import kotlinx.android.synthetic.main.view_default_toolbar.view.*
 import space.traversal.kapsule.required
@@ -50,7 +50,7 @@ class CompletedQuestViewController :
         savedViewState: Bundle?
     ): View {
 
-        rootRouter.getControllerWithTag(TimerViewController.TAG)?.let {
+        rootRouter.getControllerWithTag(QuestViewController.TAG)?.let {
             rootRouter.popController(it)
         }
 

@@ -45,6 +45,7 @@ sealed class RepeatingQuestViewState(open val id: String) : ViewState {
     data class Changed(
         override val id: String,
         val name: String,
+        val subQuestNames: List<String>,
         val color: Color,
         val category: Category,
         val nextScheduledDate: LocalDate?,
@@ -55,7 +56,8 @@ sealed class RepeatingQuestViewState(open val id: String) : ViewState {
         val startTime: Time?,
         val endTime: Time?,
         val duration: Int,
-        val isCompleted: Boolean
+        val isCompleted: Boolean,
+        val note: String?
     ) : RepeatingQuestViewState(id) {
 
         enum class ProgressModel {
@@ -114,6 +116,7 @@ object RepeatingQuestReducer : BaseViewStateReducer<RepeatingQuestViewState>() {
         return RepeatingQuestViewState.Changed(
             id = rq.id,
             name = rq.name,
+            subQuestNames = rq.subQuests.map { it.name },
             color = rq.color,
             category = Category("Chores", Color.BROWN),
             nextScheduledDate = rq.nextDate,
@@ -124,7 +127,8 @@ object RepeatingQuestReducer : BaseViewStateReducer<RepeatingQuestViewState>() {
             startTime = rq.startTime,
             endTime = rq.endTime,
             duration = rq.duration,
-            isCompleted = rq.isCompleted
+            isCompleted = rq.isCompleted,
+            note = rq.note
         )
     }
 
