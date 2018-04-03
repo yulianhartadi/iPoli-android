@@ -29,6 +29,13 @@
             android:title="@string/drawer_challenges" />
 
         <item
+            android:id="@+id/tags"
+            android:checked="false"
+            android:visible="false"
+            android:icon="@drawable/ic_tags_black_24dp"
+            android:title="@string/tags" />
+
+        <item
             android:id="@+id/growth"
             android:checked="false"
             android:icon="@drawable/ic_growth_white_24dp"
@@ -61,11 +68,9 @@
 
         <item
             android:id="@+id/settings"
-            android:checkable="false"
             android:checked="false"
             android:icon="@drawable/ic_settings_black_24dp"
-            android:title="@string/settings"
-            android:visible="false" />
+            android:title="@string/settings" />
 
         <item
             android:id="@+id/community"

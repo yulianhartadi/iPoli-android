@@ -15,6 +15,7 @@ import io.ipoli.android.pet.PetAvatar
 
 sealed class CalendarPickerAction : Action {
     object Load : CalendarPickerAction()
+    data class SelectCalendars(val selectedCalendarPositions: List<Int>) : CalendarPickerAction()
 }
 
 object CalendarPickerReducer : BaseViewStateReducer<CalendarPickerViewState>() {
@@ -32,6 +33,14 @@ object CalendarPickerReducer : BaseViewStateReducer<CalendarPickerViewState>() {
                     petAvatar = state.dataState.player!!.pet.avatar,
                     calendars = action.calendars.filter { it.isVisible }
                 )
+            is CalendarPickerAction.SelectCalendars -> {
+                val calendars = (subState as CalendarPickerViewState.CalendarsLoaded).calendars
+                val selectedCalendarIds = action.selectedCalendarPositions.map {
+                    calendars[it].id
+                }.toSet()
+                CalendarPickerViewState.CalendarsSelected(selectedCalendarIds)
+            }
+
             else ->
                 subState
         }
@@ -46,5 +55,7 @@ sealed class CalendarPickerViewState : ViewState {
         val petAvatar: PetAvatar,
         val calendars: List<Calendar>
     ) : CalendarPickerViewState()
+
+    data class CalendarsSelected(val calendarIds: Set<String>) : CalendarPickerViewState()
 }
 

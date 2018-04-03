@@ -4,7 +4,6 @@ import android.content.ContentUris
 import android.database.Cursor
 import android.provider.CalendarContract
 import android.provider.CalendarContract.Instances
-import kotlinx.coroutines.experimental.channels.ReceiveChannel
 import io.ipoli.android.common.datetime.Time
 import io.ipoli.android.common.datetime.instant
 import io.ipoli.android.common.datetime.minutes
@@ -12,6 +11,7 @@ import io.ipoli.android.common.persistence.CollectionRepository
 import io.ipoli.android.common.view.ColorUtil
 import io.ipoli.android.event.Event
 import io.ipoli.android.myPoliApp
+import kotlinx.coroutines.experimental.channels.ReceiveChannel
 import org.threeten.bp.LocalDate
 import org.threeten.bp.ZoneId
 import java.util.*
@@ -23,6 +23,9 @@ import java.util.*
  */
 
 interface EventRepository : CollectionRepository<Event> {
+
+    fun findScheduledAt(calendarIds: Set<Int>, date: LocalDate): List<Event>
+
     fun findScheduledBetween(
         calendarIds: Set<Int>,
         start: LocalDate,
@@ -61,6 +64,9 @@ class AndroidCalendarEventRepository : EventRepository {
         private const val PROJECTION_DISPLAY_COLOR = 9
         private const val PROJECTION_RRULE = 10
     }
+
+    override fun findScheduledAt(calendarIds: Set<Int>, date: LocalDate) =
+        findScheduledBetween(calendarIds, date, date)
 
     override fun findScheduledBetween(
         calendarIds: Set<Int>,

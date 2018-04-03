@@ -33,8 +33,10 @@ import io.ipoli.android.player.auth.AuthViewController
 import io.ipoli.android.player.data.AndroidAvatar
 import io.ipoli.android.quest.schedule.ScheduleViewController
 import io.ipoli.android.repeatingquest.list.RepeatingQuestListViewController
+import io.ipoli.android.settings.SettingsViewController
 import io.ipoli.android.store.StoreViewController
 import io.ipoli.android.store.avatar.AvatarStoreViewController
+import io.ipoli.android.tag.list.TagListViewController
 import kotlinx.android.synthetic.main.controller_home.view.*
 import kotlinx.android.synthetic.main.drawer_header_home.view.*
 import space.traversal.kapsule.required
@@ -109,6 +111,9 @@ class HomeViewController(args: Bundle? = null) :
             R.id.challenges ->
                 changeChildController(ChallengeListViewController())
 
+            R.id.tags ->
+                changeChildController(TagListViewController())
+
             R.id.store ->
                 changeChildController(StoreViewController())
 
@@ -117,6 +122,9 @@ class HomeViewController(args: Bundle? = null) :
 
             R.id.inviteFriends ->
                 showInviteFriends()
+
+            R.id.settings ->
+                changeChildController(SettingsViewController())
 
             R.id.feedback ->
                 showFeedback()

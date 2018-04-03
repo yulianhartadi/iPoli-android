@@ -15,7 +15,7 @@ import io.ipoli.android.common.redux.Action
 import io.ipoli.android.common.redux.Dispatcher
 import io.ipoli.android.common.redux.SideEffectHandler
 import io.ipoli.android.common.view.AppWidgetUtil
-import io.ipoli.android.event.Event
+import io.ipoli.android.event.usecase.FindEventsBetweenDatesUseCase
 import io.ipoli.android.myPoliApp
 import io.ipoli.android.pet.store.PetStoreAction
 import io.ipoli.android.pet.usecase.BuyPetUseCase
@@ -57,8 +57,6 @@ abstract class AppSideEffectHandler : SideEffectHandler<AppState>,
 
     private var dispatcher: Dispatcher? = null
 
-    private val stateStore by required { stateStore }
-
     override suspend fun execute(action: Action, state: AppState, dispatcher: Dispatcher) {
         inject(myPoliApp.module(myPoliApp.instance))
         this.dispatcher = dispatcher
@@ -78,7 +76,7 @@ abstract class AppSideEffectHandler : SideEffectHandler<AppState>,
 class DayViewSideEffectHandler : AppSideEffectHandler() {
     private val saveQuestUseCase by required { saveQuestUseCase }
     private val questRepository by required { questRepository }
-    private val eventRepository by required { eventRepository }
+    private val findEventsBetweenDatesUseCase by required { findEventsBetweenDatesUseCase }
     private val removeQuestUseCase by required { removeQuestUseCase }
     private val loadScheduleForDateUseCase by required { loadScheduleForDateUseCase }
     private val undoRemoveQuestUseCase by required { undoRemoveQuestUseCase }
@@ -137,7 +135,9 @@ class DayViewSideEffectHandler : AppSideEffectHandler() {
         }
     }
 
-    private fun startListenForCalendarQuests(currentDate: LocalDate) {
+    private fun startListenForCalendarQuests(
+        currentDate: LocalDate
+    ) {
         startDate = currentDate.minusDays(2)
         endDate = currentDate.plusDays(2)
         scheduledQuestsChannel?.cancel()
@@ -154,13 +154,12 @@ class DayViewSideEffectHandler : AppSideEffectHandler() {
                             )
                         )
 
-//                    val events = eventRepository.findScheduledBetween(
-//                        calendarIds = setOf(3),
-//                        start = startDate!!,
-//                        end = endDate!!
-//                    )
-
-                    val events = listOf<Event>()
+                    val events = findEventsBetweenDatesUseCase.execute(
+                        FindEventsBetweenDatesUseCase.Params(
+                            startDate = startDate!!,
+                            endDate = endDate!!
+                        )
+                    )
 
                     val schedule =
                         loadScheduleForDateUseCase.execute(
@@ -223,7 +222,7 @@ class DayViewSideEffectHandler : AppSideEffectHandler() {
 
     override fun canHandle(action: Action): Boolean {
         val a = (action as? NamespaceAction)?.source ?: action
-        return a is DayViewAction || a is LoadDataAction.All
+        return a is DayViewAction || a === LoadDataAction.All
     }
 }
 

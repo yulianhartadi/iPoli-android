@@ -9,7 +9,6 @@ import com.google.firebase.auth.GoogleAuthProvider
 import com.google.firebase.firestore.DocumentListenOptions
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.ListenerRegistration
-import kotlinx.coroutines.experimental.runBlocking
 import io.ipoli.android.Constants
 import io.ipoli.android.challenge.predefined.entity.PredefinedChallenge
 import io.ipoli.android.common.datetime.startOfDayUTC
@@ -22,6 +21,7 @@ import io.ipoli.android.player.persistence.model.*
 import io.ipoli.android.quest.ColorPack
 import io.ipoli.android.quest.IconPack
 import io.ipoli.android.store.powerup.PowerUp
+import kotlinx.coroutines.experimental.runBlocking
 import org.threeten.bp.Instant
 import kotlin.coroutines.experimental.CoroutineContext
 import kotlin.coroutines.experimental.suspendCoroutine
@@ -204,7 +204,8 @@ class FirestorePlayerRepository(
             createdAt = Instant.ofEpochMilli(cp.createdAt),
             updatedAt = Instant.ofEpochMilli(cp.updatedAt),
             pet = pet,
-            membership = Membership.valueOf(cp.membership)
+            membership = Membership.valueOf(cp.membership),
+            syncCalendarIds = cp.syncCalendarIds.toSet()
         )
     }
 
@@ -232,6 +233,7 @@ class FirestorePlayerRepository(
             it.pet = createDbPet(entity.pet).map
             it.inventory = createDbInventory(entity.inventory).map
             it.membership = entity.membership.name
+            it.syncCalendarIds = entity.syncCalendarIds.toList()
         }
 
     private fun createDbPet(pet: Pet) =

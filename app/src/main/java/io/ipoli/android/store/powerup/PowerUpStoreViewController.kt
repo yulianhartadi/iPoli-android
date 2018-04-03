@@ -1,5 +1,6 @@
 package io.ipoli.android.store.powerup
 
+import android.Manifest
 import android.os.Bundle
 import android.support.annotation.ColorInt
 import android.support.annotation.ColorRes
@@ -15,18 +16,20 @@ import com.mikepenz.google_material_typeface_library.GoogleMaterial
 import com.mikepenz.iconics.IconicsDrawable
 import com.mikepenz.iconics.typeface.IIcon
 import com.mikepenz.ionicons_typeface_library.Ionicons
-import kotlinx.android.synthetic.main.controller_power_up_store.view.*
-import kotlinx.android.synthetic.main.item_disabled_power_up.view.*
-import kotlinx.android.synthetic.main.item_enabled_power_up.view.*
-import kotlinx.android.synthetic.main.view_inventory_toolbar.view.*
+import io.ipoli.android.Constants
 import io.ipoli.android.R
 import io.ipoli.android.common.ViewUtils
 import io.ipoli.android.common.redux.android.ReduxViewController
 import io.ipoli.android.common.text.DateFormatter
 import io.ipoli.android.common.view.*
 import io.ipoli.android.common.view.pager.BasePagerAdapter
+import io.ipoli.android.event.calendar.picker.CalendarPickerDialogController
 import io.ipoli.android.player.inventory.InventoryViewController
 import io.ipoli.android.store.membership.MembershipViewController
+import kotlinx.android.synthetic.main.controller_power_up_store.view.*
+import kotlinx.android.synthetic.main.item_disabled_power_up.view.*
+import kotlinx.android.synthetic.main.item_enabled_power_up.view.*
+import kotlinx.android.synthetic.main.view_inventory_toolbar.view.*
 
 /**
  * Created by Venelin Valkov <venelin@mypoli.fun>
@@ -192,7 +195,6 @@ class PowerUpStoreViewController(args: Bundle? = null) :
     }
 
     override fun render(state: PowerUpStoreViewState, view: View) {
-
         when (state) {
             is PowerUpStoreViewState.Changed -> {
                 val adapter = view.powerUpPager.adapter as PowerUpAdapter
@@ -201,13 +203,30 @@ class PowerUpStoreViewController(args: Bundle? = null) :
                 colorLayout(vm)
             }
 
-            is PowerUpStoreViewState.PowerUpBought ->
+            is PowerUpStoreViewState.PowerUpBought -> {
                 showLongToast(state.message)
+                if (state.type == PowerUp.Type.CALENDAR_SYNC) {
+                    requestPermissions(
+                        mapOf(Manifest.permission.READ_CALENDAR to stringRes(R.string.allow_read_calendars_perm_reason)),
+                        Constants.RC_CALENDAR_PERM
+                    )
+                }
+            }
 
             PowerUpStoreViewState.PowerUpTooExpensive ->
                 showShortToast(R.string.power_up_too_expensive)
-
         }
+    }
+
+
+    private fun showCalendarPicker() {
+        CalendarPickerDialogController({ calendarIds ->
+            dispatch(PowerUpStoreAction.SyncCalendarsSelected(calendarIds))
+        }).show(router)
+    }
+
+    override fun onPermissionsGranted(requestCode: Int, permissions: List<String>) {
+        showCalendarPicker()
     }
 
     sealed class PowerUpViewModel(

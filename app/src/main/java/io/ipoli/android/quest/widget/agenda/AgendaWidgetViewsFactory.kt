@@ -6,9 +6,11 @@ import android.graphics.Bitmap
 import android.graphics.Canvas
 import android.graphics.drawable.GradientDrawable
 import android.os.Bundle
+import android.support.annotation.ColorInt
 import android.support.v4.content.ContextCompat
 import android.widget.RemoteViews
 import android.widget.RemoteViewsService
+import com.mikepenz.google_material_typeface_library.GoogleMaterial
 import com.mikepenz.iconics.IconicsDrawable
 import com.mikepenz.ionicons_typeface_library.Ionicons
 import io.ipoli.android.Constants
@@ -16,6 +18,8 @@ import io.ipoli.android.R
 import io.ipoli.android.common.di.Module
 import io.ipoli.android.common.view.AndroidColor
 import io.ipoli.android.common.view.AndroidIcon
+import io.ipoli.android.event.Event
+import io.ipoli.android.event.usecase.FindEventsBetweenDatesUseCase
 import io.ipoli.android.myPoliApp
 import io.ipoli.android.quest.Quest
 import org.threeten.bp.LocalDate
@@ -32,9 +36,15 @@ import java.util.concurrent.CopyOnWriteArrayList
 class AgendaWidgetViewsFactory(private val context: Context) :
     RemoteViewsService.RemoteViewsFactory, Injects<Module> {
 
-    private var quests = CopyOnWriteArrayList<Quest>()
+    sealed class Item {
+        data class QuestItem(val quest: Quest) : Item()
+        data class EventItem(val event: Event) : Item()
+    }
+
+    private var items = CopyOnWriteArrayList<Item>()
 
     private val questRepository by required { questRepository }
+    private val findEventsBetweenDatesUseCase by required { findEventsBetweenDatesUseCase }
 
     override fun onCreate() {
         inject(myPoliApp.module(context))
@@ -45,47 +55,109 @@ class AgendaWidgetViewsFactory(private val context: Context) :
     override fun getItemId(position: Int): Long = position.toLong()
 
     override fun onDataSetChanged() {
-        quests.clear()
-        quests.addAll(questRepository.findScheduledAt(LocalDate.now()).filter { !it.isCompleted })
+
+        val widgetItems = mutableListOf<Item>()
+
+        widgetItems.addAll(questRepository.findScheduledAt(LocalDate.now())
+            .filter { !it.isCompleted }.map {
+                Item.QuestItem(
+                    it
+                )
+            })
+
+        widgetItems.addAll(
+            findEventsBetweenDatesUseCase.execute(
+                FindEventsBetweenDatesUseCase.Params(LocalDate.now(), LocalDate.now())
+            ).map { Item.EventItem(it) })
+
+        widgetItems.sortBy {
+            when (it) {
+                is Item.QuestItem ->
+                    it.quest.startTime?.toMinuteOfDay()
+                is Item.EventItem ->
+                    it.event.startTime.toMinuteOfDay()
+            }
+        }
+
+        items.clear()
+        items.addAll(widgetItems)
     }
 
     override fun hasStableIds() = true
 
-    override fun getViewAt(position: Int): RemoteViews {
+    override fun getViewAt(position: Int) =
 
-        val rv = RemoteViews(context.packageName, R.layout.item_widget_agenda)
-        val q = quests[position]
+        items[position].let {
+            when (it) {
+                is Item.QuestItem -> {
 
-        rv.setTextViewText(R.id.widgetQuestName, q.name)
-        rv.setTextViewText(R.id.widgetQuestStartTime, formatStartTime(q))
+                    val q = it.quest
 
-        val icon = q.icon?.let { AndroidIcon.valueOf(it.name).icon }
-            ?: Ionicons.Icon.ion_android_clipboard
+                    RemoteViews(context.packageName, R.layout.item_widget_agenda).apply {
 
-        val iconDrawable =
-            IconicsDrawable(context)
-                .icon(icon)
-                .colorRes(R.color.md_white)
-                .sizeDp(24)
+                        setTextViewText(R.id.widgetQuestName, q.name)
+                        setTextViewText(R.id.widgetQuestStartTime, formatStartTime(q))
 
-        rv.setImageViewBitmap(R.id.widgetQuestIcon, iconDrawable.toBitmap())
+                        val icon = q.icon?.let { AndroidIcon.valueOf(it.name).icon }
+                            ?: Ionicons.Icon.ion_android_clipboard
 
-        val iconBgColor = AndroidColor.valueOf(q.color.name).color500
+                        val iconDrawable =
+                            IconicsDrawable(context)
+                                .icon(icon)
+                                .colorRes(R.color.md_white)
+                                .sizeDp(24)
 
-        rv.setImageViewBitmap(R.id.widgetQuestIconBackground, createIconBackground(iconBgColor))
+                        setImageViewBitmap(R.id.widgetQuestIcon, iconDrawable.toBitmap())
 
-        rv.setOnClickFillInIntent(R.id.widgetSelectableBackground, createClickQuestIntent(q))
+                        val iconBgColor = AndroidColor.valueOf(q.color.name).color500
 
-        val checkboxIcon =
-            IconicsDrawable(context)
-                .icon(Ionicons.Icon.ion_android_checkbox_outline_blank)
-                .colorRes(R.color.md_light_text_70)
-                .sizeDp(24)
-        rv.setImageViewBitmap(R.id.widgetQuestComplete, checkboxIcon.toBitmap())
-        rv.setOnClickFillInIntent(R.id.widgetQuestComplete, createCompleteQuestIntent(q))
+                        setImageViewBitmap(
+                            R.id.widgetQuestIconBackground,
+                            createIconBackground(ContextCompat.getColor(context, iconBgColor))
+                        )
 
-        return rv
-    }
+                        setOnClickFillInIntent(
+                            R.id.widgetSelectableBackground,
+                            createClickQuestIntent(q)
+                        )
+
+                        val checkboxIcon =
+                            IconicsDrawable(context)
+                                .icon(Ionicons.Icon.ion_android_checkbox_outline_blank)
+                                .colorRes(R.color.md_light_text_70)
+                                .sizeDp(24)
+                        setImageViewBitmap(R.id.widgetQuestComplete, checkboxIcon.toBitmap())
+                        setOnClickFillInIntent(
+                            R.id.widgetQuestComplete,
+                            createCompleteQuestIntent(q)
+                        )
+                    }
+                }
+
+                is Item.EventItem -> {
+                    val e = it.event
+
+                    RemoteViews(context.packageName, R.layout.item_widget_agenda).apply {
+                        setTextViewText(R.id.widgetQuestName, e.name)
+                        setTextViewText(R.id.widgetQuestStartTime, formatStartTime(e))
+
+                        val iconDrawable =
+                            IconicsDrawable(context)
+                                .icon(GoogleMaterial.Icon.gmd_event_available)
+                                .colorRes(R.color.md_white)
+                                .sizeDp(24)
+
+                        setImageViewBitmap(R.id.widgetQuestIcon, iconDrawable.toBitmap())
+
+                        setImageViewBitmap(
+                            R.id.widgetQuestIconBackground,
+                            createIconBackground(e.color)
+                        )
+                    }
+                }
+
+            }
+        }
 
     private fun createClickQuestIntent(q: Quest): Intent {
         val b = Bundle().apply {
@@ -111,10 +183,10 @@ class AgendaWidgetViewsFactory(private val context: Context) :
         return Intent().putExtras(b)
     }
 
-    private fun createIconBackground(iconBgColor: Int): Bitmap? {
+    private fun createIconBackground(@ColorInt iconBgColor: Int): Bitmap? {
         val drawable =
             context.getDrawable(R.drawable.widget_agenda_item_icon_background) as GradientDrawable
-        drawable.setColor(ContextCompat.getColor(context, iconBgColor))
+        drawable.setColor(iconBgColor)
 
         val bitmap = Bitmap.createBitmap(
             drawable.intrinsicWidth,
@@ -134,7 +206,13 @@ class AgendaWidgetViewsFactory(private val context: Context) :
         return "$start - $end"
     }
 
-    override fun getCount() = quests.size
+    private fun formatStartTime(event: Event): String {
+        val start = event.startTime
+        val end = start.plus(event.duration.intValue)
+        return "$start - $end"
+    }
+
+    override fun getCount() = items.size
 
     override fun getViewTypeCount() = 1
 

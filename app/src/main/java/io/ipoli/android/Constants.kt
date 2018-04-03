@@ -179,7 +179,7 @@ interface Constants {
         val SOURCE_ANDROID_CALENDAR = "android-calendar"
 
         val XP_BAR_MAX_VALUE = 100
-        val RC_CALENDAR_PERM = 102
+        const val RC_CALENDAR_PERM = 102
         val KEY_LAST_ANDROID_CALENDAR_SYNC_DATE = "LAST_ANDROID_CALENDAR_SYNC_DATE"
         val FACEBOOK_PACKAGE = "com.facebook.katana"
         val TWITTER_PACKAGE = "com.twitter.android"

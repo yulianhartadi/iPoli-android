@@ -1,0 +1,171 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_marginTop="?attr/actionBarSize"
+    android:background="@color/md_white">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:orientation="vertical">
+
+            <TextView
+                style="@style/TextAppearance.AppCompat.Body2"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingEnd="16dp"
+                android:paddingStart="16dp"
+                android:text="@string/settings_sync_calendars"
+                android:textColor="@color/colorAccent"
+                android:textSize="14sp" />
+
+            <RelativeLayout
+                android:id="@+id/syncCalendarsContainer"
+                android:layout_width="match_parent"
+                android:layout_height="48dp"
+                android:background="?android:attr/selectableItemBackground"
+                android:clickable="true"
+                android:paddingEnd="16dp"
+                android:paddingStart="16dp">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentStart="true"
+                    android:layout_centerVertical="true"
+                    android:text="@string/settings_sync_google_calendars"
+                    android:textColor="@color/md_dark_text_87"
+                    android:textSize="16sp" />
+
+                <Switch
+                    android:id="@+id/enableSyncCalendars"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentEnd="true"
+                    android:layout_centerVertical="true" />
+
+            </RelativeLayout>
+
+            <LinearLayout
+                android:id="@+id/selectSyncCalendarsContainer"
+                android:layout_width="match_parent"
+                android:layout_height="72dp"
+                android:background="?android:attr/selectableItemBackground"
+                android:clickable="true"
+                android:orientation="vertical"
+                android:paddingEnd="16dp"
+                android:paddingStart="16dp"
+                android:weightSum="2">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="0dp"
+                    android:layout_weight="1"
+                    android:gravity="bottom"
+                    android:text="@string/settings_select_sync_calendars"
+                    android:textColor="@color/md_dark_text_87"
+                    android:textSize="16sp" />
+
+                <TextView
+                    android:id="@+id/selectedSyncCalendars"
+                    android:layout_width="match_parent"
+                    android:layout_height="0dp"
+                    android:layout_weight="1"
+                    android:gravity="top"
+                    android:text="@string/no_calendars_selected_to_sync"
+                    android:textColor="@color/md_dark_text_54"
+                    android:textSize="14sp" />
+            </LinearLayout>
+        </LinearLayout>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_marginTop="8dp"
+            android:background="@color/md_dark_text_12" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:orientation="vertical">
+
+            <TextView
+                style="@style/TextAppearance.AppCompat.Body2"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingEnd="16dp"
+                android:paddingStart="16dp"
+                android:text="@string/settings_about_title"
+                android:textColor="@color/colorAccent"
+                android:textSize="14sp" />
+
+            <LinearLayout
+                android:id="@+id/rateContainer"
+                android:layout_width="match_parent"
+                android:layout_height="72dp"
+                android:background="?android:attr/selectableItemBackground"
+                android:clickable="true"
+                android:orientation="vertical"
+                android:paddingEnd="16dp"
+                android:paddingStart="16dp"
+                android:weightSum="2">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="0dp"
+                    android:layout_weight="1"
+                    android:gravity="bottom"
+                    android:text="@string/settings_rate_title"
+                    android:textColor="@color/md_dark_text_87"
+                    android:textSize="16sp" />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="0dp"
+                    android:layout_weight="1"
+                    android:gravity="top"
+                    android:text="@string/settings_rate_desc"
+                    android:textColor="@color/md_dark_text_54"
+                    android:textSize="14sp" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="72dp"
+                android:background="?android:attr/selectableItemBackground"
+                android:clickable="true"
+                android:orientation="vertical"
+                android:paddingEnd="16dp"
+                android:paddingStart="16dp"
+                android:weightSum="2">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="0dp"
+                    android:layout_weight="1"
+                    android:gravity="bottom"
+                    android:text="@string/settings_app_version"
+                    android:textColor="@color/md_dark_text_87"
+                    android:textSize="16sp" />
+
+                <TextView
+                    android:id="@+id/appVersion"
+                    android:layout_width="match_parent"
+                    android:layout_height="0dp"
+                    android:layout_weight="1"
+                    android:gravity="top"
+                    android:textColor="@color/md_dark_text_54"
+                    android:textSize="14sp" />
+            </LinearLayout>
+
+        </LinearLayout>
+    </LinearLayout>
+</ScrollView>
