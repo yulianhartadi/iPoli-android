@@ -15,6 +15,8 @@ import io.ipoli.android.common.*
 import io.ipoli.android.common.analytics.EventLogger
 import io.ipoli.android.common.analytics.FirebaseEventLogger
 import io.ipoli.android.common.middleware.LogEventsMiddleWare
+import io.ipoli.android.common.permission.AndroidPermissionChecker
+import io.ipoli.android.common.permission.PermissionChecker
 import io.ipoli.android.common.rate.AndroidRatePopupScheduler
 import io.ipoli.android.common.rate.RatePopupScheduler
 import io.ipoli.android.common.rate.RatePresenter
@@ -30,6 +32,8 @@ import io.ipoli.android.event.persistence.AndroidCalendarRepository
 import io.ipoli.android.event.persistence.CalendarRepository
 import io.ipoli.android.event.persistence.EventRepository
 import io.ipoli.android.event.sideeffect.CalendarSideEffectHandler
+import io.ipoli.android.event.usecase.FindEventsBetweenDatesUseCase
+import io.ipoli.android.event.usecase.SaveSyncCalendarsUseCase
 import io.ipoli.android.note.usecase.SaveQuestNoteUseCase
 import io.ipoli.android.pet.AndroidJobLowerPetStatsScheduler
 import io.ipoli.android.pet.LowerPetStatsScheduler
@@ -92,6 +96,8 @@ import io.ipoli.android.store.theme.sideeffect.ThemeSideEffectHandler
 import io.ipoli.android.store.theme.usecase.BuyThemeUseCase
 import io.ipoli.android.store.theme.usecase.ChangeThemeUseCase
 import io.ipoli.android.store.usecase.PurchaseGemPackUseCase
+import io.ipoli.android.tag.persistence.FirestoreTagRepository
+import io.ipoli.android.tag.persistence.TagRepository
 import kotlinx.coroutines.experimental.CommonPool
 import kotlinx.coroutines.experimental.Job
 import space.traversal.kapsule.HasModules
@@ -109,6 +115,7 @@ interface RepositoryModule {
     val challengeRepository: ChallengeRepository
     val eventRepository: EventRepository
     val calendarRepository: CalendarRepository
+    val tagRepository: TagRepository
 }
 
 class FirestoreRepositoryModule : RepositoryModule, Injects<Module> {
@@ -155,6 +162,15 @@ class FirestoreRepositoryModule : RepositoryModule, Injects<Module> {
         AndroidCalendarRepository()
     }
 
+    override val tagRepository: TagRepository
+        by required {
+            FirestoreTagRepository(
+                database,
+                job + CommonPool,
+                sharedPreferences
+            )
+        }
+
 }
 
 interface AndroidModule {
@@ -191,6 +207,8 @@ interface AndroidModule {
     val checkMembershipStatusScheduler: CheckMembershipStatusScheduler
 
     val ratePopupScheduler: RatePopupScheduler
+
+    val permissionChecker: PermissionChecker
 
     val job: Job
 }
@@ -236,11 +254,16 @@ class MainAndroidModule(
 
     override val eventLogger = FirebaseEventLogger(firebaseAnalytics)
 
+    override val permissionChecker
+        get() = AndroidPermissionChecker()
+
     override val job get() = Job()
 }
 
 class MainUseCaseModule : UseCaseModule, Injects<Module> {
     private val questRepository by required { questRepository }
+    private val eventRepository by required { eventRepository }
+    private val permissionChecker by required { permissionChecker }
     private val repeatingQuestRepository by required { repeatingQuestRepository }
     private val playerRepository by required { playerRepository }
     private val challengeRepository by required { challengeRepository }
@@ -481,6 +504,12 @@ class MainUseCaseModule : UseCaseModule, Injects<Module> {
 
     override val saveQuestNoteUseCase
         get() = SaveQuestNoteUseCase(questRepository)
+
+    override val findEventsBetweenDatesUseCase: FindEventsBetweenDatesUseCase
+        get() = FindEventsBetweenDatesUseCase(playerRepository, eventRepository, permissionChecker)
+
+    override val saveSyncCalendarsUseCase
+        get() = SaveSyncCalendarsUseCase(playerRepository)
 }
 
 interface UseCaseModule {
@@ -555,6 +584,8 @@ interface UseCaseModule {
     val removeSubQuestUseCase: RemoveSubQuestUseCase
     val reorderSubQuestUseCase: ReorderSubQuestUseCase
     val saveQuestNoteUseCase: SaveQuestNoteUseCase
+    val findEventsBetweenDatesUseCase: FindEventsBetweenDatesUseCase
+    val saveSyncCalendarsUseCase: SaveSyncCalendarsUseCase
 }
 
 interface PresenterModule {

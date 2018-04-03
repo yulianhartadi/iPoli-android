@@ -558,6 +558,7 @@ class DayViewController :
             view.questName.setTextColor(colorRes(R.color.md_white))
 
             view.repeatIndicator.visible = vm.isRepeating
+            view.challengeIndicator.gone()
         }
 
         private fun showQuest(

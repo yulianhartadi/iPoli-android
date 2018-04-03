@@ -2,6 +2,7 @@ package io.ipoli.android.quest.schedule.agenda
 
 import android.content.res.ColorStateList
 import android.os.Bundle
+import android.support.annotation.ColorInt
 import android.support.annotation.ColorRes
 import android.support.annotation.DrawableRes
 import android.support.v7.widget.LinearLayoutManager
@@ -16,16 +17,18 @@ import android.widget.TextView
 import com.bluelinelabs.conductor.RouterTransaction
 import com.mikepenz.iconics.IconicsDrawable
 import com.mikepenz.iconics.typeface.IIcon
-import kotlinx.android.synthetic.main.controller_agenda.view.*
-import kotlinx.android.synthetic.main.item_agenda_month_divider.view.*
-import kotlinx.android.synthetic.main.item_agenda_quest.view.*
 import io.ipoli.android.R
 import io.ipoli.android.common.ViewUtils
 import io.ipoli.android.common.redux.android.ReduxViewController
 import io.ipoli.android.common.view.*
-import io.ipoli.android.quest.CompletedQuestViewController
+import io.ipoli.android.common.view.recyclerview.SimpleViewHolder
 import io.ipoli.android.common.view.recyclerview.SwipeToCompleteCallback
+import io.ipoli.android.quest.CompletedQuestViewController
 import io.ipoli.android.quest.timer.QuestViewController
+import kotlinx.android.synthetic.main.controller_agenda.view.*
+import kotlinx.android.synthetic.main.item_agenda_event.view.*
+import kotlinx.android.synthetic.main.item_agenda_month_divider.view.*
+import kotlinx.android.synthetic.main.item_agenda_quest.view.*
 import org.threeten.bp.LocalDate
 
 /**
@@ -182,11 +185,19 @@ class AgendaViewController(args: Bundle? = null) :
         @ColorRes val color: Int,
         val icon: IIcon,
         val isCompleted: Boolean,
-        val showDivider: Boolean = true,
+        val showDivider: Boolean,
         val isRepeating: Boolean,
         val isFromChallenge: Boolean,
         val isPlaceholder: Boolean
     ) : AgendaViewModel
+
+    data class EventViewModel(
+        val name: String,
+        val startTime: String, @ColorInt val color: Int,
+        val icon: IIcon,
+        val showDivider: Boolean
+    ) :
+        AgendaViewModel
 
     data class DateHeaderViewModel(val text: String) : AgendaViewModel
     data class MonthDividerViewModel(
@@ -196,7 +207,7 @@ class AgendaViewController(args: Bundle? = null) :
     data class WeekHeaderViewModel(val text: String) : AgendaViewModel
 
     enum class ItemType {
-        QUEST_PLACEHOLDER, QUEST, COMPLETED_QUEST, DATE_HEADER, MONTH_DIVIDER, WEEK_HEADER
+        QUEST_PLACEHOLDER, QUEST, COMPLETED_QUEST, EVENT, DATE_HEADER, MONTH_DIVIDER, WEEK_HEADER
     }
 
     inner class AgendaAdapter(private var viewModels: MutableList<AgendaViewModel> = mutableListOf()) :
@@ -217,6 +228,8 @@ class AgendaViewController(args: Bundle? = null) :
                     itemView,
                     vm as QuestViewModel
                 )
+                ItemType.EVENT ->
+                    bindEventViewModel(itemView, vm as EventViewModel)
                 ItemType.DATE_HEADER -> bindDateHeaderViewModel(itemView, vm as DateHeaderViewModel)
                 ItemType.MONTH_DIVIDER -> bindMonthDividerViewModel(
                     itemView,
@@ -236,6 +249,23 @@ class AgendaViewController(args: Bundle? = null) :
             view.setOnClickListener(null)
             view.questName.text = vm.name
             bindQuest(view, vm)
+        }
+
+        private fun bindEventViewModel(view: View, viewModel: EventViewModel) {
+
+            view.eventDivider.visible = viewModel.showDivider
+
+            view.eventName.text = viewModel.name
+            view.eventStartTime.text = viewModel.startTime
+
+            view.eventIcon.backgroundTintList =
+                ColorStateList.valueOf(viewModel.color)
+            view.eventIcon.setImageDrawable(
+                IconicsDrawable(view.context)
+                    .icon(viewModel.icon)
+                    .colorRes(R.color.md_white)
+                    .sizeDp(24)
+            )
         }
 
         private fun bindWeekHeaderViewModel(
@@ -305,8 +335,9 @@ class AgendaViewController(args: Bundle? = null) :
             view.questStartTime.text = vm.startTime
             view.divider.visible = vm.showDivider
 
-            view.questRepeatIndicator.visibility = if(vm.isRepeating) View.VISIBLE else View.GONE
-            view.questChallengeIndicator.visibility = if(vm.isFromChallenge) View.VISIBLE else View.GONE
+            view.questRepeatIndicator.visibility = if (vm.isRepeating) View.VISIBLE else View.GONE
+            view.questChallengeIndicator.visibility =
+                if (vm.isFromChallenge) View.VISIBLE else View.GONE
         }
 
         override fun getItemCount() = viewModels.size
@@ -348,6 +379,19 @@ class AgendaViewController(args: Bundle? = null) :
                         view
                     )
                 }
+
+                ItemType.EVENT.ordinal -> {
+                    val view = LayoutInflater.from(parent.context).inflate(
+                        R.layout.item_agenda_event,
+                        parent,
+                        false
+                    )
+                    view.layoutParams.width = parent.width
+                    SimpleViewHolder(
+                        view
+                    )
+                }
+
                 ItemType.DATE_HEADER.ordinal -> DateHeaderViewHolder(
                     LayoutInflater.from(parent.context).inflate(
                         R.layout.item_agenda_date_header,
@@ -390,6 +434,7 @@ class AgendaViewController(args: Bundle? = null) :
                     ItemType.QUEST_PLACEHOLDER.ordinal
                 else
                     ItemType.QUEST.ordinal
+                is EventViewModel -> ItemType.EVENT.ordinal
                 is DateHeaderViewModel -> ItemType.DATE_HEADER.ordinal
                 is MonthDividerViewModel -> ItemType.MONTH_DIVIDER.ordinal
                 is WeekHeaderViewModel -> ItemType.WEEK_HEADER.ordinal

@@ -23,6 +23,7 @@ data class DbPlayer(override val map: MutableMap<String, Any?> = mutableMapOf())
     var pet: MutableMap<String, Any?> by map
     var inventory: MutableMap<String, Any?> by map
     var membership: String by map
+    var syncCalendarIds: List<String> by map
     override var createdAt: Long by map
     override var updatedAt: Long by map
     override var removedAt: Long? by map

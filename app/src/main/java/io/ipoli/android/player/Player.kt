@@ -26,6 +26,7 @@ data class Player(
     val authProvider: AuthProvider,
     val avatar: Avatar = Avatar.AVATAR_00,
     val membership: Membership = Membership.NONE,
+    val syncCalendarIds: Set<String> = setOf(),
     override val createdAt: Instant = Instant.now(),
     override val updatedAt: Instant = Instant.now(),
     val currentTheme: Theme = Constants.DEFAULT_THEME,
@@ -97,6 +98,8 @@ data class Player(
         inventory.hasColorPack(colorPack)
 
     fun hasChallenge(challenge: PredefinedChallenge) = inventory.hasChallenge(challenge)
+
+    fun isPowerUpEnabled(powerUp: PowerUp.Type) = inventory.isPowerUpEnabled(powerUp)
 
     val experienceProgressForLevel: Int
         get() {

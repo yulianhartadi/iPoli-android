@@ -1,15 +1,11 @@
 package io.ipoli.android.quest.schedule.agenda.sideeffect
 
-import kotlinx.coroutines.experimental.CommonPool
-import kotlinx.coroutines.experimental.android.UI
-import kotlinx.coroutines.experimental.channels.ReceiveChannel
-import kotlinx.coroutines.experimental.channels.consumeEach
-import kotlinx.coroutines.experimental.launch
 import io.ipoli.android.common.AppSideEffectHandler
 import io.ipoli.android.common.AppState
 import io.ipoli.android.common.DataLoadedAction
 import io.ipoli.android.common.LoadDataAction
 import io.ipoli.android.common.redux.Action
+import io.ipoli.android.event.usecase.FindEventsBetweenDatesUseCase
 import io.ipoli.android.quest.Quest
 import io.ipoli.android.quest.schedule.ScheduleAction
 import io.ipoli.android.quest.schedule.ScheduleViewState
@@ -23,6 +19,11 @@ import io.ipoli.android.quest.schedule.calendar.CalendarViewState
 import io.ipoli.android.quest.timer.usecase.CompleteTimeRangeUseCase
 import io.ipoli.android.quest.usecase.CompleteQuestUseCase
 import io.ipoli.android.repeatingquest.usecase.CreatePlaceholderQuestsForRepeatingQuestsUseCase
+import kotlinx.coroutines.experimental.CommonPool
+import kotlinx.coroutines.experimental.android.UI
+import kotlinx.coroutines.experimental.channels.ReceiveChannel
+import kotlinx.coroutines.experimental.channels.consumeEach
+import kotlinx.coroutines.experimental.launch
 import org.threeten.bp.LocalDate
 import space.traversal.kapsule.required
 
@@ -33,6 +34,7 @@ class AgendaSideEffectHandler : AppSideEffectHandler() {
     private val findAgendaDatesUseCase by required { findAgendaDatesUseCase }
     private val createAgendaItemsUseCase by required { createAgendaItemsUseCase }
     private val questRepository by required { questRepository }
+    private val findEventsBetweenDatesUseCase by required { findEventsBetweenDatesUseCase }
     private val completeTimeRangeUseCase by required { completeTimeRangeUseCase }
     private val createPlaceholderQuestsForRepeatingQuestsUseCase by required { createPlaceholderQuestsForRepeatingQuestsUseCase }
 
@@ -143,8 +145,8 @@ class AgendaSideEffectHandler : AppSideEffectHandler() {
     }
 
     private fun listenForAgendaItems(
-        start: LocalDate,
-        end: LocalDate,
+        startDate: LocalDate,
+        endDate: LocalDate,
         agendaDate: LocalDate,
         changeCurrentAgendaItem: Boolean
     ) {
@@ -152,8 +154,8 @@ class AgendaSideEffectHandler : AppSideEffectHandler() {
         launch(UI) {
             agendaItemsChannel?.cancel()
             agendaItemsChannel = questRepository.listenForScheduledBetween(
-                start,
-                end
+                startDate,
+                endDate
             )
             agendaItemsChannel!!.consumeEach {
                 launch(CommonPool) {
@@ -161,25 +163,33 @@ class AgendaSideEffectHandler : AppSideEffectHandler() {
                     val placeholderQuests =
                         createPlaceholderQuestsForRepeatingQuestsUseCase.execute(
                             CreatePlaceholderQuestsForRepeatingQuestsUseCase.Params(
-                                startDate = start,
-                                endDate = end
+                                startDate = startDate,
+                                endDate = endDate
                             )
                         )
 
+                    val events = findEventsBetweenDatesUseCase.execute(
+                        FindEventsBetweenDatesUseCase.Params(
+                            startDate = startDate,
+                            endDate = endDate
+                        )
+                    )
+
                     val agendaItems = createAgendaItemsUseCase.execute(
                         CreateAgendaItemsUseCase.Params(
-                            agendaDate,
-                            it + placeholderQuests,
-                            AgendaReducer.ITEMS_BEFORE_COUNT,
-                            AgendaReducer.ITEMS_AFTER_COUNT
+                            date = agendaDate,
+                            scheduledQuests = it + placeholderQuests,
+                            events = events,
+                            itemsBefore = AgendaReducer.ITEMS_BEFORE_COUNT,
+                            itemsAfter = AgendaReducer.ITEMS_AFTER_COUNT
                         )
                     )
 
 
                     dispatch(
                         DataLoadedAction.AgendaItemsChanged(
-                            start = start,
-                            end = end,
+                            start = startDate,
+                            end = endDate,
                             agendaItems = agendaItems,
                             currentAgendaItemDate = if (changeCurrentAgendaItem) agendaDate else null
                         )

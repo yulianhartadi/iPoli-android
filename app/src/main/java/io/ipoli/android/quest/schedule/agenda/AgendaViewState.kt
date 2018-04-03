@@ -1,5 +1,6 @@
 package io.ipoli.android.quest.schedule.agenda
 
+import com.mikepenz.google_material_typeface_library.GoogleMaterial
 import com.mikepenz.ionicons_typeface_library.Ionicons
 import io.ipoli.android.R
 import io.ipoli.android.common.AppState
@@ -11,8 +12,9 @@ import io.ipoli.android.common.redux.Action
 import io.ipoli.android.common.text.DateFormatter
 import io.ipoli.android.common.view.AndroidColor
 import io.ipoli.android.common.view.AndroidIcon
+import io.ipoli.android.event.Event
 import io.ipoli.android.quest.Quest
-import io.ipoli.android.quest.schedule.agenda.usecase.CreateAgendaItemsUseCase
+import io.ipoli.android.quest.schedule.agenda.usecase.CreateAgendaItemsUseCase.AgendaItem
 import org.threeten.bp.LocalDate
 import org.threeten.bp.Month
 import org.threeten.bp.format.DateTimeFormatter
@@ -93,14 +95,14 @@ object AgendaReducer : BaseViewStateReducer<AgendaViewState>() {
 
     private fun findItemPositionToScrollTo(
         date: LocalDate?,
-        agendaItems: List<CreateAgendaItemsUseCase.AgendaItem>
+        agendaItems: List<AgendaItem>
     ) = date?.let {
         val currentAgendaItemDate = it
         val index = agendaItems.indexOfLast {
             when (it) {
-                is CreateAgendaItemsUseCase.AgendaItem.Date ->
+                is AgendaItem.Date ->
                     it.startDate() == currentAgendaItemDate
-                is CreateAgendaItemsUseCase.AgendaItem.Week ->
+                is AgendaItem.Week ->
                     currentAgendaItemDate.isBetween(
                         it.start,
                         it.end
@@ -125,7 +127,7 @@ object AgendaReducer : BaseViewStateReducer<AgendaViewState>() {
 data class AgendaViewState(
     val type: AgendaViewState.StateType,
     val scrollToPosition: Int?,
-    val agendaItems: List<CreateAgendaItemsUseCase.AgendaItem>
+    val agendaItems: List<AgendaItem>
 ) : ViewState {
 
     enum class StateType {
@@ -147,15 +149,13 @@ fun AgendaViewState.toAgendaItemViewModels() =
     }
 
 private fun toAgendaViewModel(
-    agendaItem: CreateAgendaItemsUseCase.AgendaItem,
-    nextAgendaItem: CreateAgendaItemsUseCase.AgendaItem? = null
+    agendaItem: AgendaItem,
+    nextAgendaItem: AgendaItem? = null
 ): AgendaViewController.AgendaViewModel {
 
     return when (agendaItem) {
-        is CreateAgendaItemsUseCase.AgendaItem.QuestItem -> {
+        is AgendaItem.QuestItem -> {
             val quest = agendaItem.quest
-            val showDivider =
-                !(nextAgendaItem == null || nextAgendaItem !is CreateAgendaItemsUseCase.AgendaItem.QuestItem)
             val color = if (quest.isCompleted)
                 R.color.md_grey_500
             else
@@ -169,20 +169,33 @@ private fun toAgendaViewModel(
                 icon = quest.icon?.let { AndroidIcon.valueOf(it.name).icon }
                     ?: Ionicons.Icon.ion_android_clipboard,
                 isCompleted = quest.isCompleted,
-                showDivider = showDivider,
+                showDivider = shouldShowDivider(nextAgendaItem),
                 isRepeating = quest.isFromRepeatingQuest,
                 isFromChallenge = quest.isFromChallenge,
                 isPlaceholder = quest.id.isEmpty()
             )
         }
-        is CreateAgendaItemsUseCase.AgendaItem.Date -> {
+
+        is AgendaItem.EventItem -> {
+            val event = agendaItem.event
+
+            AgendaViewController.EventViewModel(
+                name = event.name,
+                startTime = formatStartTime(event),
+                color = event.color,
+                icon = GoogleMaterial.Icon.gmd_event_available,
+                showDivider = shouldShowDivider(nextAgendaItem)
+            )
+        }
+
+        is AgendaItem.Date -> {
             val date = agendaItem.date
             val dayOfMonth = date.dayOfMonth
             val dayOfWeek = date.dayOfWeek.getDisplayName(TextStyle.SHORT, Locale.getDefault())
                 .toUpperCase()
             AgendaViewController.DateHeaderViewModel("$dayOfMonth $dayOfWeek")
         }
-        is CreateAgendaItemsUseCase.AgendaItem.Week -> {
+        is AgendaItem.Week -> {
             val start = agendaItem.start
             val end = agendaItem.end
             val label = if (start.month != end.month) {
@@ -195,7 +208,7 @@ private fun toAgendaViewModel(
 
             AgendaViewController.WeekHeaderViewModel(label)
         }
-        is CreateAgendaItemsUseCase.AgendaItem.Month -> {
+        is AgendaItem.Month -> {
             AgendaViewController.MonthDividerViewModel(
                 monthToImage[agendaItem.month.month]!!,
                 agendaItem.month.format(
@@ -204,8 +217,10 @@ private fun toAgendaViewModel(
             )
         }
     }
-
 }
+
+private fun shouldShowDivider(nextAgendaItem: AgendaItem?) =
+    !(nextAgendaItem == null || (nextAgendaItem !is AgendaItem.QuestItem && nextAgendaItem !is AgendaItem.EventItem))
 
 private fun formatStartTime(quest: Quest): String {
     val start = quest.startTime ?: return "Unscheduled"
@@ -213,7 +228,13 @@ private fun formatStartTime(quest: Quest): String {
     return "$start - $end"
 }
 
-private val monthToImage = mapOf<Month, Int>(
+private fun formatStartTime(event: Event): String {
+    val start = event.startTime
+    val end = start.plus(event.duration.intValue)
+    return "$start - $end"
+}
+
+private val monthToImage = mapOf(
     Month.JANUARY to R.drawable.agenda_january,
     Month.FEBRUARY to R.drawable.agenda_february,
     Month.MARCH to R.drawable.agenda_march,

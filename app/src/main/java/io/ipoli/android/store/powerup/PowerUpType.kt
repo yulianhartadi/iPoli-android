@@ -22,7 +22,7 @@ data class PowerUp(
     enum class Type(val coinPrice: Int) {
 //        REMINDERS(130),
         CHALLENGES(220),
-//        CALENDAR_SYNC(450),
+        CALENDAR_SYNC(450),
         TIMER(130),
         SUB_QUESTS(180),
         NOTES(90),

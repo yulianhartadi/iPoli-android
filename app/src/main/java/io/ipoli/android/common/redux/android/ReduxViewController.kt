@@ -1,6 +1,7 @@
 package io.ipoli.android.common.redux.android
 
 import android.content.Context
+import android.content.pm.PackageManager
 import android.os.Bundle
 import android.text.method.LinkMovementMethod
 import android.text.style.ForegroundColorSpan
@@ -8,10 +9,7 @@ import android.view.View
 import android.widget.TextView
 import com.bluelinelabs.conductor.Controller
 import com.bluelinelabs.conductor.RestoreViewOnCreateController
-import io.ipoli.android.common.AppState
-import io.ipoli.android.common.NamespaceAction
-import io.ipoli.android.common.UIAction
-import io.ipoli.android.common.ViewUtils
+import io.ipoli.android.common.*
 import io.ipoli.android.common.di.Module
 import io.ipoli.android.common.mvi.ViewState
 import io.ipoli.android.common.redux.Action
@@ -35,6 +33,7 @@ import ru.noties.markwon.spans.SpannableTheme
 import space.traversal.kapsule.Injects
 import space.traversal.kapsule.inject
 import space.traversal.kapsule.required
+
 
 /**
  * Created by Venelin Valkov <venelin@mypoli.fun>
@@ -140,6 +139,62 @@ abstract class ReduxViewController<A : Action, VS : ViewState, out R : ViewState
             block()
         }
     }
+
+    private var permissionsToRationale: Map<String, String> = mapOf()
+
+    protected fun requestPermissions(
+        permissionsToRationale: Map<String, String>,
+        requestCode: Int
+    ) {
+        this.permissionsToRationale = permissionsToRationale
+        requestPermissions(permissionsToRationale.keys.toTypedArray(), requestCode)
+    }
+
+    override fun onRequestPermissionsResult(
+        requestCode: Int, permissions: Array<String>,
+        grantResults: IntArray
+    ) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        val granted = mutableListOf<String>()
+        val denied = mutableListOf<String>()
+
+        grantResults.forEachIndexed { index, res ->
+            val perm = permissions[index]
+            if (res == PackageManager.PERMISSION_GRANTED) {
+                granted.add(perm)
+            } else {
+                denied.add(perm)
+            }
+        }
+        if (granted.isNotEmpty()) {
+            onPermissionsGranted(requestCode, granted)
+        }
+
+        if (denied.isNotEmpty()) {
+            onPermissionsDenied(requestCode, denied)
+        }
+    }
+
+    protected open fun onPermissionsDenied(requestCode: Int, permissions: List<String>) {
+        permissions.forEach {
+            if (shouldShowRequestPermissionRationale(it)) {
+                val message = if (permissionsToRationale.containsKey(it))
+                    permissionsToRationale[it]!!
+                else
+                    ""
+                PermissionRationaleDialogController(
+                    message,
+                    { requestPermissions(permissions.toTypedArray(), requestCode) },
+                    {}
+                ).show(router)
+            }
+        }
+    }
+
+    protected open fun onPermissionsGranted(requestCode: Int, permissions: List<String>) {
+
+    }
+
 
     protected val Color.androidColor: AndroidColor
         get() = AndroidColor.valueOf(this.name)
