@@ -40,7 +40,6 @@
             android:layout_marginTop="32dp"
             android:hint="@string/add_challenge_motivation2_hint"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.104"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/motivation1"
             tools:text="Hello World" />
@@ -50,31 +49,16 @@
             style="@style/ChallengeWhiteEditText"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
+            android:layout_marginBottom="8dp"
             android:layout_marginEnd="48dp"
             android:layout_marginStart="48dp"
             android:layout_marginTop="32dp"
             android:hint="@string/add_challenge_motivation3_hint"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.156"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/motivation2"
-            tools:text="Hello World" />
-
-        <Button
-            android:id="@+id/challengeNext"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="32dp"
-            android:layout_marginEnd="8dp"
-            android:layout_marginStart="8dp"
-            android:layout_marginTop="8dp"
-            android:background="@drawable/bordered_rectangle_white_background"
-            android:foreground="?attr/selectableItemBackground"
-            android:text="@string/next"
-            android:textColor="@color/md_white"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/motivation3"
-            app:layout_constraintVertical_bias="1.0" />
-    </android.support.constraint.ConstraintLayout>
+            app:layout_constraintTop_toBottomOf="@+id/motivation2"
+            app:layout_constraintVertical_bias="0.0"
+            tools:text="Hello World" />
+
+</android.support.constraint.ConstraintLayout>

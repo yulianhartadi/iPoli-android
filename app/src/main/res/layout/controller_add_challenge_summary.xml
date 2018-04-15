@@ -1,347 +1,245 @@
-<?xml version="1.0" encoding="utf-8"?>
-<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.v4.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
+    android:layout_height="wrap_content"
+    app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
-    <Button
-        android:id="@+id/challengeAccept"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="32dp"
-        android:layout_marginEnd="8dp"
-        android:layout_marginStart="8dp"
-        android:background="@drawable/bordered_rectangle_white_background"
-        android:foreground="?attr/selectableItemBackground"
-        android:text="@string/accept"
-        android:textColor="@color/md_white"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
-
-    <ImageView
-        android:id="@+id/imageView"
-        android:layout_width="92dp"
-        android:layout_height="92dp"
-        android:layout_marginEnd="8dp"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="16dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@drawable/ic_trophy_white_24dp" />
-
-    <TextView
-        android:id="@+id/challengeName"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginEnd="48dp"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="32dp"
-        android:text="TextView"
-        android:textAppearance="@style/TextAppearance.AppCompat.Headline"
-        android:textColor="@color/md_white"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/challengeIcon"
-        app:layout_constraintTop_toBottomOf="@+id/imageView" />
-
-    <ImageView
-        android:id="@+id/challengeIcon"
-        android:layout_width="36dp"
-        android:layout_height="36dp"
-        android:layout_marginStart="48dp"
-        android:background="@drawable/bordered_circle_white_background"
-        android:padding="8dp"
-        app:layout_constraintBottom_toBottomOf="@+id/challengeName"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/challengeName"
-        app:srcCompat="@drawable/ic_assignment_white_24dp" />
-
-    <View
-        android:id="@+id/view5"
-        android:layout_width="0dp"
-        android:layout_height="1dp"
-        android:layout_marginTop="16dp"
-        android:background="@color/md_light_text_50"
-        app:layout_constraintEnd_toEndOf="@+id/challengeName"
-        app:layout_constraintStart_toStartOf="@+id/challengeName"
-        app:layout_constraintTop_toBottomOf="@+id/challengeName" />
-
-    <ScrollView
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_marginBottom="32dp"
-        android:layout_marginTop="8dp"
-        app:layout_constraintBottom_toTopOf="@+id/challengeAccept"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/view5">
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:paddingEnd="16dp"
+        android:paddingStart="16dp">
 
+        <ImageView
+            android:id="@+id/challengeSelectedIcon"
+            android:layout_width="92dp"
+            android:layout_height="92dp"
+            android:layout_gravity="center"
+            android:layout_marginTop="16dp"
+            android:background="@drawable/bordered_circle_white_background"
+            android:padding="16dp"
+            app:srcCompat="@drawable/ic_sword_white_24dp" />
 
-        <android.support.constraint.ConstraintLayout
+        <android.support.design.widget.TextInputLayout
+            android:id="@+id/challengeNameLayout"
+            style="@style/TextAppearance.myPoli.EditName.TextInputLayout"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="16dp"
+            android:layout_marginStart="16dp"
+            android:textColorHint="@color/md_light_text_50">
+
+            <android.support.design.widget.TextInputEditText
+                android:id="@+id/challengeName"
+                style="@style/TextAppearance.myPoli.EditName.TextInputEditText"
+                android:hint="@string/name_hint" />
+
+        </android.support.design.widget.TextInputLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
+            android:gravity="center_vertical"
+            android:orientation="horizontal"
+            android:weightSum="1">
 
             <TextView
-                android:id="@+id/challengePropsTitle"
+                style="@style/EditSimpleTextViewRow"
+                android:layout_height="match_parent"
                 android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginEnd="48dp"
-                android:layout_marginStart="16dp"
-                android:layout_marginTop="8dp"
-                android:text="Challenge"
-                android:textAppearance="@style/TextAppearance.AppCompat.Title"
-                android:textColor="@color/md_white"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_bias="0.0"
-                app:layout_constraintStart_toEndOf="@+id/challengeIcon2"
-                app:layout_constraintTop_toTopOf="parent" />
-
-
-            <ImageView
-                android:id="@+id/challengeIcon2"
-                android:layout_width="36dp"
-                android:layout_height="36dp"
-                android:layout_marginStart="48dp"
-                android:background="@drawable/bordered_circle_white_background"
-                android:padding="8dp"
-                app:layout_constraintBottom_toBottomOf="@+id/challengePropsTitle"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="@+id/challengePropsTitle"
-                app:srcCompat="@drawable/ic_sword_white_24dp" />
-
-            <ImageView
-                android:id="@+id/challengeIcon3"
-                android:layout_width="36dp"
-                android:layout_height="36dp"
-                android:layout_marginStart="48dp"
-                app:layout_constraintBottom_toBottomOf="@+id/challengeMotivationTitle"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="@+id/challengeMotivationTitle"
-                app:srcCompat="@drawable/ic_target_white_24dp" />
-
-            <ImageView
-                android:id="@+id/challengeIcon4"
-                android:layout_width="36dp"
-                android:layout_height="36dp"
-                android:layout_marginStart="48dp"
-                app:layout_constraintBottom_toBottomOf="@+id/challengeQuestsTitle"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="@+id/challengeQuestsTitle"
-                app:srcCompat="@drawable/ic_checklist_white_24dp" />
-
+                android:layout_weight="1"
+                android:drawableStart="@drawable/ic_tags_white_24dp"
+                android:text="@string/tags" />
 
             <TextView
+                android:id="@+id/maxTagsMessage"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAppearance="@style/TextAppearance.AppCompat.Caption"
+                android:text="@string/max_tags_message"
+                android:textColor="@color/md_light_text_70"/>
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/tagContainer"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="16dp"
+            android:layout_marginEnd="16dp"
+            android:layout_marginStart="56dp"
+            android:orientation="vertical">
+
+            <android.support.v7.widget.RecyclerView
+                android:id="@+id/challengeTagList"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+
+            <AutoCompleteTextView
+                android:id="@+id/addChallengeTag"
+                style="@style/TagAutocompleteTheme"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@null"
+                android:hint="@string/add_tag"
+                android:maxLines="1" />
+
+        </LinearLayout>
+
+        <View style="@style/EditSimpleDivider" />
+
+        <View
+            style="@style/EditSimpleDivider"
+            android:layout_marginTop="60dp" />
+
+        <TextView
+            android:id="@+id/challengeEndDate"
+            style="@style/EditSimpleTextViewRow"
+            android:layout_marginTop="32dp"
+            android:drawableStart="@drawable/ic_due_date_white_24dp" />
+
+        <View style="@style/EditSimpleDivider" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="60dp"
+            android:gravity="center_vertical"
+            android:paddingEnd="16dp"
+            android:paddingStart="16dp">
+
+            <ImageView
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:src="@drawable/ic_dumbbell_white_24dp" />
+
+            <Spinner
                 android:id="@+id/challengeDifficulty"
-                android:layout_width="0dp"
+                style="@style/Widget.AppCompat.Spinner.DropDown"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginEnd="48dp"
                 android:layout_marginStart="16dp"
-                android:layout_marginTop="16dp"
-                android:drawablePadding="8dp"
-                android:drawableStart="@drawable/ic_dumbbell_white_24dp"
-                android:textAppearance="@style/TextAppearance.AppCompat.Subhead"
-                android:textColor="@color/md_white"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="@+id/challengePropsTitle"
-                app:layout_constraintTop_toBottomOf="@+id/challengePropsTitle" />
+                android:backgroundTint="@color/md_white"
+                android:entries="@array/difficulties" />
+
+        </LinearLayout>
+
+        <View style="@style/EditSimpleDivider" />
+
+        <LinearLayout
+            android:id="@+id/challengeMotivations"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="16dp"
+            android:background="?attr/selectableItemBackground"
+            android:orientation="vertical">
 
             <TextView
-                android:id="@+id/challengeEnd"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginEnd="48dp"
-                android:layout_marginStart="16dp"
-                android:layout_marginTop="16dp"
-                android:drawablePadding="8dp"
-                android:drawableStart="@drawable/ic_sandclock_white_24dp"
-                android:textAppearance="@style/TextAppearance.AppCompat.Subhead"
-                android:textColor="@color/md_white"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_bias="0.0"
-                app:layout_constraintStart_toStartOf="@+id/challengePropsTitle"
-                app:layout_constraintTop_toBottomOf="@+id/challengeDifficulty" />
-
-            <View
-                android:id="@+id/view6"
-                android:layout_width="0dp"
-                android:layout_height="1dp"
-                android:layout_marginTop="16dp"
-                android:background="@color/md_light_text_50"
-                app:layout_constraintEnd_toEndOf="@+id/challengePropsTitle"
-                app:layout_constraintHorizontal_bias="0.0"
-                app:layout_constraintStart_toStartOf="@+id/challengePropsTitle"
-                app:layout_constraintTop_toBottomOf="@+id/challengeEnd" />
-
-            <TextView
-                android:id="@+id/challengeMotivationTitle"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginEnd="48dp"
-                android:layout_marginStart="16dp"
-                android:layout_marginTop="16dp"
-                android:text="@string/motivation"
-                android:textAppearance="@style/TextAppearance.AppCompat.Title"
-                android:textColor="@color/md_white"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_bias="0.0"
-                app:layout_constraintStart_toEndOf="@+id/challengeIcon3"
-                app:layout_constraintTop_toBottomOf="@+id/view6" />
-
-            <TextView
-                android:id="@+id/challengeQuestsTitle"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginEnd="48dp"
-                android:layout_marginStart="16dp"
-                android:layout_marginTop="16dp"
-                android:text="@string/quests"
-                android:textAppearance="@style/TextAppearance.AppCompat.Title"
-                android:textColor="@color/md_white"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_bias="0.0"
-                app:layout_constraintStart_toEndOf="@+id/challengeIcon4"
-                app:layout_constraintTop_toBottomOf="@+id/view9" />
+                style="@style/EditSimpleTextViewRow"
+                android:layout_height="48dp"
+                android:drawableStart="@drawable/ic_target_white_24dp"
+                android:text="@string/motivation" />
 
             <TextView
                 android:id="@+id/challengeMotivation1"
-                android:layout_width="0dp"
+                style="@style/TextAppearance.AppCompat.Body1"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginEnd="48dp"
-                android:layout_marginStart="16dp"
-                android:layout_marginTop="16dp"
-                android:textAppearance="@style/TextAppearance.AppCompat.Subhead"
-                android:textColor="@color/md_white"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_bias="0.0"
-                app:layout_constraintStart_toStartOf="@+id/challengePropsTitle"
-                app:layout_constraintTop_toBottomOf="@+id/challengeMotivationTitle" />
+                android:layout_marginBottom="4dp"
+                android:layout_marginEnd="16dp"
+                android:layout_marginStart="56dp"
+                android:layout_marginTop="4dp"
+                android:textColor="@color/md_light_text_100" />
 
             <TextView
                 android:id="@+id/challengeMotivation2"
-                android:layout_width="0dp"
+                style="@style/TextAppearance.AppCompat.Body1"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginEnd="48dp"
-                android:layout_marginStart="16dp"
-                android:layout_marginTop="16dp"
-                android:textAppearance="@style/TextAppearance.AppCompat.Subhead"
-                android:textColor="@color/md_white"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_bias="0.0"
-                app:layout_constraintStart_toStartOf="@+id/challengePropsTitle"
-                app:layout_constraintTop_toBottomOf="@+id/challengeMotivation1" />
+                android:layout_marginBottom="4dp"
+                android:layout_marginEnd="16dp"
+                android:layout_marginStart="56dp"
+                android:layout_marginTop="4dp"
+                android:textColor="@color/md_light_text_100" />
 
             <TextView
                 android:id="@+id/challengeMotivation3"
-                android:layout_width="0dp"
+                style="@style/TextAppearance.AppCompat.Body1"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginEnd="48dp"
-                android:layout_marginStart="16dp"
-                android:layout_marginTop="16dp"
-                android:textAppearance="@style/TextAppearance.AppCompat.Subhead"
-                android:textColor="@color/md_white"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_bias="0.0"
-                app:layout_constraintStart_toStartOf="@+id/challengePropsTitle"
-                app:layout_constraintTop_toBottomOf="@+id/challengeMotivation2" />
+                android:layout_marginBottom="4dp"
+                android:layout_marginEnd="16dp"
+                android:layout_marginStart="56dp"
+                android:layout_marginTop="4dp"
+                android:textColor="@color/md_light_text_100" />
 
-            <View
-                android:id="@+id/view8"
-                android:layout_width="0dp"
-                android:layout_height="1dp"
-                android:layout_marginTop="16dp"
-                android:background="@color/md_light_text_50"
-                app:layout_constraintEnd_toEndOf="@+id/challengePropsTitle"
-                app:layout_constraintHorizontal_bias="1.0"
-                app:layout_constraintStart_toStartOf="@+id/challengePropsTitle"
-                app:layout_constraintTop_toBottomOf="@+id/challengeMotivation3" />
+        </LinearLayout>
 
-            <TextView
-                android:id="@+id/challengeNoteTitle"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginEnd="48dp"
-                android:layout_marginStart="16dp"
-                android:layout_marginTop="16dp"
-                android:text="@string/note"
-                android:textAppearance="@style/TextAppearance.AppCompat.Title"
-                android:textColor="@color/md_white"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_bias="0.0"
-                app:layout_constraintStart_toEndOf="@+id/challengeIcon5"
-                app:layout_constraintTop_toBottomOf="@+id/view8" />
+        <View style="@style/EditSimpleDivider" />
 
-            <ImageView
-                android:id="@+id/challengeIcon5"
-                android:layout_width="36dp"
-                android:layout_height="36dp"
-                android:layout_marginStart="48dp"
-                android:background="@drawable/bordered_circle_white_background"
-                android:padding="8dp"
-                app:layout_constraintBottom_toBottomOf="@+id/challengeNoteTitle"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="@+id/challengeNoteTitle"
-                app:srcCompat="@drawable/ic_note_white_24dp" />
+        <TextView
+            android:id="@+id/challengeColor"
+            style="@style/EditSimpleTextViewRow"
+            android:drawableStart="@drawable/ic_color_palette_white_24dp"
+            android:text="@string/color" />
 
-            <TextView
-                android:id="@+id/challengeNote"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginEnd="48dp"
-                android:layout_marginStart="16dp"
-                android:layout_marginTop="16dp"
-                android:background="?attr/selectableItemBackground"
-                android:textAppearance="@style/TextAppearance.AppCompat.Subhead"
-                android:textColor="@color/md_light_text_50"
-                android:text="@string/tap_to_add_note"
-                android:ellipsize="marquee"
-                android:maxLines="2"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_bias="0.0"
-                app:layout_constraintStart_toStartOf="@+id/challengePropsTitle"
-                app:layout_constraintTop_toBottomOf="@+id/challengeNoteTitle" />
+        <View style="@style/EditSimpleDivider" />
 
-            <View
-                android:id="@+id/view9"
-                android:layout_width="0dp"
-                android:layout_height="1dp"
-                android:layout_marginTop="16dp"
-                android:background="@color/md_light_text_50"
-                app:layout_constraintEnd_toEndOf="@+id/challengePropsTitle"
-                app:layout_constraintHorizontal_bias="1.0"
-                app:layout_constraintStart_toStartOf="@+id/challengePropsTitle"
-                app:layout_constraintTop_toBottomOf="@+id/challengeNote" />
+        <TextView
+            android:id="@+id/challengeIcon"
+            style="@style/EditSimpleTextViewRow"
+            android:drawableStart="@drawable/ic_icon_white_24dp"
+            android:text="@string/icon" />
+
+        <View style="@style/EditSimpleDivider"/>
+
+        <View
+            android:id="@+id/questsTopDivider"
+            style="@style/EditSimpleDivider"
+            android:layout_marginTop="60dp"
+            />
+
+        <TextView
+            android:id="@+id/questsTitle"
+            style="@style/EditSimpleTextViewRow"
+            android:layout_height="48dp"
+            android:drawableStart="@drawable/ic_checklist_white_24dp"
+            android:text="@string/quests" />
+
+        <LinearLayout
+            android:id="@+id/questsContainer"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="16dp"
+            android:layout_marginEnd="16dp"
+            android:layout_marginStart="56dp"
+            android:orientation="vertical">
 
             <android.support.v7.widget.RecyclerView
-                android:id="@+id/challengeQuests"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginEnd="48dp"
-                android:layout_marginStart="16dp"
-                android:layout_marginTop="16dp"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_bias="0.0"
-                app:layout_constraintStart_toStartOf="@+id/challengePropsTitle"
-                app:layout_constraintTop_toBottomOf="@+id/challengeQuestsTitle" />
+                android:id="@+id/challengeQuestList"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
 
             <TextView
-                android:id="@+id/challengeQuestsEmptyState"
-                android:layout_width="0dp"
+                android:id="@+id/challengeEmptyQuests"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginEnd="48dp"
-                android:layout_marginStart="16dp"
-                android:layout_marginTop="16dp"
                 android:text="@string/add_challenge_no_quests"
                 android:textAppearance="@style/TextAppearance.AppCompat.Subhead"
-                android:textColor="@color/md_light_text_50"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_bias="0.0"
-                app:layout_constraintStart_toStartOf="@+id/challengePropsTitle"
-                app:layout_constraintTop_toBottomOf="@+id/challengeQuestsTitle" />
+                android:textColor="@color/md_light_text_50" />
 
-        </android.support.constraint.ConstraintLayout>
-    </ScrollView>
+        </LinearLayout>
 
-</android.support.constraint.ConstraintLayout>
+        <View style="@style/EditSimpleDivider" android:id="@+id/questsBottomDivider"/>
+
+        <TextView
+            android:id="@+id/challengeNote"
+            style="@style/EditSimpleTextViewRow"
+            android:drawableStart="@drawable/ic_note_white_24dp"
+            android:ellipsize="end"
+            android:maxLines="3" />
+
+        <View style="@style/EditSimpleDivider" />
+
+    </LinearLayout>
+</android.support.v4.widget.NestedScrollView>

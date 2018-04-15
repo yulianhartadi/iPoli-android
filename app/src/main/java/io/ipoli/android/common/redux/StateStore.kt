@@ -1,9 +1,9 @@
 package io.ipoli.android.common.redux
 
-import kotlinx.coroutines.experimental.launch
 import io.ipoli.android.common.UIAction
 import io.ipoli.android.common.mvi.ViewState
 import io.ipoli.android.common.redux.MiddleWare.Result.Continue
+import kotlinx.coroutines.experimental.launch
 import java.util.concurrent.CopyOnWriteArraySet
 import kotlin.coroutines.experimental.CoroutineContext
 

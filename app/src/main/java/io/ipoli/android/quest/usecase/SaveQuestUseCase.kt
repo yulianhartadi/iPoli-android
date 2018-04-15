@@ -3,13 +3,17 @@ package io.ipoli.android.quest.usecase
 import io.ipoli.android.common.UseCase
 import io.ipoli.android.common.Validator.Companion.validate
 import io.ipoli.android.common.datetime.Time
-import io.ipoli.android.quest.*
+import io.ipoli.android.quest.Color
+import io.ipoli.android.quest.Icon
+import io.ipoli.android.quest.Quest
+import io.ipoli.android.quest.Reminder
 import io.ipoli.android.quest.data.persistence.QuestRepository
 import io.ipoli.android.quest.job.ReminderScheduler
 import io.ipoli.android.quest.subquest.SubQuest
 import io.ipoli.android.quest.usecase.Result.*
 import io.ipoli.android.quest.usecase.Result.ValidationError.EMPTY_NAME
 import io.ipoli.android.quest.usecase.Result.ValidationError.TIMER_RUNNING
+import io.ipoli.android.tag.Tag
 import org.threeten.bp.LocalDate
 
 /**
@@ -38,13 +42,14 @@ class SaveQuestUseCase(
         val subQuests: List<SubQuest>?,
         val color: Color,
         val icon: Icon? = null,
-        val category: Category,
         val startTime: Time? = null,
         val scheduledDate: LocalDate,
         val duration: Int,
         val reminder: Reminder? = null,
         val repeatingQuestId: String? = null,
-        val note: String? = null
+        val challengeId: String? = null,
+        val note: String? = null,
+        val tags: List<Tag>?
     )
 
     override fun execute(parameters: Parameters): Result {
@@ -66,14 +71,15 @@ class SaveQuestUseCase(
                 name = parameters.name.trim(),
                 icon = parameters.icon,
                 color = parameters.color,
-                category = parameters.category,
                 scheduledDate = parameters.scheduledDate,
                 startTime = parameters.startTime,
                 duration = parameters.duration,
                 reminder = parameters.reminder,
                 subQuests = subQuests,
                 repeatingQuestId = parameters.repeatingQuestId,
-                note = parameters.note
+                challengeId = parameters.challengeId,
+                note = parameters.note,
+                tags = parameters.tags ?: emptyList()
             )
         } else {
 
@@ -90,14 +96,15 @@ class SaveQuestUseCase(
                 name = parameters.name.trim(),
                 icon = parameters.icon,
                 color = parameters.color,
-                category = parameters.category,
                 scheduledDate = parameters.scheduledDate,
                 startTime = parameters.startTime,
                 duration = parameters.duration,
                 reminder = parameters.reminder,
                 subQuests = subQuests,
                 repeatingQuestId = parameters.repeatingQuestId,
-                note = parameters.note
+                challengeId = parameters.challengeId,
+                note = parameters.note,
+                tags = parameters.tags ?: quest.tags
             )
         }
 

@@ -191,7 +191,6 @@ class NoteViewController(args: Bundle? = null) :
         }
     }
 
-    fun updateNote(note: String) = dispatch(NoteAction.Update(note))
 }
 
 class NoteDialogViewController(args: Bundle? = null) : BaseFullscreenDialogController(args) {

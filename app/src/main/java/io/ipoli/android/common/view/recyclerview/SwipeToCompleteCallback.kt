@@ -119,8 +119,8 @@ abstract class SwipeToCompleteCallback(
 
         val margin = (itemHeight - intrinsicHeight) / 2
         val top = itemView.top + (itemHeight - intrinsicHeight) / 2
-        val left = itemView.left + margin - intrinsicWidth
-        val right = itemView.left + margin
+        val left = itemView.left + margin
+        val right = itemView.left + margin + intrinsicWidth
         val bottom = top + intrinsicHeight
 
         completeSwipeIcon.setBounds(left, top, right, bottom)

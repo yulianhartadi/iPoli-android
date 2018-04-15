@@ -6,7 +6,10 @@ import com.nhaarman.mockito_kotlin.doReturn
 import com.nhaarman.mockito_kotlin.mock
 import io.ipoli.android.Constants
 import io.ipoli.android.common.datetime.Time
-import io.ipoli.android.quest.*
+import io.ipoli.android.quest.Color
+import io.ipoli.android.quest.Quest
+import io.ipoli.android.quest.Reminder
+import io.ipoli.android.quest.TimeRange
 import io.ipoli.android.quest.data.persistence.QuestRepository
 import io.ipoli.android.quest.timer.pomodoros
 import io.ipoli.android.quest.timer.shortBreaks
@@ -53,7 +56,6 @@ class CompleteTimeRangeUseCaseSpek : Spek({
         val simpleQuest = Quest(
             name = "",
             color = Color.BLUE,
-            category = Category("Wellness", Color.BLUE),
             scheduledDate = LocalDate.now(),
             duration = 30,
             reminder = Reminder("", Time.now(), LocalDate.now())

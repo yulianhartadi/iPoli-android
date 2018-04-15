@@ -8,9 +8,9 @@ import io.ipoli.android.R
 import io.ipoli.android.challenge.QuestPickerViewState.StateType.*
 import io.ipoli.android.common.redux.android.ReduxViewController
 import io.ipoli.android.common.view.*
+import kotlinx.android.synthetic.main.animation_empty_list.view.*
 import kotlinx.android.synthetic.main.list_quest_picker.view.*
 import kotlinx.android.synthetic.main.view_default_toolbar.view.*
-import kotlinx.android.synthetic.main.view_empty_list.view.*
 import kotlinx.android.synthetic.main.view_loader.view.*
 
 /**
@@ -44,6 +44,7 @@ class QuestPickerViewController(args: Bundle? = null) :
         view.questList.adapter = QuestAdapter(listOf(), { id, isChecked ->
             dispatch(QuestPickerAction.Check(id, isChecked))
         })
+        view.emptyAnimation.setAnimation("empty_quest_picker.json")
         return view
     }
 
@@ -93,6 +94,7 @@ class QuestPickerViewController(args: Bundle? = null) :
             }
 
             DATA_CHANGED -> {
+                view.emptyAnimation.pauseAnimation()
                 view.questList.visible()
                 view.loader.invisible()
                 view.emptyContainer.invisible()
@@ -104,7 +106,7 @@ class QuestPickerViewController(args: Bundle? = null) :
                 view.loader.invisible()
                 view.questList.invisible()
 
-                view.emptyImage.setImageResource(R.drawable.quest_picker_empty_state)
+                view.emptyAnimation.playAnimation()
                 view.emptyTitle.setText(R.string.empty_state_quest_picker_title)
                 view.emptyText.setText(R.string.empty_state_quest_picker_text)
             }

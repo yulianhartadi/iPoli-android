@@ -6,7 +6,7 @@ import com.nhaarman.mockito_kotlin.mock
 import io.ipoli.android.TestUtil
 import io.ipoli.android.quest.RepeatingQuest
 import io.ipoli.android.quest.data.persistence.QuestRepository
-import io.ipoli.android.repeatingquest.entity.RepeatingPattern
+import io.ipoli.android.repeatingquest.entity.RepeatPattern
 import org.amshove.kluent.`should be true`
 import org.jetbrains.spek.api.Spek
 import org.jetbrains.spek.api.dsl.describe
@@ -65,7 +65,7 @@ class FindNextDateForRepeatingQuestUseCaseSpek : Spek({
 
             val rq = executeUseCase(
                 questRepoMock, TestUtil.repeatingQuest.copy(
-                    repeatingPattern = RepeatingPattern.Daily(start = today)
+                    repeatPattern = RepeatPattern.Daily(start = today)
                 )
             )
             shouldHaveNextDate(rq, tomorrow)
@@ -96,7 +96,7 @@ class FindNextDateForRepeatingQuestUseCaseSpek : Spek({
 
             val rq = executeUseCase(
                 questRepoMock, TestUtil.repeatingQuest.copy(
-                    repeatingPattern = RepeatingPattern.Weekly(
+                    repeatPattern = RepeatPattern.Weekly(
                         daysOfWeek = setOf(
                             DayOfWeek.WEDNESDAY,
                             DayOfWeek.FRIDAY
@@ -132,7 +132,7 @@ class FindNextDateForRepeatingQuestUseCaseSpek : Spek({
 
             val rq = executeUseCase(
                 questRepoMock, TestUtil.repeatingQuest.copy(
-                    repeatingPattern = RepeatingPattern.Weekly(
+                    repeatPattern = RepeatPattern.Weekly(
                         daysOfWeek = setOf(
                             DayOfWeek.WEDNESDAY,
                             DayOfWeek.FRIDAY

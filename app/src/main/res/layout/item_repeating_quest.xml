@@ -3,21 +3,10 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="104dp"
+    android:layout_height="96dp"
     android:background="?attr/selectableItemBackground"
     android:clickable="true"
     android:focusable="true">
-
-    <View
-        android:id="@+id/divider"
-        android:layout_width="match_parent"
-        android:layout_height="1.5dp"
-        android:layout_marginEnd="16dp"
-        android:layout_marginStart="74dp"
-        android:background="@color/md_dark_text_38"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/rqIcon" />
 
     <TextView
         android:id="@+id/rqName"
@@ -28,41 +17,61 @@
         android:layout_marginStart="16dp"
         android:layout_marginTop="8dp"
         android:ellipsize="end"
-        android:maxLines="2"
+        android:maxLines="1"
         android:textAppearance="@style/TextAppearance.AppCompat.Title"
         android:textColor="@color/md_dark_text_54"
-        app:layout_constraintBottom_toTopOf="@+id/rqNext"
-        app:layout_constraintEnd_toEndOf="parent"
+        android:textSize="18sp"
+        app:layout_constraintEnd_toStartOf="@+id/rqTagName"
         app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintHorizontal_chainStyle="packed"
         app:layout_constraintStart_toEndOf="@+id/rqIcon"
         app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_chainStyle="spread_inside"
         tools:text="Name" />
+
+    <TextView
+        android:id="@+id/rqTagName"
+        android:layout_width="0dp"
+        android:layout_height="16dp"
+        android:layout_gravity="center_vertical"
+        android:layout_marginEnd="16dp"
+        android:drawablePadding="4dp"
+        android:drawableStart="@drawable/tag_indicator"
+        android:ellipsize="end"
+        android:includeFontPadding="false"
+        android:maxLines="1"
+        android:textAppearance="@style/TextAppearance.AppCompat.Body1"
+        android:textColor="@color/md_dark_text_54"
+        app:layout_constraintBottom_toBottomOf="@+id/rqName"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/rqName"
+        app:layout_constraintWidth_max="88dp"
+        tools:text="texty " />
 
     <ImageView
         android:id="@+id/rqIcon"
-        android:layout_width="48dp"
-        android:layout_height="48dp"
-        android:layout_marginBottom="8dp"
+        android:layout_width="38dp"
+        android:layout_height="38dp"
         android:layout_marginStart="16dp"
-        android:layout_marginTop="8dp"
         android:adjustViewBounds="true"
         android:background="@drawable/oval_background"
         android:scaleType="centerInside"
-        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintBottom_toBottomOf="@+id/rqNext"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/rqName"
         app:srcCompat="@drawable/ic_gift_grey_24dp" />
 
     <TextView
         android:id="@+id/rqNext"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginEnd="8dp"
+        android:layout_marginEnd="16dp"
         android:layout_marginStart="16dp"
+        android:layout_marginTop="4dp"
         android:textAppearance="@style/TextAppearance.AppCompat.Body1"
         android:textColor="@color/md_dark_text_54"
-        app:layout_constraintBottom_toTopOf="@+id/rqProgressBar"
-        app:layout_constraintEnd_toStartOf="@+id/rqFrequency"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toEndOf="@+id/rqIcon"
         app:layout_constraintTop_toBottomOf="@+id/rqName"
         tools:text="Today" />
@@ -71,29 +80,30 @@
         android:id="@+id/rqFrequency"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginEnd="16dp"
+        android:layout_marginStart="16dp"
         android:textAppearance="@style/TextAppearance.AppCompat.Body1"
         android:textColor="@color/md_dark_text_54"
-        app:layout_constraintBottom_toTopOf="@+id/rqProgressBar"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/rqName"
+        app:layout_constraintBottom_toBottomOf="@+id/rqProgressBar"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/rqProgressBar"
         tools:text="Daily" />
 
     <ProgressBar
         android:id="@+id/rqProgressBar"
         style="@style/Widget.AppCompat.ProgressBar.Horizontal"
         android:layout_width="0dp"
-        android:layout_height="4dp"
+        android:layout_height="5dp"
         android:layout_marginBottom="8dp"
         android:layout_marginEnd="8dp"
-        android:layout_marginStart="16dp"
+        android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
         android:max="5"
         android:progress="3"
         android:progressDrawable="@drawable/repeating_quest_item_progress"
         app:layout_constraintBottom_toTopOf="@+id/divider"
         app:layout_constraintEnd_toStartOf="@+id/rqProgress"
-        app:layout_constraintStart_toEndOf="@+id/rqIcon"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toEndOf="@+id/rqFrequency"
         app:layout_constraintTop_toBottomOf="@+id/rqNext" />
 
     <TextView
@@ -106,4 +116,17 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="@+id/rqProgressBar"
         tools:text="3/5" />
+
+    <View
+        android:id="@+id/divider"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginStart="16dp"
+        android:background="@color/md_dark_text_12"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent" />
+
 </android.support.constraint.ConstraintLayout>

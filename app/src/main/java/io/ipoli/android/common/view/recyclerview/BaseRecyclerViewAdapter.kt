@@ -3,11 +3,9 @@ package io.ipoli.android.common.view.recyclerview
 import android.support.annotation.LayoutRes
 import android.support.v7.recyclerview.extensions.ListAdapter
 import android.support.v7.util.DiffUtil
-import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import kotlin.reflect.KClass
 
 private class DiffCallback<VM> : DiffUtil.ItemCallback<VM>() {
     override fun areItemsTheSame(oldItem: VM?, newItem: VM?) = oldItem == newItem
@@ -15,7 +13,6 @@ private class DiffCallback<VM> : DiffUtil.ItemCallback<VM>() {
     override fun areContentsTheSame(oldItem: VM?, newItem: VM?) =
         oldItem == newItem
 }
-
 
 abstract class BaseRecyclerViewAdapter<VM>(
     @LayoutRes private val itemLayout: Int
@@ -70,8 +67,8 @@ abstract class BaseRecyclerViewAdapter<VM>(
 
 }
 
-abstract class MultiViewRecyclerViewAdapter : RecyclerView.Adapter<SimpleViewHolder>() {
-    private val items = mutableListOf<Any>()
+abstract class MultiViewRecyclerViewAdapter :
+    ListAdapter<Any, SimpleViewHolder>(DiffCallback<Any>()) {
 
     val viewTypeToItemBinder = mutableMapOf<Int, ItemBinder>()
     val itemTypeToViewType = mutableMapOf<Class<*>, Int>()
@@ -95,18 +92,16 @@ abstract class MultiViewRecyclerViewAdapter : RecyclerView.Adapter<SimpleViewHol
         }
     }
 
-    fun <T : Any> updateAll(items: List<T>) {
-        this.items.clear()
-        this.items.addAll(items)
-        notifyDataSetChanged()
+    fun updateAll(items: List<*>) {
+        submitList(items)
     }
 
-    fun <T : Any> getItemAt(index: Int, clazz: KClass<T>): T {
-        val item = items[index]
-        if (!(item.javaClass.isAssignableFrom(clazz.java))) {
-            throw ClassCastException("item at index is not assignable from $clazz")
+    inline fun <reified ITEM> getItemAt(position: Int): ITEM {
+        val item = `access$getItem`(position)
+        if (!(item.javaClass.isAssignableFrom(ITEM::class.java))) {
+            throw ClassCastException("item at index is not assignable from ${ITEM::class.java}")
         }
-        @Suppress("UNCHECKED_CAST") return item as T
+        @Suppress("UNCHECKED_CAST") return item as ITEM
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): SimpleViewHolder {
@@ -122,19 +117,17 @@ abstract class MultiViewRecyclerViewAdapter : RecyclerView.Adapter<SimpleViewHol
 
     override fun onBindViewHolder(holder: SimpleViewHolder, position: Int) {
         val viewType = getItemViewType(position)
-        viewTypeToItemBinder[viewType]?.bind(items[position], holder.itemView)
+        viewTypeToItemBinder[viewType]?.bind(getItem(position), holder.itemView)
     }
 
     override fun getItemViewType(position: Int): Int {
         if (viewTypeToItemBinder.isEmpty()) {
             onRegisterItemBinders()
         }
-        return itemTypeToViewType[items[position].javaClass]!!
+        return itemTypeToViewType[getItem(position).javaClass]!!
     }
 
     abstract fun onRegisterItemBinders()
-
-    override fun getItemCount() = items.size
 
     interface ItemBinder {
 
@@ -144,4 +137,7 @@ abstract class MultiViewRecyclerViewAdapter : RecyclerView.Adapter<SimpleViewHol
         fun <T> bind(item: T, view: View)
 
     }
+
+    @PublishedApi
+    internal fun `access$getItem`(position: Int) = getItem(position)
 }

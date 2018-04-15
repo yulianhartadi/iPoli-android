@@ -8,6 +8,7 @@ import android.graphics.drawable.GradientDrawable
 import android.os.Bundle
 import android.support.annotation.ColorInt
 import android.support.v4.content.ContextCompat
+import android.view.View
 import android.widget.RemoteViews
 import android.widget.RemoteViewsService
 import com.mikepenz.google_material_typeface_library.GoogleMaterial
@@ -98,13 +99,35 @@ class AgendaWidgetViewsFactory(private val context: Context) :
                         setTextViewText(R.id.widgetQuestName, q.name)
                         setTextViewText(R.id.widgetQuestStartTime, formatStartTime(q))
 
+                        if (q.tags.isEmpty()) {
+                            setViewVisibility(R.id.widgetTagIndicator, View.GONE)
+                            setViewVisibility(R.id.widgetTag, View.GONE)
+                        } else {
+                            setViewVisibility(R.id.widgetTagIndicator, View.VISIBLE)
+                            setViewVisibility(R.id.widgetTag, View.VISIBLE)
+                            val tag = q.tags.first()
+                            setTextViewText(R.id.widgetTag, tag.name)
+
+                            val bgColor = AndroidColor.valueOf(tag.color.name).color500
+                            val indicator =
+                                IconicsDrawable(context)
+                                    .icon(GoogleMaterial.Icon.gmd_block)
+                                    .colorRes(bgColor)
+                                    .backgroundColorRes(bgColor)
+                                    .roundedCornersDp(4)
+                                    .sizeDp(8)
+
+                            setImageViewBitmap(R.id.widgetTagIndicator, indicator.toBitmap())
+                        }
+
                         val icon = q.icon?.let { AndroidIcon.valueOf(it.name).icon }
-                            ?: Ionicons.Icon.ion_android_clipboard
+                                ?: Ionicons.Icon.ion_android_clipboard
 
                         val iconDrawable =
                             IconicsDrawable(context)
                                 .icon(icon)
                                 .colorRes(R.color.md_white)
+                                .paddingDp(3)
                                 .sizeDp(24)
 
                         setImageViewBitmap(R.id.widgetQuestIcon, iconDrawable.toBitmap())
@@ -145,6 +168,7 @@ class AgendaWidgetViewsFactory(private val context: Context) :
                             IconicsDrawable(context)
                                 .icon(GoogleMaterial.Icon.gmd_event_available)
                                 .colorRes(R.color.md_white)
+                                .paddingDp(3)
                                 .sizeDp(24)
 
                         setImageViewBitmap(R.id.widgetQuestIcon, iconDrawable.toBitmap())

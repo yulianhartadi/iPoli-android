@@ -9,7 +9,7 @@ import io.ipoli.android.TestUtil.lastDateOfWeek
 import io.ipoli.android.quest.Quest
 import io.ipoli.android.quest.RepeatingQuest
 import io.ipoli.android.quest.data.persistence.QuestRepository
-import io.ipoli.android.repeatingquest.entity.RepeatingPattern
+import io.ipoli.android.repeatingquest.entity.RepeatPattern
 import org.amshove.kluent.*
 import org.jetbrains.spek.api.Spek
 import org.jetbrains.spek.api.dsl.describe
@@ -76,7 +76,7 @@ class SaveQuestsForRepeatingQuestUseCaseSpek : Spek({
 
         fun createRepeatingQuest(start: LocalDate, end: LocalDate? = null) =
             TestUtil.repeatingQuest.copy(
-                repeatingPattern = RepeatingPattern.Daily(start = start, end = end)
+                repeatPattern = RepeatPattern.Daily(start = start, end = end)
             )
 
         it("should not schedule anything before quest start") {
@@ -225,7 +225,7 @@ class SaveQuestsForRepeatingQuestUseCaseSpek : Spek({
 
                     val quests = executeUseCase(
                         quest = TestUtil.repeatingQuest.copy(
-                            repeatingPattern = RepeatingPattern.Weekly(
+                            repeatPattern = RepeatPattern.Weekly(
                                 setOf(
                                     DayOfWeek.MONDAY,
                                     DayOfWeek.WEDNESDAY,
@@ -256,7 +256,7 @@ class SaveQuestsForRepeatingQuestUseCaseSpek : Spek({
 
                     val quests = executeUseCase(
                         quest = TestUtil.repeatingQuest.copy(
-                            repeatingPattern = RepeatingPattern.Weekly(
+                            repeatPattern = RepeatPattern.Weekly(
                                 setOf(
                                     DayOfWeek.MONDAY,
                                     DayOfWeek.WEDNESDAY,
@@ -282,7 +282,7 @@ class SaveQuestsForRepeatingQuestUseCaseSpek : Spek({
                     scheduledPeriods: Map<LocalDate, List<LocalDate>> = mapOf()
                 ): RepeatingQuest {
                     return TestUtil.repeatingQuest.copy(
-                        repeatingPattern = RepeatingPattern.Flexible.Weekly(
+                        repeatPattern = RepeatPattern.Flexible.Weekly(
                             timesPerWeek = timesPerWeek,
                             preferredDays = preferredDays,
                             scheduledPeriods = scheduledPeriods,
@@ -478,7 +478,7 @@ class SaveQuestsForRepeatingQuestUseCaseSpek : Spek({
                     )
 
                     val scheduledPeriods =
-                        (rq.repeatingPattern as RepeatingPattern.Flexible.Weekly).scheduledPeriods
+                        (rq.repeatPattern as RepeatPattern.Flexible.Weekly).scheduledPeriods
                     scheduledPeriods.size.`should be`(1)
                     scheduledPeriods.keys.first().`should be`(firstDateOfWeek)
                     scheduledPeriods[firstDateOfWeek]!!.size.`should be`(1)
@@ -496,7 +496,7 @@ class SaveQuestsForRepeatingQuestUseCaseSpek : Spek({
                     )
 
                     val scheduledPeriods =
-                        (rq.repeatingPattern as RepeatingPattern.Flexible.Weekly).scheduledPeriods
+                        (rq.repeatPattern as RepeatPattern.Flexible.Weekly).scheduledPeriods
                     scheduledPeriods.size.`should be`(2)
                     scheduledPeriods.keys.`should contain all`(
                         listOf(
@@ -525,7 +525,7 @@ class SaveQuestsForRepeatingQuestUseCaseSpek : Spek({
                     )
 
                     val scheduledPeriods =
-                        (rq.repeatingPattern as RepeatingPattern.Flexible.Weekly).scheduledPeriods
+                        (rq.repeatPattern as RepeatPattern.Flexible.Weekly).scheduledPeriods
                     scheduledPeriods.size.`should be`(2)
                     scheduledPeriods[firstDateOfWeek]!!.`should contain all`(scheduledPeriodDates)
                 }
@@ -546,7 +546,7 @@ class SaveQuestsForRepeatingQuestUseCaseSpek : Spek({
 
                     val quests = executeUseCase(
                         quest = TestUtil.repeatingQuest.copy(
-                            repeatingPattern = RepeatingPattern.Monthly(
+                            repeatPattern = RepeatPattern.Monthly(
                                 setOf(1, 10, 29, 31), start
                             )
                         ),
@@ -574,7 +574,7 @@ class SaveQuestsForRepeatingQuestUseCaseSpek : Spek({
 
                     val quests = executeUseCase(
                         quest = TestUtil.repeatingQuest.copy(
-                            repeatingPattern = RepeatingPattern.Monthly(
+                            repeatPattern = RepeatPattern.Monthly(
                                 setOf(1, 10, 29, 31), start
                             )
                         ),
@@ -599,7 +599,7 @@ class SaveQuestsForRepeatingQuestUseCaseSpek : Spek({
                     scheduledPeriods: Map<LocalDate, List<LocalDate>> = mapOf()
                 ): RepeatingQuest {
                     return TestUtil.repeatingQuest.copy(
-                        repeatingPattern = RepeatingPattern.Flexible.Monthly(
+                        repeatPattern = RepeatPattern.Flexible.Monthly(
                             timesPerMonth = timesPerMonth,
                             preferredDays = preferredDays,
                             scheduledPeriods = scheduledPeriods,
@@ -790,7 +790,7 @@ class SaveQuestsForRepeatingQuestUseCaseSpek : Spek({
                     )
 
                     val scheduledPeriods =
-                        (rq.repeatingPattern as RepeatingPattern.Flexible.Monthly).scheduledPeriods
+                        (rq.repeatPattern as RepeatPattern.Flexible.Monthly).scheduledPeriods
                     scheduledPeriods.size.`should be`(1)
                     scheduledPeriods.keys.first().`should be`(firstJanuary)
                     scheduledPeriods[firstJanuary]!!.size.`should be`(1)
@@ -808,7 +808,7 @@ class SaveQuestsForRepeatingQuestUseCaseSpek : Spek({
                     )
 
                     val scheduledPeriods =
-                        (rq.repeatingPattern as RepeatingPattern.Flexible.Monthly).scheduledPeriods
+                        (rq.repeatPattern as RepeatPattern.Flexible.Monthly).scheduledPeriods
                     scheduledPeriods.size.`should be`(2)
                     scheduledPeriods.keys.`should contain all`(
                         listOf(
@@ -837,7 +837,7 @@ class SaveQuestsForRepeatingQuestUseCaseSpek : Spek({
                     )
 
                     val scheduledPeriods =
-                        (rq.repeatingPattern as RepeatingPattern.Flexible.Monthly).scheduledPeriods
+                        (rq.repeatPattern as RepeatPattern.Flexible.Monthly).scheduledPeriods
                     scheduledPeriods.size.`should be`(2)
                     scheduledPeriods[firstFebruary]!!.`should contain all`(scheduledPeriodDates)
                 }
@@ -858,7 +858,7 @@ class SaveQuestsForRepeatingQuestUseCaseSpek : Spek({
 
                 val quests = executeUseCase(
                     quest = TestUtil.repeatingQuest.copy(
-                        repeatingPattern = RepeatingPattern.Yearly(
+                        repeatPattern = RepeatPattern.Yearly(
                             firstDateOfWeek.dayOfMonth,
                             firstDateOfWeek.month,
                             firstDateOfWeek
@@ -876,7 +876,7 @@ class SaveQuestsForRepeatingQuestUseCaseSpek : Spek({
 
                 val quests = executeUseCase(
                     quest = TestUtil.repeatingQuest.copy(
-                        repeatingPattern = RepeatingPattern.Yearly(
+                        repeatPattern = RepeatPattern.Yearly(
                             firstDateOfWeek.dayOfMonth,
                             firstDateOfWeek.month,
                             firstDateOfWeek
@@ -902,7 +902,7 @@ class SaveQuestsForRepeatingQuestUseCaseSpek : Spek({
 
                 val quests = executeUseCase(
                     quest = TestUtil.repeatingQuest.copy(
-                        repeatingPattern = RepeatingPattern.Yearly(
+                        repeatPattern = RepeatPattern.Yearly(
                             firstDateOfWeek.dayOfMonth,
                             firstDateOfWeek.month,
                             firstDateOfWeek
@@ -930,7 +930,7 @@ class SaveQuestsForRepeatingQuestUseCaseSpek : Spek({
 
                 val quests = executeUseCase(
                     quest = TestUtil.repeatingQuest.copy(
-                        repeatingPattern = RepeatingPattern.Yearly(
+                        repeatPattern = RepeatPattern.Yearly(
                             firstDateOfWeek.dayOfMonth,
                             firstDateOfWeek.month,
                             firstDateOfWeek
@@ -950,7 +950,7 @@ class SaveQuestsForRepeatingQuestUseCaseSpek : Spek({
 
                 val quests = executeUseCase(
                     quest = TestUtil.repeatingQuest.copy(
-                        repeatingPattern = RepeatingPattern.Yearly(
+                        repeatPattern = RepeatPattern.Yearly(
                             firstDateOfWeek.plusDays(1).dayOfMonth,
                             firstDateOfWeek.plusDays(1).month,
                             firstDateOfWeek
@@ -982,7 +982,7 @@ class SaveQuestsForRepeatingQuestUseCaseSpek : Spek({
 
                 val quests = executeUseCase(
                     quest = TestUtil.repeatingQuest.copy(
-                        repeatingPattern = RepeatingPattern.Yearly(
+                        repeatPattern = RepeatPattern.Yearly(
                             firstDateOfWeek.plusDays(1).dayOfMonth,
                             firstDateOfWeek.plusDays(1).month,
                             firstDateOfWeek

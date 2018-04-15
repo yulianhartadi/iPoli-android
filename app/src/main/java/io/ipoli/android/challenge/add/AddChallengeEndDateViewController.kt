@@ -8,63 +8,22 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
-import kotlinx.android.synthetic.main.controller_add_challenge_end_date.view.*
 import io.ipoli.android.R
-import io.ipoli.android.challenge.add.AddChallengeEndDateViewState.StateType.INITIAL
-import io.ipoli.android.common.AppState
-import io.ipoli.android.common.BaseViewStateReducer
 import io.ipoli.android.common.datetime.DateUtils
-import io.ipoli.android.common.mvi.ViewState
-import io.ipoli.android.common.redux.Action
-import io.ipoli.android.common.redux.android.ReduxViewController
+import io.ipoli.android.common.redux.android.BaseViewController
 import io.ipoli.android.common.view.stringRes
-import io.ipoli.android.quest.Color
+import kotlinx.android.synthetic.main.controller_add_challenge_end_date.view.*
 import org.threeten.bp.LocalDate
 
 /**
  * Created by Polina Zhelyazkova <polina@mypoli.fun>
  * on 3/9/18.
  */
-
-sealed class AddChallengeEndDateAction : Action {
-    data class SelectDate(val date: LocalDate) : AddChallengeEndDateAction()
-}
-
-object AddChallengeEndDateReducer : BaseViewStateReducer<AddChallengeEndDateViewState>() {
-    override val stateKey = key<AddChallengeEndDateViewState>()
-
-
-    override fun reduce(
-        state: AppState,
-        subState: AddChallengeEndDateViewState,
-        action: Action
-    ): AddChallengeEndDateViewState {
-        return subState
-    }
-
-    override fun defaultState() =
-        AddChallengeEndDateViewState(
-            type = INITIAL,
-            color = Color.GREEN
-        )
-}
-
-data class AddChallengeEndDateViewState(
-    val type: AddChallengeEndDateViewState.StateType,
-    val color: Color
-) : ViewState {
-    enum class StateType {
-        INITIAL,
-        DATA_LOADED
-    }
-}
-
 class AddChallengeEndDateViewController(args: Bundle? = null) :
-    ReduxViewController<AddChallengeEndDateAction, AddChallengeEndDateViewState, AddChallengeEndDateReducer>(
+    BaseViewController<EditChallengeAction, EditChallengeViewState>(
         args
     ) {
-
-    override val reducer = AddChallengeEndDateReducer
+    override val stateKey = EditChallengeReducer.stateKey
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -80,12 +39,8 @@ class AddChallengeEndDateViewController(args: Bundle? = null) :
 
     override fun colorLayoutBars() {}
 
-    override fun render(state: AddChallengeEndDateViewState, view: View) {
-        when (state.type) {
-            INITIAL -> {
-                (view.dateList.adapter as DateAdapter).updateAll(state.viewModels)
-            }
-        }
+    override fun render(state: EditChallengeViewState, view: View) {
+        (view.dateList.adapter as DateAdapter).updateAll(state.viewModels)
     }
 
     data class DateViewModel(
@@ -101,7 +56,7 @@ class AddChallengeEndDateViewController(args: Bundle? = null) :
             val view = holder.itemView as TextView
             view.text = vm.text
             if (vm.date != null) {
-                view.dispatchOnClick(AddChallengeEndDateAction.SelectDate(vm.date))
+                view.dispatchOnClick(EditChallengeAction.SelectDate(vm.date))
             } else {
                 view.setOnClickListener {
                     val date = LocalDate.now()
@@ -109,7 +64,7 @@ class AddChallengeEndDateViewController(args: Bundle? = null) :
                         view.context, R.style.Theme_myPoli_AlertDialog,
                         DatePickerDialog.OnDateSetListener { _, year, month, dayOfMonth ->
                             dispatch(
-                                AddChallengeEndDateAction.SelectDate(
+                                EditChallengeAction.SelectDate(
                                     LocalDate.of(
                                         year,
                                         month + 1,
@@ -145,7 +100,7 @@ class AddChallengeEndDateViewController(args: Bundle? = null) :
 
     inner class ViewHolder(view: View) : RecyclerView.ViewHolder(view)
 
-    private val AddChallengeEndDateViewState.viewModels: List<DateViewModel>
+    private val EditChallengeViewState.viewModels: List<DateViewModel>
         get() {
             val today = LocalDate.now().minusDays(1)
             val viewModels = mutableListOf<DateViewModel>()

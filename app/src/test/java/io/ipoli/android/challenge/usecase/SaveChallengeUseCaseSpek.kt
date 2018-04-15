@@ -28,6 +28,7 @@ class SaveChallengeUseCaseSpek : Spek({
                     ).execute(
                         SaveChallengeUseCase.Params.WithExistingQuests(
                             name = "",
+                            tags = emptyList(),
                             color = Color.BLUE,
                             icon = Icon.STAR,
                             difficulty = Challenge.Difficulty.NORMAL,

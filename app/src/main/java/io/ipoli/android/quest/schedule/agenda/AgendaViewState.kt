@@ -164,10 +164,16 @@ private fun toAgendaViewModel(
             AgendaViewController.QuestViewModel(
                 id = quest.id,
                 name = quest.name,
+                tags = quest.tags.map {
+                    AgendaViewController.TagViewModel(
+                        it.name,
+                        AndroidColor.valueOf(it.color.name).color500
+                    )
+                },
                 startTime = formatStartTime(quest),
                 color = color,
                 icon = quest.icon?.let { AndroidIcon.valueOf(it.name).icon }
-                    ?: Ionicons.Icon.ion_android_clipboard,
+                        ?: Ionicons.Icon.ion_android_clipboard,
                 isCompleted = quest.isCompleted,
                 showDivider = shouldShowDivider(nextAgendaItem),
                 isRepeating = quest.isFromRepeatingQuest,

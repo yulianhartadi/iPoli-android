@@ -18,6 +18,7 @@ import android.text.style.StrikethroughSpan
 import android.util.TypedValue
 import android.view.*
 import com.bluelinelabs.conductor.RouterTransaction
+import com.bluelinelabs.conductor.changehandler.FadeChangeHandler
 import com.mikepenz.iconics.IconicsDrawable
 import io.ipoli.android.Constants
 import io.ipoli.android.R
@@ -30,6 +31,7 @@ import io.ipoli.android.common.redux.android.ReduxViewController
 import io.ipoli.android.common.view.*
 import io.ipoli.android.quest.CompletedQuestViewController
 import io.ipoli.android.quest.Icon
+import io.ipoli.android.quest.edit.EditQuestViewController
 import io.ipoli.android.quest.reminder.picker.ReminderPickerDialogController
 import io.ipoli.android.quest.reminder.picker.ReminderViewModel
 import io.ipoli.android.quest.schedule.calendar.CalendarViewController
@@ -65,6 +67,8 @@ class DayViewController :
     private var reminderPickedListener: () -> Unit = {}
 
     private var datePickedListener: () -> Unit = {}
+
+    private var fullEditListener: () -> Unit = {}
 
     private lateinit var calendarDayView: CalendarDayView
 
@@ -132,14 +136,21 @@ class DayViewController :
     override fun render(state: DayViewState, view: View) {
         val color = state.color?.androidColor
         val icon = state.icon?.androidIcon
+        fullEditListener = {
+            startFullEdit(state)
+        }
 
         when (state.type) {
             SCHEDULE_LOADED -> {
                 eventsAdapter =
-                    QuestScheduledEventsAdapter(activity!!, state.scheduledQuests, calendarDayView)
+                        QuestScheduledEventsAdapter(
+                            activity!!,
+                            state.scheduledQuests,
+                            calendarDayView
+                        )
                 calendarDayView.setScheduledEventsAdapter(eventsAdapter)
                 unscheduledEventsAdapter =
-                    UnscheduledQuestsAdapter(state.unscheduledQuests, calendarDayView)
+                        UnscheduledQuestsAdapter(state.unscheduledQuests, calendarDayView)
                 calendarDayView.setUnscheduledEventsAdapter(unscheduledEventsAdapter)
                 updateUnscheduledQuestsHeight(view)
             }
@@ -281,6 +292,29 @@ class DayViewController :
         }
     }
 
+    private fun startFullEdit(state: DayViewState) {
+        val fadeChangeHandler = FadeChangeHandler()
+        pushWithRootRouter(
+            RouterTransaction.with(
+                EditQuestViewController(
+                    questId = state.editId,
+                    params = EditQuestViewController.Params(
+                        name = state.name,
+                        scheduleDate = state.scheduledDate,
+                        startTime = state.startTime,
+                        duration = state.duration,
+                        color = state.color,
+                        icon = state.icon,
+                        reminderViewModel = state.reminder
+                    )
+                )
+            )
+                .pushChangeHandler(fadeChangeHandler)
+                .popChangeHandler(fadeChangeHandler)
+        )
+        onStopEditMode()
+    }
+
     private fun updateUnscheduledQuestsHeight(view: View) {
         val unscheduledQuestsToShow = Math.min(
             unscheduledEventsAdapter.itemCount,
@@ -368,7 +402,7 @@ class DayViewController :
     }
 
     override fun onEventValidationError(dragView: View) {
-        dragView.dragName.error = "Think of a name"
+        dragView.dragName.error = stringRes(R.string.think_of_a_name)
     }
 
     override fun onRemoveEvent(eventId: String) {
@@ -411,6 +445,7 @@ class DayViewController :
         parentController?.view?.startActionMode(object : ActionMode.Callback {
             override fun onActionItemClicked(am: ActionMode, item: MenuItem): Boolean {
                 when (item.itemId) {
+                    R.id.fullEdit -> fullEditListener()
                     R.id.chooseDate -> datePickedListener()
                     R.id.chooseReminder -> reminderPickedListener()
                     R.id.chooseIcon -> iconPickedListener()
@@ -427,7 +462,8 @@ class DayViewController :
             }
 
             override fun onPrepareActionMode(p0: ActionMode?, menu: Menu?): Boolean {
-                menu!!.findItem(R.id.chooseDate).setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS)
+                menu!!.findItem(R.id.fullEdit).setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS)
+                menu.findItem(R.id.chooseDate).setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS)
                 menu.findItem(R.id.chooseReminder).setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS)
                 menu.findItem(R.id.chooseIcon).setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS)
                 menu.findItem(R.id.chooseColor).setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS)
@@ -490,6 +526,7 @@ class DayViewController :
         data class Quest(
             override val id: String,
             val name: String,
+            val tags: List<String>,
             override val duration: Int,
             override val startMinute: Int,
             val startTime: String,
@@ -589,10 +626,17 @@ class DayViewController :
                 view.questName.text = span
                 view.questName.setTextColor(colorRes(R.color.md_dark_text_54))
                 view.questSchedule.setTextColor(colorRes(R.color.md_dark_text_54))
+                view.questTags.setTextColor(colorRes(R.color.md_dark_text_54))
+                view.questTags.setCompoundDrawablesRelativeWithIntrinsicBounds(
+                    R.drawable.ic_tag_black_16dp,
+                    0,
+                    0,
+                    0
+                )
 
                 view.checkBox.isChecked = true
                 (view.checkBox as TintableCompoundButton).supportButtonTintList =
-                    tintList(R.color.md_grey_700)
+                        tintList(R.color.md_grey_700)
                 view.completedBackgroundView.visibility = View.VISIBLE
 
                 vm.icon?.let {
@@ -611,6 +655,13 @@ class DayViewController :
 
                 view.questCategoryIndicator.setBackgroundResource(vm.backgroundColor.color900)
                 view.questSchedule.setTextColor(colorRes(R.color.md_light_text_70))
+                view.questTags.setTextColor(colorRes(R.color.md_light_text_70))
+                view.questTags.setCompoundDrawablesRelativeWithIntrinsicBounds(
+                    R.drawable.ic_tag_white_16dp,
+                    0,
+                    0,
+                    0
+                )
 
                 view.questName.text = vm.name
                 view.questName.setTextColor(colorRes(R.color.md_white))
@@ -625,7 +676,7 @@ class DayViewController :
                 }
 
                 (view.checkBox as TintableCompoundButton).supportButtonTintList =
-                    tintList(vm.backgroundColor.color200)
+                        tintList(vm.backgroundColor.color200)
                 view.completedBackgroundView.visibility = View.INVISIBLE
 
                 if (vm.isPlaceholder) {
@@ -643,11 +694,17 @@ class DayViewController :
 
             view.repeatIndicator.visibility = if (vm.isRepeating) View.VISIBLE else View.GONE
             view.challengeIndicator.visibility = if (vm.isFromChallenge) View.VISIBLE else View.GONE
+            if (vm.tags.isEmpty()) {
+                view.questTags.gone()
+            } else {
+                view.questTags.text = vm.tags.joinToString()
+                view.questTags.visible()
+            }
 
             view.checkBox.setOnCheckedChangeListener { cb, checked ->
                 if (checked) {
                     (view.checkBox as TintableCompoundButton).supportButtonTintList =
-                        tintList(R.color.md_grey_700)
+                            tintList(R.color.md_grey_700)
                     val anim = RevealAnimator().create(view.completedBackgroundView, cb)
                     anim.addListener(object : AnimatorListenerAdapter() {
                         override fun onAnimationStart(animation: Animator?) {
@@ -795,7 +852,7 @@ class DayViewController :
             }
 
             (itemView.unscheduledCheckBox as TintableCompoundButton).supportButtonTintList =
-                tintList(viewModel.backgroundColor.color500, itemView.context)
+                    tintList(viewModel.backgroundColor.color500, itemView.context)
 
             if (viewModel.isCompleted) {
                 val span = SpannableString(viewModel.name)
@@ -848,10 +905,10 @@ class DayViewController :
             }
 
             itemView.unscheduledQuestRepeatIndicator.visibility =
-                if (viewModel.isRepeating) View.VISIBLE else View.GONE
+                    if (viewModel.isRepeating) View.VISIBLE else View.GONE
 
             itemView.unscheduledQuestChallengeIndicator.visibility =
-                if (viewModel.isFromChallenge) View.VISIBLE else View.GONE
+                    if (viewModel.isFromChallenge) View.VISIBLE else View.GONE
 
             itemView.unscheduledCheckBox.setOnCheckedChangeListener { _, checked ->
                 if (checked) {
@@ -908,6 +965,7 @@ class DayViewController :
                 DayViewController.ScheduledEventViewModel.Quest(
                     id = q.id,
                     name = q.name,
+                    tags = q.tags.map { it.name },
                     duration = q.duration,
                     startMinute = q.startTime!!.toMinuteOfDay(),
                     startTime = q.startTime.toString(),

@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/rootContainer"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/md_green_500">
+
+    <include layout="@layout/view_no_elevation_toolbar" />
+
+    <android.support.constraint.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginTop="?attr/actionBarSize">
+
+        <ImageView
+            android:id="@+id/tagSelectedIcon"
+            android:layout_width="92dp"
+            android:layout_height="92dp"
+            android:layout_marginEnd="8dp"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="16dp"
+            android:background="@drawable/bordered_circle_white_background"
+            android:padding="16dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:srcCompat="@drawable/ic_tags_white_24dp" />
+
+        <android.support.design.widget.TextInputLayout
+            android:id="@+id/tagNameLayout"
+            style="@style/TextAppearance.myPoli.EditName.TextInputLayout"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="48dp"
+            android:layout_marginStart="48dp"
+            android:textColorHint="@color/md_light_text_50"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/tagSelectedIcon">
+
+            <android.support.design.widget.TextInputEditText
+                android:id="@+id/tagName"
+                android:maxLength="35"
+                style="@style/TextAppearance.myPoli.EditName.TextInputEditText"
+                android:hint="@string/tag_name_hint"
+                tools:text="Hello World" />
+        </android.support.design.widget.TextInputLayout>
+
+        <TextView
+            android:id="@+id/tagColor"
+            android:layout_width="0dp"
+            android:layout_height="48dp"
+            android:layout_marginTop="32dp"
+            android:background="?attr/selectableItemBackground"
+            android:drawablePadding="16dp"
+            android:drawableStart="@drawable/ic_color_palette_white_24dp"
+            android:gravity="start|center_vertical"
+            android:text="@string/color"
+            android:textAppearance="@style/TextAppearance.AppCompat.Subhead"
+            android:textColor="@color/md_white"
+            app:layout_constraintEnd_toEndOf="@+id/tagNameLayout"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintStart_toStartOf="@+id/tagNameLayout"
+            app:layout_constraintTop_toBottomOf="@+id/tagNameLayout" />
+
+        <TextView
+            android:id="@+id/tagIcon"
+            android:layout_width="0dp"
+            android:layout_height="48dp"
+            android:layout_marginBottom="8dp"
+            android:layout_marginTop="16dp"
+            android:background="?attr/selectableItemBackground"
+            android:drawablePadding="16dp"
+            android:drawableStart="@drawable/ic_icon_white_24dp"
+            android:gravity="start|center_vertical"
+            android:text="@string/icon"
+            android:textAppearance="@style/TextAppearance.AppCompat.Subhead"
+            android:textColor="@color/md_white"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="@+id/tagNameLayout"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintStart_toStartOf="@+id/tagNameLayout"
+            app:layout_constraintTop_toBottomOf="@+id/tagColor"
+            app:layout_constraintVertical_bias="0.0" />
+
+
+    </android.support.constraint.ConstraintLayout>
+</android.support.design.widget.CoordinatorLayout>

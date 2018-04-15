@@ -5,12 +5,12 @@ import io.ipoli.android.common.BaseViewStateReducer
 import io.ipoli.android.common.DataLoadedAction
 import io.ipoli.android.common.mvi.ViewState
 import io.ipoli.android.common.redux.Action
-import io.ipoli.android.home.HomeViewState.Initial
-import io.ipoli.android.home.HomeViewState.PlayerChanged
+import io.ipoli.android.home.HomeViewState.StateType.*
 import io.ipoli.android.pet.PetAvatar
 import io.ipoli.android.pet.PetMood
 import io.ipoli.android.player.Player
 import io.ipoli.android.player.data.Avatar
+import io.ipoli.android.tag.Tag
 
 /**
  * Created by Polina Zhelyazkova <polina@mypoli.fun>
@@ -18,6 +18,9 @@ import io.ipoli.android.player.data.Avatar
  */
 sealed class HomeAction : Action {
     object Load : HomeAction()
+    object HideTags : HomeAction()
+    object ShowTags : HomeAction()
+    data class SelectTag(val index: Int) : HomeAction()
 }
 
 object HomeReducer : BaseViewStateReducer<HomeViewState>() {
@@ -28,19 +31,57 @@ object HomeReducer : BaseViewStateReducer<HomeViewState>() {
         when (action) {
             is HomeAction.Load -> {
                 val player = state.dataState.player
-                player?.let {
-                    createPlayerChangeState(it)
-                } ?: Initial(showSignIn = true)
+                val tags = state.dataState.tags
+
+                val s = player?.let {
+                    createStateFromPlayer(subState, it)
+                } ?: subState
+
+                s.copy(
+                    type = DATA_LOADED,
+                    tags = tags.filter { it.isFavorite }
+                )
             }
 
             is DataLoadedAction.PlayerChanged -> {
-                createPlayerChangeState(action.player)
+                createStateFromPlayer(subState, action.player).copy(
+                    type = PLAYER_CHANGED
+                )
             }
+
+            is DataLoadedAction.TagsChanged -> {
+                subState.copy(
+                    type = TAGS_CHANGED,
+                    tags = action.tags.filter { it.isFavorite }
+                )
+            }
+
+            is HomeAction.HideTags -> {
+                subState.copy(
+                    type = TAGS_HIDDEN,
+                    showTags = false
+                )
+            }
+
+            is HomeAction.ShowTags -> {
+                subState.copy(
+                    type = TAGS_SHOWN,
+                    showTags = true
+                )
+            }
+
+            is HomeAction.SelectTag -> {
+                subState.copy(
+                    type = TAG_SELECTED,
+                    selectedTagIndex = action.index
+                )
+            }
+
             else -> subState
         }
 
-    private fun createPlayerChangeState(player: Player) =
-        PlayerChanged(
+    private fun createStateFromPlayer(state: HomeViewState, player: Player) =
+        state.copy(
             showSignIn = !player.isLoggedIn(),
             avatar = player.avatar,
             petAvatar = player.pet.avatar,
@@ -54,24 +95,50 @@ object HomeReducer : BaseViewStateReducer<HomeViewState>() {
             maxProgress = player.experienceForNextLevel
         )
 
-    override fun defaultState() = Initial(showSignIn = true)
+    override fun defaultState() = HomeViewState(
+        type = LOADING,
+        showSignIn = true,
+        titleIndex = 0,
+        level = 0,
+        avatar = Avatar.AVATAR_00,
+        petAvatar = PetAvatar.ELEPHANT,
+        petMood = PetMood.AWESOME,
+        gems = 0,
+        lifeCoins = 0,
+        experience = 0,
+        progress = 0,
+        maxProgress = 0,
+        tags = listOf(),
+        showTags = true,
+        selectedTagIndex = null
+    )
 }
 
-sealed class HomeViewState : ViewState {
+data class HomeViewState(
+    val type: StateType,
+    val showSignIn: Boolean,
+    val titleIndex: Int,
+    val level: Int,
+    val avatar: Avatar,
+    val petAvatar: PetAvatar,
+    val petMood: PetMood,
+    val gems: Int,
+    val lifeCoins: Int,
+    val experience: Long,
+    val progress: Int,
+    val maxProgress: Int,
+    val tags: List<Tag>,
+    val showTags: Boolean,
+    val selectedTagIndex: Int?
+) : ViewState {
 
-    data class Initial(val showSignIn: Boolean) : HomeViewState()
-
-    data class PlayerChanged(
-        val showSignIn: Boolean,
-        val titleIndex: Int,
-        val level: Int,
-        val avatar: Avatar,
-        val petAvatar: PetAvatar,
-        val petMood: PetMood,
-        val gems: Int,
-        val lifeCoins: Int,
-        val experience: Long,
-        val progress: Int,
-        val maxProgress: Int
-    ) : HomeViewState()
+    enum class StateType {
+        LOADING,
+        DATA_LOADED,
+        PLAYER_CHANGED,
+        TAGS_CHANGED,
+        TAGS_SHOWN,
+        TAGS_HIDDEN,
+        TAG_SELECTED
+    }
 }

@@ -13,7 +13,9 @@ import io.ipoli.android.common.redux.ViewStateReducer
 
 sealed class LoadDataAction : Action {
     object All : LoadDataAction()
+
     data class ChangePlayer(val oldPlayerId: String) : LoadDataAction()
+    object Preload : LoadDataAction()
 }
 
 sealed class UIAction : Action {

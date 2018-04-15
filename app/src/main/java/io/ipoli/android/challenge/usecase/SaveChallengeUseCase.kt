@@ -6,6 +6,7 @@ import io.ipoli.android.common.UseCase
 import io.ipoli.android.quest.BaseQuest
 import io.ipoli.android.quest.Color
 import io.ipoli.android.quest.Icon
+import io.ipoli.android.tag.Tag
 import org.threeten.bp.LocalDate
 
 /**
@@ -36,6 +37,7 @@ class SaveChallengeUseCase(
         return challengeRepository.save(
             c!!.copy(
                 name = parameters.name.trim(),
+                tags = parameters.tags,
                 color = parameters.color,
                 icon = parameters.icon,
                 difficulty = parameters.difficulty,
@@ -50,6 +52,7 @@ class SaveChallengeUseCase(
         val c = challengeRepository.save(
             Challenge(
                 name = parameters.name.trim(),
+                tags = parameters.tags,
                 color = parameters.color,
                 icon = parameters.icon,
                 difficulty = parameters.difficulty,
@@ -83,6 +86,7 @@ class SaveChallengeUseCase(
     sealed class Params(
         open val id: String = "",
         open val name: String,
+        open val tags: List<Tag>,
         open val color: Color,
         open val icon: Icon?,
         open val difficulty: Challenge.Difficulty,
@@ -94,6 +98,7 @@ class SaveChallengeUseCase(
             val quests: List<BaseQuest>,
             override val id: String = "",
             override val name: String,
+            override val tags: List<Tag>,
             override val color: Color,
             override val icon: Icon?,
             override val difficulty: Challenge.Difficulty,
@@ -101,13 +106,14 @@ class SaveChallengeUseCase(
             override val end: LocalDate,
             override val note: String? = null
 
-        ) : Params(id, name, color, icon, difficulty, motivations, end, note)
+        ) : Params(id, name, tags, color, icon, difficulty, motivations, end, note)
 
         data class WithExistingQuests(
             val allQuests: List<BaseQuest> = listOf(),
             val selectedQuestIds: Set<String> = setOf(),
             override val id: String = "",
             override val name: String,
+            override val tags: List<Tag>,
             override val color: Color,
             override val icon: Icon?,
             override val difficulty: Challenge.Difficulty,
@@ -115,7 +121,7 @@ class SaveChallengeUseCase(
             override val end: LocalDate,
             override val note: String? = null
 
-        ) : Params(id, name, color, icon, difficulty, motivations, end, note)
+        ) : Params(id, name, tags, color, icon, difficulty, motivations, end, note)
     }
 
     private fun transformMotivations(motivations: List<String>) =

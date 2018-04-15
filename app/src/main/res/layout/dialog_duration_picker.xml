@@ -5,19 +5,8 @@
     android:layout_height="match_parent"
     android:padding="24dp">
 
-    <com.sdsmdg.harjot.crollerTest.Croller
+    <io.ipoli.android.common.view.widget.WheelItemPickerView
         android:id="@+id/durationPicker"
-        android:layout_width="250dp"
-        android:layout_height="250dp"
-        android:layout_centerInParent="true"
-        app:back_circle_color="?attr/colorPrimary"
-        app:indicator_color="?attr/colorAccent"
-        app:indicator_width="15"
-        app:is_continuous="false"
-        app:label_color="@color/md_dark_text_54"
-        app:main_circle_color="@color/md_white"
-        app:progress_primary_circle_size="15"
-        app:progress_primary_color="?attr/colorAccent"
-        app:progress_secondary_circle_size="5"
-        app:progress_secondary_color="?attr/colorAccent" />
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
 </RelativeLayout>

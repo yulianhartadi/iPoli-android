@@ -2,15 +2,21 @@ package io.ipoli.android.tag.list
 
 import io.ipoli.android.common.AppState
 import io.ipoli.android.common.BaseViewStateReducer
+import io.ipoli.android.common.DataLoadedAction
 import io.ipoli.android.common.mvi.ViewState
 import io.ipoli.android.common.redux.Action
+import io.ipoli.android.tag.Tag
 
 /**
  * Created by Venelin Valkov <venelin@mypoli.fun>
  * on 04/03/2018.
  */
 sealed class TagListAction : Action {
+    data class Favorite(val tag: Tag) : TagListAction()
+    data class Unfavorite(val tag: Tag) : TagListAction()
+
     object Load : TagListAction()
+    object AddTag : TagListAction()
 }
 
 object TagListReducer : BaseViewStateReducer<TagListViewState>() {
@@ -19,8 +25,31 @@ object TagListReducer : BaseViewStateReducer<TagListViewState>() {
         state: AppState,
         subState: TagListViewState,
         action: Action
-    ): TagListViewState {
-        return subState
+    ) = when (action) {
+
+        TagListAction.Load -> {
+            val dataState = state.dataState
+
+            if (dataState.tags.isEmpty()) {
+                TagListViewState.Empty
+            } else {
+                TagListViewState.Changed(dataState.tags)
+            }
+        }
+
+        is DataLoadedAction.TagsChanged -> {
+            if (action.tags.isEmpty()) {
+                TagListViewState.Empty
+            } else {
+                TagListViewState.Changed(action.tags)
+            }
+        }
+
+        TagListAction.AddTag ->
+            TagListViewState.ShowAdd
+
+        else ->
+            subState
     }
 
     override fun defaultState() = TagListViewState.Loading
@@ -31,4 +60,7 @@ object TagListReducer : BaseViewStateReducer<TagListViewState>() {
 
 sealed class TagListViewState : ViewState {
     object Loading : TagListViewState()
+    data class Changed(val tags: List<Tag>) : TagListViewState()
+    object Empty : TagListViewState()
+    object ShowAdd : TagListViewState()
 }

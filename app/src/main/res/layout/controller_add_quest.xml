@@ -5,160 +5,114 @@
     android:id="@+id/container"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="?attr/colorPrimary"
+    android:background="@color/md_grey_50"
     android:clickable="true"
     android:focusable="true">
 
     <io.ipoli.android.common.view.EditTextBackEvent
         android:id="@+id/questName"
-        android:layout_width="match_parent"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="8dp"
+        android:layout_marginEnd="8dp"
         android:backgroundTint="@android:color/transparent"
         android:hint="e.g. Go for a run"
         android:imeOptions="actionDone"
         android:inputType="textCapSentences"
         android:paddingEnd="16dp"
         android:paddingStart="16dp"
-        android:textColor="@color/md_white"
-        android:textColorHint="@color/md_light_text_50"
-
-        app:layout_constraintEnd_toEndOf="parent"
+        android:textColor="@color/md_black"
+        android:textColorHint="@color/md_dark_text_54"
+        app:layout_constraintEnd_toStartOf="@+id/done"
         app:layout_constraintStart_toStartOf="parent" />
 
-    <android.support.v7.widget.RecyclerView
-        android:id="@+id/subQuestList"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
-        app:layout_constraintBottom_toTopOf="@+id/scheduleDate"
-        app:layout_constraintEnd_toEndOf="parent"
+    <ImageView
+        android:id="@+id/scheduleDate"
+        android:layout_width="40dp"
+        android:layout_height="28dp"
+        android:layout_marginBottom="16dp"
+        android:background="?selectableItemBackgroundBorderless"
+        android:padding="2dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/startTime"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintHorizontal_chainStyle="packed"
+        app:layout_constraintStart_toEndOf="@+id/fullAdd"
+        app:layout_constraintTop_toBottomOf="@+id/questName" />
+
+    <ImageView
+        android:id="@+id/fullAdd"
+        android:layout_width="40dp"
+        android:layout_height="28dp"
+        android:layout_marginBottom="16dp"
+        android:layout_marginStart="8dp"
+        android:background="?selectableItemBackgroundBorderless"
+        android:padding="2dp"
+        android:src="@drawable/ic_edit_black_24dp"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/questName" />
 
     <ImageView
         android:id="@+id/startTime"
         android:layout_width="40dp"
-        android:layout_height="24dp"
-        android:layout_marginStart="8dp"
+        android:layout_height="28dp"
+        android:layout_marginStart="12dp"
         android:background="?selectableItemBackgroundBorderless"
-        android:paddingEnd="8dp"
-        android:paddingStart="8dp"
-        android:src="@drawable/ic_clock_white_24dp"
+        android:padding="2dp"
         app:layout_constraintBottom_toBottomOf="@+id/scheduleDate"
-        app:layout_constraintStart_toEndOf="@+id/repeatingPattern"
-        app:layout_constraintTop_toTopOf="@+id/scheduleDate" />
+        app:layout_constraintEnd_toStartOf="@+id/duration"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toEndOf="@+id/scheduleDate" />
 
     <ImageView
         android:id="@+id/duration"
         android:layout_width="40dp"
-        android:layout_height="24dp"
+        android:layout_height="28dp"
+        android:layout_marginStart="12dp"
         android:background="?selectableItemBackgroundBorderless"
-        android:paddingEnd="8dp"
-        android:paddingStart="8dp"
+        android:padding="2dp"
         app:layout_constraintBottom_toBottomOf="@+id/scheduleDate"
-        app:layout_constraintStart_toEndOf="@+id/startTime"
-        app:layout_constraintTop_toTopOf="@+id/scheduleDate" />
-
-    <ImageView
-        android:id="@+id/color"
-        android:layout_width="40dp"
-        android:layout_height="24dp"
-        android:background="?selectableItemBackgroundBorderless"
-        android:paddingEnd="8dp"
-        android:paddingStart="8dp"
-        android:src="@drawable/ic_color_palette_white_24dp"
-        app:layout_constraintBottom_toBottomOf="@+id/scheduleDate"
-        app:layout_constraintStart_toEndOf="@+id/duration"
-        app:layout_constraintTop_toTopOf="@+id/scheduleDate" />
-
-    <ImageView
-        android:id="@+id/reminder"
-        android:layout_width="40dp"
-        android:layout_height="24dp"
-        android:background="?selectableItemBackgroundBorderless"
-        android:paddingEnd="8dp"
-        android:paddingStart="8dp"
-        android:src="@drawable/ic_reminder_white_24dp"
-        app:layout_constraintBottom_toBottomOf="@+id/scheduleDate"
-        app:layout_constraintStart_toEndOf="@+id/icon"
-        app:layout_constraintTop_toTopOf="@+id/scheduleDate" />
-
-    <ImageView
-        android:id="@+id/addSubQuest"
-        android:layout_width="40dp"
-        android:layout_height="24dp"
-        android:background="?selectableItemBackgroundBorderless"
-        android:paddingEnd="8dp"
-        android:paddingStart="8dp"
-        android:src="@drawable/ic_playlist_add_white_24dp"
-        app:layout_constraintBottom_toBottomOf="@+id/scheduleDate"
-        app:layout_constraintStart_toEndOf="@+id/reminder"
-        app:layout_constraintTop_toTopOf="@+id/scheduleDate" />
-
-    <ImageView
-        android:id="@+id/note"
-        android:layout_width="40dp"
-        android:layout_height="24dp"
-        android:layout_marginEnd="8dp"
-        android:background="?selectableItemBackgroundBorderless"
-        android:paddingEnd="8dp"
-        android:paddingStart="8dp"
-        android:src="@drawable/ic_note_white_24dp"
-        app:layout_constraintBottom_toBottomOf="@+id/scheduleDate"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toEndOf="@+id/addSubQuest"
-        app:layout_constraintTop_toTopOf="@+id/scheduleDate" />
-
-    <ImageView
-        android:id="@+id/done"
-        android:layout_width="40dp"
-        android:layout_height="24dp"
-        android:layout_marginEnd="8dp"
-        android:background="?selectableItemBackgroundBorderless"
-        android:paddingEnd="8dp"
-        android:paddingStart="8dp"
-        android:src="@drawable/ic_done_white_24dp"
-        app:layout_constraintBottom_toBottomOf="@+id/questName"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/questName" />
+        app:layout_constraintEnd_toStartOf="@+id/icon"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toEndOf="@+id/startTime" />
 
     <ImageView
         android:id="@+id/icon"
         android:layout_width="40dp"
-        android:layout_height="24dp"
+        android:layout_height="28dp"
+        android:layout_marginStart="12dp"
         android:background="?selectableItemBackgroundBorderless"
-        android:paddingEnd="8dp"
-        android:paddingStart="8dp"
+        android:padding="2dp"
         app:layout_constraintBottom_toBottomOf="@+id/scheduleDate"
-        app:layout_constraintStart_toEndOf="@+id/color"
-        app:layout_constraintTop_toTopOf="@+id/scheduleDate"
-        app:srcCompat="@drawable/ic_icon_white_24dp" />
+        app:layout_constraintEnd_toStartOf="@+id/color"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toEndOf="@+id/duration" />
 
     <ImageView
-        android:id="@+id/scheduleDate"
+        android:id="@+id/color"
         android:layout_width="40dp"
         android:layout_height="28dp"
-        android:layout_marginBottom="8dp"
-        android:layout_marginStart="8dp"
-        android:background="@drawable/quest_type_left_solid_background"
-        android:foreground="?attr/selectableItemBackground"
-        android:padding="2dp"
-        android:src="@drawable/ic_event_white_24dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
+        android:layout_marginStart="12dp"
+        android:background="?selectableItemBackgroundBorderless"
+        android:paddingBottom="1dp"
+        android:paddingEnd="7dp"
+        android:paddingStart="7dp"
+        android:paddingTop="1dp"
+        android:src="@drawable/oval_background"
+        app:layout_constraintBottom_toBottomOf="@+id/scheduleDate"
+        app:layout_constraintEnd_toStartOf="@+id/done"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toEndOf="@+id/icon" />
 
     <ImageView
-        android:id="@+id/repeatingPattern"
-        android:layout_width="40dp"
+        android:id="@+id/done"
+        android:layout_width="28dp"
         android:layout_height="28dp"
-        android:layout_marginBottom="8dp"
-        android:background="@drawable/quest_type_right_bordered_background"
-        android:foreground="?attr/selectableItemBackground"
+        android:layout_marginEnd="8dp"
+        android:background="?selectableItemBackgroundBorderless"
         android:padding="2dp"
-        android:src="@drawable/ic_repeat_white_24dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/scheduleDate" />
+        app:layout_constraintBottom_toBottomOf="@+id/questName"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/questName" />
 
 </android.support.constraint.ConstraintLayout>

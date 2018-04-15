@@ -28,7 +28,7 @@ class CreateRepeatingQuestHistoryUseCase(
         val completedDates = quests.map { it.completedAtDate }.toSet()
 
         val data = start.datesBetween(end).map {
-            val shouldBeCompleted = rq.repeatingPattern.shouldScheduleOn(it)
+            val shouldBeCompleted = rq.repeatPattern.shouldScheduleOn(it)
             val isCompleted = completedDates.contains(it)
 
             val state = when {

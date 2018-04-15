@@ -10,7 +10,6 @@ import android.view.ViewGroup
 import com.mikepenz.iconics.IconicsDrawable
 import com.mikepenz.iconics.typeface.IIcon
 import com.mikepenz.ionicons_typeface_library.Ionicons
-import kotlinx.android.synthetic.main.item_quest_picker.view.*
 import io.ipoli.android.R
 import io.ipoli.android.challenge.QuestPickerViewState.StateType.*
 import io.ipoli.android.common.AppState
@@ -23,6 +22,7 @@ import io.ipoli.android.common.view.visible
 import io.ipoli.android.quest.BaseQuest
 import io.ipoli.android.quest.Quest
 import io.ipoli.android.quest.RepeatingQuest
+import kotlinx.android.synthetic.main.item_quest_picker.view.*
 import org.threeten.bp.LocalDate
 
 /**
@@ -174,7 +174,7 @@ sealed class PickerQuest(
             repeatingQuest,
             repeatingQuest.id,
             repeatingQuest.name,
-            repeatingQuest.repeatingPattern.start
+            repeatingQuest.repeatPattern.start
         )
 }
 
@@ -219,6 +219,7 @@ class QuestAdapter(
             IconicsDrawable(view.context)
                 .icon(vm.icon)
                 .colorRes(R.color.md_white)
+                .paddingDp(3)
                 .sizeDp(24)
         )
         view.questRepeatIndicator.visible = vm.isRepeating

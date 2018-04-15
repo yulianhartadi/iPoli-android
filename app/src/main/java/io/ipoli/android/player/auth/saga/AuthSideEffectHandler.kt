@@ -15,6 +15,9 @@ import io.ipoli.android.player.Player
 import io.ipoli.android.player.auth.AuthAction
 import io.ipoli.android.player.auth.AuthViewState
 import io.ipoli.android.player.persistence.PlayerRepository
+import io.ipoli.android.quest.Color
+import io.ipoli.android.quest.Icon
+import io.ipoli.android.tag.Tag
 import space.traversal.kapsule.required
 import java.nio.charset.Charset
 import java.util.regex.Pattern
@@ -27,6 +30,7 @@ class AuthSideEffectHandler : AppSideEffectHandler() {
 
     private val eventLogger by required { eventLogger }
     private val playerRepository by required { playerRepository }
+    private val tagRepository by required { tagRepository }
     private val sharedPreferences by required { sharedPreferences }
     private val petStatsChangeScheduler by required { lowerPetStatsScheduler }
     private val saveQuestsForRepeatingQuestScheduler by required { saveQuestsForRepeatingQuestScheduler }
@@ -215,9 +219,36 @@ class AuthSideEffectHandler : AppSideEffectHandler() {
             playerRepository.addUsername(username)
         }
 
+        saveDefaultTags()
+
         prepareAppStart()
         dispatch(AuthAction.PlayerCreated)
 
+    }
+
+    private fun saveDefaultTags() {
+        tagRepository.save(
+            listOf(
+                Tag(
+                    name = "Personal",
+                    color = Color.ORANGE,
+                    icon = Icon.SUN,
+                    isFavorite = true
+                ),
+                Tag(
+                    name = "Work",
+                    color = Color.RED,
+                    icon = Icon.BRIEFCASE,
+                    isFavorite = true
+                ),
+                Tag(
+                    name = "Wellness",
+                    color = Color.GREEN,
+                    icon = Icon.TREE,
+                    isFavorite = true
+                )
+            )
+        )
     }
 
     private fun loginExistingPlayer(user: FirebaseUser) {
@@ -233,7 +264,7 @@ class AuthSideEffectHandler : AppSideEffectHandler() {
     }
 
     private fun prepareAppStart() {
-        dispatch(LoadDataAction.All)
+        dispatch(LoadDataAction.Preload)
         petStatsChangeScheduler.schedule()
         saveQuestsForRepeatingQuestScheduler.schedule()
         removeExpiredPowerUpsScheduler.schedule()

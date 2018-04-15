@@ -14,6 +14,8 @@ data class Tag(
     val name: String,
     val color: Color,
     val icon: Icon? = null,
+    val isFavorite: Boolean,
+    val questCount: Int = -1,
     override val createdAt: Instant = Instant.now(),
     override val updatedAt: Instant = Instant.now()
 ) : Entity

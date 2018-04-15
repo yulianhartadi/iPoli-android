@@ -3,6 +3,7 @@ package io.ipoli.android.quest
 import android.animation.ObjectAnimator
 import android.content.res.ColorStateList
 import android.graphics.Color
+import android.graphics.drawable.GradientDrawable
 import android.os.Bundle
 import android.support.annotation.ColorInt
 import android.view.LayoutInflater
@@ -14,35 +15,34 @@ import com.mikepenz.iconics.IconicsDrawable
 import io.ipoli.android.R
 import io.ipoli.android.common.datetime.Duration
 import io.ipoli.android.common.datetime.Minute
-import io.ipoli.android.common.mvi.MviViewController
+import io.ipoli.android.common.redux.android.ReduxViewController
 import io.ipoli.android.common.text.DateFormatter
 import io.ipoli.android.common.text.DurationFormatter
 import io.ipoli.android.common.view.*
 import io.ipoli.android.quest.CompletedQuestViewState.StateType.DATA_LOADED
 import io.ipoli.android.quest.CompletedQuestViewState.Timer
 import io.ipoli.android.quest.timer.QuestViewController
+import io.ipoli.android.tag.Tag
 import kotlinx.android.synthetic.main.controller_completed_quest.view.*
+import kotlinx.android.synthetic.main.item_quest_tag_list.view.*
 import kotlinx.android.synthetic.main.view_default_toolbar.view.*
-import space.traversal.kapsule.required
 
 /**
  * Created by Polina Zhelyazkova <polina@mypoli.fun>
  * on 1/24/18.
  */
 class CompletedQuestViewController :
-    MviViewController<CompletedQuestViewState, CompletedQuestViewController, CompletedQuestPresenter, CompletedQuestIntent> {
+    ReduxViewController<CompletedQuestAction, CompletedQuestViewState, CompletedQuestReducer> {
 
     private lateinit var questId: String
 
-    private val presenter by required { completedQuestPresenter }
+    override val reducer = CompletedQuestReducer
 
     constructor(args: Bundle? = null) : super(args)
 
     constructor(questId: String) : super() {
         this.questId = questId
     }
-
-    override fun createPresenter() = presenter
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -72,10 +72,11 @@ class CompletedQuestViewController :
         return super.onOptionsItemSelected(item)
     }
 
+    override fun onCreateLoadAction() = CompletedQuestAction.Load(questId)
+
     override fun onAttach(view: View) {
         showBackButton()
         super.onAttach(view)
-        send(CompletedQuestIntent.LoadData(questId))
     }
 
     override fun render(state: CompletedQuestViewState, view: View) {
@@ -83,6 +84,7 @@ class CompletedQuestViewController :
             DATA_LOADED -> {
 
                 view.questName.text = state.name
+                renderTags(state.tags, view)
 
                 state.icon?.let {
                     view.questName.setCompoundDrawablesWithIntrinsicBounds(
@@ -101,34 +103,34 @@ class CompletedQuestViewController :
                 view.questDate.text = DateFormatter.format(view.context, state.completeAt)
                 view.questTime.text = "${state.startedAt} - ${state.finishedAt}"
                 view.questProgressDuration.text =
-                    DurationFormatter.formatShort(view.context, state.totalDuration!!.intValue)
+                        DurationFormatter.formatShort(view.context, state.totalDuration!!.intValue)
 
                 renderTimer(state.timer!!, view, state)
                 renderBounty(view, state)
 
                 view.questDurationProgress.secondaryProgressTintList =
-                    ColorStateList.valueOf(colorRes(color.color100))
+                        ColorStateList.valueOf(colorRes(color.color100))
 
                 view.questDurationProgress.progressTintList =
-                    ColorStateList.valueOf(colorRes(color.color300))
+                        ColorStateList.valueOf(colorRes(color.color300))
 
                 view.questDurationProgress.backgroundTintList =
-                    ColorStateList.valueOf(colorRes(color.color500))
+                        ColorStateList.valueOf(colorRes(color.color500))
 
                 view.level.text = "Lvl ${state.playerLevel!!}"
 
                 view.levelProgress.backgroundTintList =
-                    ColorStateList.valueOf(attrData(R.attr.colorAccent))
+                        ColorStateList.valueOf(attrData(R.attr.colorAccent))
 
                 view.levelProgress.progressTintList =
-                    ColorStateList.valueOf(
-                        lighten(attrData(R.attr.colorAccent), 0.6f)
-                    )
+                        ColorStateList.valueOf(
+                            lighten(attrData(R.attr.colorAccent), 0.6f)
+                        )
 
                 view.levelProgress.secondaryProgressTintList =
-                    ColorStateList.valueOf(
-                        lighten(attrData(R.attr.colorAccent), 0.3f)
-                    )
+                        ColorStateList.valueOf(
+                            lighten(attrData(R.attr.colorAccent), 0.3f)
+                        )
 
                 view.levelProgress.max = state.playerLevelMaxProgress!!
                 view.levelProgress.secondaryProgress = state.playerLevelMaxProgress
@@ -136,6 +138,27 @@ class CompletedQuestViewController :
             }
         }
     }
+
+    private fun renderTags(
+        tags: List<Tag>,
+        view: View
+    ) {
+        view.questTagList.removeAllViews()
+
+        val inflater = LayoutInflater.from(activity!!)
+        tags.forEach { tag ->
+            val item = inflater.inflate(R.layout.item_quest_tag_list, view.questTagList, false)
+            renderTag(item, tag)
+            view.questTagList.addView(item)
+        }
+    }
+
+    private fun renderTag(view: View, tag: Tag) {
+        view.tagName.text = tag.name
+        val indicator = view.tagName.compoundDrawablesRelative[0] as GradientDrawable
+        indicator.setColor(colorRes(AndroidColor.valueOf(tag.color.name).color500))
+    }
+
 
     private fun lighten(@ColorInt color: Int, factor: Float): Int {
         val hsv = FloatArray(3)
@@ -165,7 +188,7 @@ class CompletedQuestViewController :
                 view.pomodoroGroup.showViews()
                 view.timerGroup.showViews()
                 view.pomodoro.text =
-                    "${timer.completedPomodoros}/${timer.totalPomodoros} pomodoros"
+                        "${timer.completedPomodoros}/${timer.totalPomodoros} pomodoros"
 
                 view.questWorkTime.text = createDurationLabel(
                     view,
@@ -210,10 +233,10 @@ class CompletedQuestViewController :
 
                 if (isOverdue) {
                     view.questDurationProgress.secondaryProgressTintList =
-                        ColorStateList.valueOf(colorRes(state.color!!.color300))
+                            ColorStateList.valueOf(colorRes(state.color!!.color300))
 
                     view.questDurationProgress.progressTintList =
-                        ColorStateList.valueOf(colorRes(state.color.color700))
+                            ColorStateList.valueOf(colorRes(state.color.color700))
 
                     playProgressAnimation(
                         view.questDurationProgress,

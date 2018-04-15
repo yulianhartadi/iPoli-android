@@ -3,34 +3,30 @@ package io.ipoli.android.quest.schedule.addquest
 import android.app.DatePickerDialog
 import android.app.Dialog
 import android.app.TimePickerDialog
-import android.content.res.ColorStateList
+import android.graphics.drawable.GradientDrawable
 import android.os.Bundle
-import android.support.transition.TransitionManager
-import android.support.v7.widget.LinearLayoutManager
+import android.text.Editable
+import android.text.TextWatcher
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.EditorInfo
 import android.widget.ImageView
+import com.bluelinelabs.conductor.RouterTransaction
+import com.bluelinelabs.conductor.changehandler.FadeChangeHandler
 import com.mikepenz.google_material_typeface_library.GoogleMaterial
 import com.mikepenz.iconics.IconicsDrawable
-import io.ipoli.android.Constants
+import com.mikepenz.iconics.typeface.IIcon
 import io.ipoli.android.R
 import io.ipoli.android.common.ViewUtils
 import io.ipoli.android.common.datetime.Time
 import io.ipoli.android.common.redux.android.ReduxViewController
 import io.ipoli.android.common.view.*
-import io.ipoli.android.common.view.recyclerview.BaseRecyclerViewAdapter
-import io.ipoli.android.common.view.recyclerview.SimpleViewHolder
-import io.ipoli.android.note.NoteDialogViewController
-import io.ipoli.android.quest.reminder.picker.ReminderPickerDialogController
-import io.ipoli.android.quest.reminder.picker.ReminderViewModel
+import io.ipoli.android.quest.Color
+import io.ipoli.android.quest.edit.EditQuestViewController
 import io.ipoli.android.quest.schedule.addquest.StateType.*
-import io.ipoli.android.repeatingquest.edit.picker.RepeatingPatternPickerDialogController
 import kotlinx.android.synthetic.main.controller_add_quest.view.*
-import kotlinx.android.synthetic.main.item_add_sub_quest.view.*
 import org.threeten.bp.LocalDate
-import java.util.*
 
 /**
  * Created by Polina Zhelyazkova <polina@mypoli.fun>
@@ -65,6 +61,24 @@ class AddQuestViewController(args: Bundle? = null) :
             }
         })
 
+        view.questName.addTextChangedListener(object : TextWatcher {
+            override fun afterTextChanged(s: Editable) {
+                val text = s.toString()
+                if (text.isBlank() || text.length == 1) {
+                    setIcon(GoogleMaterial.Icon.gmd_send, view.done)
+                } else {
+                    setIcon(GoogleMaterial.Icon.gmd_send, view.done, true)
+                }
+            }
+
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
+            }
+
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+            }
+
+        })
+
         view.questName.setOnEditorActionListener { _, actionId, _ ->
             if (actionId == EditorInfo.IME_ACTION_DONE) {
                 onSaveQuest(view)
@@ -72,119 +86,102 @@ class AddQuestViewController(args: Bundle? = null) :
             true
         }
 
-        view.duration.setImageDrawable(
-            IconicsDrawable(view.context)
-                .icon(GoogleMaterial.Icon.gmd_hourglass_empty)
-                .colorRes(R.color.md_white)
-                .sizeDp(22)
-        )
-
         view.done.setOnClickListener {
             onSaveQuest(view)
         }
-        view.subQuestList.layoutManager = LinearLayoutManager(activity!!)
-        view.subQuestList.adapter = SubQuestAdapter()
 
-        view.addSubQuest.dispatchOnClick(AddQuestAction.AddSubQuest)
+        resetForm(view)
 
         return view
     }
 
+    private fun setColor(color: Color, view: View) {
+        val d = view.color.drawable as GradientDrawable
+        d.setColor(colorRes(color.androidColor.color500))
+    }
+
+    private fun setIcon(icon: IIcon, view: ImageView, useAccentColor: Boolean = false) {
+        val color =
+            if (useAccentColor)
+                attrData(R.attr.colorAccent)
+            else
+                colorRes(R.color.md_dark_text_54)
+
+        val iconDrawable =
+            IconicsDrawable(activity!!)
+                .icon(icon)
+                .color(color)
+                .sizeDp(24)
+
+        view.setImageDrawable(iconDrawable)
+    }
+
     private fun onSaveQuest(view: View) {
-
-        val sqs = view.subQuestList.children.map {
-            it.subQuestName.text.toString()
-        }
-
         dispatch(
             AddQuestAction.Save(
-                name = view.questName.text.toString(),
-                subQuestNames = sqs
+                name = view.questName.text.toString()
             )
         )
     }
 
     override fun onCreateLoadAction() = AddQuestAction.Load(currentDate)
 
-    private fun selectRepeatingPattern(view: View) {
-        TransitionManager.beginDelayedTransition(view as ViewGroup)
-        view.scheduleDate.setBackgroundResource(R.drawable.quest_type_left_bordered_background)
-        view.repeatingPattern.setBackgroundResource(R.drawable.quest_type_right_solid_background)
-    }
-
-    private fun selectScheduleDate(view: View) {
-        TransitionManager.beginDelayedTransition(view as ViewGroup)
-        view.scheduleDate.setBackgroundResource(R.drawable.quest_type_left_solid_background)
-        view.repeatingPattern.setBackgroundResource(R.drawable.quest_type_right_bordered_background)
-    }
-
     override fun render(state: AddQuestViewState, view: View) {
+        setupFullAdd(view, state)
 
         when (state.type) {
             DATA_LOADED -> {
                 renderDate(view, state)
-                renderRepeatingPattern(view, state)
                 renderStartTime(view, state)
-                renderDuration(view, state)
+                renderDuration(state, view)
                 renderColor(view, state)
                 renderIcon(view, state)
-                renderReminder(view, state)
-                renderNote(view, state)
             }
 
             DATE_PICKED -> renderDate(view, state)
 
-            REPEATING_PATTERN_PICKED -> renderRepeatingPattern(view, state)
-
             TIME_PICKED -> renderStartTime(view, state)
 
-            DURATION_PICKED -> renderDuration(view, state)
+            DURATION_PICKED -> renderDuration(state, view)
 
             COLOR_PICKED -> renderColor(view, state)
 
             ICON_PICKED -> renderIcon(view, state)
 
-            REMINDER_PICKED -> renderReminder(view, state)
-
-            NOTE_PICKED -> renderNote(view, state)
-
-            SWITCHED_TO_QUEST -> {
-                selectScheduleDate(view)
-            }
-
-            SWITCHED_TO_REPEATING -> {
-                selectRepeatingPattern(view)
-            }
-
-            ADD_SUB_QUEST ->
-                (view.subQuestList.adapter as SubQuestAdapter).add(
-                    SubQuestViewModel(
-                        name = "",
-                        startInEdit = true
-                    )
-                )
-
             VALIDATION_ERROR_EMPTY_NAME ->
-                view.questName.error = "Think of a name"
+                view.questName.error = stringRes(R.string.think_of_a_name)
 
-            QUEST_SAVED -> {
-                resetForm(view)
+            QUEST_SAVED -> resetForm(view)
+
+            else -> {
             }
         }
     }
 
-    private fun renderRepeatingPattern(
+    private fun setupFullAdd(
         view: View,
         state: AddQuestViewState
     ) {
-        view.repeatingPattern.setOnClickListener {
-            selectRepeatingPattern(view)
-            RepeatingPatternPickerDialogController(
-                state.repeatingPattern,
-                { dispatch(AddQuestAction.RepeatingPatternPicked(it)) },
-                { dispatch(AddQuestAction.RepeatingPatterPickerCanceled) }
+        view.fullAdd.setOnClickListener {
+            ViewUtils.hideKeyboard(view)
+            val fadeChangeHandler = FadeChangeHandler()
+            pushWithRootRouter(
+                RouterTransaction.with(
+                    EditQuestViewController(
+                        params = EditQuestViewController.Params(
+                            name = view.questName.text.toString(),
+                            scheduleDate = state.date,
+                            startTime = state.time,
+                            duration = state.duration,
+                            color = state.color,
+                            icon = state.icon,
+                            reminderViewModel = null
+                        )
+                    )
+                )
+                    .pushChangeHandler(fadeChangeHandler)
+                    .popChangeHandler(fadeChangeHandler)
             )
-                .show(router, "pick_repeating_pattern_tag")
         }
     }
 
@@ -192,8 +189,8 @@ class AddQuestViewController(args: Bundle? = null) :
         view: View,
         state: AddQuestViewState
     ) {
+        setIcon(GoogleMaterial.Icon.gmd_event, view.scheduleDate, state.date != null)
         view.scheduleDate.setOnClickListener {
-            selectScheduleDate(view)
             val date = state.date ?: LocalDate.now()
             val datePickerDialog = DatePickerDialog(
                 view.context, R.style.Theme_myPoli_AlertDialog,
@@ -208,18 +205,13 @@ class AddQuestViewController(args: Bundle? = null) :
         }
     }
 
-    private fun renderReminder(
-        view: View,
-        state: AddQuestViewState
-    ) {
-        resetOrColorIcon(state.reminder, view.reminder)
-        view.reminder.setOnClickListener {
-            ReminderPickerDialogController(object :
-                ReminderPickerDialogController.ReminderPickedListener {
-                override fun onReminderPicked(reminder: ReminderViewModel?) {
-                    dispatch(AddQuestAction.ReminderPicked(reminder))
-                }
-            }, state.reminder).showDialog(router, "pick_reminder_tag")
+    private fun renderDuration(state: AddQuestViewState, view: View) {
+        setIcon(GoogleMaterial.Icon.gmd_timer, view.duration, state.duration != null)
+        view.duration.setOnClickListener {
+            PickDurationDialogController(
+                state.duration,
+                { dispatch(AddQuestAction.DurationPicked(it)) }
+            ).show(router, "pick_duration_tag")
         }
     }
 
@@ -227,7 +219,23 @@ class AddQuestViewController(args: Bundle? = null) :
         view: View,
         state: AddQuestViewState
     ) {
-        resetOrColorIcon(state.icon, view.icon)
+
+        if (state.icon != null) {
+            val androidIcon = state.icon.androidIcon
+            val iconDrawable =
+                IconicsDrawable(activity!!)
+                    .icon(androidIcon.icon)
+                    .color(colorRes(androidIcon.color))
+                    .sizeDp(24)
+
+            view.icon.setImageDrawable(iconDrawable)
+        } else {
+            setIcon(
+                icon = GoogleMaterial.Icon.gmd_local_florist,
+                view = view.icon,
+                useAccentColor = false
+            )
+        }
         view.icon.setOnClickListener {
             IconPickerDialogController({ icon ->
                 dispatch(AddQuestAction.IconPicked(icon))
@@ -243,7 +251,7 @@ class AddQuestViewController(args: Bundle? = null) :
         state: AddQuestViewState
     ) {
         state.color?.let {
-            applySelectedColor(view.color)
+            setColor(state.color, view)
         }
         view.color.setOnClickListener {
             ColorPickerDialogController({
@@ -255,29 +263,11 @@ class AddQuestViewController(args: Bundle? = null) :
         }
     }
 
-    private fun renderDuration(
-        view: View,
-        state: AddQuestViewState
-    ) {
-        state.duration?.let {
-            applySelectedColor(view.duration)
-        }
-        view.duration.setOnClickListener {
-            DurationPickerDialogController(object :
-                DurationPickerDialogController.DurationPickedListener {
-                override fun onDurationPicked(minutes: Int) {
-                    dispatch(AddQuestAction.DurationPicked(minutes))
-                }
-
-            }, state.duration).showDialog(router, "pick_duration_tag")
-        }
-    }
-
     private fun renderStartTime(
         view: View,
         state: AddQuestViewState
     ) {
-        resetOrColorIcon(state.time, view.startTime)
+        setIcon(GoogleMaterial.Icon.gmd_access_time, view.startTime, state.time != null)
         view.startTime.setOnClickListener {
             val startTime = state.time ?: Time.now()
             val dialog = TimePickerDialog(
@@ -296,49 +286,14 @@ class AddQuestViewController(args: Bundle? = null) :
         }
     }
 
-    private fun renderNote(
-        view: View,
-        state: AddQuestViewState
-    ) {
-        resetOrColorIcon(state.note, view.note)
-        view.note.setOnClickListener {
-            NoteDialogViewController(state.note ?: "", { note ->
-                dispatch(AddQuestAction.NotePicked(note))
-            }).show(router)
-        }
-    }
-
     private fun resetForm(view: View) {
         view.questName.setText("")
-        (view.subQuestList.adapter as SubQuestAdapter).updateAll(listOf())
-        listOf<ImageView>(
-            view.scheduleDate,
-            view.startTime,
-            view.duration,
-            view.color,
-            view.icon,
-            view.reminder,
-            view.repeatingPattern
-        )
-            .forEach { resetColor(it) }
-        selectScheduleDate(view)
+        setIcon(GoogleMaterial.Icon.gmd_event, view.scheduleDate, true)
+        setIcon(GoogleMaterial.Icon.gmd_access_time, view.startTime)
+        setIcon(GoogleMaterial.Icon.gmd_local_florist, view.icon)
+        setColor(Color.GREEN, view)
+        setIcon(GoogleMaterial.Icon.gmd_send, view.done)
         view.questName.requestFocus()
-    }
-
-    private fun resetOrColorIcon(stateData: Any?, iconView: ImageView) {
-        if (stateData == null) {
-            resetColor(iconView)
-        } else {
-            applySelectedColor(iconView)
-        }
-    }
-
-    private fun resetColor(view: ImageView) {
-        view.drawable.alpha = Constants.NO_TRANSPARENCY_ALPHA
-    }
-
-    private fun applySelectedColor(view: ImageView) {
-        view.drawable.alpha = Constants.MEDIUM_ALPHA
     }
 
     override fun onDetach(view: View) {
@@ -353,33 +308,5 @@ class AddQuestViewController(args: Bundle? = null) :
             view.questName.requestFocus()
             ViewUtils.showKeyboard(view.questName.context, view.questName)
         }, shortAnimTime)
-    }
-
-    data class SubQuestViewModel(
-        val id: String = UUID.randomUUID().toString(),
-        val name: String,
-        val startInEdit: Boolean = false
-    )
-
-    inner class SubQuestAdapter :
-        BaseRecyclerViewAdapter<SubQuestViewModel>(R.layout.item_add_sub_quest) {
-        override fun onBindViewModel(
-            vm: SubQuestViewModel,
-            view: View,
-            holder: SimpleViewHolder
-        ) {
-            view.subQuestIndicator.backgroundTintList =
-                ColorStateList.valueOf(colorRes(R.color.md_white))
-            view.subQuestName.setText(vm.name)
-            view.removeSubQuest.setOnClickListener {
-                removeAt(holder.adapterPosition)
-            }
-
-            if (vm.startInEdit) {
-                view.subQuestName.requestFocus()
-                ViewUtils.showKeyboard(view.context, view.subQuestName)
-            }
-        }
-
     }
 }

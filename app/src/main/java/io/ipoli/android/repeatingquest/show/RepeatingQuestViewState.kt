@@ -9,15 +9,15 @@ import io.ipoli.android.common.datetime.Time
 import io.ipoli.android.common.datetime.minutes
 import io.ipoli.android.common.mvi.ViewState
 import io.ipoli.android.common.redux.Action
-import io.ipoli.android.quest.Category
 import io.ipoli.android.quest.Color
 import io.ipoli.android.quest.RepeatingQuest
 import io.ipoli.android.repeatingquest.entity.PeriodProgress
-import io.ipoli.android.repeatingquest.entity.RepeatingPattern
+import io.ipoli.android.repeatingquest.entity.RepeatPattern
 import io.ipoli.android.repeatingquest.show.RepeatingQuestViewState.Changed.ProgressModel.COMPLETE
 import io.ipoli.android.repeatingquest.show.RepeatingQuestViewState.Changed.ProgressModel.INCOMPLETE
 import io.ipoli.android.repeatingquest.show.RepeatingQuestViewState.Changed.RepeatType.*
 import io.ipoli.android.repeatingquest.usecase.CreateRepeatingQuestHistoryUseCase
+import io.ipoli.android.tag.Tag
 import org.threeten.bp.LocalDate
 
 /**
@@ -45,9 +45,9 @@ sealed class RepeatingQuestViewState(open val id: String) : ViewState {
     data class Changed(
         override val id: String,
         val name: String,
+        val tags: List<Tag>,
         val subQuestNames: List<String>,
         val color: Color,
-        val category: Category,
         val nextScheduledDate: LocalDate?,
         val totalDuration: Duration<Minute>,
         val currentStreak: Int,
@@ -116,13 +116,13 @@ object RepeatingQuestReducer : BaseViewStateReducer<RepeatingQuestViewState>() {
         return RepeatingQuestViewState.Changed(
             id = rq.id,
             name = rq.name,
+            tags = rq.tags,
             subQuestNames = rq.subQuests.map { it.name },
             color = rq.color,
-            category = Category("Chores", Color.BROWN),
             nextScheduledDate = rq.nextDate,
             totalDuration = 180.minutes,
             currentStreak = 10,
-            repeat = repeatTypeFor(rq.repeatingPattern),
+            repeat = repeatTypeFor(rq.repeatPattern),
             progress = progressFor(rq.periodProgress!!),
             startTime = rq.startTime,
             endTime = rq.endTime,
@@ -142,18 +142,18 @@ object RepeatingQuestReducer : BaseViewStateReducer<RepeatingQuestViewState>() {
         return complete + incomplete
     }
 
-    private fun repeatTypeFor(repeatingPattern: RepeatingPattern) =
-        when (repeatingPattern) {
-            is RepeatingPattern.Daily -> Daily
-            is RepeatingPattern.Weekly, is RepeatingPattern.Flexible.Weekly -> Weekly(
-                repeatingPattern.periodCount
+    private fun repeatTypeFor(repeatPattern: RepeatPattern) =
+        when (repeatPattern) {
+            is RepeatPattern.Daily -> Daily
+            is RepeatPattern.Weekly, is RepeatPattern.Flexible.Weekly -> Weekly(
+                repeatPattern.periodCount
             )
 
-            is RepeatingPattern.Monthly, is RepeatingPattern.Flexible.Monthly -> Monthly(
-                repeatingPattern.periodCount
+            is RepeatPattern.Monthly, is RepeatPattern.Flexible.Monthly -> Monthly(
+                repeatPattern.periodCount
             )
 
-            is RepeatingPattern.Yearly ->
+            is RepeatPattern.Yearly ->
                 Yearly
         }
 

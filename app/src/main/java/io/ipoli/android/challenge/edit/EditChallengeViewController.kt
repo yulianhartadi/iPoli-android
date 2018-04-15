@@ -4,24 +4,34 @@ import android.app.DatePickerDialog
 import android.graphics.drawable.Drawable
 import android.os.Bundle
 import android.support.v4.content.ContextCompat
+import android.support.v4.widget.TextViewCompat
+import android.support.v7.widget.LinearLayoutManager
 import android.view.*
 import android.widget.AdapterView
 import android.widget.TextView
 import com.mikepenz.iconics.IconicsDrawable
+import com.mikepenz.material_design_iconic_typeface_library.MaterialDesignIconic
 import io.ipoli.android.R
-import io.ipoli.android.challenge.edit.EditChallengeViewState.StateType.*
+import io.ipoli.android.challenge.add.EditChallengeAction
+import io.ipoli.android.challenge.add.EditChallengeReducer
+import io.ipoli.android.challenge.add.EditChallengeViewState
+import io.ipoli.android.challenge.add.EditChallengeViewState.StateType.*
 import io.ipoli.android.common.redux.android.ReduxViewController
 import io.ipoli.android.common.text.DateFormatter
 import io.ipoli.android.common.view.*
 import io.ipoli.android.note.NoteDialogViewController
+import io.ipoli.android.tag.widget.EditItemAutocompleteTagAdapter
+import io.ipoli.android.tag.widget.EditItemTagAdapter
+import kotlinx.android.synthetic.main.controller_add_challenge_summary.view.*
 import kotlinx.android.synthetic.main.controller_edit_challenge.view.*
+import kotlinx.android.synthetic.main.view_no_elevation_toolbar.view.*
 import org.threeten.bp.LocalDate
 
 /**
  * Created by Polina Zhelyazkova <polina@mypoli.fun>
  * on 3/12/18.
  */
-class EditChallengeViewController(args : Bundle? = null) :
+open class EditChallengeViewController(args : Bundle? = null) :
     ReduxViewController<EditChallengeAction, EditChallengeViewState, EditChallengeReducer>(args) {
 
     override val reducer = EditChallengeReducer
@@ -45,8 +55,38 @@ class EditChallengeViewController(args : Bundle? = null) :
         setHasOptionsMenu(true)
         val view = inflater.inflate(R.layout.controller_edit_challenge, container, false)
         setToolbar(view.toolbar)
-        toolbarTitle = ""
-        view.toolbarTitle.text = stringRes(R.string.title_edit_challenge)
+        toolbarTitle = stringRes(R.string.title_edit_challenge)
+
+        listOf(
+            view.questsTopDivider,
+            view.questsTitle,
+            view.questsContainer,
+            view.questsBottomDivider
+        ).forEach { it.gone() }
+
+        view.challengeTagList.layoutManager = LinearLayoutManager(activity!!)
+        view.challengeTagList.adapter = EditItemTagAdapter(removeTagCallback = {
+            dispatch(EditChallengeAction.RemoveTag(it))
+        })
+
+
+        view.challengeDifficulty.onItemSelectedListener =
+            object : AdapterView.OnItemSelectedListener {
+                override fun onNothingSelected(parent: AdapterView<*>?) {
+                }
+
+                override fun onItemSelected(
+                    parent: AdapterView<*>?,
+                    view: View?,
+                    position: Int,
+                    id: Long
+                ) {
+                    dispatch(EditChallengeAction.ChangeDifficulty(position))
+                }
+
+            }
+
+
         return view
     }
 
@@ -68,9 +108,8 @@ class EditChallengeViewController(args : Bundle? = null) :
             }
             R.id.actionSave -> {
                 dispatch(
-                    EditChallengeAction.Validate(
-                        view!!.challengeName.text.toString(),
-                        view!!.challengeDifficultyValue.selectedItemPosition
+                    EditChallengeAction.ValidateName(
+                        view!!.challengeName.text.toString()
                     )
                 )
                 true
@@ -80,14 +119,19 @@ class EditChallengeViewController(args : Bundle? = null) :
 
     override fun render(state: EditChallengeViewState, view: View) {
         when (state.type) {
-            DATA_LOADED -> {
+            DATA_CHANGED -> {
                 view.challengeName.setText(state.name)
+                renderTags(view, state)
                 renderMotivations(view, state)
                 renderEndDate(view, state)
                 renderDifficulty(view, state)
                 renderIcon(view, state)
                 renderColor(view, state)
                 renderNote(view, state)
+            }
+
+            TAGS_CHANGED -> {
+                renderTags(view, state)
             }
 
             ICON_CHANGED -> {
@@ -111,19 +155,46 @@ class EditChallengeViewController(args : Bundle? = null) :
             }
 
             VALIDATION_ERROR_EMPTY_NAME -> {
-                view.challengeName.error = "Think of a name"
+                view.challengeName.error = stringRes(R.string.think_of_a_name)
             }
 
-            VALIDATION_SUCCESSFUL -> {
+            VALIDATION_NAME_SUCCESSFUL -> {
                 dispatch(EditChallengeAction.Save)
                 router.popCurrentController()
             }
         }
     }
 
+    private fun renderTags(
+        view: View,
+        state: EditChallengeViewState
+    ) {
+        (view.challengeTagList.adapter as EditItemTagAdapter).updateAll(state.tagViewModels)
+        val add = view.addChallengeTag
+        if (state.maxTagsReached) {
+            add.gone()
+            view.maxTagsMessage.visible()
+        } else {
+            add.visible()
+            view.maxTagsMessage.gone()
+
+            val adapter = EditItemAutocompleteTagAdapter(state.tagNames, activity!!)
+            add.setAdapter(adapter)
+            add.setOnItemClickListener { _, _, position, _ ->
+                dispatch(EditChallengeAction.AddTag(adapter.getItem(position)))
+                add.setText("")
+            }
+            add.threshold = 0
+            add.setOnTouchListener { v, event ->
+                add.showDropDown()
+                false
+            }
+        }
+    }
+
     private fun renderNote(view: View, state: EditChallengeViewState) {
-        view.questNoteValue.text = state.noteText
-        view.questNoteContainer.setOnClickListener {
+        view.challengeNote.text = state.noteText
+        view.challengeNote.setOnClickListener {
             NoteDialogViewController(state.note ?: "", { note ->
                 dispatch(EditChallengeAction.ChangeNote(note))
             }).show(router)
@@ -135,7 +206,7 @@ class EditChallengeViewController(args : Bundle? = null) :
         state: EditChallengeViewState
     ) {
         colorLayout(view, state)
-        view.challengeColorContainer.setOnClickListener {
+        view.challengeColor.setOnClickListener {
             ColorPickerDialogController({
                 dispatch(EditChallengeAction.ChangeColor(it.color))
             }, state.color.androidColor).showDialog(
@@ -149,8 +220,8 @@ class EditChallengeViewController(args : Bundle? = null) :
         view: View,
         state: EditChallengeViewState
     ) {
-        view.challengeIconIcon.setImageDrawable(state.iconDrawable)
-        view.challengeIconContainer.setOnClickListener {
+        view.challengeSelectedIcon.setImageDrawable(state.iconDrawable)
+        view.challengeIcon.setOnClickListener {
             IconPickerDialogController({ icon ->
                 dispatch(EditChallengeAction.ChangeIcon(icon))
             }, state.icon?.androidIcon).showDialog(
@@ -164,10 +235,10 @@ class EditChallengeViewController(args : Bundle? = null) :
         view: View,
         state: EditChallengeViewState
     ) {
-        view.challengeDifficultyValue.setSelection(state.difficultyIndex)
+        view.challengeDifficulty.setSelection(state.difficultyIndex)
         styleSelectedDifficulty(view)
 
-        view.challengeDifficultyValue.onItemSelectedListener =
+        view.challengeDifficulty.onItemSelectedListener =
             object : AdapterView.OnItemSelectedListener {
                 override fun onNothingSelected(parent: AdapterView<*>?) {
                 }
@@ -184,8 +255,9 @@ class EditChallengeViewController(args : Bundle? = null) :
     }
 
     private fun styleSelectedDifficulty(view: View) {
-        val item = view.challengeDifficultyValue.selectedView as TextView
-        item.setTextAppearance(item.context, R.style.TextAppearance_AppCompat_Caption)
+        val item = view.challengeDifficulty.selectedView as TextView
+        TextViewCompat.setTextAppearance(item, R.style.TextAppearance_AppCompat_Subhead)
+        item.setTextColor(colorRes(R.color.md_light_text_100))
         item.setPadding(0, 0, 0, 0)
     }
 
@@ -193,9 +265,9 @@ class EditChallengeViewController(args : Bundle? = null) :
         view: View,
         state: EditChallengeViewState
     ) {
-        view.challengeEndDateValue.text = state.formattedDate
+        view.challengeEndDate.text = state.endDateText
         val date = state.end
-        view.challengeEndDateContainer.setOnClickListener {
+        view.challengeEndDate.setOnClickListener {
             DatePickerDialog(
                 view.context, R.style.Theme_myPoli_AlertDialog,
                 DatePickerDialog.OnDateSetListener { _, year, month, dayOfMonth ->
@@ -214,25 +286,25 @@ class EditChallengeViewController(args : Bundle? = null) :
         state: EditChallengeViewState
     ) {
         if (state.motivation1.isNotEmpty()) {
-            view.challengeMotivation1Value.visibility = View.VISIBLE
-            view.challengeMotivation1Value.text = state.motivation1
+            view.challengeMotivation1.visibility = View.VISIBLE
+            view.challengeMotivation1.text = state.motivation1
         } else {
-            view.challengeMotivation1Value.visibility = View.GONE
+            view.challengeMotivation1.visibility = View.GONE
         }
         if (state.motivation2.isNotEmpty()) {
-            view.challengeMotivation2Value.visibility = View.VISIBLE
-            view.challengeMotivation2Value.text = state.motivation2
+            view.challengeMotivation2.visibility = View.VISIBLE
+            view.challengeMotivation2.text = state.motivation2
         } else {
-            view.challengeMotivation2Value.visibility = View.GONE
+            view.challengeMotivation2.visibility = View.GONE
         }
         if (state.motivation3.isNotEmpty()) {
-            view.challengeMotivation3Value.visibility = View.VISIBLE
-            view.challengeMotivation3Value.text = state.motivation3
+            view.challengeMotivation3.visibility = View.VISIBLE
+            view.challengeMotivation3.text = state.motivation3
         } else {
-            view.challengeMotivation3Value.visibility = View.GONE
+            view.challengeMotivation3.visibility = View.GONE
         }
 
-        view.challengeMotivationsContainer.setOnClickListener {
+        view.challengeMotivations.setOnClickListener {
             ChallengeMotivationsDialogController(
                 state.motivation1,
                 state.motivation2,
@@ -252,7 +324,7 @@ class EditChallengeViewController(args : Bundle? = null) :
         val color700 = colorRes(state.color700)
         view.appbar.setBackgroundColor(color500)
         view.toolbar.setBackgroundColor(color500)
-        view.toolbarCollapsingContainer.setContentScrimColor(color500)
+        view.rootContainer.setBackgroundColor(color500)
         activity?.window?.navigationBarColor = color500
         activity?.window?.statusBarColor = color700
     }
@@ -263,8 +335,8 @@ class EditChallengeViewController(args : Bundle? = null) :
     private val EditChallengeViewState.color700: Int
         get() = color.androidColor.color700
 
-    private val EditChallengeViewState.formattedDate: String
-        get() = DateFormatter.format(view!!.context, end)
+    private val EditChallengeViewState.endDateText: String
+        get() = stringRes(R.string.ends_at_date, DateFormatter.format(view!!.context, end))
 
     private val EditChallengeViewState.difficultyIndex: Int
         get() = difficulty.ordinal
@@ -272,15 +344,25 @@ class EditChallengeViewController(args : Bundle? = null) :
     private val EditChallengeViewState.iconDrawable: Drawable
         get() =
             if (icon == null) {
-                ContextCompat.getDrawable(view!!.context, R.drawable.ic_icon_black_24dp)!!
+                ContextCompat.getDrawable(view!!.context, R.drawable.ic_icon_white_24dp)!!
             } else {
                 val androidIcon = icon.androidIcon
                 IconicsDrawable(view!!.context)
-                    .icon(androidIcon.icon)
-                    .colorRes(androidIcon.color)
-                    .sizeDp(24)
+                    .largeIcon(androidIcon.icon)
             }
 
     private val EditChallengeViewState.noteText: String
         get() = note ?: stringRes(R.string.tap_to_add_note)
+
+    private val EditChallengeViewState.tagViewModels: List<EditItemTagAdapter.TagViewModel>
+        get() = challengeTags.map {
+            EditItemTagAdapter.TagViewModel(
+                name = it.name,
+                icon = it.icon?.androidIcon?.icon ?: MaterialDesignIconic.Icon.gmi_label,
+                tag = it
+            )
+        }
+
+    private val EditChallengeViewState.tagNames: List<String>
+        get() = tags.map { it.name }
 }

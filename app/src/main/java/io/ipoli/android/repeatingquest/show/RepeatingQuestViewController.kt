@@ -21,7 +21,9 @@ import io.ipoli.android.common.view.*
 import io.ipoli.android.common.view.recyclerview.BaseRecyclerViewAdapter
 import io.ipoli.android.common.view.recyclerview.SimpleViewHolder
 import io.ipoli.android.repeatingquest.edit.EditRepeatingQuestViewController
+import io.ipoli.android.tag.Tag
 import kotlinx.android.synthetic.main.controller_repeating_quest.view.*
+import kotlinx.android.synthetic.main.item_quest_tag_list.view.*
 import kotlinx.android.synthetic.main.item_repeating_quest_sub_quest.view.*
 
 
@@ -36,41 +38,6 @@ class RepeatingQuestViewController(args: Bundle? = null) :
 
     private lateinit var repeatingQuestId: String
 
-    abstract class AppBarStateChangeListener : AppBarLayout.OnOffsetChangedListener {
-
-        private var currentState = State.IDLE
-
-        enum class State {
-            EXPANDED,
-            COLLAPSED,
-            IDLE
-        }
-
-        override fun onOffsetChanged(appBarLayout: AppBarLayout, verticalOffset: Int) {
-            when {
-                verticalOffset == 0 -> {
-                    if (currentState != State.EXPANDED) {
-                        onStateChanged(appBarLayout, State.EXPANDED)
-                    }
-                    currentState = State.EXPANDED
-                }
-                Math.abs(verticalOffset) >= appBarLayout.totalScrollRange -> {
-                    if (currentState != State.COLLAPSED) {
-                        onStateChanged(appBarLayout, State.COLLAPSED)
-                    }
-                    currentState = State.COLLAPSED
-                }
-                else -> {
-                    if (currentState != State.IDLE) {
-                        onStateChanged(appBarLayout, State.IDLE)
-                    }
-                    currentState = State.IDLE
-                }
-            }
-        }
-
-        abstract fun onStateChanged(appBarLayout: AppBarLayout, state: State)
-    }
 
     constructor(
         repeatingQuestId: String
@@ -164,6 +131,7 @@ class RepeatingQuestViewController(args: Bundle? = null) :
             is RepeatingQuestViewState.Changed -> {
                 colorLayout(state, view)
                 renderName(state, view)
+                renderTags(state.tags, view)
                 renderSubQuests(state, view)
                 renderProgress(state, view)
                 renderSummaryStats(state, view)
@@ -176,6 +144,26 @@ class RepeatingQuestViewController(args: Bundle? = null) :
             is RepeatingQuestViewState.HistoryChanged ->
                 view.historyChart.updateData(state.history)
         }
+    }
+
+    private fun renderTags(
+        tags: List<Tag>,
+        view: View
+    ) {
+        view.tagList.removeAllViews()
+
+        val inflater = LayoutInflater.from(activity!!)
+        tags.forEach { tag ->
+            val item = inflater.inflate(R.layout.item_quest_tag_list, view.tagList, false)
+            renderTag(item, tag)
+            view.tagList.addView(item)
+        }
+    }
+
+    private fun renderTag(view: View, tag: Tag) {
+        view.tagName.text = tag.name
+        val indicator = view.tagName.compoundDrawablesRelative[0] as GradientDrawable
+        indicator.setColor(colorRes(tag.color.androidColor.color500))
     }
 
     private fun renderNote(
@@ -259,7 +247,7 @@ class RepeatingQuestViewController(args: Bundle? = null) :
             holder: SimpleViewHolder
         ) {
             view.subQuestIndicator.backgroundTintList =
-                ColorStateList.valueOf(colorRes(R.color.md_dark_text_54))
+                    ColorStateList.valueOf(colorRes(R.color.md_dark_text_54))
             view.subQuestName.text = vm
         }
     }

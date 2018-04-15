@@ -13,6 +13,7 @@ import io.ipoli.android.quest.subquest.SubQuest
 import io.ipoli.android.quest.timer.QuestViewState.StateType.*
 import io.ipoli.android.quest.timer.sideeffect.TimerStartedAction
 import io.ipoli.android.quest.timer.view.formatter.TimerFormatter
+import io.ipoli.android.tag.Tag
 import org.threeten.bp.Instant
 
 /**
@@ -30,6 +31,7 @@ sealed class QuestAction : Action {
     data class RemoveSubQuest(val position: Int) : QuestAction()
     data class ReorderSubQuest(val oldPosition: Int, val newPosition: Int) : QuestAction()
     data class SaveNote(val note: String) : QuestAction()
+    data class UpdateNote(val note: String) : QuestAction()
 
     object Start : QuestAction()
     object Stop : QuestAction()
@@ -130,7 +132,7 @@ object QuestReducer : BaseViewStateReducer<QuestViewState>() {
             else -> subState
         }
 
-    override fun defaultState() = QuestViewState(LOADING)
+    override fun defaultState() = QuestViewState(type = LOADING, tags = listOf())
 
     private fun formatDuration(duration: Duration<Second>): String {
         return if (duration >= 0.seconds) {
@@ -155,7 +157,8 @@ object QuestReducer : BaseViewStateReducer<QuestViewState>() {
             subQuests = quest.subQuests,
             subQuestListProgressPercent = ((completedSubQuestsCount.toFloat() / quest.subQuests.size) * 100).toInt(),
             hasSubQuests = hasSubQuests,
-            allSubQuestsDone = hasSubQuests && completedSubQuestsCount == quest.subQuests.size
+            allSubQuestsDone = hasSubQuests && completedSubQuestsCount == quest.subQuests.size,
+            tags = quest.tags
         )
 
 
@@ -317,7 +320,8 @@ data class QuestViewState(
     val maxTimerProgress: Int = 0,
     val pomodoroProgress: List<PomodoroProgress> = listOf(),
     val currentProgressIndicator: Int = 0,
-    val showCompletePomodoroButton: Boolean = false
+    val showCompletePomodoroButton: Boolean = false,
+    val tags: List<Tag>
 ) : ViewState {
 
     enum class StateType {

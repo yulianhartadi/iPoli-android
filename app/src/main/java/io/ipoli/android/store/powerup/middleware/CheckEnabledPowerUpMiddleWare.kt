@@ -1,5 +1,6 @@
 package io.ipoli.android.store.powerup.middleware
 
+import io.ipoli.android.Constants
 import io.ipoli.android.challenge.list.ChallengeListAction
 import io.ipoli.android.common.AppState
 import io.ipoli.android.common.redux.Action
@@ -7,10 +8,10 @@ import io.ipoli.android.common.redux.Dispatcher
 import io.ipoli.android.common.redux.MiddleWare
 import io.ipoli.android.note.NoteAction
 import io.ipoli.android.player.Inventory
-import io.ipoli.android.quest.schedule.addquest.AddQuestAction
 import io.ipoli.android.quest.timer.QuestAction
-import io.ipoli.android.repeatingquest.edit.EditRepeatingQuestAction
+import io.ipoli.android.repeatingquest.add.EditRepeatingQuestAction
 import io.ipoli.android.store.powerup.PowerUp
+import io.ipoli.android.tag.list.TagListAction
 
 /**
  * Created by Venelin Valkov <venelin@mypoli.fun>
@@ -36,7 +37,12 @@ class CheckEnabledPowerUpMiddleWare : MiddleWare<AppState> {
             QuestAction.Start ->
                 checkForAvailablePowerUp(PowerUp.Type.TIMER, inventory, dispatcher)
 
-            AddQuestAction.AddSubQuest,
+            TagListAction.AddTag ->
+                if (state.dataState.tags.size < Constants.MAX_FREE_TAGS)
+                    MiddleWare.Result.Continue
+                else
+                    checkForAvailablePowerUp(PowerUp.Type.TAGS, inventory, dispatcher)
+
             is QuestAction.AddSubQuest,
             is EditRepeatingQuestAction.AddSubQuest ->
                 checkForAvailablePowerUp(PowerUp.Type.SUB_QUESTS, inventory, dispatcher)

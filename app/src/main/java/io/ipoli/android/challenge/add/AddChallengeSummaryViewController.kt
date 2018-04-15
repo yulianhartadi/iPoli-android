@@ -1,31 +1,31 @@
 package io.ipoli.android.challenge.add
 
+import android.app.DatePickerDialog
+import android.graphics.drawable.Drawable
 import android.os.Bundle
+import android.support.v4.content.ContextCompat
+import android.support.v4.widget.TextViewCompat
 import android.support.v7.widget.LinearLayoutManager
-import android.support.v7.widget.RecyclerView
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
+import android.view.*
+import android.widget.AdapterView
+import android.widget.TextView
 import com.mikepenz.google_material_typeface_library.GoogleMaterial
 import com.mikepenz.iconics.IconicsDrawable
 import com.mikepenz.iconics.typeface.IIcon
+import com.mikepenz.material_design_iconic_typeface_library.MaterialDesignIconic
 import io.ipoli.android.R
-import io.ipoli.android.challenge.add.AddChallengeSummaryViewState.StateType.*
-import io.ipoli.android.challenge.entity.Challenge
-import io.ipoli.android.common.AppState
-import io.ipoli.android.common.BaseViewStateReducer
-import io.ipoli.android.common.mvi.ViewState
-import io.ipoli.android.common.redux.Action
-import io.ipoli.android.common.redux.android.ReduxViewController
+import io.ipoli.android.challenge.add.EditChallengeViewState.StateType.*
+import io.ipoli.android.challenge.edit.ChallengeMotivationsDialogController
+import io.ipoli.android.common.redux.android.BaseViewController
 import io.ipoli.android.common.text.DateFormatter
-import io.ipoli.android.common.view.colorRes
-import io.ipoli.android.common.view.stringRes
-import io.ipoli.android.common.view.visible
+import io.ipoli.android.common.view.*
+import io.ipoli.android.common.view.recyclerview.BaseRecyclerViewAdapter
+import io.ipoli.android.common.view.recyclerview.SimpleViewHolder
 import io.ipoli.android.note.NoteDialogViewController
-import io.ipoli.android.quest.BaseQuest
-import io.ipoli.android.quest.Icon
 import io.ipoli.android.quest.Quest
 import io.ipoli.android.quest.RepeatingQuest
+import io.ipoli.android.tag.widget.EditItemAutocompleteTagAdapter
+import io.ipoli.android.tag.widget.EditItemTagAdapter
 import kotlinx.android.synthetic.main.controller_add_challenge_summary.view.*
 import kotlinx.android.synthetic.main.item_challenge_summary_quest.view.*
 import org.threeten.bp.LocalDate
@@ -34,166 +34,281 @@ import org.threeten.bp.LocalDate
  * Created by Polina Zhelyazkova <polina@mypoli.fun>
  * on 3/10/18.
  */
-sealed class AddChallengeSummaryAction : Action {
-    data class UpdateNote(val note: String) : AddChallengeSummaryAction()
-    object Save : AddChallengeSummaryAction()
-}
-
-object AddChallengeSummaryReducer : BaseViewStateReducer<AddChallengeSummaryViewState>() {
-    override val stateKey = key<AddChallengeSummaryViewState>()
-
-    override fun reduce(
-        state: AppState,
-        subState: AddChallengeSummaryViewState,
-        action: Action
-    ) = when (action) {
-        AddChallengeAction.UpdateSummary -> {
-            val s = state.stateFor(AddChallengeViewState::class.java)
-            val motivationList = s.motivationList
-            subState.copy(
-                type = DATA_CHANGED,
-                name = s.name,
-                icon = s.icon,
-                difficulty = s.difficulty,
-                end = s.end,
-                motivation1 = if (motivationList.isNotEmpty()) motivationList[0] else "",
-                motivation2 = if (motivationList.size > 1) motivationList[1] else "",
-                motivation3 = if (motivationList.size > 2) motivationList[2] else "",
-                quests = s.allQuests.filter { s.selectedQuestIds.contains(it.id) },
-                note = s.note
-            )
-        }
-
-        is AddChallengeSummaryAction.UpdateNote -> {
-            val note = action.note.trim()
-            subState.copy(
-                type = NOTE_CHANGED,
-                note = if (note.isEmpty()) null else note
-            )
-        }
-
-        else -> subState
-    }
-
-    override fun defaultState() =
-        AddChallengeSummaryViewState(
-            type = INITIAL,
-            name = "",
-            icon = null,
-            difficulty = Challenge.Difficulty.NORMAL,
-            end = LocalDate.now(),
-            quests = listOf(),
-            motivation1 = "",
-            motivation2 = "",
-            motivation3 = "",
-            note = null
-        )
-}
-
-data class AddChallengeSummaryViewState(
-    val type: AddChallengeSummaryViewState.StateType,
-    val name: String,
-    val icon: Icon?,
-    val difficulty: Challenge.Difficulty,
-    val end: LocalDate,
-    val motivation1: String,
-    val motivation2: String,
-    val motivation3: String,
-    val quests: List<BaseQuest>,
-    val note: String?
-) : ViewState {
-    enum class StateType {
-        INITIAL,
-        DATA_CHANGED,
-        NOTE_CHANGED
-    }
-}
-
 class AddChallengeSummaryViewController(args: Bundle? = null) :
-    ReduxViewController<AddChallengeSummaryAction, AddChallengeSummaryViewState, AddChallengeSummaryReducer>(
+    BaseViewController<EditChallengeAction, EditChallengeViewState>(
         args
     ) {
-    override val reducer = AddChallengeSummaryReducer
+    override val stateKey = EditChallengeReducer.stateKey
 
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup,
         savedViewState: Bundle?
     ): View {
+        setHasOptionsMenu(true)
         val view = inflater.inflate(R.layout.controller_add_challenge_summary, container, false)
-        view.challengeQuests.layoutManager =
+
+        view.challengeQuestList.layoutManager =
             LinearLayoutManager(activity!!, LinearLayoutManager.VERTICAL, false)
-        view.challengeQuests.adapter = QuestAdapter()
-        view.challengeAccept.dispatchOnClick(AddChallengeSummaryAction.Save)
+        view.challengeQuestList.adapter = QuestAdapter()
+
+        view.challengeTagList.layoutManager = LinearLayoutManager(activity!!)
+        view.challengeTagList.adapter = EditItemTagAdapter(removeTagCallback = {
+            dispatch(EditChallengeAction.RemoveTag(it))
+        })
+
+        view.challengeDifficulty.onItemSelectedListener =
+            object : AdapterView.OnItemSelectedListener {
+                override fun onNothingSelected(parent: AdapterView<*>?) {
+                }
+
+                override fun onItemSelected(
+                    parent: AdapterView<*>?,
+                    view: View?,
+                    position: Int,
+                    id: Long
+                ) {
+                    dispatch(EditChallengeAction.ChangeDifficulty(position))
+                }
+
+            }
+
         return view
     }
 
     override fun colorLayoutBars() {}
 
-    override fun render(state: AddChallengeSummaryViewState, view: View) {
-        when (state.type) {
-            DATA_CHANGED -> {
-                view.challengeName.text = state.name
-                view.challengeIcon.setImageDrawable(
-                    IconicsDrawable(view.context)
-                        .icon(state.iicon)
-                        .colorRes(R.color.md_white)
-                        .sizeDp(24)
-                )
-                view.challengeDifficulty.text = state.difficultyText
-                view.challengeEnd.text = state.formattedEndDate
+    override fun onCreateLoadAction() = EditChallengeAction.LoadSummary
 
-                renderMotivation(view, state)
-                renderNote(view, state)
+    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+        super.onCreateOptionsMenu(menu, inflater)
+        inflater.inflate(R.menu.edit_challenge_menu, menu)
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem) =
+        when (item.itemId) {
+            R.id.actionSave -> {
+                dispatch(
+                    EditChallengeAction.ValidateName(
+                        view!!.challengeName.text.toString()
+                    )
+                )
+                true
+            }
+            else -> super.onOptionsItemSelected(item)
+        }
+
+    override fun render(state: EditChallengeViewState, view: View) {
+        when (state.type) {
+            SUMMARY_DATA_LOADED -> {
+                view.challengeName.setText(state.name)
+                renderTags(view, state)
+                renderMotivations(view, state)
+                renderEndDate(view, state)
+                renderDifficulty(view, state)
+                renderIcon(view, state)
+                renderColor(view, state)
                 renderQuests(view, state)
+                renderNote(view, state)
+            }
+
+            TAGS_CHANGED -> {
+                renderTags(view, state)
+            }
+
+            ICON_CHANGED -> {
+                renderIcon(view, state)
+            }
+
+            COLOR_CHANGED -> {
+                renderColor(view, state)
+            }
+
+            END_DATE_CHANGED -> {
+                renderEndDate(view, state)
+            }
+
+            MOTIVATIONS_CHANGED -> {
+                renderMotivations(view, state)
             }
 
             NOTE_CHANGED -> {
                 renderNote(view, state)
             }
+
+            VALIDATION_ERROR_EMPTY_NAME -> {
+                view.challengeName.error = stringRes(R.string.think_of_a_name)
+            }
+
+            VALIDATION_NAME_SUCCESSFUL -> {
+                dispatch(EditChallengeAction.Save)
+                router.popCurrentController()
+            }
         }
     }
 
-    private fun renderNote(
+    private fun renderTags(
         view: View,
-        state: AddChallengeSummaryViewState
+        state: EditChallengeViewState
     ) {
-        view.challengeNote.text = state.noteText
-        view.challengeNote.setTextColor(state.noteColor)
+        (view.challengeTagList.adapter as EditItemTagAdapter).updateAll(state.tagViewModels)
+        val add = view.addChallengeTag
+        if(state.maxTagsReached) {
+            add.gone()
+            view.maxTagsMessage.visible()
+        } else {
+            add.visible()
+            view.maxTagsMessage.gone()
 
+            val adapter = EditItemAutocompleteTagAdapter(state.tagNames, activity!!)
+            add.setAdapter(adapter)
+            add.setOnItemClickListener { _, _, position, _ ->
+                dispatch(EditChallengeAction.AddTag(adapter.getItem(position)))
+                add.setText("")
+            }
+
+            add.threshold = 0
+            add.setOnTouchListener { v, event ->
+                add.showDropDown()
+                false
+            }
+        }
+    }
+
+    private fun renderNote(view: View, state: EditChallengeViewState) {
+        view.challengeNote.text = state.noteText
         view.challengeNote.setOnClickListener {
             NoteDialogViewController(state.note ?: "", { note ->
-                dispatch(AddChallengeSummaryAction.UpdateNote(note))
+                dispatch(EditChallengeAction.ChangeNote(note))
             }).show(router)
         }
     }
 
-    private fun renderMotivation(
+    private fun renderColor(
         view: View,
-        state: AddChallengeSummaryViewState
+        state: EditChallengeViewState
     ) {
-        view.challengeMotivation1.text = state.motivation1
-        view.challengeMotivation1.visibility =
-            if (state.motivation1.isNotEmpty()) View.VISIBLE else View.GONE
-        view.challengeMotivation2.text = state.motivation2
-        view.challengeMotivation2.visibility =
-            if (state.motivation2.isNotEmpty()) View.VISIBLE else View.GONE
-        view.challengeMotivation3.text = state.motivation3
-        view.challengeMotivation3.visibility =
-            if (state.motivation3.isNotEmpty()) View.VISIBLE else View.GONE
+        view.challengeColor.setOnClickListener {
+            ColorPickerDialogController({
+                dispatch(EditChallengeAction.ChangeColor(it.color))
+            }, state.color.androidColor).showDialog(
+                router,
+                "pick_color_tag"
+            )
+        }
+    }
+
+    private fun renderIcon(
+        view: View,
+        state: EditChallengeViewState
+    ) {
+        view.challengeSelectedIcon.setImageDrawable(state.iconDrawable)
+        view.challengeIcon.setOnClickListener {
+            IconPickerDialogController({ icon ->
+                dispatch(EditChallengeAction.ChangeIcon(icon))
+            }, state.icon?.androidIcon).showDialog(
+                router,
+                "pick_icon_tag"
+            )
+        }
+    }
+
+    private fun renderDifficulty(
+        view: View,
+        state: EditChallengeViewState
+    ) {
+        view.challengeDifficulty.setSelection(state.difficultyIndex)
+        styleSelectedDifficulty(view)
+
+        view.challengeDifficulty.onItemSelectedListener =
+            object : AdapterView.OnItemSelectedListener {
+                override fun onNothingSelected(parent: AdapterView<*>?) {
+                }
+
+                override fun onItemSelected(
+                    parent: AdapterView<*>?,
+                    v: View?,
+                    position: Int,
+                    id: Long
+                ) {
+                    styleSelectedDifficulty(view)
+                }
+            }
+    }
+
+    private fun styleSelectedDifficulty(view: View) {
+        val item = view.challengeDifficulty.selectedView as TextView
+        TextViewCompat.setTextAppearance(item, R.style.TextAppearance_AppCompat_Subhead)
+        item.setTextColor(colorRes(R.color.md_light_text_100))
+        item.setPadding(0, 0, 0, 0)
+    }
+
+    private fun renderEndDate(
+        view: View,
+        state: EditChallengeViewState
+    ) {
+        view.challengeEndDate.text = state.endDateText
+        val date = state.end
+        view.challengeEndDate.setOnClickListener {
+            DatePickerDialog(
+                view.context, R.style.Theme_myPoli_AlertDialog,
+                DatePickerDialog.OnDateSetListener { _, year, month, dayOfMonth ->
+                    dispatch(
+                        EditChallengeAction.ChangeEndDate(
+                            LocalDate.of(year, month + 1, dayOfMonth)
+                        )
+                    )
+                }, date.year, date.month.value - 1, date.dayOfMonth
+            ).show()
+        }
+    }
+
+    private fun renderMotivations(
+        view: View,
+        state: EditChallengeViewState
+    ) {
+        if (state.motivation1.isNotEmpty()) {
+            view.challengeMotivation1.visibility = View.VISIBLE
+            view.challengeMotivation1.text = state.motivation1
+        } else {
+            view.challengeMotivation1.visibility = View.GONE
+        }
+        if (state.motivation2.isNotEmpty()) {
+            view.challengeMotivation2.visibility = View.VISIBLE
+            view.challengeMotivation2.text = state.motivation2
+        } else {
+            view.challengeMotivation2.visibility = View.GONE
+        }
+        if (state.motivation3.isNotEmpty()) {
+            view.challengeMotivation3.visibility = View.VISIBLE
+            view.challengeMotivation3.text = state.motivation3
+        } else {
+            view.challengeMotivation3.visibility = View.GONE
+        }
+
+        view.challengeMotivations.setOnClickListener {
+            ChallengeMotivationsDialogController(
+                state.motivation1,
+                state.motivation2,
+                state.motivation3,
+                { m1, m2, m3 ->
+                    dispatch(EditChallengeAction.ChangeMotivations(m1, m2, m3))
+                }
+            ).show(router, "motivations")
+        }
     }
 
     private fun renderQuests(
         view: View,
-        state: AddChallengeSummaryViewState
+        state: EditChallengeViewState
     ) {
-        (view.challengeQuests.adapter as QuestAdapter).updateAll(state.questViewModels)
+        (view.challengeQuestList.adapter as QuestAdapter).updateAll(state.questViewModels)
         if (state.quests.isNotEmpty()) {
-            view.challengeQuestsEmptyState.visibility = View.GONE
-            view.challengeQuests.visibility = View.VISIBLE
+            view.challengeEmptyQuests.visibility = View.GONE
+            view.challengeQuestList.visibility = View.VISIBLE
         } else {
-            view.challengeQuestsEmptyState.visibility = View.VISIBLE
-            view.challengeQuests.visibility = View.GONE
+            view.challengeEmptyQuests.visibility = View.VISIBLE
+            view.challengeQuestList.visibility = View.GONE
         }
     }
 
@@ -203,13 +318,9 @@ class AddChallengeSummaryViewController(args: Bundle? = null) :
         val isRepeating: Boolean
     )
 
-    inner class QuestAdapter(private var viewModels: List<QuestViewModel> = listOf()) :
-        RecyclerView.Adapter<ViewHolder>() {
-        override fun getItemCount() = viewModels.size
-
-        override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-            val vm = viewModels[position]
-            val view = holder.itemView
+    inner class QuestAdapter :
+        BaseRecyclerViewAdapter<QuestViewModel>(R.layout.item_challenge_summary_quest) {
+        override fun onBindViewModel(vm: QuestViewModel, view: View, holder: SimpleViewHolder) {
             view.questIcon.setImageDrawable(
                 IconicsDrawable(view.context)
                     .icon(vm.icon)
@@ -220,34 +331,9 @@ class AddChallengeSummaryViewController(args: Bundle? = null) :
             view.repeatingIndicator.visible = vm.isRepeating
         }
 
-        fun updateAll(viewModels: List<QuestViewModel>) {
-            this.viewModels = viewModels
-            notifyDataSetChanged()
-        }
-
-        override fun onCreateViewHolder(parent: ViewGroup, viewType: Int) =
-            ViewHolder(
-                LayoutInflater.from(parent.context).inflate(
-                    R.layout.item_challenge_summary_quest,
-                    parent,
-                    false
-                )
-            )
-
     }
 
-    inner class ViewHolder(view: View) : RecyclerView.ViewHolder(view)
-
-    private val AddChallengeSummaryViewState.iicon: IIcon
-        get() = icon?.androidIcon?.icon ?: GoogleMaterial.Icon.gmd_local_florist
-
-    private val AddChallengeSummaryViewState.difficultyText: String
-        get() = view!!.resources.getStringArray(R.array.difficulties)[difficulty.ordinal]
-
-    private val AddChallengeSummaryViewState.formattedEndDate: String
-        get() = DateFormatter.format(view!!.context, end)
-
-    private val AddChallengeSummaryViewState.questViewModels: List<QuestViewModel>
+    private val EditChallengeViewState.questViewModels: List<QuestViewModel>
         get() = quests.map {
             when (it) {
                 is Quest -> QuestViewModel(
@@ -264,13 +350,41 @@ class AddChallengeSummaryViewController(args: Bundle? = null) :
 
         }
 
-    private val AddChallengeSummaryViewState.noteColor: Int
+    private val EditChallengeViewState.noteColor: Int
         get() = if (note == null) {
             colorRes(R.color.md_light_text_50)
         } else {
             colorRes(R.color.md_white)
         }
 
-    private val AddChallengeSummaryViewState.noteText: String
+    private val EditChallengeViewState.noteText: String
         get() = note ?: stringRes(R.string.tap_to_add_note)
+
+    private val EditChallengeViewState.tagViewModels: List<EditItemTagAdapter.TagViewModel>
+        get() = challengeTags.map {
+            EditItemTagAdapter.TagViewModel(
+                name = it.name,
+                icon = it.icon?.androidIcon?.icon ?: MaterialDesignIconic.Icon.gmi_label,
+                tag = it
+            )
+        }
+
+    private val EditChallengeViewState.tagNames: List<String>
+        get() = tags.map { it.name }
+
+    private val EditChallengeViewState.difficultyIndex: Int
+        get() = difficulty.ordinal
+
+    private val EditChallengeViewState.iconDrawable: Drawable
+        get() =
+            if (icon == null) {
+                ContextCompat.getDrawable(view!!.context, R.drawable.ic_icon_white_24dp)!!
+            } else {
+                val androidIcon = icon.androidIcon
+                IconicsDrawable(view!!.context)
+                    .largeIcon(androidIcon.icon)
+            }
+
+    private val EditChallengeViewState.endDateText: String
+        get() = stringRes(R.string.ends_at_date, DateFormatter.format(view!!.context, end))
 }

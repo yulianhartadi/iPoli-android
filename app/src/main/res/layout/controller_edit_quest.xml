@@ -1,0 +1,220 @@
+<android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/rootContainer"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <include layout="@layout/view_no_elevation_toolbar" />
+
+    <View
+        android:layout_width="0px"
+        android:layout_height="0px"
+        android:focusable="true"
+        android:focusableInTouchMode="true" />
+
+    <android.support.v4.widget.NestedScrollView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            android:paddingEnd="16dp"
+            android:paddingStart="16dp">
+
+            <ImageView
+                android:id="@+id/questSelectedIcon"
+                android:layout_width="92dp"
+                android:layout_height="92dp"
+                android:layout_gravity="center"
+                android:layout_marginTop="16dp"
+                android:background="@drawable/bordered_circle_white_background"
+                android:padding="16dp"
+                app:srcCompat="@drawable/ic_icon_white_24dp" />
+
+            <android.support.design.widget.TextInputLayout
+                android:id="@+id/questNameLayout"
+                style="@style/TextAppearance.myPoli.EditName.TextInputLayout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="16dp"
+                android:layout_marginStart="16dp"
+                android:textColorHint="@color/md_light_text_50">
+
+                <android.support.design.widget.TextInputEditText
+                    android:id="@+id/questName"
+                    style="@style/TextAppearance.myPoli.EditName.TextInputEditText"
+                    android:hint="@string/name_hint" />
+
+            </android.support.design.widget.TextInputLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="48dp"
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+                android:weightSum="1">
+
+                <TextView
+                    style="@style/EditSimpleTextViewRow"
+                    android:layout_height="match_parent"
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
+                    android:drawableStart="@drawable/ic_tags_white_24dp"
+                    android:text="@string/tags" />
+
+                <TextView
+                    android:id="@+id/maxTagsMessage"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textAppearance="@style/TextAppearance.AppCompat.Caption"
+                    android:text="@string/max_tags_message"
+                    android:textColor="@color/md_light_text_70"/>
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/tagContainer"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="16dp"
+                android:layout_marginEnd="16dp"
+                android:layout_marginStart="56dp"
+                android:orientation="vertical">
+
+                <android.support.v7.widget.RecyclerView
+                    android:id="@+id/questTagList"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" />
+
+                <AutoCompleteTextView
+                    style="@style/TagAutocompleteTheme"
+                    android:id="@+id/addQuestTag"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@null"
+                    android:maxLines="1"
+                    android:hint="@string/add_tag" />
+
+            </LinearLayout>
+
+            <View style="@style/EditSimpleDivider" />
+
+            <View
+                style="@style/EditSimpleDivider"
+                android:layout_marginTop="60dp" />
+
+            <TextView
+                android:id="@+id/questScheduleDate"
+                android:layout_marginTop="16dp"
+                style="@style/EditSimpleTextViewRow"
+                android:drawableStart="@drawable/ic_event_white_24dp" />
+
+            <View style="@style/EditSimpleDivider" />
+
+            <TextView
+                android:id="@+id/questStartTime"
+                style="@style/EditSimpleTextViewRow"
+                android:drawableStart="@drawable/ic_clock_white_24dp" />
+
+            <View style="@style/EditSimpleDivider" />
+
+            <TextView
+                android:id="@+id/questDuration"
+                style="@style/EditSimpleTextViewRow"
+                android:drawableStart="@drawable/ic_sandclock_white_24dp" />
+
+            <View style="@style/EditSimpleDivider" />
+
+            <TextView
+                android:id="@+id/questReminder"
+                style="@style/EditSimpleTextViewRow"
+                android:drawableStart="@drawable/ic_reminder_white_24dp" />
+
+            <View style="@style/EditSimpleDivider" />
+
+            <TextView
+                android:id="@+id/questColor"
+                style="@style/EditSimpleTextViewRow"
+                android:drawableStart="@drawable/ic_color_palette_white_24dp"
+                android:text="@string/color" />
+
+            <View style="@style/EditSimpleDivider" />
+
+            <TextView
+                android:id="@+id/questIcon"
+                style="@style/EditSimpleTextViewRow"
+                android:drawableStart="@drawable/ic_icon_white_24dp"
+                android:text="@string/icon" />
+
+            <View style="@style/EditSimpleDivider" />
+
+            <View style="@style/EditSimpleDivider"
+                android:layout_marginTop="60dp"/>
+
+            <TextView
+                style="@style/EditSimpleTextViewRow"
+                android:drawableStart="@drawable/ic_playlist_add_white_24dp"
+                android:text="@string/sub_quests"
+                android:layout_height="48dp"/>
+
+            <LinearLayout
+                android:orientation="vertical"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="16dp"
+                android:layout_marginEnd="16dp"
+                android:layout_marginStart="56dp">
+
+                <android.support.v7.widget.RecyclerView
+                    android:id="@+id/questSubQuestList"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" />
+
+                <io.ipoli.android.common.view.EditTextBackEvent
+                    android:id="@+id/questSubQuestName"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:background="@null"
+                    android:hint="@string/add_sub_quest"
+                    android:maxLines="1"
+                    android:textColor="@color/md_light_text_100"
+                    android:textColorHint="@color/md_light_text_70" />
+
+                <TextView
+                    android:id="@+id/questAddSubQuest"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
+                    android:background="?selectableItemBackgroundBorderless"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:text="@string/add"
+                    android:textAppearance="@style/TextAppearance.AppCompat.Body2"
+                    android:textColor="@color/md_light_text_100"
+                    android:visibility="gone" />
+            </LinearLayout>
+
+            <View style="@style/EditSimpleDivider" />
+
+            <TextView
+                android:id="@+id/questChallenge"
+                style="@style/EditSimpleTextViewRow"
+                android:drawableStart="@drawable/ic_sword_white_24dp" />
+
+            <View style="@style/EditSimpleDivider" />
+
+            <TextView
+                android:id="@+id/questNote"
+                style="@style/EditSimpleTextViewRow"
+                android:ellipsize="end"
+                android:maxLines="3"
+                android:drawableStart="@drawable/ic_note_white_24dp" />
+
+            <View style="@style/EditSimpleDivider" />
+
+        </LinearLayout>
+    </android.support.v4.widget.NestedScrollView>
+</android.support.design.widget.CoordinatorLayout>

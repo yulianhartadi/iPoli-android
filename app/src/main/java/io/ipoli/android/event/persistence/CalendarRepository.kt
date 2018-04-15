@@ -2,20 +2,17 @@ package io.ipoli.android.event.persistence
 
 import android.database.Cursor
 import android.provider.CalendarContract
-import kotlinx.coroutines.experimental.channels.ReceiveChannel
 import io.ipoli.android.common.persistence.CollectionRepository
 import io.ipoli.android.common.view.ColorUtil
 import io.ipoli.android.event.Calendar
 import io.ipoli.android.myPoliApp
+import kotlinx.coroutines.experimental.channels.Channel
 
 /**
  * Created by Venelin Valkov <venelin@mypoli.fun>
  * on 03/11/2018.
  */
-interface CalendarRepository : CollectionRepository<Calendar> {
-
-    fun findAll(): List<Calendar>
-}
+interface CalendarRepository : CollectionRepository<Calendar>
 
 class AndroidCalendarRepository : CalendarRepository {
 
@@ -73,11 +70,11 @@ class AndroidCalendarRepository : CalendarRepository {
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 
-    override fun listenById(id: String): ReceiveChannel<Calendar?> {
+    override suspend fun listenById(id: String, channel: Channel<Calendar?>): Channel<Calendar?> {
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 
-    override fun listenForAll(): ReceiveChannel<List<Calendar>> {
+    override suspend fun listenForAll(channel: Channel<List<Calendar>>): Channel<List<Calendar>> {
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 

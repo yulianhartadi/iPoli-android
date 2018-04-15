@@ -93,10 +93,10 @@
         android:layout_marginBottom="8dp"
         android:layout_marginEnd="16dp"
         android:layout_marginTop="8dp"
-        app:layout_constraintHorizontal_chainStyle="spread_inside"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintHorizontal_chainStyle="spread_inside"
         app:layout_constraintStart_toEndOf="@+id/questName"
         app:layout_constraintTop_toTopOf="parent" />
 
@@ -116,10 +116,24 @@
         android:layout_height="16dp"
         android:layout_marginStart="8dp"
         app:layout_constraintBottom_toBottomOf="@+id/questSchedule"
-        app:layout_constraintEnd_toEndOf="@+id/questName"
-        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toEndOf="@+id/repeatIndicator"
         app:layout_constraintTop_toTopOf="@+id/questSchedule"
         app:srcCompat="@drawable/ic_sword_white_24dp" />
+
+    <TextView
+        android:id="@+id/questTags"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:drawablePadding="4dp"
+        android:ellipsize="end"
+        android:includeFontPadding="false"
+        android:maxLines="1"
+        android:textAppearance="@style/TextAppearance.AppCompat.Caption"
+        android:textColor="@color/md_light_text_70"
+        app:layout_constraintBottom_toBottomOf="@+id/questSchedule"
+        app:layout_constraintEnd_toEndOf="@+id/questName"
+        app:layout_constraintStart_toEndOf="@+id/challengeIndicator"
+        app:layout_constraintTop_toTopOf="@+id/questSchedule" />
 
 </android.support.constraint.ConstraintLayout>

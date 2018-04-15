@@ -16,6 +16,7 @@ import com.mikepenz.google_material_typeface_library.GoogleMaterial
 import com.mikepenz.iconics.IconicsDrawable
 import com.mikepenz.iconics.typeface.IIcon
 import com.mikepenz.ionicons_typeface_library.Ionicons
+import com.mikepenz.material_design_iconic_typeface_library.MaterialDesignIconic
 import io.ipoli.android.Constants
 import io.ipoli.android.R
 import io.ipoli.android.common.ViewUtils
@@ -59,6 +60,14 @@ enum class AndroidPowerUp(
         Ionicons.Icon.ion_ios_flag,
         R.color.md_deep_purple_300,
         R.color.md_deep_purple_400
+    ),
+    TAGS(
+        R.string.power_up_tags_title,
+        R.string.power_up_tags_sub_title,
+        R.string.power_up_tags_long_desc,
+        MaterialDesignIconic.Icon.gmi_labels,
+        R.color.md_indigo_500,
+        R.color.md_indigo_700
     ),
     CALENDAR_SYNC(
         R.string.settings_sync_google_calendars,
@@ -147,7 +156,7 @@ class PowerUpStoreViewController(args: Bundle? = null) :
         view.powerUpPager.pageMargin = ViewUtils.dpToPx(8f, view.context).toInt()
 
         view.hide.setOnClickListener {
-            TransitionManager.beginDelayedTransition(view.rootCoordinator)
+            TransitionManager.beginDelayedTransition(view.rootCoordinator as ViewGroup  )
             view.membershipHint.gone()
         }
 

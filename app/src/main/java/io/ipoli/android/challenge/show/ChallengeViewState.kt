@@ -9,6 +9,7 @@ import io.ipoli.android.common.mvi.ViewState
 import io.ipoli.android.common.redux.Action
 import io.ipoli.android.quest.BaseQuest
 import io.ipoli.android.quest.Color
+import io.ipoli.android.tag.Tag
 import org.threeten.bp.LocalDate
 import java.util.*
 
@@ -64,6 +65,7 @@ object ChallengeReducer : BaseViewStateReducer<ChallengeViewState>() {
         return ChallengeViewState.Changed(
             id = challenge.id,
             name = challenge.name,
+            tags = challenge.tags,
             color = challenge.color,
             difficulty = challenge.difficulty.name.toLowerCase().capitalize(),
             endDate = challenge.end,
@@ -94,6 +96,7 @@ sealed class ChallengeViewState(open val id: String = "") : ViewState {
     data class Changed(
         override val id: String,
         val name: String,
+        val tags: List<Tag>,
         val color: Color,
         val difficulty: String,
         val endDate: LocalDate,

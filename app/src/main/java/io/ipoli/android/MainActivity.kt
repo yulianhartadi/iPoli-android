@@ -22,16 +22,17 @@ import io.ipoli.android.common.view.playerTheme
 import io.ipoli.android.home.HomeViewController
 import io.ipoli.android.player.auth.AuthViewController
 import io.ipoli.android.quest.timer.QuestViewController
+import io.ipoli.android.repeatingquest.add.AddRepeatingQuestViewController
 import io.ipoli.android.store.membership.MembershipViewController
 import io.ipoli.android.store.powerup.AndroidPowerUp
 import io.ipoli.android.store.powerup.buy.BuyPowerUpDialogController
 import io.ipoli.android.store.powerup.middleware.ShowBuyPowerUpAction
+import io.ipoli.android.tag.show.TagAction
 import kotlinx.coroutines.experimental.android.UI
 import kotlinx.coroutines.experimental.launch
 import space.traversal.kapsule.Injects
 import space.traversal.kapsule.inject
 import space.traversal.kapsule.required
-
 
 /**
  * Created by Venelin Valkov <venelin@mypoli.fun>
@@ -44,6 +45,8 @@ class MainActivity : AppCompatActivity(), Injects<Module>, SideEffectHandler<App
     private val playerRepository by required { playerRepository }
 
     private val stateStore by required { stateStore }
+
+    val rootRouter get() = router
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -64,7 +67,11 @@ class MainActivity : AppCompatActivity(), Injects<Module>, SideEffectHandler<App
         incrementAppRun()
 
         router =
-            Conductor.attachRouter(this, findViewById(R.id.controllerContainer), savedInstanceState)
+                Conductor.attachRouter(
+                    this,
+                    findViewById(R.id.controllerContainer),
+                    savedInstanceState
+                )
         router.setPopsLastView(true)
         inject(myPoliApp.module(this))
 
@@ -88,11 +95,12 @@ class MainActivity : AppCompatActivity(), Injects<Module>, SideEffectHandler<App
         } else if (!router.hasRootController()) {
 //                        router.setRoot(RouterTransaction.with(RepeatingQuestViewController("")))
             router.setRoot(RouterTransaction.with(HomeViewController()))
+//            router.setRoot(RouterTransaction.with(AddRepeatingQuestViewController()))
 //            router.setRoot(RouterTransaction.with(NoteDialogViewController(note = "")))
 //                        router.setRoot(RouterTransaction.with(PowerUpStoreViewController()))
         }
 
-        stateStore.dispatch(LoadDataAction.All)
+        stateStore.dispatch(LoadDataAction.Preload)
     }
 
     private fun incrementAppRun() {
@@ -147,17 +155,15 @@ class MainActivity : AppCompatActivity(), Injects<Module>, SideEffectHandler<App
         router.pushController(transaction)
     }
 
-    val rootRouter get() = router
-
     fun enterFullScreen() {
         window.decorView.systemUiVisibility = (
-            View.SYSTEM_UI_FLAG_LAYOUT_STABLE
-                or View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
-                or View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
-                or View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
-                or View.SYSTEM_UI_FLAG_FULLSCREEN
-                or View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY
-            )
+                View.SYSTEM_UI_FLAG_LAYOUT_STABLE
+                        or View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
+                        or View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
+                        or View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
+                        or View.SYSTEM_UI_FLAG_FULLSCREEN
+                        or View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY
+                )
     }
 
     fun exitFullScreen() {
@@ -167,9 +173,15 @@ class MainActivity : AppCompatActivity(), Injects<Module>, SideEffectHandler<App
     override suspend fun execute(action: Action, state: AppState, dispatcher: Dispatcher) {
         launch(UI) {
             when (action) {
-                is ShowBuyPowerUpAction -> {
+                is ShowBuyPowerUpAction ->
                     showPowerUpDialog(action)
-                }
+
+                is TagAction.TagCountLimitReached ->
+                    Toast.makeText(
+                        this@MainActivity,
+                        R.string.max_tag_count_reached,
+                        Toast.LENGTH_LONG
+                    ).show()
             }
         }
     }
@@ -206,7 +218,8 @@ class MainActivity : AppCompatActivity(), Injects<Module>, SideEffectHandler<App
         }).show(router)
     }
 
-    override fun canHandle(action: Action) = action is ShowBuyPowerUpAction
+    override fun canHandle(action: Action) =
+        action is ShowBuyPowerUpAction || action === TagAction.TagCountLimitReached
 
     companion object {
         const val ACTION_SHOW_TIMER = "mypoli.android.intent.action.SHOW_TIMER"

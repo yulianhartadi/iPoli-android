@@ -2,6 +2,7 @@
 
 <android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/md_white">
@@ -42,18 +43,31 @@
                         android:id="@+id/questName"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
+                        android:paddingStart="16dp"
+                        android:paddingEnd="16dp"
                         android:drawablePadding="16dp"
                         android:gravity="center_vertical"
                         android:paddingBottom="16dp"
-                        android:paddingEnd="16dp"
-                        android:paddingStart="16dp"
                         android:paddingTop="16dp"
                         android:textAppearance="@style/TextAppearance.AppCompat.Title"
                         android:textColor="@color/md_white"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintHorizontal_bias="0.0"
                         app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toTopOf="parent" />
+                        app:layout_constraintTop_toTopOf="parent"
+                        tools:text="Name" />
+
+                    <org.apmem.tools.layouts.FlowLayout
+                        android:id="@+id/questTagList"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="16dp"
+                        android:layout_marginTop="16dp"
+                        android:layout_marginEnd="16dp"
+                        app:layout_constraintEnd_toStartOf="@+id/questDurationProgress"
+                        app:layout_constraintHorizontal_bias="0.0"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@+id/questName" />
 
                     <TextView
                         android:id="@+id/questDate"
@@ -68,7 +82,7 @@
                         app:layout_constraintEnd_toStartOf="@+id/questDurationProgress"
                         app:layout_constraintHorizontal_bias="0.0"
                         app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toBottomOf="@+id/questName" />
+                        app:layout_constraintTop_toBottomOf="@+id/questTagList" />
 
                     <TextView
                         android:id="@+id/questTime"

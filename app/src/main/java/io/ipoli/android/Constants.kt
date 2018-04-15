@@ -99,21 +99,19 @@ interface Constants {
         val DEFAULT_PLAYER_SLEEP_END_MINUTE = 8 * 60
         val DEFAULT_PLAYER_COMPLETE_DAILY_QUESTS_MINUTE = 0
 
-        val DEFAULT_PLAYER_WORK_DAYS: Set<Int> = HashSet<Int>(
-            Arrays.asList(
-                DayOfWeek.MONDAY.getValue(),
-                DayOfWeek.TUESDAY.getValue(),
-                DayOfWeek.WEDNESDAY.getValue(),
-                DayOfWeek.THURSDAY.getValue(),
-                DayOfWeek.FRIDAY.getValue()
-            )
+        val DEFAULT_PLAYER_WORK_DAYS: Set<Int> = setOf(
+            DayOfWeek.MONDAY.value,
+            DayOfWeek.TUESDAY.value,
+            DayOfWeek.WEDNESDAY.value,
+            DayOfWeek.THURSDAY.value,
+            DayOfWeek.FRIDAY.value
         )
 
         val CHANGE_PET_STATS_MORNING_TIME = Time.atHours(9)
         val CHANGE_PET_STATS_AFTERNOON_TIME = Time.atHours(14)
         val CHANGE_PET_STATS_EVENING_TIME = Time.atHours(19)
 
-        val DURATIONS = arrayOf(10, 15, 25, 30, 45, 60, 90, 120)
+        val DURATIONS = listOf(10, 15, 20, 25, 30, 45, 60, 90, 120, 180, 240)
 
         val REWARD_COINS = arrayOf(10, 20, 50, 100, 200, 500, 1000)
 
@@ -197,6 +195,8 @@ interface Constants {
         val KEY_ACHIEVEMENT_ACTION = "achievement_action"
         val KEY_ACHIEVEMENT_ACTION_CLASS = "achievement_action_class"
 
+        const val MAX_FAVORITE_TAGS = 10
+
         // 0.48 = 122
         val MEDIUM_ALPHA = 122
         val NO_TRANSPARENCY_ALPHA = 255
@@ -214,6 +214,9 @@ interface Constants {
 
         const val USERNAME_MIN_LENGTH = 3
         const val USERNAME_MAX_LENGTH = 20
+
+        const val MAX_FREE_TAGS = 5
+        const val MAX_TAGS_PER_ITEM = 3
 
         val LEVEL_UP_REWARDS = listOf<String>(
             "https://media2.giphy.com/media/l0MYt5jPR6QX5pnqM/giphy.gif",

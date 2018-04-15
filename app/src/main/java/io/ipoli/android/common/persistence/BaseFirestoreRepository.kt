@@ -3,17 +3,21 @@ package io.ipoli.android.common.persistence
 import android.content.SharedPreferences
 import com.crashlytics.android.Crashlytics
 import com.google.firebase.firestore.*
-import kotlinx.coroutines.experimental.android.UI
-import kotlinx.coroutines.experimental.channels.Channel
-import kotlinx.coroutines.experimental.channels.ReceiveChannel
-import kotlinx.coroutines.experimental.launch
-import kotlinx.coroutines.experimental.runBlocking
 import io.ipoli.android.Constants
 import io.ipoli.android.quest.Entity
+import io.ipoli.android.tag.Tag
+import kotlinx.coroutines.experimental.android.UI
+import kotlinx.coroutines.experimental.channels.Channel
+import kotlinx.coroutines.experimental.channels.SendChannel
+import kotlinx.coroutines.experimental.launch
+import kotlinx.coroutines.experimental.runBlocking
+import kotlinx.coroutines.experimental.withContext
 import org.threeten.bp.Instant
 import timber.log.Timber
+import java.util.concurrent.ConcurrentHashMap
 import kotlin.coroutines.experimental.CoroutineContext
 import kotlin.coroutines.experimental.suspendCoroutine
+import kotlin.reflect.KProperty
 
 /**
  * Created by Venelin Valkov <venelin@mypoli.fun>
@@ -24,6 +28,10 @@ abstract class BaseFirestoreRepository<E, out T>(
     protected val database: FirebaseFirestore,
     private val sharedPreferences: SharedPreferences
 ) : Repository<E> where E : Entity, T : FirestoreModel {
+
+    abstract val collectionReference: CollectionReference
+
+    private val channelToRegistration = mutableMapOf<SendChannel<*>, ListenerRegistration>()
 
     protected val playerId: String
         get() =
@@ -70,8 +78,6 @@ abstract class BaseFirestoreRepository<E, out T>(
         Crashlytics.logException(error)
     }
 
-    abstract val collectionReference: CollectionReference
-
     override fun save(entity: E): E {
 
         val entityData = toDatabaseObject(entity).map.toMutableMap()
@@ -99,9 +105,7 @@ abstract class BaseFirestoreRepository<E, out T>(
 
         val batch = database.batch()
 
-        val result = mutableListOf<E>()
-
-        entities.forEach {
+        val newEntities = entities.map {
             val entityData = toDatabaseObject(it).map.toMutableMap()
 
             val ref = if (it.id.isEmpty()) {
@@ -121,11 +125,34 @@ abstract class BaseFirestoreRepository<E, out T>(
 
             batch.set(ref, entityData)
 
-            result.add(toEntityObject(entityData))
+            toEntityObject(entityData)
         }
 
         batch.commit()
-        return result
+        return newEntities
+    }
+
+    protected fun shouldNotSendData(
+        error: FirebaseFirestoreException?,
+        channel: SendChannel<*>
+    ): Boolean {
+
+        val r = channelToRegistration[channel]
+        requireNotNull(r)
+
+        if (error != null) {
+            logError(error)
+            r!!.remove()
+            channelToRegistration.remove(channel)
+            return true
+        }
+
+        if (channel.isClosedForSend) {
+            r!!.remove()
+            channelToRegistration.remove(channel)
+            return true
+        }
+        return false
     }
 
     protected abstract fun toEntityObject(dataMap: MutableMap<String, Any?>): E
@@ -139,6 +166,17 @@ abstract class BaseFirestoreRepository<E, out T>(
         }
 
         return toEntityObject(result.data)
+    }
+
+    protected fun mapChannelToRegistration(
+        channel: SendChannel<*>,
+        registration: ListenerRegistration
+    ) {
+        if (channelToRegistration.containsKey(channel)) {
+            val r = channelToRegistration[channel]
+            r!!.remove()
+        }
+        channelToRegistration[channel] = registration
     }
 
     protected val Query.entities
@@ -160,29 +198,21 @@ abstract class BaseEntityFirestoreRepository<E, out T>(
 
     abstract val entityReference: DocumentReference
 
-    override fun listen(): ReceiveChannel<E?> {
-        val c = Channel<E?>()
-        var registration: ListenerRegistration? = null
-        registration = entityReference
-            .addSnapshotListener { snapshot, error ->
+    override suspend fun listen(channel: Channel<E?>): Channel<E?> {
+        withContext(UI) {
+            val registration: ListenerRegistration?
+            registration = entityReference
+                .addSnapshotListener { snapshot, error ->
 
-                if (error != null) {
-                    logError(error)
-                    registration?.remove()
-                    return@addSnapshotListener
-                }
+                    if (shouldNotSendData(error, channel)) return@addSnapshotListener
 
-                if (c.isClosedForReceive) {
-                    registration?.remove()
-                    return@addSnapshotListener
+                    launch(coroutineContext) {
+                        channel.send(toEntityObject(snapshot.data))
+                    }
                 }
-
-                val entity = toEntityObject(snapshot.data)
-                launch(coroutineContext) {
-                    c.send(entity)
-                }
-            }
-        return c
+            mapChannelToRegistration(channel, registration)
+        }
+        return channel
     }
 
     override fun find(): E? =
@@ -201,59 +231,45 @@ abstract class BaseCollectionFirestoreRepository<E, out T>(
     override fun findById(id: String): E? =
         extractDocument(documentReference(id))
 
-    override fun listenById(id: String): ReceiveChannel<E?> {
+    override fun findAll() = collectionReference.entities
 
-        val c = Channel<E?>()
-        var registration: ListenerRegistration? = null
-        registration = documentReference(id)
-            .addSnapshotListener { snapshot, error ->
+    override suspend fun listenById(id: String, channel: Channel<E?>): Channel<E?> {
+        withContext(UI) {
+            val registration: ListenerRegistration?
+            registration = documentReference(id)
+                .addSnapshotListener { snapshot, error ->
 
-                if (error != null) {
-                    logError(error)
-                    registration?.remove()
-                    return@addSnapshotListener
+                    if (shouldNotSendData(error, channel)) return@addSnapshotListener
+
+                    launch(coroutineContext) {
+                        channel.send(toEntityObject(snapshot.data))
+                    }
                 }
-
-                if (c.isClosedForReceive) {
-                    registration?.remove()
-                    return@addSnapshotListener
-                }
-
-                val entity = toEntityObject(snapshot.data)
-                launch(coroutineContext) {
-                    c.send(entity)
-                }
-            }
-        return c
+            mapChannelToRegistration(channel, registration)
+        }
+        return channel
     }
 
-    private fun listen(query: Query): ReceiveChannel<List<E>> {
-        val c = Channel<List<E>>()
-        var registration: ListenerRegistration? = null
-        registration = query
-            .whereEqualTo("removedAt", null)
-            .addSnapshotListener { snapshot, error ->
+    private suspend fun listen(query: Query, channel: Channel<List<E>>): Channel<List<E>> {
+        withContext(UI) {
+            val registration: ListenerRegistration?
+            registration = query
+                .whereEqualTo("removedAt", null)
+                .addSnapshotListener { snapshot, error ->
 
-                if (error != null) {
-                    logError(error)
-                    registration?.remove()
-                    return@addSnapshotListener
-                }
+                    if (shouldNotSendData(error, channel)) return@addSnapshotListener
 
-                if (c.isClosedForReceive) {
-                    registration?.remove()
-                    return@addSnapshotListener
+                    launch(coroutineContext) {
+                        channel.send(toEntityObjects(snapshot.documents))
+                    }
                 }
-
-                val entities = toEntityObjects(snapshot.documents)
-                launch(coroutineContext) {
-                    c.send(entities)
-                }
-            }
-        return c
+            mapChannelToRegistration(channel, registration)
+        }
+        return channel
     }
 
-    override fun listenForAll() = collectionReference.listenForChanges()
+    override suspend fun listenForAll(channel: Channel<List<E>>) =
+        collectionReference.listenForChanges(channel)
 
     override fun remove(entity: E) =
         remove(entity.id)
@@ -274,7 +290,20 @@ abstract class BaseCollectionFirestoreRepository<E, out T>(
 
     protected fun documentReference(id: String) = collectionReference.document(id)
 
-    protected fun Query.listenForChanges(): ReceiveChannel<List<E>> {
-        return listen(this)
+    protected suspend fun Query.listenForChanges(channel: Channel<List<E>>) =
+        listen(this, channel)
+}
+
+class TagProvider {
+
+    private val tags = ConcurrentHashMap<String, Tag>()
+
+    operator fun getValue(thisRef: Any?, property: KProperty<*>): Map<String, Tag> {
+        return tags
+    }
+
+    fun updateTags(tags: List<Tag>) {
+        this.tags.clear()
+        this.tags.putAll(tags.map { it.id to it })
     }
 }

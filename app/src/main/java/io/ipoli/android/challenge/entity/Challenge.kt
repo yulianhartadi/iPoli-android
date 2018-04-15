@@ -2,6 +2,7 @@ package io.ipoli.android.challenge.entity
 
 import io.ipoli.android.common.datetime.Time
 import io.ipoli.android.quest.*
+import io.ipoli.android.tag.Tag
 import org.threeten.bp.Instant
 import org.threeten.bp.LocalDate
 
@@ -15,6 +16,7 @@ data class Challenge(
     val color: Color,
     val icon: Icon? = null,
     val difficulty: Difficulty,
+    val tags: List<Tag> = listOf(),
     val start: LocalDate,
     val end: LocalDate,
     val motivations: List<String>,

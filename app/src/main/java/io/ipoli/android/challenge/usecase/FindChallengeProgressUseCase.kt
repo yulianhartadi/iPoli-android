@@ -6,12 +6,12 @@ import io.ipoli.android.common.datetime.DateUtils
 import io.ipoli.android.common.datetime.datesBetween
 import io.ipoli.android.common.datetime.daysUntil
 import io.ipoli.android.quest.Quest
-import io.ipoli.android.repeatingquest.entity.RepeatingPattern
-import io.ipoli.android.repeatingquest.entity.RepeatingPattern.Companion.findMonthlyPeriods
-import io.ipoli.android.repeatingquest.entity.RepeatingPattern.Companion.findWeeklyPeriods
-import io.ipoli.android.repeatingquest.entity.RepeatingPattern.Companion.monthlyDatesToScheduleInPeriod
-import io.ipoli.android.repeatingquest.entity.RepeatingPattern.Companion.weeklyDatesToScheduleInPeriod
-import io.ipoli.android.repeatingquest.entity.RepeatingPattern.Companion.yearlyDatesToScheduleInPeriod
+import io.ipoli.android.repeatingquest.entity.RepeatPattern
+import io.ipoli.android.repeatingquest.entity.RepeatPattern.Companion.findMonthlyPeriods
+import io.ipoli.android.repeatingquest.entity.RepeatPattern.Companion.findWeeklyPeriods
+import io.ipoli.android.repeatingquest.entity.RepeatPattern.Companion.monthlyDatesToScheduleInPeriod
+import io.ipoli.android.repeatingquest.entity.RepeatPattern.Companion.weeklyDatesToScheduleInPeriod
+import io.ipoli.android.repeatingquest.entity.RepeatPattern.Companion.yearlyDatesToScheduleInPeriod
 import org.threeten.bp.DayOfWeek
 import org.threeten.bp.LocalDate
 
@@ -27,29 +27,29 @@ class FindChallengeProgressUseCase : UseCase<FindChallengeProgressUseCase.Params
             val rqEnd = rq.end
             val start = rq.start
             val end = if (rqEnd == null) challenge.end else DateUtils.min(rqEnd, challenge.end)
-            val repeatingPattern = rq.repeatingPattern
+            val repeatingPattern = rq.repeatPattern
 
             val removedCount =
                 challenge.quests.filter { it.repeatingQuestId == rq.id && it.isRemoved }.size
 
             val allCount = when (repeatingPattern) {
-                is RepeatingPattern.Daily -> {
+                is RepeatPattern.Daily -> {
                     start.daysUntil(end).toInt() + 1
                 }
 
-                is RepeatingPattern.Weekly -> {
+                is RepeatPattern.Weekly -> {
                     weeklyDatesToScheduleInPeriod(repeatingPattern, start, end).size
                 }
 
-                is RepeatingPattern.Monthly -> {
+                is RepeatPattern.Monthly -> {
                     monthlyDatesToScheduleInPeriod(repeatingPattern, start, end).size
                 }
 
-                is RepeatingPattern.Yearly -> {
+                is RepeatPattern.Yearly -> {
                     yearlyDatesToScheduleInPeriod(repeatingPattern, start, end).size
                 }
 
-                is RepeatingPattern.Flexible.Weekly -> {
+                is RepeatPattern.Flexible.Weekly -> {
                     val periods = findWeeklyPeriods(start, end, parameters.lastDayOfWeek)
                     periods.sumBy {
                         if (repeatingPattern.scheduledPeriods.containsKey(it.start)) {
@@ -60,7 +60,7 @@ class FindChallengeProgressUseCase : UseCase<FindChallengeProgressUseCase.Params
                     }
                 }
 
-                is RepeatingPattern.Flexible.Monthly -> {
+                is RepeatPattern.Flexible.Monthly -> {
                     val periods = findMonthlyPeriods(start, end)
                     periods.sumBy {
                         if (repeatingPattern.scheduledPeriods.containsKey(it.start)) {

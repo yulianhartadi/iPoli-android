@@ -2,11 +2,9 @@ package io.ipoli.android.challenge.sideeffect
 
 import io.ipoli.android.challenge.QuestPickerAction
 import io.ipoli.android.challenge.QuestPickerViewState
-import io.ipoli.android.challenge.add.AddChallengeSummaryAction
-import io.ipoli.android.challenge.add.AddChallengeViewState
+import io.ipoli.android.challenge.add.EditChallengeAction
+import io.ipoli.android.challenge.add.EditChallengeViewState
 import io.ipoli.android.challenge.complete.CompleteChallengePopup
-import io.ipoli.android.challenge.edit.EditChallengeAction
-import io.ipoli.android.challenge.edit.EditChallengeViewState
 import io.ipoli.android.challenge.predefined.PersonalizeChallengeAction
 import io.ipoli.android.challenge.predefined.PersonalizeChallengeViewState
 import io.ipoli.android.challenge.predefined.entity.PredefinedChallengeData
@@ -68,28 +66,26 @@ class ChallengeSideEffectHandler : AppSideEffectHandler() {
                 )
             }
 
-            is AddChallengeSummaryAction.Save -> {
-                val s = state.stateFor(AddChallengeViewState::class.java)
-                saveChallengeUseCase.execute(
+            is EditChallengeAction.Save -> {
+                val s = state.stateFor(EditChallengeViewState::class.java)
+                val params = if (s.id.isEmpty()) {
                     SaveChallengeUseCase.Params.WithExistingQuests(
                         name = s.name,
+                        tags = s.challengeTags,
                         color = s.color,
                         icon = s.icon,
                         difficulty = s.difficulty,
                         end = s.end,
-                        motivations = s.motivationList,
+                        motivations = listOf(s.motivation1, s.motivation2, s.motivation3),
                         allQuests = s.allQuests,
                         selectedQuestIds = s.selectedQuestIds,
                         note = s.note
                     )
-                )
-            }
-
-            is EditChallengeAction.Save -> {
-                val s = state.stateFor(EditChallengeViewState::class.java)
-                saveChallengeUseCase.execute(
+                } else {
                     SaveChallengeUseCase.Params.WithExistingQuests(
+                        id = s.id,
                         name = s.name,
+                        tags = s.challengeTags,
                         color = s.color,
                         icon = s.icon,
                         difficulty = s.difficulty,
@@ -97,6 +93,10 @@ class ChallengeSideEffectHandler : AppSideEffectHandler() {
                         motivations = listOf(s.motivation1, s.motivation2, s.motivation3),
                         note = s.note
                     )
+                }
+
+                saveChallengeUseCase.execute(
+                    params
                 )
             }
 
@@ -145,6 +145,7 @@ class ChallengeSideEffectHandler : AppSideEffectHandler() {
                 saveChallengeUseCase.execute(
                     SaveChallengeUseCase.Params.WithNewQuests(
                         id = "",
+                        tags = emptyList(),
                         name = predefinedChallenge.title,
                         color = predefinedChallenge.color,
                         icon = predefinedChallenge.icon,
@@ -162,7 +163,6 @@ class ChallengeSideEffectHandler : AppSideEffectHandler() {
 
     override fun canHandle(action: Action) =
         action is QuestPickerAction
-            || action is AddChallengeSummaryAction
             || action is EditChallengeAction
             || action is ChallengeAction
             || action is PersonalizeChallengeAction

@@ -4,6 +4,7 @@ import io.ipoli.android.Constants
 import io.ipoli.android.common.mvi.BaseMviPresenter
 import io.ipoli.android.common.mvi.ViewStateRenderer
 import io.ipoli.android.common.parser.ReminderMinutesParser
+import io.ipoli.android.myPoliApp
 import io.ipoli.android.pet.usecase.FindPetUseCase
 import io.ipoli.android.quest.reminder.formatter.ReminderTimeFormatter
 import io.ipoli.android.quest.reminder.formatter.TimeUnitFormatter
@@ -15,7 +16,6 @@ import kotlin.coroutines.experimental.CoroutineContext
  * on 10/5/17.
  */
 class ReminderPickerDialogPresenter(
-    private val reminderTimeFormatter: ReminderTimeFormatter,
     private val timeUnitFormatter: TimeUnitFormatter,
     private val findPetUseCase: FindPetUseCase,
     coroutineContext: CoroutineContext
@@ -58,7 +58,7 @@ class ReminderPickerDialogPresenter(
             }
 
             is ChangePredefinedTimeIntent -> {
-                if (intent.index == reminderTimeFormatter.predefinedTimes.size - 1) {
+                if (intent.index == ReminderTimeFormatter.predefinedTimes(myPoliApp.instance).size - 1) {
                     state.copy(
                         type = CUSTOM_TIME,
                         timeValue = "",
@@ -85,7 +85,7 @@ class ReminderPickerDialogPresenter(
     private fun loadNewReminderData(state: ReminderPickerViewState): ReminderPickerViewState {
         return state.copy(
             type = NEW_REMINDER,
-            predefinedValues = reminderTimeFormatter.predefinedTimes,
+            predefinedValues = ReminderTimeFormatter.predefinedTimes(myPoliApp.instance),
             predefinedIndex = 0
         )
     }
@@ -99,7 +99,7 @@ class ReminderPickerDialogPresenter(
             return state.copy(
                 type = EDIT_REMINDER,
                 message = reminder.message,
-                predefinedValues = reminderTimeFormatter.predefinedTimes,
+                predefinedValues = ReminderTimeFormatter.predefinedTimes(myPoliApp.instance),
                 predefinedIndex = 0
             )
         }

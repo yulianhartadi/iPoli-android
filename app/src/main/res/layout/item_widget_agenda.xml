@@ -25,28 +25,54 @@
 
         <TextView
             android:id="@+id/widgetQuestName"
-            style="@style/Calendar.Quest.Name"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:ellipsize="end"
             android:maxLines="1"
+            android:textAppearance="@style/TextAppearance.AppCompat.Title"
             android:textColor="@color/md_light_text_70"
+            android:textSize="18sp"
             tools:text="Name" />
 
-        <TextView
-            android:id="@+id/widgetQuestStartTime"
+        <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:maxLines="1"
-            android:textAppearance="@style/TextAppearance.AppCompat.Body1"
-            android:textColor="@color/md_light_text_50" />
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/widgetQuestStartTime"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="16dp"
+                android:maxLines="1"
+                android:textAppearance="@style/TextAppearance.AppCompat.Body1"
+                android:textColor="@color/md_light_text_50" />
+
+            <ImageView
+                android:id="@+id/widgetTagIndicator"
+                android:layout_width="8dp"
+                android:layout_marginEnd="4dp"
+                android:layout_gravity="center_vertical"
+                android:layout_height="8dp" />
+
+            <TextView
+                android:id="@+id/widgetTag"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:layout_marginEnd="16dp"
+                android:ellipsize="end"
+                android:maxLines="1"
+                android:textAppearance="@style/TextAppearance.AppCompat.Body1"
+                android:textColor="@color/md_light_text_50" />
+        </LinearLayout>
     </LinearLayout>
 
 
     <ImageView
         android:id="@+id/widgetQuestIconBackground"
-        android:layout_width="42dp"
-        android:layout_height="42dp"
+        android:layout_width="38dp"
+        android:layout_height="38dp"
         android:layout_alignParentStart="true"
         android:layout_centerVertical="true"
         android:layout_marginStart="16dp"
@@ -55,8 +81,8 @@
 
     <ImageView
         android:id="@+id/widgetQuestIcon"
-        android:layout_width="42dp"
-        android:layout_height="42dp"
+        android:layout_width="38dp"
+        android:layout_height="38dp"
         android:layout_alignParentStart="true"
         android:layout_centerVertical="true"
         android:layout_marginStart="16dp"

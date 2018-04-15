@@ -30,7 +30,7 @@
             <View
                 android:layout_width="wrap_content"
                 android:layout_height="1dp"
-                android:background="@color/md_dark_text_38" />
+                android:background="@color/md_dark_text_12" />
 
             <ImageView
                 android:id="@+id/icon"

@@ -26,9 +26,9 @@ class SaveQuestsForRepeatingQuestJob : DailyJob(), Injects<Module> {
 
         val rqs = repeatingQuestRepository.findAllActive()
         rqs.forEach {
-            val currentPeriod = it.repeatingPattern.periodRangeFor(LocalDate.now())
+            val currentPeriod = it.repeatPattern.periodRangeFor(LocalDate.now())
             val nextPeriodFirstDate = currentPeriod.end.plusDays(1)
-            val end = it.repeatingPattern.periodRangeFor(nextPeriodFirstDate).end
+            val end = it.repeatPattern.periodRangeFor(nextPeriodFirstDate).end
             saveQuestsForRepeatingQuestUseCase.execute(
                 SaveQuestsForRepeatingQuestUseCase.Params(
                     repeatingQuest = it,

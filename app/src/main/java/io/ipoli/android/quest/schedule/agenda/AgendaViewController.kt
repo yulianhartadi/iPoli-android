@@ -1,10 +1,12 @@
 package io.ipoli.android.quest.schedule.agenda
 
 import android.content.res.ColorStateList
+import android.graphics.drawable.GradientDrawable
 import android.os.Bundle
 import android.support.annotation.ColorInt
 import android.support.annotation.ColorRes
 import android.support.annotation.DrawableRes
+import android.support.v4.widget.TextViewCompat
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
 import android.support.v7.widget.helper.ItemTouchHelper
@@ -176,11 +178,14 @@ class AgendaViewController(args: Bundle? = null) :
         )
     }
 
+    data class TagViewModel(val name: String, @ColorRes val color: Int)
+
     interface AgendaViewModel
 
     data class QuestViewModel(
         val id: String,
         val name: String,
+        val tags: List<TagViewModel>,
         val startTime: String,
         @ColorRes val color: Int,
         val icon: IIcon,
@@ -264,6 +269,7 @@ class AgendaViewController(args: Bundle? = null) :
                 IconicsDrawable(view.context)
                     .icon(viewModel.icon)
                     .colorRes(R.color.md_white)
+                    .paddingDp(3)
                     .sizeDp(24)
             )
         }
@@ -330,14 +336,43 @@ class AgendaViewController(args: Bundle? = null) :
                 IconicsDrawable(view.context)
                     .icon(vm.icon)
                     .colorRes(R.color.md_white)
+                    .paddingDp(3)
                     .sizeDp(24)
             )
+
+            if (vm.tags.isNotEmpty()) {
+                view.questTagName.visible()
+                renderTag(view, vm.tags.first())
+            } else {
+                view.questTagName.gone()
+            }
+
             view.questStartTime.text = vm.startTime
             view.divider.visible = vm.showDivider
 
             view.questRepeatIndicator.visibility = if (vm.isRepeating) View.VISIBLE else View.GONE
             view.questChallengeIndicator.visibility =
                 if (vm.isFromChallenge) View.VISIBLE else View.GONE
+        }
+
+        private fun renderTag(view: View, tag: TagViewModel) {
+            view.questTagName.text = tag.name
+            TextViewCompat.setTextAppearance(
+                view.questTagName,
+                R.style.TextAppearance_AppCompat_Caption
+            )
+
+            val indicator = view.questTagName.compoundDrawablesRelative[0] as GradientDrawable
+            indicator.mutate()
+            val size = ViewUtils.dpToPx(8f, view.context).toInt()
+            indicator.setSize(size, size)
+            indicator.setColor(colorRes(tag.color))
+            view.questTagName.setCompoundDrawablesRelativeWithIntrinsicBounds(
+                indicator,
+                null,
+                null,
+                null
+            )
         }
 
         override fun getItemCount() = viewModels.size

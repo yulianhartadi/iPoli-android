@@ -7,14 +7,9 @@ import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.content.Context
 import android.os.Build
-import android.util.Log
 import com.crashlytics.android.Crashlytics
 import com.evernote.android.job.JobManager
-import com.github.moduth.blockcanary.BlockCanary
-import com.github.moduth.blockcanary.BlockCanaryContext
 import com.google.firebase.analytics.FirebaseAnalytics
-import com.google.firebase.firestore.FirebaseFirestore
-import com.google.firebase.firestore.FirebaseFirestoreSettings
 import com.jakewharton.threetenabp.AndroidThreeTen
 import com.squareup.leakcanary.LeakCanary
 import io.fabric.sdk.android.Fabric
@@ -46,25 +41,16 @@ class myPoliApp : Application() {
     override fun onCreate() {
         super.onCreate()
 
-
         if (LeakCanary.isInAnalyzerProcess(this)) {
             // This process is dedicated to LeakCanary for heap analysis.
             // You should not init your app in this process.
             return
         }
 
-
         AndroidThreeTen.init(this)
         Timber.plant(Timber.DebugTree())
 
-
         if (!BuildConfig.DEBUG) {
-
-            BlockCanary.install(this, object : BlockCanaryContext() {
-                override fun provideBlockThreshold(): Int {
-                    return 500
-                }
-            }).start()
 
             Fabric.with(
                 Fabric.Builder(this)
@@ -73,28 +59,23 @@ class myPoliApp : Application() {
                     .build()
             )
 
-//            refWatcher = LeakCanary.install(this)
+
+        } else {
+            //            BlockCanary.install(this, object : BlockCanaryContext() {
+//                override fun provideBlockThreshold(): Int {
+//                    return 500
+//                }
+//            }).start()
+
+            //            refWatcher = LeakCanary.install(this)
         }
 
         JobManager.create(this).addJobCreator(myPoliJobCreator())
 
-        val currentUncaughtExceptionHandler = Thread.getDefaultUncaughtExceptionHandler()
-        Thread.setDefaultUncaughtExceptionHandler({ thread, exception ->
-            Log.println(Log.ERROR, thread.name, Log.getStackTraceString(exception))
-            currentUncaughtExceptionHandler.uncaughtException(thread, exception)
-        })
-
-        val db = FirebaseFirestore.getInstance()
-
-        val settings = FirebaseFirestoreSettings.Builder()
-            .setPersistenceEnabled(true)
-            .build()
-        db.firestoreSettings = settings
-
         val analytics = FirebaseAnalytics.getInstance(this)
 
         module = Module(
-            androidModule = MainAndroidModule(this, db, analytics),
+            androidModule = MainAndroidModule(this, analytics),
             repositoryModule = FirestoreRepositoryModule(),
             useCaseModule = MainUseCaseModule(),
             presenterModule = AndroidPresenterModule(),

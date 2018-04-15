@@ -20,7 +20,7 @@ class FindNextDateForRepeatingQuestUseCase(
 
 
         if (nextScheduled != null) {
-            val patternNext = rq.repeatingPattern.nextDate(fromDate)
+            val patternNext = rq.repeatPattern.nextDate(fromDate)
             if (patternNext == null) {
                 return rq.copy(
                     nextDate = nextScheduled.scheduledDate
@@ -46,7 +46,7 @@ class FindNextDateForRepeatingQuestUseCase(
                         nextDate = nextDate
                     )
                 }
-                nextDate = rq.repeatingPattern.nextDate(nextDate.plusDays(1))
+                nextDate = rq.repeatPattern.nextDate(nextDate.plusDays(1))
 
                 if (nextDate == null) {
                     return rq.copy(
@@ -59,7 +59,7 @@ class FindNextDateForRepeatingQuestUseCase(
                 nextDate = nextScheduled.scheduledDate
             )
         } else {
-            var nextDate: LocalDate? = rq.repeatingPattern.nextDate(fromDate)
+            var nextDate: LocalDate? = rq.repeatPattern.nextDate(fromDate)
 
             while (true) {
 
@@ -70,7 +70,7 @@ class FindNextDateForRepeatingQuestUseCase(
                         nextDate = nextDate
                     )
                 }
-                nextDate = rq.repeatingPattern.nextDate(nextDate.plusDays(1))
+                nextDate = rq.repeatPattern.nextDate(nextDate.plusDays(1))
 
                 if (nextDate == null) {
                     return rq.copy(

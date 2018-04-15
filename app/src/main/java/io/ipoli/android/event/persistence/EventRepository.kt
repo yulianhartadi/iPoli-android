@@ -11,7 +11,7 @@ import io.ipoli.android.common.persistence.CollectionRepository
 import io.ipoli.android.common.view.ColorUtil
 import io.ipoli.android.event.Event
 import io.ipoli.android.myPoliApp
-import kotlinx.coroutines.experimental.channels.ReceiveChannel
+import kotlinx.coroutines.experimental.channels.Channel
 import org.threeten.bp.LocalDate
 import org.threeten.bp.ZoneId
 import java.util.*
@@ -63,6 +63,10 @@ class AndroidCalendarEventRepository : EventRepository {
         private const val PROJECTION_TIME_ZONE_INDEX = 8
         private const val PROJECTION_DISPLAY_COLOR = 9
         private const val PROJECTION_RRULE = 10
+    }
+
+    override fun findAll(): List<Event> {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 
     override fun findScheduledAt(calendarIds: Set<Int>, date: LocalDate) =
@@ -133,11 +137,11 @@ class AndroidCalendarEventRepository : EventRepository {
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 
-    override fun listenById(id: String): ReceiveChannel<Event?> {
+    override suspend fun listenById(id: String, channel: Channel<Event?>): Channel<Event?> {
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 
-    override fun listenForAll(): ReceiveChannel<List<Event>> {
+    override suspend fun listenForAll(channel: Channel<List<Event>>): Channel<List<Event>> {
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 

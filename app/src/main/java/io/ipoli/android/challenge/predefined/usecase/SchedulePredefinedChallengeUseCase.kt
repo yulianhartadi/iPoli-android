@@ -4,10 +4,9 @@ import io.ipoli.android.challenge.predefined.entity.PredefinedChallengeData
 import io.ipoli.android.common.UseCase
 import io.ipoli.android.common.datetime.datesBetween
 import io.ipoli.android.quest.BaseQuest
-import io.ipoli.android.quest.Category
 import io.ipoli.android.quest.Quest
 import io.ipoli.android.quest.RepeatingQuest
-import io.ipoli.android.repeatingquest.entity.RepeatingPattern
+import io.ipoli.android.repeatingquest.entity.RepeatPattern
 import org.threeten.bp.LocalDate
 import org.threeten.bp.temporal.TemporalAdjusters
 import java.util.*
@@ -39,12 +38,11 @@ class SchedulePredefinedChallengeUseCase :
                         color = q.color,
                         icon = q.icon,
                         startTime = q.startTime,
-                        category = Category(challenge.category.name, q.color),
                         duration = q.duration,
-                        repeatingPattern = if (q.weekDays.isEmpty()) {
-                            RepeatingPattern.Daily(startDate, endDate)
+                        repeatPattern = if (q.weekDays.isEmpty()) {
+                            RepeatPattern.Daily(startDate, endDate)
                         } else {
-                            RepeatingPattern.Weekly(
+                            RepeatPattern.Weekly(
                                 daysOfWeek = q.weekDays.toSet(),
                                 start = startDate,
                                 end = endDate
@@ -101,7 +99,6 @@ class SchedulePredefinedChallengeUseCase :
             color = it.color,
             icon = it.icon,
             startTime = it.startTime,
-            category = Category(challenge.category.name, it.color),
             duration = it.duration,
             scheduledDate = scheduledDate
         )

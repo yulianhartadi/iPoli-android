@@ -10,10 +10,10 @@
 
     <View
         android:layout_width="match_parent"
-        android:layout_height="1.5dp"
+        android:layout_height="1dp"
         android:layout_marginEnd="16dp"
         android:layout_marginStart="74dp"
-        android:background="@color/md_dark_text_38"
+        android:background="@color/md_dark_text_12"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@+id/ccIcon" />
@@ -36,8 +36,8 @@
 
     <ImageView
         android:id="@+id/ccIcon"
-        android:layout_width="48dp"
-        android:layout_height="48dp"
+        android:layout_width="38dp"
+        android:layout_height="38dp"
         android:layout_marginBottom="8dp"
         android:layout_marginStart="16dp"
         android:layout_marginTop="8dp"

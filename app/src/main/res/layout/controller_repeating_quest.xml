@@ -35,7 +35,7 @@
                     android:layout_gravity="center_horizontal"
                     android:layout_marginEnd="16dp"
                     android:layout_marginStart="16dp"
-                    android:ellipsize="marquee"
+                    android:ellipsize="end"
                     android:gravity="center_horizontal"
                     android:maxLines="3"
                     android:paddingTop="?attr/actionBarSize" />
@@ -193,6 +193,15 @@
             android:paddingBottom="16dp"
             android:paddingTop="16dp">
 
+            <org.apmem.tools.layouts.FlowLayout
+                android:id="@+id/tagList"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:layout_marginEnd="16dp"
+                android:layout_marginBottom="8dp"
+                android:gravity="center_horizontal" />
+
             <TextView
                 style="@style/SectionTitle"
                 android:text="@string/history" />
@@ -218,10 +227,10 @@
 
             <TextView
                 android:id="@+id/note"
-                android:layout_marginStart="16dp"
-                android:layout_marginEnd="16dp"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_marginEnd="16dp"
+                android:layout_marginStart="16dp"
                 android:background="?attr/selectableItemBackground"
                 android:gravity="center_vertical"
                 android:textAppearance="@style/TextAppearance.AppCompat.Body1" />

@@ -58,12 +58,11 @@ open class SaveQuestsForChallengeUseCase(
                             subQuestNames = rq.subQuests.map { it.name },
                             color = rq.color,
                             icon = rq.icon,
-                            category = rq.category,
                             startTime = rq.startTime,
                             duration = rq.duration,
                             reminder = rq.reminder,
                             challengeId = challengeId,
-                            repeatingPattern = rq.repeatingPattern
+                            repeatPattern = rq.repeatPattern
                         )
                     )
                 }

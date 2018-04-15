@@ -32,7 +32,6 @@ class SplitDurationForPomodoroTimerUseCaseSpek : Spek({
         val simpleQuest = Quest(
             name = "",
             color = Color.BLUE,
-            category = Category("Wellness", Color.BLUE),
             scheduledDate = LocalDate.now(),
             duration = 30,
             reminder = Reminder("", Time.now(), LocalDate.now())

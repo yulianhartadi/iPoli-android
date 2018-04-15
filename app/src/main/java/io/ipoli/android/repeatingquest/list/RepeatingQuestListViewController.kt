@@ -2,8 +2,10 @@ package io.ipoli.android.repeatingquest.list
 
 import android.content.Context
 import android.content.res.ColorStateList
+import android.graphics.drawable.GradientDrawable
 import android.os.Bundle
 import android.support.annotation.ColorRes
+import android.support.v4.widget.TextViewCompat
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
@@ -14,10 +16,6 @@ import com.bluelinelabs.conductor.changehandler.FadeChangeHandler
 import com.mikepenz.iconics.IconicsDrawable
 import com.mikepenz.iconics.typeface.IIcon
 import com.mikepenz.ionicons_typeface_library.Ionicons
-import kotlinx.android.synthetic.main.controller_repeating_quest_list.view.*
-import kotlinx.android.synthetic.main.item_repeating_quest.view.*
-import kotlinx.android.synthetic.main.view_empty_list.view.*
-import kotlinx.android.synthetic.main.view_loader.view.*
 import io.ipoli.android.R
 import io.ipoli.android.common.ViewUtils
 import io.ipoli.android.common.redux.android.ReduxViewController
@@ -25,9 +23,14 @@ import io.ipoli.android.common.text.DateFormatter
 import io.ipoli.android.common.text.DurationFormatter
 import io.ipoli.android.common.view.*
 import io.ipoli.android.common.view.recyclerview.SimpleViewHolder
+import io.ipoli.android.repeatingquest.add.AddRepeatingQuestViewController
 import io.ipoli.android.repeatingquest.entity.repeatType
 import io.ipoli.android.repeatingquest.list.RepeatingQuestListViewState.StateType.CHANGED
 import io.ipoli.android.repeatingquest.show.RepeatingQuestViewController
+import kotlinx.android.synthetic.main.animation_empty_list.view.*
+import kotlinx.android.synthetic.main.controller_repeating_quest_list.view.*
+import kotlinx.android.synthetic.main.item_repeating_quest.view.*
+import kotlinx.android.synthetic.main.view_loader.view.*
 
 /**
  * Created by Polina Zhelyazkova <polina@mypoli.fun>
@@ -50,8 +53,18 @@ class RepeatingQuestListViewController(args: Bundle? = null) :
             R.layout.controller_repeating_quest_list, container, false
         )
         view.repeatingQuestList.layoutManager =
-            LinearLayoutManager(container.context, LinearLayoutManager.VERTICAL, false)
+                LinearLayoutManager(container.context, LinearLayoutManager.VERTICAL, false)
         view.repeatingQuestList.adapter = RepeatingQuestAdapter()
+
+        view.addRepeatingQuest.setOnClickListener {
+            val handler = FadeChangeHandler()
+            rootRouter.pushController(
+                RouterTransaction.with(AddRepeatingQuestViewController())
+                    .pushChangeHandler(handler)
+                    .popChangeHandler(handler)
+            )
+        }
+        view.emptyAnimation.setAnimation("empty_repeating_quest_list.json")
         return view
     }
 
@@ -71,12 +84,13 @@ class RepeatingQuestListViewController(args: Bundle? = null) :
                 if (state.showEmptyView) {
                     view.repeatingQuestList.visible = false
                     view.emptyContainer.visible = true
-                    view.emptyImage.setImageResource(R.drawable.rq_list_empty_state)
+                    view.emptyAnimation.playAnimation()
                     view.emptyTitle.setText(R.string.empty_repeating_quests_title)
                     view.emptyText.setText(R.string.empty_repeating_quests_text)
                 } else {
                     view.repeatingQuestList.visible = true
                     view.emptyContainer.visible = false
+                    view.emptyAnimation.pauseAnimation()
                 }
 
                 (view.repeatingQuestList.adapter as RepeatingQuestAdapter).updateAll(
@@ -88,9 +102,12 @@ class RepeatingQuestListViewController(args: Bundle? = null) :
         }
     }
 
+    data class TagViewModel(val name: String, @ColorRes val color: Int)
+
     data class RepeatingQuestViewModel(
         val id: String,
         val name: String,
+        val tags: List<TagViewModel>,
         val icon: IIcon,
         @ColorRes val color: Int,
         val next: String,
@@ -112,12 +129,20 @@ class RepeatingQuestListViewController(args: Bundle? = null) :
 
             view.rqName.text = vm.name
 
+            if(vm.tags.isNotEmpty()) {
+                view.rqTagName.visible()
+                renderTag(view, vm.tags.first())
+            } else {
+                view.rqTagName.gone()
+            }
+
             view.rqIcon.backgroundTintList =
-                ColorStateList.valueOf(colorRes(vm.color))
+                    ColorStateList.valueOf(colorRes(vm.color))
             view.rqIcon.setImageDrawable(
                 IconicsDrawable(view.context)
                     .icon(vm.icon)
                     .colorRes(R.color.md_white)
+                    .paddingDp(3)
                     .sizeDp(24)
             )
             view.rqNext.text = vm.next
@@ -144,6 +169,20 @@ class RepeatingQuestListViewController(args: Bundle? = null) :
                 )
             }
         }
+
+
+        private fun renderTag(view: View, tag: TagViewModel) {
+            view.rqTagName.text = tag.name
+            TextViewCompat.setTextAppearance(view.rqTagName,  R.style.TextAppearance_AppCompat_Caption)
+
+            val indicator = view.rqTagName.compoundDrawablesRelative[0] as GradientDrawable
+            indicator.mutate()
+            val size = ViewUtils.dpToPx(8f, view.context).toInt()
+            indicator.setSize(size, size)
+            indicator.setColor(colorRes(tag.color))
+            view.rqTagName.setCompoundDrawablesRelativeWithIntrinsicBounds(indicator, null, null, null)
+        }
+
 
         override fun onCreateViewHolder(
             parent: ViewGroup,
@@ -193,14 +232,15 @@ class RepeatingQuestListViewController(args: Bundle? = null) :
             RepeatingQuestListViewController.RepeatingQuestViewModel(
                 id = it.id,
                 name = it.name,
+                tags = it.tags.map { TagViewModel(it.name, it.color.androidColor.color500) },
                 icon = it.icon?.let { AndroidIcon.valueOf(it.name).icon }
-                    ?: Ionicons.Icon.ion_android_clipboard,
+                        ?: Ionicons.Icon.ion_android_clipboard,
                 color = AndroidColor.valueOf(it.color.name).color500,
                 next = next,
                 completedCount = it.periodProgress!!.completedCount,
                 allCount = it.periodProgress.allCount,
                 isCompleted = it.isCompleted,
-                frequency = frequencies[it.repeatingPattern.repeatType.ordinal]
+                frequency = frequencies[it.repeatPattern.repeatType.ordinal]
             )
         }
     }

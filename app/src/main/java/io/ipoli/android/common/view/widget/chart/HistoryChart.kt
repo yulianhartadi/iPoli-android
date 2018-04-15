@@ -114,11 +114,22 @@ class HistoryChart @JvmOverloads constructor(
                     )
                 }
 
-                val fullWeeksToAdd = ROW_COUNT_WITH_SPLIT - result.size
+                val weekStart =
+                    firstOfMonth.with(TemporalAdjusters.previousOrSame(DateUtils.firstDayOfWeek))
+                val firstDayOfWeekIsFirstOfMonth =
+                    weekStart.dayOfMonth == 1
+
+                val fullWeeksToAdd =
+                    if (firstDayOfWeekIsFirstOfMonth)
+                        ROW_COUNT_WITH_SPLIT - result.size - 1
+                    else
+                        ROW_COUNT_WITH_SPLIT - result.size
 
                 val firstWeekStart =
-                    firstOfMonth.with(TemporalAdjusters.previousOrSame(DateUtils.firstDayOfWeek))
-                        .plusWeeks(1)
+                    if (firstDayOfWeekIsFirstOfMonth)
+                        weekStart
+                    else
+                        weekStart.plusWeeks(1)
 
                 result.addAll(
                     createCellsForWeeks(
@@ -280,13 +291,12 @@ class HistoryChart @JvmOverloads constructor(
 
         private fun createCellsForWeek(
             weekStart: LocalDate
-        ) =
-            (0 until DAYS_IN_A_WEEK).map {
-                val date = weekStart.plusDays(it.toLong())
-                val state = data[date]!!
-                val dayOfMonth = weekStart.dayOfMonth + it
-                createCellFor(state, dayOfMonth)
-            }
+        ) = (0 until DAYS_IN_A_WEEK).map {
+            val date = weekStart.plusDays(it.toLong())
+            val state = data[date]!!
+            val dayOfMonth = weekStart.dayOfMonth + it
+            createCellFor(state, dayOfMonth)
+        }
 
         private fun createCellFor(
             state: CreateRepeatingQuestHistoryUseCase.DateHistory,

@@ -64,6 +64,7 @@ abstract class BaseDialogController : RestoreViewOnCreateController {
             dialogBuilder.setCustomTitle(headerView)
         }
         dialog = onCreateDialog(dialogBuilder, contentView, savedViewState)
+        dialog.window.addFlags(WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE)
 
         dialog.ownerActivity = activity!!
         dialog.setOnDismissListener { dismiss() }
@@ -104,6 +105,12 @@ abstract class BaseDialogController : RestoreViewOnCreateController {
     override fun onAttach(view: View) {
         super.onAttach(view)
         dialog.show()
+        dialog.window.decorView.systemUiVisibility =
+            dialog.ownerActivity.window.decorView.systemUiVisibility
+
+        dialog.window.clearFlags(
+            WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE
+        )
     }
 
     override fun onDetach(view: View) {
@@ -172,7 +179,7 @@ abstract class ReduxDialogController<A : Action, VS : ViewState, out R : ViewSta
             .setCustomTitle(headerView)
         dialog = onCreateDialog(dialogBuilder, contentView, savedViewState)
 
-        dialog.window.addFlags(WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE);
+        dialog.window.addFlags(WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE)
 
         onDialogCreated(dialog, contentView)
 

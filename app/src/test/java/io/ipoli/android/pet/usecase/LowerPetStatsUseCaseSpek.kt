@@ -6,7 +6,6 @@ import io.ipoli.android.Constants
 import io.ipoli.android.TestUtil
 import io.ipoli.android.common.datetime.Time
 import io.ipoli.android.pet.Pet
-import io.ipoli.android.quest.Category
 import io.ipoli.android.quest.Color
 import io.ipoli.android.quest.Quest
 import io.ipoli.android.quest.data.persistence.QuestRepository
@@ -28,7 +27,6 @@ class LowerPetStatsUseCaseSpek : Spek({
         val quest = Quest(
             name = "",
             color = Color.BLUE,
-            category = Category("Wellness", Color.BLUE),
             scheduledDate = LocalDate.now(),
             duration = 60
         )

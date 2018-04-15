@@ -5,6 +5,7 @@ import io.ipoli.android.common.BaseViewStateReducer
 import io.ipoli.android.common.mvi.ViewState
 import io.ipoli.android.common.redux.Action
 import io.ipoli.android.note.NoteViewState.Type.*
+import io.ipoli.android.quest.timer.QuestAction
 
 /**
  * Created by Venelin Valkov <venelin@mypoli.fun>
@@ -62,7 +63,7 @@ object NoteReducer : BaseViewStateReducer<NoteViewState>() {
                     showText = false
                 )
 
-            is NoteAction.Update -> {
+            is QuestAction.UpdateNote -> {
                 subState.copy(
                     type = CHANGED,
                     text = action.note,

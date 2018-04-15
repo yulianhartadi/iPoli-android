@@ -5,7 +5,6 @@ import com.nhaarman.mockito_kotlin.doReturn
 import com.nhaarman.mockito_kotlin.mock
 import io.ipoli.android.common.datetime.Time
 import io.ipoli.android.player.usecase.RemoveRewardFromPlayerUseCase
-import io.ipoli.android.quest.Category
 import io.ipoli.android.quest.Color
 import io.ipoli.android.quest.Quest
 import io.ipoli.android.quest.Reminder
@@ -30,7 +29,6 @@ class UndoCompleteQuestUseCaseSpek : Spek({
         val quest = Quest(
             name = "",
             color = Color.BLUE,
-            category = Category("Wellness", Color.BLUE),
             scheduledDate = LocalDate.now(),
             duration = 30,
             reminder = Reminder("", Time.now(), LocalDate.now()),

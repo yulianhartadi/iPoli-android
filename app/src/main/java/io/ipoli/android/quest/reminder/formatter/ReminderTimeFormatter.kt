@@ -9,9 +9,9 @@ import java.util.concurrent.TimeUnit
  * Created by Venelin Valkov <venelin@mypoli.fun>
  * on 10/5/17.
  */
-public class ReminderTimeFormatter(private val context: Context) {
+object ReminderTimeFormatter {
 
-    fun format(minutes: Int): String {
+    fun format(minutes: Int, context: Context): String {
         if (minutes < 0) {
             return ""
         }
@@ -40,11 +40,10 @@ public class ReminderTimeFormatter(private val context: Context) {
             String.format(context.getString(R.string.reminder_time_format_minutes), mins)
     }
 
-    val predefinedTimes: List<String>
-        get() {
-            val predefinedTimes = Constants.REMINDER_PREDEFINED_MINUTES.map {
-                format(it)
-            }
-            return predefinedTimes + context.getString(R.string.custom)
+    fun predefinedTimes(context: Context): List<String> {
+        val predefinedTimes = Constants.REMINDER_PREDEFINED_MINUTES.map {
+            format(it, context)
         }
+        return predefinedTimes + context.getString(R.string.custom)
+    }
 }

@@ -2,9 +2,11 @@ package io.ipoli.android.quest
 
 import io.ipoli.android.common.datetime.*
 import io.ipoli.android.common.sumByLong
+import io.ipoli.android.quest.reminder.picker.ReminderViewModel
 import io.ipoli.android.quest.subquest.SubQuest
 import io.ipoli.android.repeatingquest.entity.PeriodProgress
-import io.ipoli.android.repeatingquest.entity.RepeatingPattern
+import io.ipoli.android.repeatingquest.entity.RepeatPattern
+import io.ipoli.android.tag.Tag
 import org.threeten.bp.Instant
 import org.threeten.bp.LocalDate
 import org.threeten.bp.LocalDateTime
@@ -33,6 +35,28 @@ data class Reminder(
             LocalTime.of(remindTime.hours, remindTime.getMinutes())
         ).toMillis()
 
+    companion object {
+        fun create(
+            reminder: ReminderViewModel?,
+            scheduledDate: LocalDate,
+            startTime: Time
+        ) : Reminder? {
+            return reminder?.let {
+                val questDateTime =
+                    LocalDateTime.of(
+                        scheduledDate,
+                        LocalTime.of(startTime.hours, startTime.getMinutes())
+                    )
+                val reminderDateTime = questDateTime.minusMinutes(it.minutesFromStart)
+                val toLocalTime = reminderDateTime.toLocalTime()
+                Reminder(
+                    it.message,
+                    Time.at(toLocalTime.hour, toLocalTime.minute),
+                    reminderDateTime.toLocalDate()
+                )
+            }
+        }
+    }
 }
 
 fun Reminder.toMinutesFromStart(startDate: LocalDate, startTime: Time): Long {
@@ -43,11 +67,6 @@ fun Reminder.toMinutesFromStart(startDate: LocalDate, startTime: Time): Long {
 
 fun Reminder.toMinutesFromStart(startTime: Time) =
     startTime.toMinuteOfDay() - remindTime.toMinuteOfDay()
-
-data class Category(
-    val name: String,
-    val color: Color
-)
 
 enum class ColorPack(val gemPrice: Int) {
     FREE(0),
@@ -120,7 +139,7 @@ data class Quest(
     val name: String,
     val color: Color,
     val icon: Icon? = null,
-    val category: Category,
+    val tags: List<Tag> = listOf(),
     val startTime: Time? = null,
     val duration: Int,
     val reminder: Reminder? = null,
@@ -129,6 +148,7 @@ data class Quest(
     val originalScheduledDate: LocalDate = scheduledDate,
     val timeRanges: List<TimeRange> = listOf(),
     val timeRangesToComplete: List<TimeRange> = listOf(),
+    val totalPomodoros: Int? = null,
     val completedAtDate: LocalDate? = null,
     val completedAtTime: Time? = null,
     val completedAt: Instant? = null,
@@ -235,11 +255,11 @@ data class RepeatingQuest(
     val name: String,
     val color: Color,
     val icon: Icon? = null,
-    val category: Category,
+    val tags: List<Tag> = listOf(),
     val startTime: Time? = null,
     val duration: Int,
     val reminder: Reminder? = null,
-    val repeatingPattern: RepeatingPattern,
+    val repeatPattern: RepeatPattern,
     val subQuests: List<SubQuest> = listOf(),
     val nextDate: LocalDate? = null,
     val periodProgress: PeriodProgress? = null,
@@ -249,10 +269,10 @@ data class RepeatingQuest(
     override val updatedAt: Instant = Instant.now()
 ) : BaseQuest(id), Entity {
     val start
-        get() = repeatingPattern.start
+        get() = repeatPattern.start
 
     val end
-        get() = repeatingPattern.end
+        get() = repeatPattern.end
 
     val isCompleted
         get() = if (end == null) false else LocalDate.now().isAfter(end)
@@ -261,7 +281,7 @@ data class RepeatingQuest(
         get() = startTime?.plus(duration)
 
     val isFlexible: Boolean
-        get() = repeatingPattern is RepeatingPattern.Flexible
+        get() = repeatPattern is RepeatPattern.Flexible
 
     val isFixed: Boolean
         get() = !isFlexible

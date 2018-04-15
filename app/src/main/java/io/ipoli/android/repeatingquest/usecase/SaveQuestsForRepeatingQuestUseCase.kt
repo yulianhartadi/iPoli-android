@@ -8,12 +8,12 @@ import io.ipoli.android.quest.Quest
 import io.ipoli.android.quest.RepeatingQuest
 import io.ipoli.android.quest.data.persistence.QuestRepository
 import io.ipoli.android.repeatingquest.entity.Period
-import io.ipoli.android.repeatingquest.entity.RepeatingPattern
-import io.ipoli.android.repeatingquest.entity.RepeatingPattern.Companion.findMonthlyPeriods
-import io.ipoli.android.repeatingquest.entity.RepeatingPattern.Companion.findWeeklyPeriods
-import io.ipoli.android.repeatingquest.entity.RepeatingPattern.Companion.monthlyDatesToScheduleInPeriod
-import io.ipoli.android.repeatingquest.entity.RepeatingPattern.Companion.weeklyDatesToScheduleInPeriod
-import io.ipoli.android.repeatingquest.entity.RepeatingPattern.Companion.yearlyDatesToScheduleInPeriod
+import io.ipoli.android.repeatingquest.entity.RepeatPattern
+import io.ipoli.android.repeatingquest.entity.RepeatPattern.Companion.findMonthlyPeriods
+import io.ipoli.android.repeatingquest.entity.RepeatPattern.Companion.findWeeklyPeriods
+import io.ipoli.android.repeatingquest.entity.RepeatPattern.Companion.monthlyDatesToScheduleInPeriod
+import io.ipoli.android.repeatingquest.entity.RepeatPattern.Companion.weeklyDatesToScheduleInPeriod
+import io.ipoli.android.repeatingquest.entity.RepeatPattern.Companion.yearlyDatesToScheduleInPeriod
 import org.threeten.bp.DayOfWeek
 import org.threeten.bp.LocalDate
 import org.threeten.bp.temporal.TemporalAdjusters.nextOrSame
@@ -43,49 +43,49 @@ class SaveQuestsForRepeatingQuestUseCase(
 
         var newRQ: RepeatingQuest? = null
 
-        val scheduleDates = when (rq.repeatingPattern) {
+        val scheduleDates = when (rq.repeatPattern) {
 
-            is RepeatingPattern.Daily -> start.datesBetween(end).toSet()
+            is RepeatPattern.Daily -> start.datesBetween(end).toSet()
 
 
-            is RepeatingPattern.Weekly ->
+            is RepeatPattern.Weekly ->
                 weeklyDatesToScheduleInPeriod(
-                    rq.repeatingPattern,
+                    rq.repeatPattern,
                     start,
                     end
                 )
 
-            is RepeatingPattern.Monthly ->
+            is RepeatPattern.Monthly ->
                 monthlyDatesToScheduleInPeriod(
-                    rq.repeatingPattern,
+                    rq.repeatPattern,
                     start,
                     end
                 )
 
 
-            is RepeatingPattern.Yearly ->
+            is RepeatPattern.Yearly ->
                 yearlyDatesToScheduleInPeriod(
-                    rq.repeatingPattern,
+                    rq.repeatPattern,
                     start,
                     end
                 )
 
 
-            is RepeatingPattern.Flexible.Weekly -> {
-                val scheduledPeriods = rq.repeatingPattern.scheduledPeriods.toMutableMap()
+            is RepeatPattern.Flexible.Weekly -> {
+                val scheduledPeriods = rq.repeatPattern.scheduledPeriods.toMutableMap()
                 val periods = findWeeklyPeriods(start, end, parameters.lastDayOfWeek)
                 periods.forEach {
                     if (!scheduledPeriods.containsKey(it.start)) {
                         scheduledPeriods[it.start] =
-                            generateWeeklyFlexibleDates(rq.repeatingPattern, it)
+                            generateWeeklyFlexibleDates(rq.repeatPattern, it)
                     }
                 }
-                val pattern = rq.repeatingPattern.copy(
+                val pattern = rq.repeatPattern.copy(
                     scheduledPeriods = scheduledPeriods
                 )
 
                 newRQ = rq.copy(
-                    repeatingPattern = pattern
+                    repeatPattern = pattern
                 )
 
                 flexibleWeeklyToScheduleInPeriod(
@@ -97,22 +97,22 @@ class SaveQuestsForRepeatingQuestUseCase(
             }
 
 
-            is RepeatingPattern.Flexible.Monthly -> {
-                val scheduledPeriods = rq.repeatingPattern.scheduledPeriods.toMutableMap()
+            is RepeatPattern.Flexible.Monthly -> {
+                val scheduledPeriods = rq.repeatPattern.scheduledPeriods.toMutableMap()
                 val periods = findMonthlyPeriods(start, end)
                 periods.forEach {
                     if (!scheduledPeriods.containsKey(it.start)) {
                         scheduledPeriods[it.start] =
-                            generateMonthlyFlexibleDates(rq.repeatingPattern, it)
+                            generateMonthlyFlexibleDates(rq.repeatPattern, it)
                     }
                 }
 
-                val pattern = rq.repeatingPattern.copy(
+                val pattern = rq.repeatPattern.copy(
                     scheduledPeriods = scheduledPeriods
                 )
 
                 newRQ = rq.copy(
-                    repeatingPattern = pattern
+                    repeatPattern = pattern
                 )
 
                 flexibleMonthlyToScheduleInPeriod(
@@ -155,7 +155,7 @@ class SaveQuestsForRepeatingQuestUseCase(
 
     private fun flexibleMonthlyToScheduleInPeriod(
         periods: List<Period>,
-        pattern: RepeatingPattern.Flexible.Monthly,
+        pattern: RepeatPattern.Flexible.Monthly,
         start: LocalDate,
         end: LocalDate
     ): List<LocalDate> {
@@ -178,7 +178,7 @@ class SaveQuestsForRepeatingQuestUseCase(
     }
 
     private fun generateMonthlyFlexibleDates(
-        pattern: RepeatingPattern.Flexible.Monthly,
+        pattern: RepeatPattern.Flexible.Monthly,
         period: Period
     ): List<LocalDate> {
         val timesPerMonth = pattern.timesPerMonth
@@ -202,7 +202,7 @@ class SaveQuestsForRepeatingQuestUseCase(
 
     private fun flexibleWeeklyToScheduleInPeriod(
         periods: List<Period>,
-        pattern: RepeatingPattern.Flexible.Weekly,
+        pattern: RepeatPattern.Flexible.Weekly,
         start: LocalDate,
         end: LocalDate
     ): List<LocalDate> {
@@ -226,7 +226,7 @@ class SaveQuestsForRepeatingQuestUseCase(
     }
 
     private fun generateWeeklyFlexibleDates(
-        pattern: RepeatingPattern.Flexible.Weekly,
+        pattern: RepeatPattern.Flexible.Weekly,
         period: Period
     ): List<LocalDate> {
         val preferredDays = pattern.preferredDays
@@ -255,7 +255,6 @@ class SaveQuestsForRepeatingQuestUseCase(
             subQuests = rq.subQuests,
             color = rq.color,
             icon = rq.icon,
-            category = rq.category,
             startTime = rq.startTime,
             duration = rq.duration,
             scheduledDate = scheduleDate,
@@ -264,7 +263,8 @@ class SaveQuestsForRepeatingQuestUseCase(
             ),
             repeatingQuestId = rq.id,
             challengeId = rq.challengeId,
-            note = rq.note
+            note = rq.note,
+            tags = rq.tags
         )
 
     data class Result(val quests: List<Quest>, val repeatingQuest: RepeatingQuest)

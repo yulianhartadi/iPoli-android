@@ -3,9 +3,12 @@ package io.ipoli.android.home
 import android.content.Intent
 import android.content.Intent.ACTION_VIEW
 import android.content.res.Resources
+import android.graphics.PorterDuff
 import android.graphics.drawable.GradientDrawable
 import android.net.Uri
 import android.os.Bundle
+import android.support.annotation.ColorRes
+import android.support.annotation.IdRes
 import android.support.design.widget.NavigationView
 import android.support.v4.view.GravityCompat
 import android.support.v7.app.ActionBarDrawerToggle
@@ -13,11 +16,15 @@ import android.view.LayoutInflater
 import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageView
 import com.bluelinelabs.conductor.Controller
 import com.bluelinelabs.conductor.RouterTransaction
 import com.bluelinelabs.conductor.changehandler.FadeChangeHandler
 import com.bumptech.glide.Glide
 import com.bumptech.glide.request.RequestOptions
+import com.mikepenz.iconics.IconicsDrawable
+import com.mikepenz.iconics.typeface.IIcon
+import com.mikepenz.material_design_iconic_typeface_library.MaterialDesignIconic
 import io.ipoli.android.Constants
 import io.ipoli.android.MainActivity
 import io.ipoli.android.R
@@ -26,6 +33,7 @@ import io.ipoli.android.common.EmailUtils
 import io.ipoli.android.common.InviteFriendsDialogController
 import io.ipoli.android.common.redux.android.ReduxViewController
 import io.ipoli.android.common.view.*
+import io.ipoli.android.home.HomeViewState.StateType.*
 import io.ipoli.android.pet.AndroidPetAvatar
 import io.ipoli.android.pet.AndroidPetMood
 import io.ipoli.android.pet.PetViewController
@@ -36,9 +44,12 @@ import io.ipoli.android.repeatingquest.list.RepeatingQuestListViewController
 import io.ipoli.android.settings.SettingsViewController
 import io.ipoli.android.store.StoreViewController
 import io.ipoli.android.store.avatar.AvatarStoreViewController
+import io.ipoli.android.tag.Tag
 import io.ipoli.android.tag.list.TagListViewController
+import io.ipoli.android.tag.show.TagViewController
 import kotlinx.android.synthetic.main.controller_home.view.*
 import kotlinx.android.synthetic.main.drawer_header_home.view.*
+import kotlinx.android.synthetic.main.menu_item_tag_view.view.*
 import space.traversal.kapsule.required
 
 
@@ -93,7 +104,6 @@ class HomeViewController(args: Bundle? = null) :
         }
 
         contentView.drawerLayout.addDrawerListener(actionBarDrawerToggle)
-
         return contentView
     }
 
@@ -111,8 +121,9 @@ class HomeViewController(args: Bundle? = null) :
             R.id.challenges ->
                 changeChildController(ChallengeListViewController())
 
-            R.id.tags ->
+            R.id.tags -> {
                 changeChildController(TagListViewController())
+            }
 
             R.id.store ->
                 changeChildController(StoreViewController())
@@ -140,6 +151,12 @@ class HomeViewController(args: Bundle? = null) :
 
             R.id.signIn ->
                 showAuth()
+
+            else -> {
+                if (TAG_IDS.contains(item.itemId)) {
+                    dispatch(HomeAction.SelectTag(TAG_IDS.indexOf(item.itemId)))
+                }
+            }
         }
 
         view!!.navigationView.setCheckedItem(item.itemId)
@@ -192,7 +209,6 @@ class HomeViewController(args: Bundle? = null) :
 
         super.onAttach(view)
         view.navigationView.bringToFront()
-
 
         val childRouter = getChildRouter(view.childControllerContainer, null)
         if (!childRouter.hasRootController()) {
@@ -247,49 +263,145 @@ class HomeViewController(args: Bundle? = null) :
     }
 
     override fun render(state: HomeViewState, view: View) {
-        when (state) {
-            is HomeViewState.Initial -> {
+        when (state.type) {
+            DATA_LOADED -> {
                 renderSignIn(view, state.showSignIn)
+                renderPlayer(view, state)
+                renderTags(view, state)
             }
 
-            is HomeViewState.PlayerChanged -> {
+            PLAYER_CHANGED -> {
+                renderPlayer(view, state)
+            }
 
-                Glide.with(view.context).load(state.avatarImage)
-                    .apply(RequestOptions.circleCropTransform())
-                    .into(view.playerAvatar)
+            TAGS_CHANGED -> {
+                renderTags(view, state)
+            }
 
-                view.playerAvatar.setOnClickListener {
-                    router.pushController(
-                        RouterTransaction.with(AvatarStoreViewController())
-                            .pushChangeHandler(fadeChangeHandler)
-                            .popChangeHandler(fadeChangeHandler)
+            TAG_SELECTED -> {
+                val fadeChangeHandler = FadeChangeHandler()
+                pushWithRootRouter(
+                    RouterTransaction.with(
+                        TagViewController(state.tags[state.selectedTagIndex!!].id)
                     )
-                }
-
-                Glide.with(view.context).load(state.petHeadImage)
-                    .apply(RequestOptions.circleCropTransform())
-                    .into(view.petHeadImage)
-
-
-                view.petContainer.setOnClickListener {
-                    showPet()
-                }
-
-                view.drawerPlayerGems.text = state.gemsText
-                view.drawerPlayerCoins.text = state.lifeCoinsText
-                view.drawerCurrentExperience.text = state.experienceText
-
-                view.drawerPlayerTitle.text = state.title(resources!!)
-
-                val drawable = view.petMood.background as GradientDrawable
-                drawable.setColor(colorRes(state.petMoodColor))
-
-                view.levelProgress.max = state.maxProgress
-                view.levelProgress.progress = state.progress
-
-                renderSignIn(view, state.showSignIn)
+                        .pushChangeHandler(fadeChangeHandler)
+                        .popChangeHandler(fadeChangeHandler)
+                )
             }
         }
+    }
+
+    private fun renderTags(view: View, state: HomeViewState) {
+        TAG_IDS.forEach { view.navigationView.menu.removeItem(it) }
+
+        val dropDown = view.navigationView.findViewById<ImageView>(R.id.dropDown)
+        dropDown.visible()
+
+        if (state.tags.isEmpty()) {
+            dropDown.invisible()
+            return
+        }
+
+        val tagItems = mutableListOf<MenuItem>()
+        state.tags.forEachIndexed { index, tag ->
+            tagItems.add(
+                createTagForNavigationDrawer(
+                    view = view,
+                    tagId = TAG_IDS[index],
+                    name = tag.name,
+                    icon = state.tagIcon(tag),
+                    iconColor = tag.color.androidColor.color500,
+                    questCount = tag.questCount,
+                    isVisible = state.showTags
+                )
+            )
+        }
+
+        dropDown.rotation = if (!state.showTags) 0f else 180f
+        dropDown.setOnClickListener {
+            val shouldClose = tagItems.isEmpty() || tagItems.first().isVisible
+            val rotationDegree = if (shouldClose) 0f else 180f
+            it.rotation = rotationDegree
+            tagItems.forEach {
+                it.isVisible = !it.isVisible
+            }
+            if (shouldClose) {
+                dispatch(HomeAction.HideTags)
+            } else {
+                dispatch(HomeAction.ShowTags)
+            }
+        }
+
+
+    }
+
+    private fun renderPlayer(view: View, state: HomeViewState) {
+        Glide.with(view.context).load(state.avatarImage)
+            .apply(RequestOptions.circleCropTransform())
+            .into(view.playerAvatar)
+
+        view.playerAvatar.setOnClickListener {
+            router.pushController(
+                RouterTransaction.with(AvatarStoreViewController())
+                    .pushChangeHandler(fadeChangeHandler)
+                    .popChangeHandler(fadeChangeHandler)
+            )
+        }
+
+        Glide.with(view.context).load(state.petHeadImage)
+            .apply(RequestOptions.circleCropTransform())
+            .into(view.petHeadImage)
+
+
+        view.petContainer.setOnClickListener {
+            showPet()
+        }
+
+        view.drawerPlayerGems.text = state.gemsText
+        view.drawerPlayerCoins.text = state.lifeCoinsText
+        view.drawerCurrentExperience.text = state.experienceText
+
+        view.drawerPlayerTitle.text = state.title(resources!!)
+
+        val drawable = view.petMood.background as GradientDrawable
+        drawable.setColor(colorRes(state.petMoodColor))
+
+        view.levelProgress.max = state.maxProgress
+        view.levelProgress.progress = state.progress
+    }
+
+    private fun createTagForNavigationDrawer(
+        view: View,
+        @IdRes tagId: Int,
+        name: String,
+        icon: IIcon,
+        questCount: Int,
+        @ColorRes iconColor: Int,
+        isVisible: Boolean
+    ): MenuItem {
+        val item = view.navigationView.menu.add(
+            R.id.drawerMainGroup,
+            tagId,
+            0,
+            name
+        )
+        item.actionView =
+            LayoutInflater.from(view.context).inflate(R.layout.menu_item_tag_view, null)
+        item.actionView.questCount.text = questCount.toString()
+
+        val iconDrawable =
+            IconicsDrawable(activity!!)
+                .icon(icon)
+                .paddingDp(3)
+                .sizeDp(24)
+
+        item.icon = iconDrawable
+        val ic = item.icon
+        ic.mutate()
+        ic.setColorFilter(colorRes(iconColor), PorterDuff.Mode.SRC_ATOP)
+        item.isVisible = isVisible
+        item.isCheckable = true
+        return item
     }
 
     private fun renderSignIn(
@@ -299,29 +411,33 @@ class HomeViewController(args: Bundle? = null) :
         view.navigationView.menu.findItem(R.id.signIn).isVisible = showSignIn
     }
 
-    private val HomeViewState.PlayerChanged.avatarImage
+    private val HomeViewState.avatarImage
         get() = AndroidAvatar.valueOf(avatar.name).image
 
-    private val HomeViewState.PlayerChanged.petHeadImage
+    private val HomeViewState.petHeadImage
         get() = AndroidPetAvatar.valueOf(petAvatar.name).headImage
 
-    private val HomeViewState.PlayerChanged.petMoodColor
+    private val HomeViewState.petMoodColor
         get() = AndroidPetMood.valueOf(petMood.name).color
 
-    private fun HomeViewState.PlayerChanged.title(resources: Resources): String {
+    private fun HomeViewState.title(resources: Resources): String {
         val titles = resources.getStringArray(R.array.player_titles)
         val titleText = titles[Math.min(titleIndex, titles.size - 1)]
         return stringRes(R.string.player_level, level, titleText)
     }
 
-    private val HomeViewState.PlayerChanged.gemsText
+    private val HomeViewState.gemsText
         get() = formatValue(gems.toLong())
 
-    private val HomeViewState.PlayerChanged.lifeCoinsText
+    private val HomeViewState.lifeCoinsText
         get() = formatValue(lifeCoins.toLong())
 
-    private val HomeViewState.PlayerChanged.experienceText
+    private val HomeViewState.experienceText
         get() = formatValue(experience)
+
+    private fun HomeViewState.tagIcon(tag: Tag): IIcon =
+        tag.icon?.androidIcon?.icon ?: MaterialDesignIconic.Icon.gmi_label
+
 
     private fun formatValue(value: Long): String {
         val valString = value.toString()
@@ -335,5 +451,20 @@ class HomeViewController(args: Bundle? = null) :
             result += "." + tail
         }
         return stringRes(R.string.big_value_format, result)
+    }
+
+    companion object {
+        val TAG_IDS = listOf(
+            R.id.tag1,
+            R.id.tag2,
+            R.id.tag3,
+            R.id.tag4,
+            R.id.tag5,
+            R.id.tag6,
+            R.id.tag7,
+            R.id.tag8,
+            R.id.tag9,
+            R.id.tag10
+        )
     }
 }

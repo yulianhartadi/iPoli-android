@@ -6,7 +6,7 @@ import io.ipoli.android.common.datetime.isBetween
 import io.ipoli.android.quest.Quest
 import io.ipoli.android.quest.RepeatingQuest
 import io.ipoli.android.quest.data.persistence.QuestRepository
-import io.ipoli.android.repeatingquest.entity.RepeatingPattern
+import io.ipoli.android.repeatingquest.entity.RepeatPattern
 import io.ipoli.android.repeatingquest.persistence.RepeatingQuestRepository
 import org.threeten.bp.LocalDate
 
@@ -46,29 +46,29 @@ class CreatePlaceholderQuestsForRepeatingQuestsUseCase(
             val currEnd = if (rqEnd != null && rqEnd.isBefore(end)) rqEnd else end
 
 
-            val scheduleDates = when (it.repeatingPattern) {
+            val scheduleDates = when (it.repeatPattern) {
 
-                is RepeatingPattern.Daily -> currStart.datesBetween(currEnd).toSet()
+                is RepeatPattern.Daily -> currStart.datesBetween(currEnd).toSet()
 
 
-                is RepeatingPattern.Weekly ->
+                is RepeatPattern.Weekly ->
                     weeklyDatesToScheduleInPeriod(
-                        it.repeatingPattern,
+                        it.repeatPattern,
                         currStart,
                         currEnd
                     )
 
-                is RepeatingPattern.Monthly ->
+                is RepeatPattern.Monthly ->
                     monthlyDatesToScheduleInPeriod(
-                        it.repeatingPattern,
+                        it.repeatPattern,
                         currStart,
                         currEnd
                     )
 
 
-                is RepeatingPattern.Yearly ->
+                is RepeatPattern.Yearly ->
                     yearlyDatesToScheduleInPeriod(
-                        it.repeatingPattern,
+                        it.repeatPattern,
                         currStart,
                         currEnd
                     )
@@ -103,7 +103,6 @@ class CreatePlaceholderQuestsForRepeatingQuestsUseCase(
             name = rq.name,
             color = rq.color,
             icon = rq.icon,
-            category = rq.category,
             startTime = rq.startTime,
             duration = rq.duration,
             scheduledDate = scheduleDate,
@@ -115,7 +114,7 @@ class CreatePlaceholderQuestsForRepeatingQuestsUseCase(
         )
 
     private fun monthlyDatesToScheduleInPeriod(
-        repeatingPattern: RepeatingPattern.Monthly,
+        repeatPattern: RepeatPattern.Monthly,
         start: LocalDate,
         end: LocalDate
     ): List<LocalDate> {
@@ -123,7 +122,7 @@ class CreatePlaceholderQuestsForRepeatingQuestsUseCase(
         var date = start
         val dates = mutableListOf<LocalDate>()
         while (date.isBefore(end.plusDays(1))) {
-            if (date.dayOfMonth in repeatingPattern.daysOfMonth) {
+            if (date.dayOfMonth in repeatPattern.daysOfMonth) {
                 dates.add(date)
             }
             date = date.plusDays(1)
@@ -133,7 +132,7 @@ class CreatePlaceholderQuestsForRepeatingQuestsUseCase(
     }
 
     private fun weeklyDatesToScheduleInPeriod(
-        repeatingPattern: RepeatingPattern.Weekly,
+        repeatPattern: RepeatPattern.Weekly,
         start: LocalDate,
         end: LocalDate
     ): List<LocalDate> {
@@ -141,7 +140,7 @@ class CreatePlaceholderQuestsForRepeatingQuestsUseCase(
         var date = start
         val dates = mutableListOf<LocalDate>()
         while (date.isBefore(end.plusDays(1))) {
-            if (date.dayOfWeek in repeatingPattern.daysOfWeek) {
+            if (date.dayOfWeek in repeatPattern.daysOfWeek) {
                 dates.add(date)
             }
             date = date.plusDays(1)
@@ -151,15 +150,15 @@ class CreatePlaceholderQuestsForRepeatingQuestsUseCase(
     }
 
     private fun yearlyDatesToScheduleInPeriod(
-        repeatingPattern: RepeatingPattern.Yearly,
+        repeatPattern: RepeatPattern.Yearly,
         start: LocalDate,
         end: LocalDate
     ): List<LocalDate> {
         if (start.year == end.year) {
             val date = LocalDate.of(
                 start.year,
-                repeatingPattern.month,
-                repeatingPattern.dayOfMonth
+                repeatPattern.month,
+                repeatPattern.dayOfMonth
             )
             return listOf(date).filter { it.isBetween(start, end) }
         }
@@ -170,8 +169,8 @@ class CreatePlaceholderQuestsForRepeatingQuestsUseCase(
             val lastDayOfYear = LocalDate.of(startPeriodDate.year, 12, 31)
             val date = LocalDate.of(
                 startPeriodDate.year,
-                repeatingPattern.month,
-                repeatingPattern.dayOfMonth
+                repeatPattern.month,
+                repeatPattern.dayOfMonth
             )
             val endPeriodDate = if (end.isBefore(lastDayOfYear)) end else lastDayOfYear
             if (date.isBetween(startPeriodDate, endPeriodDate)) {

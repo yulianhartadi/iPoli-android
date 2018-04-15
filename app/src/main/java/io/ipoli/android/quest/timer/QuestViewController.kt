@@ -21,6 +21,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import com.bluelinelabs.conductor.RouterTransaction
+import com.bluelinelabs.conductor.changehandler.FadeChangeHandler
 import com.mikepenz.iconics.IconicsDrawable
 import com.mikepenz.ionicons_typeface_library.Ionicons
 import io.ipoli.android.R
@@ -32,11 +33,14 @@ import io.ipoli.android.common.view.recyclerview.ReorderItemHelper
 import io.ipoli.android.common.view.recyclerview.SimpleViewHolder
 import io.ipoli.android.note.NoteViewController
 import io.ipoli.android.quest.CompletedQuestViewController
+import io.ipoli.android.quest.edit.EditQuestViewController
+import io.ipoli.android.tag.Tag
 import kotlinx.android.synthetic.main.controller_quest.view.*
-import kotlinx.android.synthetic.main.controller_timer.view.*
 import kotlinx.android.synthetic.main.item_quest_sub_quest.view.*
+import kotlinx.android.synthetic.main.item_quest_tag_list.view.*
 import kotlinx.android.synthetic.main.item_timer_progress.view.*
 import kotlinx.android.synthetic.main.view_quest_sub_quests.view.*
+import kotlinx.android.synthetic.main.view_timer.view.*
 
 /**
  * Created by Venelin Valkov <venelin@io.ipoli.io>
@@ -54,7 +58,7 @@ class QuestViewController : ReduxViewController<QuestAction, QuestViewState, Que
 
     private lateinit var newSubQuestWatcher: TextWatcher
 
-    private lateinit var noteDialogViewController: NoteViewController
+    private lateinit var noteViewController: NoteViewController
 
     constructor(args: Bundle? = null) : super(args)
 
@@ -101,12 +105,12 @@ class QuestViewController : ReduxViewController<QuestAction, QuestViewState, Que
 
         setupSubQuestList(view)
 
-        noteDialogViewController = NoteViewController("", { note ->
+        noteViewController = NoteViewController("", { note ->
             dispatch(QuestAction.SaveNote(note))
         })
         setChildController(
             view.noteContainer,
-            noteDialogViewController
+            noteViewController
         )
 
         view.newSubQuestName.setOnEditTextImeBackListener(object : EditTextImeBackListener {
@@ -114,6 +118,17 @@ class QuestViewController : ReduxViewController<QuestAction, QuestViewState, Que
                 enterFullScreen()
             }
         })
+
+        view.editQuest.setOnClickListener {
+            val fadeChangeHandler = FadeChangeHandler()
+            pushWithRootRouter(
+                RouterTransaction.with(
+                    EditQuestViewController(questId)
+                )
+                    .pushChangeHandler(fadeChangeHandler)
+                    .popChangeHandler(fadeChangeHandler)
+            )
+        }
 
         return view
     }
@@ -207,6 +222,8 @@ class QuestViewController : ReduxViewController<QuestAction, QuestViewState, Que
         view.questName.text = state.questName
         view.timerLabel.text = state.timerLabel
 
+        renderTags(view, state.tags)
+
         renderSubQuests(state, view)
 
         when (state.type) {
@@ -221,7 +238,7 @@ class QuestViewController : ReduxViewController<QuestAction, QuestViewState, Que
                 view.startStop.dispatchOnClick(QuestAction.Start)
                 view.complete.visibility = View.GONE
 
-                updateNote(state)
+                dispatch(QuestAction.UpdateNote(state.quest?.note ?: ""))
             }
 
             QuestViewState.StateType.SHOW_COUNTDOWN -> {
@@ -230,13 +247,13 @@ class QuestViewController : ReduxViewController<QuestAction, QuestViewState, Que
                 view.startStop.dispatchOnClick(QuestAction.Start)
                 view.pomodoroIndicatorsGroup.visible = false
 
-                updateNote(state)
+                dispatch(QuestAction.UpdateNote(state.quest?.note ?: ""))
             }
 
             QuestViewState.StateType.RESUMED -> {
                 startTimer(view, state)
 
-                updateNote(state)
+                dispatch(QuestAction.UpdateNote(state.quest?.note ?: ""))
             }
 
             QuestViewState.StateType.TIMER_REPLACED -> {
@@ -269,6 +286,27 @@ class QuestViewController : ReduxViewController<QuestAction, QuestViewState, Que
             QuestViewState.StateType.QUEST_COMPLETED ->
                 showCompletedQuest(state.quest!!.id)
         }
+    }
+
+    private fun renderTags(
+        view: View,
+        tags: List<Tag>
+    ) {
+        view.tagList.removeAllViews()
+
+        val inflater = LayoutInflater.from(activity!!)
+        tags.forEach { tag ->
+            val item = inflater.inflate(R.layout.item_quest_tag_list, view.tagList, false)
+            renderTag(item, tag)
+            view.tagList.addView(item)
+        }
+    }
+
+    private fun renderTag(view: View, tag: Tag) {
+        view.tagName.text = tag.name
+        val indicator = view.tagName.compoundDrawablesRelative[0] as GradientDrawable
+        indicator.setColor(colorRes(tag.color.androidColor.color500))
+
     }
 
     private fun renderSubQuests(state: QuestViewState, view: View) {
@@ -331,12 +369,8 @@ class QuestViewController : ReduxViewController<QuestAction, QuestViewState, Que
 
     }
 
-    private fun updateNote(state: QuestViewState) {
-        noteDialogViewController.updateNote(state.quest?.note ?: "")
-    }
-
     private fun cancelAnimations(view: View) {
-        view.notImportantGroup.views().forEach {
+        notImportantViews().forEach {
             it.animate().cancel()
             it.alpha = 1f
         }
@@ -397,7 +431,7 @@ class QuestViewController : ReduxViewController<QuestAction, QuestViewState, Que
             view.complete.dispatchOnClick(QuestAction.CompleteQuest)
         }
 
-        view.setOnClickListener {
+        view.timerProgressLayout.setOnClickListener {
             playShowNotImportantViewsAnimation(view)
         }
         playHideNotImportantViewsAnimation(view)
@@ -444,7 +478,7 @@ class QuestViewController : ReduxViewController<QuestAction, QuestViewState, Que
             .y(originalTimerButtonsY(view))
             .setDuration(shortAnimTime)
             .withEndAction {
-                view.notImportantGroup.views().forEach {
+                notImportantViews().forEach {
                     it
                         .animate()
                         .alpha(1f)
@@ -466,7 +500,7 @@ class QuestViewController : ReduxViewController<QuestAction, QuestViewState, Que
     }
 
     private fun playHideNotImportantViewsAnimation(view: View) {
-        view.notImportantGroup.views().forEach {
+        notImportantViews().forEach {
             it
                 .animate()
                 .alpha(0f)
@@ -543,6 +577,12 @@ class QuestViewController : ReduxViewController<QuestAction, QuestViewState, Que
         }
 
         view.timerProgressContainer.addView(progressView)
+    }
+
+    private fun notImportantViews(): List<View> {
+        val views = view!!.notImportantGroup.views().toMutableList()
+        views.add(view!!.timerLabel)
+        return views
     }
 
     private fun showCompletedQuest(questId: String) {

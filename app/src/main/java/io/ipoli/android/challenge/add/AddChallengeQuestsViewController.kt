@@ -9,9 +9,8 @@ import io.ipoli.android.challenge.*
 import io.ipoli.android.common.redux.android.ReduxViewController
 import io.ipoli.android.common.view.invisible
 import io.ipoli.android.common.view.visible
-import kotlinx.android.synthetic.main.controller_add_challenge_quests.view.*
+import kotlinx.android.synthetic.main.animation_empty_list.view.*
 import kotlinx.android.synthetic.main.list_quest_picker.view.*
-import kotlinx.android.synthetic.main.view_empty_list.view.*
 import kotlinx.android.synthetic.main.view_loader.view.*
 
 /**
@@ -34,7 +33,7 @@ class AddChallengeQuestsViewController(args: Bundle? = null) :
         view.questList.adapter = QuestAdapter(listOf(), { id, isChecked ->
             dispatch(QuestPickerAction.Check(id, isChecked))
         })
-        view.challengeNext.dispatchOnClick(QuestPickerAction.Next)
+        view.emptyAnimation.setAnimation("empty_quest_picker.json")
         return view
     }
 
@@ -44,7 +43,7 @@ class AddChallengeQuestsViewController(args: Bundle? = null) :
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         super.onCreateOptionsMenu(menu, inflater)
-        inflater.inflate(R.menu.challenge_quest_picker_menu, menu)
+        inflater.inflate(R.menu.add_challenge_quest_picker_menu, menu)
         val searchItem = menu.findItem(R.id.actionSearch)
         val searchView = searchItem.actionView as SearchView
         searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
@@ -56,6 +55,16 @@ class AddChallengeQuestsViewController(args: Bundle? = null) :
             }
         })
     }
+
+    override fun onOptionsItemSelected(item: MenuItem) =
+        when (item.itemId) {
+            R.id.actionNext -> {
+                dispatch(QuestPickerAction.Next)
+                true
+            }
+
+            else -> super.onOptionsItemSelected(item)
+        }
 
     override fun render(state: QuestPickerViewState, view: View) {
         when (state.type) {
@@ -69,6 +78,8 @@ class AddChallengeQuestsViewController(args: Bundle? = null) :
                 view.questList.visible()
                 view.loader.invisible()
                 view.emptyContainer.invisible()
+                view.emptyAnimation.pauseAnimation()
+
                 (view.questList.adapter as QuestAdapter).updateAll(state.toViewModels())
             }
 
@@ -77,7 +88,7 @@ class AddChallengeQuestsViewController(args: Bundle? = null) :
                 view.loader.invisible()
                 view.questList.invisible()
 
-                view.emptyImage.setImageResource(R.drawable.quest_picker_empty_state)
+                view.emptyAnimation.playAnimation()
                 view.emptyTitle.setText(R.string.empty_state_quest_picker_title)
                 view.emptyText.setText(R.string.empty_state_quest_picker_text)
             }

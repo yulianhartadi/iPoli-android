@@ -8,20 +8,29 @@ import io.ipoli.android.common.datetime.*
 import io.ipoli.android.common.persistence.BaseCollectionFirestoreRepository
 import io.ipoli.android.common.persistence.CollectionRepository
 import io.ipoli.android.common.persistence.FirestoreModel
+import io.ipoli.android.common.persistence.TagProvider
 import io.ipoli.android.pet.Food
 import io.ipoli.android.quest.*
 import io.ipoli.android.quest.subquest.SubQuest
-import kotlinx.coroutines.experimental.channels.ReceiveChannel
+import kotlinx.coroutines.experimental.channels.Channel
 import org.threeten.bp.*
 import kotlin.coroutines.experimental.CoroutineContext
 
 interface QuestRepository : CollectionRepository<Quest> {
-    fun listenForScheduledBetween(
-        startDate: LocalDate,
-        endDate: LocalDate
-    ): ReceiveChannel<List<Quest>>
 
-    fun listenForScheduledAt(date: LocalDate): ReceiveChannel<List<Quest>>
+    suspend fun listenForScheduledBetween(
+        startDate: LocalDate,
+        endDate: LocalDate,
+        channel: Channel<List<Quest>>
+    ): Channel<List<Quest>>
+
+    suspend fun listenForScheduledAt(
+        date: LocalDate,
+        channel: Channel<List<Quest>>
+    ): Channel<List<Quest>>
+
+    suspend fun listenByTag(tagId: String, channel: Channel<List<Quest>>): Channel<List<Quest>>
+
     fun findScheduledAt(date: LocalDate): List<Quest>
     fun findScheduledForRepeatingQuestBetween(
         repeatingQuestId: String,
@@ -82,8 +91,11 @@ interface QuestRepository : CollectionRepository<Quest> {
         currentDate: LocalDate = LocalDate.now()
     ): List<Quest>
 
-    fun purge(questId: String)
+    fun findCountForTag(tagId: String): Int
 
+    fun findByTag(tagId: String): List<Quest>
+
+    fun purge(questId: String)
     fun purge(questIds: List<String>)
 }
 
@@ -93,7 +105,7 @@ data class DbQuest(override val map: MutableMap<String, Any?> = mutableMapOf()) 
     var name: String by map
     var color: String by map
     var icon: String? by map
-    var category: String by map
+    var tagIds: Map<String, Boolean> by map
     var duration: Int by map
     var reminder: MutableMap<String, Any?>? by map
     var startMinute: Long? by map
@@ -146,12 +158,15 @@ data class DbTimeRange(val map: MutableMap<String, Any?> = mutableMapOf()) {
 class FirestoreQuestRepository(
     database: FirebaseFirestore,
     coroutineContext: CoroutineContext,
-    sharedPreferences: SharedPreferences
+    sharedPreferences: SharedPreferences,
+    tagProvider: TagProvider
 ) : BaseCollectionFirestoreRepository<Quest, DbQuest>(
     database,
     coroutineContext,
     sharedPreferences
 ), QuestRepository {
+
+    private val tags by tagProvider
 
     override fun findAllForRepeatingQuestAfterDate(
         repeatingQuestId: String,
@@ -274,16 +289,35 @@ class FirestoreQuestRepository(
         return toEntityObject(doc.first().data)
     }
 
-    override fun listenForScheduledBetween(
+    override suspend fun listenByTag(
+        tagId: String,
+        channel: Channel<List<Quest>>
+    ) =
+        collectionReference
+            .whereEqualTo("tagIds.$tagId", true)
+            .listenForChanges(channel)
+
+    override fun findByTag(tagId: String) =
+        collectionReference
+            .whereEqualTo("tagIds.$tagId", true)
+            .entities
+
+    override fun findCountForTag(tagId: String): Int =
+        collectionReference
+            .whereEqualTo("tagIds.$tagId", true)
+            .documents.size
+
+    override suspend fun listenForScheduledBetween(
         startDate: LocalDate,
-        endDate: LocalDate
+        endDate: LocalDate,
+        channel: Channel<List<Quest>>
     ) =
         collectionReference
             .whereGreaterThanOrEqualTo("scheduledDate", startDate.startOfDayUTC())
             .whereLessThanOrEqualTo("scheduledDate", endDate.startOfDayUTC())
             .orderBy("scheduledDate")
             .orderBy("startMinute")
-            .listenForChanges()
+            .listenForChanges(channel)
 
     override fun findScheduledAt(date: LocalDate) =
         collectionReference
@@ -303,10 +337,13 @@ class FirestoreQuestRepository(
             .whereGreaterThan("scheduledDate", start.startOfDayUTC() - 1)
             .whereLessThanOrEqualTo("scheduledDate", end.startOfDayUTC()).entities
 
-    override fun listenForScheduledAt(date: LocalDate) =
+    override suspend fun listenForScheduledAt(
+        date: LocalDate,
+        channel: Channel<List<Quest>>
+    ) =
         collectionReference
             .whereEqualTo("scheduledDate", date.startOfDayUTC())
-            .listenForChanges()
+            .listenForChanges(channel)
 
     override fun findNextReminderTime(afterTime: ZonedDateTime): LocalDateTime? {
 
@@ -471,14 +508,12 @@ class FirestoreQuestRepository(
     private fun createReminderData(
         questId: String,
         reminder: Reminder
-    ): Map<String, Any> {
-        val r = mapOf(
+    ) =
+        mapOf(
             "questId" to questId,
             "date" to reminder.remindDate!!.startOfDayUTC(),
             "millisOfDay" to reminder.remindTime.toMillisOfDay()
         )
-        return r
-    }
 
     private fun purgeReminders(questId: String) {
         val batch = database.batch()
@@ -536,7 +571,9 @@ class FirestoreQuestRepository(
             icon = cq.icon?.let {
                 Icon.valueOf(it)
             },
-            category = Category(cq.category, Color.GREEN),
+            tags = cq.tagIds.keys.map {
+                tags[it]!!
+            },
             scheduledDate = plannedDate,
             originalScheduledDate = cq.originalScheduledDate.startOfDayUTC,
             startTime = plannedTime,
@@ -586,7 +623,7 @@ class FirestoreQuestRepository(
         val q = DbQuest()
         q.id = entity.id
         q.name = entity.name
-        q.category = entity.category.name
+        q.tagIds = entity.tags.map { it.id to true }.toMap()
         q.color = entity.color.name
         q.icon = entity.icon?.name
         q.duration = entity.duration
@@ -615,7 +652,6 @@ class FirestoreQuestRepository(
             if (it is Quest.Bounty.Food) {
                 cr.name = it.food.name
             }
-
             cr.map
         }
         q.startMinute = entity.startTime?.toMinuteOfDay()?.toLong()

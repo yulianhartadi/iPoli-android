@@ -12,6 +12,8 @@ import io.ipoli.android.quest.RepeatingQuest
 import io.ipoli.android.quest.schedule.agenda.usecase.CreateAgendaItemsUseCase
 import io.ipoli.android.quest.usecase.Schedule
 import io.ipoli.android.repeatingquest.usecase.CreateRepeatingQuestHistoryUseCase
+import io.ipoli.android.tag.Tag
+import io.ipoli.android.tag.usecase.CreateTagItemsUseCase
 import org.threeten.bp.LocalDate
 
 /**
@@ -20,6 +22,7 @@ import org.threeten.bp.LocalDate
  */
 
 sealed class DataLoadedAction : Action {
+
     data class PlayerChanged(val player: Player) : DataLoadedAction()
     data class TodayQuestsChanged(val quests: List<Quest>) : DataLoadedAction()
     data class RepeatingQuestsChanged(val repeatingQuests: List<RepeatingQuest>) :
@@ -46,6 +49,9 @@ sealed class DataLoadedAction : Action {
     data class EventsChanged(val events: List<Event>) : DataLoadedAction()
     data class CalendarsChanged(val calendars: List<Calendar>) : DataLoadedAction()
     data class QuestChanged(val quest: Quest) : DataLoadedAction()
+    data class TagsChanged(val tags: List<Tag>) : DataLoadedAction()
+    data class TagItemsChanged(val tagId: String, val items: List<CreateTagItemsUseCase.TagItem>) :
+        DataLoadedAction()
 }
 
 data class AppDataState(
@@ -56,7 +62,8 @@ data class AppDataState(
     val repeatingQuests: List<RepeatingQuest>,
     val challenges: List<Challenge>,
     val agendaItems: List<CreateAgendaItemsUseCase.AgendaItem>,
-    val events: List<Event>
+    val events: List<Event>,
+    val tags: List<Tag>
 ) : State
 
 object AppDataReducer : Reducer<AppState, AppDataState> {
@@ -102,11 +109,16 @@ object AppDataReducer : Reducer<AppState, AppDataState> {
                     events = action.events
                 )
 
+            is DataLoadedAction.TagsChanged ->
+                subState.copy(
+                    tags = action.tags
+                )
+
             else -> subState
         }
 
-    override fun defaultState(): AppDataState {
-        return AppDataState(
+    override fun defaultState() =
+        AppDataState(
             today = LocalDate.now(),
             player = null,
             todayQuests = listOf(),
@@ -114,8 +126,7 @@ object AppDataReducer : Reducer<AppState, AppDataState> {
             repeatingQuests = listOf(),
             challenges = listOf(),
             agendaItems = listOf(),
-            events = listOf()
+            events = listOf(),
+            tags = listOf()
         )
-    }
-
 }

@@ -23,6 +23,7 @@ data class PowerUp(
 //        REMINDERS(130),
         CHALLENGES(220),
         CALENDAR_SYNC(450),
+        TAGS(300),
         TIMER(130),
         SUB_QUESTS(180),
         NOTES(90),

@@ -136,6 +136,43 @@
         <item name="colorAccent">@color/md_light_text_70</item>
     </style>
 
+    <style name="TextAppearance.myPoli.TextInputLayout.HintAppearance" parent="TextAppearance.myPoli.EditText">
+        <item name="android:textColor">@color/md_light_text_50</item>
+    </style>
+
+    <style name="TextAppearance.myPoli.EditName.TextInputLayout" parent="TextAppearance.myPoli.EditText">
+        <item name="android:layout_gravity">center_horizontal</item>
+        <item name="android:layout_marginTop">16dp</item>
+        <item name="hintTextAppearance">
+            @style/TextAppearance.myPoli.TextInputLayout.HintAppearance
+        </item>
+    </style>
+
+    <style name="TextAppearance.myPoli.EditName.TextInputEditText" parent="TextAppearance.AppCompat.Title">
+        <item name="android:theme">@style/WhiteEditTextTheme</item>
+        <item name="android:textColor">@color/md_white</item>
+        <item name="android:inputType">textCapSentences</item>
+        <item name="android:maxLines">1</item>
+        <item name="android:paddingStart">8dp</item>
+        <item name="android:paddingEnd">8dp</item>
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+    </style>
+
+    <style name="TagAutocomplete" parent="TextAppearance.AppCompat.Subhead">
+        <item name="android:textColorHint">@color/md_light_text_70</item>
+        <item name="android:textColor">@color/md_light_text_100</item>
+        <item name="colorAccent">@color/md_light_text_70</item>
+        <item name="colorControlNormal">@color/md_light_text_70</item>
+        <item name="colorControlActivated">@color/md_light_text_70</item>
+        <item name="android:colorControlHighlight">@color/md_light_text_70</item>
+        <item name="android:textColorPrimary">@color/md_light_text_100</item>
+    </style>
+
+    <style name="TagAutocompleteTheme">
+        <item name="android:theme">@style/TagAutocomplete</item>
+    </style>
+
     <style name="CategoryIndicator">
         <item name="android:layout_width">42dp</item>
         <item name="android:layout_height">42dp</item>
@@ -168,19 +205,7 @@
         <item name="android:textColor">?attr/colorAccent</item>
     </style>
 
-    <style name="WhiteEditTextTheme" parent="Base.TextAppearance.AppCompat.Small">
-        <item name="android:singleLine">true</item>
-        <item name="android:textColor">@color/md_light_text_70</item>
-        <item name="colorControlNormal">@color/md_light_text_70</item>
-        <item name="colorControlActivated">@color/md_light_text_70</item>
-        <item name="android:textColorPrimary">@color/md_light_text_70</item>
-    </style>
-
-    <style name="SubQuestWhiteEditText">
-        <item name="android:theme">@style/WhiteEditTextTheme</item>
-    </style>
-
-    <style name="ChallengeWhiteEditTextTheme" parent="Base.TextAppearance.AppCompat.Title">
+    <style name="WhiteEditTextTheme" parent="Base.TextAppearance.AppCompat.Title">
         <item name="android:singleLine">true</item>
         <item name="android:textColor">@color/md_light_text_70</item>
         <item name="colorControlNormal">@color/md_light_text_70</item>
@@ -192,7 +217,7 @@
     </style>
 
     <style name="ChallengeWhiteEditText">
-        <item name="android:theme">@style/ChallengeWhiteEditTextTheme</item>
+        <item name="android:theme">@style/WhiteEditTextTheme</item>
     </style>
 
     <style name="ChallengeTextInputLayout" parent="Base.TextAppearance.AppCompat">
@@ -262,46 +287,23 @@
         <item name="cardElevation">4dp</item>
     </style>
 
-    <style name="LearningCheckbox">
-        <item name="android:colorAccent">@color/md_blue_500</item>
-        <item name="android:colorControlNormal">@color/md_blue_500</item>
-        <item name="android:colorControlHighlight">@color/md_blue_500</item>
-        <item name="android:colorControlActivated">@color/md_blue_500</item>
+    <style name="EditSimpleTextViewRow" parent="TextAppearance.AppCompat.Subhead">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:gravity">center_vertical</item>
+        <item name="android:layout_height">60dp</item>
+        <item name="android:paddingStart">16dp</item>
+        <item name="android:paddingEnd">16dp</item>
+        <item name="android:textColor">@color/md_light_text_100</item>
+        <item name="android:background">?attr/selectableItemBackground</item>
+        <item name="android:clickable">true</item>
+        <item name="android:focusable">true</item>
+        <item name="android:drawablePadding">16dp</item>
     </style>
 
-    <style name="WellnessCheckbox">
-        <item name="android:colorAccent">@color/md_green_500</item>
-        <item name="android:colorControlNormal">@color/md_green_500</item>
-        <item name="android:colorControlHighlight">@color/md_green_500</item>
-        <item name="android:colorControlActivated">@color/md_green_500</item>
-    </style>
-
-    <style name="PersonalCheckbox">
-        <item name="android:colorAccent">@color/md_orange_500</item>
-        <item name="android:colorControlNormal">@color/md_orange_500</item>
-        <item name="android:colorControlHighlight">@color/md_orange_500</item>
-        <item name="android:colorControlActivated">@color/md_orange_500</item>
-    </style>
-
-    <style name="WorkCheckbox">
-        <item name="android:colorAccent">@color/md_red_500</item>
-        <item name="android:colorControlNormal">@color/md_red_500</item>
-        <item name="android:colorControlHighlight">@color/md_red_500</item>
-        <item name="android:colorControlActivated">@color/md_red_500</item>
-    </style>
-
-    <style name="FunCheckbox">
-        <item name="android:colorAccent">@color/md_purple_500</item>
-        <item name="android:colorControlNormal">@color/md_purple_500</item>
-        <item name="android:colorControlHighlight">@color/md_purple_500</item>
-        <item name="android:colorControlActivated">@color/md_purple_500</item>
-    </style>
-
-    <style name="ChoresCheckbox">
-        <item name="android:colorAccent">@color/md_blue_grey_500</item>
-        <item name="android:colorControlNormal">@color/md_blue_grey_500</item>
-        <item name="android:colorControlHighlight">@color/md_blue_grey_500</item>
-        <item name="android:colorControlActivated">@color/md_blue_grey_500</item>
+    <style name="EditSimpleDivider">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">1dp</item>
+        <item name="android:background">@color/md_light_text_50</item>
     </style>
 
     <style name="SectionTitle" parent="@style/TextAppearance.AppCompat.Subhead">

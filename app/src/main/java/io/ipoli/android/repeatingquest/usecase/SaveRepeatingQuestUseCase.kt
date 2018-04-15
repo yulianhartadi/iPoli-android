@@ -2,11 +2,15 @@ package io.ipoli.android.repeatingquest.usecase
 
 import io.ipoli.android.common.UseCase
 import io.ipoli.android.common.datetime.Time
-import io.ipoli.android.quest.*
+import io.ipoli.android.quest.Color
+import io.ipoli.android.quest.Icon
+import io.ipoli.android.quest.Reminder
+import io.ipoli.android.quest.RepeatingQuest
 import io.ipoli.android.quest.data.persistence.QuestRepository
 import io.ipoli.android.quest.subquest.SubQuest
-import io.ipoli.android.repeatingquest.entity.RepeatingPattern
+import io.ipoli.android.repeatingquest.entity.RepeatPattern
 import io.ipoli.android.repeatingquest.persistence.RepeatingQuestRepository
+import io.ipoli.android.tag.Tag
 import org.threeten.bp.Instant
 import org.threeten.bp.LocalDate
 
@@ -30,14 +34,14 @@ class SaveRepeatingQuestUseCase(
                 name = parameters.name.trim(),
                 icon = parameters.icon,
                 color = parameters.color,
-                category = parameters.category,
                 startTime = parameters.startTime,
                 duration = parameters.duration,
                 reminder = parameters.reminder,
-                repeatingPattern = parameters.repeatingPattern,
+                repeatPattern = parameters.repeatPattern,
                 subQuests = createSubQuests(parameters.subQuestNames),
                 challengeId = parameters.challengeId,
-                note = parameters.note
+                note = parameters.note,
+                tags = parameters.tags
             )
         } else {
 
@@ -47,19 +51,19 @@ class SaveRepeatingQuestUseCase(
                 name = parameters.name.trim(),
                 icon = parameters.icon,
                 color = parameters.color,
-                category = parameters.category,
                 startTime = parameters.startTime,
                 duration = parameters.duration,
                 reminder = parameters.reminder,
-                repeatingPattern = parameters.repeatingPattern,
+                repeatPattern = parameters.repeatPattern,
                 subQuests = createSubQuests(parameters.subQuestNames),
                 challengeId = parameters.challengeId,
-                note = parameters.note
+                note = parameters.note,
+                tags = parameters.tags
             )
         }
 
         val rq = if (parameters.id.isEmpty()) {
-            // we should wait for updating the RepeatingPattern and then save the Repeating Quest
+            // we should wait for updating the RepeatPattern and then save the Repeating Quest
             saveQuestsFor(
                 repeatingQuest.copy(
                     id = repeatingQuestRepository.generateId(),
@@ -70,7 +74,6 @@ class SaveRepeatingQuestUseCase(
             questRepository.purgeAllNotCompletedForRepeating(repeatingQuest.id, LocalDate.now())
             saveQuestsFor(repeatingQuest)
         }
-
         return repeatingQuestRepository.save(rq)
     }
 
@@ -86,9 +89,9 @@ class SaveRepeatingQuestUseCase(
             }
 
     private fun saveQuestsFor(repeatingQuest: RepeatingQuest): RepeatingQuest {
-        val currentPeriod = repeatingQuest.repeatingPattern.periodRangeFor(LocalDate.now())
+        val currentPeriod = repeatingQuest.repeatPattern.periodRangeFor(LocalDate.now())
         val nextPeriodFirstDate = currentPeriod.end.plusDays(1)
-        val end = repeatingQuest.repeatingPattern.periodRangeFor(nextPeriodFirstDate).end
+        val end = repeatingQuest.repeatPattern.periodRangeFor(nextPeriodFirstDate).end
         return saveQuestsForRepeatingQuestUseCase.execute(
             SaveQuestsForRepeatingQuestUseCase.Params(
                 repeatingQuest = repeatingQuest,
@@ -104,12 +107,12 @@ class SaveRepeatingQuestUseCase(
         val subQuestNames: List<String>,
         val color: Color,
         val icon: Icon? = null,
-        val category: Category,
         val startTime: Time? = null,
         val duration: Int,
         val reminder: Reminder? = null,
-        val repeatingPattern: RepeatingPattern,
+        val repeatPattern: RepeatPattern,
         val challengeId: String? = null,
-        val note: String? = null
+        val note: String? = null,
+        val tags: List<Tag> = listOf()
     )
 }

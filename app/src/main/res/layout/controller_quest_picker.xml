@@ -15,7 +15,7 @@
 
         <include layout="@layout/view_loader" />
 
-        <include layout="@layout/view_empty_list" />
+        <include layout="@layout/animation_empty_list" />
     </FrameLayout>
 
 </android.support.design.widget.CoordinatorLayout>

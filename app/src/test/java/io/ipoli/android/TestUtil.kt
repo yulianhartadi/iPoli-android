@@ -11,9 +11,12 @@ import io.ipoli.android.pet.PetAvatar
 import io.ipoli.android.player.AuthProvider
 import io.ipoli.android.player.Player
 import io.ipoli.android.player.persistence.PlayerRepository
-import io.ipoli.android.quest.*
+import io.ipoli.android.quest.Color
+import io.ipoli.android.quest.Icon
+import io.ipoli.android.quest.Quest
+import io.ipoli.android.quest.RepeatingQuest
 import io.ipoli.android.quest.data.persistence.QuestRepository
-import io.ipoli.android.repeatingquest.entity.RepeatingPattern
+import io.ipoli.android.repeatingquest.entity.RepeatPattern
 import io.ipoli.android.repeatingquest.persistence.RepeatingQuestRepository
 import org.threeten.bp.DayOfWeek
 import org.threeten.bp.LocalDate
@@ -70,16 +73,14 @@ object TestUtil {
     val quest = Quest(
         name = "Test",
         color = Color.BLUE,
-        category = Category("test", Color.BLUE),
         duration = 60,
         scheduledDate = LocalDate.now()
     )
 
     val repeatingQuest = RepeatingQuest(
         name = "Test",
-        repeatingPattern = RepeatingPattern.Daily(start = firstDateOfWeek),
+        repeatPattern = RepeatPattern.Daily(start = firstDateOfWeek),
         color = Color.BLUE,
-        category = Category("test", Color.BLUE),
         duration = 60
     )
 

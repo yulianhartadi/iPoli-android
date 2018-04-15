@@ -2,148 +2,38 @@ package io.ipoli.android.challenge.add
 
 import android.graphics.PorterDuff
 import android.os.Bundle
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
+import android.support.v7.widget.LinearLayoutManager
+import android.view.*
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import com.mikepenz.google_material_typeface_library.GoogleMaterial
 import com.mikepenz.iconics.IconicsDrawable
 import com.mikepenz.iconics.typeface.IIcon
-import kotlinx.android.synthetic.main.controller_add_challenge_name.view.*
+import com.mikepenz.material_design_iconic_typeface_library.MaterialDesignIconic
 import io.ipoli.android.R
-import io.ipoli.android.challenge.add.AddChallengeNameViewState.StateType.*
-import io.ipoli.android.challenge.entity.Challenge
-import io.ipoli.android.common.AppState
-import io.ipoli.android.common.BaseViewStateReducer
-import io.ipoli.android.common.Validator
-import io.ipoli.android.common.mvi.ViewState
-import io.ipoli.android.common.redux.Action
-import io.ipoli.android.common.redux.android.ReduxViewController
-import io.ipoli.android.common.view.ColorPickerDialogController
-import io.ipoli.android.common.view.IconPickerDialogController
-import io.ipoli.android.common.view.colorRes
-import io.ipoli.android.quest.Color
-import io.ipoli.android.quest.Icon
+import io.ipoli.android.challenge.add.EditChallengeViewState.StateType.*
+import io.ipoli.android.common.redux.android.BaseViewController
+import io.ipoli.android.common.view.*
+import io.ipoli.android.tag.widget.EditItemAutocompleteTagAdapter
+import io.ipoli.android.tag.widget.EditItemTagAdapter
+import kotlinx.android.synthetic.main.controller_add_challenge_name.view.*
 
 /**
  * Created by Polina Zhelyazkova <polina@mypoli.fun>
  * on 3/8/18.
  */
-
-sealed class AddChallengeNameAction : Action {
-    object Load : AddChallengeNameAction()
-    data class ChangeColor(val color: Color) : AddChallengeNameAction()
-    data class ChangeIcon(val icon: Icon?) : AddChallengeNameAction()
-    data class ChangeDifficulty(val position: Int) : AddChallengeNameAction()
-    object Next : AddChallengeNameAction()
-    data class Validate(val name: String) : AddChallengeNameAction()
-}
-
-object AddChallengeNameReducer : BaseViewStateReducer<AddChallengeNameViewState>() {
-
-    override val stateKey = key<AddChallengeNameViewState>()
-
-
-    override fun reduce(
-        state: AppState,
-        subState: AddChallengeNameViewState,
-        action: Action
-    ) =
-        when (action) {
-            AddChallengeNameAction.Load -> {
-                val parentState = state.stateFor(AddChallengeViewState::class.java)
-                subState.copy(
-                    type = DATA_LOADED,
-                    name = parentState.name,
-                    color = parentState.color,
-                    icon = parentState.icon,
-                    difficulty = parentState.difficulty
-                )
-            }
-
-            is AddChallengeNameAction.ChangeColor ->
-                subState.copy(
-                    type = COLOR_CHANGED,
-                    color = action.color
-                )
-
-            is AddChallengeNameAction.ChangeIcon ->
-                subState.copy(
-                    type = ICON_CHANGED,
-                    icon = action.icon
-                )
-
-            is AddChallengeNameAction.ChangeDifficulty ->
-                subState.copy(
-                    type = DIFFICULTY_CHANGED,
-                    difficulty = Challenge.Difficulty.values()[action.position]
-                )
-
-            is AddChallengeNameAction.Validate -> {
-                val errors = Validator.validate(action).check<ValidationError> {
-                    "name" {
-                        given { name.isEmpty() } addError ValidationError.EMPTY_NAME
-                    }
-                }
-                subState.copy(
-                    type = if (errors.isEmpty()) {
-                        VALIDATION_SUCCESSFUL
-                    } else {
-                        VALIDATION_ERROR_EMPTY_NAME
-                    },
-                    name = action.name
-                )
-            }
-            else -> subState
-    }
-
-    override fun defaultState() =
-        AddChallengeNameViewState(
-            type = INITIAL,
-            name = "",
-            color = Color.GREEN,
-            icon = null,
-            difficulty = Challenge.Difficulty.NORMAL
-        )
-
-    enum class ValidationError {
-        EMPTY_NAME
-    }
-}
-
-
-
-data class AddChallengeNameViewState(
-    val type: AddChallengeNameViewState.StateType,
-    val name: String,
-    val color: Color,
-    val icon: Icon?,
-    val difficulty: Challenge.Difficulty
-) : ViewState {
-    enum class StateType {
-        INITIAL,
-        DATA_LOADED,
-        COLOR_CHANGED,
-        ICON_CHANGED,
-        DIFFICULTY_CHANGED,
-        VALIDATION_ERROR_EMPTY_NAME,
-        VALIDATION_SUCCESSFUL
-    }
-}
-
 class AddChallengeNameViewController(args: Bundle? = null) :
-    ReduxViewController<AddChallengeNameAction, AddChallengeNameViewState, AddChallengeNameReducer>(
+    BaseViewController<EditChallengeAction, EditChallengeViewState>(
         args
     ) {
-    override val reducer = AddChallengeNameReducer
+    override val stateKey = EditChallengeReducer.stateKey
 
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup,
         savedViewState: Bundle?
     ): View {
-        setHasOptionsMenu(false)
+        setHasOptionsMenu(true)
         val view = inflater.inflate(R.layout.controller_add_challenge_name, container, false)
 
         view.challengeDifficulty.background.setColorFilter(
@@ -156,77 +46,107 @@ class AddChallengeNameViewController(args: Bundle? = null) :
             R.id.spinnerItemId,
             view.resources.getStringArray(R.array.difficulties)
         )
+
+        view.challengeDifficulty.onItemSelectedListener =
+            object : AdapterView.OnItemSelectedListener {
+                override fun onNothingSelected(parent: AdapterView<*>?) {
+                }
+
+                override fun onItemSelected(
+                    parent: AdapterView<*>?,
+                    view: View?,
+                    position: Int,
+                    id: Long
+                ) {
+                    dispatch(EditChallengeAction.ChangeDifficulty(position))
+                }
+
+            }
+
+        view.challengeTagList.layoutManager = LinearLayoutManager(activity!!)
+        view.challengeTagList.adapter = EditItemTagAdapter(removeTagCallback = {
+            dispatch(EditChallengeAction.RemoveTag(it))
+        })
         return view
     }
 
-    override fun onCreateLoadAction() =
-        AddChallengeNameAction.Load
+    override fun onCreateLoadAction() = EditChallengeAction.LoadTags
 
-    override fun colorLayoutBars() {}
+    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+        super.onCreateOptionsMenu(menu, inflater)
+        inflater.inflate(R.menu.next_wizard_menu, menu)
+    }
 
-    override fun render(state: AddChallengeNameViewState, view: View) {
+    override fun onOptionsItemSelected(item: MenuItem) =
+        when (item.itemId) {
+            R.id.actionNext -> {
+                dispatch(EditChallengeAction.ValidateName(view!!.challengeName.text.toString()))
+                true
+            }
+
+            else -> super.onOptionsItemSelected(item)
+        }
+
+    override fun render(state: EditChallengeViewState, view: View) {
+        view.challengeName.setText(state.name)
+        renderColor(view, state)
+        renderIcon(view, state)
         when (state.type) {
-            DATA_LOADED -> {
-                renderColor(view, state)
-                renderIcon(view, state)
-
-                view.challengeDifficulty.onItemSelectedListener =
-                    object : AdapterView.OnItemSelectedListener {
-                        override fun onNothingSelected(parent: AdapterView<*>?) {
-                        }
-
-                        override fun onItemSelected(
-                            parent: AdapterView<*>?,
-                            view: View?,
-                            position: Int,
-                            id: Long
-                        ) {
-                            dispatch(AddChallengeNameAction.ChangeDifficulty(position))
-                        }
-
-                    }
-
-                view.challengeNext.setOnClickListener {
-                    dispatch(AddChallengeNameAction.Validate(view.challengeName.text.toString()))
-                }
-            }
-
-            COLOR_CHANGED -> {
-                renderColor(view, state)
-            }
-
-            ICON_CHANGED -> {
-                renderIcon(view, state)
-            }
-
-            DIFFICULTY_CHANGED -> {
+            TAGS_CHANGED -> {
+                renderTags(view, state)
             }
 
             VALIDATION_ERROR_EMPTY_NAME -> {
-                view.challengeName.error = "Think of a name"
+                view.challengeName.error = stringRes(R.string.think_of_a_name)
             }
 
-            VALIDATION_SUCCESSFUL -> {
-                dispatch(AddChallengeNameAction.Next)
+            VALIDATION_NAME_SUCCESSFUL -> {
+                dispatch(EditChallengeAction.ShowNext)
+            }
+        }
+    }
+
+    override fun colorLayoutBars() {}
+
+    private fun renderTags(
+        view: View,
+        state: EditChallengeViewState
+    ) {
+        (view.challengeTagList.adapter as EditItemTagAdapter).updateAll(state.tagViewModels)
+        val add = view.addChallengeTag
+        if (state.maxTagsReached) {
+            add.gone()
+            view.maxTagsMessage.visible()
+        } else {
+            add.visible()
+            view.maxTagsMessage.gone()
+
+            val adapter = EditItemAutocompleteTagAdapter(state.tagNames, activity!!)
+            add.setAdapter(adapter)
+            add.setOnItemClickListener { _, _, position, _ ->
+                dispatch(EditChallengeAction.AddTag(adapter.getItem(position)))
+                add.setText("")
+            }
+            add.threshold = 0
+            add.setOnTouchListener { v, event ->
+                add.showDropDown()
+                false
             }
         }
     }
 
     private fun renderIcon(
         view: View,
-        state: AddChallengeNameViewState
+        state: EditChallengeViewState
     ) {
-        view.challengeIcon.setCompoundDrawablesWithIntrinsicBounds(
+        view.challengeSelectedIcon.setImageDrawable(
             IconicsDrawable(view.context)
-                .icon(state.iicon)
-                .colorRes(R.color.md_white)
-                .sizeDp(24),
-            null, null, null
+                .largeIcon(state.iicon)
         )
 
         view.challengeIcon.setOnClickListener {
             IconPickerDialogController({ icon ->
-                dispatch(AddChallengeNameAction.ChangeIcon(icon))
+                dispatch(EditChallengeAction.ChangeIcon(icon))
             }, state.icon?.androidIcon).showDialog(
                 router,
                 "pick_icon_tag"
@@ -237,12 +157,12 @@ class AddChallengeNameViewController(args: Bundle? = null) :
 
     private fun renderColor(
         view: View,
-        state: AddChallengeNameViewState
+        state: EditChallengeViewState
     ) {
         colorLayout(view, state)
         view.challengeColor.setOnClickListener {
             ColorPickerDialogController({
-                dispatch(AddChallengeNameAction.ChangeColor(it.color))
+                dispatch(EditChallengeAction.ChangeColor(it.color))
             }, state.color.androidColor).showDialog(
                 router,
                 "pick_color_tag"
@@ -252,13 +172,25 @@ class AddChallengeNameViewController(args: Bundle? = null) :
 
     private fun colorLayout(
         view: View,
-        state: AddChallengeNameViewState
+        state: EditChallengeViewState
     ) {
         view.challengeDifficulty.setPopupBackgroundResource(state.color.androidColor.color500)
 
     }
 
-    private val AddChallengeNameViewState.iicon: IIcon
+    private val EditChallengeViewState.iicon: IIcon
         get() = icon?.androidIcon?.icon ?: GoogleMaterial.Icon.gmd_local_florist
+
+    private val EditChallengeViewState.tagViewModels: List<EditItemTagAdapter.TagViewModel>
+        get() = challengeTags.map {
+            EditItemTagAdapter.TagViewModel(
+                name = it.name,
+                icon = it.icon?.androidIcon?.icon ?: MaterialDesignIconic.Icon.gmi_label,
+                tag = it
+            )
+        }
+
+    private val EditChallengeViewState.tagNames: List<String>
+        get() = tags.map { it.name }
 
 }

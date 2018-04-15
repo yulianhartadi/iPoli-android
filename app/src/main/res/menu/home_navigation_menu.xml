@@ -1,18 +1,21 @@
 <?xml version="1.0" encoding="utf-8"?>
-<menu xmlns:android="http://schemas.android.com/apk/res/android">
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
     <group
-        android:id="@+id/drawer_main_group"
+        android:id="@+id/drawerMainGroup"
         android:checkableBehavior="single">
         <item
             android:id="@+id/calendar"
             android:checked="true"
             android:icon="@drawable/ic_event_white_24dp"
+            android:orderInCategory="0"
             android:title="@string/calendar" />
 
         <item
             android:id="@+id/inbox"
             android:checked="false"
             android:icon="@drawable/ic_inbox_white_24dp"
+            android:orderInCategory="0"
             android:title="@string/inbox"
             android:visible="false" />
 
@@ -20,35 +23,42 @@
             android:id="@+id/repeatingQuests"
             android:checked="false"
             android:icon="@drawable/ic_repeat_white_24dp"
+            android:orderInCategory="0"
             android:title="@string/drawer_repeating_quests" />
 
         <item
             android:id="@+id/challenges"
             android:checked="false"
             android:icon="@drawable/ic_sword_white_24dp"
+            android:orderInCategory="0"
             android:title="@string/drawer_challenges" />
+
 
         <item
             android:id="@+id/tags"
             android:checked="false"
-            android:visible="false"
             android:icon="@drawable/ic_tags_black_24dp"
-            android:title="@string/tags" />
-
-        <item
-            android:id="@+id/growth"
-            android:checked="false"
-            android:icon="@drawable/ic_growth_white_24dp"
-            android:title="@string/growth"
-            android:visible="false" />
-
-        <item
-            android:id="@+id/feed"
-            android:checked="false"
-            android:icon="@drawable/ic_summit_black_24dp"
-            android:title="@string/achievement_feed"
-            android:visible="false" />
+            android:orderInCategory="0"
+            android:title="@string/tags"
+            app:actionLayout="@layout/menu_item_tags_view" />
     </group>
+
+    <!--<group>-->
+
+    <!--<item-->
+    <!--android:id="@+id/growth"-->
+    <!--android:checked="false"-->
+    <!--android:icon="@drawable/ic_growth_white_24dp"-->
+    <!--android:title="@string/growth"-->
+    <!--android:visible="false" />-->
+
+    <!--<item-->
+    <!--android:id="@+id/feed"-->
+    <!--android:checked="false"-->
+    <!--android:icon="@drawable/ic_summit_black_24dp"-->
+    <!--android:title="@string/achievement_feed"-->
+    <!--android:visible="false" />-->
+    <!--</group>-->
 
     <group
         android:id="@+id/third_group"
@@ -57,6 +67,7 @@
             android:id="@+id/store"
             android:checked="false"
             android:icon="@drawable/ic_shopping_basket_black_24dp"
+            android:orderInCategory="1"
             android:title="@string/drawer_store" />
 
         <item
@@ -64,12 +75,14 @@
             android:checkable="false"
             android:checked="false"
             android:icon="@drawable/ic_person_add_white_24dp"
+            android:orderInCategory="1"
             android:title="@string/invite_friends" />
 
         <item
             android:id="@+id/settings"
             android:checked="false"
             android:icon="@drawable/ic_settings_black_24dp"
+            android:orderInCategory="1"
             android:title="@string/settings" />
 
         <item
@@ -77,6 +90,7 @@
             android:checkable="false"
             android:checked="false"
             android:icon="@drawable/ic_forum_black_24dp"
+            android:orderInCategory="1"
             android:title="@string/community" />
 
         <item
@@ -84,18 +98,21 @@
             android:checkable="false"
             android:checked="false"
             android:icon="@drawable/ic_comment_white_24dp"
+            android:orderInCategory="1"
             android:title="@string/feedback" />
         <item
             android:id="@+id/contactUs"
             android:checkable="false"
             android:checked="false"
             android:icon="@drawable/ic_email_white_24dp"
+            android:orderInCategory="1"
             android:title="@string/contact_us" />
         <item
             android:id="@+id/signIn"
             android:checkable="false"
             android:checked="false"
             android:icon="@drawable/ic_login_white_24dp"
+            android:orderInCategory="1"
             android:title="@string/sign_in_button" />
     </group>
 </menu>

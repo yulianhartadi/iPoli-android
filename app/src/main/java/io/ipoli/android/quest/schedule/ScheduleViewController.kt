@@ -193,10 +193,10 @@ class ScheduleViewController(args: Bundle? = null) :
         val fabTranslation = ObjectAnimator.ofFloat(fab, "x", x)
 
         val fabColor = attrData(R.attr.colorAccent)
-        val primaryColor = attrData(R.attr.colorPrimary)
+        val whiteColor = colorRes(R.color.md_white)
 
-        val startColor = if (reverse) primaryColor else fabColor
-        val endColor = if (reverse) fabColor else primaryColor
+        val startColor = if (reverse) whiteColor else fabColor
+        val endColor = if (reverse) fabColor else whiteColor
 
         val rgbAnim = ObjectAnimator.ofArgb(
             fab,

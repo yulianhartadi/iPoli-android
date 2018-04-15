@@ -2,6 +2,7 @@ package io.ipoli.android.challenge.show
 
 import android.animation.ObjectAnimator
 import android.content.res.ColorStateList
+import android.graphics.drawable.GradientDrawable
 import android.os.Bundle
 import android.support.annotation.ColorRes
 import android.support.design.widget.AppBarLayout
@@ -32,12 +33,13 @@ import io.ipoli.android.common.redux.android.ReduxViewController
 import io.ipoli.android.common.text.DateFormatter
 import io.ipoli.android.common.view.*
 import io.ipoli.android.common.view.recyclerview.SimpleViewHolder
+import io.ipoli.android.common.view.recyclerview.SwipeToCompleteCallback
 import io.ipoli.android.quest.Quest
 import io.ipoli.android.quest.RepeatingQuest
-import io.ipoli.android.common.view.recyclerview.SwipeToCompleteCallback
-import io.ipoli.android.repeatingquest.show.RepeatingQuestViewController
+import io.ipoli.android.tag.Tag
 import kotlinx.android.synthetic.main.controller_challenge.view.*
 import kotlinx.android.synthetic.main.item_challenge_quest.view.*
+import kotlinx.android.synthetic.main.item_quest_tag_list.view.*
 
 
 /**
@@ -112,7 +114,7 @@ class ChallengeViewController(args: Bundle? = null) :
 
     private fun setupAppBar(view: View) {
         view.appbar.addOnOffsetChangedListener(object :
-            RepeatingQuestViewController.AppBarStateChangeListener() {
+            AppBarStateChangeListener() {
             override fun onStateChanged(appBarLayout: AppBarLayout, state: State) {
 
                 appBarLayout.post {
@@ -235,6 +237,7 @@ class ChallengeViewController(args: Bundle? = null) :
                 colorLayout(state, view)
 
                 renderName(state.name, view)
+                renderTags(state.tags, view)
 
                 val animator =
                     ObjectAnimator.ofInt(view.progress, "progress", 0, state.progressPercent)
@@ -277,6 +280,26 @@ class ChallengeViewController(args: Bundle? = null) :
             else -> {
             }
         }
+    }
+
+    private fun renderTags(
+        tags: List<Tag>,
+        view: View
+    ) {
+        view.tagList.removeAllViews()
+
+        val inflater = LayoutInflater.from(activity!!)
+        tags.forEach { tag ->
+            val item = inflater.inflate(R.layout.item_quest_tag_list, view.tagList, false)
+            renderTag(item, tag)
+            view.tagList.addView(item)
+        }
+    }
+
+    private fun renderTag(view: View, tag: Tag) {
+        view.tagName.text = tag.name
+        val indicator = view.tagName.compoundDrawablesRelative[0] as GradientDrawable
+        indicator.setColor(colorRes(tag.color.androidColor.color500))
     }
 
     private fun renderNote(
