@@ -107,7 +107,7 @@ data class DbQuest(override val map: MutableMap<String, Any?> = mutableMapOf()) 
     var icon: String? by map
     var tagIds: Map<String, Boolean> by map
     var duration: Int by map
-    var reminder: MutableMap<String, Any?>? by map
+    var reminders: List<MutableMap<String, Any?>> by map
     var startMinute: Long? by map
     var experience: Long? by map
     var coins: Long? by map
@@ -449,9 +449,7 @@ class FirestoreQuestRepository(
 
     override fun save(entity: Quest): Quest {
         val quest = super.save(entity)
-        quest.reminder?.let {
-            saveReminders(quest.id, listOf(it))
-        }
+        saveReminders(quest.id, quest.reminders)
         return quest
     }
 
@@ -460,15 +458,15 @@ class FirestoreQuestRepository(
 
         val batch = database.batch()
 
-        val questToReminder = quests.map { Pair(it.id, it.reminder) }.filter { it.second != null }
+        val questToReminder = quests.map { q -> q.reminders.map { Pair(q.id, it) } }.flatten()
 
-        val questIds = questToReminder.map { it.first }
+        val questIds = quests.map { it.id }
 
         purgeReminders(questIds, batch)
 
         questToReminder.forEach {
             val ref = remindersReference.document()
-            batch.set(ref, createReminderData(it.first, it.second!!))
+            batch.set(ref, createReminderData(it.first, it.second))
         }
 
         batch.commit()
@@ -534,8 +532,8 @@ class FirestoreQuestRepository(
     override fun undoRemove(id: String) {
         super.undoRemove(id)
         val quest = findById(id)!!
-        quest.reminder?.let {
-            addReminders(listOf(it), id)
+        if (quest.reminders.isNotEmpty()) {
+            addReminders(quest.reminders, id)
         }
     }
 
@@ -592,7 +590,7 @@ class FirestoreQuestRepository(
             completedAtTime = cq.completedAtMinute?.let {
                 Time.of(it.toInt())
             },
-            reminder = cq.reminder?.let {
+            reminders = cq.reminders.map {
                 val cr = DbReminder(it)
                 Reminder(cr.message, Time.of(cr.minute), cr.date?.startOfDayUTC)
             },
@@ -629,7 +627,7 @@ class FirestoreQuestRepository(
         q.duration = entity.duration
         q.scheduledDate = entity.scheduledDate.startOfDayUTC()
         q.originalScheduledDate = entity.originalScheduledDate.startOfDayUTC()
-        q.reminder = entity.reminder?.let {
+        q.reminders = entity.reminders.map {
             createDbReminder(it).map
         }
         q.subQuests = entity.subQuests.map {

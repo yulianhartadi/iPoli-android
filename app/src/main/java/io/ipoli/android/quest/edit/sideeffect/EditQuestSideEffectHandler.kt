@@ -47,7 +47,7 @@ class EditQuestSideEffectHandler : AppSideEffectHandler() {
                     scheduledDate = scheduledDate,
                     startTime = addQuestState.time,
                     duration = addQuestState.duration ?: Constants.QUEST_MIN_DURATION,
-                    reminder = reminder
+                    reminders = reminder?.let { listOf(it) }
                 )
 
                 val result = saveQuestUseCase.execute(questParams)
@@ -88,7 +88,7 @@ class EditQuestSideEffectHandler : AppSideEffectHandler() {
                     scheduledDate = s.scheduleDate,
                     startTime = s.startTime,
                     duration = s.duration,
-                    reminder = reminder,
+                    reminders = reminder?.let { listOf(it) },
                     challengeId = s.challenge?.id,
                     repeatingQuestId = s.repeatingQuestId,
                     note = s.note,

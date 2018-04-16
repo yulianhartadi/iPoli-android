@@ -49,7 +49,7 @@ data class DbRepeatingQuest(override val map: MutableMap<String, Any?> = mutable
     var tagIds: Map<String, Boolean> by map
     var startMinute: Long? by map
     var duration: Int by map
-    var reminder: MutableMap<String, Any?>? by map
+    var reminders: List<MutableMap<String, Any?>> by map
     var repeatingPattern: MutableMap<String, Any?> by map
     var subQuests: List<MutableMap<String, Any?>> by map
     var challengeId: String? by map
@@ -154,7 +154,7 @@ class FirestoreRepeatingQuestRepository(
             },
             startTime = rq.startMinute?.let { Time.of(it.toInt()) },
             duration = rq.duration,
-            reminder = rq.reminder?.let {
+            reminders = rq.reminders.map {
                 val cr = DbReminder(it)
                 Reminder(cr.message, Time.of(cr.minute), cr.date?.startOfDayUTC)
             },
@@ -241,7 +241,7 @@ class FirestoreRepeatingQuestRepository(
         rq.icon = entity.icon?.name
         rq.duration = entity.duration
         rq.startMinute = entity.startTime?.toMinuteOfDay()?.toLong()
-        rq.reminder = entity.reminder?.let {
+        rq.reminders = entity.reminders.map {
             createDbReminder(it).map
         }
         rq.subQuests = entity.subQuests.map {

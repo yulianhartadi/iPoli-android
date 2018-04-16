@@ -70,7 +70,7 @@ class ReminderNotificationJob : Job(), Injects<Module> {
         launch(UI) {
             quests.forEach {
 
-                val reminder = it.reminder!!
+                val reminder = it.reminders.first()
                 val message =
                     reminder.message.let { if (it.isEmpty()) "Ready for a quest?" else it }
 
@@ -151,6 +151,7 @@ class ReminderNotificationJob : Job(), Injects<Module> {
                 .setContentText(message)
                 .setSmallIcon(android.graphics.drawable.Icon.createWithBitmap(icon.toBitmap()))
                 .setLargeIcon(icon.toBitmap())
+            
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                 builder.setChannelId(Constants.NOTIFICATION_CHANNEL_ID)
             }

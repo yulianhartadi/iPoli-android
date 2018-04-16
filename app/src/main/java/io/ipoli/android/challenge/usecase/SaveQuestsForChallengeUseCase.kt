@@ -60,7 +60,7 @@ open class SaveQuestsForChallengeUseCase(
                             icon = rq.icon,
                             startTime = rq.startTime,
                             duration = rq.duration,
-                            reminder = rq.reminder,
+                            reminders = rq.reminders,
                             challengeId = challengeId,
                             repeatPattern = rq.repeatPattern
                         )

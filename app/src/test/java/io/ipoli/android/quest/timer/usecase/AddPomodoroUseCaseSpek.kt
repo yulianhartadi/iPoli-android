@@ -4,11 +4,9 @@ import com.nhaarman.mockito_kotlin.any
 import com.nhaarman.mockito_kotlin.doAnswer
 import com.nhaarman.mockito_kotlin.doReturn
 import com.nhaarman.mockito_kotlin.mock
-import io.ipoli.android.common.datetime.Time
+import io.ipoli.android.TestUtil
 import io.ipoli.android.common.datetime.plusMinutes
-import io.ipoli.android.quest.Color
 import io.ipoli.android.quest.Quest
-import io.ipoli.android.quest.Reminder
 import io.ipoli.android.quest.TimeRange
 import io.ipoli.android.quest.data.persistence.QuestRepository
 import io.ipoli.android.quest.timer.longBreaks
@@ -19,7 +17,6 @@ import org.jetbrains.spek.api.Spek
 import org.jetbrains.spek.api.dsl.describe
 import org.jetbrains.spek.api.dsl.it
 import org.threeten.bp.Instant
-import org.threeten.bp.LocalDate
 
 /**
  * Created by Polina Zhelyazkova <polina@mypoli.fun>
@@ -45,13 +42,7 @@ class AddPomodoroUseCaseSpek : Spek({
                 .execute(AddPomodoroUseCase.Params(quest.id))
         }
 
-        val simpleQuest = Quest(
-            name = "",
-            color = Color.BLUE,
-            scheduledDate = LocalDate.now(),
-            duration = 30,
-            reminder = Reminder("", Time.now(), LocalDate.now())
-        )
+        val simpleQuest = TestUtil.quest
 
         val now = Instant.now()
 

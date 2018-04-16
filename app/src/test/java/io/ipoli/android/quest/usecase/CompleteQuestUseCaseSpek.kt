@@ -6,14 +6,11 @@ import com.nhaarman.mockito_kotlin.mock
 import com.nhaarman.mockito_kotlin.reset
 import io.ipoli.android.TestUtil
 import io.ipoli.android.common.SimpleReward
-import io.ipoli.android.common.datetime.Time
 import io.ipoli.android.common.rate.RatePopupScheduler
 import io.ipoli.android.pet.Food
 import io.ipoli.android.player.persistence.PlayerRepository
 import io.ipoli.android.player.usecase.RewardPlayerUseCase
-import io.ipoli.android.quest.Color
 import io.ipoli.android.quest.Quest
-import io.ipoli.android.quest.Reminder
 import io.ipoli.android.quest.data.persistence.QuestRepository
 import io.ipoli.android.quest.job.QuestCompleteScheduler
 import io.ipoli.android.quest.job.ReminderScheduler
@@ -22,7 +19,6 @@ import org.amshove.kluent.*
 import org.jetbrains.spek.api.Spek
 import org.jetbrains.spek.api.dsl.describe
 import org.jetbrains.spek.api.dsl.it
-import org.threeten.bp.LocalDate
 import org.threeten.bp.LocalDateTime
 
 /**
@@ -42,13 +38,7 @@ class CompleteQuestUseCaseSpek : Spek({
 
         val player = TestUtil.player()
 
-        val quest = Quest(
-            name = "",
-            color = Color.BLUE,
-            scheduledDate = LocalDate.now(),
-            duration = 30,
-            reminder = Reminder("", Time.now(), LocalDate.now())
-        )
+        val quest = TestUtil.quest
 
         val questRepo = createQuestRepository(quest)
 
