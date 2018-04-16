@@ -1,27 +1,33 @@
 package io.ipoli.android.quest.job
 
 import android.annotation.SuppressLint
+import android.app.Notification
 import android.app.NotificationManager
 import android.content.Context
+import android.os.Build
 import android.support.v4.app.NotificationCompat
 import android.widget.Toast
 import com.evernote.android.job.Job
 import com.evernote.android.job.JobManager
 import com.evernote.android.job.JobRequest
 import com.evernote.android.job.util.support.PersistableBundleCompat
-import kotlinx.coroutines.experimental.android.UI
-import kotlinx.coroutines.experimental.launch
+import com.mikepenz.google_material_typeface_library.GoogleMaterial
+import com.mikepenz.iconics.IconicsDrawable
 import io.ipoli.android.Constants
 import io.ipoli.android.R
 import io.ipoli.android.common.IntentUtil
 import io.ipoli.android.common.datetime.Time
 import io.ipoli.android.common.datetime.toMillis
 import io.ipoli.android.common.di.Module
+import io.ipoli.android.common.view.AndroidIcon
 import io.ipoli.android.common.view.asThemedWrapper
+import io.ipoli.android.common.view.largeIcon
 import io.ipoli.android.myPoliApp
 import io.ipoli.android.quest.Quest
 import io.ipoli.android.quest.reminder.ReminderNotificationPopup
 import io.ipoli.android.quest.reminder.ReminderNotificationViewModel
+import kotlinx.coroutines.experimental.android.UI
+import kotlinx.coroutines.experimental.launch
 import org.threeten.bp.Instant
 import org.threeten.bp.LocalDate
 import org.threeten.bp.LocalDateTime
@@ -70,8 +76,25 @@ class ReminderNotificationJob : Job(), Injects<Module> {
 
                 val startTimeMessage = startTimeMessage(it)
 
+                val iconicsDrawable = IconicsDrawable(this@ReminderNotificationJob.context)
+                val icon = it.icon?.let {
+                    val androidIcon = AndroidIcon.valueOf(it.name)
+                    iconicsDrawable.largeIcon(
+                        androidIcon.icon,
+                        androidIcon.color
+                    )
+                } ?: iconicsDrawable.largeIcon(
+                    GoogleMaterial.Icon.gmd_notifications_active,
+                    R.color.md_blue_500
+                )
+
                 val questName = it.name
-                val notificationId = showNotification(questName, message, notificationManager)
+                val notificationId = showNotification(
+                    questName,
+                    message,
+                    icon,
+                    notificationManager
+                )
 
                 val viewModel = ReminderNotificationViewModel(
                     it.id,
@@ -106,26 +129,52 @@ class ReminderNotificationJob : Job(), Injects<Module> {
     private fun showNotification(
         questName: String,
         message: String,
+        icon: IconicsDrawable,
         notificationManager: NotificationManager
     ): Int {
-        val notification = createNotification(questName, message)
+        val notification = createNotification(questName, icon, message)
         val notificationId = Random().nextInt()
+
         notificationManager.notify(notificationId, notification)
         return notificationId
     }
 
-    private fun createNotification(title: String, message: String) =
-        NotificationCompat.Builder(
-            context,
-            Constants.NOTIFICATION_CHANNEL_ID
-        )
-            .setSmallIcon(R.drawable.ic_notification_small)
-            .setContentTitle(title)
-            .setContentText(message)
-            .setDefaults(NotificationCompat.DEFAULT_ALL)
-            .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
-            .setAutoCancel(true)
-            .build()
+    private fun createNotification(
+        title: String,
+        icon: IconicsDrawable,
+        message: String
+    ): Notification {
+
+        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            val builder = Notification.Builder(context)
+                .setContentTitle(title)
+                .setContentText(message)
+                .setSmallIcon(android.graphics.drawable.Icon.createWithBitmap(icon.toBitmap()))
+                .setLargeIcon(icon.toBitmap())
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                builder.setChannelId(Constants.NOTIFICATION_CHANNEL_ID)
+            }
+
+            builder.setDefaults(Notification.DEFAULT_ALL)
+                .setVisibility(Notification.VISIBILITY_PUBLIC)
+                .setAutoCancel(true)
+                .build()
+        } else {
+
+            NotificationCompat.Builder(
+                context,
+                Constants.NOTIFICATION_CHANNEL_ID
+            )
+                .setSmallIcon(R.drawable.ic_notification_small)
+                .setContentTitle(title)
+                .setContentText(message)
+                .setLargeIcon(icon.toBitmap())
+                .setDefaults(NotificationCompat.DEFAULT_ALL)
+                .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
+                .setAutoCancel(true)
+                .build()
+        }
+    }
 
     private fun startTimeMessage(quest: Quest): String {
         val daysDiff = ChronoUnit.DAYS.between(quest.scheduledDate, LocalDate.now())
@@ -145,7 +194,7 @@ class ReminderNotificationJob : Job(), Injects<Module> {
     }
 
     companion object {
-        val TAG = "job_reminder_notification_tag"
+        const val TAG = "job_reminder_notification_tag"
     }
 }
 

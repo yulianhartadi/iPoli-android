@@ -9,11 +9,14 @@ import io.ipoli.android.R
  * Created by Venelin Valkov <venelin@mypoli.fun>
  * on 04/11/2018.
  */
-fun IconicsDrawable.largeIcon(icon: IIcon): IconicsDrawable =
+fun IconicsDrawable.largeIcon(icon: IIcon, @ColorRes color: Int): IconicsDrawable =
     icon(icon)
-        .colorRes(R.color.md_white)
+        .colorRes(color)
         .paddingDp(8)
         .sizeDp(64)
+
+fun IconicsDrawable.largeIcon(icon: IIcon): IconicsDrawable =
+    largeIcon(icon, R.color.md_white)
 
 fun IconicsDrawable.normalIcon(icon: IIcon, @ColorRes color: Int): IconicsDrawable =
     icon(icon)

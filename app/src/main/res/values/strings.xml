@@ -1260,4 +1260,5 @@
     <string name="power_up_tags_long_desc">Tags help you separate different types of tasks so you can search &amp; follow progress easily</string>
     <string name="power_up_tags_title">Unlimited Tags</string>
     <string name="max_tags_message">(Limit of 3 tags reached)</string>
+    <string name="remind_label">Remind</string>
 </resources>
