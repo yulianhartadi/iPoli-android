@@ -31,7 +31,7 @@ class UndoCompleteQuestUseCaseSpek : Spek({
             color = Color.BLUE,
             scheduledDate = LocalDate.now(),
             duration = 30,
-            reminder = Reminder("", Time.now(), LocalDate.now()),
+            reminders = listOf(Reminder("", Time.now(), LocalDate.now())),
             experience = 20,
             coins = 10,
             bounty = Quest.Bounty.None

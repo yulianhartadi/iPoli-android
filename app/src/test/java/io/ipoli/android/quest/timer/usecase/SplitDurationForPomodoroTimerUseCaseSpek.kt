@@ -1,7 +1,8 @@
 package io.ipoli.android.quest.timer.usecase
 
-import io.ipoli.android.common.datetime.Time
-import io.ipoli.android.quest.*
+import io.ipoli.android.TestUtil
+import io.ipoli.android.quest.Quest
+import io.ipoli.android.quest.TimeRange
 import io.ipoli.android.quest.timer.longBreaks
 import io.ipoli.android.quest.timer.pomodoros
 import io.ipoli.android.quest.timer.shortBreaks
@@ -12,7 +13,6 @@ import org.jetbrains.spek.api.Spek
 import org.jetbrains.spek.api.dsl.describe
 import org.jetbrains.spek.api.dsl.it
 import org.threeten.bp.Instant
-import org.threeten.bp.LocalDate
 
 /**
  * Created by Polina Zhelyazkova <polina@mypoli.fun>
@@ -29,13 +29,7 @@ class SplitDurationForPomodoroTimerUseCaseSpek : Spek({
                 )
             )
 
-        val simpleQuest = Quest(
-            name = "",
-            color = Color.BLUE,
-            scheduledDate = LocalDate.now(),
-            duration = 30,
-            reminder = Reminder("", Time.now(), LocalDate.now())
-        )
+        val simpleQuest = TestUtil.quest
 
         it("should be split into 1 work and 1 break") {
             val quest = simpleQuest.copy(
