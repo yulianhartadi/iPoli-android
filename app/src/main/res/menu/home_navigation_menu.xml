@@ -97,7 +97,7 @@
             android:id="@+id/feedback"
             android:checkable="false"
             android:checked="false"
-            android:icon="@drawable/ic_comment_white_24dp"
+            android:icon="@drawable/ic_megaphone_black_24dp"
             android:orderInCategory="1"
             android:title="@string/feedback" />
         <item

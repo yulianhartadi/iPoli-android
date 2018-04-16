@@ -143,15 +143,14 @@ class ReminderNotificationJob : Job(), Injects<Module> {
         title: String,
         icon: IconicsDrawable,
         message: String
-    ): Notification {
-
-        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+    ) =
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
             val builder = Notification.Builder(context)
                 .setContentTitle(title)
                 .setContentText(message)
                 .setSmallIcon(android.graphics.drawable.Icon.createWithBitmap(icon.toBitmap()))
                 .setLargeIcon(icon.toBitmap())
-            
+
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                 builder.setChannelId(Constants.NOTIFICATION_CHANNEL_ID)
             }
@@ -175,7 +174,6 @@ class ReminderNotificationJob : Job(), Injects<Module> {
                 .setAutoCancel(true)
                 .build()
         }
-    }
 
     private fun startTimeMessage(quest: Quest): String {
         val daysDiff = ChronoUnit.DAYS.between(quest.scheduledDate, LocalDate.now())
