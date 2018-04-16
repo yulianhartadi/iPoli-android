@@ -50,7 +50,7 @@ class SettingsViewController(args: Bundle? = null) :
     ) {
         view.enableSyncCalendars.setOnCheckedChangeListener(null)
         view.enableSyncCalendars.isChecked = state.isCalendarSyncEnabled
-        view.enableSyncCalendars.setOnCheckedChangeListener { buttonView, isChecked ->
+        view.enableSyncCalendars.setOnCheckedChangeListener { _, isChecked ->
             if (isChecked) {
                 requestPermissions(
                     mapOf(Manifest.permission.READ_CALENDAR to stringRes(R.string.allow_read_calendars_perm_reason)),

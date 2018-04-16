@@ -9,13 +9,13 @@ import android.view.LayoutInflater
 import android.view.View
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
-import kotlinx.android.synthetic.main.dialog_reminder_picker.view.*
-import kotlinx.android.synthetic.main.view_dialog_header.view.*
 import io.ipoli.android.R
 import io.ipoli.android.common.ViewUtils
 import io.ipoli.android.common.view.MviDialogController
 import io.ipoli.android.common.view.stringRes
 import io.ipoli.android.pet.AndroidPetAvatar
+import kotlinx.android.synthetic.main.dialog_reminder_picker.view.*
+import kotlinx.android.synthetic.main.view_dialog_header.view.*
 import space.traversal.kapsule.required
 
 typealias TimeUnitConverter = java.util.concurrent.TimeUnit
