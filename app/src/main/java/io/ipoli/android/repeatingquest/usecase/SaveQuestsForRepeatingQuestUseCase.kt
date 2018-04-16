@@ -258,9 +258,9 @@ class SaveQuestsForRepeatingQuestUseCase(
             startTime = rq.startTime,
             duration = rq.duration,
             scheduledDate = scheduleDate,
-            reminder = rq.reminder?.copy(
-                remindDate = scheduleDate
-            ),
+            reminders = rq.reminders.map {
+                it.copy(remindDate = scheduleDate)
+            },
             repeatingQuestId = rq.id,
             challengeId = rq.challengeId,
             note = rq.note,

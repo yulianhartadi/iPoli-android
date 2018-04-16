@@ -191,7 +191,7 @@ object EditRepeatingQuestReducer : BaseViewStateReducer<EditRepeatingQuestViewSt
                     startTime = rq.startTime,
                     repeatPattern = rq.repeatPattern,
                     duration = rq.duration.minutes,
-                    reminder = rq.reminder?.let {
+                    reminder = rq.reminders.firstOrNull()?.let {
                         ReminderViewModel(
                             it.message,
                             it.toMinutesFromStart(it.remindTime).toLong()

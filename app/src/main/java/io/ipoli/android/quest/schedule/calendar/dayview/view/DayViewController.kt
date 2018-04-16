@@ -955,7 +955,7 @@ class DayViewController :
             val questVms = schedule!!.scheduledQuests.map { q ->
                 val color = q.color.androidColor
 
-                val reminder = q.reminder?.let {
+                val reminder = q.reminders.firstOrNull()?.let {
                     ReminderViewModel(
                         it.message,
                         it.toMinutesFromStart(q.scheduledDate, q.startTime!!)

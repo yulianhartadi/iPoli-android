@@ -64,7 +64,7 @@ class RepeatingQuestSideEffectHandler : AppSideEffectHandler() {
                     icon = rqState.icon,
                     startTime = rqState.startTime,
                     duration = rqState.duration.intValue,
-                    reminder = reminder,
+                    reminders = reminder?.let { listOf(it) },
                     repeatPattern = rqState.repeatPattern!!,
                     challengeId = rqState.challenge?.id,
                     note = rqState.note

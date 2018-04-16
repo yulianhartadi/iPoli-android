@@ -159,7 +159,7 @@ class DayViewSideEffectHandler : AppSideEffectHandler() {
             scheduledDate = scheduledDate,
             startTime = dayViewState.startTime,
             duration = dayViewState.duration!!,
-            reminder = reminder,
+            reminders = reminder?.let { listOf(it) },
             repeatingQuestId = dayViewState.repeatingQuestId,
             tags = null
         )

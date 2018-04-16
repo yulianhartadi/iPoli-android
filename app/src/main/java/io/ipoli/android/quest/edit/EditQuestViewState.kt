@@ -78,7 +78,7 @@ object EditQuestReducer : BaseViewStateReducer<EditQuestViewState>() {
         is EditQuestAction.Loaded -> {
             val quest = action.quest
             val params = action.params
-            val reminderViewModel = quest.reminder?.let {
+            val reminderViewModel = quest.reminders.firstOrNull()?.let {
                 if (quest.startTime == null) {
                     null
                 } else {

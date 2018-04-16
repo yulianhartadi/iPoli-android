@@ -9,8 +9,6 @@ import com.evernote.android.job.Job
 import com.evernote.android.job.JobManager
 import com.evernote.android.job.JobRequest
 import com.evernote.android.job.util.support.PersistableBundleCompat
-import kotlinx.coroutines.experimental.android.UI
-import kotlinx.coroutines.experimental.launch
 import io.ipoli.android.Constants
 import io.ipoli.android.R
 import io.ipoli.android.common.IntentUtil
@@ -22,6 +20,8 @@ import io.ipoli.android.myPoliApp
 import io.ipoli.android.quest.Quest
 import io.ipoli.android.quest.reminder.ReminderNotificationPopup
 import io.ipoli.android.quest.reminder.ReminderNotificationViewModel
+import kotlinx.coroutines.experimental.android.UI
+import kotlinx.coroutines.experimental.launch
 import org.threeten.bp.Instant
 import org.threeten.bp.LocalDate
 import org.threeten.bp.LocalDateTime
@@ -64,7 +64,7 @@ class ReminderNotificationJob : Job(), Injects<Module> {
         launch(UI) {
             quests.forEach {
 
-                val reminder = it.reminder!!
+                val reminder = it.reminders.first()
                 val message =
                     reminder.message.let { if (it.isEmpty()) "Ready for a quest?" else it }
 
