@@ -6,6 +6,7 @@ import android.app.Notification
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.content.Context
+import android.net.Uri
 import android.os.Build
 import com.crashlytics.android.Crashlytics
 import com.evernote.android.job.JobManager
@@ -96,6 +97,10 @@ class myPoliApp : Application() {
             channel.description = "Reminder notifications"
             channel.enableLights(true)
             channel.enableVibration(true)
+            channel.setSound(
+                Uri.parse("android.resource://" + packageName + "/" + R.raw.notification),
+                Notification.AUDIO_ATTRIBUTES_DEFAULT
+            )
             channel.lockscreenVisibility = Notification.VISIBILITY_PUBLIC
             notificationManager.createNotificationChannel(channel)
         }

@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.app.Notification
 import android.app.NotificationManager
 import android.content.Context
+import android.net.Uri
 import android.os.Build
 import android.support.v4.app.NotificationCompat
 import android.widget.Toast
@@ -132,7 +133,10 @@ class ReminderNotificationJob : Job(), Injects<Module> {
         icon: IconicsDrawable,
         notificationManager: NotificationManager
     ): Int {
-        val notification = createNotification(questName, icon, message)
+        val sound =
+            Uri.parse("android.resource://" + context.packageName + "/" + R.raw.notification)
+        val notification = createNotification(questName, icon, message, sound)
+
         val notificationId = Random().nextInt()
 
         notificationManager.notify(notificationId, notification)
@@ -142,7 +146,8 @@ class ReminderNotificationJob : Job(), Injects<Module> {
     private fun createNotification(
         title: String,
         icon: IconicsDrawable,
-        message: String
+        message: String,
+        sound: Uri
     ) =
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
             val builder = Notification.Builder(context)
@@ -150,7 +155,7 @@ class ReminderNotificationJob : Job(), Injects<Module> {
                 .setContentText(message)
                 .setSmallIcon(android.graphics.drawable.Icon.createWithBitmap(icon.toBitmap()))
                 .setLargeIcon(icon.toBitmap())
-
+                .setSound(sound)
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                 builder.setChannelId(Constants.NOTIFICATION_CHANNEL_ID)
             }
@@ -160,7 +165,6 @@ class ReminderNotificationJob : Job(), Injects<Module> {
                 .setAutoCancel(true)
                 .build()
         } else {
-
             NotificationCompat.Builder(
                 context,
                 Constants.NOTIFICATION_CHANNEL_ID
@@ -168,6 +172,7 @@ class ReminderNotificationJob : Job(), Injects<Module> {
                 .setSmallIcon(R.drawable.ic_notification_small)
                 .setContentTitle(title)
                 .setContentText(message)
+                .setSound(sound)
                 .setLargeIcon(icon.toBitmap())
                 .setDefaults(NotificationCompat.DEFAULT_ALL)
                 .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
