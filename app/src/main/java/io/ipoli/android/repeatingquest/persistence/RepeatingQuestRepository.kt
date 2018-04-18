@@ -50,7 +50,7 @@ data class DbRepeatingQuest(override val map: MutableMap<String, Any?> = mutable
     var startMinute: Long? by map
     var duration: Int by map
     var reminders: List<MutableMap<String, Any?>> by map
-    var repeatingPattern: MutableMap<String, Any?> by map
+    var repeatPattern: MutableMap<String, Any?> by map
     var subQuests: List<MutableMap<String, Any?>> by map
     var challengeId: String? by map
     var note: String? by map
@@ -158,7 +158,7 @@ class FirestoreRepeatingQuestRepository(
                 val cr = DbReminder(it)
                 Reminder(cr.message, Time.of(cr.minute), cr.date?.startOfDayUTC)
             },
-            repeatPattern = createRepeatPattern(DbRepeatPattern(rq.repeatingPattern)),
+            repeatPattern = createRepeatPattern(DbRepeatPattern(rq.repeatPattern)),
             subQuests = rq.subQuests.map {
                 val dsq = DbSubQuest(it)
                 SubQuest(
@@ -251,7 +251,7 @@ class FirestoreRepeatingQuestRepository(
                 completedAtTime = it.completedAtTime?.toMinuteOfDay()?.toLong()
             }.map
         }
-        rq.repeatingPattern = createDbRepeatingPattern(entity.repeatPattern).map
+        rq.repeatPattern = createDbRepeatingPattern(entity.repeatPattern).map
         rq.challengeId = entity.challengeId
         rq.note = entity.note
         rq.updatedAt = entity.updatedAt.toEpochMilli()
@@ -297,6 +297,10 @@ class FirestoreRepeatingQuestRepository(
                 rp.type = DbRepeatPatternType.FLEXIBLE_MONTHLY.name
                 rp.timesPerMonth = repeatPattern.timesPerMonth
                 rp.preferredDays = repeatPattern.preferredDays.map { it.toString() }
+
+                rp.scheduledPeriods = repeatPattern.scheduledPeriods.entries
+                    .associate { it.key.startOfDayUTC().toString() to it.value.map { it.startOfDayUTC() } }
+                    .toMutableMap()
             }
         }
         return rp
