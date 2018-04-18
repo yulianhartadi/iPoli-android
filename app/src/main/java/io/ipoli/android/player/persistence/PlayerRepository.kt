@@ -161,7 +161,7 @@ class FirestorePlayerRepository(
             healthPoints = cPet.healthPoints,
             coinBonus = cPet.coinBonus,
             experienceBonus = cPet.experienceBonus,
-            bountyBonus = cPet.itemDropChanceBonus
+            itemDropBonus = cPet.itemDropBonus
         )
 
         val ci = DbInventory(cp.inventory)
@@ -245,7 +245,7 @@ class FirestorePlayerRepository(
             it.moodPoints = pet.moodPoints
             it.coinBonus = pet.coinBonus
             it.experienceBonus = pet.experienceBonus
-            it.itemDropChanceBonus = pet.bountyBonus
+            it.itemDropBonus = pet.itemDropBonus
         }
 
     private fun createDbPetEquipment(equipment: PetEquipment) =

@@ -101,7 +101,7 @@ class PetPresenter(
                     hp = pet.healthPoints,
                     coinsBonus = pet.coinBonus,
                     xpBonus = pet.experienceBonus,
-                    unlockChanceBonus = pet.bountyBonus,
+                    unlockChanceBonus = pet.itemDropBonus,
                     avatar = pet.avatar,
                     mood = pet.mood,
                     isDead = pet.isDead,

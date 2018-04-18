@@ -45,7 +45,7 @@ data class DbPet(val map: MutableMap<String, Any?> = mutableMapOf()) {
     var healthPoints: Int by map
     var experienceBonus: Float by map
     var coinBonus: Float by map
-    var itemDropChanceBonus: Float by map
+    var itemDropBonus: Float by map
 }
 
 data class DbPetEquipment(val map: MutableMap<String, Any?> = mutableMapOf()) {

@@ -22,7 +22,7 @@ data class Pet(
     val mood: PetMood = moodFor(moodPoints, healthPoints),
     val experienceBonus: Float = bonusFor(mood, MAX_XP_BONUS),
     val coinBonus: Float = bonusFor(mood, MAX_COIN_BONUS),
-    val bountyBonus: Float = bonusFor(mood, MAX_BOUNTY_BONUS)
+    val itemDropBonus: Float = bonusFor(mood, MAX_BOUNTY_BONUS)
 ) {
 
     val isDead = healthPoints == 0
@@ -42,7 +42,7 @@ data class Pet(
                 mood = SAD,
                 coinBonus = 0f,
                 experienceBonus = 0f,
-                bountyBonus = 0f
+                itemDropBonus = 0f
             )
         }
 
@@ -58,7 +58,7 @@ data class Pet(
             mood = newMood,
             coinBonus = bonusFor(newMood, MAX_COIN_BONUS),
             experienceBonus = bonusFor(newMood, MAX_XP_BONUS),
-            bountyBonus = bonusFor(newMood, MAX_BOUNTY_BONUS)
+            itemDropBonus = bonusFor(newMood, MAX_BOUNTY_BONUS)
         )
     }
 
@@ -74,7 +74,7 @@ data class Pet(
             mood = newMood,
             coinBonus = bonusFor(newMood, MAX_COIN_BONUS),
             experienceBonus = bonusFor(newMood, MAX_XP_BONUS),
-            bountyBonus = bonusFor(newMood, MAX_BOUNTY_BONUS)
+            itemDropBonus = bonusFor(newMood, MAX_BOUNTY_BONUS)
         )
     }
 
@@ -99,7 +99,7 @@ data class Pet(
             mood = newMood,
             coinBonus = bonusFor(newMood, MAX_COIN_BONUS),
             experienceBonus = bonusFor(newMood, MAX_XP_BONUS),
-            bountyBonus = bonusFor(newMood, MAX_BOUNTY_BONUS)
+            itemDropBonus = bonusFor(newMood, MAX_BOUNTY_BONUS)
         )
     }
 
@@ -134,7 +134,7 @@ data class Pet(
             mood = newMood,
             coinBonus = bonusFor(newMood, MAX_COIN_BONUS),
             experienceBonus = bonusFor(newMood, MAX_XP_BONUS),
-            bountyBonus = bonusFor(newMood, MAX_BOUNTY_BONUS)
+            itemDropBonus = bonusFor(newMood, MAX_BOUNTY_BONUS)
         )
     }
 

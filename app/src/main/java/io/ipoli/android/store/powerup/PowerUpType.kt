@@ -14,19 +14,19 @@ data class PowerUp(
 ) {
 
     companion object {
-        fun fromType(type: PowerUp.Type, expirationDate: LocalDate): PowerUp {
-            return PowerUp(type, type.coinPrice, expirationDate)
-        }
+        fun fromType(type: PowerUp.Type, expirationDate: LocalDate) =
+            PowerUp(type, type.coinPrice, expirationDate)
     }
 
     enum class Type(val coinPrice: Int) {
-//        REMINDERS(130),
+        REMINDERS(130),
         CHALLENGES(220),
         CALENDAR_SYNC(450),
         TAGS(300),
         TIMER(130),
         SUB_QUESTS(180),
         NOTES(90),
-//        CUSTOM_DURATION(130)
+        CUSTOM_DURATION(130),
+        GROWTH(300)
     }
 }

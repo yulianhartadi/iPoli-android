@@ -44,7 +44,7 @@ open class CompleteQuestUseCase(
 
         val experience = quest.experience ?: experience(pet.experienceBonus)
         val coins = quest.coins ?: coins(pet.coinBonus)
-        val bounty = quest.bounty ?: bounty(pet.bountyBonus)
+        val bounty = quest.bounty ?: bounty(pet.itemDropBonus)
         val newQuest = quest.copy(
             completedAtDate = LocalDate.now(),
             completedAtTime = Time.now(),

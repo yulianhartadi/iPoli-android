@@ -108,6 +108,14 @@ enum class AndroidPowerUp(
         GoogleMaterial.Icon.gmd_timelapse,
         R.color.md_deep_orange_500,
         R.color.md_deep_orange_700
+    ),
+    GROWTH(
+        R.string.custom_duration,
+        R.string.power_up_custom_duration_sub_title,
+        R.string.power_up_custom_duration_long_desc,
+        GoogleMaterial.Icon.gmd_timelapse,
+        R.color.md_deep_orange_500,
+        R.color.md_deep_orange_700
     )
 }
 
