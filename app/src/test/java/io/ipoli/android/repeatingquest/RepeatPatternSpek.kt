@@ -92,7 +92,7 @@ class RepeatPatternSpek : Spek({
 
                 it("should give today when today is first day of week") {
                     val today =
-                        DateUtils.today.with(TemporalAdjusters.previousOrSame(DateUtils.firstDayOfWeek))
+                        DateUtils.today.with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY))
 
                     val pattern = RepeatPattern.Flexible.Weekly(
                         timesPerWeek = 2,
@@ -109,7 +109,7 @@ class RepeatPatternSpek : Spek({
                 it("should give tomorrow when today is not scheduled") {
 
                     val today =
-                        DateUtils.today.with(TemporalAdjusters.previousOrSame(DateUtils.firstDayOfWeek))
+                        DateUtils.today.with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY))
 
                     val tomorrow = today.plusDays(1)
 
@@ -128,7 +128,7 @@ class RepeatPatternSpek : Spek({
                 it("should give two days after tomorrow when from is after tomorrow") {
 
                     val today =
-                        DateUtils.today.with(TemporalAdjusters.previousOrSame(DateUtils.firstDayOfWeek))
+                        DateUtils.today.with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY))
 
                     val tomorrow = today.plusDays(1)
                     val dayAfterTomorrow = tomorrow.plusDays(1)
@@ -149,7 +149,7 @@ class RepeatPatternSpek : Spek({
                 it("should get first date from next period") {
 
                     val today =
-                        DateUtils.today.with(TemporalAdjusters.previousOrSame(DateUtils.firstDayOfWeek))
+                        DateUtils.today.with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY))
 
                     val tomorrow = today.plusDays(1)
                     val dayAfterTomorrow = tomorrow.plusDays(1)
