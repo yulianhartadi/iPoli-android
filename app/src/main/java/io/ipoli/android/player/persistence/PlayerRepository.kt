@@ -10,6 +10,7 @@ import com.google.firebase.firestore.DocumentListenOptions
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.ListenerRegistration
 import io.ipoli.android.Constants
+import io.ipoli.android.achievement.Achievement
 import io.ipoli.android.challenge.predefined.entity.PredefinedChallenge
 import io.ipoli.android.common.datetime.Time
 import io.ipoli.android.common.datetime.TimeOfDay
@@ -204,6 +205,15 @@ class FirestorePlayerRepository(
             timeFormat = Player.Preferences.TimeFormat.valueOf(cPref.timeFormat)
         )
 
+        val ca = cp.achievements.map { DbUnlockedAchievement(it) }
+        val achievements = ca.map {
+            Player.UnlockedAchievement(
+                achievement = Achievement.valueOf(it.achievement),
+                unlockTime = Time.of(it.unlockTime),
+                unlockDate = it.unlockDate.startOfDayUTC
+            )
+        }
+
         return Player(
             id = cp.id,
             username = cp.username,
@@ -220,8 +230,8 @@ class FirestorePlayerRepository(
             updatedAt = Instant.ofEpochMilli(cp.updatedAt),
             pet = pet,
             membership = Membership.valueOf(cp.membership),
-            preferences = pref
-
+            preferences = pref,
+            achievements = achievements
         )
     }
 
@@ -249,6 +259,7 @@ class FirestorePlayerRepository(
             it.inventory = createDbInventory(entity.inventory).map
             it.membership = entity.membership.name
             it.preferences = createDbPreferences(entity.preferences).map
+            it.achievements = createDbAchievements(entity.achievements)
         }
 
     private fun createDbPet(pet: Pet) =
@@ -337,5 +348,14 @@ class FirestorePlayerRepository(
             it.sleepStartTime = preferences.sleepStartTime.toMinuteOfDay()
             it.sleepEndTime = preferences.sleepEndTime.toMinuteOfDay()
             it.timeFormat = preferences.timeFormat.name
+        }
+
+    private fun createDbAchievements(achievements: List<Player.UnlockedAchievement>) =
+        achievements.map { a ->
+            DbUnlockedAchievement().also {
+                it.achievement = a.achievement.name
+                it.unlockTime = a.unlockTime.toMinuteOfDay()
+                it.unlockDate = a.unlockDate.startOfDayUTC()
+            }.map
         }
 }

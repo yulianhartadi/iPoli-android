@@ -23,6 +23,7 @@ data class DbPlayer(override val map: MutableMap<String, Any?> = mutableMapOf())
     var inventory: MutableMap<String, Any?> by map
     var membership: String by map
     var preferences: MutableMap<String, Any?> by map
+    var achievements: List<MutableMap<String, Any?>> by map
     override var createdAt: Long by map
     override var updatedAt: Long by map
     override var removedAt: Long? by map
@@ -80,4 +81,10 @@ data class DbPreferences(val map: MutableMap<String, Any?> = mutableMapOf()) {
     var sleepStartTime: Int by map
     var sleepEndTime: Int by map
     var timeFormat: String by map
+}
+
+data class DbUnlockedAchievement(val map: MutableMap<String, Any?> = mutableMapOf()) {
+    var achievement: String by map
+    var unlockTime: Int by map
+    var unlockDate: Long by map
 }

@@ -2,6 +2,7 @@ package io.ipoli.android.player
 
 import android.net.Uri
 import io.ipoli.android.Constants
+import io.ipoli.android.achievement.Achievement
 import io.ipoli.android.challenge.predefined.entity.PredefinedChallenge
 import io.ipoli.android.common.datetime.Time
 import io.ipoli.android.common.datetime.TimeOfDay
@@ -16,6 +17,7 @@ import io.ipoli.android.quest.IconPack
 import io.ipoli.android.store.powerup.PowerUp
 import org.threeten.bp.DayOfWeek
 import org.threeten.bp.Instant
+import org.threeten.bp.LocalDate
 
 data class Player(
     override val id: String = "",
@@ -29,8 +31,6 @@ data class Player(
     val authProvider: AuthProvider,
     val avatar: Avatar = Avatar.AVATAR_00,
     val membership: Membership = Membership.NONE,
-    override val createdAt: Instant = Instant.now(),
-    override val updatedAt: Instant = Instant.now(),
     val pet: Pet = Pet(
         name = Constants.DEFAULT_PET_NAME,
         avatar = PetAvatar.ELEPHANT
@@ -45,8 +45,17 @@ data class Player(
         colorPacks = setOf(ColorPack.FREE),
         iconPacks = setOf(IconPack.FREE)
     ),
-    val preferences: Preferences = Preferences()
+    val preferences: Preferences = Preferences(),
+    val achievements: List<UnlockedAchievement> = listOf(),
+    override val updatedAt: Instant = Instant.now(),
+    override val createdAt: Instant = Instant.now()
 ) : Entity {
+
+    data class UnlockedAchievement(
+        val achievement: Achievement,
+        val unlockTime: Time,
+        val unlockDate: LocalDate
+    )
 
     data class Preferences(
         val theme: Theme = Constants.DEFAULT_THEME,
