@@ -1,6 +1,5 @@
 package io.ipoli.android.quest
 
-import io.ipoli.android.challenge.entity.Challenge
 import io.ipoli.android.common.datetime.*
 import io.ipoli.android.common.sumByLong
 import io.ipoli.android.quest.reminder.picker.ReminderViewModel
@@ -143,7 +142,6 @@ data class Quest(
     val tags: List<Tag> = listOf(),
     val startTime: Time? = null,
     val duration: Int,
-    val difficulty: Challenge.Difficulty = Challenge.Difficulty.NORMAL,
     val priority: Priority = Priority.NOT_IMPORTANT_NOT_URGENT,
     val preferredStartTime: TimePreference = TimePreference.ANY,
     val reminders: List<Reminder> = listOf(),
@@ -269,7 +267,6 @@ data class RepeatingQuest(
     val tags: List<Tag> = listOf(),
     val startTime: Time? = null,
     val duration: Int,
-    val difficulty: Challenge.Difficulty = Challenge.Difficulty.NORMAL,
     val priority: Priority = Priority.NOT_IMPORTANT_NOT_URGENT,
     val preferredStartTime: TimePreference = TimePreference.ANY,
     val reminders: List<Reminder> = listOf(),

@@ -257,7 +257,6 @@ class SaveQuestsForRepeatingQuestUseCase(
             icon = rq.icon,
             startTime = rq.startTime,
             duration = rq.duration,
-            difficulty = rq.difficulty,
             priority = rq.priority,
             preferredStartTime = rq.preferredStartTime,
             scheduledDate = scheduleDate,

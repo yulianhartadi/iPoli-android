@@ -2,7 +2,6 @@ package io.ipoli.android.repeatingquest.persistence
 
 import android.content.SharedPreferences
 import com.google.firebase.firestore.FirebaseFirestore
-import io.ipoli.android.challenge.entity.Challenge
 import io.ipoli.android.common.datetime.Time
 import io.ipoli.android.common.datetime.TimePreference
 import io.ipoli.android.common.datetime.instant
@@ -48,7 +47,6 @@ data class DbRepeatingQuest(override val map: MutableMap<String, Any?> = mutable
     var tagIds: Map<String, Boolean> by map
     var startMinute: Long? by map
     var duration: Int by map
-    var difficulty: String by map
     var priority: String by map
     var preferredStartTime: String by map
     var reminders: List<MutableMap<String, Any?>> by map
@@ -156,7 +154,6 @@ class FirestoreRepeatingQuestRepository(
             },
             startTime = rq.startMinute?.let { Time.of(it.toInt()) },
             duration = rq.duration,
-            difficulty = Challenge.Difficulty.valueOf(rq.difficulty),
             priority = Priority.valueOf(rq.priority),
             preferredStartTime = TimePreference.valueOf(rq.preferredStartTime),
             reminders = rq.reminders.map {
@@ -245,7 +242,6 @@ class FirestoreRepeatingQuestRepository(
         rq.color = entity.color.name
         rq.icon = entity.icon?.name
         rq.duration = entity.duration
-        rq.difficulty = entity.difficulty.name
         rq.priority = entity.priority.name
         rq.preferredStartTime = entity.preferredStartTime.name
         rq.startMinute = entity.startTime?.toMinuteOfDay()?.toLong()
