@@ -195,7 +195,10 @@ class FirestorePlayerRepository(
         val cPref = DbPreferences(cp.preferences)
         val pref = Player.Preferences(
             theme = Theme.valueOf(cPref.theme),
-            syncCalendarIds = cPref.syncCalendarIds.toSet(),
+            syncCalendars = cPref.syncCalendars.map {
+                val sc = DbSyncCalendar(it)
+                Player.Preferences.SyncCalendar(sc.id, sc.name)
+            }.toSet(),
             productiveTimesOfDay = cPref.productiveTimesOfDay.map { TimeOfDay.valueOf(it) }.toSet(),
             workDays = cPref.workDays.map { DayOfWeek.valueOf(it) }.toSet(),
             workStartTime = Time.Companion.of(cPref.workStartTime),
@@ -340,7 +343,12 @@ class FirestorePlayerRepository(
     private fun createDbPreferences(preferences: Player.Preferences) =
         DbPreferences().also {
             it.theme = preferences.theme.name
-            it.syncCalendarIds = preferences.syncCalendarIds.toList()
+            it.syncCalendars = preferences.syncCalendars.map { c ->
+                DbSyncCalendar().also {
+                    it.id = c.id
+                    it.name = c.name
+                }.map
+            }
             it.productiveTimesOfDay = preferences.productiveTimesOfDay.map { it.name }
             it.workDays = preferences.workDays.map { it.name }
             it.workStartTime = preferences.workStartTime.toMinuteOfDay()

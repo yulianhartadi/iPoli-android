@@ -5,13 +5,16 @@ import io.ipoli.android.common.BaseViewStateReducer
 import io.ipoli.android.common.DataLoadedAction
 import io.ipoli.android.common.mvi.ViewState
 import io.ipoli.android.common.redux.Action
+import io.ipoli.android.player.Player
 
 /**
  * Created by Polina Zhelyazkova <polina@mypoli.fun>
  * on 4/2/18.
  */
 sealed class SettingsAction : Action {
-    data class SyncCalendarsSelected(val calendarIds: Set<String>) : SettingsAction()
+    data class SyncCalendarsSelected(val calendars: Set<Player.Preferences.SyncCalendar>) :
+        SettingsAction()
+
     object Load : SettingsAction()
     object DisableCalendarsSync : SettingsAction()
 }
@@ -24,7 +27,7 @@ object SettingsReducer : BaseViewStateReducer<SettingsViewState>() {
     ) = when (action) {
 
         SettingsAction.Load -> {
-            val selectedCalendars = state.dataState.player!!.preferences.syncCalendarIds.size
+            val selectedCalendars = state.dataState.player!!.preferences.syncCalendars.size
             createChangedState(
                 playerId = state.dataState.player.id,
                 selectedCalendars = selectedCalendars
@@ -32,7 +35,7 @@ object SettingsReducer : BaseViewStateReducer<SettingsViewState>() {
         }
 
         is DataLoadedAction.PlayerChanged -> {
-            val selectedCalendars = action.player.preferences.syncCalendarIds.size
+            val selectedCalendars = action.player.preferences.syncCalendars.size
             createChangedState(playerId = action.player.id, selectedCalendars = selectedCalendars)
         }
 

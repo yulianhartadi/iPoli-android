@@ -26,12 +26,12 @@ class CalendarSideEffectHandler : AppSideEffectHandler() {
 
             is SettingsAction.SyncCalendarsSelected ->
                 saveSyncCalendarsUseCase.execute(
-                    SaveSyncCalendarsUseCase.Params(action.calendarIds)
+                    SaveSyncCalendarsUseCase.Params(action.calendars)
                 )
 
             is PowerUpStoreAction.SyncCalendarsSelected ->
                 saveSyncCalendarsUseCase.execute(
-                    SaveSyncCalendarsUseCase.Params(action.calendarIds)
+                    SaveSyncCalendarsUseCase.Params(action.calendars)
                 )
 
             SettingsAction.DisableCalendarsSync ->

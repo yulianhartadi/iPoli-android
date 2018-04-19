@@ -7,6 +7,7 @@ import io.ipoli.android.common.mvi.ViewState
 import io.ipoli.android.common.redux.Action
 import io.ipoli.android.event.Calendar
 import io.ipoli.android.pet.PetAvatar
+import io.ipoli.android.player.Player
 
 /**
  * Created by Venelin Valkov <venelin@mypoli.fun>
@@ -35,10 +36,13 @@ object CalendarPickerReducer : BaseViewStateReducer<CalendarPickerViewState>() {
                 )
             is CalendarPickerAction.SelectCalendars -> {
                 val calendars = (subState as CalendarPickerViewState.CalendarsLoaded).calendars
-                val selectedCalendarIds = action.selectedCalendarPositions.map {
-                    calendars[it].id
+                val syncCalendars = action.selectedCalendarPositions.map {
+                    Player.Preferences.SyncCalendar(
+                        id = calendars[it].id,
+                        name = calendars[it].name
+                    )
                 }.toSet()
-                CalendarPickerViewState.CalendarsSelected(selectedCalendarIds)
+                CalendarPickerViewState.CalendarsSelected(syncCalendars)
             }
 
             else ->
@@ -56,6 +60,7 @@ sealed class CalendarPickerViewState : ViewState {
         val calendars: List<Calendar>
     ) : CalendarPickerViewState()
 
-    data class CalendarsSelected(val calendarIds: Set<String>) : CalendarPickerViewState()
+    data class CalendarsSelected(val calendars: Set<Player.Preferences.SyncCalendar>) :
+        CalendarPickerViewState()
 }
 

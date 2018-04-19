@@ -30,14 +30,14 @@ class FindEventsBetweenDatesUseCase(
             return emptyList()
         }
 
-        val calendarIds = p.preferences.syncCalendarIds
+        val calendars = p.preferences.syncCalendars
 
-        if (calendarIds.isEmpty()) {
+        if (calendars.isEmpty()) {
             return emptyList()
         }
 
         return eventRepository.findScheduledBetween(
-            calendarIds.map { it.toInt() }.toSet(),
+            calendars.map { it.id.toInt() }.toSet(),
             parameters.startDate,
             parameters.endDate
         )

@@ -18,11 +18,11 @@ class SaveSyncCalendarsUseCase(private val playerRepository: PlayerRepository) :
         return playerRepository.save(
             p.updatePreferences(
                 prefs.copy(
-                    syncCalendarIds = parameters.calendarIds
+                    syncCalendars = parameters.calendars
                 )
             )
         )
     }
 
-    data class Params(val calendarIds: Set<String>)
+    data class Params(val calendars: Set<Player.Preferences.SyncCalendar>)
 }

@@ -14,6 +14,7 @@ import io.ipoli.android.common.view.children
 import io.ipoli.android.common.view.recyclerview.SimpleViewHolder
 import io.ipoli.android.event.Calendar
 import io.ipoli.android.pet.AndroidPetAvatar
+import io.ipoli.android.player.Player.Preferences.SyncCalendar
 import kotlinx.android.synthetic.main.dialog_calendar_picker.view.*
 import kotlinx.android.synthetic.main.item_calendar_picker.view.*
 import kotlinx.android.synthetic.main.view_dialog_header.view.*
@@ -27,12 +28,12 @@ class CalendarPickerDialogController :
 
     override val reducer = CalendarPickerReducer
 
-    private var pickedCalendarsListener: (Set<String>) -> Unit = {}
+    private var pickedCalendarsListener: (Set<SyncCalendar>) -> Unit = {}
 
     constructor(args: Bundle? = null) : super(args)
 
     constructor(
-        pickedCalendarsListener: (Set<String>) -> Unit
+        pickedCalendarsListener: (Set<SyncCalendar>) -> Unit
     ) : this() {
         this.pickedCalendarsListener = pickedCalendarsListener
     }
@@ -87,7 +88,7 @@ class CalendarPickerDialogController :
 
             is CalendarPickerViewState.CalendarsSelected -> {
                 dismiss()
-                pickedCalendarsListener(state.calendarIds)
+                pickedCalendarsListener(state.calendars)
             }
         }
     }

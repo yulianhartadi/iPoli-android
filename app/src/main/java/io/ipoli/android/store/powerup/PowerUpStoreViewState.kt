@@ -20,7 +20,7 @@ import org.threeten.bp.LocalDate
 sealed class PowerUpStoreAction : Action {
     object Load : PowerUpStoreAction()
     data class Enable(val type: PowerUp.Type) : PowerUpStoreAction()
-    data class SyncCalendarsSelected(val calendarIds: Set<String>) : PowerUpStoreAction()
+    data class SyncCalendarsSelected(val calendars: Set<Player.Preferences.SyncCalendar>) : PowerUpStoreAction()
 }
 
 object PowerUpStoreReducer : BaseViewStateReducer<PowerUpStoreViewState>() {

@@ -73,7 +73,7 @@ data class DbInventoryPet(val map: MutableMap<String, Any?> = mutableMapOf()) {
 
 data class DbPreferences(val map: MutableMap<String, Any?> = mutableMapOf()) {
     var theme: String by map
-    var syncCalendarIds: List<String> by map
+    var syncCalendars: List<MutableMap<String, Any?>> by map
     var productiveTimesOfDay: List<String> by map
     var workDays: List<String> by map
     var workStartTime: Int by map
@@ -81,6 +81,11 @@ data class DbPreferences(val map: MutableMap<String, Any?> = mutableMapOf()) {
     var sleepStartTime: Int by map
     var sleepEndTime: Int by map
     var timeFormat: String by map
+}
+
+data class DbSyncCalendar(val map: MutableMap<String, Any?> = mutableMapOf()) {
+    var id: String by map
+    var name: String by map
 }
 
 data class DbUnlockedAchievement(val map: MutableMap<String, Any?> = mutableMapOf()) {

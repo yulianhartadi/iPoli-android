@@ -59,7 +59,7 @@ data class Player(
 
     data class Preferences(
         val theme: Theme = Constants.DEFAULT_THEME,
-        val syncCalendarIds: Set<String> = setOf(),
+        val syncCalendars: Set<SyncCalendar> = setOf(),
         val productiveTimesOfDay: Set<TimeOfDay> = Constants.DEFAULT_PLAYER_PRODUCTIVE_TIMES,
         val workDays: Set<DayOfWeek> = Constants.DEFAULT_PLAYER_WORK_DAYS,
         val workStartTime: Time = Constants.DEFAULT_PLAYER_WORK_START_TIME,
@@ -74,6 +74,8 @@ data class Player(
         enum class TimeFormat {
             TWELVE_HOURS, TWENTY_FOUR_HOURS, DEVICE_DEFAULT
         }
+
+        data class SyncCalendar(val id: String, val name: String)
     }
 
     fun updatePreferences(preferences: Preferences) =

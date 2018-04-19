@@ -76,8 +76,8 @@ class SettingsViewController(args: Bundle? = null) :
     }
 
     private fun showCalendarPicker() {
-        CalendarPickerDialogController({ calendarIds ->
-            dispatch(SettingsAction.SyncCalendarsSelected(calendarIds))
+        CalendarPickerDialogController({ calendars ->
+            dispatch(SettingsAction.SyncCalendarsSelected(calendars))
         }).show(router)
     }
 
