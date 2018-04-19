@@ -36,15 +36,16 @@ class ChangeThemeUseCaseSpek : Spek({
         it("should change theme") {
             val currentTheme = Theme.RED
             val newTheme = Theme.BLUE
-            val player = TestUtil.player().copy(
-                currentTheme = currentTheme,
+            val p = TestUtil.player()
+            val player = p.copy(
+                preferences = p.preferences.copy(theme = currentTheme),
                 inventory = Inventory(
                     themes = setOf(currentTheme, newTheme)
                 )
             )
 
             val newPlayer = executeUseCase(player, Theme.BLUE)
-            newPlayer.currentTheme.`should be`(newTheme)
+            newPlayer.preferences.theme.`should be`(newTheme)
         }
     }
 })
