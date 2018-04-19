@@ -180,3 +180,7 @@ data class Time constructor(private val minutesAfterMidnight: Int) {
 enum class TimePreference {
     WORK_HOURS, PERSONAL_HOURS, MORNING, AFTERNOON, EVENING, ANY
 }
+
+enum class TimeOfDay {
+    MORNING, AFTERNOON, EVENING, ANY
+}

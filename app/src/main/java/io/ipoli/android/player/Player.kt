@@ -3,6 +3,8 @@ package io.ipoli.android.player
 import android.net.Uri
 import io.ipoli.android.Constants
 import io.ipoli.android.challenge.predefined.entity.PredefinedChallenge
+import io.ipoli.android.common.datetime.Time
+import io.ipoli.android.common.datetime.TimeOfDay
 import io.ipoli.android.pet.Food
 import io.ipoli.android.pet.Pet
 import io.ipoli.android.pet.PetAvatar
@@ -12,6 +14,7 @@ import io.ipoli.android.quest.ColorPack
 import io.ipoli.android.quest.Entity
 import io.ipoli.android.quest.IconPack
 import io.ipoli.android.store.powerup.PowerUp
+import org.threeten.bp.DayOfWeek
 import org.threeten.bp.Instant
 
 data class Player(
@@ -26,10 +29,8 @@ data class Player(
     val authProvider: AuthProvider,
     val avatar: Avatar = Avatar.AVATAR_00,
     val membership: Membership = Membership.NONE,
-    val syncCalendarIds: Set<String> = setOf(),
     override val createdAt: Instant = Instant.now(),
     override val updatedAt: Instant = Instant.now(),
-    val currentTheme: Theme = Constants.DEFAULT_THEME,
     val pet: Pet = Pet(
         name = Constants.DEFAULT_PET_NAME,
         avatar = PetAvatar.ELEPHANT
@@ -40,11 +41,35 @@ data class Player(
         ),
         avatars = setOf(Avatar.AVATAR_00),
         pets = setOf(InventoryPet.createFromPet(pet)),
-        themes = setOf(currentTheme),
+        themes = setOf(Constants.DEFAULT_THEME),
         colorPacks = setOf(ColorPack.FREE),
         iconPacks = setOf(IconPack.FREE)
-    )
+    ),
+    val preferences: Preferences = Preferences()
 ) : Entity {
+
+    data class Preferences(
+        val theme: Theme = Constants.DEFAULT_THEME,
+        val syncCalendarIds: Set<String> = setOf(),
+        val productiveTimesOfDay: Set<TimeOfDay> = Constants.DEFAULT_PLAYER_PRODUCTIVE_TIMES,
+        val workDays: Set<DayOfWeek> = Constants.DEFAULT_PLAYER_WORK_DAYS,
+        val workStartTime: Time = Constants.DEFAULT_PLAYER_WORK_START_TIME,
+        val workEndTime: Time = Constants.DEFAULT_PLAYER_WORK_END_TIME,
+        val sleepStartTime: Time = Constants.DEFAULT_PLAYER_SLEEP_START_TIME,
+        val sleepEndTime: Time = Constants.DEFAULT_PLAYER_SLEEP_START_TIME,
+        val timeFormat: TimeFormat = TimeFormat.DEVICE_DEFAULT
+    ) {
+        val nonWorkDays: Set<DayOfWeek>
+            get() = DayOfWeek.values().toSet() - workDays
+
+        enum class TimeFormat {
+            TWELVE_HOURS, TWENTY_FOUR_HOURS, DEVICE_DEFAULT
+        }
+    }
+
+    fun updatePreferences(preferences: Preferences) =
+        copy(preferences = preferences)
+
     fun addExperience(experience: Int): Player {
         val newXp = experience + this.experience
         return copy(

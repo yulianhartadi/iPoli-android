@@ -16,8 +16,10 @@ class ChangeThemeUseCase(private val playerRepository: PlayerRepository) : UseCa
         requireNotNull(player)
         require(player!!.hasTheme(theme))
 
-        val newPlayer = player.copy(
-            currentTheme = theme
+        val newPlayer = player.updatePreferences(
+            player.preferences.copy(
+                theme = theme
+            )
         )
 
         return playerRepository.save(newPlayer)

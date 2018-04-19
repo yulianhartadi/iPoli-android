@@ -57,7 +57,7 @@ object ThemeStoreReducer : BaseViewStateReducer<ThemeStoreViewState>() {
     private fun createThemes(player: Player) =
         Theme.values().map {
             when {
-                player.currentTheme == it ->
+                player.preferences.theme == it ->
                     ThemeItem.Current(it)
 
                 player.inventory.hasTheme(it) ->

@@ -24,12 +24,12 @@ object SettingsReducer : BaseViewStateReducer<SettingsViewState>() {
     ) = when (action) {
 
         SettingsAction.Load -> {
-            val selectedCalendars = state.dataState.player?.syncCalendarIds?.size ?: 0
+            val selectedCalendars = state.dataState.player!!.preferences.syncCalendarIds.size
             createChangedState(selectedCalendars)
         }
 
         is DataLoadedAction.PlayerChanged -> {
-            val selectedCalendars = action.player.syncCalendarIds.size
+            val selectedCalendars = action.player.preferences.syncCalendarIds.size
             createChangedState(selectedCalendars)
         }
 

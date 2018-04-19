@@ -14,9 +14,12 @@ class SaveSyncCalendarsUseCase(private val playerRepository: PlayerRepository) :
     override fun execute(parameters: Params): Player {
         val p = playerRepository.find()
         requireNotNull(p)
+        val prefs = p!!.preferences
         return playerRepository.save(
-            p!!.copy(
-                syncCalendarIds = parameters.calendarIds
+            p.updatePreferences(
+                prefs.copy(
+                    syncCalendarIds = parameters.calendarIds
+                )
             )
         )
     }

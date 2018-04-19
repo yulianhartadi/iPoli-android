@@ -11,6 +11,8 @@ import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.ListenerRegistration
 import io.ipoli.android.Constants
 import io.ipoli.android.challenge.predefined.entity.PredefinedChallenge
+import io.ipoli.android.common.datetime.Time
+import io.ipoli.android.common.datetime.TimeOfDay
 import io.ipoli.android.common.datetime.startOfDayUTC
 import io.ipoli.android.common.persistence.BaseEntityFirestoreRepository
 import io.ipoli.android.common.persistence.EntityRepository
@@ -22,6 +24,7 @@ import io.ipoli.android.quest.ColorPack
 import io.ipoli.android.quest.IconPack
 import io.ipoli.android.store.powerup.PowerUp
 import kotlinx.coroutines.experimental.runBlocking
+import org.threeten.bp.DayOfWeek
 import org.threeten.bp.Instant
 import kotlin.coroutines.experimental.CoroutineContext
 import kotlin.coroutines.experimental.suspendCoroutine
@@ -188,6 +191,19 @@ class FirestorePlayerRepository(
             challenges = ci.challenges.map { PredefinedChallenge.valueOf(it) }.toSet()
         )
 
+        val cPref = DbPreferences(cp.preferences)
+        val pref = Player.Preferences(
+            theme = Theme.valueOf(cPref.theme),
+            syncCalendarIds = cPref.syncCalendarIds.toSet(),
+            productiveTimesOfDay = cPref.productiveTimesOfDay.map { TimeOfDay.valueOf(it) }.toSet(),
+            workDays = cPref.workDays.map { DayOfWeek.valueOf(it) }.toSet(),
+            workStartTime = Time.Companion.of(cPref.workStartTime),
+            workEndTime = Time.Companion.of(cPref.workEndTime),
+            sleepStartTime = Time.Companion.of(cPref.sleepStartTime),
+            sleepEndTime = Time.Companion.of(cPref.sleepEndTime),
+            timeFormat = Player.Preferences.TimeFormat.valueOf(cPref.timeFormat)
+        )
+
         return Player(
             id = cp.id,
             username = cp.username,
@@ -199,13 +215,13 @@ class FirestorePlayerRepository(
             experience = cp.experience,
             authProvider = authProvider,
             avatar = Avatar.valueOf(cp.avatar),
-            currentTheme = Theme.valueOf(cp.currentTheme),
             inventory = inventory,
             createdAt = Instant.ofEpochMilli(cp.createdAt),
             updatedAt = Instant.ofEpochMilli(cp.updatedAt),
             pet = pet,
             membership = Membership.valueOf(cp.membership),
-            syncCalendarIds = cp.syncCalendarIds.toSet()
+            preferences = pref
+
         )
     }
 
@@ -229,11 +245,10 @@ class FirestorePlayerRepository(
             it.avatar = entity.avatar.name
             it.createdAt = entity.createdAt.toEpochMilli()
             it.updatedAt = entity.updatedAt.toEpochMilli()
-            it.currentTheme = entity.currentTheme.name
             it.pet = createDbPet(entity.pet).map
             it.inventory = createDbInventory(entity.inventory).map
             it.membership = entity.membership.name
-            it.syncCalendarIds = entity.syncCalendarIds.toList()
+            it.preferences = createDbPreferences(entity.preferences).map
         }
 
     private fun createDbPet(pet: Pet) =
@@ -309,5 +324,18 @@ class FirestorePlayerRepository(
             it.name = inventoryPet.name
             it.avatar = inventoryPet.avatar.name
             it.items = inventoryPet.items.map { it.name }
+        }
+
+    private fun createDbPreferences(preferences: Player.Preferences) =
+        DbPreferences().also {
+            it.theme = preferences.theme.name
+            it.syncCalendarIds = preferences.syncCalendarIds.toList()
+            it.productiveTimesOfDay = preferences.productiveTimesOfDay.map { it.name }
+            it.workDays = preferences.workDays.map { it.name }
+            it.workStartTime = preferences.workStartTime.toMinuteOfDay()
+            it.workEndTime = preferences.workEndTime.toMinuteOfDay()
+            it.sleepStartTime = preferences.sleepStartTime.toMinuteOfDay()
+            it.sleepEndTime = preferences.sleepEndTime.toMinuteOfDay()
+            it.timeFormat = preferences.timeFormat.name
         }
 }

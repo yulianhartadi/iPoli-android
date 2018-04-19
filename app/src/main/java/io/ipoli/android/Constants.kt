@@ -1,6 +1,7 @@
 package io.ipoli.android
 
 import io.ipoli.android.common.datetime.Time
+import io.ipoli.android.common.datetime.TimeOfDay
 import io.ipoli.android.player.Theme
 import org.threeten.bp.DayOfWeek
 import java.util.*
@@ -92,19 +93,19 @@ interface Constants {
         val DEFAULT_PLAYER_GEMS = 1
         val GEM_COINS_PRICE = 100
         //        val DEFAULT_PLAYER_AVATAR = Avatar.IPOLI_CLASSIC
-//        val DEFAULT_PLAYER_PRODUCTIVE_TIMES: Set<TimeOfDay> = HashSet<Any>(listOf(TimeOfDay.MORNING))
-        val DEFAULT_PLAYER_WORK_START_MINUTE = 10 * 60
-        val DEFAULT_PLAYER_WORK_END_MINUTE = 18 * 60
-        val DEFAULT_PLAYER_SLEEP_START_MINUTE = 23 * 60
-        val DEFAULT_PLAYER_SLEEP_END_MINUTE = 8 * 60
+        val DEFAULT_PLAYER_PRODUCTIVE_TIMES = setOf(TimeOfDay.MORNING)
+        val DEFAULT_PLAYER_WORK_START_TIME = Time.atHours(9)
+        val DEFAULT_PLAYER_WORK_END_TIME = Time.atHours(18)
+        val DEFAULT_PLAYER_SLEEP_START_TIME = Time.atHours(23)
+        val DEFAULT_PLAYER_SLEEP_END_TIME = Time.atHours(8)
         val DEFAULT_PLAYER_COMPLETE_DAILY_QUESTS_MINUTE = 0
 
-        val DEFAULT_PLAYER_WORK_DAYS: Set<Int> = setOf(
-            DayOfWeek.MONDAY.value,
-            DayOfWeek.TUESDAY.value,
-            DayOfWeek.WEDNESDAY.value,
-            DayOfWeek.THURSDAY.value,
-            DayOfWeek.FRIDAY.value
+        val DEFAULT_PLAYER_WORK_DAYS = setOf(
+            DayOfWeek.MONDAY,
+            DayOfWeek.TUESDAY,
+            DayOfWeek.WEDNESDAY,
+            DayOfWeek.THURSDAY,
+            DayOfWeek.FRIDAY
         )
 
         val CHANGE_PET_STATS_MORNING_TIME = Time.atHours(9)

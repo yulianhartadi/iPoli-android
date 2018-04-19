@@ -30,7 +30,7 @@ class FindEventsBetweenDatesUseCase(
             return emptyList()
         }
 
-        val calendarIds = p.syncCalendarIds
+        val calendarIds = p.preferences.syncCalendarIds
 
         if (calendarIds.isEmpty()) {
             return emptyList()

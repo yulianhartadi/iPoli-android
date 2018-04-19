@@ -19,11 +19,10 @@ data class DbPlayer(override val map: MutableMap<String, Any?> = mutableMapOf())
     var experience: Long by map
     var authProvider: MutableMap<String, Any?> by map
     var avatar: String by map
-    var currentTheme: String by map
     var pet: MutableMap<String, Any?> by map
     var inventory: MutableMap<String, Any?> by map
     var membership: String by map
-    var syncCalendarIds: List<String> by map
+    var preferences: MutableMap<String, Any?> by map
     override var createdAt: Long by map
     override var updatedAt: Long by map
     override var removedAt: Long? by map
@@ -71,6 +70,14 @@ data class DbInventoryPet(val map: MutableMap<String, Any?> = mutableMapOf()) {
     var items: List<String> by map
 }
 
-enum class ProviderType {
-    FACEBOOK, GOOGLE, ANONYMOUS
+data class DbPreferences(val map: MutableMap<String, Any?> = mutableMapOf()) {
+    var theme: String by map
+    var syncCalendarIds: List<String> by map
+    var productiveTimesOfDay: List<String> by map
+    var workDays: List<String> by map
+    var workStartTime: Int by map
+    var workEndTime: Int by map
+    var sleepStartTime: Int by map
+    var sleepEndTime: Int by map
+    var timeFormat: String by map
 }
