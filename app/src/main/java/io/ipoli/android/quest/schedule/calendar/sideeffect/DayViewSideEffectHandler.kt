@@ -95,26 +95,23 @@ class DayViewSideEffectHandler : AppSideEffectHandler() {
             is DayViewAction.Load ->
                 startListenForCalendarQuests(a.currentDate)
 
-            is DayViewAction.CompleteQuest -> {
-                val questId = a.questId
+            is DayViewAction.CompleteQuest ->
                 if (a.isStarted) {
                     completeTimeRangeUseCase.execute(
                         CompleteTimeRangeUseCase.Params(
-                            questId
+                            a.questId
                         )
                     )
                 } else {
                     completeQuestUseCase.execute(
                         CompleteQuestUseCase.Params.WithQuestId(
-                            questId
+                            a.questId
                         )
                     )
                 }
-            }
 
-            is DayViewAction.UndoCompleteQuest -> {
+            is DayViewAction.UndoCompleteQuest ->
                 undoCompletedQuestUseCase.execute(a.questId)
-            }
         }
     }
 
@@ -166,13 +163,10 @@ class DayViewSideEffectHandler : AppSideEffectHandler() {
         val result = saveQuestUseCase.execute(questParams)
 
         when (result) {
-            is Result.Invalid -> {
-                dispatch(
-                    DayViewAction.SaveInvalidQuest(
-                        result
-                    )
-                )
-            }
+
+            is Result.Invalid ->
+                dispatch(DayViewAction.SaveInvalidQuest(result))
+
             else -> dispatch(DayViewAction.QuestSaved)
         }
     }

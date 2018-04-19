@@ -119,8 +119,8 @@ sealed class RepeatPattern(
         ) : Flexible(start, end) {
             override fun periodRangeFor(date: LocalDate) =
                 PeriodRange(
-                    start = date.with(TemporalAdjusters.previousOrSame(DateUtils.firstDayOfWeek)),
-                    end = date.with(TemporalAdjusters.nextOrSame(DateUtils.lastDayOfWeek))
+                    start = date.with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY)),
+                    end = date.with(TemporalAdjusters.nextOrSame(DayOfWeek.SUNDAY))
                 )
 
             override val periodCount get() = timesPerWeek
@@ -129,7 +129,7 @@ sealed class RepeatPattern(
                 require(scheduledPeriods.isNotEmpty())
 
                 val periodStart =
-                    from.with(TemporalAdjusters.previousOrSame(DateUtils.firstDayOfWeek))
+                    from.with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY))
                 require(scheduledPeriods.contains(periodStart))
 
                 val nextDate = scheduledPeriods[periodStart]!!.firstOrNull { !it.isBefore(from) }
