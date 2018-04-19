@@ -153,7 +153,7 @@ class AddChallengeSummaryViewController(args: Bundle? = null) :
     ) {
         (view.challengeTagList.adapter as EditItemTagAdapter).updateAll(state.tagViewModels)
         val add = view.addChallengeTag
-        if(state.maxTagsReached) {
+        if (state.maxTagsReached) {
             add.gone()
             view.maxTagsMessage.visible()
         } else {
@@ -168,7 +168,7 @@ class AddChallengeSummaryViewController(args: Bundle? = null) :
             }
 
             add.threshold = 0
-            add.setOnTouchListener { v, event ->
+            add.setOnTouchListener { _, _ ->
                 add.showDropDown()
                 false
             }
@@ -178,7 +178,7 @@ class AddChallengeSummaryViewController(args: Bundle? = null) :
     private fun renderNote(view: View, state: EditChallengeViewState) {
         view.challengeNote.text = state.noteText
         view.challengeNote.setOnClickListener {
-            NoteDialogViewController(state.note ?: "", { note ->
+            NoteDialogViewController(state.note, { note ->
                 dispatch(EditChallengeAction.ChangeNote(note))
             }).show(router)
         }
@@ -350,15 +350,8 @@ class AddChallengeSummaryViewController(args: Bundle? = null) :
 
         }
 
-    private val EditChallengeViewState.noteColor: Int
-        get() = if (note == null) {
-            colorRes(R.color.md_light_text_50)
-        } else {
-            colorRes(R.color.md_white)
-        }
-
     private val EditChallengeViewState.noteText: String
-        get() = note ?: stringRes(R.string.tap_to_add_note)
+        get() = if (note.isBlank()) stringRes(R.string.tap_to_add_note) else note
 
     private val EditChallengeViewState.tagViewModels: List<EditItemTagAdapter.TagViewModel>
         get() = challengeTags.map {

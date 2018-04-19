@@ -199,7 +199,7 @@ object EditRepeatingQuestReducer : BaseViewStateReducer<EditRepeatingQuestViewSt
                     },
                     icon = rq.icon,
                     color = rq.color,
-                    note = rq.note ?: "",
+                    note = rq.note,
                     maxTagsReached = rq.tags.size >= Constants.MAX_TAGS_PER_ITEM
                 )
             }

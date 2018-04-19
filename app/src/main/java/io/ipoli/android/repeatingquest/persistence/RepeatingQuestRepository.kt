@@ -53,7 +53,7 @@ data class DbRepeatingQuest(override val map: MutableMap<String, Any?> = mutable
     var repeatPattern: MutableMap<String, Any?> by map
     var subQuests: List<MutableMap<String, Any?>> by map
     var challengeId: String? by map
-    var note: String? by map
+    var note: String by map
     override var createdAt: Long by map
     override var updatedAt: Long by map
     override var removedAt: Long? by map

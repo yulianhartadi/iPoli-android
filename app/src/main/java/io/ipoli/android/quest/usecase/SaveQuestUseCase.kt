@@ -48,7 +48,7 @@ class SaveQuestUseCase(
         val reminders: List<Reminder>?,
         val repeatingQuestId: String? = null,
         val challengeId: String? = null,
-        val note: String? = null,
+        val note: String = "",
         val tags: List<Tag>?
     )
 

@@ -112,7 +112,7 @@ class SaveRepeatingQuestUseCase(
         val reminders: List<Reminder>?,
         val repeatPattern: RepeatPattern,
         val challengeId: String? = null,
-        val note: String? = null,
+        val note: String = "",
         val tags: List<Tag> = listOf()
     )
 }

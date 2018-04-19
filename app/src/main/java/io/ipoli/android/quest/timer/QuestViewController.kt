@@ -238,7 +238,7 @@ class QuestViewController : ReduxViewController<QuestAction, QuestViewState, Que
                 view.startStop.dispatchOnClick(QuestAction.Start)
                 view.complete.visibility = View.GONE
 
-                dispatch(QuestAction.UpdateNote(state.quest?.note ?: ""))
+                dispatch(QuestAction.UpdateNote(state.note))
             }
 
             QuestViewState.StateType.SHOW_COUNTDOWN -> {
@@ -247,13 +247,13 @@ class QuestViewController : ReduxViewController<QuestAction, QuestViewState, Que
                 view.startStop.dispatchOnClick(QuestAction.Start)
                 view.pomodoroIndicatorsGroup.visible = false
 
-                dispatch(QuestAction.UpdateNote(state.quest?.note ?: ""))
+                dispatch(QuestAction.UpdateNote(state.note))
             }
 
             QuestViewState.StateType.RESUMED -> {
                 startTimer(view, state)
 
-                dispatch(QuestAction.UpdateNote(state.quest?.note ?: ""))
+                dispatch(QuestAction.UpdateNote(state.note))
             }
 
             QuestViewState.StateType.TIMER_REPLACED -> {

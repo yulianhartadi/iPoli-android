@@ -31,7 +31,7 @@ data class Challenge(
     val quests: List<Quest> = listOf(),
     val repeatingQuests: List<RepeatingQuest> = listOf(),
     val progress: Progress = Progress(),
-    val note: String? = null,
+    val note: String = "",
     override val createdAt: Instant = Instant.now(),
     override val updatedAt: Instant = Instant.now()
 ) : Entity {

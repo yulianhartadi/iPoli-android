@@ -34,6 +34,7 @@ sealed class EditQuestAction : Action {
 
     data class Loaded(val quest: Quest, val params: EditQuestViewController.Params?) :
         EditQuestAction()
+
     data class ChangeColor(val color: Color) : EditQuestAction()
     data class ChangeIcon(val icon: Icon?) : EditQuestAction()
     data class ChangeDate(val scheduleDate: LocalDate) : EditQuestAction()
@@ -185,13 +186,11 @@ object EditQuestReducer : BaseViewStateReducer<EditQuestViewState>() {
             )
         }
 
-        is EditQuestAction.ChangeNote -> {
-            val note = action.note.trim()
+        is EditQuestAction.ChangeNote ->
             subState.copy(
                 type = NOTE_CHANGED,
-                note = if (note.isNotEmpty()) note else null
+                note = action.note.trim()
             )
-        }
 
         is EditQuestAction.ChangeChallenge -> {
             subState.copy(
@@ -238,7 +237,7 @@ object EditQuestReducer : BaseViewStateReducer<EditQuestViewState>() {
             color = Color.GREEN,
             icon = null,
             challenge = null,
-            note = null,
+            note = "",
             repeatingQuestId = null,
             subQuests = emptyMap(),
             newSubQuestName = "",
@@ -263,7 +262,7 @@ data class EditQuestViewState(
     val color: Color,
     val icon: Icon?,
     val challenge: Challenge?,
-    val note: String?,
+    val note: String,
     val repeatingQuestId: String?,
     val subQuests: Map<String, SubQuest>,
     val newSubQuestName: String,

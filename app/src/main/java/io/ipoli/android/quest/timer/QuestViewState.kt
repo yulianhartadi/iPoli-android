@@ -158,7 +158,8 @@ object QuestReducer : BaseViewStateReducer<QuestViewState>() {
             subQuestListProgressPercent = ((completedSubQuestsCount.toFloat() / quest.subQuests.size) * 100).toInt(),
             hasSubQuests = hasSubQuests,
             allSubQuestsDone = hasSubQuests && completedSubQuestsCount == quest.subQuests.size,
-            tags = quest.tags
+            tags = quest.tags,
+            note = quest.note
         )
 
 
@@ -321,7 +322,8 @@ data class QuestViewState(
     val pomodoroProgress: List<PomodoroProgress> = listOf(),
     val currentProgressIndicator: Int = 0,
     val showCompletePomodoroButton: Boolean = false,
-    val tags: List<Tag>
+    val tags: List<Tag>,
+    val note: String = ""
 ) : ViewState {
 
     enum class StateType {

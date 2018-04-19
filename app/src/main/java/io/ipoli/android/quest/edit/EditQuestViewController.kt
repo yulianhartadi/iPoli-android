@@ -281,7 +281,7 @@ class EditQuestViewController(args: Bundle? = null) :
                 add.setText("")
             }
             add.threshold = 0
-            add.setOnTouchListener { v, event ->
+            add.setOnTouchListener { _, _ ->
                 add.showDropDown()
                 false
             }
@@ -433,7 +433,7 @@ class EditQuestViewController(args: Bundle? = null) :
     private fun renderNote(view: View, state: EditQuestViewState) {
         view.questNote.text = state.noteText
         view.questNote.setOnClickListener {
-            NoteDialogViewController(state.note ?: "", { note ->
+            NoteDialogViewController(state.note, { note ->
                 dispatch(EditQuestAction.ChangeNote(note))
             }).show(router)
         }
@@ -459,7 +459,7 @@ class EditQuestViewController(args: Bundle? = null) :
             }
 
     private val EditQuestViewState.noteText: String
-        get() = note ?: stringRes(R.string.tap_to_add_note)
+        get() = if (note.isBlank()) stringRes(R.string.tap_to_add_note) else note
 
     private val EditQuestViewState.startTimeText: String
         get() = startTime?.let { "At $it" }

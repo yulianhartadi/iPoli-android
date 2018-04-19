@@ -158,7 +158,7 @@ data class Quest(
     val isRemoved: Boolean = false,
     val repeatingQuestId: String? = null,
     val challengeId: String? = null,
-    val note: String? = null,
+    val note: String = "",
     override val createdAt: Instant = Instant.now(),
     override val updatedAt: Instant = Instant.now()
 ) : BaseQuest(id), Entity {
@@ -264,7 +264,7 @@ data class RepeatingQuest(
     val nextDate: LocalDate? = null,
     val periodProgress: PeriodProgress? = null,
     val challengeId: String? = null,
-    val note: String? = null,
+    val note: String = "",
     override val createdAt: Instant = Instant.now(),
     override val updatedAt: Instant = Instant.now()
 ) : BaseQuest(id), Entity {

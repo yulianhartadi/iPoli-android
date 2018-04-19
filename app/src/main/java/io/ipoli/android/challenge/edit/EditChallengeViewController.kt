@@ -31,7 +31,7 @@ import org.threeten.bp.LocalDate
  * Created by Polina Zhelyazkova <polina@mypoli.fun>
  * on 3/12/18.
  */
-open class EditChallengeViewController(args : Bundle? = null) :
+open class EditChallengeViewController(args: Bundle? = null) :
     ReduxViewController<EditChallengeAction, EditChallengeViewState, EditChallengeReducer>(args) {
 
     override val reducer = EditChallengeReducer
@@ -185,7 +185,7 @@ open class EditChallengeViewController(args : Bundle? = null) :
                 add.setText("")
             }
             add.threshold = 0
-            add.setOnTouchListener { v, event ->
+            add.setOnTouchListener { _, _ ->
                 add.showDropDown()
                 false
             }
@@ -195,7 +195,7 @@ open class EditChallengeViewController(args : Bundle? = null) :
     private fun renderNote(view: View, state: EditChallengeViewState) {
         view.challengeNote.text = state.noteText
         view.challengeNote.setOnClickListener {
-            NoteDialogViewController(state.note ?: "", { note ->
+            NoteDialogViewController(state.note, { note ->
                 dispatch(EditChallengeAction.ChangeNote(note))
             }).show(router)
         }
@@ -352,7 +352,7 @@ open class EditChallengeViewController(args : Bundle? = null) :
             }
 
     private val EditChallengeViewState.noteText: String
-        get() = note ?: stringRes(R.string.tap_to_add_note)
+        get() = if (note.isBlank()) stringRes(R.string.tap_to_add_note) else note
 
     private val EditChallengeViewState.tagViewModels: List<EditItemTagAdapter.TagViewModel>
         get() = challengeTags.map {

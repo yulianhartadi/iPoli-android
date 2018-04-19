@@ -121,7 +121,7 @@ data class DbQuest(override val map: MutableMap<String, Any?> = mutableMapOf()) 
     var timeRangeCount: Int by map
     var repeatingQuestId: String? by map
     var challengeId: String? by map
-    var note: String? by map
+    var note: String by map
     override var createdAt: Long by map
     override var updatedAt: Long by map
     override var removedAt: Long? by map

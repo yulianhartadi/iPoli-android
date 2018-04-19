@@ -14,13 +14,12 @@ class SaveQuestNoteUseCase(private val questRepository: QuestRepository) :
     override fun execute(parameters: Params): Quest {
         val quest = questRepository.findById(parameters.questId)
         requireNotNull(quest)
-        val note = parameters.note?.trim()
         return questRepository.save(
             quest!!.copy(
-                note = if (note != null && note.isNotEmpty()) note else null
+                note = parameters.note.trim()
             )
         )
     }
 
-    data class Params(val questId: String, val note: String?)
+    data class Params(val questId: String, val note: String)
 }

@@ -46,7 +46,7 @@ class QuestSideEffectHandler : AppSideEffectHandler() {
         producer = { c, p ->
             questRepository.listenById(p.questId, c)
         },
-        consumer = { q, p ->
+        consumer = { q, _ ->
 
             val quest = if (isPomodoroQuest(q!!)) {
                 val timeRanges = q.timeRanges
@@ -73,7 +73,7 @@ class QuestSideEffectHandler : AppSideEffectHandler() {
         producer = { c, p ->
             questRepository.listenById(p.questId, c)
         },
-        consumer = { q, p ->
+        consumer = { q, _ ->
 
             val quest = q!!
 

@@ -92,7 +92,7 @@ class SaveChallengeUseCase(
         open val difficulty: Challenge.Difficulty,
         open val motivations: List<String>,
         open val end: LocalDate,
-        open val note: String?
+        open val note: String
     ) {
         data class WithNewQuests(
             val quests: List<BaseQuest>,
@@ -104,7 +104,7 @@ class SaveChallengeUseCase(
             override val difficulty: Challenge.Difficulty,
             override val motivations: List<String>,
             override val end: LocalDate,
-            override val note: String? = null
+            override val note: String = ""
 
         ) : Params(id, name, tags, color, icon, difficulty, motivations, end, note)
 
@@ -119,7 +119,7 @@ class SaveChallengeUseCase(
             override val difficulty: Challenge.Difficulty,
             override val motivations: List<String>,
             override val end: LocalDate,
-            override val note: String? = null
+            override val note: String = ""
 
         ) : Params(id, name, tags, color, icon, difficulty, motivations, end, note)
     }

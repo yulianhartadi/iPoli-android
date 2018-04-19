@@ -33,7 +33,11 @@ sealed class EditChallengeAction : Action {
     data class AddTag(val tagName: String) : EditChallengeAction()
     data class Load(val challengeId: String) : EditChallengeAction()
     data class ChangeEndDate(val date: LocalDate) : EditChallengeAction()
-    data class ChangeMotivations(val motivation1: String, val motivation2: String, val motivation3: String) : EditChallengeAction()
+    data class ChangeMotivations(
+        val motivation1: String,
+        val motivation2: String,
+        val motivation3: String
+    ) : EditChallengeAction()
 
     object ShowNext : EditChallengeAction()
     object UpdateSummary : EditChallengeAction()
@@ -44,7 +48,7 @@ sealed class EditChallengeAction : Action {
     object Save : EditChallengeAction()
 }
 
-object EditChallengeReducer : BaseViewStateReducer<EditChallengeViewState> () {
+object EditChallengeReducer : BaseViewStateReducer<EditChallengeViewState>() {
 
     override val stateKey = key<EditChallengeViewState>()
 
@@ -217,13 +221,11 @@ object EditChallengeReducer : BaseViewStateReducer<EditChallengeViewState> () {
                 )
             }
 
-            is EditChallengeAction.ChangeNote -> {
-                val note = action.note.trim()
+            is EditChallengeAction.ChangeNote ->
                 subState.copy(
                     type = NOTE_CHANGED,
-                    note = if(note.isEmpty()) null else note
+                    note = action.note.trim()
                 )
-            }
 
             is EditChallengeAction.ChangeEndDate -> {
                 subState.copy(
@@ -252,7 +254,7 @@ object EditChallengeReducer : BaseViewStateReducer<EditChallengeViewState> () {
 
 
             else -> subState
-    }
+        }
 
     override fun defaultState() =
         EditChallengeViewState(
@@ -272,7 +274,7 @@ object EditChallengeReducer : BaseViewStateReducer<EditChallengeViewState> () {
             allQuests = emptyList(),
             quests = emptyList(),
             selectedQuestIds = emptySet(),
-            note = null,
+            note = "",
             maxTagsReached = false
         )
 
@@ -299,7 +301,7 @@ data class EditChallengeViewState(
     val allQuests: List<BaseQuest>,
     val quests: List<BaseQuest>,
     val selectedQuestIds: Set<String>,
-    val note: String?,
+    val note: String,
     val maxTagsReached: Boolean
 ) : ViewState {
     enum class StateType {

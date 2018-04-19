@@ -119,7 +119,7 @@ data class DbChallenge(override val map: MutableMap<String, Any?> = mutableMapOf
     var coins: Long? by map
     var completedAtDate: Long? by map
     var completedAtMinute: Long? by map
-    var note: String? by map
+    var note: String by map
     override var createdAt: Long by map
     override var updatedAt: Long by map
     override var removedAt: Long? by map
