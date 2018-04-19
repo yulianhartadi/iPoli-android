@@ -29,7 +29,6 @@ import io.ipoli.android.Constants
 import io.ipoli.android.MainActivity
 import io.ipoli.android.R
 import io.ipoli.android.challenge.list.ChallengeListViewController
-import io.ipoli.android.common.EmailUtils
 import io.ipoli.android.common.InviteFriendsDialogController
 import io.ipoli.android.common.redux.android.ReduxViewController
 import io.ipoli.android.common.view.*
@@ -139,18 +138,6 @@ class HomeViewController(args: Bundle? = null) :
 
             R.id.feedback ->
                 showFeedback()
-
-            R.id.contactUs -> {
-                EmailUtils.send(
-                    activity!!,
-                    "Hi",
-                    sharedPreferences.getString(Constants.KEY_PLAYER_ID, null),
-                    stringRes(R.string.contact_us_email_chooser_title)
-                )
-            }
-
-            R.id.signIn ->
-                showAuth()
 
             else -> {
                 if (TAG_IDS.contains(item.itemId)) {
@@ -408,7 +395,14 @@ class HomeViewController(args: Bundle? = null) :
         view: View,
         showSignIn: Boolean
     ) {
-        view.navigationView.menu.findItem(R.id.signIn).isVisible = showSignIn
+        if (showSignIn) {
+            view.navigationView.signIn.visible()
+            view.navigationView.signIn.setOnClickListener {
+                showAuth()
+            }
+        } else {
+            view.navigationView.signIn.gone()
+        }
     }
 
     private val HomeViewState.avatarImage

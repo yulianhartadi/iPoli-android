@@ -79,13 +79,6 @@
             android:title="@string/invite_friends" />
 
         <item
-            android:id="@+id/settings"
-            android:checked="false"
-            android:icon="@drawable/ic_settings_black_24dp"
-            android:orderInCategory="1"
-            android:title="@string/settings" />
-
-        <item
             android:id="@+id/community"
             android:checkable="false"
             android:checked="false"
@@ -100,19 +93,12 @@
             android:icon="@drawable/ic_megaphone_black_24dp"
             android:orderInCategory="1"
             android:title="@string/feedback" />
+
         <item
-            android:id="@+id/contactUs"
-            android:checkable="false"
+            android:id="@+id/settings"
             android:checked="false"
-            android:icon="@drawable/ic_email_white_24dp"
+            android:icon="@drawable/ic_settings_black_24dp"
             android:orderInCategory="1"
-            android:title="@string/contact_us" />
-        <item
-            android:id="@+id/signIn"
-            android:checkable="false"
-            android:checked="false"
-            android:icon="@drawable/ic_login_white_24dp"
-            android:orderInCategory="1"
-            android:title="@string/sign_in_button" />
+            android:title="@string/settings" />
     </group>
 </menu>

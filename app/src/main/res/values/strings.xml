@@ -375,6 +375,7 @@
     <string name="settings_tutorial_title">Show tutorial</string>
     <string name="settings_tutorial_desc">View tutorial again to find out more about myPoli</string>
     <string name="settings_about_title">About</string>
+    <string name="settings_misc_title">Misc</string>
     <string name="settings_rate_title">Encourage us</string>
     <string name="settings_rate_desc">Rate myPoli on Google Play and share your opinion</string>
     <string name="settings_app_version">App version</string>
@@ -1261,4 +1262,6 @@
     <string name="power_up_tags_title">Unlimited Tags</string>
     <string name="max_tags_message">(Limit of 3 tags reached)</string>
     <string name="remind_label">Remind</string>
+    <string name="settings_contact_title">Contact Us</string>
+    <string name="settings_contact_desc">Have a question? Found a bug or just want to say hi?</string>
 </resources>

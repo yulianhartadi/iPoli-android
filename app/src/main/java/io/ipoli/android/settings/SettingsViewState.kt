@@ -25,23 +25,26 @@ object SettingsReducer : BaseViewStateReducer<SettingsViewState>() {
 
         SettingsAction.Load -> {
             val selectedCalendars = state.dataState.player!!.preferences.syncCalendarIds.size
-            createChangedState(selectedCalendars)
+            createChangedState(
+                playerId = state.dataState.player.id,
+                selectedCalendars = selectedCalendars
+            )
         }
 
         is DataLoadedAction.PlayerChanged -> {
             val selectedCalendars = action.player.preferences.syncCalendarIds.size
-            createChangedState(selectedCalendars)
+            createChangedState(playerId = action.player.id, selectedCalendars = selectedCalendars)
         }
 
         else -> subState
     }
 
-    private fun createChangedState(selectedCalendars: Int): SettingsViewState {
-        return SettingsViewState.Changed(
+    private fun createChangedState(playerId: String, selectedCalendars: Int) =
+        SettingsViewState.Changed(
+            playerId = playerId,
             selectedCalendars = selectedCalendars,
             isCalendarSyncEnabled = selectedCalendars > 0
         )
-    }
 
     override fun defaultState() = SettingsViewState.Loading
 
@@ -52,6 +55,7 @@ object SettingsReducer : BaseViewStateReducer<SettingsViewState>() {
 sealed class SettingsViewState : ViewState {
     object Loading : SettingsViewState()
     data class Changed(
+        val playerId: String,
         val isCalendarSyncEnabled: Boolean,
         val selectedCalendars: Int
     ) : SettingsViewState()

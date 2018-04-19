@@ -10,6 +10,7 @@ import android.view.ViewGroup
 import io.ipoli.android.BuildConfig
 import io.ipoli.android.Constants
 import io.ipoli.android.R
+import io.ipoli.android.common.EmailUtils
 import io.ipoli.android.common.redux.android.ReduxViewController
 import io.ipoli.android.common.view.stringRes
 import io.ipoli.android.common.view.toolbarTitle
@@ -38,15 +39,15 @@ class SettingsViewController(args: Bundle? = null) :
     override fun render(state: SettingsViewState, view: View) {
         when (state) {
             is SettingsViewState.Changed -> {
-                renderAboutSection(view)
-                renderSyncCalendarsSection(view, state)
+                renderAboutSection(state, view)
+                renderSyncCalendarsSection(state, view)
             }
         }
     }
 
     private fun renderSyncCalendarsSection(
-        view: View,
-        state: SettingsViewState.Changed
+        state: SettingsViewState.Changed,
+        view: View
     ) {
         view.enableSyncCalendars.setOnCheckedChangeListener(null)
         view.enableSyncCalendars.isChecked = state.isCalendarSyncEnabled
@@ -80,13 +81,24 @@ class SettingsViewController(args: Bundle? = null) :
         }).show(router)
     }
 
-    private fun renderAboutSection(view: View) {
-        view.appVersion.text = BuildConfig.VERSION_NAME
+    private fun renderAboutSection(state: SettingsViewState.Changed, view: View) {
+
+        view.contactContainer.setOnClickListener {
+            EmailUtils.send(
+                activity!!,
+                "Hi",
+                state.playerId,
+                stringRes(R.string.contact_us_email_chooser_title)
+            )
+        }
+
         view.rateContainer.setOnClickListener {
             val uri = Uri.parse("market://details?id=" + activity!!.packageName)
             val linkToMarket = Intent(Intent.ACTION_VIEW, uri)
             startActivity(linkToMarket)
         }
+
+        view.appVersion.text = BuildConfig.VERSION_NAME
     }
 
     private val SettingsViewState.Changed.selectedCalendarsText: String

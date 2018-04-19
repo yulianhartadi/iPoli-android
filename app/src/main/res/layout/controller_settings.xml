@@ -17,14 +17,8 @@
             android:orientation="vertical">
 
             <TextView
-                style="@style/TextAppearance.AppCompat.Body2"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:paddingEnd="16dp"
-                android:paddingStart="16dp"
-                android:text="@string/settings_sync_calendars"
-                android:textColor="@color/colorAccent"
-                android:textSize="14sp" />
+                style="@style/SectionTitle"
+                android:text="@string/settings_sync_calendars" />
 
             <RelativeLayout
                 android:id="@+id/syncCalendarsContainer"
@@ -98,14 +92,38 @@
             android:orientation="vertical">
 
             <TextView
-                style="@style/TextAppearance.AppCompat.Body2"
+                style="@style/SectionTitle"
+                android:text="@string/settings_misc_title" />
+
+            <LinearLayout
+                android:id="@+id/contactContainer"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="72dp"
+                android:background="?android:attr/selectableItemBackground"
+                android:clickable="true"
+                android:orientation="vertical"
                 android:paddingEnd="16dp"
                 android:paddingStart="16dp"
-                android:text="@string/settings_about_title"
-                android:textColor="@color/colorAccent"
-                android:textSize="14sp" />
+                android:weightSum="2">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="0dp"
+                    android:layout_weight="1"
+                    android:gravity="bottom"
+                    android:text="@string/settings_contact_title"
+                    android:textColor="@color/md_dark_text_87"
+                    android:textSize="16sp" />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="0dp"
+                    android:layout_weight="1"
+                    android:gravity="top"
+                    android:text="@string/settings_contact_desc"
+                    android:textColor="@color/md_dark_text_54"
+                    android:textSize="14sp" />
+            </LinearLayout>
 
             <LinearLayout
                 android:id="@+id/rateContainer"
