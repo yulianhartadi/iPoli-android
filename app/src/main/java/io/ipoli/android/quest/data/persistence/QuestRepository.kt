@@ -4,6 +4,7 @@ import android.content.SharedPreferences
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.Query
 import com.google.firebase.firestore.WriteBatch
+import io.ipoli.android.challenge.entity.Challenge
 import io.ipoli.android.common.datetime.*
 import io.ipoli.android.common.persistence.BaseCollectionFirestoreRepository
 import io.ipoli.android.common.persistence.CollectionRepository
@@ -107,6 +108,9 @@ data class DbQuest(override val map: MutableMap<String, Any?> = mutableMapOf()) 
     var icon: String? by map
     var tagIds: Map<String, Boolean> by map
     var duration: Int by map
+    var difficulty: String by map
+    var priority: String by map
+    var preferredStartTime: String by map
     var reminders: List<MutableMap<String, Any?>> by map
     var startMinute: Long? by map
     var experience: Long? by map
@@ -576,6 +580,9 @@ class FirestoreQuestRepository(
             originalScheduledDate = cq.originalScheduledDate.startOfDayUTC,
             startTime = plannedTime,
             duration = cq.duration,
+            difficulty = Challenge.Difficulty.valueOf(cq.difficulty),
+            priority = Priority.valueOf(cq.priority),
+            preferredStartTime = TimePreference.valueOf(cq.preferredStartTime),
             experience = cq.experience?.toInt(),
             coins = cq.coins?.toInt(),
             bounty = cq.bounty?.let {
@@ -625,6 +632,9 @@ class FirestoreQuestRepository(
         q.color = entity.color.name
         q.icon = entity.icon?.name
         q.duration = entity.duration
+        q.difficulty = entity.difficulty.name
+        q.priority = entity.priority.name
+        q.preferredStartTime = entity.preferredStartTime.name
         q.scheduledDate = entity.scheduledDate.startOfDayUTC()
         q.originalScheduledDate = entity.originalScheduledDate.startOfDayUTC()
         q.reminders = entity.reminders.map {

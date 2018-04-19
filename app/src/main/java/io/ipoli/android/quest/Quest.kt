@@ -1,5 +1,6 @@
 package io.ipoli.android.quest
 
+import io.ipoli.android.challenge.entity.Challenge
 import io.ipoli.android.common.datetime.*
 import io.ipoli.android.common.sumByLong
 import io.ipoli.android.quest.reminder.picker.ReminderViewModel
@@ -40,7 +41,7 @@ data class Reminder(
             reminder: ReminderViewModel?,
             scheduledDate: LocalDate,
             startTime: Time
-        ) : Reminder? {
+        ): Reminder? {
             return reminder?.let {
                 val questDateTime =
                     LocalDateTime.of(
@@ -142,6 +143,9 @@ data class Quest(
     val tags: List<Tag> = listOf(),
     val startTime: Time? = null,
     val duration: Int,
+    val difficulty: Challenge.Difficulty = Challenge.Difficulty.NORMAL,
+    val priority: Priority = Priority.NOT_IMPORTANT_NOT_URGENT,
+    val preferredStartTime: TimePreference = TimePreference.ANY,
     val reminders: List<Reminder> = listOf(),
     val subQuests: List<SubQuest> = listOf(),
     val scheduledDate: LocalDate,
@@ -250,6 +254,13 @@ data class TimeRange(
     }
 }
 
+enum class Priority {
+    IMPORTANT_URGENT,
+    IMPORTANT_NOT_URGENT,
+    NOT_IMPORTANT_URGENT,
+    NOT_IMPORTANT_NOT_URGENT
+}
+
 data class RepeatingQuest(
     override val id: String = "",
     val name: String,
@@ -258,6 +269,9 @@ data class RepeatingQuest(
     val tags: List<Tag> = listOf(),
     val startTime: Time? = null,
     val duration: Int,
+    val difficulty: Challenge.Difficulty = Challenge.Difficulty.NORMAL,
+    val priority: Priority = Priority.NOT_IMPORTANT_NOT_URGENT,
+    val preferredStartTime: TimePreference = TimePreference.ANY,
     val reminders: List<Reminder> = listOf(),
     val repeatPattern: RepeatPattern,
     val subQuests: List<SubQuest> = listOf(),

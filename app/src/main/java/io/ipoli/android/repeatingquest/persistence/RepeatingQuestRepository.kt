@@ -2,17 +2,16 @@ package io.ipoli.android.repeatingquest.persistence
 
 import android.content.SharedPreferences
 import com.google.firebase.firestore.FirebaseFirestore
+import io.ipoli.android.challenge.entity.Challenge
 import io.ipoli.android.common.datetime.Time
+import io.ipoli.android.common.datetime.TimePreference
 import io.ipoli.android.common.datetime.instant
 import io.ipoli.android.common.datetime.startOfDayUTC
 import io.ipoli.android.common.persistence.BaseCollectionFirestoreRepository
 import io.ipoli.android.common.persistence.CollectionRepository
 import io.ipoli.android.common.persistence.FirestoreModel
 import io.ipoli.android.common.persistence.TagProvider
-import io.ipoli.android.quest.Color
-import io.ipoli.android.quest.Icon
-import io.ipoli.android.quest.Reminder
-import io.ipoli.android.quest.RepeatingQuest
+import io.ipoli.android.quest.*
 import io.ipoli.android.quest.data.persistence.DbReminder
 import io.ipoli.android.quest.data.persistence.DbSubQuest
 import io.ipoli.android.quest.subquest.SubQuest
@@ -49,6 +48,9 @@ data class DbRepeatingQuest(override val map: MutableMap<String, Any?> = mutable
     var tagIds: Map<String, Boolean> by map
     var startMinute: Long? by map
     var duration: Int by map
+    var difficulty: String by map
+    var priority: String by map
+    var preferredStartTime: String by map
     var reminders: List<MutableMap<String, Any?>> by map
     var repeatPattern: MutableMap<String, Any?> by map
     var subQuests: List<MutableMap<String, Any?>> by map
@@ -154,6 +156,9 @@ class FirestoreRepeatingQuestRepository(
             },
             startTime = rq.startMinute?.let { Time.of(it.toInt()) },
             duration = rq.duration,
+            difficulty = Challenge.Difficulty.valueOf(rq.difficulty),
+            priority = Priority.valueOf(rq.priority),
+            preferredStartTime = TimePreference.valueOf(rq.preferredStartTime),
             reminders = rq.reminders.map {
                 val cr = DbReminder(it)
                 Reminder(cr.message, Time.of(cr.minute), cr.date?.startOfDayUTC)
@@ -240,6 +245,9 @@ class FirestoreRepeatingQuestRepository(
         rq.color = entity.color.name
         rq.icon = entity.icon?.name
         rq.duration = entity.duration
+        rq.difficulty = entity.difficulty.name
+        rq.priority = entity.priority.name
+        rq.preferredStartTime = entity.preferredStartTime.name
         rq.startMinute = entity.startTime?.toMinuteOfDay()?.toLong()
         rq.reminders = entity.reminders.map {
             createDbReminder(it).map
