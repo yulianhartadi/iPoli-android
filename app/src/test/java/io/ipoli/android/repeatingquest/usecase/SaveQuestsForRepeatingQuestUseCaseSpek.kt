@@ -177,7 +177,7 @@ class SaveQuestsForRepeatingQuestUseCaseSpek : Spek({
                     questRepo = repo
                 )
                 quests.size.`should be`(6)
-                quests.filter { it.scheduledDate.isEqual(firstDateOfWeek) }
+                quests.filter { it.scheduledDate!!.isEqual(firstDateOfWeek) }
                     .`should be empty`()
             }
 
@@ -361,7 +361,7 @@ class SaveQuestsForRepeatingQuestUseCaseSpek : Spek({
 
                     quests.size.`should be`(1)
                     val scheduledDate = quests.first().scheduledDate
-                    scheduledDate.dayOfWeek.`should be in`(preferredDays)
+                    scheduledDate!!.dayOfWeek.`should be in`(preferredDays)
                 }
 
                 it("should schedule 2 quest with 1 preferred day") {
@@ -377,7 +377,7 @@ class SaveQuestsForRepeatingQuestUseCaseSpek : Spek({
 
                     quests.size.`should be`(2)
                     val scheduledDates = quests.map { it.scheduledDate }
-                    scheduledDates.filter { it.dayOfWeek == DayOfWeek.FRIDAY }.size.`should be`(1)
+                    scheduledDates.filter { it!!.dayOfWeek == DayOfWeek.FRIDAY }.size.`should be`(1)
                 }
 
                 it("should schedule 3 quest with 4 preferred day") {
@@ -402,11 +402,11 @@ class SaveQuestsForRepeatingQuestUseCaseSpek : Spek({
                         DayOfWeek.FRIDAY
                     )
                     if (quests.size == 1) {
-                        quests.first().scheduledDate.dayOfWeek.`should be in`(
+                        quests.first().scheduledDate!!.dayOfWeek.`should be in`(
                             possibleWeekDays
                         )
                     } else {
-                        quests.map { it.scheduledDate.dayOfWeek }.`should contain all`(
+                        quests.map { it.scheduledDate!!.dayOfWeek }.`should contain all`(
                             possibleWeekDays
                         )
                     }
@@ -427,11 +427,11 @@ class SaveQuestsForRepeatingQuestUseCaseSpek : Spek({
                         DayOfWeek.SUNDAY
                     )
                     if (quests.size == 1) {
-                        quests.first().scheduledDate.dayOfWeek.`should be in`(
+                        quests.first().scheduledDate!!.dayOfWeek.`should be in`(
                             possibleWeekDays
                         )
                     } else {
-                        quests.map { it.scheduledDate.dayOfWeek }.`should contain all`(
+                        quests.map { it.scheduledDate!!.dayOfWeek }.`should contain all`(
                             possibleWeekDays
                         )
                     }
@@ -453,17 +453,17 @@ class SaveQuestsForRepeatingQuestUseCaseSpek : Spek({
 
                     quests.size.`should be in range`(1, 2)
                     if (quests.size == 1) {
-                        quests.first().scheduledDate.dayOfWeek.`should be in`(
+                        quests.first().scheduledDate!!.dayOfWeek.`should be in`(
                             possibleWeekDays
                         )
                     } else {
                         quests.forEach {
-                            it.scheduledDate.dayOfWeek.`should be in`(possibleWeekDays)
+                            it.scheduledDate!!.dayOfWeek.`should be in`(possibleWeekDays)
                         }
                         val first = quests.first().scheduledDate
                         val second = quests[1].scheduledDate
                         val woy = WeekFields.of(Locale.getDefault()).weekOfWeekBasedYear()
-                        first.get(woy).`should not be`(second.get(woy))
+                        first!!.get(woy).`should not be`(second!!.get(woy))
                     }
                 }
 
@@ -676,7 +676,7 @@ class SaveQuestsForRepeatingQuestUseCaseSpek : Spek({
                     )
                     quests.size.`should be`(1)
                     val scheduledDate = quests.first().scheduledDate
-                    scheduledDate.dayOfMonth.`should be in`(preferredDays)
+                    scheduledDate!!.dayOfMonth.`should be in`(preferredDays)
                 }
 
                 it("should schedule 2 quest with 1 preferred day") {
@@ -692,7 +692,7 @@ class SaveQuestsForRepeatingQuestUseCaseSpek : Spek({
 
                     quests.size.`should be`(2)
                     val scheduledDates = quests.map { it.scheduledDate }
-                    scheduledDates.filter { it.dayOfMonth == 10 }.size.`should be`(1)
+                    scheduledDates.filter { it!!.dayOfMonth == 10 }.size.`should be`(1)
                 }
 
                 it("should schedule 3 quest with 4 preferred day") {
@@ -709,11 +709,11 @@ class SaveQuestsForRepeatingQuestUseCaseSpek : Spek({
                     quests.size.`should be in range`(1, 2)
                     val possibleMonthDays = setOf(20, 25)
                     if (quests.size == 1) {
-                        quests.first().scheduledDate.dayOfMonth.`should be in`(
+                        quests.first().scheduledDate!!.dayOfMonth.`should be in`(
                             possibleMonthDays
                         )
                     } else {
-                        quests.map { it.scheduledDate.dayOfMonth }.`should contain all`(
+                        quests.map { it.scheduledDate!!.dayOfMonth }.`should contain all`(
                             possibleMonthDays
                         )
                     }
@@ -731,11 +731,11 @@ class SaveQuestsForRepeatingQuestUseCaseSpek : Spek({
                     quests.size.`should be in range`(1, 2)
                     val possibleMonthDays = setOf(30, 31)
                     if (quests.size == 1) {
-                        quests.first().scheduledDate.dayOfMonth.`should be in`(
+                        quests.first().scheduledDate!!.dayOfMonth.`should be in`(
                             possibleMonthDays
                         )
                     } else {
-                        quests.map { it.scheduledDate.dayOfMonth }.`should contain all`(
+                        quests.map { it.scheduledDate!!.dayOfMonth }.`should contain all`(
                             possibleMonthDays
                         )
                     }
@@ -767,15 +767,15 @@ class SaveQuestsForRepeatingQuestUseCaseSpek : Spek({
                     quests.size.`should be in range`(1, 2)
                     if (quests.size == 1) {
                         val scheduledDate = quests.first().scheduledDate
-                        scheduledDate.dayOfMonth.`should be in`(possibleMonthDays)
+                        scheduledDate!!.dayOfMonth.`should be in`(possibleMonthDays)
                         scheduledDate.month.`should be`(Month.FEBRUARY)
                     } else {
                         quests.forEach {
-                            it.scheduledDate.dayOfMonth.`should be in`(possibleMonthDays)
+                            it.scheduledDate!!.dayOfMonth.`should be in`(possibleMonthDays)
                         }
                         val first = quests.first().scheduledDate
                         val second = quests[1].scheduledDate
-                        first.monthValue.`should not be equal to`(second.monthValue)
+                        first!!.monthValue.`should not be equal to`(second!!.monthValue)
                     }
                 }
 
