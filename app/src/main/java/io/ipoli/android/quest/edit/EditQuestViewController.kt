@@ -267,7 +267,7 @@ class EditQuestViewController(args: Bundle? = null) :
     ) {
         (view.questTagList.adapter as EditItemTagAdapter).updateAll(state.tagViewModels)
         val add = view.addQuestTag
-        if(state.maxTagsReached) {
+        if (state.maxTagsReached) {
             add.gone()
             view.maxTagsMessage.visible()
         } else {
@@ -316,13 +316,17 @@ class EditQuestViewController(args: Bundle? = null) :
     ) {
         view.questScheduleDate.text = state.scheduleDateText
         view.questScheduleDate.setOnClickListener {
-            val date = state.scheduleDate
+            val date = state.scheduleDate ?: LocalDate.now()
             val datePickerDialog = DatePickerDialog(
                 view.context, R.style.Theme_myPoli_AlertDialog,
                 DatePickerDialog.OnDateSetListener { _, year, month, dayOfMonth ->
                     dispatch(EditQuestAction.ChangeDate(LocalDate.of(year, month + 1, dayOfMonth)))
                 }, date.year, date.month.value - 1, date.dayOfMonth
             )
+            datePickerDialog.setButton(
+                Dialog.BUTTON_NEUTRAL,
+                view.context.getString(R.string.do_not_know),
+                { _, _ -> dispatch(EditQuestAction.ChangeDate(null)) })
             datePickerDialog.show()
         }
     }
@@ -463,7 +467,7 @@ class EditQuestViewController(args: Bundle? = null) :
 
     private val EditQuestViewState.startTimeText: String
         get() = startTime?.let { "At $it" }
-                ?: stringRes(R.string.unscheduled)
+            ?: stringRes(R.string.unscheduled)
 
     private val EditQuestViewState.durationText: String
         get() = "For ${DurationFormatter.formatReadable(activity!!, duration)}"
@@ -475,7 +479,7 @@ class EditQuestViewController(args: Bundle? = null) :
                 activity!!
             )
         }
-                ?: stringRes(R.string.do_not_remind)
+            ?: stringRes(R.string.do_not_remind)
 
     private val EditQuestViewState.challengeText: String
         get() = challenge?.name ?: stringRes(R.string.add_to_challenge)

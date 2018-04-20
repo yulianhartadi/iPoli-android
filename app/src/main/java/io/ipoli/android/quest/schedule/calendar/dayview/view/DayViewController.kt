@@ -4,6 +4,7 @@ import android.animation.Animator
 import android.animation.AnimatorListenerAdapter
 import android.animation.ObjectAnimator
 import android.app.DatePickerDialog
+import android.app.Dialog
 import android.content.Context
 import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
@@ -481,12 +482,17 @@ class DayViewController :
     }
 
     private fun showDatePicker(selectedDate: LocalDate) {
-        DatePickerDialog(
+        val datePickerDialog = DatePickerDialog(
             view!!.context, R.style.Theme_myPoli_AlertDialog,
             DatePickerDialog.OnDateSetListener { _, year, month, dayOfMonth ->
                 dispatch(DayViewAction.DatePicked(LocalDate.of(year, month + 1, dayOfMonth)))
             }, selectedDate.year, selectedDate.month.value - 1, selectedDate.dayOfMonth
-        ).show()
+        )
+        datePickerDialog.setButton(
+            Dialog.BUTTON_NEUTRAL,
+            view!!.context.getString(R.string.do_not_know),
+            { _, _ -> dispatch(DayViewAction.DatePicked(null)) })
+        datePickerDialog.show()
     }
 
     private fun showReminderPicker(selectedReminder: ReminderViewModel?) {
@@ -958,7 +964,7 @@ class DayViewController :
                 val reminder = q.reminders.firstOrNull()?.let {
                     ReminderViewModel(
                         it.message,
-                        it.toMinutesFromStart(q.scheduledDate, q.startTime!!)
+                        it.toMinutesFromStart(q.scheduledDate!!, q.startTime!!)
                     )
                 }
 

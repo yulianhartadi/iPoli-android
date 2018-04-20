@@ -133,7 +133,7 @@ class SaveQuestsForRepeatingQuestUseCase(
             questRepository.findScheduledForRepeatingQuestBetween(rq.id, start, end)
         val (removed, existing) = scheduledQuests.partition { it.isRemoved }
         val scheduledDateToQuest = existing.associateBy({ it.originalScheduledDate }, { it })
-        val removedDates = removed.map { it.originalScheduledDate }
+        val removedDates = removed.map { it.originalScheduledDate!! }
         val resultDates = scheduleDates - removedDates
 
         val questsToSave = mutableListOf<Quest>()

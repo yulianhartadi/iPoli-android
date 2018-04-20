@@ -82,8 +82,8 @@ class CreatePlaceholderQuestsForRepeatingQuestsUseCase(
 
                 val (removed, existing) = scheduledQuests.partition { it.isRemoved }
                 val scheduledDateToQuest =
-                    existing.associateBy({ it.originalScheduledDate }, { it })
-                val removedDates = removed.map { it.originalScheduledDate }
+                    existing.associateBy({ it.originalScheduledDate!! }, { it })
+                val removedDates = removed.map { it.originalScheduledDate!! }
                 val resultDates = scheduleDates - removedDates
 
                 resultDates.filter { !scheduledDateToQuest.containsKey(it) }.map { date ->

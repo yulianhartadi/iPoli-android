@@ -15,9 +15,11 @@ class FindNextDateForChallengeUseCase : UseCase<FindNextDateForChallengeUseCase.
         val challenge = parameters.challenge
         val currentDate = parameters.currentDate
 
-        val nextDate = challenge.quests.sortedBy { it.scheduledDate }.firstOrNull {
-            it.scheduledDate.isAfterOrEqual(currentDate) && !it.isCompleted
-        }?.scheduledDate
+        val nextDate =
+            challenge.quests.filter { it.scheduledDate != null }.sortedBy { it.scheduledDate }
+                .firstOrNull {
+                    it.scheduledDate!!.isAfterOrEqual(currentDate) && !it.isCompleted
+                }?.scheduledDate
 
         if (nextDate == null) {
             return challenge

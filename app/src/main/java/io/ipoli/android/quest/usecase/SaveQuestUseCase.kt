@@ -43,7 +43,7 @@ class SaveQuestUseCase(
         val color: Color,
         val icon: Icon? = null,
         val startTime: Time? = null,
-        val scheduledDate: LocalDate,
+        val scheduledDate: LocalDate?,
         val duration: Int,
         val reminders: List<Reminder>?,
         val repeatingQuestId: String? = null,
@@ -92,11 +92,14 @@ class SaveQuestUseCase(
             val subQuests = parameters.subQuests
                 ?.filter { it.name.isNotBlank() } ?: quest.subQuests
 
+            val originalScheduledDate = quest.originalScheduledDate ?: parameters.scheduledDate
+
             quest.copy(
                 name = parameters.name.trim(),
                 icon = parameters.icon,
                 color = parameters.color,
                 scheduledDate = parameters.scheduledDate,
+                originalScheduledDate = originalScheduledDate,
                 startTime = parameters.startTime,
                 duration = parameters.duration,
                 reminders = parameters.reminders ?: quest.reminders,

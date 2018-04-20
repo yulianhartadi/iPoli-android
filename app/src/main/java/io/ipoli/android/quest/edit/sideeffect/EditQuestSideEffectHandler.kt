@@ -26,7 +26,7 @@ class EditQuestSideEffectHandler : AppSideEffectHandler() {
     private val saveQuestUseCase by required { saveQuestUseCase }
 
     override suspend fun doExecute(action: Action, state: AppState) {
-        when(action) {
+        when (action) {
             is EditQuestAction.Load -> {
                 val quest = questRepository.findById(action.questId)
                 dispatch(EditQuestAction.Loaded(quest!!, action.params))
@@ -62,10 +62,13 @@ class EditQuestSideEffectHandler : AppSideEffectHandler() {
 
             is EditQuestAction.Save -> {
                 val s = state.stateFor(EditQuestViewState::class.java)
-                val reminder = s.startTime?.let {
-                    Reminder.create(s.reminder, s.scheduleDate, it)
-                }
 
+                val reminder = s.startTime?.let {
+                    s.scheduleDate?.let {
+                        Reminder.create(s.reminder, s.scheduleDate, s.startTime)
+                    }
+
+                }
 
                 val subQuests = action.newSubQuestNames.entries.map {
                     var subQuest = SubQuest(it.value, null, null)
