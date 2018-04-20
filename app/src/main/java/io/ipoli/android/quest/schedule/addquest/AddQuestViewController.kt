@@ -198,6 +198,12 @@ class AddQuestViewController(args: Bundle? = null) :
                     dispatch(AddQuestAction.DatePicked(LocalDate.of(year, month + 1, dayOfMonth)))
                 }, date.year, date.month.value - 1, date.dayOfMonth
             )
+            datePickerDialog.setButton(
+                Dialog.BUTTON_NEUTRAL,
+                view.context.getString(R.string.do_not_know),
+                { _, _ ->
+                    dispatch(AddQuestAction.DatePicked(null))
+                })
             datePickerDialog.setOnCancelListener {
                 dispatch(AddQuestAction.DatePickerCanceled)
             }

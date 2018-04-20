@@ -39,7 +39,7 @@ sealed class DayViewAction : Action {
     data class ChangeEditViewName(val name: String) : DayViewAction()
     object EditQuest : DayViewAction()
     object EditUnscheduledQuest : DayViewAction()
-    data class DatePicked(val date: LocalDate) : DayViewAction()
+    data class DatePicked(val date: LocalDate?) : DayViewAction()
     data class ReminderPicked(val reminder: ReminderViewModel?) : DayViewAction()
     data class IconPicked(val icon: Icon?) : DayViewAction()
     data class ColorPicked(val color: Color) : DayViewAction()

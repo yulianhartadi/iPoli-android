@@ -37,7 +37,7 @@ sealed class EditQuestAction : Action {
 
     data class ChangeColor(val color: Color) : EditQuestAction()
     data class ChangeIcon(val icon: Icon?) : EditQuestAction()
-    data class ChangeDate(val scheduleDate: LocalDate) : EditQuestAction()
+    data class ChangeDate(val scheduleDate: LocalDate?) : EditQuestAction()
     data class ChangeDuration(val duration: Int) : EditQuestAction()
     data class ChangeStartTime(val time: Time?) : EditQuestAction()
     data class ChangeNote(val note: String) : EditQuestAction()

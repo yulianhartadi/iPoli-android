@@ -62,13 +62,13 @@ class EditQuestSideEffectHandler : AppSideEffectHandler() {
 
             is EditQuestAction.Save -> {
                 val s = state.stateFor(EditQuestViewState::class.java)
+
                 val reminder = s.startTime?.let {
                     s.scheduleDate?.let {
                         Reminder.create(s.reminder, s.scheduleDate, s.startTime)
                     }
 
                 }
-
 
                 val subQuests = action.newSubQuestNames.entries.map {
                     var subQuest = SubQuest(it.value, null, null)
