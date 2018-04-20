@@ -156,8 +156,8 @@ dependencies {
         exclude group: "org.jetbrains.kotlin"
     }
     testImplementation 'com.nhaarman:mockito-kotlin-kt1.1:1.5.0'
-    testImplementation 'org.amshove.kluent:kluent:1.34'
-    testImplementation 'org.amshove.kluent:kluent-android:1.34'
+    testImplementation 'org.amshove.kluent:kluent:1.36'
+    testImplementation 'org.amshove.kluent:kluent-android:1.36'
     testImplementation "org.jetbrains.kotlin:kotlin-reflect:$kotlin_version"
 }
 
