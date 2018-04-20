@@ -41,7 +41,7 @@ class ScheduleViewController(args: Bundle? = null) :
 
     private lateinit var calendarToolbar: ViewGroup
 
-    private var viewModeIcon: IIcon = Entypo.Icon.ent_text_document
+    private var viewModeIcon: IIcon = Entypo.Icon.ent_sweden
 
     private var viewModeTitle = "Agenda"
 
@@ -397,7 +397,7 @@ class ScheduleViewController(args: Bundle? = null) :
 
     private val ScheduleViewState.viewModeIcon: IIcon
         get() = if (viewMode == ScheduleViewState.ViewMode.CALENDAR)
-            Entypo.Icon.ent_text_document
+            Entypo.Icon.ent_sweden
         else
             GoogleMaterial.Icon.gmd_event
 }
