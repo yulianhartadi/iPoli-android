@@ -958,7 +958,7 @@ class DayViewController :
                 val reminder = q.reminders.firstOrNull()?.let {
                     ReminderViewModel(
                         it.message,
-                        it.toMinutesFromStart(q.scheduledDate, q.startTime!!)
+                        it.toMinutesFromStart(q.scheduledDate!!, q.startTime!!)
                     )
                 }
 

@@ -24,9 +24,13 @@ class CreateTagItemsUseCase :
         val (today, otherDays) = incomplete.partition { it.scheduledDate == parameters.currentDate }
         val tomorrowDate = parameters.currentDate.plusDays(1)
         val (tomorrow, otherDays1) = otherDays.partition { it.scheduledDate == tomorrowDate }
-        val (upcoming, past) = otherDays1.partition { it.scheduledDate.isAfter(tomorrowDate) }
 
-        return createSectionWithQuests(TagItem.Today, today) +
+        val (unscheduled, scheduled) = otherDays1.partition { it.scheduledDate == null }
+
+        val (upcoming, past) = scheduled.partition { it.scheduledDate!!.isAfter(tomorrowDate) }
+
+        return createSectionWithQuests(TagItem.Unscheduled, unscheduled) +
+            createSectionWithQuests(TagItem.Today, today) +
             createSectionWithQuests(TagItem.Tomorrow, tomorrow) +
             createSectionWithQuests(TagItem.Upcoming, upcoming) +
             createSectionWithQuests(TagItem.Completed, completed) +
@@ -49,6 +53,7 @@ class CreateTagItemsUseCase :
 
     sealed class TagItem {
         data class QuestItem(val quest: Quest) : TagItem()
+        object Unscheduled : TagItem()
         object Today : TagItem()
         object Tomorrow : TagItem()
         object Upcoming : TagItem()

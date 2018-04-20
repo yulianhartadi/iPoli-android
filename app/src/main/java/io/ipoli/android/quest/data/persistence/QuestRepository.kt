@@ -116,8 +116,8 @@ data class DbQuest(override val map: MutableMap<String, Any?> = mutableMapOf()) 
     var bounty: MutableMap<String, Any?>? by map
     var startDate: Long? by map
     var endDate: Long? by map
-    var scheduledDate: Long by map
-    var originalScheduledDate: Long by map
+    var scheduledDate: Long? by map
+    var originalScheduledDate: Long? by map
     var completedAtDate: Long? by map
     var completedAtMinute: Long? by map
     var subQuests: List<MutableMap<String, Any?>> by map
@@ -563,9 +563,6 @@ class FirestoreQuestRepository(
             null
         })
 
-        val plannedDate = cq.scheduledDate.startOfDayUTC
-        val plannedTime = cq.startMinute?.let { Time.of(it.toInt()) }
-
         return Quest(
             id = cq.id,
             name = cq.name,
@@ -578,9 +575,9 @@ class FirestoreQuestRepository(
             },
             startDate = cq.startDate?.startOfDayUTC,
             endDate = cq.endDate?.startOfDayUTC,
-            scheduledDate = plannedDate,
-            originalScheduledDate = cq.originalScheduledDate.startOfDayUTC,
-            startTime = plannedTime,
+            scheduledDate = cq.scheduledDate?.startOfDayUTC,
+            originalScheduledDate = cq.originalScheduledDate?.startOfDayUTC,
+            startTime = cq.startMinute?.let { Time.of(it.toInt()) },
             duration = cq.duration,
             priority = Priority.valueOf(cq.priority),
             preferredStartTime = TimePreference.valueOf(cq.preferredStartTime),
@@ -637,8 +634,8 @@ class FirestoreQuestRepository(
         q.preferredStartTime = entity.preferredStartTime.name
         q.startDate = entity.startDate?.startOfDayUTC()
         q.endDate = entity.endDate?.startOfDayUTC()
-        q.scheduledDate = entity.scheduledDate.startOfDayUTC()
-        q.originalScheduledDate = entity.originalScheduledDate.startOfDayUTC()
+        q.scheduledDate = entity.scheduledDate?.startOfDayUTC()
+        q.originalScheduledDate = entity.originalScheduledDate?.startOfDayUTC()
         q.reminders = entity.reminders.map {
             createDbReminder(it).map
         }

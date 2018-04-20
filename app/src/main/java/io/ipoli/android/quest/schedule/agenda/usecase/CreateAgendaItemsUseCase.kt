@@ -17,7 +17,7 @@ class CreateAgendaItemsUseCase :
 
     override fun execute(parameters: Params): List<CreateAgendaItemsUseCase.AgendaItem> {
 
-        val scheduledQuests = parameters.scheduledQuests.groupBy { it.scheduledDate }
+        val scheduledQuests = parameters.scheduledQuests.groupBy { it.scheduledDate!! }
         val events = parameters.events.groupBy { it.startDate }
 
         val beforeItems =
@@ -150,7 +150,7 @@ class CreateAgendaItemsUseCase :
     sealed class AgendaItem {
 
         data class QuestItem(val quest: Quest) : AgendaItem() {
-            override fun startDate() = quest.scheduledDate
+            override fun startDate() = quest.scheduledDate!!
         }
 
         data class EventItem(val event: Event) : AgendaItem() {

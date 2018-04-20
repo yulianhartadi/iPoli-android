@@ -430,6 +430,9 @@ class TagViewController(args: Bundle? = null) :
                     }
                 }
 
+                is CreateTagItemsUseCase.TagItem.Unscheduled ->
+                    ItemViewModel.SectionItem(stringRes(R.string.unscheduled))
+
                 is CreateTagItemsUseCase.TagItem.Today ->
                     ItemViewModel.SectionItem(stringRes(R.string.today))
 

@@ -255,7 +255,7 @@ data class EditQuestViewState(
     val type: EditQuestViewState.StateType,
     val id: String,
     val name: String,
-    val scheduleDate: LocalDate,
+    val scheduleDate: LocalDate?,
     val startTime: Time?,
     val duration: Int,
     val reminder: ReminderViewModel?,
