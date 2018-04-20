@@ -19,10 +19,9 @@ import io.ipoli.android.common.redux.Action
 import io.ipoli.android.common.redux.Dispatcher
 import io.ipoli.android.common.redux.SideEffectHandler
 import io.ipoli.android.common.view.playerTheme
-import io.ipoli.android.home.HomeViewController
+import io.ipoli.android.common.home.HomeViewController
 import io.ipoli.android.player.auth.AuthViewController
-import io.ipoli.android.quest.timer.QuestViewController
-import io.ipoli.android.repeatingquest.add.AddRepeatingQuestViewController
+import io.ipoli.android.quest.show.QuestViewController
 import io.ipoli.android.store.membership.MembershipViewController
 import io.ipoli.android.store.powerup.AndroidPowerUp
 import io.ipoli.android.store.powerup.buy.BuyPowerUpDialogController

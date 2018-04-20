@@ -28,7 +28,7 @@ import io.ipoli.android.common.LoaderDialogController
 import io.ipoli.android.common.ViewUtils
 import io.ipoli.android.common.redux.android.ReduxViewController
 import io.ipoli.android.common.view.*
-import io.ipoli.android.home.HomeViewController
+import io.ipoli.android.common.home.HomeViewController
 
 
 /**

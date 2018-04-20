@@ -1,11 +1,11 @@
-package io.ipoli.android.home
+package io.ipoli.android.common.home
 
 import io.ipoli.android.common.AppState
 import io.ipoli.android.common.BaseViewStateReducer
 import io.ipoli.android.common.DataLoadedAction
 import io.ipoli.android.common.mvi.ViewState
 import io.ipoli.android.common.redux.Action
-import io.ipoli.android.home.HomeViewState.StateType.*
+import io.ipoli.android.common.home.HomeViewState.StateType.*
 import io.ipoli.android.pet.PetAvatar
 import io.ipoli.android.pet.PetMood
 import io.ipoli.android.player.Player

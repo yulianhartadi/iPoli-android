@@ -1,4 +1,4 @@
-package io.ipoli.android.quest.timer.usecase
+package io.ipoli.android.quest.show.usecase
 
 import io.ipoli.android.Constants
 import io.ipoli.android.common.UseCase

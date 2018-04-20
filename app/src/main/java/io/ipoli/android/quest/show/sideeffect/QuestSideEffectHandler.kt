@@ -1,4 +1,4 @@
-package io.ipoli.android.quest.timer.sideeffect
+package io.ipoli.android.quest.show.sideeffect
 
 import io.ipoli.android.common.AppSideEffectHandler
 import io.ipoli.android.common.AppState
@@ -9,10 +9,10 @@ import io.ipoli.android.note.usecase.SaveQuestNoteUseCase
 import io.ipoli.android.quest.CompletedQuestAction
 import io.ipoli.android.quest.Quest
 import io.ipoli.android.quest.subquest.usecase.*
-import io.ipoli.android.quest.timer.QuestAction
-import io.ipoli.android.quest.timer.QuestReducer
-import io.ipoli.android.quest.timer.QuestViewState
-import io.ipoli.android.quest.timer.usecase.*
+import io.ipoli.android.quest.show.QuestAction
+import io.ipoli.android.quest.show.QuestReducer
+import io.ipoli.android.quest.show.QuestViewState
+import io.ipoli.android.quest.show.usecase.*
 import space.traversal.kapsule.required
 
 /**

@@ -5,7 +5,7 @@ import io.ipoli.android.common.BaseViewStateReducer
 import io.ipoli.android.common.mvi.ViewState
 import io.ipoli.android.common.redux.Action
 import io.ipoli.android.note.NoteViewState.Type.*
-import io.ipoli.android.quest.timer.QuestAction
+import io.ipoli.android.quest.show.QuestAction
 
 /**
  * Created by Venelin Valkov <venelin@mypoli.fun>

@@ -1,4 +1,4 @@
-package io.ipoli.android.quest.timer.job
+package io.ipoli.android.quest.show.job
 
 import android.annotation.SuppressLint
 import android.app.NotificationManager

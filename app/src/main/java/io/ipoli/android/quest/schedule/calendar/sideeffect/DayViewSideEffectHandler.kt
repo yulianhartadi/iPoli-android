@@ -8,7 +8,7 @@ import io.ipoli.android.quest.Quest
 import io.ipoli.android.quest.Reminder
 import io.ipoli.android.quest.schedule.calendar.dayview.view.DayViewAction
 import io.ipoli.android.quest.schedule.calendar.dayview.view.DayViewState
-import io.ipoli.android.quest.timer.usecase.CompleteTimeRangeUseCase
+import io.ipoli.android.quest.show.usecase.CompleteTimeRangeUseCase
 import io.ipoli.android.quest.usecase.CompleteQuestUseCase
 import io.ipoli.android.quest.usecase.LoadScheduleForDateUseCase
 import io.ipoli.android.quest.usecase.Result

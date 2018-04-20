@@ -10,7 +10,7 @@ import io.ipoli.android.Constants
 import io.ipoli.android.common.di.Module
 import io.ipoli.android.common.view.AppWidgetUtil
 import io.ipoli.android.myPoliApp
-import io.ipoli.android.quest.timer.usecase.CompleteTimeRangeUseCase
+import io.ipoli.android.quest.show.usecase.CompleteTimeRangeUseCase
 import space.traversal.kapsule.Injects
 import space.traversal.kapsule.inject
 import space.traversal.kapsule.required

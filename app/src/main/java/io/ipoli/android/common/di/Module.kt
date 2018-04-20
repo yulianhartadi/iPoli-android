@@ -64,10 +64,10 @@ import io.ipoli.android.quest.schedule.agenda.usecase.CreateAgendaItemsUseCase
 import io.ipoli.android.quest.schedule.agenda.usecase.FindAgendaDatesUseCase
 import io.ipoli.android.quest.schedule.calendar.sideeffect.DayViewSideEffectHandler
 import io.ipoli.android.quest.subquest.usecase.*
-import io.ipoli.android.quest.timer.job.AndroidJobTimerCompleteScheduler
-import io.ipoli.android.quest.timer.job.TimerCompleteScheduler
-import io.ipoli.android.quest.timer.sideeffect.QuestSideEffectHandler
-import io.ipoli.android.quest.timer.usecase.*
+import io.ipoli.android.quest.show.job.AndroidJobTimerCompleteScheduler
+import io.ipoli.android.quest.show.job.TimerCompleteScheduler
+import io.ipoli.android.quest.show.sideeffect.QuestSideEffectHandler
+import io.ipoli.android.quest.show.usecase.*
 import io.ipoli.android.quest.usecase.*
 import io.ipoli.android.quest.view.QuestCompletePresenter
 import io.ipoli.android.repeatingquest.AndroidSaveQuestsForRepeatingQuestScheduler

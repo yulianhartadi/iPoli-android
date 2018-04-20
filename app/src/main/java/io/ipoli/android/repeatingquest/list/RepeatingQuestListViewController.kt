@@ -7,7 +7,6 @@ import android.os.Bundle
 import android.support.annotation.ColorRes
 import android.support.v4.widget.TextViewCompat
 import android.support.v7.widget.LinearLayoutManager
-import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -22,6 +21,7 @@ import io.ipoli.android.common.redux.android.ReduxViewController
 import io.ipoli.android.common.text.DateFormatter
 import io.ipoli.android.common.text.DurationFormatter
 import io.ipoli.android.common.view.*
+import io.ipoli.android.common.view.recyclerview.BaseRecyclerViewAdapter
 import io.ipoli.android.common.view.recyclerview.SimpleViewHolder
 import io.ipoli.android.repeatingquest.add.AddRepeatingQuestViewController
 import io.ipoli.android.repeatingquest.entity.repeatType
@@ -117,19 +117,17 @@ class RepeatingQuestListViewController(args: Bundle? = null) :
         val frequency: String
     )
 
-    inner class RepeatingQuestAdapter(private var viewModels: List<RepeatingQuestViewModel> = listOf()) :
-        RecyclerView.Adapter<SimpleViewHolder>() {
+    inner class RepeatingQuestAdapter :
+        BaseRecyclerViewAdapter<RepeatingQuestViewModel>(R.layout.item_repeating_quest) {
 
-        override fun onBindViewHolder(
-            holder: SimpleViewHolder,
-            position: Int
+        override fun onBindViewModel(
+            vm: RepeatingQuestViewModel,
+            view: View,
+            holder: SimpleViewHolder
         ) {
-            val vm = viewModels[position]
-            val view = holder.itemView
-
             view.rqName.text = vm.name
 
-            if(vm.tags.isNotEmpty()) {
+            if (vm.tags.isNotEmpty()) {
                 view.rqTagName.visible()
                 renderTag(view, vm.tags.first())
             } else {
@@ -170,37 +168,24 @@ class RepeatingQuestListViewController(args: Bundle? = null) :
             }
         }
 
-
         private fun renderTag(view: View, tag: TagViewModel) {
             view.rqTagName.text = tag.name
-            TextViewCompat.setTextAppearance(view.rqTagName,  R.style.TextAppearance_AppCompat_Caption)
+            TextViewCompat.setTextAppearance(
+                view.rqTagName,
+                R.style.TextAppearance_AppCompat_Caption
+            )
 
             val indicator = view.rqTagName.compoundDrawablesRelative[0] as GradientDrawable
             indicator.mutate()
             val size = ViewUtils.dpToPx(8f, view.context).toInt()
             indicator.setSize(size, size)
             indicator.setColor(colorRes(tag.color))
-            view.rqTagName.setCompoundDrawablesRelativeWithIntrinsicBounds(indicator, null, null, null)
-        }
-
-
-        override fun onCreateViewHolder(
-            parent: ViewGroup,
-            viewType: Int
-        ): SimpleViewHolder =
-            SimpleViewHolder(
-                LayoutInflater.from(parent.context).inflate(
-                    R.layout.item_repeating_quest,
-                    parent,
-                    false
-                )
+            view.rqTagName.setCompoundDrawablesRelativeWithIntrinsicBounds(
+                indicator,
+                null,
+                null,
+                null
             )
-
-        override fun getItemCount() = viewModels.size
-
-        fun updateAll(viewModels: List<RepeatingQuestViewModel>) {
-            this.viewModels = viewModels
-            notifyDataSetChanged()
         }
     }
 

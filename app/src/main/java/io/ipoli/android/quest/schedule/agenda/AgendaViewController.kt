@@ -26,7 +26,7 @@ import io.ipoli.android.common.view.*
 import io.ipoli.android.common.view.recyclerview.SimpleViewHolder
 import io.ipoli.android.common.view.recyclerview.SwipeToCompleteCallback
 import io.ipoli.android.quest.CompletedQuestViewController
-import io.ipoli.android.quest.timer.QuestViewController
+import io.ipoli.android.quest.show.QuestViewController
 import kotlinx.android.synthetic.main.controller_agenda.view.*
 import kotlinx.android.synthetic.main.item_agenda_event.view.*
 import kotlinx.android.synthetic.main.item_agenda_month_divider.view.*

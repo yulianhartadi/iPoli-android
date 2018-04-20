@@ -1,4 +1,4 @@
-package io.ipoli.android.quest.timer.usecase
+package io.ipoli.android.quest.show.usecase
 
 import com.nhaarman.mockito_kotlin.any
 import com.nhaarman.mockito_kotlin.doAnswer
@@ -9,9 +9,9 @@ import io.ipoli.android.common.datetime.plusMinutes
 import io.ipoli.android.quest.Quest
 import io.ipoli.android.quest.TimeRange
 import io.ipoli.android.quest.data.persistence.QuestRepository
-import io.ipoli.android.quest.timer.longBreaks
-import io.ipoli.android.quest.timer.pomodoros
-import io.ipoli.android.quest.timer.shortBreaks
+import io.ipoli.android.quest.show.longBreaks
+import io.ipoli.android.quest.show.pomodoros
+import io.ipoli.android.quest.show.shortBreaks
 import org.amshove.kluent.`should be equal to`
 import org.jetbrains.spek.api.Spek
 import org.jetbrains.spek.api.dsl.describe

@@ -25,7 +25,7 @@ import io.ipoli.android.common.view.recyclerview.MultiViewRecyclerViewAdapter
 import io.ipoli.android.common.view.recyclerview.SwipeToCompleteCallback
 import io.ipoli.android.quest.CompletedQuestViewController
 import io.ipoli.android.quest.Quest
-import io.ipoli.android.quest.timer.QuestViewController
+import io.ipoli.android.quest.show.QuestViewController
 import io.ipoli.android.tag.edit.EditTagViewController
 import io.ipoli.android.tag.show.TagViewState.TagChanged
 import io.ipoli.android.tag.usecase.CreateTagItemsUseCase

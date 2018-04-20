@@ -1,4 +1,4 @@
-package io.ipoli.android.quest.timer
+package io.ipoli.android.quest.show
 
 import android.animation.Animator
 import android.animation.AnimatorListenerAdapter

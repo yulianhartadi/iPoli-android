@@ -1,4 +1,4 @@
-package io.ipoli.android.quest.timer
+package io.ipoli.android.quest.show
 
 import io.ipoli.android.Constants
 

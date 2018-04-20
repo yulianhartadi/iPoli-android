@@ -21,7 +21,7 @@ import io.ipoli.android.common.text.DurationFormatter
 import io.ipoli.android.common.view.*
 import io.ipoli.android.quest.CompletedQuestViewState.StateType.DATA_LOADED
 import io.ipoli.android.quest.CompletedQuestViewState.Timer
-import io.ipoli.android.quest.timer.QuestViewController
+import io.ipoli.android.quest.show.QuestViewController
 import io.ipoli.android.tag.Tag
 import kotlinx.android.synthetic.main.controller_completed_quest.view.*
 import kotlinx.android.synthetic.main.item_quest_tag_list.view.*

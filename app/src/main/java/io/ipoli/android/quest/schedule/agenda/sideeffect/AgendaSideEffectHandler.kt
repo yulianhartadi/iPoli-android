@@ -17,7 +17,7 @@ import io.ipoli.android.quest.schedule.agenda.usecase.CreateAgendaItemsUseCase
 import io.ipoli.android.quest.schedule.agenda.usecase.FindAgendaDatesUseCase
 import io.ipoli.android.quest.schedule.calendar.CalendarAction
 import io.ipoli.android.quest.schedule.calendar.CalendarViewState
-import io.ipoli.android.quest.timer.usecase.CompleteTimeRangeUseCase
+import io.ipoli.android.quest.show.usecase.CompleteTimeRangeUseCase
 import io.ipoli.android.quest.usecase.CompleteQuestUseCase
 import io.ipoli.android.repeatingquest.usecase.CreatePlaceholderQuestsForRepeatingQuestsUseCase
 import org.threeten.bp.LocalDate

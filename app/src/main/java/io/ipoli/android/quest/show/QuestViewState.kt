@@ -1,4 +1,4 @@
-package io.ipoli.android.quest.timer
+package io.ipoli.android.quest.show
 
 import io.ipoli.android.Constants
 import io.ipoli.android.common.AppState
@@ -10,9 +10,9 @@ import io.ipoli.android.common.redux.Action
 import io.ipoli.android.quest.Quest
 import io.ipoli.android.quest.TimeRange
 import io.ipoli.android.quest.subquest.SubQuest
-import io.ipoli.android.quest.timer.QuestViewState.StateType.*
-import io.ipoli.android.quest.timer.sideeffect.TimerStartedAction
-import io.ipoli.android.quest.timer.view.formatter.TimerFormatter
+import io.ipoli.android.quest.show.QuestViewState.StateType.*
+import io.ipoli.android.quest.show.sideeffect.TimerStartedAction
+import io.ipoli.android.quest.show.view.formatter.TimerFormatter
 import io.ipoli.android.tag.Tag
 import org.threeten.bp.Instant
 

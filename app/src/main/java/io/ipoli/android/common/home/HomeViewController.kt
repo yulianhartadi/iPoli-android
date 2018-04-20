@@ -1,4 +1,4 @@
-package io.ipoli.android.home
+package io.ipoli.android.common.home
 
 import android.content.Intent
 import android.content.Intent.ACTION_VIEW
@@ -30,14 +30,15 @@ import io.ipoli.android.MainActivity
 import io.ipoli.android.R
 import io.ipoli.android.challenge.list.ChallengeListViewController
 import io.ipoli.android.common.InviteFriendsDialogController
+import io.ipoli.android.common.home.HomeViewState.StateType.*
 import io.ipoli.android.common.redux.android.ReduxViewController
 import io.ipoli.android.common.view.*
-import io.ipoli.android.home.HomeViewState.StateType.*
 import io.ipoli.android.pet.AndroidPetAvatar
 import io.ipoli.android.pet.AndroidPetMood
 import io.ipoli.android.pet.PetViewController
 import io.ipoli.android.player.auth.AuthViewController
 import io.ipoli.android.player.data.AndroidAvatar
+import io.ipoli.android.quest.inbox.InboxViewController
 import io.ipoli.android.quest.schedule.ScheduleViewController
 import io.ipoli.android.repeatingquest.list.RepeatingQuestListViewController
 import io.ipoli.android.settings.SettingsViewController
@@ -113,6 +114,9 @@ class HomeViewController(args: Bundle? = null) :
         when (item.itemId) {
             R.id.calendar ->
                 changeChildController(ScheduleViewController())
+
+            R.id.inbox ->
+                changeChildController(InboxViewController())
 
             R.id.repeatingQuests ->
                 changeChildController(RepeatingQuestListViewController())
@@ -373,7 +377,7 @@ class HomeViewController(args: Bundle? = null) :
             name
         )
         item.actionView =
-            LayoutInflater.from(view.context).inflate(R.layout.menu_item_tag_view, null)
+                LayoutInflater.from(view.context).inflate(R.layout.menu_item_tag_view, null)
         item.actionView.questCount.text = questCount.toString()
 
         val iconDrawable =

@@ -38,7 +38,7 @@ import io.ipoli.android.quest.reminder.picker.ReminderViewModel
 import io.ipoli.android.quest.schedule.calendar.CalendarViewController
 import io.ipoli.android.quest.schedule.calendar.dayview.view.DayViewState.StateType.*
 import io.ipoli.android.quest.schedule.calendar.dayview.view.widget.*
-import io.ipoli.android.quest.timer.QuestViewController
+import io.ipoli.android.quest.show.QuestViewController
 import io.ipoli.android.quest.toMinutesFromStart
 import kotlinx.android.synthetic.main.calendar_hour_cell.view.*
 import kotlinx.android.synthetic.main.controller_day_view.view.*

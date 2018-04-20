@@ -1,9 +1,9 @@
-package io.ipoli.android.quest.timer.usecase
+package io.ipoli.android.quest.show.usecase
 
 import io.ipoli.android.common.UseCase
 import io.ipoli.android.quest.Quest
 import io.ipoli.android.quest.data.persistence.QuestRepository
-import io.ipoli.android.quest.timer.job.TimerCompleteScheduler
+import io.ipoli.android.quest.show.job.TimerCompleteScheduler
 
 /**
  * Created by Polina Zhelyazkova <polina@mypoli.fun>
