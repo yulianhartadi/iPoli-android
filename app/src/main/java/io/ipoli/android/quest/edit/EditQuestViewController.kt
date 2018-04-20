@@ -316,13 +316,17 @@ class EditQuestViewController(args: Bundle? = null) :
     ) {
         view.questScheduleDate.text = state.scheduleDateText
         view.questScheduleDate.setOnClickListener {
-            val date = state.scheduleDate
+            val date = state.scheduleDate ?: LocalDate.now()
             val datePickerDialog = DatePickerDialog(
                 view.context, R.style.Theme_myPoli_AlertDialog,
                 DatePickerDialog.OnDateSetListener { _, year, month, dayOfMonth ->
                     dispatch(EditQuestAction.ChangeDate(LocalDate.of(year, month + 1, dayOfMonth)))
                 }, date.year, date.month.value - 1, date.dayOfMonth
             )
+            datePickerDialog.setButton(
+                Dialog.BUTTON_NEUTRAL,
+                view.context.getString(R.string.do_not_know),
+                { _, _ -> dispatch(EditQuestAction.ChangeDate(null)) })
             datePickerDialog.show()
         }
     }
