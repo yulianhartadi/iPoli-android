@@ -14,7 +14,8 @@ class CreateTagItemsUseCase :
     override fun execute(parameters: Params): List<TagItem> {
 
         val qs = parameters.quests.sortedWith(
-            compareByDescending<Quest> { it.completedAt }
+            compareByDescending<Quest> { it.completedAtDate }
+                .thenBy { it.completedAtTime?.toMinuteOfDay() }
                 .thenBy { it.scheduledDate }
                 .thenBy { it.startTime?.toMinuteOfDay() }
         )

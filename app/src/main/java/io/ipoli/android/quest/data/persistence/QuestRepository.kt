@@ -114,6 +114,8 @@ data class DbQuest(override val map: MutableMap<String, Any?> = mutableMapOf()) 
     var experience: Long? by map
     var coins: Long? by map
     var bounty: MutableMap<String, Any?>? by map
+    var startDate: Long? by map
+    var endDate: Long? by map
     var scheduledDate: Long by map
     var originalScheduledDate: Long by map
     var completedAtDate: Long? by map
@@ -574,6 +576,8 @@ class FirestoreQuestRepository(
             tags = cq.tagIds.keys.map {
                 tags[it]!!
             },
+            startDate = cq.startDate?.startOfDayUTC,
+            endDate = cq.endDate?.startOfDayUTC,
             scheduledDate = plannedDate,
             originalScheduledDate = cq.originalScheduledDate.startOfDayUTC,
             startTime = plannedTime,
@@ -631,6 +635,8 @@ class FirestoreQuestRepository(
         q.duration = entity.duration
         q.priority = entity.priority.name
         q.preferredStartTime = entity.preferredStartTime.name
+        q.startDate = entity.startDate?.startOfDayUTC()
+        q.endDate = entity.endDate?.startOfDayUTC()
         q.scheduledDate = entity.scheduledDate.startOfDayUTC()
         q.originalScheduledDate = entity.originalScheduledDate.startOfDayUTC()
         q.reminders = entity.reminders.map {
