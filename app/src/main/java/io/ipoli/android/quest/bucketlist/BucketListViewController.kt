@@ -12,14 +12,19 @@ import com.bluelinelabs.conductor.RouterTransaction
 import com.bluelinelabs.conductor.changehandler.FadeChangeHandler
 import com.mikepenz.iconics.IconicsDrawable
 import com.mikepenz.iconics.typeface.IIcon
+import com.mikepenz.ionicons_typeface_library.Ionicons
 import io.ipoli.android.R
 import io.ipoli.android.common.redux.android.ReduxViewController
 import io.ipoli.android.common.view.*
 import io.ipoli.android.common.view.recyclerview.MultiViewRecyclerViewAdapter
 import io.ipoli.android.quest.CompletedQuestViewController
+import io.ipoli.android.quest.Quest
+import io.ipoli.android.quest.bucketlist.usecase.CreateBucketListItemsUseCase
 import io.ipoli.android.quest.show.QuestViewController
+import kotlinx.android.synthetic.main.animation_empty_list.view.*
 import kotlinx.android.synthetic.main.controller_bucket_list.view.*
 import kotlinx.android.synthetic.main.item_agenda_quest.view.*
+import kotlinx.android.synthetic.main.view_loader.view.*
 
 class BucketListViewController(args: Bundle? = null) :
     ReduxViewController<BucketListAction, BucketListViewState, BucketListReducer>(args) {
@@ -47,6 +52,15 @@ class BucketListViewController(args: Bundle? = null) :
     override fun onCreateLoadAction() = BucketListAction.Load
 
     override fun render(state: BucketListViewState, view: View) {
+        when (state) {
+            is BucketListViewState.Changed -> {
+                view.loader.invisible()
+                view.emptyContainer.invisible()
+                view.emptyAnimation.pauseAnimation()
+                view.questList.visible()
+                (view.questList.adapter as QuestAdapter).updateAll(state.itemViewModels)
+            }
+        }
     }
 
     sealed class ItemViewModel {
@@ -162,5 +176,70 @@ class BucketListViewController(args: Bundle? = null) :
                     }
                 })
         }
+    }
+
+    private val BucketListViewState.Changed.itemViewModels: List<ItemViewModel>
+        get() = items.map {
+            when (it) {
+                is CreateBucketListItemsUseCase.BucketListItem.QuestItem -> {
+
+                    val q = it.quest
+
+                    val color = if (q.isCompleted)
+                        R.color.md_grey_500
+                    else
+                        q.color.androidColor.color500
+
+                    if (q.isCompleted) {
+                        ItemViewModel.CompletedQuestItem(
+                            id = q.id,
+                            name = q.name,
+                            startTime = formatStartTime(q),
+                            color = color,
+                            icon = q.icon?.androidIcon?.icon
+                                    ?: Ionicons.Icon.ion_android_clipboard,
+                            isRepeating = q.isFromRepeatingQuest,
+                            isFromChallenge = q.isFromChallenge
+                        )
+                    } else {
+
+                        ItemViewModel.QuestItem(
+                            id = q.id,
+                            name = q.name,
+                            startTime = formatStartTime(q),
+                            color = color,
+                            icon = q.icon?.androidIcon?.icon
+                                    ?: Ionicons.Icon.ion_android_clipboard,
+                            isRepeating = q.isFromRepeatingQuest,
+                            isFromChallenge = q.isFromChallenge
+                        )
+                    }
+                }
+
+                is CreateBucketListItemsUseCase.BucketListItem.Today ->
+                    ItemViewModel.SectionItem(stringRes(R.string.today))
+
+                is CreateBucketListItemsUseCase.BucketListItem.Tomorrow ->
+                    ItemViewModel.SectionItem(stringRes(R.string.tomorrow))
+
+                is CreateBucketListItemsUseCase.BucketListItem.Upcoming ->
+                    ItemViewModel.SectionItem(stringRes(R.string.upcoming))
+
+                is CreateBucketListItemsUseCase.BucketListItem.Completed ->
+                    ItemViewModel.SectionItem(stringRes(R.string.completed))
+
+                is CreateBucketListItemsUseCase.BucketListItem.Overdue ->
+                    ItemViewModel.SectionItem(stringRes(R.string.overdue))
+
+                CreateBucketListItemsUseCase.BucketListItem.SomeDay ->
+                    ItemViewModel.SectionItem(stringRes(R.string.some_day))
+            }
+
+        }
+
+    private fun formatStartTime(quest: Quest): String {
+        val start = quest.startTime ?: return "Unscheduled"
+        val end = start.plus(quest.actualDuration.asMinutes.intValue)
+        return "$start - $end"
     }
 }

@@ -23,6 +23,9 @@ object BucketListReducer : BaseViewStateReducer<BucketListViewState>() {
         action: Action
     ) = when (action) {
 
+        is BucketListAction.Load ->
+            BucketListViewState.Loading
+
         is BucketListAction.ItemsChanged ->
             BucketListViewState.Changed(action.items)
 
@@ -34,6 +37,6 @@ object BucketListReducer : BaseViewStateReducer<BucketListViewState>() {
 
 sealed class BucketListViewState : ViewState {
     object Loading : BucketListViewState()
-    data class Changed(val quests: List<CreateBucketListItemsUseCase.BucketListItem>) :
+    data class Changed(val items: List<CreateBucketListItemsUseCase.BucketListItem>) :
         BucketListViewState()
 }

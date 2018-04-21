@@ -13,7 +13,6 @@ import io.ipoli.android.quest.schedule.addquest.AddQuestViewState
 import io.ipoli.android.quest.subquest.SubQuest
 import io.ipoli.android.quest.usecase.Result
 import io.ipoli.android.quest.usecase.SaveQuestUseCase
-import org.threeten.bp.LocalDate
 import space.traversal.kapsule.required
 
 /**
@@ -34,7 +33,7 @@ class EditQuestSideEffectHandler : AppSideEffectHandler() {
 
             is AddQuestAction.Save -> {
                 val addQuestState = state.stateFor(AddQuestViewState::class.java)
-                val scheduledDate = addQuestState.date ?: LocalDate.now()
+                val scheduledDate = addQuestState.date
                 val reminder = addQuestState.time?.let {
                     Reminder("", it, scheduledDate)
                 }
@@ -106,6 +105,6 @@ class EditQuestSideEffectHandler : AppSideEffectHandler() {
 
     override fun canHandle(action: Action) =
         action is EditQuestAction
-            || action is AddQuestAction
+                || action is AddQuestAction
 
 }
