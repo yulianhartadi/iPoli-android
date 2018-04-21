@@ -10,6 +10,9 @@ sealed class BucketListAction : Action {
     data class ItemsChanged(val items: List<CreateBucketListItemsUseCase.BucketListItem>) :
         BucketListAction()
 
+    data class CompleteQuest(val questId: String) : BucketListAction()
+    data class ScheduleForToday(val questId: String) : BucketListAction()
+
     object Load : BucketListAction()
 }
 

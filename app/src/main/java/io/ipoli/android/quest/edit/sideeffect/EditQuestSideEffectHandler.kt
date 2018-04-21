@@ -6,13 +6,18 @@ import io.ipoli.android.common.AppState
 import io.ipoli.android.common.redux.Action
 import io.ipoli.android.quest.Color
 import io.ipoli.android.quest.Reminder
+import io.ipoli.android.quest.bucketlist.BucketListAction
 import io.ipoli.android.quest.edit.EditQuestAction
 import io.ipoli.android.quest.edit.EditQuestViewState
 import io.ipoli.android.quest.schedule.addquest.AddQuestAction
 import io.ipoli.android.quest.schedule.addquest.AddQuestViewState
 import io.ipoli.android.quest.subquest.SubQuest
+import io.ipoli.android.quest.usecase.CompleteQuestUseCase
+import io.ipoli.android.quest.usecase.RescheduleQuestUseCase
 import io.ipoli.android.quest.usecase.Result
 import io.ipoli.android.quest.usecase.SaveQuestUseCase
+import io.ipoli.android.tag.show.TagAction
+import org.threeten.bp.LocalDate
 import space.traversal.kapsule.required
 
 /**
@@ -23,6 +28,8 @@ class EditQuestSideEffectHandler : AppSideEffectHandler() {
 
     private val questRepository by required { questRepository }
     private val saveQuestUseCase by required { saveQuestUseCase }
+    private val completeQuestUseCase by required { completeQuestUseCase }
+    private val rescheduleQuestUseCase by required { rescheduleQuestUseCase }
 
     override suspend fun doExecute(action: Action, state: AppState) {
         when (action) {
@@ -100,11 +107,32 @@ class EditQuestSideEffectHandler : AppSideEffectHandler() {
                 saveQuestUseCase.execute(questParams)
 
             }
+
+            is TagAction.CompleteQuest ->
+                completeQuest(action.questId)
+
+            is BucketListAction.CompleteQuest ->
+                completeQuest(action.questId)
+
+            is BucketListAction.ScheduleForToday ->
+                rescheduleQuestUseCase.execute(
+                    RescheduleQuestUseCase.Params(
+                        action.questId,
+                        LocalDate.now()
+                    )
+                )
         }
+    }
+
+    private fun completeQuest(questId: String) {
+        completeQuestUseCase.execute(CompleteQuestUseCase.Params.WithQuestId(questId))
     }
 
     override fun canHandle(action: Action) =
         action is EditQuestAction
                 || action is AddQuestAction
+                || action is TagAction.CompleteQuest
+                || action is BucketListAction.CompleteQuest
+                || action is BucketListAction.ScheduleForToday
 
 }

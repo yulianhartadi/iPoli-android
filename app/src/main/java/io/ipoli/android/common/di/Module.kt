@@ -545,6 +545,9 @@ class MainUseCaseModule : UseCaseModule, Injects<Module> {
 
     override val createBucketListItemsUseCase
         get() = CreateBucketListItemsUseCase()
+
+    override val rescheduleQuestUseCase
+        get() = RescheduleQuestUseCase(questRepository)
 }
 
 interface UseCaseModule {
@@ -627,6 +630,7 @@ interface UseCaseModule {
     val addQuestCountToTagUseCase: AddQuestCountToTagUseCase
     val removeTagUseCase: RemoveTagUseCase
     val createBucketListItemsUseCase: CreateBucketListItemsUseCase
+    val rescheduleQuestUseCase: RescheduleQuestUseCase
 }
 
 interface PresenterModule {

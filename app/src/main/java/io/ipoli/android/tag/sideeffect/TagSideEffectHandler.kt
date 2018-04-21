@@ -7,7 +7,6 @@ import io.ipoli.android.common.DataLoadedAction
 import io.ipoli.android.common.async.ChannelRelay
 import io.ipoli.android.common.redux.Action
 import io.ipoli.android.quest.Quest
-import io.ipoli.android.quest.usecase.CompleteQuestUseCase
 import io.ipoli.android.tag.edit.EditTagAction
 import io.ipoli.android.tag.edit.EditTagViewState
 import io.ipoli.android.tag.list.TagListAction
@@ -23,7 +22,6 @@ import space.traversal.kapsule.required
 class TagSideEffectHandler : AppSideEffectHandler() {
     private val saveTagUseCase by required { saveTagUseCase }
     private val questRepository by required { questRepository }
-    private val completeQuestUseCase by required { completeQuestUseCase }
     private val undoCompletedQuestUseCase by required { undoCompletedQuestUseCase }
     private val createTagItemsUseCase by required { createTagItemsUseCase }
     private val favoriteTagUseCase by required { favoriteTagUseCase }
@@ -81,13 +79,6 @@ class TagSideEffectHandler : AppSideEffectHandler() {
 
             is TagAction.Remove ->
                 removeTagUseCase.execute(RemoveTagUseCase.Params(action.tagId))
-
-            is TagAction.CompleteQuest ->
-                completeQuestUseCase.execute(
-                    CompleteQuestUseCase.Params.WithQuestId(
-                        action.questId
-                    )
-                )
 
             is TagAction.UndoCompleteQuest ->
                 undoCompletedQuestUseCase.execute(

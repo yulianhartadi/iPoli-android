@@ -35,5 +35,5 @@ class BucketListSideEffectHandler : AppSideEffectHandler() {
     }
 
     override fun canHandle(action: Action) =
-        action is BucketListAction
+        action is BucketListAction || action is DataLoadedAction.UnscheduledQuestsChanged
 }

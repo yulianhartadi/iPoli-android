@@ -4,6 +4,8 @@ import android.content.res.ColorStateList
 import android.os.Bundle
 import android.support.annotation.ColorRes
 import android.support.v7.widget.LinearLayoutManager
+import android.support.v7.widget.RecyclerView
+import android.support.v7.widget.helper.ItemTouchHelper
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -14,9 +16,12 @@ import com.mikepenz.iconics.IconicsDrawable
 import com.mikepenz.iconics.typeface.IIcon
 import com.mikepenz.ionicons_typeface_library.Ionicons
 import io.ipoli.android.R
+import io.ipoli.android.common.datetime.daysUntil
 import io.ipoli.android.common.redux.android.ReduxViewController
+import io.ipoli.android.common.text.DateFormatter
 import io.ipoli.android.common.view.*
 import io.ipoli.android.common.view.recyclerview.MultiViewRecyclerViewAdapter
+import io.ipoli.android.common.view.recyclerview.SwipeToCompleteCallback
 import io.ipoli.android.quest.CompletedQuestViewController
 import io.ipoli.android.quest.Quest
 import io.ipoli.android.quest.bucketlist.usecase.CreateBucketListItemsUseCase
@@ -25,6 +30,7 @@ import kotlinx.android.synthetic.main.animation_empty_list.view.*
 import kotlinx.android.synthetic.main.controller_bucket_list.view.*
 import kotlinx.android.synthetic.main.item_agenda_quest.view.*
 import kotlinx.android.synthetic.main.view_loader.view.*
+import org.threeten.bp.LocalDate
 
 class BucketListViewController(args: Bundle? = null) :
     ReduxViewController<BucketListAction, BucketListViewState, BucketListReducer>(args) {
@@ -40,6 +46,47 @@ class BucketListViewController(args: Bundle? = null) :
 
         view.questList.layoutManager = LinearLayoutManager(activity!!)
         view.questList.adapter = QuestAdapter()
+
+
+        val swipeHandler = object : SwipeToCompleteCallback(
+            view.context,
+            R.drawable.ic_done_white_24dp,
+            R.color.md_green_500,
+            R.drawable.ic_event_white_24dp,
+            R.color.md_blue_500
+        ) {
+            override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
+                if (direction == ItemTouchHelper.END) {
+                    dispatch(BucketListAction.CompleteQuest(questId(viewHolder)))
+                } else if (direction == ItemTouchHelper.START) {
+                    dispatch(BucketListAction.ScheduleForToday(questId(viewHolder)))
+                    showShortToast(R.string.quest_scheduled_for_today)
+                }
+            }
+
+            private fun questId(holder: RecyclerView.ViewHolder): String {
+                val adapter = view.questList.adapter as QuestAdapter
+                return if (holder.itemViewType == ViewType.QUEST.value) {
+                    val item = adapter.getItemAt<ItemViewModel.QuestItem>(holder.adapterPosition)
+                    item.id
+                } else {
+                    val item =
+                        adapter.getItemAt<ItemViewModel.CompletedQuestItem>(holder.adapterPosition)
+                    item.id
+                }
+
+            }
+
+            override fun getSwipeDirs(
+                recyclerView: RecyclerView,
+                viewHolder: RecyclerView.ViewHolder
+            ) = when {
+                viewHolder.itemViewType == ViewType.QUEST.value -> (ItemTouchHelper.END or ItemTouchHelper.START)
+                else -> 0
+            }
+        }
+        val itemTouchHelper = ItemTouchHelper(swipeHandler)
+        itemTouchHelper.attachToRecyclerView(view.questList)
 
         return view
     }
@@ -206,7 +253,7 @@ class BucketListViewController(args: Bundle? = null) :
                         ItemViewModel.QuestItem(
                             id = q.id,
                             name = q.name,
-                            startTime = formatStartTime(q),
+                            startTime = formatDueDate(q),
                             color = color,
                             icon = q.icon?.androidIcon?.icon
                                     ?: Ionicons.Icon.ion_android_clipboard,
@@ -232,10 +279,24 @@ class BucketListViewController(args: Bundle? = null) :
                     ItemViewModel.SectionItem(stringRes(R.string.overdue))
 
                 CreateBucketListItemsUseCase.BucketListItem.SomeDay ->
-                    ItemViewModel.SectionItem(stringRes(R.string.some_day))
+                    ItemViewModel.SectionItem(stringRes(R.string.someday))
             }
 
         }
+
+    private fun formatDueDate(quest: Quest): String {
+        if (quest.endDate == null) {
+            return formatStartTime(quest)
+        }
+        val dueDate = quest.endDate
+        val today = LocalDate.now()
+        return if (dueDate.isBefore(today)) {
+            val overdueDays = dueDate.daysUntil(today)
+            "Overdue by $overdueDays"
+        } else {
+            "Due " + DateFormatter.formatWithoutYear(activity!!, dueDate) + formatStartTime(quest)
+        }
+    }
 
     private fun formatStartTime(quest: Quest): String {
         val start = quest.startTime ?: return "Unscheduled"
