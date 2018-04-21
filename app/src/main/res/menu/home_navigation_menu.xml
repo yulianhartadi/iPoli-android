@@ -14,9 +14,9 @@
         <item
             android:id="@+id/inbox"
             android:checked="false"
-            android:icon="@drawable/ic_markunread_mailbox_black_24dp"
+            android:icon="@drawable/ic_bucket_black_24dp"
             android:orderInCategory="0"
-            android:title="@string/inbox" />
+            android:title="@string/title_bucket_list" />
 
         <item
             android:id="@+id/repeatingQuests"

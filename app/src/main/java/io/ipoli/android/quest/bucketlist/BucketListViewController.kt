@@ -1,4 +1,4 @@
-package io.ipoli.android.quest.inbox
+package io.ipoli.android.quest.bucketlist
 
 import android.content.res.ColorStateList
 import android.os.Bundle
@@ -18,33 +18,33 @@ import io.ipoli.android.common.view.*
 import io.ipoli.android.common.view.recyclerview.MultiViewRecyclerViewAdapter
 import io.ipoli.android.quest.CompletedQuestViewController
 import io.ipoli.android.quest.show.QuestViewController
-import kotlinx.android.synthetic.main.controller_inbox.view.*
+import kotlinx.android.synthetic.main.controller_bucket_list.view.*
 import kotlinx.android.synthetic.main.item_agenda_quest.view.*
 
-class InboxViewController(args: Bundle? = null) :
-    ReduxViewController<InboxAction, InboxViewState, InboxReducer>(args) {
+class BucketListViewController(args: Bundle? = null) :
+    ReduxViewController<BucketListAction, BucketListViewState, BucketListReducer>(args) {
 
-    override val reducer = InboxReducer
+    override val reducer = BucketListReducer
 
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup,
         savedViewState: Bundle?
     ): View {
-        val view = container.inflate(R.layout.controller_inbox)
+        val view = container.inflate(R.layout.controller_bucket_list)
 
         view.questList.layoutManager = LinearLayoutManager(activity!!)
-        view.questList.adapter = InboxAdapter()
+        view.questList.adapter = QuestAdapter()
 
         return view
     }
 
     override fun onAttach(view: View) {
         super.onAttach(view)
-        toolbarTitle = stringRes(R.string.inbox)
+        toolbarTitle = stringRes(R.string.title_bucket_list)
     }
 
-    override fun render(state: InboxViewState, view: View) {
+    override fun render(state: BucketListViewState, view: View) {
     }
 
     sealed class ItemViewModel {
@@ -78,7 +78,7 @@ class InboxViewController(args: Bundle? = null) :
         COMPLETED_QUEST(2)
     }
 
-    inner class InboxAdapter : MultiViewRecyclerViewAdapter() {
+    inner class QuestAdapter : MultiViewRecyclerViewAdapter() {
 
         override fun onRegisterItemBinders() {
 

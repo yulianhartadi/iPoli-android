@@ -38,7 +38,7 @@ import io.ipoli.android.pet.AndroidPetMood
 import io.ipoli.android.pet.PetViewController
 import io.ipoli.android.player.auth.AuthViewController
 import io.ipoli.android.player.data.AndroidAvatar
-import io.ipoli.android.quest.inbox.InboxViewController
+import io.ipoli.android.quest.bucketlist.BucketListViewController
 import io.ipoli.android.quest.schedule.ScheduleViewController
 import io.ipoli.android.repeatingquest.list.RepeatingQuestListViewController
 import io.ipoli.android.settings.SettingsViewController
@@ -116,7 +116,7 @@ class HomeViewController(args: Bundle? = null) :
                 changeChildController(ScheduleViewController())
 
             R.id.inbox ->
-                changeChildController(InboxViewController())
+                changeChildController(BucketListViewController())
 
             R.id.repeatingQuests ->
                 changeChildController(RepeatingQuestListViewController())
