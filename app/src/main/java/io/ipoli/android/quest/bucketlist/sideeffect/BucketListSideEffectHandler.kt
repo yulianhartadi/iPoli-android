@@ -15,16 +15,20 @@ class BucketListSideEffectHandler : AppSideEffectHandler() {
     override suspend fun doExecute(action: Action, state: AppState) {
         when (action) {
             BucketListAction.Load ->
-                BucketListAction.ItemsChanged(
-                    createBucketListItemsUseCase.execute(
-                        CreateBucketListItemsUseCase.Params(state.dataState.unscheduledQuests)
+                dispatch(
+                    BucketListAction.ItemsChanged(
+                        createBucketListItemsUseCase.execute(
+                            CreateBucketListItemsUseCase.Params(state.dataState.unscheduledQuests)
+                        )
                     )
                 )
 
             is DataLoadedAction.UnscheduledQuestsChanged ->
-                BucketListAction.ItemsChanged(
-                    createBucketListItemsUseCase.execute(
-                        CreateBucketListItemsUseCase.Params(action.quests)
+                dispatch(
+                    BucketListAction.ItemsChanged(
+                        createBucketListItemsUseCase.execute(
+                            CreateBucketListItemsUseCase.Params(action.quests)
+                        )
                     )
                 )
         }

@@ -306,6 +306,7 @@ class FirestoreQuestRepository(
     override suspend fun listenForAllUnscheduled(channel: Channel<List<Quest>>) =
         collectionReference
             .whereEqualTo("scheduledDate", null)
+            .orderBy("endDate", Query.Direction.ASCENDING)
             .listenForChanges(channel)
 
     override fun findByTag(tagId: String) =
