@@ -219,6 +219,15 @@ class LoadAllDataSideEffectHandler : AppSideEffectHandler() {
         }
     )
 
+    private val unscheduledQuestsChannelRelay = ChannelRelay<List<Quest>, Unit>(
+        producer = { c, _ ->
+            questRepository.listenForAllUnscheduled(c)
+        },
+        consumer = { qs, _ ->
+            dispatch(DataLoadedAction.UnscheduledQuestsChanged(qs))
+        }
+    )
+
     override suspend fun doExecute(action: Action, state: AppState) {
 
         if (action is LoadDataAction.ChangePlayer) {
@@ -237,6 +246,7 @@ class LoadAllDataSideEffectHandler : AppSideEffectHandler() {
         repeatingQuestsChannelRelay.listen(Unit)
         challengesChannelRelay.listen(Unit)
         tagsChannelRelay.listen(Unit)
+        unscheduledQuestsChannelRelay.listen(Unit)
     }
 
     private fun updateWidgets() {

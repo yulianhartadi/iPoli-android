@@ -5,9 +5,11 @@ import io.ipoli.android.common.BaseViewStateReducer
 import io.ipoli.android.common.mvi.ViewState
 import io.ipoli.android.common.redux.Action
 import io.ipoli.android.quest.Quest
+import io.ipoli.android.quest.bucketlist.usecase.CreateBucketListItemsUseCase
 
 sealed class BucketListAction : Action {
-
+    data class ItemsChanged(val items: List<CreateBucketListItemsUseCase.BucketListItem>)
+    object Load : BucketListAction()
 }
 
 object BucketListReducer : BaseViewStateReducer<BucketListViewState>() {

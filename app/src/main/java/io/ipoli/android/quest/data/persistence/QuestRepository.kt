@@ -31,6 +31,8 @@ interface QuestRepository : CollectionRepository<Quest> {
 
     suspend fun listenByTag(tagId: String, channel: Channel<List<Quest>>): Channel<List<Quest>>
 
+    suspend fun listenForAllUnscheduled(channel: Channel<List<Quest>>): Channel<List<Quest>>
+
     fun findScheduledAt(date: LocalDate): List<Quest>
     fun findScheduledForRepeatingQuestBetween(
         repeatingQuestId: String,
@@ -299,6 +301,11 @@ class FirestoreQuestRepository(
     ) =
         collectionReference
             .whereEqualTo("tagIds.$tagId", true)
+            .listenForChanges(channel)
+
+    override suspend fun listenForAllUnscheduled(channel: Channel<List<Quest>>) =
+        collectionReference
+            .whereEqualTo("scheduledDate", null)
             .listenForChanges(channel)
 
     override fun findByTag(tagId: String) =

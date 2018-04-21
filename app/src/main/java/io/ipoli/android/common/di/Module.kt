@@ -50,6 +50,8 @@ import io.ipoli.android.player.persistence.FirestorePlayerRepository
 import io.ipoli.android.player.persistence.PlayerRepository
 import io.ipoli.android.player.usecase.*
 import io.ipoli.android.player.view.LevelUpPresenter
+import io.ipoli.android.quest.bucketlist.sideeffect.BucketListSideEffectHandler
+import io.ipoli.android.quest.bucketlist.usecase.CreateBucketListItemsUseCase
 import io.ipoli.android.quest.data.persistence.FirestoreQuestRepository
 import io.ipoli.android.quest.data.persistence.QuestRepository
 import io.ipoli.android.quest.edit.sideeffect.EditQuestSideEffectHandler
@@ -63,11 +65,11 @@ import io.ipoli.android.quest.schedule.agenda.sideeffect.AgendaSideEffectHandler
 import io.ipoli.android.quest.schedule.agenda.usecase.CreateAgendaItemsUseCase
 import io.ipoli.android.quest.schedule.agenda.usecase.FindAgendaDatesUseCase
 import io.ipoli.android.quest.schedule.calendar.sideeffect.DayViewSideEffectHandler
-import io.ipoli.android.quest.subquest.usecase.*
 import io.ipoli.android.quest.show.job.AndroidJobTimerCompleteScheduler
 import io.ipoli.android.quest.show.job.TimerCompleteScheduler
 import io.ipoli.android.quest.show.sideeffect.QuestSideEffectHandler
 import io.ipoli.android.quest.show.usecase.*
+import io.ipoli.android.quest.subquest.usecase.*
 import io.ipoli.android.quest.usecase.*
 import io.ipoli.android.quest.view.QuestCompletePresenter
 import io.ipoli.android.repeatingquest.AndroidSaveQuestsForRepeatingQuestScheduler
@@ -540,6 +542,9 @@ class MainUseCaseModule : UseCaseModule, Injects<Module> {
             challengeRepository,
             tagRepository
         )
+
+    override val createBucketListItemsUseCase
+        get() = CreateBucketListItemsUseCase()
 }
 
 interface UseCaseModule {
@@ -621,6 +626,7 @@ interface UseCaseModule {
     val createTagItemsUseCase: CreateTagItemsUseCase
     val addQuestCountToTagUseCase: AddQuestCountToTagUseCase
     val removeTagUseCase: RemoveTagUseCase
+    val createBucketListItemsUseCase: CreateBucketListItemsUseCase
 }
 
 interface PresenterModule {
@@ -743,7 +749,8 @@ class AndroidStateStoreModule : StateStoreModule, Injects<Module> {
                 EditQuestSideEffectHandler(),
                 AvatarSideEffectHandler(),
                 ThemeSideEffectHandler(),
-                TagSideEffectHandler()
+                TagSideEffectHandler(),
+                BucketListSideEffectHandler()
             ),
             sideEffectHandlerExecutor = CoroutineSideEffectHandlerExecutor(job + CommonPool),
             middleware = setOf(

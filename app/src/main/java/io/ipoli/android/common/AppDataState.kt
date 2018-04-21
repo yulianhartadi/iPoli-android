@@ -52,12 +52,15 @@ sealed class DataLoadedAction : Action {
     data class TagsChanged(val tags: List<Tag>) : DataLoadedAction()
     data class TagItemsChanged(val tagId: String, val items: List<CreateTagItemsUseCase.TagItem>) :
         DataLoadedAction()
+
+    data class UnscheduledQuestsChanged(val quests: List<Quest>) : DataLoadedAction()
 }
 
 data class AppDataState(
     val today: LocalDate,
     val player: Player?,
     val todayQuests: List<Quest>,
+    val unscheduledQuests: List<Quest>,
     val calendarSchedule: Map<LocalDate, Schedule>,
     val repeatingQuests: List<RepeatingQuest>,
     val challenges: List<Challenge>,
@@ -114,6 +117,11 @@ object AppDataReducer : Reducer<AppState, AppDataState> {
                     tags = action.tags
                 )
 
+            is DataLoadedAction.UnscheduledQuestsChanged ->
+                subState.copy(
+                    unscheduledQuests = action.quests
+                )
+
             else -> subState
         }
 
@@ -122,6 +130,7 @@ object AppDataReducer : Reducer<AppState, AppDataState> {
             today = LocalDate.now(),
             player = null,
             todayQuests = listOf(),
+            unscheduledQuests = emptyList(),
             calendarSchedule = mapOf(),
             repeatingQuests = listOf(),
             challenges = listOf(),

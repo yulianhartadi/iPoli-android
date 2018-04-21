@@ -44,6 +44,8 @@ class BucketListViewController(args: Bundle? = null) :
         toolbarTitle = stringRes(R.string.title_bucket_list)
     }
 
+    override fun onCreateLoadAction() = BucketListAction.Load
+
     override fun render(state: BucketListViewState, view: View) {
     }
 
