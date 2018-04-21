@@ -12,10 +12,10 @@ class CreateBucketListItemsUseCase :
         val today = parameters.currentDate
         val tomorrow = today.plusDays(1)
         val (completed, incompleted) = quests.partition { it.isCompleted }
-        val (someday, withDueDate) = incompleted.partition { it.endDate == null }
-        val (overdue, notOverdue) = withDueDate.partition { it.endDate!!.isBefore(today) }
-        val (dueToday, dueOtherDay) = notOverdue.partition { it.endDate == today }
-        val (dueTomorrow, upcoming) = dueOtherDay.partition { it.endDate == tomorrow }
+        val (someday, withDueDate) = incompleted.partition { it.dueDate == null }
+        val (overdue, notOverdue) = withDueDate.partition { it.dueDate!!.isBefore(today) }
+        val (dueToday, dueOtherDay) = notOverdue.partition { it.dueDate == today }
+        val (dueTomorrow, upcoming) = dueOtherDay.partition { it.dueDate == tomorrow }
         return createSectionWithQuests(BucketListItem.Overdue, overdue) +
                 createSectionWithQuests(BucketListItem.Today, dueToday) +
                 createSectionWithQuests(BucketListItem.Tomorrow, dueTomorrow) +

@@ -369,7 +369,7 @@ data class EditRepeatingQuestViewState(
     val repeatPattern: RepeatPattern?,
     val reminder: ReminderViewModel?,
     val challenge: Challenge?,
-    val duration: Duration<Minute> = Constants.QUEST_MIN_DURATION.minutes,
+    val duration: Duration<Minute> = Constants.DEFAULT_QUEST_DURATION.minutes,
     val note: String,
     val maxTagsReached: Boolean
 ) : ViewState {

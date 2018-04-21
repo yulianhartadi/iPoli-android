@@ -61,6 +61,8 @@ interface Constants {
 
         val QUEST_MIN_DURATION = 10
 
+        val DEFAULT_QUEST_DURATION = 60
+
         val MAX_UNSCHEDULED_QUEST_VISIBLE_COUNT = 3
         val RESULT_REMOVED = 100
 

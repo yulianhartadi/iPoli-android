@@ -285,10 +285,10 @@ class BucketListViewController(args: Bundle? = null) :
         }
 
     private fun formatDueDate(quest: Quest): String {
-        if (quest.endDate == null) {
+        if (quest.dueDate == null) {
             return formatStartTime(quest)
         }
-        val dueDate = quest.endDate
+        val dueDate = quest.dueDate
         val today = LocalDate.now()
         return if (dueDate.isBefore(today)) {
             val overdueDays = dueDate.daysUntil(today)

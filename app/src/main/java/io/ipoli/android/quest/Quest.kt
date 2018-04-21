@@ -147,7 +147,7 @@ data class Quest(
     val reminders: List<Reminder> = listOf(),
     val subQuests: List<SubQuest> = listOf(),
     val startDate: LocalDate? = null,
-    val endDate: LocalDate? = null,
+    val dueDate: LocalDate? = null,
     val scheduledDate: LocalDate?,
     val originalScheduledDate: LocalDate? = scheduledDate,
     val timeRanges: List<TimeRange> = listOf(),

@@ -117,7 +117,7 @@ data class DbQuest(override val map: MutableMap<String, Any?> = mutableMapOf()) 
     var coins: Long? by map
     var bounty: MutableMap<String, Any?>? by map
     var startDate: Long? by map
-    var endDate: Long? by map
+    var dueDate: Long? by map
     var scheduledDate: Long? by map
     var originalScheduledDate: Long? by map
     var completedAtDate: Long? by map
@@ -306,7 +306,7 @@ class FirestoreQuestRepository(
     override suspend fun listenForAllUnscheduled(channel: Channel<List<Quest>>) =
         collectionReference
             .whereEqualTo("scheduledDate", null)
-            .orderBy("endDate", Query.Direction.ASCENDING)
+            .orderBy("dueDate", Query.Direction.ASCENDING)
             .listenForChanges(channel)
 
     override fun findByTag(tagId: String) =
@@ -582,7 +582,7 @@ class FirestoreQuestRepository(
                 tags[it]!!
             },
             startDate = cq.startDate?.startOfDayUTC,
-            endDate = cq.endDate?.startOfDayUTC,
+            dueDate = cq.dueDate?.startOfDayUTC,
             scheduledDate = cq.scheduledDate?.startOfDayUTC,
             originalScheduledDate = cq.originalScheduledDate?.startOfDayUTC,
             startTime = cq.startMinute?.let { Time.of(it.toInt()) },
@@ -641,7 +641,7 @@ class FirestoreQuestRepository(
         q.priority = entity.priority.name
         q.preferredStartTime = entity.preferredStartTime.name
         q.startDate = entity.startDate?.startOfDayUTC()
-        q.endDate = entity.endDate?.startOfDayUTC()
+        q.dueDate = entity.dueDate?.startOfDayUTC()
         q.scheduledDate = entity.scheduledDate?.startOfDayUTC()
         q.originalScheduledDate = entity.originalScheduledDate?.startOfDayUTC()
         q.reminders = entity.reminders.map {

@@ -52,7 +52,7 @@ class EditQuestSideEffectHandler : AppSideEffectHandler() {
                     icon = addQuestState.icon,
                     scheduledDate = scheduledDate,
                     startTime = addQuestState.time,
-                    duration = addQuestState.duration ?: Constants.QUEST_MIN_DURATION,
+                    duration = addQuestState.duration ?: Constants.DEFAULT_QUEST_DURATION,
                     reminders = reminder?.let { listOf(it) }
                 )
 
