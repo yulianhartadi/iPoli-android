@@ -2,10 +2,10 @@ package io.ipoli.android.common.api
 
 import com.fasterxml.jackson.core.type.TypeReference
 import com.fasterxml.jackson.databind.ObjectMapper
-import kotlinx.coroutines.experimental.suspendCancellableCoroutine
 import io.ipoli.android.BuildConfig
 import io.ipoli.android.Constants
 import io.ipoli.android.common.datetime.startOfDayUTC
+import kotlinx.coroutines.experimental.suspendCancellableCoroutine
 import okhttp3.*
 import org.json.JSONObject
 import org.threeten.bp.LocalDate
@@ -19,13 +19,17 @@ import java.util.concurrent.TimeUnit
  * on 3/23/18.
  */
 
-class Api {
+object Api {
 
     private val objectMapper = ObjectMapper()
     private val urlProvider = if (BuildConfig.DEBUG) DevUrlProvider() else ProdUrlProvider()
     private val httpClient = OkHttpClient().newBuilder()
         .readTimeout(Constants.API_READ_TIMEOUT_SECONDS.toLong(), TimeUnit.SECONDS)
         .retryOnConnectionFailure(false).build()
+
+    suspend fun migratePlayer(playerId: String, email: String) {
+
+    }
 
     /**
      * @throws MembershipStatusException

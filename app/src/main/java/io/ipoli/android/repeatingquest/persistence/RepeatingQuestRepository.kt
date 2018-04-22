@@ -61,8 +61,8 @@ data class DbRepeatingQuest(override val map: MutableMap<String, Any?> = mutable
 
 data class DbRepeatPattern(val map: MutableMap<String, Any?> = mutableMapOf()) {
     var type: String by map
-    var start: Long by map
-    var end: Long? by map
+    var startDate: Long by map
+    var endDate: Long? by map
     var dayOfMonth: Int by map
     var month: String by map
     var daysOfWeek: List<String> by map
@@ -100,11 +100,11 @@ class FirestoreRepeatingQuestRepository(
 
     override fun findAllActive(currentDate: LocalDate): List<RepeatingQuest> {
         val rqsWithEndDate = collectionReference
-            .whereGreaterThanOrEqualTo("repeatPattern.end", currentDate.startOfDayUTC())
+            .whereGreaterThanOrEqualTo("repeatPattern.endDate", currentDate.startOfDayUTC())
             .entities
 
         val rqsWithoutEndDate = collectionReference
-            .whereEqualTo("repeatPattern.end", null)
+            .whereEqualTo("repeatPattern.endDate", null)
             .entities
 
         return rqsWithEndDate + rqsWithoutEndDate
@@ -182,22 +182,22 @@ class FirestoreRepeatingQuestRepository(
         return when (type) {
             DbRepeatPatternType.DAILY -> {
                 RepeatPattern.Daily(
-                    start = rp.start.startOfDayUTC,
-                    end = rp.end?.startOfDayUTC
+                    startDate = rp.startDate.startOfDayUTC,
+                    endDate = rp.endDate?.startOfDayUTC
                 )
             }
             DbRepeatPatternType.WEEKLY -> {
                 RepeatPattern.Weekly(
                     daysOfWeek = rp.daysOfWeek.map { DayOfWeek.valueOf(it) }.toSet(),
-                    start = rp.start.startOfDayUTC,
-                    end = rp.end?.startOfDayUTC
+                    startDate = rp.startDate.startOfDayUTC,
+                    endDate = rp.endDate?.startOfDayUTC
                 )
             }
             DbRepeatPatternType.MONTHLY -> {
                 RepeatPattern.Monthly(
                     daysOfMonth = rp.daysOfMonth.toSet(),
-                    start = rp.start.startOfDayUTC,
-                    end = rp.end?.startOfDayUTC
+                    startDate = rp.startDate.startOfDayUTC,
+                    endDate = rp.endDate?.startOfDayUTC
                 )
             }
 
@@ -205,8 +205,8 @@ class FirestoreRepeatingQuestRepository(
                 RepeatPattern.Yearly(
                     dayOfMonth = rp.dayOfMonth,
                     month = Month.valueOf(rp.month),
-                    start = rp.start.startOfDayUTC,
-                    end = rp.end?.startOfDayUTC
+                    startDate = rp.startDate.startOfDayUTC,
+                    endDate = rp.endDate?.startOfDayUTC
                 )
             }
 
@@ -216,8 +216,8 @@ class FirestoreRepeatingQuestRepository(
                     preferredDays = rp.preferredDays.map { DayOfWeek.valueOf(it) }.toSet(),
                     scheduledPeriods = rp.scheduledPeriods.entries
                         .associate { it.key.toLong().startOfDayUTC to it.value.map { it.startOfDayUTC } },
-                    start = rp.start.startOfDayUTC,
-                    end = rp.end?.startOfDayUTC
+                    startDate = rp.startDate.startOfDayUTC,
+                    endDate = rp.endDate?.startOfDayUTC
                 )
             }
 
@@ -227,8 +227,8 @@ class FirestoreRepeatingQuestRepository(
                     preferredDays = rp.preferredDays.map { it.toInt() }.toSet(),
                     scheduledPeriods = rp.scheduledPeriods.entries
                         .associate { it.key.toLong().startOfDayUTC to it.value.map { it.startOfDayUTC } },
-                    start = rp.start.startOfDayUTC,
-                    end = rp.end?.startOfDayUTC
+                    startDate = rp.startDate.startOfDayUTC,
+                    endDate = rp.endDate?.startOfDayUTC
                 )
             }
         }
@@ -265,8 +265,8 @@ class FirestoreRepeatingQuestRepository(
 
     private fun createDbRepeatingPattern(repeatPattern: RepeatPattern): DbRepeatPattern {
         val rp = DbRepeatPattern()
-        rp.start = repeatPattern.start.startOfDayUTC()
-        rp.end = repeatPattern.end?.startOfDayUTC()
+        rp.startDate = repeatPattern.startDate.startOfDayUTC()
+        rp.endDate = repeatPattern.endDate?.startOfDayUTC()
 
         when (repeatPattern) {
             is RepeatPattern.Daily -> {

@@ -26,7 +26,7 @@ class FindChallengeProgressUseCase : UseCase<FindChallengeProgressUseCase.Params
         val repeatingCount = challenge.repeatingQuests.sumBy { rq ->
             val rqEnd = rq.end
             val start = rq.start
-            val end = if (rqEnd == null) challenge.end else DateUtils.min(rqEnd, challenge.end)
+            val end = if (rqEnd == null) challenge.endDate else DateUtils.min(rqEnd, challenge.endDate)
             val repeatingPattern = rq.repeatPattern
 
             val removedCount =
@@ -80,7 +80,7 @@ class FindChallengeProgressUseCase : UseCase<FindChallengeProgressUseCase.Params
 
         val increasePerQuest = (1f / allCount) * 100f
 
-        val historyData = challenge.start.datesBetween(parameters.currentDate).map {
+        val historyData = challenge.startDate.datesBetween(parameters.currentDate).map {
             it to 0f
         }.toMap().toMutableMap()
 

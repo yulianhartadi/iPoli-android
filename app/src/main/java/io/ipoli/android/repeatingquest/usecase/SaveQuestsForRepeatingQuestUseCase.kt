@@ -272,7 +272,7 @@ class SaveQuestsForRepeatingQuestUseCase(
     data class Result(val quests: List<Quest>, val repeatingQuest: RepeatingQuest)
 
     /**
-     * @start inclusive
+     * @startDate inclusive
      * @end inclusive
      */
     data class Params(

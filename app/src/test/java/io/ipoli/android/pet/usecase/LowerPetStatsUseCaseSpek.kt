@@ -183,7 +183,7 @@ class LowerPetStatsUseCaseSpek : Spek({
 
         describe("filterQuestsInInterval") {
 
-            it("should not include quest before start") {
+            it("should not include quest before startDate") {
 
                 val duration = LowerPetStatsUseCase.findQuestsDurationInInterval(
                     Constants.CHANGE_PET_STATS_MORNING_TIME,
@@ -213,7 +213,7 @@ class LowerPetStatsUseCaseSpek : Spek({
                 duration.`should be equal to`(0)
             }
 
-            it("should include quest at interval start") {
+            it("should include quest at interval startDate") {
 
                 val duration = LowerPetStatsUseCase.findQuestsDurationInInterval(
                     Constants.CHANGE_PET_STATS_MORNING_TIME,

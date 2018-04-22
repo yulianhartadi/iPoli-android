@@ -281,10 +281,10 @@ data class RepeatingQuest(
     override val updatedAt: Instant = Instant.now()
 ) : BaseQuest(id), Entity {
     val start
-        get() = repeatPattern.start
+        get() = repeatPattern.startDate
 
     val end
-        get() = repeatPattern.end
+        get() = repeatPattern.endDate
 
     val isCompleted
         get() = if (end == null) false else LocalDate.now().isAfter(end)

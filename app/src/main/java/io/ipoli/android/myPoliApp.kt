@@ -66,7 +66,7 @@ class myPoliApp : Application() {
 //                override fun provideBlockThreshold(): Int {
 //                    return 500
 //                }
-//            }).start()
+//            }).startDate()
 
             //            refWatcher = LeakCanary.install(this)
         }

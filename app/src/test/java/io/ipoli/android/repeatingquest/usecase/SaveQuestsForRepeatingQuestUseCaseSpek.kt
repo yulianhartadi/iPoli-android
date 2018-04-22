@@ -76,10 +76,10 @@ class SaveQuestsForRepeatingQuestUseCaseSpek : Spek({
 
         fun createRepeatingQuest(start: LocalDate, end: LocalDate? = null) =
             TestUtil.repeatingQuest.copy(
-                repeatPattern = RepeatPattern.Daily(start = start, end = end)
+                repeatPattern = RepeatPattern.Daily(startDate = start, endDate = end)
             )
 
-        it("should not schedule anything before quest start") {
+        it("should not schedule anything before quest startDate") {
             val quests = executeUseCase(
                 quest = createRepeatingQuest(start = lastDateOfWeek.plusDays(1)),
                 start = firstDateOfWeek,
@@ -104,7 +104,7 @@ class SaveQuestsForRepeatingQuestUseCaseSpek : Spek({
 
         describe("repeating daily") {
 
-            it("should schedule for every day at start of week when no quests are scheduled") {
+            it("should schedule for every day at startDate of week when no quests are scheduled") {
 
                 val quests = executeUseCase(
                     quest = TestUtil.repeatingQuest,
@@ -114,7 +114,7 @@ class SaveQuestsForRepeatingQuestUseCaseSpek : Spek({
                 quests.size.`should be`(7)
             }
 
-            it("should schedule for every day at start of week when 1 quest is scheduled") {
+            it("should schedule for every day at startDate of week when 1 quest is scheduled") {
 
                 val repo = mockQuestsForRepeatingQuest(
                     listOf(
@@ -197,7 +197,7 @@ class SaveQuestsForRepeatingQuestUseCaseSpek : Spek({
                 quests.size.`should be`(4)
             }
 
-            it("should not schedule for dates before repeating quest start") {
+            it("should not schedule for dates before repeating quest startDate") {
 
                 val repo = mockQuestsForRepeatingQuest(listOf())
 
@@ -286,7 +286,7 @@ class SaveQuestsForRepeatingQuestUseCaseSpek : Spek({
                             timesPerWeek = timesPerWeek,
                             preferredDays = preferredDays,
                             scheduledPeriods = scheduledPeriods,
-                            start = firstDateOfWeek
+                            startDate = firstDateOfWeek
                         )
                     )
                 }
@@ -603,7 +603,7 @@ class SaveQuestsForRepeatingQuestUseCaseSpek : Spek({
                             timesPerMonth = timesPerMonth,
                             preferredDays = preferredDays,
                             scheduledPeriods = scheduledPeriods,
-                            start = firstJanuary
+                            startDate = firstJanuary
                         )
                     )
                 }

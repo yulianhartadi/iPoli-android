@@ -340,7 +340,7 @@ class ChallengeListViewController(args: Bundle? = null) :
                         )
                     }
 
-                    val daysUntilComplete = LocalDate.now().daysUntil(c.end)
+                    val daysUntilComplete = LocalDate.now().daysUntil(c.endDate)
 
                     val end = when {
                         daysUntilComplete == 0L -> stringRes(R.string.ends_today)
@@ -350,7 +350,7 @@ class ChallengeListViewController(args: Bundle? = null) :
                         )
                         else -> stringRes(
                             R.string.ends_at_date,
-                            DateFormatter.formatWithoutYear(view!!.context, c.end)
+                            DateFormatter.formatWithoutYear(view!!.context, c.endDate)
                         )
                     }
 
@@ -387,7 +387,7 @@ class ChallengeListViewController(args: Bundle? = null) :
                                     ?: Ionicons.Icon.ion_android_clipboard,
                             start = stringRes(
                                 R.string.started_at_date,
-                                DateFormatter.format(activity!!, start)
+                                DateFormatter.format(activity!!, startDate)
                             ),
                             complete = stringRes(
                                 R.string.completed_at_date,

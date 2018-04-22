@@ -65,7 +65,7 @@ class FindNextDateForRepeatingQuestUseCaseSpek : Spek({
 
             val rq = executeUseCase(
                 questRepoMock, TestUtil.repeatingQuest.copy(
-                    repeatPattern = RepeatPattern.Daily(start = today)
+                    repeatPattern = RepeatPattern.Daily(startDate = today)
                 )
             )
             shouldHaveNextDate(rq, tomorrow)
@@ -101,7 +101,7 @@ class FindNextDateForRepeatingQuestUseCaseSpek : Spek({
                             DayOfWeek.WEDNESDAY,
                             DayOfWeek.FRIDAY
                         ),
-                        start = today
+                        startDate = today
                     )
                 ),
                 fromDate = today
@@ -137,7 +137,7 @@ class FindNextDateForRepeatingQuestUseCaseSpek : Spek({
                             DayOfWeek.WEDNESDAY,
                             DayOfWeek.FRIDAY
                         ),
-                        start = today
+                        startDate = today
                     )
                 ),
                 fromDate = today

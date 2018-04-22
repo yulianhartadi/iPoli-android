@@ -42,7 +42,7 @@ class FirestoreChallengeRepository(
 
     override suspend fun listenForAll(channel: Channel<List<Challenge>>) =
         collectionReference
-            .orderBy("end", Query.Direction.ASCENDING)
+            .orderBy("endDate", Query.Direction.ASCENDING)
             .listenForChanges(channel)
 
     override fun findByTag(tagId: String) =
@@ -66,8 +66,8 @@ class FirestoreChallengeRepository(
             tags = c.tagIds.keys.map {
                 tags[it]!!
             },
-            start = c.start.startOfDayUTC,
-            end = c.end.startOfDayUTC,
+            startDate = c.startDate.startOfDayUTC,
+            endDate = c.endDate.startOfDayUTC,
             motivations = c.motivations,
             experience = c.experience?.toInt(),
             coins = c.coins?.toInt(),
@@ -89,8 +89,8 @@ class FirestoreChallengeRepository(
         c.icon = entity.icon?.name
         c.difficulty = entity.difficulty.name
         c.tagIds = entity.tags.map { it.id to true }.toMap()
-        c.start = entity.start.startOfDayUTC()
-        c.end = entity.end.startOfDayUTC()
+        c.startDate = entity.startDate.startOfDayUTC()
+        c.endDate = entity.endDate.startOfDayUTC()
         c.motivations = entity.motivations
         c.experience = entity.experience?.toLong()
         c.coins = entity.coins?.toLong()
@@ -112,8 +112,8 @@ data class DbChallenge(override val map: MutableMap<String, Any?> = mutableMapOf
     var icon: String? by map
     var difficulty: String by map
     var tagIds: Map<String, Boolean> by map
-    var start: Long by map
-    var end: Long by map
+    var startDate: Long by map
+    var endDate: Long by map
     var motivations: List<String> by map
     var experience: Long? by map
     var coins: Long? by map

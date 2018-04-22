@@ -79,7 +79,7 @@ object TestUtil {
 
     val repeatingQuest = RepeatingQuest(
         name = "Test",
-        repeatPattern = RepeatPattern.Daily(start = firstDateOfWeek),
+        repeatPattern = RepeatPattern.Daily(startDate = firstDateOfWeek),
         color = Color.BLUE,
         duration = 60
     )
@@ -89,8 +89,8 @@ object TestUtil {
         color = Color.BLUE,
         icon = Icon.STAR,
         difficulty = Challenge.Difficulty.NORMAL,
-        start = LocalDate.now(),
-        end = LocalDate.now(),
+        startDate = LocalDate.now(),
+        endDate = LocalDate.now(),
         motivations = listOf()
     )
 }

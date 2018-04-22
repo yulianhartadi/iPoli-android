@@ -13,14 +13,14 @@ import org.threeten.bp.temporal.TemporalAdjusters
  */
 
 sealed class RepeatPattern(
-    open val start: LocalDate,
-    open val end: LocalDate?
+    open val startDate: LocalDate,
+    open val endDate: LocalDate?
 ) {
 
     data class Daily(
-        override val start: LocalDate = LocalDate.now(),
-        override val end: LocalDate? = null
-    ) : RepeatPattern(start, end) {
+        override val startDate: LocalDate = LocalDate.now(),
+        override val endDate: LocalDate? = null
+    ) : RepeatPattern(startDate, endDate) {
         override fun periodRangeFor(date: LocalDate) =
             PeriodRange(
                 start = date.with(TemporalAdjusters.previousOrSame(DateUtils.firstDayOfWeek)),
@@ -35,9 +35,9 @@ sealed class RepeatPattern(
     data class Yearly(
         val dayOfMonth: Int,
         val month: Month,
-        override val start: LocalDate = LocalDate.now(),
-        override val end: LocalDate? = null
-    ) : RepeatPattern(start, end) {
+        override val startDate: LocalDate = LocalDate.now(),
+        override val endDate: LocalDate? = null
+    ) : RepeatPattern(startDate, endDate) {
         override fun periodRangeFor(date: LocalDate) =
             PeriodRange(
                 start = date.with(TemporalAdjusters.firstDayOfYear()),
@@ -57,9 +57,9 @@ sealed class RepeatPattern(
 
     data class Weekly(
         val daysOfWeek: Set<DayOfWeek>,
-        override val start: LocalDate = LocalDate.now(),
-        override val end: LocalDate? = null
-    ) : RepeatPattern(start, end) {
+        override val startDate: LocalDate = LocalDate.now(),
+        override val endDate: LocalDate? = null
+    ) : RepeatPattern(startDate, endDate) {
         override fun periodRangeFor(date: LocalDate) =
             PeriodRange(
                 start = date.with(TemporalAdjusters.previousOrSame(DateUtils.firstDayOfWeek)),
@@ -82,9 +82,9 @@ sealed class RepeatPattern(
 
     data class Monthly(
         val daysOfMonth: Set<Int>,
-        override val start: LocalDate = LocalDate.now(),
-        override val end: LocalDate? = null
-    ) : RepeatPattern(start, end) {
+        override val startDate: LocalDate = LocalDate.now(),
+        override val endDate: LocalDate? = null
+    ) : RepeatPattern(startDate, endDate) {
         override fun periodRangeFor(date: LocalDate) =
             PeriodRange(
                 start = date.with(TemporalAdjusters.firstDayOfMonth()),
@@ -106,17 +106,17 @@ sealed class RepeatPattern(
     }
 
     sealed class Flexible(
-        override val start: LocalDate,
-        override val end: LocalDate?
-    ) : RepeatPattern(start, end) {
+        override val startDate: LocalDate,
+        override val endDate: LocalDate?
+    ) : RepeatPattern(startDate, endDate) {
 
         data class Weekly(
             val timesPerWeek: Int,
             val preferredDays: Set<DayOfWeek> = DayOfWeek.values().toSet(),
             val scheduledPeriods: Map<LocalDate, List<LocalDate>> = mapOf(),
-            override val start: LocalDate = LocalDate.now(),
-            override val end: LocalDate? = null
-        ) : Flexible(start, end) {
+            override val startDate: LocalDate = LocalDate.now(),
+            override val endDate: LocalDate? = null
+        ) : Flexible(startDate, endDate) {
             override fun periodRangeFor(date: LocalDate) =
                 PeriodRange(
                     start = date.with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY)),
@@ -149,9 +149,9 @@ sealed class RepeatPattern(
             val timesPerMonth: Int,
             val preferredDays: Set<Int>,
             val scheduledPeriods: Map<LocalDate, List<LocalDate>> = mapOf(),
-            override val start: LocalDate = LocalDate.now(),
-            override val end: LocalDate? = null
-        ) : Flexible(start, end) {
+            override val startDate: LocalDate = LocalDate.now(),
+            override val endDate: LocalDate? = null
+        ) : Flexible(startDate, endDate) {
             override fun periodRangeFor(date: LocalDate) =
                 PeriodRange(
                     start = date.with(TemporalAdjusters.firstDayOfMonth()),
@@ -185,8 +185,8 @@ sealed class RepeatPattern(
 
     fun nextDate(from: LocalDate) =
         when {
-            end != null && from.isAfter(end) -> null
-            from.isBefore(start) -> nextDateWithoutRange(start)
+            endDate != null && from.isAfter(endDate) -> null
+            from.isBefore(startDate) -> nextDateWithoutRange(startDate)
             else -> nextDateWithoutRange(from)
         }
 

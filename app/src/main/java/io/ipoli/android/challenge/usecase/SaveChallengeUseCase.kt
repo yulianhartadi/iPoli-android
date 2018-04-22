@@ -41,7 +41,7 @@ class SaveChallengeUseCase(
                 color = parameters.color,
                 icon = parameters.icon,
                 difficulty = parameters.difficulty,
-                end = parameters.end,
+                endDate = parameters.end,
                 motivations = transformMotivations(parameters.motivations),
                 note = parameters.note
             )
@@ -56,8 +56,8 @@ class SaveChallengeUseCase(
                 color = parameters.color,
                 icon = parameters.icon,
                 difficulty = parameters.difficulty,
-                start = LocalDate.now(),
-                end = parameters.end,
+                startDate = LocalDate.now(),
+                endDate = parameters.end,
                 motivations = transformMotivations(parameters.motivations),
                 note = parameters.note
             )

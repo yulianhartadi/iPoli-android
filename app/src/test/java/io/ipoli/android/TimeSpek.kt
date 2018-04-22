@@ -18,7 +18,7 @@ class TimeSpek : Spek({
 
         describe("is between") {
 
-            it("should include start time") {
+            it("should include startDate time") {
                 val result = Time.atHours(9).isBetween(Time.atHours(9), Time.atHours(10))
                 result.`should be true`()
             }
@@ -54,7 +54,7 @@ class TimeSpek : Spek({
                 result.`should be true`()
             }
 
-            it("should be outside interval when start & end times are same") {
+            it("should be outside interval when startDate & end times are same") {
                 val result = Time.atHours(22).isBetween(Time.atHours(23), Time.atHours(23))
                 result.`should be false`()
             }

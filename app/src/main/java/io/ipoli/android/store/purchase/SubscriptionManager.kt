@@ -83,7 +83,7 @@ class AndroidSubscriptionManager(private val checkout: UiCheckout) : Subscriptio
             override fun onSuccess(purchase: Purchase) {
                 launch {
                     try {
-                        val status = Api().getMembershipStatus(purchase.sku, purchase.token)
+                        val status = Api.getMembershipStatus(purchase.sku, purchase.token)
                         successListener(status.startDate, status.expirationDate)
                     } catch (e: Api.MembershipStatusException) {
                         errorListener(e.message!!, e)

@@ -44,7 +44,7 @@ class CreateRepeatingQuestHistoryUseCaseSpek : Spek({
                 )
             )
 
-        it("should require end to be after start") {
+        it("should require end to be after startDate") {
             val exec = {
                 executeUseCase(
                     TestUtil.questRepoMock(),

@@ -71,7 +71,7 @@ object EditChallengeReducer : BaseViewStateReducer<EditChallengeViewState>() {
                     icon = c.icon,
                     color = c.color,
                     difficulty = c.difficulty,
-                    end = c.end,
+                    end = c.endDate,
                     motivation1 = c.motivation1,
                     motivation2 = c.motivation2,
                     motivation3 = c.motivation3,

@@ -31,7 +31,7 @@ class RepeatPatternSpek : Spek({
             date.isEqual(nextDate).`should be true`()
         }
 
-        it("should not return before start") {
+        it("should not return before startDate") {
             val pattern = RepeatPattern.Daily(DateUtils.today)
             val nextDate = pattern.nextDate(DateUtils.today.minusDays(1))
             shouldHaveNextDate(nextDate!!, DateUtils.today)
@@ -100,7 +100,7 @@ class RepeatPatternSpek : Spek({
                         scheduledPeriods = mapOf(
                             today to listOf(today)
                         ),
-                        start = today
+                        startDate = today
                     )
 
                     shouldHaveNextDate(pattern.nextDate(today), today)
@@ -119,7 +119,7 @@ class RepeatPatternSpek : Spek({
                         scheduledPeriods = mapOf(
                             today to listOf(tomorrow)
                         ),
-                        start = today
+                        startDate = today
                     )
 
                     shouldHaveNextDate(pattern.nextDate(today), tomorrow)
@@ -140,7 +140,7 @@ class RepeatPatternSpek : Spek({
                         scheduledPeriods = mapOf(
                             today to listOf(tomorrow, twoDaysAfterTomorrow)
                         ),
-                        start = today
+                        startDate = today
                     )
 
                     shouldHaveNextDate(pattern.nextDate(dayAfterTomorrow), twoDaysAfterTomorrow)
@@ -163,7 +163,7 @@ class RepeatPatternSpek : Spek({
                             today to listOf(tomorrow),
                             nextPeriodStart to listOf(nextPeriodStart)
                         ),
-                        start = today
+                        startDate = today
                     )
 
                     shouldHaveNextDate(pattern.nextDate(dayAfterTomorrow), nextPeriodStart)
@@ -177,7 +177,7 @@ class RepeatPatternSpek : Spek({
                     val first = DateUtils.today.withDayOfMonth(1)
                     val pattern = RepeatPattern.Monthly(
                         daysOfMonth = setOf(1),
-                        start = first
+                        startDate = first
                     )
                     shouldHaveNextDate(pattern.nextDate(first), first)
                 }
@@ -213,7 +213,7 @@ class RepeatPatternSpek : Spek({
                         scheduledPeriods = mapOf(
                             today to listOf(today)
                         ),
-                        start = today
+                        startDate = today
                     )
 
                     shouldHaveNextDate(pattern.nextDate(today), today)
@@ -231,7 +231,7 @@ class RepeatPatternSpek : Spek({
                         scheduledPeriods = mapOf(
                             today to listOf(tomorrow)
                         ),
-                        start = today
+                        startDate = today
                     )
 
                     shouldHaveNextDate(pattern.nextDate(today), tomorrow)
@@ -252,7 +252,7 @@ class RepeatPatternSpek : Spek({
                         scheduledPeriods = mapOf(
                             today to listOf(tomorrow, twoDaysAfterTomorrow)
                         ),
-                        start = today
+                        startDate = today
                     )
 
                     shouldHaveNextDate(pattern.nextDate(dayAfterTomorrow), twoDaysAfterTomorrow)
@@ -275,7 +275,7 @@ class RepeatPatternSpek : Spek({
                             today to listOf(tomorrow),
                             nextPeriodStart to listOf(nextPeriodStart)
                         ),
-                        start = today
+                        startDate = today
                     )
 
                     shouldHaveNextDate(pattern.nextDate(dayAfterTomorrow), nextPeriodStart)

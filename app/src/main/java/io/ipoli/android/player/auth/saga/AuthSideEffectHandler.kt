@@ -9,6 +9,7 @@ import io.ipoli.android.Constants
 import io.ipoli.android.common.AppSideEffectHandler
 import io.ipoli.android.common.AppState
 import io.ipoli.android.common.LoadDataAction
+import io.ipoli.android.common.api.Api
 import io.ipoli.android.common.redux.Action
 import io.ipoli.android.player.AuthProvider
 import io.ipoli.android.player.Player
@@ -138,7 +139,7 @@ class AuthSideEffectHandler : AppSideEffectHandler() {
         dispatch(AuthAction.SignOutAccount)
     }
 
-    private fun updatePlayerAuthProvider(
+    private suspend fun updatePlayerAuthProvider(
         user: FirebaseUser
     ) {
         val authProviders =
@@ -146,33 +147,37 @@ class AuthSideEffectHandler : AppSideEffectHandler() {
         require(authProviders.size == 1)
         val authProvider = authProviders.first()
 
-        val playerAuthProvider = if (authProvider.providerId == FacebookAuthProvider.PROVIDER_ID) {
-            AuthProvider.Facebook(
+        val auth = when {
+            authProvider.providerId == FacebookAuthProvider.PROVIDER_ID -> AuthProvider.Facebook(
                 authProvider.uid,
                 displayName = user.displayName!!,
                 email = user.email!!,
                 imageUrl = user.photoUrl!!
             )
-        } else if (authProvider.providerId == GoogleAuthProvider.PROVIDER_ID) {
-            AuthProvider.Google(
+            authProvider.providerId == GoogleAuthProvider.PROVIDER_ID -> AuthProvider.Google(
                 authProvider.uid,
                 displayName = user.displayName!!,
                 email = user.email!!,
                 imageUrl = user.photoUrl!!
             )
-        } else {
-            throw IllegalStateException("Unknown Auth provider")
+            else -> throw IllegalStateException("Unknown Auth provider")
+        }
+
+        if (auth is AuthProvider.Facebook) {
+            Api.migratePlayer(auth.userId, auth.email)
+        } else if (auth is AuthProvider.Google) {
+            Api.migratePlayer(auth.userId, auth.email)
         }
 
         val player = playerRepository.find()
         playerRepository.save(
             player!!.copy(
-                authProvider = playerAuthProvider
+                authProvider = auth
             )
         )
     }
 
-    private fun createNewPlayer(
+    private suspend fun createNewPlayer(
         user: FirebaseUser,
         username: String
     ) {
@@ -186,28 +191,41 @@ class AuthSideEffectHandler : AppSideEffectHandler() {
             authProviders.first()
         }
 
-        val playerAuthProvider = when {
-            authProvider.providerId == FacebookAuthProvider.PROVIDER_ID -> AuthProvider.Facebook(
-                authProvider.uid,
-                displayName = user.displayName!!,
-                email = user.email!!,
-                imageUrl = user.photoUrl!!
-            )
-            authProvider.providerId == GoogleAuthProvider.PROVIDER_ID -> AuthProvider.Google(
-                authProvider.uid,
-                displayName = user.displayName!!,
-                email = user.email!!,
-                imageUrl = user.photoUrl!!
-            )
-            authProvider.providerId == FirebaseAuthProvider.PROVIDER_ID -> AuthProvider.Guest(
-                authProvider.uid
-            )
+        val auth = when {
+
+            authProvider.providerId == FacebookAuthProvider.PROVIDER_ID ->
+                AuthProvider.Facebook(
+                    authProvider.uid,
+                    displayName = user.displayName!!,
+                    email = user.email!!,
+                    imageUrl = user.photoUrl!!
+                )
+
+            authProvider.providerId == GoogleAuthProvider.PROVIDER_ID ->
+                AuthProvider.Google(
+                    authProvider.uid,
+                    displayName = user.displayName!!,
+                    email = user.email!!,
+                    imageUrl = user.photoUrl!!
+                )
+
+            authProvider.providerId == FirebaseAuthProvider.PROVIDER_ID ->
+                AuthProvider.Guest(
+                    authProvider.uid
+                )
+
             else -> throw IllegalStateException("Unknown Auth provider")
         }
 
+        if (auth is AuthProvider.Facebook) {
+            Api.migratePlayer(auth.userId, auth.email)
+        } else if (auth is AuthProvider.Google) {
+            Api.migratePlayer(auth.userId, auth.email)
+        }
+
         val player = Player(
-            authProvider = playerAuthProvider,
-            username = if (playerAuthProvider !is AuthProvider.Guest) username else "",
+            authProvider = auth,
+            username = if (auth !is AuthProvider.Guest) username else "",
             displayName = if (user.displayName != null) user.displayName!! else "",
             schemaVersion = Constants.SCHEMA_VERSION
         )

@@ -68,7 +68,7 @@ object ChallengeReducer : BaseViewStateReducer<ChallengeViewState>() {
             tags = challenge.tags,
             color = challenge.color,
             difficulty = challenge.difficulty.name.toLowerCase().capitalize(),
-            endDate = challenge.end,
+            endDate = challenge.endDate,
             nextDate = challenge.nextDate,
             completedCount = progress.completedCount,
             totalCount = progress.allCount,

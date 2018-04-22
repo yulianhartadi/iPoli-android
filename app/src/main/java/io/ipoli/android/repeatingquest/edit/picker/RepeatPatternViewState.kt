@@ -57,8 +57,8 @@ object RepeatPatternReducer : BaseViewStateReducer<RepeatPatternViewState>() {
                 val monthDaysCount = Math.max(1, selectedMonthDays.size)
                 val monthDaysCountIndex = subState.monthCountValues.indexOfFirst { monthDaysCount == it }
 
-                val startDate = pattern?.start ?: subState.startDate
-                val endDate = pattern?.end ?: subState.endDate
+                val startDate = pattern?.startDate ?: subState.startDate
+                val endDate = pattern?.endDate ?: subState.endDate
 
                 val petAvatar = AndroidPetAvatar.valueOf(state.dataState.player!!.pet.avatar.name)
 
@@ -181,14 +181,14 @@ object RepeatPatternReducer : BaseViewStateReducer<RepeatPatternViewState>() {
                     RepeatPattern.Flexible.Weekly(
                         timesPerWeek = state.weekCountValues[state.weekDaysCountIndex],
                         preferredDays = state.selectedWeekDays,
-                        start = state.startDate,
-                        end = state.endDate
+                        startDate = state.startDate,
+                        endDate = state.endDate
                     )
                 } else {
                     RepeatPattern.Weekly(
                         daysOfWeek = state.selectedWeekDays,
-                        start = state.startDate,
-                        end = state.endDate
+                        startDate = state.startDate,
+                        endDate = state.endDate
                     )
                 }
             }
@@ -197,14 +197,14 @@ object RepeatPatternReducer : BaseViewStateReducer<RepeatPatternViewState>() {
                     RepeatPattern.Flexible.Monthly(
                         timesPerMonth = state.monthDaysCount,
                         preferredDays = state.selectedMonthDays,
-                        start = state.startDate,
-                        end = state.endDate
+                        startDate = state.startDate,
+                        endDate = state.endDate
                     )
                 } else {
                     RepeatPattern.Monthly(
                         daysOfMonth = state.selectedMonthDays,
-                        start = state.startDate,
-                        end = state.endDate
+                        startDate = state.startDate,
+                        endDate = state.endDate
                     )
                 }
             }
@@ -213,8 +213,8 @@ object RepeatPatternReducer : BaseViewStateReducer<RepeatPatternViewState>() {
                 RepeatPattern.Yearly(
                     dayOfMonth = date.dayOfMonth,
                     month = date.month,
-                    start = state.startDate,
-                    end = state.endDate
+                    startDate = state.startDate,
+                    endDate = state.endDate
                 )
             }
 

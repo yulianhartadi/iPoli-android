@@ -174,7 +174,7 @@ sealed class PickerQuest(
             repeatingQuest,
             repeatingQuest.id,
             repeatingQuest.name,
-            repeatingQuest.repeatPattern.start
+            repeatingQuest.repeatPattern.startDate
         )
 }
 

@@ -2,7 +2,6 @@ package io.ipoli.android.store.membership.job
 
 import com.evernote.android.job.DailyJob
 import com.evernote.android.job.JobRequest
-import kotlinx.coroutines.experimental.runBlocking
 import io.ipoli.android.BillingConstants
 import io.ipoli.android.Constants
 import io.ipoli.android.common.api.Api
@@ -13,6 +12,7 @@ import io.ipoli.android.player.Membership
 import io.ipoli.android.store.membership.usecase.RemoveMembershipUseCase
 import io.ipoli.android.store.powerup.usecase.EnableAllPowerUpsUseCase
 import io.ipoli.android.store.purchase.AndroidSubscriptionManager
+import kotlinx.coroutines.experimental.runBlocking
 import org.solovyev.android.checkout.*
 import org.threeten.bp.LocalDate
 import space.traversal.kapsule.Injects
@@ -64,7 +64,7 @@ class CheckMembershipStatusJob : DailyJob(), Injects<Module> {
         if (activePurchase == null) {
             removeMembershipUseCase.execute(Unit)
         } else {
-            val status = Api().getMembershipStatus(activePurchase.sku, activePurchase.token)
+            val status = Api.getMembershipStatus(activePurchase.sku, activePurchase.token)
             if (status.isAutoRenewing) {
                 updatePowerUpsExpirationDate(status, enableAllPowerUpsUseCase)
             }

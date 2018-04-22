@@ -44,8 +44,8 @@ class SchedulePredefinedChallengeUseCase :
                         } else {
                             RepeatPattern.Weekly(
                                 daysOfWeek = q.weekDays.toSet(),
-                                start = startDate,
-                                end = endDate
+                                startDate = startDate,
+                                endDate = endDate
                             )
                         }
                     )
