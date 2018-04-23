@@ -71,7 +71,7 @@ class HomeViewController(args: Bundle? = null) :
 
     private val eventLogger by required { eventLogger }
 
-    private lateinit var dropDown : ImageView
+    private lateinit var dropDown: ImageView
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -254,7 +254,6 @@ class HomeViewController(args: Bundle? = null) :
         )
     }
 
-
     private fun showPet() {
         router.pushController(
             RouterTransaction.with(PetViewController())
@@ -279,8 +278,7 @@ class HomeViewController(args: Bundle? = null) :
             TAGS_CHANGED ->
                 renderTags(view, state)
 
-            TAG_SELECTED -> {
-                val fadeChangeHandler = FadeChangeHandler()
+            TAG_SELECTED ->
                 pushWithRootRouter(
                     RouterTransaction.with(
                         TagViewController(state.tags[state.selectedTagIndex!!].id)
@@ -288,7 +286,6 @@ class HomeViewController(args: Bundle? = null) :
                         .pushChangeHandler(fadeChangeHandler)
                         .popChangeHandler(fadeChangeHandler)
                 )
-            }
 
             UNSCHEDULED_QUESTS_CHANGED ->
                 renderBucketList(state.bucketListQuestCount, view)
@@ -342,7 +339,6 @@ class HomeViewController(args: Bundle? = null) :
                 dispatch(HomeAction.ShowTags)
             }
         }
-
 
     }
 
@@ -400,13 +396,11 @@ class HomeViewController(args: Bundle? = null) :
             LayoutInflater.from(view.context).inflate(R.layout.menu_item_tag_view, null)
         item.actionView.questCount.text = questCount.toString()
 
-        val iconDrawable =
-            IconicsDrawable(activity!!)
-                .icon(icon)
-                .paddingDp(3)
-                .sizeDp(24)
+        item.icon = IconicsDrawable(activity!!)
+            .icon(icon)
+            .paddingDp(3)
+            .sizeDp(24)
 
-        item.icon = iconDrawable
         val ic = item.icon
         ic.mutate()
         ic.setColorFilter(colorRes(iconColor), PorterDuff.Mode.SRC_ATOP)
