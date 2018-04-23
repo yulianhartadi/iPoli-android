@@ -47,7 +47,8 @@ class PickDurationDialogController :
                     )
                 })
 
-        val selectedIndex = Constants.DURATIONS.indexOfFirst { it == selectedDuration ?: 30 }
+        val selectedIndex =
+            Constants.DURATIONS.indexOfFirst { it == selectedDuration ?: Constants.DEFAULT_QUEST_DURATION }
         durationPicker.setSelectedItem(selectedIndex)
 
         return contentView
