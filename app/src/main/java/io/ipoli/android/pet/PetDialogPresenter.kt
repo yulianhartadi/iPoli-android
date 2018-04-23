@@ -19,7 +19,7 @@ import kotlin.coroutines.experimental.CoroutineContext
 
 object LoadPetDialogAction : Action
 
-class PetDialogReducer : BaseViewStateReducer<PetDialogViewState>() {
+object PetDialogReducer : BaseViewStateReducer<PetDialogViewState>() {
     override fun reduce(
         state: AppState,
         subState: PetDialogViewState,

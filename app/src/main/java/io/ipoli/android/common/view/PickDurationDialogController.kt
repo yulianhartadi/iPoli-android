@@ -21,7 +21,7 @@ import kotlinx.android.synthetic.main.view_dialog_header.view.*
 class PickDurationDialogController :
     ReduxDialogController<LoadPetDialogAction, PetDialogViewState, PetDialogReducer> {
 
-    override val reducer = PetDialogReducer()
+    override val reducer = PetDialogReducer
 
     private var listener: (Int) -> Unit = {}
     private var selectedDuration: Int? = null

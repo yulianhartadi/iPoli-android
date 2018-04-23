@@ -897,7 +897,7 @@
     <string name="empty_quest_picker_text">No quests to share. Go complete some!</string>
     <string name="title_activity_quest_picker">Pick Quest to Share</string>
     <string name="short_bio_hint">Enter a short bio</string>
-    <string name="date_time_picker_title">Schedule your quest</string>
+    <string name="date_time_picker_title">Pick date and time</string>
     <string name="quest_from_post_added">Quest scheduled in your calendar</string>
     <string name="title_fragment_feed">Achievements by Heroes</string>
     <string name="dialog_delete_post_title">Delete post</string>

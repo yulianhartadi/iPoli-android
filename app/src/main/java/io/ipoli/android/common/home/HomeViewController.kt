@@ -100,11 +100,13 @@ class HomeViewController(args: Bundle? = null) :
                 navigationItemSelected?.let {
                     onItemSelectedFromDrawer(it)
                 }
-
             }
         }
 
         contentView.drawerLayout.addDrawerListener(actionBarDrawerToggle)
+
+        PickDateTimeDialogController().show(router)
+
         return contentView
     }
 
