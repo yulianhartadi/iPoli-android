@@ -72,7 +72,6 @@ class AddRepeatingQuestViewController(args: Bundle? = null) :
         return view
     }
 
-
     override fun onAttach(view: View) {
         super.onAttach(view)
         showBackButton()
@@ -87,6 +86,10 @@ class AddRepeatingQuestViewController(args: Bundle? = null) :
     override fun handleBack(): Boolean {
         dispatch(EditRepeatingQuestAction.Back)
         return true
+    }
+
+    override fun colorLayoutBars() {
+
     }
 
     override fun render(state: EditRepeatingQuestViewState, view: View) {

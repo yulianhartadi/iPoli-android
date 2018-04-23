@@ -66,13 +66,19 @@ class AddChallengeViewController(args: Bundle? = null) :
         return true
     }
 
+    override fun colorLayoutBars() {
+
+    }
+
     override fun render(state: EditChallengeViewState, view: View) {
         when (state.type) {
+
             INITIAL -> {
                 toolbarTitle = "New Challenge"
                 colorLayout(view, state)
                 changeChildController(view, state.adapterPosition)
             }
+
             CHANGE_PAGE -> {
                 if (state.adapterPosition == SUMMARY_INDEX) {
                     dispatch(EditChallengeAction.UpdateSummary)
@@ -81,13 +87,11 @@ class AddChallengeViewController(args: Bundle? = null) :
                 toolbarTitle = state.toolbarTitle
             }
 
-            CLOSE -> {
+            CLOSE ->
                 router.popCurrentController()
-            }
 
-            COLOR_CHANGED -> {
+            COLOR_CHANGED ->
                 colorLayout(view, state)
-            }
         }
     }
 
