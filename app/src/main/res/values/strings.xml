@@ -1266,4 +1266,6 @@
     <string name="settings_contact_desc">Have a question? Found a bug or just want to say hi?</string>
     <string name="title_bucket_list">Bucket List</string>
     <string name="someday">Someday</string>
+    <string name="empty_bucket_list_title">Unscheduled Quests rest here</string>
+    <string name="empty_bucket_list_text">Tasks without a scheduled date will be put here. myPoli will help you schedule and get them done!</string>
 </resources>

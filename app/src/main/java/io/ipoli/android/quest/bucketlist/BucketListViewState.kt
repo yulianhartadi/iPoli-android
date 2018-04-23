@@ -30,7 +30,11 @@ object BucketListReducer : BaseViewStateReducer<BucketListViewState>() {
             BucketListViewState.Loading
 
         is BucketListAction.ItemsChanged ->
-            BucketListViewState.Changed(action.items)
+            if (action.items.isEmpty()) {
+                BucketListViewState.Empty
+            } else {
+                BucketListViewState.Changed(action.items)
+            }
 
         else -> subState
     }
@@ -42,4 +46,6 @@ sealed class BucketListViewState : ViewState {
     object Loading : BucketListViewState()
     data class Changed(val items: List<CreateBucketListItemsUseCase.BucketListItem>) :
         BucketListViewState()
+
+    object Empty : BucketListViewState()
 }

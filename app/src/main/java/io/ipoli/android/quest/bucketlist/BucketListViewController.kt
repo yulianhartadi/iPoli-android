@@ -88,7 +88,15 @@ class BucketListViewController(args: Bundle? = null) :
         val itemTouchHelper = ItemTouchHelper(swipeHandler)
         itemTouchHelper.attachToRecyclerView(view.questList)
 
+        initEmptyView(view)
+
         return view
+    }
+
+    private fun initEmptyView(view: View) {
+        view.emptyAnimation.setAnimation("empty_bucket_list.json")
+        view.emptyTitle.setText(R.string.empty_bucket_list_title)
+        view.emptyText.setText(R.string.empty_bucket_list_text)
     }
 
     override fun onAttach(view: View) {
@@ -100,14 +108,30 @@ class BucketListViewController(args: Bundle? = null) :
 
     override fun render(state: BucketListViewState, view: View) {
         when (state) {
-            is BucketListViewState.Changed -> {
-                view.loader.invisible()
-                view.emptyContainer.invisible()
-                view.emptyAnimation.pauseAnimation()
-                view.questList.visible()
-                (view.questList.adapter as QuestAdapter).updateAll(state.itemViewModels)
-            }
+
+            BucketListViewState.Empty ->
+                renderEmpty(view)
+
+            is BucketListViewState.Changed ->
+                renderQuests(state, view)
         }
+    }
+
+    private fun renderEmpty(view: View) {
+        view.loader.invisible()
+        view.emptyContainer.visible()
+        view.emptyAnimation.playAnimation()
+    }
+
+    private fun renderQuests(
+        state: BucketListViewState.Changed,
+        view: View
+    ) {
+        view.loader.invisible()
+        view.emptyContainer.invisible()
+        view.emptyAnimation.pauseAnimation()
+        view.questList.visible()
+        (view.questList.adapter as QuestAdapter).updateAll(state.itemViewModels)
     }
 
     sealed class ItemViewModel {
@@ -161,7 +185,7 @@ class BucketListViewController(args: Bundle? = null) :
                     view.questTagName.gone()
 
                     view.questIcon.backgroundTintList =
-                            ColorStateList.valueOf(colorRes(vm.color))
+                        ColorStateList.valueOf(colorRes(vm.color))
                     view.questIcon.setImageDrawable(
                         IconicsDrawable(view.context)
                             .icon(vm.icon)
@@ -173,9 +197,9 @@ class BucketListViewController(args: Bundle? = null) :
                     view.questStartTime.text = vm.startTime
 
                     view.questRepeatIndicator.visibility =
-                            if (vm.isRepeating) View.VISIBLE else View.GONE
+                        if (vm.isRepeating) View.VISIBLE else View.GONE
                     view.questChallengeIndicator.visibility =
-                            if (vm.isFromChallenge) View.VISIBLE else View.GONE
+                        if (vm.isFromChallenge) View.VISIBLE else View.GONE
 
                     view.setOnClickListener {
                         val handler = FadeChangeHandler()
@@ -196,7 +220,7 @@ class BucketListViewController(args: Bundle? = null) :
                     view.questName.text = vm.name
 
                     view.questIcon.backgroundTintList =
-                            ColorStateList.valueOf(colorRes(vm.color))
+                        ColorStateList.valueOf(colorRes(vm.color))
                     view.questIcon.setImageDrawable(
                         IconicsDrawable(view.context)
                             .icon(vm.icon)
@@ -208,9 +232,9 @@ class BucketListViewController(args: Bundle? = null) :
                     view.questStartTime.text = vm.startTime
 
                     view.questRepeatIndicator.visibility =
-                            if (vm.isRepeating) View.VISIBLE else View.GONE
+                        if (vm.isRepeating) View.VISIBLE else View.GONE
                     view.questChallengeIndicator.visibility =
-                            if (vm.isFromChallenge) View.VISIBLE else View.GONE
+                        if (vm.isFromChallenge) View.VISIBLE else View.GONE
 
                     view.setOnClickListener {
                         val handler = FadeChangeHandler()
@@ -244,7 +268,7 @@ class BucketListViewController(args: Bundle? = null) :
                             startTime = formatStartTime(q),
                             color = color,
                             icon = q.icon?.androidIcon?.icon
-                                    ?: Ionicons.Icon.ion_android_clipboard,
+                                ?: Ionicons.Icon.ion_android_clipboard,
                             isRepeating = q.isFromRepeatingQuest,
                             isFromChallenge = q.isFromChallenge
                         )
@@ -256,7 +280,7 @@ class BucketListViewController(args: Bundle? = null) :
                             startTime = formatDueDate(q),
                             color = color,
                             icon = q.icon?.androidIcon?.icon
-                                    ?: Ionicons.Icon.ion_android_clipboard,
+                                ?: Ionicons.Icon.ion_android_clipboard,
                             isRepeating = q.isFromRepeatingQuest,
                             isFromChallenge = q.isFromChallenge
                         )
