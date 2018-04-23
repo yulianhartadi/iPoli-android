@@ -149,30 +149,59 @@ class HistoryChart @JvmOverloads constructor(
                     )
                 )
 
-                result.add(
-                    RowData.CellRow(
-                        createWeekWithNoneCellsAtEnd(
-                            previousMonthLastDay
+                val currentWeekStart =
+                    currentDate.with(TemporalAdjusters.previousOrSame(DateUtils.firstDayOfWeek))
+                val currentWeekEnd = currentWeekStart.plusWeeks(1).minusDays(1)
+
+                if (currentWeekStart.month == currentWeekEnd.month) {
+                    result.add(RowData.CellRow(createCellsForWeek(currentWeekStart)))
+
+                    result.add(
+                        RowData.CellRow(
+                            createWeekWithNoneCellsAtEnd(
+                                previousMonthLastDay
+                            )
                         )
                     )
-                )
-                val nextMonthFirst = previousMonthLastDay.plusDays(1)
+                    val nextMonthFirst = previousMonthLastDay.plusDays(1)
 
-                result.addAll(createMonthWithWeekDaysRows())
+                    result.addAll(createMonthWithWeekDaysRows())
 
-                result.add(
-                    RowData.CellRow(
-                        createWeekWithNoneCellsAtStart(
-                            nextMonthFirst
+                    result.add(
+                        RowData.CellRow(
+                            createWeekWithNoneCellsAtStart(
+                                nextMonthFirst
+                            )
                         )
                     )
-                )
+                } else {
 
-                if (nextMonthFirst.dayOfWeek != DateUtils.firstDayOfWeek) {
-                    val lastWeekStart = nextMonthFirst.plusWeeks(1).with(
-                        TemporalAdjusters.previousOrSame(DateUtils.firstDayOfWeek)
+                    result.add(
+                        RowData.CellRow(
+                            createWeekWithNoneCellsAtEnd(
+                                previousMonthLastDay
+                            )
+                        )
                     )
-                    result.add(RowData.CellRow(createCellsForWeek(lastWeekStart)))
+                    val nextMonthFirst = previousMonthLastDay.plusDays(1)
+
+                    result.addAll(createMonthWithWeekDaysRows())
+
+                    result.add(
+                        RowData.CellRow(
+                            createWeekWithNoneCellsAtStart(
+                                nextMonthFirst
+                            )
+                        )
+                    )
+
+                    if (nextMonthFirst.dayOfWeek != DateUtils.firstDayOfWeek) {
+                        val lastWeekStart = nextMonthFirst.plusWeeks(1).with(
+                            TemporalAdjusters.previousOrSame(DateUtils.firstDayOfWeek)
+                        )
+
+                        result.add(RowData.CellRow(createCellsForWeek(lastWeekStart)))
+                    }
                 }
             } else {
                 result.addAll(createMonthWithWeekDaysRows())

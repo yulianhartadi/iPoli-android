@@ -117,6 +117,10 @@ open class EditChallengeViewController(args: Bundle? = null) :
             else -> super.onOptionsItemSelected(item)
         }
 
+    override fun colorLayoutBars() {
+
+    }
+
     override fun render(state: EditChallengeViewState, view: View) {
         when (state.type) {
             DATA_CHANGED -> {
