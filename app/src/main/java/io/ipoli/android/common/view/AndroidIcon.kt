@@ -42,7 +42,7 @@ enum class AndroidIcon(val icon: IIcon, @ColorRes val color: Int) {
     PIZZA(Ionicons.Icon.ion_pizza, R.color.md_orange_500),
     PHONE(Entypo.Icon.ent_old_phone, R.color.md_purple_300),
     CLOUD(Entypo.Icon.ent_cloud, R.color.md_blue_300),
-    SUN(Ionicons.Icon.ion_ios_sunny, R.color.md_yellow_600),
+    SUN(Entypo.Icon.ent_light_up, R.color.md_yellow_600),
     AMERICAN_FOOTBALL(Ionicons.Icon.ion_ios_americanfootball, R.color.md_red_500),
     WALLET(Entypo.Icon.ent_wallet, R.color.md_blue_300),
     FOOTBALL(Ionicons.Icon.ion_ios_football, R.color.md_orange_500),
