@@ -121,7 +121,7 @@ enum class Icon(val pack: IconPack) {
     CLOUD(IconPack.FREE),
     SUN(IconPack.BASIC),
     AMERICAN_FOOTBALL(IconPack.BASIC),
-    TROPHY(IconPack.BASIC),
+    WALLET(IconPack.BASIC),
     FOOTBALL(IconPack.BASIC),
     MONEY(IconPack.BASIC),
     CAMERA(IconPack.BASIC),
@@ -133,6 +133,10 @@ enum class Icon(val pack: IconPack) {
     CALCULATOR(IconPack.BASIC),
     HAIR_CROSS(IconPack.BASIC),
     LAPTOP(IconPack.BASIC),
+    TROPHY(IconPack.BASIC),
+    TOOLS(IconPack.BASIC),
+    MIC(IconPack.BASIC),
+    FEATHER(IconPack.BASIC),
 }
 
 enum class IconPack(val gemPrice: Int) {

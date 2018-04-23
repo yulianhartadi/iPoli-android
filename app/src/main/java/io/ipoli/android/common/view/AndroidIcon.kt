@@ -44,7 +44,7 @@ enum class AndroidIcon(val icon: IIcon, @ColorRes val color: Int) {
     CLOUD(Entypo.Icon.ent_cloud, R.color.md_blue_300),
     SUN(Ionicons.Icon.ion_ios_sunny, R.color.md_yellow_600),
     AMERICAN_FOOTBALL(Ionicons.Icon.ion_ios_americanfootball, R.color.md_red_500),
-    TROPHY(Entypo.Icon.ent_trophy, R.color.md_yellow_600),
+    WALLET(Entypo.Icon.ent_wallet, R.color.md_blue_300),
     FOOTBALL(Ionicons.Icon.ion_ios_football, R.color.md_orange_500),
     MONEY(Entypo.Icon.ent_credit, R.color.md_green_500),
     CAMERA(Ionicons.Icon.ion_ios_videocam, R.color.md_purple_300),
@@ -56,4 +56,8 @@ enum class AndroidIcon(val icon: IIcon, @ColorRes val color: Int) {
     CALCULATOR(Entypo.Icon.ent_calculator, R.color.md_blue_300),
     HAIR_CROSS(Entypo.Icon.ent_hair_cross, R.color.md_red_500),
     LAPTOP(Entypo.Icon.ent_laptop, R.color.md_green_500),
+    TROPHY(Entypo.Icon.ent_trophy, R.color.md_yellow_600),
+    TOOLS(Entypo.Icon.ent_tools, R.color.md_orange_500),
+    MIC(Entypo.Icon.ent_modern_mic, R.color.md_red_500),
+    FEATHER(Entypo.Icon.ent_feather, R.color.md_blue_300),
 }
