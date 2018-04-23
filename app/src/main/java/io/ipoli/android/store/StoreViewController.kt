@@ -8,13 +8,13 @@ import android.support.annotation.ColorRes
 import android.support.annotation.DrawableRes
 import android.support.annotation.StringRes
 import android.view.LayoutInflater
+import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
 import com.bluelinelabs.conductor.Controller
 import com.bluelinelabs.conductor.RestoreViewOnCreateController
 import com.bluelinelabs.conductor.RouterTransaction
 import com.bluelinelabs.conductor.changehandler.FadeChangeHandler
-import kotlinx.android.synthetic.main.item_store.view.*
 import io.ipoli.android.R
 import io.ipoli.android.common.view.*
 import io.ipoli.android.pet.store.PetStoreViewController
@@ -23,6 +23,8 @@ import io.ipoli.android.store.gem.GemStoreViewController
 import io.ipoli.android.store.membership.MembershipViewController
 import io.ipoli.android.store.powerup.PowerUpStoreViewController
 import io.ipoli.android.store.theme.ThemeStoreViewController
+import kotlinx.android.synthetic.main.item_store.view.*
+import kotlinx.android.synthetic.main.view_default_toolbar.view.*
 
 /**
  * Created by Polina Zhelyazkova <polina@mypoli.fun>
@@ -44,12 +46,14 @@ class StoreViewController(args: Bundle? = null) : RestoreViewOnCreateController(
         container: ViewGroup,
         savedViewState: Bundle?
     ): View {
+        setHasOptionsMenu(true)
         val view = inflater.inflate(R.layout.controller_store, container, false)
 
         view.post {
             itemHeight = view.height * 6 / 7 / VISIBLE_ITEMS_PER_SCREEN
             renderAll(view)
         }
+        setToolbar(view.toolbar)
         return view
     }
 
@@ -90,6 +94,19 @@ class StoreViewController(args: Bundle? = null) : RestoreViewOnCreateController(
         }
     }
 
+    override fun onAttach(view: View) {
+        super.onAttach(view)
+        toolbarTitle = stringRes(R.string.drawer_store)
+        showBackButton()
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        if (item.itemId == android.R.id.home) {
+            return router.handleBack()
+        }
+        return super.onOptionsItemSelected(item)
+    }
+
     private fun renderItem(
         view: View,
         @ColorRes color: Int,
@@ -116,11 +133,6 @@ class StoreViewController(args: Bundle? = null) : RestoreViewOnCreateController(
         view.setOnClickListener {
             open()
         }
-    }
-
-    override fun onAttach(view: View) {
-        super.onAttach(view)
-        toolbarTitle = stringRes(R.string.drawer_store)
     }
 
     private fun createLeftRoundedDrawable(xRadius: Float, yRadius: Float, color: Int): Drawable {

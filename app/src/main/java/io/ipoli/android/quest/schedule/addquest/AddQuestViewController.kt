@@ -296,6 +296,7 @@ class AddQuestViewController(args: Bundle? = null) :
         view.questName.setText("")
         setIcon(GoogleMaterial.Icon.gmd_event, view.scheduleDate, true)
         setIcon(GoogleMaterial.Icon.gmd_access_time, view.startTime)
+        setIcon(GoogleMaterial.Icon.gmd_timer, view.duration)
         setIcon(GoogleMaterial.Icon.gmd_local_florist, view.icon)
         setColor(Color.GREEN, view)
         setIcon(GoogleMaterial.Icon.gmd_send, view.done)

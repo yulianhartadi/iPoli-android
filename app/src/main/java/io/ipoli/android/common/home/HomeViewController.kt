@@ -129,7 +129,11 @@ class HomeViewController(args: Bundle? = null) :
             }
 
             R.id.store ->
-                changeChildController(StoreViewController())
+                pushWithRootRouter(
+                    RouterTransaction.with(StoreViewController())
+                        .pushChangeHandler(fadeChangeHandler)
+                        .popChangeHandler(fadeChangeHandler)
+                )
 
             R.id.community ->
                 openCommunity()
@@ -138,9 +142,14 @@ class HomeViewController(args: Bundle? = null) :
                 showInviteFriends()
 
             R.id.settings ->
-                changeChildController(SettingsViewController())
+                pushWithRootRouter(
+                    RouterTransaction.with(SettingsViewController())
+                        .pushChangeHandler(fadeChangeHandler)
+                        .popChangeHandler(fadeChangeHandler)
+                )
 
-            R.id.feedback ->
+            R.id.feedback
+            ->
                 showFeedback()
 
             else -> {
@@ -377,7 +386,7 @@ class HomeViewController(args: Bundle? = null) :
             name
         )
         item.actionView =
-                LayoutInflater.from(view.context).inflate(R.layout.menu_item_tag_view, null)
+            LayoutInflater.from(view.context).inflate(R.layout.menu_item_tag_view, null)
         item.actionView.questCount.text = questCount.toString()
 
         val iconDrawable =

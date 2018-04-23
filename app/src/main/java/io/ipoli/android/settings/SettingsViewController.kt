@@ -5,6 +5,7 @@ import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
 import android.view.LayoutInflater
+import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
 import io.ipoli.android.BuildConfig
@@ -12,10 +13,13 @@ import io.ipoli.android.Constants
 import io.ipoli.android.R
 import io.ipoli.android.common.EmailUtils
 import io.ipoli.android.common.redux.android.ReduxViewController
+import io.ipoli.android.common.view.setToolbar
+import io.ipoli.android.common.view.showBackButton
 import io.ipoli.android.common.view.stringRes
 import io.ipoli.android.common.view.toolbarTitle
 import io.ipoli.android.event.calendar.picker.CalendarPickerDialogController
 import kotlinx.android.synthetic.main.controller_settings.view.*
+import kotlinx.android.synthetic.main.view_default_toolbar.view.*
 
 /**
  * Created by Polina Zhelyazkova <polina@mypoli.fun>
@@ -30,8 +34,23 @@ class SettingsViewController(args: Bundle? = null) :
         container: ViewGroup,
         savedViewState: Bundle?
     ): View {
+        setHasOptionsMenu(true)
+        val view = container.inflate(R.layout.controller_settings)
+        setToolbar(view.toolbar)
+        return view
+    }
+
+    override fun onAttach(view: View) {
+        super.onAttach(view)
         toolbarTitle = stringRes(R.string.settings)
-        return inflater.inflate(R.layout.controller_settings, null)
+        showBackButton()
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        if (item.itemId == android.R.id.home) {
+            return router.handleBack()
+        }
+        return super.onOptionsItemSelected(item)
     }
 
     override fun onCreateLoadAction() = SettingsAction.Load

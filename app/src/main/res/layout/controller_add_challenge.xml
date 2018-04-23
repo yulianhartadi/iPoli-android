@@ -6,11 +6,6 @@
 
     <include layout="@layout/view_no_elevation_toolbar" />
 
-    <!--<io.ipoli.android.quest.schedule.calendar.dayview.view.widget.LockableViewPager-->
-        <!--android:id="@+id/pager"-->
-        <!--android:layout_width="match_parent"-->
-        <!--android:layout_height="match_parent"-->
-        <!--android:layout_marginTop="?attr/actionBarSize" />-->
     <com.bluelinelabs.conductor.ChangeHandlerFrameLayout
         android:id="@+id/pager"
         android:layout_width="match_parent"
