@@ -68,8 +68,6 @@ class HomeViewController(args: Bundle? = null) :
 
     private val fadeChangeHandler = FadeChangeHandler()
 
-    private val sharedPreferences by required { sharedPreferences }
-
     private val eventLogger by required { eventLogger }
 
     override fun onCreateView(
@@ -115,7 +113,7 @@ class HomeViewController(args: Bundle? = null) :
             R.id.calendar ->
                 changeChildController(ScheduleViewController())
 
-            R.id.inbox ->
+            R.id.bucketList ->
                 changeChildController(BucketListViewController())
 
             R.id.repeatingQuests ->
@@ -266,17 +264,16 @@ class HomeViewController(args: Bundle? = null) :
         when (state.type) {
             DATA_LOADED -> {
                 renderSignIn(view, state.showSignIn)
+                renderBucketList(state.bucketListQuestCount, view)
                 renderPlayer(view, state)
                 renderTags(view, state)
             }
 
-            PLAYER_CHANGED -> {
+            PLAYER_CHANGED ->
                 renderPlayer(view, state)
-            }
 
-            TAGS_CHANGED -> {
+            TAGS_CHANGED ->
                 renderTags(view, state)
-            }
 
             TAG_SELECTED -> {
                 val fadeChangeHandler = FadeChangeHandler()
@@ -288,7 +285,18 @@ class HomeViewController(args: Bundle? = null) :
                         .popChangeHandler(fadeChangeHandler)
                 )
             }
+
+            UNSCHEDULED_QUESTS_CHANGED ->
+                renderBucketList(state.bucketListQuestCount, view)
         }
+    }
+
+    private fun renderBucketList(bucketListQuestCount: Int, view: View) {
+        val item = view.navigationView.menu.findItem(R.id.bucketList)
+
+        item.actionView =
+            LayoutInflater.from(view.context).inflate(R.layout.menu_item_tag_view, null)
+        item.actionView.questCount.text = bucketListQuestCount.toString()
     }
 
     private fun renderTags(view: View, state: HomeViewState) {

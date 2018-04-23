@@ -12,7 +12,7 @@
             android:title="@string/calendar" />
 
         <item
-            android:id="@+id/inbox"
+            android:id="@+id/bucketList"
             android:checked="false"
             android:icon="@drawable/ic_bucket_black_24dp"
             android:orderInCategory="0"

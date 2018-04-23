@@ -3,9 +3,9 @@ package io.ipoli.android.common.home
 import io.ipoli.android.common.AppState
 import io.ipoli.android.common.BaseViewStateReducer
 import io.ipoli.android.common.DataLoadedAction
+import io.ipoli.android.common.home.HomeViewState.StateType.*
 import io.ipoli.android.common.mvi.ViewState
 import io.ipoli.android.common.redux.Action
-import io.ipoli.android.common.home.HomeViewState.StateType.*
 import io.ipoli.android.pet.PetAvatar
 import io.ipoli.android.pet.PetMood
 import io.ipoli.android.player.Player
@@ -32,6 +32,7 @@ object HomeReducer : BaseViewStateReducer<HomeViewState>() {
             is HomeAction.Load -> {
                 val player = state.dataState.player
                 val tags = state.dataState.tags
+                val bq = state.dataState.unscheduledQuests
 
                 val s = player?.let {
                     createStateFromPlayer(subState, it)
@@ -39,43 +40,45 @@ object HomeReducer : BaseViewStateReducer<HomeViewState>() {
 
                 s.copy(
                     type = DATA_LOADED,
-                    tags = tags.filter { it.isFavorite }
+                    tags = tags.filter { it.isFavorite },
+                    bucketListQuestCount = bq.size
                 )
             }
 
-            is DataLoadedAction.PlayerChanged -> {
+            is DataLoadedAction.PlayerChanged ->
                 createStateFromPlayer(subState, action.player).copy(
                     type = PLAYER_CHANGED
                 )
-            }
 
-            is DataLoadedAction.TagsChanged -> {
+            is DataLoadedAction.TagsChanged ->
                 subState.copy(
                     type = TAGS_CHANGED,
                     tags = action.tags.filter { it.isFavorite }
                 )
-            }
 
-            is HomeAction.HideTags -> {
+            is DataLoadedAction.UnscheduledQuestsChanged ->
+                subState.copy(
+                    type = UNSCHEDULED_QUESTS_CHANGED,
+                    bucketListQuestCount = action.quests.size
+                )
+
+            is HomeAction.HideTags ->
                 subState.copy(
                     type = TAGS_HIDDEN,
                     showTags = false
                 )
-            }
 
-            is HomeAction.ShowTags -> {
+            is HomeAction.ShowTags ->
                 subState.copy(
                     type = TAGS_SHOWN,
                     showTags = true
                 )
-            }
 
-            is HomeAction.SelectTag -> {
+            is HomeAction.SelectTag ->
                 subState.copy(
                     type = TAG_SELECTED,
                     selectedTagIndex = action.index
                 )
-            }
 
             else -> subState
         }
@@ -110,7 +113,8 @@ object HomeReducer : BaseViewStateReducer<HomeViewState>() {
         maxProgress = 0,
         tags = listOf(),
         showTags = true,
-        selectedTagIndex = null
+        selectedTagIndex = null,
+        bucketListQuestCount = 0
     )
 }
 
@@ -129,13 +133,15 @@ data class HomeViewState(
     val maxProgress: Int,
     val tags: List<Tag>,
     val showTags: Boolean,
-    val selectedTagIndex: Int?
+    val selectedTagIndex: Int?,
+    val bucketListQuestCount: Int
 ) : ViewState {
 
     enum class StateType {
         LOADING,
         DATA_LOADED,
         PLAYER_CHANGED,
+        UNSCHEDULED_QUESTS_CHANGED,
         TAGS_CHANGED,
         TAGS_SHOWN,
         TAGS_HIDDEN,
