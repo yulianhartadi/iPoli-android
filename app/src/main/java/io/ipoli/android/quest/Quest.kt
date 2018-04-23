@@ -124,7 +124,15 @@ enum class Icon(val pack: IconPack) {
     TROPHY(IconPack.BASIC),
     FOOTBALL(IconPack.BASIC),
     MONEY(IconPack.BASIC),
-    CAMERA(IconPack.BASIC)
+    CAMERA(IconPack.BASIC),
+    FLOWER(IconPack.BASIC),
+    CREDIT_CARD(IconPack.BASIC),
+    DROP(IconPack.BASIC),
+    DRINK(IconPack.BASIC),
+    BUCKET(IconPack.BASIC),
+    CALCULATOR(IconPack.BASIC),
+    HAIR_CROSS(IconPack.BASIC),
+    LAPTOP(IconPack.BASIC),
 }
 
 enum class IconPack(val gemPrice: Int) {
