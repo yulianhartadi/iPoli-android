@@ -126,17 +126,21 @@ enum class Icon(val pack: IconPack) {
     MONEY(IconPack.BASIC),
     CAMERA(IconPack.BASIC),
     FLOWER(IconPack.BASIC),
-    CREDIT_CARD(IconPack.BASIC),
+    LAPTOP(IconPack.BASIC),
     DROP(IconPack.BASIC),
     DRINK(IconPack.BASIC),
     BUCKET(IconPack.BASIC),
     CALCULATOR(IconPack.BASIC),
     HAIR_CROSS(IconPack.BASIC),
-    LAPTOP(IconPack.BASIC),
+    CREDIT_CARD(IconPack.BASIC),
     TROPHY(IconPack.BASIC),
     TOOLS(IconPack.BASIC),
     MIC(IconPack.BASIC),
     FEATHER(IconPack.BASIC),
+    MAIL(IconPack.BASIC),
+    SHOP(IconPack.BASIC),
+    MEDAL(IconPack.BASIC),
+    MAP(IconPack.BASIC),
 }
 
 enum class IconPack(val gemPrice: Int) {
