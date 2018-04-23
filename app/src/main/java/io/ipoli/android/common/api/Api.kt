@@ -11,7 +11,7 @@ import org.json.JSONObject
 import org.threeten.bp.LocalDate
 import java.io.IOException
 import java.lang.Exception
-import java.util.*
+import java.net.URL
 import java.util.concurrent.TimeUnit
 
 /**
@@ -28,7 +28,15 @@ object Api {
         .retryOnConnectionFailure(false).build()
 
     suspend fun migratePlayer(playerId: String, email: String) {
-
+        val params = mapOf(
+            "player_id" to playerId,
+            "email" to email
+        )
+        val request = createPostRequest(params, urlProvider.migratePlayer)
+        val response = callServer(request)
+        if (!response.isSuccessful) {
+            throw PlayerMigrationException("Api Player migration call failed with response ${response.message()}")
+        }
     }
 
     /**
@@ -38,7 +46,13 @@ object Api {
         subscriptionId: String,
         token: String
     ): MembershipStatus {
-        val request = createRequest(subscriptionId, token)
+
+        val params = mapOf(
+            "subscription_id" to subscriptionId,
+            "token" to token
+        )
+
+        val request = createPostRequest(params, urlProvider.getMembershipStatus)
         val response = callServer(request)
         if (!response.isSuccessful) {
             throw MembershipStatusException("Api membership status call failed with response ${response.message()}")
@@ -61,27 +75,23 @@ object Api {
         )
     }
 
-    private fun createRequest(subscriptionId: String, token: String): Request {
-        val params = HashMap<String, String>()
-        params["subscription_id"] = subscriptionId
-        params["token"] = token
-
-        val jsonContent = JSONObject(params)
-
-        val mediaType = MediaType.parse("application/json; charset=utf-8")
-        val body = RequestBody.create(mediaType, jsonContent.toString())
-
-        return Request.Builder()
-            .url(urlProvider.getMembershipStatus())
-            .post(body)
+    private fun createPostRequest(params: Map<String, String>, url: URL) =
+        Request.Builder()
+            .url(url)
+            .post(createPostRequestBody(params))
             .build()
+
+    private fun createPostRequestBody(params: Map<String, String>): RequestBody {
+        val jsonMediaType = MediaType.parse("application/json; charset=utf-8")
+        val jsonContent = JSONObject(params)
+        return RequestBody.create(jsonMediaType, jsonContent.toString())
     }
 
     private suspend fun callServer(request: Request) =
         try {
             httpClient.newCall(request).await()
         } catch (e: Exception) {
-            throw MembershipStatusException("Api membership status call failed", e)
+            throw ApiServerCallException("Api server call failed", e)
         }
 
 
@@ -92,6 +102,12 @@ object Api {
     )
 
     class MembershipStatusException(message: String, cause: Throwable? = null) :
+        Exception(message, cause)
+
+    class PlayerMigrationException(message: String, cause: Throwable? = null) :
+        Exception(message, cause)
+
+    class ApiServerCallException(message: String, cause: Throwable? = null) :
         Exception(message, cause)
 }
 

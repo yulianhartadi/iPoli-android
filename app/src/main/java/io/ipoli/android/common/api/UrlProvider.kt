@@ -8,14 +8,16 @@ import java.net.URL
  * on 3/23/18.
  */
 interface UrlProvider {
-    fun getMembershipStatus(): URL
+    val getMembershipStatus: URL
+    val migratePlayer: URL
 }
 
 class ProdUrlProvider : UrlProvider {
-    override fun getMembershipStatus() = URL("${ApiConstants.PROD_API_URL}subscriptions/")
+    override val getMembershipStatus = URL("${ApiConstants.PROD_API_URL}subscriptions/")
+    override val migratePlayer = URL("${ApiConstants.PROD_API_URL}migrations/")
 }
 
 class DevUrlProvider : UrlProvider {
-    override fun getMembershipStatus() = URL("${ApiConstants.DEV_API_URL}subscriptions/")
-
+    override val getMembershipStatus = URL("${ApiConstants.DEV_API_URL}subscriptions/")
+    override val migratePlayer = URL("${ApiConstants.DEV_API_URL}migrations/")
 }
