@@ -138,10 +138,11 @@ class DayViewSideEffectHandler : AppSideEffectHandler() {
         val scheduledDate = dayViewState.scheduledDate ?: dayViewState.currentDate
         val r = dayViewState.reminder
         val reminder = when {
-            dayViewState.editId.isEmpty() -> Reminder.Relative(
-                "",
-                Constants.DEFAULT_RELATIVE_REMINDER_MINUTES_FROM_START
-            )
+            dayViewState.editId.isEmpty() ->
+                Reminder.Relative(
+                    "",
+                    Constants.DEFAULT_RELATIVE_REMINDER_MINUTES_FROM_START
+                )
             r != null -> Reminder.Relative(r.message, r.minutesFromStart)
             else -> null
         }

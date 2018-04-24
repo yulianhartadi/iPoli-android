@@ -15,6 +15,7 @@ import io.ipoli.android.quest.data.persistence.DbReminder
 import io.ipoli.android.quest.data.persistence.DbSubQuest
 import io.ipoli.android.quest.subquest.SubQuest
 import io.ipoli.android.repeatingquest.entity.RepeatPattern
+import io.ipoli.android.repeatingquest.persistence.DbRepeatPattern.Type.*
 import org.threeten.bp.DayOfWeek
 import org.threeten.bp.LocalDate
 import org.threeten.bp.Month
@@ -185,23 +186,23 @@ class FirestoreRepeatingQuestRepository(
     }
 
     private fun createRepeatPattern(rp: DbRepeatPattern): RepeatPattern {
-        val type = DbRepeatPattern.Type.valueOf(rp.type)
+        val type = valueOf(rp.type)
 
         return when (type) {
-            DbRepeatPattern.Type.DAILY -> {
+            DAILY -> {
                 RepeatPattern.Daily(
                     startDate = rp.startDate.startOfDayUTC,
                     endDate = rp.endDate?.startOfDayUTC
                 )
             }
-            DbRepeatPattern.Type.WEEKLY -> {
+            WEEKLY -> {
                 RepeatPattern.Weekly(
                     daysOfWeek = rp.daysOfWeek.map { DayOfWeek.valueOf(it) }.toSet(),
                     startDate = rp.startDate.startOfDayUTC,
                     endDate = rp.endDate?.startOfDayUTC
                 )
             }
-            DbRepeatPattern.Type.MONTHLY -> {
+            MONTHLY -> {
                 RepeatPattern.Monthly(
                     daysOfMonth = rp.daysOfMonth.toSet(),
                     startDate = rp.startDate.startOfDayUTC,
@@ -209,7 +210,7 @@ class FirestoreRepeatingQuestRepository(
                 )
             }
 
-            DbRepeatPattern.Type.YEARLY -> {
+            YEARLY -> {
                 RepeatPattern.Yearly(
                     dayOfMonth = rp.dayOfMonth,
                     month = Month.valueOf(rp.month),
@@ -218,7 +219,7 @@ class FirestoreRepeatingQuestRepository(
                 )
             }
 
-            DbRepeatPattern.Type.FLEXIBLE_WEEKLY -> {
+            FLEXIBLE_WEEKLY -> {
                 RepeatPattern.Flexible.Weekly(
                     timesPerWeek = rp.timesPerWeek,
                     preferredDays = rp.preferredDays.map { DayOfWeek.valueOf(it) }.toSet(),
@@ -229,7 +230,7 @@ class FirestoreRepeatingQuestRepository(
                 )
             }
 
-            DbRepeatPattern.Type.FLEXIBLE_MONTHLY -> {
+            FLEXIBLE_MONTHLY -> {
                 RepeatPattern.Flexible.Monthly(
                     timesPerMonth = rp.timesPerMonth,
                     preferredDays = rp.preferredDays.map { it.toInt() }.toSet(),
@@ -278,25 +279,25 @@ class FirestoreRepeatingQuestRepository(
 
         when (repeatPattern) {
             is RepeatPattern.Daily -> {
-                rp.type = DbRepeatPattern.Type.DAILY.name
+                rp.type = DAILY.name
             }
             is RepeatPattern.Weekly -> {
-                rp.type = DbRepeatPattern.Type.WEEKLY.name
+                rp.type = WEEKLY.name
                 rp.daysOfWeek = repeatPattern.daysOfWeek.map {
                     it.name
                 }
             }
             is RepeatPattern.Monthly -> {
-                rp.type = DbRepeatPattern.Type.MONTHLY.name
+                rp.type = MONTHLY.name
                 rp.daysOfMonth = repeatPattern.daysOfMonth.map { it }
             }
             is RepeatPattern.Yearly -> {
-                rp.type = DbRepeatPattern.Type.YEARLY.name
+                rp.type = YEARLY.name
                 rp.dayOfMonth = repeatPattern.dayOfMonth
                 rp.month = repeatPattern.month.name
             }
             is RepeatPattern.Flexible.Weekly -> {
-                rp.type = DbRepeatPattern.Type.FLEXIBLE_WEEKLY.name
+                rp.type = FLEXIBLE_WEEKLY.name
                 rp.timesPerWeek = repeatPattern.timesPerWeek
                 rp.preferredDays = repeatPattern.preferredDays.map {
                     it.name
@@ -306,7 +307,7 @@ class FirestoreRepeatingQuestRepository(
                     .toMutableMap()
             }
             is RepeatPattern.Flexible.Monthly -> {
-                rp.type = DbRepeatPattern.Type.FLEXIBLE_MONTHLY.name
+                rp.type = FLEXIBLE_MONTHLY.name
                 rp.timesPerMonth = repeatPattern.timesPerMonth
                 rp.preferredDays = repeatPattern.preferredDays.map { it.toString() }
 
