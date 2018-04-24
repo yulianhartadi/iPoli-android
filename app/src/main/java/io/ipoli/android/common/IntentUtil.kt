@@ -15,11 +15,11 @@ object IntentUtil {
         Intent(context, MainActivity::class.java).apply {
             action = MainActivity.ACTION_SHOW_TIMER
             putExtra(Constants.QUEST_ID_EXTRA_KEY, questId)
-            flags = Intent.FLAG_ACTIVITY_NEW_TASK
+            flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK
         }
 
     fun startApp(context: Context) =
         Intent(context, MainActivity::class.java).apply {
-            flags = Intent.FLAG_ACTIVITY_NEW_TASK
+            flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK
         }
 }
