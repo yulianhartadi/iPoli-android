@@ -81,7 +81,7 @@ import io.ipoli.android.repeatingquest.usecase.*
 import io.ipoli.android.store.avatar.sideeffect.AvatarSideEffectHandler
 import io.ipoli.android.store.avatar.usecase.BuyAvatarUseCase
 import io.ipoli.android.store.avatar.usecase.ChangeAvatarUseCase
-import io.ipoli.android.store.gem.GemStorePresenter
+import io.ipoli.android.store.gem.GemStoreSideEffectHandler
 import io.ipoli.android.store.membership.MembershipSideEffectHandler
 import io.ipoli.android.store.membership.job.AndroidCheckMembershipStatusScheduler
 import io.ipoli.android.store.membership.job.CheckMembershipStatusScheduler
@@ -138,23 +138,23 @@ class FirestoreRepositoryModule : RepositoryModule, Injects<Module> {
     }
 
     override val playerRepository
-            by required {
-                FirestorePlayerRepository(
-                    database,
-                    job + CommonPool,
-                    sharedPreferences
-                )
-            }
+        by required {
+            FirestorePlayerRepository(
+                database,
+                job + CommonPool,
+                sharedPreferences
+            )
+        }
 
     override val repeatingQuestRepository
-            by required {
-                FirestoreRepeatingQuestRepository(
-                    database,
-                    job + CommonPool,
-                    sharedPreferences,
-                    tagProvider
-                )
-            }
+        by required {
+            FirestoreRepeatingQuestRepository(
+                database,
+                job + CommonPool,
+                sharedPreferences,
+                tagProvider
+            )
+        }
 
     override val challengeRepository by required {
         FirestoreChallengeRepository(
@@ -174,13 +174,13 @@ class FirestoreRepositoryModule : RepositoryModule, Injects<Module> {
     }
 
     override val tagRepository
-            by required {
-                FirestoreTagRepository(
-                    database,
-                    job + CommonPool,
-                    sharedPreferences
-                )
-            }
+        by required {
+            FirestoreTagRepository(
+                database,
+                job + CommonPool,
+                sharedPreferences
+            )
+        }
 
 }
 
@@ -640,7 +640,6 @@ interface PresenterModule {
     val colorPickerPresenter: ColorPickerPresenter
     val iconPickerPresenter: IconPickerDialogPresenter
     val currencyConverterPresenter: CurrencyConverterPresenter
-    val gemStorePresenter: GemStorePresenter
     val petMessagePresenter: PetMessagePresenter
     val levelUpPresenter: LevelUpPresenter
     val questCompletePresenter: QuestCompletePresenter
@@ -702,12 +701,6 @@ class AndroidPresenterModule : PresenterModule, Injects<Module> {
             convertCoinsToGemsUseCase,
             job
         )
-    override val gemStorePresenter
-        get() = GemStorePresenter(
-            purchaseGemPackUseCase,
-            listenForPlayerChangesUseCase,
-            job
-        )
 
     override val petMessagePresenter get() = PetMessagePresenter(listenForPlayerChangesUseCase, job)
     override val levelUpPresenter get() = LevelUpPresenter(listenForPlayerChangesUseCase, job)
@@ -754,7 +747,8 @@ class AndroidStateStoreModule : StateStoreModule, Injects<Module> {
                 AvatarSideEffectHandler(),
                 ThemeSideEffectHandler(),
                 TagSideEffectHandler(),
-                BucketListSideEffectHandler()
+                BucketListSideEffectHandler(),
+                GemStoreSideEffectHandler()
             ),
             sideEffectHandlerExecutor = CoroutineSideEffectHandlerExecutor(job + CommonPool),
             middleware = setOf(

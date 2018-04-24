@@ -11,7 +11,7 @@ import com.mikepenz.google_material_typeface_library.GoogleMaterial
 import com.mikepenz.iconics.IconicsDrawable
 import io.ipoli.android.BillingConstants
 import io.ipoli.android.R
-import io.ipoli.android.common.mvi.MviViewController
+import io.ipoli.android.common.redux.android.ReduxViewController
 import io.ipoli.android.common.view.setChildController
 import io.ipoli.android.common.view.setToolbar
 import io.ipoli.android.common.view.showBackButton
@@ -19,25 +19,23 @@ import io.ipoli.android.player.inventory.InventoryViewController
 import io.ipoli.android.store.gem.GemStoreViewState.StateType.*
 import io.ipoli.android.store.purchase.AndroidInAppPurchaseManager
 import io.ipoli.android.store.purchase.GemPackType
+import io.ipoli.android.store.purchase.InAppPurchaseManager
 import kotlinx.android.synthetic.main.controller_gem_store.view.*
 import kotlinx.android.synthetic.main.view_inventory_toolbar.view.*
 import org.solovyev.android.checkout.Billing
 import org.solovyev.android.checkout.Checkout
 import org.solovyev.android.checkout.UiCheckout
-import space.traversal.kapsule.required
 
 /**
  * Created by Venelin Valkov <venelin@io.ipoli.io>
  * on 27.12.17.
  */
 class GemStoreViewController(args: Bundle? = null) :
-    MviViewController<GemStoreViewState, GemStoreViewController, GemStorePresenter, GemStoreIntent>(
+    ReduxViewController<GemStoreAction, GemStoreViewState, GemStoreReducer>(
         args
     ) {
 
-    private val presenter by required { gemStorePresenter }
-
-    override fun createPresenter() = presenter
+    override val reducer = GemStoreReducer
 
     private lateinit var checkout: UiCheckout
 
@@ -64,7 +62,6 @@ class GemStoreViewController(args: Bundle? = null) :
 
         checkout = Checkout.forActivity(activity!!, billing)
         checkout.start()
-        presenter.purchaseManager = AndroidInAppPurchaseManager(checkout, activity!!.resources)
 
         registerForActivityResult(AndroidInAppPurchaseManager.PURCHASE_REQUEST_CODE)
 
@@ -79,10 +76,15 @@ class GemStoreViewController(args: Bundle? = null) :
         return view
     }
 
+    override fun onCreateLoadAction() =
+        GemStoreAction.Load(createPurchaseManager())
+
+    private fun createPurchaseManager(): InAppPurchaseManager =
+        AndroidInAppPurchaseManager(checkout, activity!!.resources)
+
     override fun onAttach(view: View) {
-        showBackButton()
         super.onAttach(view)
-        send(GemStoreIntent.LoadData)
+        showBackButton()
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
@@ -100,22 +102,20 @@ class GemStoreViewController(args: Bundle? = null) :
 
     override fun render(state: GemStoreViewState, view: View) {
         when (state.type) {
-            PLAYER_CHANGED -> {
-                if (state.isGiftPurchased) {
+            PLAYER_CHANGED ->
+                if (state.isGiftPurchased)
                     showMostPopular(view)
-                }
-            }
 
-            GEM_PACKS_LOADED -> {
+            GEM_PACKS_LOADED ->
                 state.gemPacks.forEach {
                     when (it.type) {
                         GemPackType.BASIC -> {
                             view.basicPackPrice.text = it.price
                             view.basicPackTitle.text = it.title
                             view.basicPackGems.text = "x ${it.gems}"
-                            view.basicPackBuy.sendOnClick(
-                                GemStoreIntent.BuyGemPack(
-                                    it
+                            view.basicPackBuy.dispatchOnClick(
+                                GemStoreAction.BuyGemPack(
+                                    it, createPurchaseManager()
                                 )
                             )
                         }
@@ -123,9 +123,9 @@ class GemStoreViewController(args: Bundle? = null) :
                             view.smartPackPrice.text = it.price
                             view.smartPackTitle.text = it.title
                             view.smartPackGems.text = "x ${it.gems}"
-                            view.smartPackBuy.sendOnClick(
-                                GemStoreIntent.BuyGemPack(
-                                    it
+                            view.smartPackBuy.dispatchOnClick(
+                                GemStoreAction.BuyGemPack(
+                                    it, createPurchaseManager()
                                 )
                             )
                         }
@@ -133,28 +133,25 @@ class GemStoreViewController(args: Bundle? = null) :
                             view.platinumPackPrice.text = it.price
                             view.platinumPackTitle.text = it.title
                             view.platinumPackGems.text = "x ${it.gems}"
-                            view.platinumPackBuy.sendOnClick(
-                                GemStoreIntent.BuyGemPack(
-                                    it
+                            view.platinumPackBuy.dispatchOnClick(
+                                GemStoreAction.BuyGemPack(
+                                    it, createPurchaseManager()
                                 )
                             )
                         }
                     }
                 }
-            }
 
-            GEM_PACK_PURCHASED -> {
+            GEM_PACK_PURCHASED ->
                 Toast.makeText(view.context, R.string.gem_pack_purchased, Toast.LENGTH_LONG).show()
-            }
 
             DOG_UNLOCKED -> {
                 showMostPopular(view)
                 Toast.makeText(view.context, R.string.gift_unlocked, Toast.LENGTH_LONG).show()
             }
 
-            PURCHASE_FAILED -> {
+            PURCHASE_FAILED ->
                 Toast.makeText(view.context, R.string.purchase_failed, Toast.LENGTH_LONG).show()
-            }
         }
     }
 
