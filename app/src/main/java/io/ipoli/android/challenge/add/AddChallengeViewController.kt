@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.view.*
 import com.bluelinelabs.conductor.Controller
 import com.bluelinelabs.conductor.RouterTransaction
+import com.bluelinelabs.conductor.changehandler.HorizontalChangeHandler
 import io.ipoli.android.R
 import io.ipoli.android.challenge.add.EditChallengeViewState.StateType.*
 import io.ipoli.android.common.redux.android.ReduxViewController
@@ -76,14 +77,23 @@ class AddChallengeViewController(args: Bundle? = null) :
             INITIAL -> {
                 toolbarTitle = "New Challenge"
                 colorLayout(view, state)
-                changeChildController(view, state.adapterPosition)
+                changeChildController(
+                    view = view,
+                    adapterPosition = state.adapterPosition,
+                    animate = false
+                )
             }
 
-            CHANGE_PAGE -> {
+            NEXT_PAGE -> {
                 if (state.adapterPosition == SUMMARY_INDEX) {
                     dispatch(EditChallengeAction.UpdateSummary)
                 }
-                changeChildController(view, state.adapterPosition)
+                changeChildController(view = view, adapterPosition = state.adapterPosition)
+                toolbarTitle = state.toolbarTitle
+            }
+
+            PREVIOUS_PAGE -> {
+                getChildRouter(view.pager).popCurrentController()
                 toolbarTitle = state.toolbarTitle
             }
 
@@ -97,14 +107,19 @@ class AddChallengeViewController(args: Bundle? = null) :
 
     private fun changeChildController(
         view: View,
-        adapterPosition: Int
+        adapterPosition: Int,
+        animate: Boolean = true
     ) {
         val childRouter = getChildRouter(view.pager)
-        childRouter.setRoot(
-            RouterTransaction.with(
-                createControllerForPosition(adapterPosition)
-            )
+
+        val changeHandler = if (animate) HorizontalChangeHandler() else null
+
+        val transaction = RouterTransaction.with(
+            createControllerForPosition(adapterPosition)
         )
+            .popChangeHandler(changeHandler)
+            .pushChangeHandler(changeHandler)
+        childRouter.pushController(transaction)
     }
 
     private fun createControllerForPosition(position: Int): Controller =

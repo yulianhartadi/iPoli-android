@@ -83,7 +83,7 @@ object EditChallengeReducer : BaseViewStateReducer<EditChallengeViewState>() {
 
             is EditChallengeAction.ShowNext -> {
                 subState.copy(
-                    type = CHANGE_PAGE,
+                    type = NEXT_PAGE,
                     adapterPosition = subState.adapterPosition + 1
                 )
             }
@@ -182,7 +182,7 @@ object EditChallengeReducer : BaseViewStateReducer<EditChallengeViewState>() {
 
             is EditChallengeAction.SelectDate -> {
                 subState.copy(
-                    type = CHANGE_PAGE,
+                    type = NEXT_PAGE,
                     adapterPosition = subState.adapterPosition + 1,
                     end = action.date
                 )
@@ -191,7 +191,7 @@ object EditChallengeReducer : BaseViewStateReducer<EditChallengeViewState>() {
             is QuestPickerAction.Next -> {
                 val s = state.stateFor(QuestPickerViewState::class.java)
                 subState.copy(
-                    type = CHANGE_PAGE,
+                    type = NEXT_PAGE,
                     adapterPosition = subState.adapterPosition + 1,
                     allQuests = s.allQuests.map {
                         it.baseQuest
@@ -208,7 +208,7 @@ object EditChallengeReducer : BaseViewStateReducer<EditChallengeViewState>() {
                     )
                 } else {
                     subState.copy(
-                        type = CHANGE_PAGE,
+                        type = PREVIOUS_PAGE,
                         adapterPosition = adapterPosition
                     )
                 }
@@ -307,7 +307,8 @@ data class EditChallengeViewState(
     enum class StateType {
         INITIAL,
         DATA_CHANGED,
-        CHANGE_PAGE,
+        NEXT_PAGE,
+        PREVIOUS_PAGE,
         CLOSE,
         COLOR_CHANGED,
         ICON_CHANGED,
