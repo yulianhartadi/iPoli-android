@@ -447,12 +447,12 @@
     <string name="inbox_overdue_by">Overdue by %1$d %2$s</string>
     <string name="days">Days</string>
 
-    <string name="reminder_at_start">At start</string>
-    <string name="reminder_time_format_full">%1$d hours and %2$d minutes before</string>
-    <string name="reminder_time_format_1_hour">1 hour before</string>
-    <string name="reminder_time_format_hours">%d hours before</string>
-    <string name="reminder_time_format_1_minute">1 minute before</string>
-    <string name="reminder_time_format_minutes">%d minutes before</string>
+    <string name="reminder_at_start">Remind at start</string>
+    <string name="reminder_time_format_full">Remind %1$d hours and %2$d minutes before</string>
+    <string name="reminder_time_format_1_hour">Remind 1 hour before</string>
+    <string name="reminder_time_format_hours">Remind %d hours before</string>
+    <string name="reminder_time_format_1_minute">Remind 1 minute before</string>
+    <string name="reminder_time_format_minutes">Remind %d minutes before</string>
 
     <string name="minutes">minutes</string>
     <string name="hours">hours</string>

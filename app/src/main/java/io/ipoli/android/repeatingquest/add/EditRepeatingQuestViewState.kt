@@ -345,7 +345,10 @@ object EditRepeatingQuestReducer : BaseViewStateReducer<EditRepeatingQuestViewSt
             color = Color.GREEN,
             icon = null,
             repeatPattern = null,
-            reminder = null,
+            reminder = ReminderViewModel(
+                message = "",
+                minutesFromStart = Constants.DEFAULT_RELATIVE_REMINDER_MINUTES_FROM_START
+            ),
             challenge = null,
             note = "",
             maxTagsReached = false
