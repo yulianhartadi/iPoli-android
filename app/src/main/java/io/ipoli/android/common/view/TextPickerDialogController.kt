@@ -5,25 +5,22 @@ import android.os.Bundle
 import android.support.v7.app.AlertDialog
 import android.view.LayoutInflater
 import android.view.View
-import kotlinx.android.synthetic.main.dialog_text_picker.view.*
-import kotlinx.android.synthetic.main.view_dialog_header.view.*
 import io.ipoli.android.R
 import io.ipoli.android.pet.AndroidPetAvatar
-import io.ipoli.android.pet.LoadPetIntent
-import io.ipoli.android.pet.PetDialogPresenter
+import io.ipoli.android.pet.LoadPetDialogAction
+import io.ipoli.android.pet.PetDialogReducer
 import io.ipoli.android.pet.PetDialogViewState
-import space.traversal.kapsule.required
+import kotlinx.android.synthetic.main.dialog_text_picker.view.*
+import kotlinx.android.synthetic.main.view_dialog_header.view.*
 
 /**
  * Created by Polina Zhelyazkova <polina@mypoli.fun>
  * on 12/3/17.
  */
 class TextPickerDialogController :
-    MviDialogController<PetDialogViewState, TextPickerDialogController, PetDialogPresenter, LoadPetIntent> {
+    ReduxDialogController<LoadPetDialogAction, PetDialogViewState, PetDialogReducer> {
 
-    private val presenter by required { petDialogPresenter }
-
-    override fun createPresenter() = presenter
+    override val reducer = PetDialogReducer
 
     private var listener: (String) -> Unit = {}
 
@@ -85,10 +82,7 @@ class TextPickerDialogController :
         }
     }
 
-    override fun onAttach(view: View) {
-        super.onAttach(view)
-        send(LoadPetIntent)
-    }
+    override fun onCreateLoadAction() = LoadPetDialogAction
 
     override fun render(state: PetDialogViewState, view: View) {
         if (state.type == PetDialogViewState.Type.PET_LOADED) {

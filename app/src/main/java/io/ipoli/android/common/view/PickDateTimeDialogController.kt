@@ -73,6 +73,8 @@ class PickDateTimeDialogController(args: Bundle? = null) :
         headerView.dialogHeaderTitle.setText(R.string.date_time_picker_title)
     }
 
+    override fun onCreateLoadAction() = LoadPetDialogAction
+
     override fun render(state: PetDialogViewState, view: View) {
         if (state.type == PetDialogViewState.Type.PET_LOADED) {
             changeIcon(AndroidPetAvatar.valueOf(state.petAvatar!!.name).headImage)

@@ -24,10 +24,6 @@ import com.bluelinelabs.conductor.RouterTransaction
 import com.bluelinelabs.conductor.changehandler.FadeChangeHandler
 import com.mikepenz.iconics.IconicsDrawable
 import com.mikepenz.ionicons_typeface_library.Ionicons
-import kotlinx.android.synthetic.main.controller_pet.view.*
-import kotlinx.android.synthetic.main.item_pet_food.view.*
-import kotlinx.android.synthetic.main.item_pet_item.view.*
-import kotlinx.android.synthetic.main.view_inventory_toolbar.view.*
 import io.ipoli.android.R
 import io.ipoli.android.common.ViewUtils
 import io.ipoli.android.common.mvi.MviViewController
@@ -35,6 +31,10 @@ import io.ipoli.android.common.view.*
 import io.ipoli.android.pet.PetViewState.StateType.*
 import io.ipoli.android.pet.store.PetStoreViewController
 import io.ipoli.android.player.inventory.InventoryViewController
+import kotlinx.android.synthetic.main.controller_pet.view.*
+import kotlinx.android.synthetic.main.item_pet_food.view.*
+import kotlinx.android.synthetic.main.item_pet_item.view.*
+import kotlinx.android.synthetic.main.view_inventory_toolbar.view.*
 import space.traversal.kapsule.required
 
 
@@ -201,8 +201,7 @@ class PetViewController(args: Bundle? = null) :
                     stringRes(R.string.dialog_rename_pet_title),
                     state.petName,
                     hint = stringRes(R.string.dialog_rename_pet_hint)
-                )
-                    .showDialog(router, "text-picker-tag")
+                ).show(router, "text-picker-tag")
 
             PET_RENAMED ->
                 renderPetName(view, state.petName)
