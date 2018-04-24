@@ -14,13 +14,11 @@ import com.bluelinelabs.conductor.changehandler.FadeChangeHandler
 import io.ipoli.android.R
 import io.ipoli.android.common.ViewUtils
 import io.ipoli.android.common.redux.android.ReduxViewController
-import io.ipoli.android.common.view.CurrencyConverterDialogController
-import io.ipoli.android.common.view.setToolbar
-import io.ipoli.android.common.view.showBackButton
-import io.ipoli.android.common.view.visible
+import io.ipoli.android.common.view.*
 import io.ipoli.android.pet.PetAvatar
 import io.ipoli.android.pet.store.PetStoreAction.*
 import io.ipoli.android.pet.store.PetStoreViewState.StateType.*
+import io.ipoli.android.player.inventory.InventoryViewController
 import io.ipoli.android.store.gem.GemStoreViewController
 import kotlinx.android.synthetic.main.controller_pet_store.view.*
 import kotlinx.android.synthetic.main.item_pet_store.view.*
@@ -45,9 +43,10 @@ class PetStoreViewController(args: Bundle? = null) :
         setHasOptionsMenu(true)
         val view = inflater.inflate(R.layout.controller_pet_store, container, false)
 
-        setToolbar(view.toolbar)
-
-        view.toolbarTitle.setText(R.string.pet_store)
+        setChildController(
+            view.playerGems,
+            InventoryViewController()
+        )
 
         view.petPager.clipToPadding = false
         view.petPager.pageMargin = ViewUtils.dpToPx(16f, view.context).toInt()
@@ -61,8 +60,10 @@ class PetStoreViewController(args: Bundle? = null) :
         PetStoreAction.Load
 
     override fun onAttach(view: View) {
-        showBackButton()
         super.onAttach(view)
+        setToolbar(view.toolbar)
+        showBackButton()
+        view.toolbarTitle.setText(R.string.pets)
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
