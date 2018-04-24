@@ -11,6 +11,7 @@ import android.view.inputmethod.EditorInfo
 import android.widget.TextView
 import com.bluelinelabs.conductor.Controller
 import com.bluelinelabs.conductor.RouterTransaction
+import com.bluelinelabs.conductor.changehandler.HorizontalChangeHandler
 import com.mikepenz.google_material_typeface_library.GoogleMaterial
 import com.mikepenz.iconics.IconicsDrawable
 import com.mikepenz.iconics.typeface.IIcon
@@ -97,11 +98,20 @@ class AddRepeatingQuestViewController(args: Bundle? = null) :
             EditRepeatingQuestViewState.StateType.INITIAL -> {
                 toolbarTitle = state.toolbarTitle
                 colorLayout(view, state.color)
-                changeChildController(view, state.adapterPosition)
+                changeChildController(
+                    view = view,
+                    adapterPosition = state.adapterPosition,
+                    animate = false
+                )
             }
 
-            EditRepeatingQuestViewState.StateType.CHANGE_PAGE -> {
-                changeChildController(view, state.adapterPosition)
+            EditRepeatingQuestViewState.StateType.NEXT_PAGE -> {
+                changeChildController(view = view, adapterPosition = state.adapterPosition)
+                toolbarTitle = state.toolbarTitle
+            }
+
+            EditRepeatingQuestViewState.StateType.PREVIOUS_PAGE -> {
+                getChildRouter(view.pager).popCurrentController()
                 toolbarTitle = state.toolbarTitle
             }
 
@@ -115,14 +125,19 @@ class AddRepeatingQuestViewController(args: Bundle? = null) :
 
     private fun changeChildController(
         view: View,
-        adapterPosition: Int
+        adapterPosition: Int,
+        animate: Boolean = true
     ) {
         val childRouter = getChildRouter(view.pager)
-        childRouter.setRoot(
-            RouterTransaction.with(
-                createControllerForPosition(adapterPosition)
-            )
+
+        val changeHandler = if (animate) HorizontalChangeHandler() else null
+
+        val transaction = RouterTransaction.with(
+            createControllerForPosition(adapterPosition)
         )
+            .popChangeHandler(changeHandler)
+            .pushChangeHandler(changeHandler)
+        childRouter.pushController(transaction)
     }
 
     private fun createControllerForPosition(position: Int): Controller =
@@ -228,7 +243,8 @@ class AddRepeatingQuestViewController(args: Bundle? = null) :
                 EditRepeatingQuestViewState.StateType.TAGS_CHANGED ->
                     renderTags(state, view)
 
-                else -> {}
+                else -> {
+                }
             }
         }
 
@@ -469,7 +485,7 @@ class AddRepeatingQuestViewController(args: Bundle? = null) :
             val view = container.inflate(R.layout.controller_add_repeating_quest_summary)
             view.summarySubQuestList.layoutManager = LinearLayoutManager(activity!!)
             view.summarySubQuestList.adapter =
-                    ReadOnlySubQuestAdapter(view.summarySubQuestList, useLightTheme = true)
+                ReadOnlySubQuestAdapter(view.summarySubQuestList, useLightTheme = true)
 
             newSubQuestWatcher = object : TextWatcher {
                 override fun afterTextChanged(editable: Editable) {

@@ -83,7 +83,7 @@ object EditRepeatingQuestReducer : BaseViewStateReducer<EditRepeatingQuestViewSt
 
                 if (errors.isEmpty()) {
                     subState.copy(
-                        type = CHANGE_PAGE,
+                        type = NEXT_PAGE,
                         name = action.name,
                         adapterPosition = subState.adapterPosition + 1
                     )
@@ -134,7 +134,7 @@ object EditRepeatingQuestReducer : BaseViewStateReducer<EditRepeatingQuestViewSt
                     )
                 else
                     subState.copy(
-                        type = CHANGE_PAGE,
+                        type = NEXT_PAGE,
                         duration = createDurationFromOption(action.durationOption),
                         adapterPosition = subState.adapterPosition + 1
                     )
@@ -146,14 +146,14 @@ object EditRepeatingQuestReducer : BaseViewStateReducer<EditRepeatingQuestViewSt
                     )
                 else
                     subState.copy(
-                        type = CHANGE_PAGE,
+                        type = NEXT_PAGE,
                         repeatPattern = createRepeatingPatternFromOption(action.repeatPatternOption),
                         adapterPosition = subState.adapterPosition + 1
                     )
 
             is EditRepeatingQuestAction.RepeatPatternPicked ->
                 subState.copy(
-                    type = CHANGE_PAGE,
+                    type = NEXT_PAGE,
                     repeatPattern = action.repeatPattern,
                     adapterPosition = subState.adapterPosition + 1
                 )
@@ -166,7 +166,7 @@ object EditRepeatingQuestReducer : BaseViewStateReducer<EditRepeatingQuestViewSt
                     )
                 } else {
                     subState.copy(
-                        type = CHANGE_PAGE,
+                        type = PREVIOUS_PAGE,
                         adapterPosition = adapterPosition
                     )
                 }
@@ -385,7 +385,8 @@ data class EditRepeatingQuestViewState(
         VALIDATION_ERROR_EMPTY_NAME,
         TAGS_CHANGED,
         SHOW_REPEATING_PATTERN_PICKER,
-        CHANGE_PAGE,
+        NEXT_PAGE,
+        PREVIOUS_PAGE,
         SUB_QUEST_ADDED,
         CLOSE,
         REPEAT_PATTERN_CHANGED,
