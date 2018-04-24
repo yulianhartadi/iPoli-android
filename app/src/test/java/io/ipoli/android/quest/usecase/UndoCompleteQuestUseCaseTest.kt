@@ -3,11 +3,9 @@ package io.ipoli.android.quest.usecase
 import com.nhaarman.mockito_kotlin.any
 import com.nhaarman.mockito_kotlin.doReturn
 import com.nhaarman.mockito_kotlin.mock
-import io.ipoli.android.common.datetime.Time
 import io.ipoli.android.player.usecase.RemoveRewardFromPlayerUseCase
 import io.ipoli.android.quest.Color
 import io.ipoli.android.quest.Quest
-import io.ipoli.android.quest.Reminder
 import io.ipoli.android.quest.data.persistence.QuestRepository
 import io.ipoli.android.quest.job.ReminderScheduler
 import org.amshove.kluent.*
@@ -31,7 +29,7 @@ class UndoCompleteQuestUseCaseSpek : Spek({
             color = Color.BLUE,
             scheduledDate = LocalDate.now(),
             duration = 30,
-            reminders = listOf(Reminder("", Time.now(), LocalDate.now())),
+            reminders = listOf(),
             experience = 20,
             coins = 10,
             bounty = Quest.Bounty.None
@@ -50,7 +48,7 @@ class UndoCompleteQuestUseCaseSpek : Spek({
         )
 
         beforeEachTest {
-            questRepo = mock<QuestRepository> {
+            questRepo = mock {
 
                 on { findById(any()) } doReturn
                     quest
@@ -58,7 +56,7 @@ class UndoCompleteQuestUseCaseSpek : Spek({
                 on { findNextReminderTime(any()) } doReturn LocalDateTime.now()
             }
 
-            reminderScheduler = mock<ReminderScheduler>()
+            reminderScheduler = mock()
 
             useCase = UndoCompletedQuestUseCase(
                 questRepo,
