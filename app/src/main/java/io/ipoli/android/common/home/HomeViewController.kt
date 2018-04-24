@@ -105,8 +105,6 @@ class HomeViewController(args: Bundle? = null) :
 
         contentView.drawerLayout.addDrawerListener(actionBarDrawerToggle)
 
-        PickDateTimeDialogController().show(router)
-
         return contentView
     }
 
@@ -298,7 +296,7 @@ class HomeViewController(args: Bundle? = null) :
         val item = view.navigationView.menu.findItem(R.id.bucketList)
 
         item.actionView =
-            LayoutInflater.from(view.context).inflate(R.layout.menu_item_tag_view, null)
+                LayoutInflater.from(view.context).inflate(R.layout.menu_item_tag_view, null)
         item.actionView.questCount.text = bucketListQuestCount.toString()
     }
 
@@ -395,7 +393,7 @@ class HomeViewController(args: Bundle? = null) :
             name
         )
         item.actionView =
-            LayoutInflater.from(view.context).inflate(R.layout.menu_item_tag_view, null)
+                LayoutInflater.from(view.context).inflate(R.layout.menu_item_tag_view, null)
         item.actionView.questCount.text = questCount.toString()
 
         item.icon = IconicsDrawable(activity!!)
