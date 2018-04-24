@@ -14,8 +14,8 @@ import io.ipoli.android.common.mvi.ViewState
 import io.ipoli.android.common.redux.Action
 import io.ipoli.android.quest.Color
 import io.ipoli.android.quest.Icon
+import io.ipoli.android.quest.Reminder
 import io.ipoli.android.quest.reminder.picker.ReminderViewModel
-import io.ipoli.android.quest.toMinutesFromStart
 import io.ipoli.android.repeatingquest.add.EditRepeatingQuestViewState.DurationOption.*
 import io.ipoli.android.repeatingquest.add.EditRepeatingQuestViewState.RepeatPatternOption.*
 import io.ipoli.android.repeatingquest.add.EditRepeatingQuestViewState.RepeatPatternOption.MORE_OPTIONS
@@ -192,10 +192,12 @@ object EditRepeatingQuestReducer : BaseViewStateReducer<EditRepeatingQuestViewSt
                     repeatPattern = rq.repeatPattern,
                     duration = rq.duration.minutes,
                     reminder = rq.reminders.firstOrNull()?.let {
-                        ReminderViewModel(
-                            it.message,
-                            it.toMinutesFromStart(it.remindTime).toLong()
-                        )
+                        if (it is Reminder.Relative) {
+                            ReminderViewModel(
+                                it.message,
+                                it.minutesFromStart.toLong()
+                            )
+                        } else null
                     },
                     icon = rq.icon,
                     color = rq.color,

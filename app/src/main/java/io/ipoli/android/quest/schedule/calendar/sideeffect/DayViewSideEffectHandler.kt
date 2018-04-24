@@ -1,5 +1,6 @@
 package io.ipoli.android.quest.schedule.calendar.sideeffect
 
+import io.ipoli.android.Constants
 import io.ipoli.android.common.*
 import io.ipoli.android.common.async.ChannelRelay
 import io.ipoli.android.common.redux.Action
@@ -135,16 +136,14 @@ class DayViewSideEffectHandler : AppSideEffectHandler() {
         )
 
         val scheduledDate = dayViewState.scheduledDate ?: dayViewState.currentDate
-        val reminder = if (dayViewState.startTime != null && dayViewState.reminder != null) {
-            Reminder.create(
-                dayViewState.reminder,
-                scheduledDate,
-                dayViewState.startTime
+        val r = dayViewState.reminder
+        val reminder = when {
+            dayViewState.editId.isEmpty() -> Reminder.Relative(
+                "",
+                Constants.DEFAULT_RELATIVE_REMINDER_MINUTES_FROM_START
             )
-        } else if (dayViewState.editId.isEmpty()) {
-            Reminder("", dayViewState.startTime!!, scheduledDate)
-        } else {
-            null
+            r != null -> Reminder.Relative(r.message, r.minutesFromStart)
+            else -> null
         }
 
         val questParams = SaveQuestUseCase.Parameters(

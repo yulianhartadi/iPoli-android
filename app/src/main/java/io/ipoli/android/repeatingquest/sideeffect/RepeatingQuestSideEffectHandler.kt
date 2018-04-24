@@ -6,7 +6,6 @@ import io.ipoli.android.common.DataLoadedAction
 import io.ipoli.android.common.datetime.DateUtils
 import io.ipoli.android.common.redux.Action
 import io.ipoli.android.quest.Reminder
-import io.ipoli.android.quest.reminder.picker.ReminderViewModel
 import io.ipoli.android.repeatingquest.add.EditRepeatingQuestAction
 import io.ipoli.android.repeatingquest.add.EditRepeatingQuestViewState
 import io.ipoli.android.repeatingquest.show.RepeatingQuestAction
@@ -49,11 +48,9 @@ class RepeatingQuestSideEffectHandler : AppSideEffectHandler() {
 
             EditRepeatingQuestAction.Save -> {
                 val rqState = state.stateFor(EditRepeatingQuestViewState::class.java)
-                val r: ReminderViewModel? = rqState.reminder
-                val reminder = if (rqState.startTime == null || r == null) {
-                    null
-                } else {
-                    Reminder(r.message, rqState.startTime.minus(r.minutesFromStart.toInt()), null)
+                val r = rqState.reminder
+                val reminder = r?.let {
+                    Reminder.Relative(it.message, it.minutesFromStart)
                 }
                 val rqParams = SaveRepeatingQuestUseCase.Params(
                     id = rqState.id,

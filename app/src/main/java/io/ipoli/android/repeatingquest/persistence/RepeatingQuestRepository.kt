@@ -71,10 +71,10 @@ data class DbRepeatPattern(val map: MutableMap<String, Any?> = mutableMapOf()) {
     var timesPerMonth: Int by map
     var preferredDays: List<String> by map
     var scheduledPeriods: MutableMap<String, List<Long>> by map
-}
 
-enum class DbRepeatPatternType {
-    DAILY, WEEKLY, MONTHLY, YEARLY, FLEXIBLE_WEEKLY, FLEXIBLE_MONTHLY
+    enum class Type {
+        DAILY, WEEKLY, MONTHLY, YEARLY, FLEXIBLE_WEEKLY, FLEXIBLE_MONTHLY
+    }
 }
 
 class FirestoreRepeatingQuestRepository(
@@ -158,7 +158,15 @@ class FirestoreRepeatingQuestRepository(
             preferredStartTime = TimePreference.valueOf(rq.preferredStartTime),
             reminders = rq.reminders.map {
                 val cr = DbReminder(it)
-                Reminder(cr.message, Time.of(cr.minute), cr.date?.startOfDayUTC)
+                val type = DbReminder.Type.valueOf(cr.type)
+                when (type) {
+                    DbReminder.Type.RELATIVE ->
+                        Reminder.Relative(cr.message, cr.minutesFromStart!!)
+
+                    DbReminder.Type.FIXED ->
+                        Reminder.Fixed(cr.message, cr.date!!.startOfDayUTC, Time.of(cr.minute!!))
+                }
+
             },
             repeatPattern = createRepeatPattern(DbRepeatPattern(rq.repeatPattern)),
             subQuests = rq.subQuests.map {
@@ -177,23 +185,23 @@ class FirestoreRepeatingQuestRepository(
     }
 
     private fun createRepeatPattern(rp: DbRepeatPattern): RepeatPattern {
-        val type = DbRepeatPatternType.valueOf(rp.type)
+        val type = DbRepeatPattern.Type.valueOf(rp.type)
 
         return when (type) {
-            DbRepeatPatternType.DAILY -> {
+            DbRepeatPattern.Type.DAILY -> {
                 RepeatPattern.Daily(
                     startDate = rp.startDate.startOfDayUTC,
                     endDate = rp.endDate?.startOfDayUTC
                 )
             }
-            DbRepeatPatternType.WEEKLY -> {
+            DbRepeatPattern.Type.WEEKLY -> {
                 RepeatPattern.Weekly(
                     daysOfWeek = rp.daysOfWeek.map { DayOfWeek.valueOf(it) }.toSet(),
                     startDate = rp.startDate.startOfDayUTC,
                     endDate = rp.endDate?.startOfDayUTC
                 )
             }
-            DbRepeatPatternType.MONTHLY -> {
+            DbRepeatPattern.Type.MONTHLY -> {
                 RepeatPattern.Monthly(
                     daysOfMonth = rp.daysOfMonth.toSet(),
                     startDate = rp.startDate.startOfDayUTC,
@@ -201,7 +209,7 @@ class FirestoreRepeatingQuestRepository(
                 )
             }
 
-            DbRepeatPatternType.YEARLY -> {
+            DbRepeatPattern.Type.YEARLY -> {
                 RepeatPattern.Yearly(
                     dayOfMonth = rp.dayOfMonth,
                     month = Month.valueOf(rp.month),
@@ -210,7 +218,7 @@ class FirestoreRepeatingQuestRepository(
                 )
             }
 
-            DbRepeatPatternType.FLEXIBLE_WEEKLY -> {
+            DbRepeatPattern.Type.FLEXIBLE_WEEKLY -> {
                 RepeatPattern.Flexible.Weekly(
                     timesPerWeek = rp.timesPerWeek,
                     preferredDays = rp.preferredDays.map { DayOfWeek.valueOf(it) }.toSet(),
@@ -221,7 +229,7 @@ class FirestoreRepeatingQuestRepository(
                 )
             }
 
-            DbRepeatPatternType.FLEXIBLE_MONTHLY -> {
+            DbRepeatPattern.Type.FLEXIBLE_MONTHLY -> {
                 RepeatPattern.Flexible.Monthly(
                     timesPerMonth = rp.timesPerMonth,
                     preferredDays = rp.preferredDays.map { it.toInt() }.toSet(),
@@ -270,25 +278,25 @@ class FirestoreRepeatingQuestRepository(
 
         when (repeatPattern) {
             is RepeatPattern.Daily -> {
-                rp.type = DbRepeatPatternType.DAILY.name
+                rp.type = DbRepeatPattern.Type.DAILY.name
             }
             is RepeatPattern.Weekly -> {
-                rp.type = DbRepeatPatternType.WEEKLY.name
+                rp.type = DbRepeatPattern.Type.WEEKLY.name
                 rp.daysOfWeek = repeatPattern.daysOfWeek.map {
                     it.name
                 }
             }
             is RepeatPattern.Monthly -> {
-                rp.type = DbRepeatPatternType.MONTHLY.name
+                rp.type = DbRepeatPattern.Type.MONTHLY.name
                 rp.daysOfMonth = repeatPattern.daysOfMonth.map { it }
             }
             is RepeatPattern.Yearly -> {
-                rp.type = DbRepeatPatternType.YEARLY.name
+                rp.type = DbRepeatPattern.Type.YEARLY.name
                 rp.dayOfMonth = repeatPattern.dayOfMonth
                 rp.month = repeatPattern.month.name
             }
             is RepeatPattern.Flexible.Weekly -> {
-                rp.type = DbRepeatPatternType.FLEXIBLE_WEEKLY.name
+                rp.type = DbRepeatPattern.Type.FLEXIBLE_WEEKLY.name
                 rp.timesPerWeek = repeatPattern.timesPerWeek
                 rp.preferredDays = repeatPattern.preferredDays.map {
                     it.name
@@ -298,7 +306,7 @@ class FirestoreRepeatingQuestRepository(
                     .toMutableMap()
             }
             is RepeatPattern.Flexible.Monthly -> {
-                rp.type = DbRepeatPatternType.FLEXIBLE_MONTHLY.name
+                rp.type = DbRepeatPattern.Type.FLEXIBLE_MONTHLY.name
                 rp.timesPerMonth = repeatPattern.timesPerMonth
                 rp.preferredDays = repeatPattern.preferredDays.map { it.toString() }
 
@@ -313,8 +321,19 @@ class FirestoreRepeatingQuestRepository(
     private fun createDbReminder(reminder: Reminder): DbReminder {
         val cr = DbReminder()
         cr.message = reminder.message
-        cr.date = reminder.remindDate?.startOfDayUTC()
-        cr.minute = reminder.remindTime.toMinuteOfDay()
+        when (reminder) {
+
+            is Reminder.Fixed -> {
+                cr.type = DbReminder.Type.FIXED.name
+                cr.date = reminder.date.startOfDayUTC()
+                cr.minute = reminder.time.toMinuteOfDay()
+            }
+
+            is Reminder.Relative -> {
+                cr.type = DbReminder.Type.RELATIVE.name
+                cr.minutesFromStart = reminder.minutesFromStart
+            }
+        }
         return cr
     }
 }

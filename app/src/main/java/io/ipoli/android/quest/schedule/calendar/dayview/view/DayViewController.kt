@@ -32,6 +32,7 @@ import io.ipoli.android.common.redux.android.ReduxViewController
 import io.ipoli.android.common.view.*
 import io.ipoli.android.quest.CompletedQuestViewController
 import io.ipoli.android.quest.Icon
+import io.ipoli.android.quest.Reminder
 import io.ipoli.android.quest.edit.EditQuestViewController
 import io.ipoli.android.quest.reminder.picker.ReminderPickerDialogController
 import io.ipoli.android.quest.reminder.picker.ReminderViewModel
@@ -39,7 +40,6 @@ import io.ipoli.android.quest.schedule.calendar.CalendarViewController
 import io.ipoli.android.quest.schedule.calendar.dayview.view.DayViewState.StateType.*
 import io.ipoli.android.quest.schedule.calendar.dayview.view.widget.*
 import io.ipoli.android.quest.show.QuestViewController
-import io.ipoli.android.quest.toMinutesFromStart
 import kotlinx.android.synthetic.main.calendar_hour_cell.view.*
 import kotlinx.android.synthetic.main.controller_day_view.view.*
 import kotlinx.android.synthetic.main.item_calendar_drag.view.*
@@ -962,10 +962,13 @@ class DayViewController :
                 val color = q.color.androidColor
 
                 val reminder = q.reminders.firstOrNull()?.let {
-                    ReminderViewModel(
-                        it.message,
-                        it.toMinutesFromStart(q.scheduledDate!!, q.startTime!!)
-                    )
+                    if (it is Reminder.Relative)
+                        ReminderViewModel(
+                            it.message,
+                            it.minutesFromStart
+                        )
+                    else
+                        null
                 }
 
                 DayViewController.ScheduledEventViewModel.Quest(

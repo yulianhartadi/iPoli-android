@@ -12,10 +12,10 @@ import io.ipoli.android.common.redux.Action
 import io.ipoli.android.quest.Color
 import io.ipoli.android.quest.Icon
 import io.ipoli.android.quest.Quest
+import io.ipoli.android.quest.Reminder
 import io.ipoli.android.quest.edit.EditQuestViewState.StateType.*
 import io.ipoli.android.quest.reminder.picker.ReminderViewModel
 import io.ipoli.android.quest.subquest.SubQuest
-import io.ipoli.android.quest.toMinutesFromStart
 import io.ipoli.android.tag.Tag
 import org.threeten.bp.LocalDate
 import java.util.*
@@ -80,14 +80,10 @@ object EditQuestReducer : BaseViewStateReducer<EditQuestViewState>() {
             val quest = action.quest
             val params = action.params
             val reminderViewModel = quest.reminders.firstOrNull()?.let {
-                if (quest.startTime == null) {
+                if (it is Reminder.Relative)
+                    ReminderViewModel(it.message, it.minutesFromStart)
+                else
                     null
-                } else {
-                    ReminderViewModel(
-                        it.message,
-                        it.toMinutesFromStart(quest.startTime).toLong()
-                    )
-                }
             }
             val challenge = if (quest.isFromChallenge) {
                 state.dataState.challenges.first { it.id == quest.challengeId }

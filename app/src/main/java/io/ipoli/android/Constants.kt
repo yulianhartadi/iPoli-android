@@ -221,6 +221,8 @@ interface Constants {
         const val MAX_FREE_TAGS = 5
         const val MAX_TAGS_PER_ITEM = 3
 
+        const val DEFAULT_RELATIVE_REMINDER_MINUTES_FROM_START = 0L
+
         val LEVEL_UP_REWARDS = listOf<String>(
             "https://media2.giphy.com/media/l0MYt5jPR6QX5pnqM/giphy.gif",
             "https://i.imgur.com/vlU5ROS.jpg",

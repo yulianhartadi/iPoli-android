@@ -77,7 +77,7 @@ class SaveQuestsForRepeatingQuestUseCase(
                 periods.forEach {
                     if (!scheduledPeriods.containsKey(it.start)) {
                         scheduledPeriods[it.start] =
-                            generateWeeklyFlexibleDates(rq.repeatPattern, it)
+                                generateWeeklyFlexibleDates(rq.repeatPattern, it)
                     }
                 }
                 val pattern = rq.repeatPattern.copy(
@@ -103,7 +103,7 @@ class SaveQuestsForRepeatingQuestUseCase(
                 periods.forEach {
                     if (!scheduledPeriods.containsKey(it.start)) {
                         scheduledPeriods[it.start] =
-                            generateMonthlyFlexibleDates(rq.repeatPattern, it)
+                                generateMonthlyFlexibleDates(rq.repeatPattern, it)
                     }
                 }
 
@@ -260,9 +260,7 @@ class SaveQuestsForRepeatingQuestUseCase(
             priority = rq.priority,
             preferredStartTime = rq.preferredStartTime,
             scheduledDate = scheduleDate,
-            reminders = rq.reminders.map {
-                it.copy(remindDate = scheduleDate)
-            },
+            reminders = rq.reminders,
             repeatingQuestId = rq.id,
             challengeId = rq.challengeId,
             note = rq.note,

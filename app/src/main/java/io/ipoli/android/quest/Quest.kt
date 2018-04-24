@@ -2,7 +2,6 @@ package io.ipoli.android.quest
 
 import io.ipoli.android.common.datetime.*
 import io.ipoli.android.common.sumByLong
-import io.ipoli.android.quest.reminder.picker.ReminderViewModel
 import io.ipoli.android.quest.subquest.SubQuest
 import io.ipoli.android.repeatingquest.entity.PeriodProgress
 import io.ipoli.android.repeatingquest.entity.RepeatPattern
@@ -11,7 +10,6 @@ import org.threeten.bp.Instant
 import org.threeten.bp.LocalDate
 import org.threeten.bp.LocalDateTime
 import org.threeten.bp.LocalTime
-import org.threeten.bp.temporal.ChronoUnit
 
 /**
  * Created by Venelin Valkov <venelin@mypoli.fun>
@@ -24,49 +22,13 @@ interface Entity {
     val updatedAt: Instant
 }
 
-data class Reminder(
-    val message: String,
-    val remindTime: Time,
-    val remindDate: LocalDate?
-) {
-    fun toMillis() =
-        LocalDateTime.of(
-            remindDate,
-            LocalTime.of(remindTime.hours, remindTime.getMinutes())
-        ).toMillis()
+sealed class Reminder(open val message: String) {
+    data class Fixed(override val message: String, val date: LocalDate, val time: Time) :
+        Reminder(message)
 
-    companion object {
-        fun create(
-            reminder: ReminderViewModel?,
-            scheduledDate: LocalDate,
-            startTime: Time
-        ): Reminder? {
-            return reminder?.let {
-                val questDateTime =
-                    LocalDateTime.of(
-                        scheduledDate,
-                        LocalTime.of(startTime.hours, startTime.getMinutes())
-                    )
-                val reminderDateTime = questDateTime.minusMinutes(it.minutesFromStart)
-                val toLocalTime = reminderDateTime.toLocalTime()
-                Reminder(
-                    it.message,
-                    Time.at(toLocalTime.hour, toLocalTime.minute),
-                    reminderDateTime.toLocalDate()
-                )
-            }
-        }
-    }
+    data class Relative(override val message: String, val minutesFromStart: Long) :
+        Reminder(message)
 }
-
-fun Reminder.toMinutesFromStart(startDate: LocalDate, startTime: Time): Long {
-    val daysDiff = ChronoUnit.DAYS.between(startDate, remindDate)
-    val minutesDiff = startTime.toMinuteOfDay() - remindTime.toMinuteOfDay()
-    return minutesDiff + Time.MINUTES_IN_A_DAY * daysDiff
-}
-
-fun Reminder.toMinutesFromStart(startTime: Time) =
-    startTime.toMinuteOfDay() - remindTime.toMinuteOfDay()
 
 enum class ColorPack(val gemPrice: Int) {
     FREE(0),
@@ -188,58 +150,49 @@ data class Quest(
     }
 
     val isCompleted = completedAtDate != null
-    val endTime: Time?
-        get() = startTime?.plus(duration)
-    val isScheduled = startTime != null
+    val endTime = startTime?.plus(duration)
+    val isScheduled = startTime != null && scheduledDate != null
 
-    val actualStart: Instant?
+    val actualStart = if (hasTimer) timeRanges.first().start else null
+
+    val actualStartTime =
+        if (isCompleted) {
+            val localCompletedAt = LocalDateTime.of(
+                completedAtDate,
+                LocalTime.of(completedAtTime!!.hours, completedAtTime.getMinutes())
+            )
+            val result = localCompletedAt.minusSeconds(actualDuration.longValue)
+            Time.at(result.hour, result.minute)
+        } else {
+            startTime
+        }
+
+    val actualDuration
         get() =
-            if (hasTimer) timeRanges.first().start else null
-
-    val actualStartTime: Time?
-        get() {
-            if (isCompleted) {
-                val localCompletedAt = LocalDateTime.of(
-                    completedAtDate,
-                    LocalTime.of(completedAtTime!!.hours, completedAtTime.getMinutes())
-                )
-                val result = localCompletedAt.minusSeconds(actualDuration.longValue)
-                return Time.at(result.hour, result.minute)
-            }
-            return startTime
-        }
-
-    val actualDuration: Duration<Second>
-        get() {
-
-            if (hasCountDownTimer) {
-                val timeRange = timeRanges.first()
-                return if (isCompleted) {
-                    timeRange.actualDuration()
-                } else {
-                    (Instant.now() - timeRange.start!!).milliseconds.asSeconds
+            when {
+                hasCountDownTimer -> {
+                    val timeRange = timeRanges.first()
+                    if (isCompleted) {
+                        timeRange.actualDuration()
+                    } else {
+                        (Instant.now() - timeRange.start!!).milliseconds.asSeconds
+                    }
                 }
+                hasPomodoroTimer -> timeRanges.sumByLong { it.actualDuration().longValue }.seconds
+                else -> duration.minutes.asSeconds
             }
 
-            if (hasPomodoroTimer) {
-                return timeRanges.sumByLong { it.actualDuration().longValue }.seconds
-            }
-            return duration.minutes.asSeconds
-        }
-
-    val hasTimer: Boolean
+    val hasTimer
         get() = hasCountDownTimer || hasPomodoroTimer
 
-    val hasCountDownTimer: Boolean
-        get() = timeRanges.firstOrNull()?.type == TimeRange.Type.COUNTDOWN
+    val hasCountDownTimer = timeRanges.firstOrNull()?.type == TimeRange.Type.COUNTDOWN
 
-    val hasPomodoroTimer: Boolean
-        get() = timeRanges.firstOrNull()?.type == TimeRange.Type.POMODORO_WORK
+    val hasPomodoroTimer = timeRanges.firstOrNull()?.type == TimeRange.Type.POMODORO_WORK
 
-    val isStarted: Boolean
-        get() = !isCompleted &&
-            (hasCountDownTimer ||
-                (hasPomodoroTimer && timeRanges.last().end == null))
+    val isStarted =
+        !isCompleted &&
+                (hasCountDownTimer ||
+                        (hasPomodoroTimer && timeRanges.last().end == null))
 
     fun hasCompletedAllTimeRanges() = timeRanges.sumBy { it.duration } >= duration
 

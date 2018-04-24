@@ -41,9 +41,6 @@ class EditQuestSideEffectHandler : AppSideEffectHandler() {
             is AddQuestAction.Save -> {
                 val addQuestState = state.stateFor(AddQuestViewState::class.java)
                 val scheduledDate = addQuestState.date
-                val reminder = addQuestState.time?.let {
-                    Reminder("", it, scheduledDate)
-                }
                 val questParams = SaveQuestUseCase.Parameters(
                     name = action.name,
                     tags = emptyList(),
@@ -53,7 +50,12 @@ class EditQuestSideEffectHandler : AppSideEffectHandler() {
                     scheduledDate = scheduledDate,
                     startTime = addQuestState.time,
                     duration = addQuestState.duration ?: Constants.DEFAULT_QUEST_DURATION,
-                    reminders = reminder?.let { listOf(it) }
+                    reminders = listOf(
+                        Reminder.Relative(
+                            "",
+                            Constants.DEFAULT_RELATIVE_REMINDER_MINUTES_FROM_START
+                        )
+                    )
                 )
 
                 val result = saveQuestUseCase.execute(questParams)
@@ -69,11 +71,8 @@ class EditQuestSideEffectHandler : AppSideEffectHandler() {
             is EditQuestAction.Save -> {
                 val s = state.stateFor(EditQuestViewState::class.java)
 
-                val reminder = s.startTime?.let {
-                    s.scheduleDate?.let {
-                        Reminder.create(s.reminder, s.scheduleDate, s.startTime)
-                    }
-
+                val reminder = s.reminder?.let {
+                    Reminder.Relative(it.message, it.minutesFromStart)
                 }
 
                 val subQuests = action.newSubQuestNames.entries.map {

@@ -11,8 +11,7 @@ import org.threeten.bp.LocalDateTime
  */
 class FindQuestsToRemindUseCase(private val questRepository: QuestRepository) :
     UseCase<LocalDateTime, List<Quest>> {
-    override fun execute(parameters: LocalDateTime): List<Quest> {
-        return questRepository.findQuestsToRemind(parameters)
-    }
 
+    override fun execute(parameters: LocalDateTime) =
+        questRepository.findQuestsToRemind(parameters)
 }

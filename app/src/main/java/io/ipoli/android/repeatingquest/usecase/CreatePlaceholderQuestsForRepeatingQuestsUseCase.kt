@@ -106,9 +106,7 @@ class CreatePlaceholderQuestsForRepeatingQuestsUseCase(
             startTime = rq.startTime,
             duration = rq.duration,
             scheduledDate = scheduleDate,
-            reminders = rq.reminders.map {
-                it.copy(remindDate = scheduleDate)
-            },
+            reminders = rq.reminders,
             repeatingQuestId = rq.id,
             note = rq.note
         )
