@@ -18,7 +18,7 @@ import kotlinx.android.synthetic.main.view_dialog_header.view.*
  * Created by Venelin Valkov <venelin@mypoli.fun>
  * on 9/2/17.
  */
-class PickDurationDialogController :
+class DurationPickerDialogController :
     ReduxDialogController<LoadPetDialogAction, PetDialogViewState, PetDialogReducer> {
 
     override val reducer = PetDialogReducer

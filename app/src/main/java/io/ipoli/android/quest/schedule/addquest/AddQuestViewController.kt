@@ -214,7 +214,7 @@ class AddQuestViewController(args: Bundle? = null) :
     private fun renderDuration(state: AddQuestViewState, view: View) {
         setIcon(GoogleMaterial.Icon.gmd_timer, view.duration, state.duration != null)
         view.duration.setOnClickListener {
-            PickDurationDialogController(
+            DurationPickerDialogController(
                 state.duration,
                 { dispatch(AddQuestAction.DurationPicked(it)) }
             ).show(router, "pick_duration_tag")

@@ -15,7 +15,7 @@ import kotlinx.android.synthetic.main.dialog_date_time_picker.view.*
 import kotlinx.android.synthetic.main.view_dialog_header.view.*
 import org.threeten.bp.LocalDate
 
-class PickDateTimeDialogController(args: Bundle? = null) :
+class DateTimePickerDialogController(args: Bundle? = null) :
     ReduxDialogController<LoadPetDialogAction, PetDialogViewState, PetDialogReducer>(args) {
 
     private var listener: (LocalDate?, Time?) -> Unit = { _, _ -> }

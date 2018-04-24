@@ -337,7 +337,7 @@ class EditQuestViewController(args: Bundle? = null) :
     ) {
         view.questDuration.text = state.durationText
         view.questDuration.setOnClickListener {
-            PickDurationDialogController(
+            DurationPickerDialogController(
                 state.duration,
                 { dispatch(EditQuestAction.ChangeDuration(it)) }
             ).show(router, "pick_duration_tag")

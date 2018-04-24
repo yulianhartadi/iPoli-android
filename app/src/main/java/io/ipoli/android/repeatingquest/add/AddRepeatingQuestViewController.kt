@@ -417,7 +417,7 @@ class AddRepeatingQuestViewController(args: Bundle? = null) :
         override fun render(state: EditRepeatingQuestViewState, view: View) {
             when (state.type) {
                 EditRepeatingQuestViewState.StateType.SHOW_DURATION_PICKER -> {
-                    PickDurationDialogController(
+                    DurationPickerDialogController(
                         state.duration.intValue,
                         { dispatch(EditRepeatingQuestAction.DurationPicked(it)) }
                     ).show(router, "pick_duration_tag")
@@ -690,7 +690,7 @@ class AddRepeatingQuestViewController(args: Bundle? = null) :
 
             view.summaryDuration.text = state.durationText
             view.summaryDuration.setOnClickListener {
-                PickDurationDialogController(
+                DurationPickerDialogController(
                     state.duration.intValue,
                     { dispatch(EditRepeatingQuestAction.DurationPicked(it)) }
                 ).show(router, "pick_duration_tag")

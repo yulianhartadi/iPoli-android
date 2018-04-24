@@ -292,7 +292,7 @@ class EditRepeatingQuestViewController(args: Bundle? = null) :
 
         view.summaryDuration.text = state.durationText
         view.summaryDuration.setOnClickListener {
-            PickDurationDialogController(
+            DurationPickerDialogController(
                 state.duration.intValue,
                 { dispatch(EditRepeatingQuestAction.DurationPicked(it)) }
             ).show(router, "pick_duration_tag")
