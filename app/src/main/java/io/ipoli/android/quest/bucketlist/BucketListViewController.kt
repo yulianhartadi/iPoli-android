@@ -16,6 +16,7 @@ import com.mikepenz.iconics.IconicsDrawable
 import com.mikepenz.iconics.typeface.IIcon
 import com.mikepenz.ionicons_typeface_library.Ionicons
 import io.ipoli.android.R
+import io.ipoli.android.common.ViewUtils
 import io.ipoli.android.common.datetime.daysUntil
 import io.ipoli.android.common.redux.android.ReduxViewController
 import io.ipoli.android.common.text.DateFormatter
@@ -25,6 +26,7 @@ import io.ipoli.android.common.view.recyclerview.SwipeToCompleteCallback
 import io.ipoli.android.quest.CompletedQuestViewController
 import io.ipoli.android.quest.Quest
 import io.ipoli.android.quest.bucketlist.usecase.CreateBucketListItemsUseCase
+import io.ipoli.android.quest.schedule.addquest.AddQuestAnimationHelper
 import io.ipoli.android.quest.show.QuestViewController
 import kotlinx.android.synthetic.main.animation_empty_list.view.*
 import kotlinx.android.synthetic.main.controller_bucket_list.view.*
@@ -36,6 +38,8 @@ class BucketListViewController(args: Bundle? = null) :
     ReduxViewController<BucketListAction, BucketListViewState, BucketListReducer>(args) {
 
     override val reducer = BucketListReducer
+
+    private lateinit var addQuestAnimationHelper: AddQuestAnimationHelper
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -90,8 +94,32 @@ class BucketListViewController(args: Bundle? = null) :
 
         initEmptyView(view)
 
+        initAddQuest(view)
+
         return view
     }
+
+    private fun initAddQuest(view: View) {
+        addQuestAnimationHelper = AddQuestAnimationHelper(
+            controller = this,
+            addContainer = view.addContainer,
+            fab = view.addQuest,
+            background = view.addContainerBackground
+        )
+
+        view.addContainerBackground.setOnClickListener {
+            addContainerRouter(view).popCurrentController()
+            ViewUtils.hideKeyboard(view)
+            addQuestAnimationHelper.closeAddContainer()
+        }
+
+        view.addQuest.setOnClickListener {
+            addQuestAnimationHelper.openAddContainer(null)
+        }
+    }
+
+    private fun addContainerRouter(view: View) =
+        getChildRouter(view.addContainer, "add-quest")
 
     private fun initEmptyView(view: View) {
         view.emptyAnimation.setAnimation("empty_bucket_list.json")

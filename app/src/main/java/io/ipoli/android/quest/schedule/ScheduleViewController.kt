@@ -1,34 +1,24 @@
 package io.ipoli.android.quest.schedule
 
-import android.animation.Animator
-import android.animation.AnimatorListenerAdapter
-import android.animation.AnimatorSet
-import android.animation.ObjectAnimator
-import android.content.res.ColorStateList
 import android.os.Bundle
-import android.support.design.widget.FloatingActionButton
 import android.view.*
-import android.view.animation.AccelerateDecelerateInterpolator
 import com.bluelinelabs.conductor.RouterTransaction
 import com.bluelinelabs.conductor.changehandler.FadeChangeHandler
 import com.mikepenz.entypo_typeface_library.Entypo
 import com.mikepenz.google_material_typeface_library.GoogleMaterial
 import com.mikepenz.iconics.IconicsDrawable
 import com.mikepenz.iconics.typeface.IIcon
-import kotlinx.android.synthetic.main.controller_schedule.view.*
-import kotlinx.android.synthetic.main.view_calendar_toolbar.view.*
 import io.ipoli.android.R
 import io.ipoli.android.common.ViewUtils
-import io.ipoli.android.common.home.HomeViewController
 import io.ipoli.android.common.redux.android.ReduxViewController
 import io.ipoli.android.common.view.*
-import io.ipoli.android.common.view.changehandler.CircularRevealChangeHandler
 import io.ipoli.android.quest.schedule.ScheduleViewState.DatePickerState.*
 import io.ipoli.android.quest.schedule.ScheduleViewState.StateType.*
-import io.ipoli.android.quest.schedule.addquest.AddQuestViewController
+import io.ipoli.android.quest.schedule.addquest.AddQuestAnimationHelper
 import io.ipoli.android.quest.schedule.agenda.AgendaViewController
 import io.ipoli.android.quest.schedule.calendar.CalendarViewController
-import kotlinx.android.synthetic.main.controller_home.view.*
+import kotlinx.android.synthetic.main.controller_schedule.view.*
+import kotlinx.android.synthetic.main.view_calendar_toolbar.view.*
 import org.threeten.bp.LocalDate
 import sun.bob.mcalendarview.CellConfig
 import sun.bob.mcalendarview.MarkStyle
@@ -43,6 +33,8 @@ class ScheduleViewController(args: Bundle? = null) :
 
     private lateinit var calendarToolbar: ViewGroup
 
+    private lateinit var addQuestAnimationHelper: AddQuestAnimationHelper
+
     private var viewModeIcon: IIcon = Entypo.Icon.ent_sweden
 
     private var viewModeTitle = "Agenda"
@@ -54,9 +46,16 @@ class ScheduleViewController(args: Bundle? = null) :
     ): View {
         setHasOptionsMenu(true)
         val view = inflater.inflate(R.layout.controller_schedule, container, false)
-        initAddQuest(view)
 
         setChildController(view.contentContainer, CalendarViewController(LocalDate.now()))
+
+        addQuestAnimationHelper = AddQuestAnimationHelper(
+            controller = this,
+            addContainer = view.addContainer,
+            fab = view.addQuest,
+            background = view.addContainerBackground
+        )
+        initAddQuest(view)
 
         return view
     }
@@ -98,126 +97,12 @@ class ScheduleViewController(args: Bundle? = null) :
         view.addContainerBackground.setOnClickListener {
             addContainerRouter(view).popCurrentController()
             ViewUtils.hideKeyboard(view)
-            closeAddContainer()
+            addQuestAnimationHelper.closeAddContainer()
         }
-    }
-
-    private fun openAddContainer(currentDate: LocalDate) {
-        val addContainer = view!!.addContainer
-
-        val fab = view!!.addQuest
-
-        val halfWidth = addContainer.width / 2
-
-        val fabSet = createFabAnimator(fab, halfWidth.toFloat() - fab.width / 2)
-        fabSet.start()
-
-        fabSet.addListener(object : AnimatorListenerAdapter() {
-            override fun onAnimationEnd(animation: Animator?) {
-                addContainer.visibility = View.VISIBLE
-                fab.visibility = View.INVISIBLE
-
-                animateShowAddContainer()
-
-                val handler = CircularRevealChangeHandler(
-                    addContainer,
-                    addContainer,
-                    duration = shortAnimTime
-                )
-                val childRouter = addContainerRouter(view!!)
-                val addQuestViewController = AddQuestViewController({
-                    childRouter.popCurrentController()
-                    closeAddContainer()
-                }, currentDate)
-
-                childRouter.setRoot(
-                    RouterTransaction.with(addQuestViewController)
-                        .pushChangeHandler(handler)
-                        .popChangeHandler(handler)
-                )
-            }
-        })
     }
 
     private fun addContainerRouter(view: View) =
         getChildRouter(view.addContainer, "add-quest")
-
-    private fun animateShowAddContainer() {
-        val addContainerBackground = view!!.addContainerBackground
-//        val addContainerBackground = (parentController as HomeViewController).getBackgroundView()
-        addContainerBackground.alpha = 0f
-        addContainerBackground.visibility = View.VISIBLE
-        addContainerBackground.animate().alpha(1f).setDuration(longAnimTime).start()
-    }
-
-    private fun closeAddContainer() {
-//        (parentController as HomeViewController).getBackgroundView().gone()
-        view!!.addContainerBackground.gone()
-        val duration = view!!.resources.getInteger(android.R.integer.config_shortAnimTime).toLong()
-        val addContainer = view!!.addContainer
-        val fab = view!!.addQuest
-
-        val revealAnim = RevealAnimator().createWithEndRadius(
-            view = addContainer,
-            endRadius = (fab.width / 2).toFloat(),
-            reverse = true
-        )
-        revealAnim.duration = duration
-        revealAnim.startDelay = 300
-        revealAnim.interpolator = AccelerateDecelerateInterpolator()
-        revealAnim.addListener(object : AnimatorListenerAdapter() {
-
-            override fun onAnimationEnd(animation: Animator?) {
-                if (view == null) {
-                    return
-                }
-                addContainer.visibility = View.INVISIBLE
-                view!!.addContainer.requestFocus()
-                fab.visibility = View.VISIBLE
-
-                val fabSet = createFabAnimator(
-                    fab,
-                    (addContainer.width - fab.width - ViewUtils.dpToPx(16f, fab.context)),
-                    reverse = true
-                )
-                fabSet.start()
-
-            }
-
-        })
-        revealAnim.start()
-    }
-
-    private fun createFabAnimator(
-        fab: FloatingActionButton,
-        x: Float,
-        reverse: Boolean = false
-    ): AnimatorSet {
-        val duration = view!!.resources.getInteger(android.R.integer.config_shortAnimTime).toLong()
-        val fabTranslation = ObjectAnimator.ofFloat(fab, "x", x)
-
-        val fabColor = attrData(R.attr.colorAccent)
-        val whiteColor = colorRes(R.color.md_white)
-
-        val startColor = if (reverse) whiteColor else fabColor
-        val endColor = if (reverse) fabColor else whiteColor
-
-        val rgbAnim = ObjectAnimator.ofArgb(
-            fab,
-            "backgroundTint",
-            startColor, endColor
-        )
-        rgbAnim.addUpdateListener({ animation ->
-            val value = animation.animatedValue as Int
-            fab.backgroundTintList = ColorStateList.valueOf(value)
-        })
-
-        return AnimatorSet().also {
-            it.playTogether(fabTranslation, rgbAnim)
-            it.interpolator = AccelerateDecelerateInterpolator()
-            it.duration = duration
-        }
-    }
 
     private fun initDayPicker(view: View, calendarToolbar: ViewGroup) {
         view.datePickerContainer.visibility = View.GONE
@@ -272,7 +157,7 @@ class ScheduleViewController(args: Bundle? = null) :
         view.currentMonth.text = state.monthText
 
         view.addQuest.setOnClickListener {
-            openAddContainer(state.currentDate)
+            addQuestAnimationHelper.openAddContainer(state.currentDate)
         }
 
         when (state.type) {

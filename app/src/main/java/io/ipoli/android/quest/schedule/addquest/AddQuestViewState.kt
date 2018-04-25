@@ -23,7 +23,7 @@ sealed class AddQuestAction : Action {
     data class TimePicked(val time: Time?) : AddQuestAction()
     data class ColorPicked(val color: Color) : AddQuestAction()
     data class IconPicked(val icon: Icon?) : AddQuestAction()
-    data class Load(val date: LocalDate) : AddQuestAction()
+    data class Load(val date: LocalDate?) : AddQuestAction()
     object QuestSaved : AddQuestAction()
     data class SaveInvalidQuest(val error: Result.ValidationError) : AddQuestAction()
     data class DurationPicked(val minutes: Int) : AddQuestAction()
@@ -94,7 +94,7 @@ object AddQuestReducer : BaseViewStateReducer<AddQuestViewState>() {
 
 data class AddQuestViewState(
     val type: StateType,
-    val originalDate: LocalDate,
+    val originalDate: LocalDate?,
     val date: LocalDate?,
     val time: Time?,
     val duration: Int?,

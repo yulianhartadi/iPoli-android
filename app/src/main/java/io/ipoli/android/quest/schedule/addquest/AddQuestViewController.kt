@@ -42,9 +42,13 @@ class AddQuestViewController(args: Bundle? = null) :
 
     private var isFullscreen: Boolean = false
 
-    private lateinit var currentDate: LocalDate
+    private var currentDate: LocalDate? = null
 
-    constructor(closeListener: () -> Unit, currentDate: LocalDate, isFullscreen : Boolean = false) : this() {
+    constructor(
+        closeListener: () -> Unit,
+        currentDate: LocalDate?,
+        isFullscreen: Boolean = false
+    ) : this() {
         this.closeListener = closeListener
         this.currentDate = currentDate
         this.isFullscreen = isFullscreen
