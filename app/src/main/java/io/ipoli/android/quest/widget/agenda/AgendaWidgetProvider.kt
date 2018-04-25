@@ -80,6 +80,7 @@ class AgendaWidgetProvider : AppWidgetProvider() {
             rv.setTextViewText(R.id.widgetDate, date)
 
             rv.setOnClickPendingIntent(R.id.widgetAgendaHeader, createStartAppIntent(context))
+            rv.setOnClickPendingIntent(R.id.widgetAgendaAdd, createQuickAddIntent(context))
 
             rv.setRemoteAdapter(
                 R.id.widgetAgendaList,
@@ -104,6 +105,14 @@ class AgendaWidgetProvider : AppWidgetProvider() {
 
     }
 
+    private fun createQuickAddIntent(context: Context) =
+        PendingIntent.getActivity(
+            context,
+            0,
+            IntentUtil.showQuickAdd(context),
+            PendingIntent.FLAG_UPDATE_CURRENT
+        )
+
 
     private fun createQuestListIntent(context: Context, widgetId: Int) =
         Intent(context, AgendaWidgetService::class.java).apply {
@@ -122,12 +131,11 @@ class AgendaWidgetProvider : AppWidgetProvider() {
         )
     }
 
-    private fun createStartAppIntent(context: Context): PendingIntent {
-        return PendingIntent.getActivity(
+    private fun createStartAppIntent(context: Context) =
+        PendingIntent.getActivity(
             context,
             0,
             IntentUtil.startApp(context),
             PendingIntent.FLAG_UPDATE_CURRENT
         )
-    }
 }
