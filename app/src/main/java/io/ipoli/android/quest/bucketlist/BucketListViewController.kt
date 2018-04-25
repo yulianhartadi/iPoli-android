@@ -146,7 +146,8 @@ class BucketListViewController(args: Bundle? = null) :
     }
 
     private fun renderEmpty(view: View) {
-        view.loader.invisible()
+        view.loader.gone()
+        view.questList.gone()
         view.emptyContainer.visible()
         view.emptyAnimation.playAnimation()
     }
@@ -155,8 +156,8 @@ class BucketListViewController(args: Bundle? = null) :
         state: BucketListViewState.Changed,
         view: View
     ) {
-        view.loader.invisible()
-        view.emptyContainer.invisible()
+        view.loader.gone()
+        view.emptyContainer.gone()
         view.emptyAnimation.pauseAnimation()
         view.questList.visible()
         (view.questList.adapter as QuestAdapter).updateAll(state.itemViewModels)
