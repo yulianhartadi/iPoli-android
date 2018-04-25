@@ -64,11 +64,12 @@ class RepeatingQuestHistoryUseCaseSpek : Spek({
                         any(),
                         any()
                     )
-                } doReturn listOf(
-                    TestUtil.quest.copy(
-                        completedAtDate = date
+                } doReturn
+                    listOf(
+                        TestUtil.quest.copy(
+                            completedAtDate = date
+                        )
                     )
-                )
             }
             val result = executeUseCase(
                 questRepoMock, TestUtil.repeatingQuest.copy(

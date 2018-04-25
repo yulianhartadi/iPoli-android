@@ -149,13 +149,13 @@ data class Quest(
         data class Food(val food: io.ipoli.android.pet.Food) : Bounty()
     }
 
-    val isCompleted = completedAtDate != null
-    val endTime = startTime?.plus(duration)
-    val isScheduled = startTime != null && scheduledDate != null
+    val isCompleted get() = completedAtDate != null
+    val endTime get() = startTime?.plus(duration)
+    val isScheduled get() = startTime != null && scheduledDate != null
 
-    val actualStart = if (hasTimer) timeRanges.first().start else null
+    val actualStart get() = if (hasTimer) timeRanges.first().start else null
 
-    val actualStartTime =
+    val actualStartTime get() =
         if (isCompleted) {
             val localCompletedAt = LocalDateTime.of(
                 completedAtDate,
@@ -185,20 +185,20 @@ data class Quest(
     val hasTimer
         get() = hasCountDownTimer || hasPomodoroTimer
 
-    val hasCountDownTimer = timeRanges.firstOrNull()?.type == TimeRange.Type.COUNTDOWN
+    val hasCountDownTimer get() = timeRanges.firstOrNull()?.type == TimeRange.Type.COUNTDOWN
 
-    val hasPomodoroTimer = timeRanges.firstOrNull()?.type == TimeRange.Type.POMODORO_WORK
+    val hasPomodoroTimer get() = timeRanges.firstOrNull()?.type == TimeRange.Type.POMODORO_WORK
 
-    val isStarted =
+    val isStarted get() =
         !isCompleted &&
                 (hasCountDownTimer ||
                         (hasPomodoroTimer && timeRanges.last().end == null))
 
     fun hasCompletedAllTimeRanges() = timeRanges.sumBy { it.duration } >= duration
 
-    val isFromRepeatingQuest = repeatingQuestId != null
+    val isFromRepeatingQuest get() = repeatingQuestId != null
 
-    val isFromChallenge = challengeId != null
+    val isFromChallenge get() = challengeId != null
 }
 
 data class TimeRange(
