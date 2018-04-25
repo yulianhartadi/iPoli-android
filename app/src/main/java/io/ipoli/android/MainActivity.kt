@@ -21,6 +21,7 @@ import io.ipoli.android.common.redux.Dispatcher
 import io.ipoli.android.common.redux.SideEffectHandler
 import io.ipoli.android.common.view.playerTheme
 import io.ipoli.android.player.auth.AuthViewController
+import io.ipoli.android.quest.schedule.addquest.AddQuestViewController
 import io.ipoli.android.quest.show.QuestViewController
 import io.ipoli.android.store.membership.MembershipViewController
 import io.ipoli.android.store.powerup.AndroidPowerUp
@@ -29,6 +30,7 @@ import io.ipoli.android.store.powerup.middleware.ShowBuyPowerUpAction
 import io.ipoli.android.tag.show.TagAction
 import kotlinx.coroutines.experimental.android.UI
 import kotlinx.coroutines.experimental.launch
+import org.threeten.bp.LocalDate
 import space.traversal.kapsule.Injects
 import space.traversal.kapsule.inject
 import space.traversal.kapsule.required
@@ -134,7 +136,16 @@ class MainActivity : AppCompatActivity(), Injects<Module>, SideEffectHandler<App
     }
 
     private fun showQuickAdd() {
-
+        router.setRoot(
+            RouterTransaction.with(
+                AddQuestViewController(
+                    {
+                        router.popCurrentController()
+                    },
+                    LocalDate.now()
+                )
+            )
+        )
     }
 
     private fun showTimer(intent: Intent) {

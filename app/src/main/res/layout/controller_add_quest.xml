@@ -1,18 +1,27 @@
 <?xml version="1.0" encoding="utf-8"?>
 <android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/container"
+    android:layout_height="match_parent"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:background="@color/md_grey_50"
+    android:background="@color/md_dark_text_38"
     android:clickable="true"
     android:focusable="true">
+
+    <View
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:background="@color/md_grey_50"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/questName" />
 
     <io.ipoli.android.common.view.EditTextBackEvent
         android:id="@+id/questName"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
+        android:layout_marginBottom="8dp"
         android:layout_marginEnd="8dp"
         android:backgroundTint="@android:color/transparent"
         android:hint="e.g. Go for a run"
@@ -22,6 +31,7 @@
         android:paddingStart="16dp"
         android:textColor="@color/md_black"
         android:textColorHint="@color/md_dark_text_54"
+        app:layout_constraintBottom_toTopOf="@+id/scheduleDate"
         app:layout_constraintEnd_toStartOf="@+id/done"
         app:layout_constraintStart_toStartOf="parent" />
 
@@ -36,8 +46,7 @@
         app:layout_constraintEnd_toStartOf="@+id/startTime"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintHorizontal_chainStyle="packed"
-        app:layout_constraintStart_toEndOf="@+id/fullAdd"
-        app:layout_constraintTop_toBottomOf="@+id/questName" />
+        app:layout_constraintStart_toEndOf="@+id/fullAdd" />
 
     <ImageView
         android:id="@+id/fullAdd"
@@ -50,7 +59,8 @@
         android:src="@drawable/ic_edit_black_24dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/questName" />
+        app:layout_constraintTop_toBottomOf="@+id/questName"
+        app:layout_constraintVertical_bias="1.0" />
 
     <ImageView
         android:id="@+id/startTime"

@@ -19,6 +19,7 @@ import kotlinx.android.synthetic.main.controller_schedule.view.*
 import kotlinx.android.synthetic.main.view_calendar_toolbar.view.*
 import io.ipoli.android.R
 import io.ipoli.android.common.ViewUtils
+import io.ipoli.android.common.home.HomeViewController
 import io.ipoli.android.common.redux.android.ReduxViewController
 import io.ipoli.android.common.view.*
 import io.ipoli.android.common.view.changehandler.CircularRevealChangeHandler
@@ -27,6 +28,7 @@ import io.ipoli.android.quest.schedule.ScheduleViewState.StateType.*
 import io.ipoli.android.quest.schedule.addquest.AddQuestViewController
 import io.ipoli.android.quest.schedule.agenda.AgendaViewController
 import io.ipoli.android.quest.schedule.calendar.CalendarViewController
+import kotlinx.android.synthetic.main.controller_home.view.*
 import org.threeten.bp.LocalDate
 import sun.bob.mcalendarview.CellConfig
 import sun.bob.mcalendarview.MarkStyle
@@ -142,13 +144,15 @@ class ScheduleViewController(args: Bundle? = null) :
 
     private fun animateShowAddContainer() {
         val addContainerBackground = view!!.addContainerBackground
+//        val addContainerBackground = (parentController as HomeViewController).getBackgroundView()
         addContainerBackground.alpha = 0f
         addContainerBackground.visibility = View.VISIBLE
         addContainerBackground.animate().alpha(1f).setDuration(longAnimTime).start()
     }
 
     private fun closeAddContainer() {
-        view!!.addContainerBackground.visibility = View.GONE
+//        (parentController as HomeViewController).getBackgroundView().gone()
+        view!!.addContainerBackground.gone()
         val duration = view!!.resources.getInteger(android.R.integer.config_shortAnimTime).toLong()
         val addContainer = view!!.addContainer
         val fab = view!!.addQuest
