@@ -40,11 +40,14 @@ class AddQuestViewController(args: Bundle? = null) :
 
     private var closeListener: () -> Unit = {}
 
+    private var isFullscreen: Boolean = false
+
     private lateinit var currentDate: LocalDate
 
-    constructor(closeListener: () -> Unit, currentDate: LocalDate) : this() {
+    constructor(closeListener: () -> Unit, currentDate: LocalDate, isFullscreen : Boolean = false) : this() {
         this.closeListener = closeListener
         this.currentDate = currentDate
+        this.isFullscreen = isFullscreen
     }
 
     override fun onCreateView(
@@ -60,6 +63,13 @@ class AddQuestViewController(args: Bundle? = null) :
                 view.questName.setOnEditTextImeBackListener(null)
             }
         })
+
+        if(isFullscreen) {
+            view.setOnClickListener {
+                ViewUtils.hideKeyboard(view)
+                closeListener()
+            }
+        }
 
         view.questName.addTextChangedListener(object : TextWatcher {
             override fun afterTextChanged(s: Editable) {
@@ -93,6 +103,12 @@ class AddQuestViewController(args: Bundle? = null) :
         resetForm(view)
 
         return view
+    }
+
+    override fun colorLayoutBars() {
+        if(isFullscreen) {
+            activity?.window?.statusBarColor = colorRes(R.color.md_dark_text_38)
+        }
     }
 
     private fun setColor(color: Color, view: View) {
@@ -306,7 +322,6 @@ class AddQuestViewController(args: Bundle? = null) :
     override fun onDetach(view: View) {
         view.questName.setOnEditTextImeBackListener(null)
         super.onDetach(view)
-        router.popController(this)
     }
 
     override fun onAttach(view: View) {

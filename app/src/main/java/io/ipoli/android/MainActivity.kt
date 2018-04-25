@@ -14,6 +14,7 @@ import com.bluelinelabs.conductor.RouterTransaction
 import com.bluelinelabs.conductor.changehandler.FadeChangeHandler
 import io.ipoli.android.common.AppState
 import io.ipoli.android.common.LoadDataAction
+import io.ipoli.android.common.ViewUtils
 import io.ipoli.android.common.di.Module
 import io.ipoli.android.common.home.HomeViewController
 import io.ipoli.android.common.redux.Action
@@ -139,10 +140,11 @@ class MainActivity : AppCompatActivity(), Injects<Module>, SideEffectHandler<App
         router.setRoot(
             RouterTransaction.with(
                 AddQuestViewController(
-                    {
-                        router.popCurrentController()
+                    closeListener = {
+                        finish()
                     },
-                    LocalDate.now()
+                    currentDate = LocalDate.now(),
+                    isFullscreen = true
                 )
             )
         )
