@@ -50,7 +50,6 @@ import io.ipoli.android.tag.show.TagViewController
 import kotlinx.android.synthetic.main.controller_home.view.*
 import kotlinx.android.synthetic.main.drawer_header_home.view.*
 import kotlinx.android.synthetic.main.menu_item_tag_view.view.*
-import kotlinx.android.synthetic.main.menu_item_tags_view.view.*
 import space.traversal.kapsule.required
 
 
@@ -70,8 +69,6 @@ class HomeViewController(args: Bundle? = null) :
     private val fadeChangeHandler = FadeChangeHandler()
 
     private val eventLogger by required { eventLogger }
-
-    private lateinit var dropDown: ImageView
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -265,7 +262,6 @@ class HomeViewController(args: Bundle? = null) :
     override fun render(state: HomeViewState, view: View) {
         when (state.type) {
             DATA_LOADED -> {
-                dropDown = view.navigationView.dropDown
                 renderSignIn(view, state.showSignIn)
                 renderBucketList(state.bucketListQuestCount, view)
                 renderPlayer(view, state)
@@ -302,6 +298,9 @@ class HomeViewController(args: Bundle? = null) :
 
     private fun renderTags(view: View, state: HomeViewState) {
         TAG_IDS.forEach { view.navigationView.menu.removeItem(it) }
+
+        val dropDown =
+            view.navigationView.menu.findItem(R.id.tags).actionView.findViewById<ImageView>(R.id.dropDown)
 
         dropDown.visible()
 
