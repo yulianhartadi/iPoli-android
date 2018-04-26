@@ -343,6 +343,11 @@ class ChallengeListViewController(args: Bundle? = null) :
                     val daysUntilComplete = LocalDate.now().daysUntil(c.endDate)
 
                     val end = when {
+                        daysUntilComplete < 0L -> stringRes(
+                            R.string.inbox_overdue_by,
+                            Math.abs(daysUntilComplete),
+                            stringRes(R.string.days).toLowerCase()
+                        )
                         daysUntilComplete == 0L -> stringRes(R.string.ends_today)
                         daysUntilComplete <= 7 -> stringRes(
                             R.string.ends_in_days,

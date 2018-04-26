@@ -96,6 +96,7 @@ sealed class RepeatPattern(
         override fun nextDateWithoutRange(from: LocalDate): LocalDate? {
             require(daysOfMonth.isNotEmpty())
             var nextDate = from
+
             while (true) {
                 if (daysOfMonth.contains(nextDate.dayOfMonth)) {
                     return nextDate
@@ -198,17 +199,16 @@ sealed class RepeatPattern(
     companion object {
         fun findWeeklyPeriods(
             start: LocalDate,
-            end: LocalDate,
-            lastDayOfWeek: DayOfWeek
+            end: LocalDate
         ): List<Period> {
 
             val periods = mutableListOf<Period>()
-            val firstDayOfWeek = lastDayOfWeek.minus(6)
+            val firstDayOfWeek = DayOfWeek.MONDAY
 
             var periodStart = start.with(TemporalAdjusters.previousOrSame(firstDayOfWeek))
             val dayAfterEnd = end.plusDays(1)
             while (periodStart.isBefore(dayAfterEnd)) {
-                val periodEnd = periodStart.with(TemporalAdjusters.nextOrSame(lastDayOfWeek))
+                val periodEnd = periodStart.with(TemporalAdjusters.nextOrSame(DayOfWeek.SUNDAY))
                 periods.add(Period(periodStart, periodEnd))
                 periodStart = periodEnd.plusDays(1)
             }

@@ -50,7 +50,7 @@ class FindChallengeProgressUseCase : UseCase<FindChallengeProgressUseCase.Params
                 }
 
                 is RepeatPattern.Flexible.Weekly -> {
-                    val periods = findWeeklyPeriods(start, end, parameters.lastDayOfWeek)
+                    val periods = findWeeklyPeriods(start, end)
                     periods.sumBy {
                         if (repeatingPattern.scheduledPeriods.containsKey(it.start)) {
                             repeatingPattern.scheduledPeriods[it.start]!!.size

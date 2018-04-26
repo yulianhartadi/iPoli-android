@@ -73,7 +73,7 @@ class SaveQuestsForRepeatingQuestUseCase(
 
             is RepeatPattern.Flexible.Weekly -> {
                 val scheduledPeriods = rq.repeatPattern.scheduledPeriods.toMutableMap()
-                val periods = findWeeklyPeriods(start, end, parameters.lastDayOfWeek)
+                val periods = findWeeklyPeriods(start, end)
                 periods.forEach {
                     if (!scheduledPeriods.containsKey(it.start)) {
                         scheduledPeriods[it.start] =

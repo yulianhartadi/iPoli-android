@@ -19,6 +19,7 @@ import io.ipoli.android.repeatingquest.persistence.DbRepeatPattern.Type.*
 import org.threeten.bp.DayOfWeek
 import org.threeten.bp.LocalDate
 import org.threeten.bp.Month
+import timber.log.Timber
 import kotlin.coroutines.experimental.CoroutineContext
 
 /**
@@ -138,6 +139,10 @@ class FirestoreRepeatingQuestRepository(
     }
 
     override fun toEntityObject(dataMap: MutableMap<String, Any?>): RepeatingQuest {
+
+        try {
+
+
         val rq = DbRepeatingQuest(dataMap.withDefault {
             null
         })
@@ -183,6 +188,12 @@ class FirestoreRepeatingQuestRepository(
             updatedAt = rq.updatedAt.instant,
             createdAt = rq.createdAt.instant
         )
+
+        } catch (e: Throwable) {
+            Timber.e(e)
+        }
+
+        throw IllegalArgumentException()
     }
 
     private fun createRepeatPattern(rp: DbRepeatPattern): RepeatPattern {

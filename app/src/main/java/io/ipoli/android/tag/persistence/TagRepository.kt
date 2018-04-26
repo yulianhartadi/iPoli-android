@@ -37,7 +37,7 @@ class FirestoreTagRepository(
 
     override suspend fun listenForAll(channel: Channel<List<Tag>>) =
         collectionReference
-            .orderBy("createdAt", Query.Direction.DESCENDING)
+            .orderBy("createdAt", Query.Direction.ASCENDING)
             .listenForChanges(channel)
 
     override fun purge(tagId: String) {
