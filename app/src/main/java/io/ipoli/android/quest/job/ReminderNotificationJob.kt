@@ -27,6 +27,7 @@ import io.ipoli.android.myPoliApp
 import io.ipoli.android.quest.Quest
 import io.ipoli.android.quest.reminder.ReminderNotificationPopup
 import io.ipoli.android.quest.reminder.ReminderNotificationViewModel
+import kotlinx.coroutines.experimental.CommonPool
 import kotlinx.coroutines.experimental.android.UI
 import kotlinx.coroutines.experimental.launch
 import org.threeten.bp.Instant
@@ -112,7 +113,9 @@ class ReminderNotificationJob : Job(), Injects<Module> {
 
                         override fun onSnooze() {
                             notificationManager.cancel(notificationId)
-                            snoozeQuestUseCase.execute(it.id)
+                            launch(CommonPool) {
+                                snoozeQuestUseCase.execute(it.id)
+                            }
                             Toast.makeText(c, "Quest snoozed", Toast.LENGTH_SHORT).show()
                         }
 
