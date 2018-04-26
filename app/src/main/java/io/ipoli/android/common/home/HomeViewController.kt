@@ -464,10 +464,6 @@ class HomeViewController(args: Bundle? = null) :
         return stringRes(R.string.big_value_format, result)
     }
 
-//    fun getBackgroundView() : View {
-//        return view!!.addContainerBackground
-//    }
-
     companion object {
         val TAG_IDS = listOf(
             R.id.tag1,

@@ -7,6 +7,7 @@ import android.preference.PreferenceManager
 import android.provider.Settings
 import android.support.v7.app.AppCompatActivity
 import android.view.View
+import android.view.ViewGroup
 import android.widget.Toast
 import com.bluelinelabs.conductor.Conductor
 import com.bluelinelabs.conductor.Router
@@ -14,7 +15,6 @@ import com.bluelinelabs.conductor.RouterTransaction
 import com.bluelinelabs.conductor.changehandler.FadeChangeHandler
 import io.ipoli.android.common.AppState
 import io.ipoli.android.common.LoadDataAction
-import io.ipoli.android.common.ViewUtils
 import io.ipoli.android.common.di.Module
 import io.ipoli.android.common.home.HomeViewController
 import io.ipoli.android.common.redux.Action
@@ -137,6 +137,7 @@ class MainActivity : AppCompatActivity(), Injects<Module>, SideEffectHandler<App
     }
 
     private fun showQuickAdd() {
+        findViewById<ViewGroup>(R.id.controllerContainer).setBackgroundResource(android.R.color.transparent)
         router.setRoot(
             RouterTransaction.with(
                 AddQuestViewController(
