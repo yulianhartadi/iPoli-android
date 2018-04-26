@@ -268,8 +268,10 @@ class HomeViewController(args: Bundle? = null) :
                 renderTags(view, state)
             }
 
-            PLAYER_CHANGED ->
+            PLAYER_CHANGED -> {
+                renderSignIn(view, state.showSignIn)
                 renderPlayer(view, state)
+            }
 
             TAGS_CHANGED ->
                 renderTags(view, state)
