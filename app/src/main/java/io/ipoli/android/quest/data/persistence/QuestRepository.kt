@@ -108,7 +108,7 @@ data class DbQuest(override val map: MutableMap<String, Any?> = mutableMapOf()) 
     var color: String by map
     var icon: String? by map
     var tagIds: Map<String, Boolean> by map
-    var duration: Int by map
+    var duration: Long by map
     var priority: String by map
     var preferredStartTime: String by map
     var reminders: List<MutableMap<String, Any?>> by map
@@ -124,7 +124,7 @@ data class DbQuest(override val map: MutableMap<String, Any?> = mutableMapOf()) 
     var completedAtMinute: Long? by map
     var subQuests: List<MutableMap<String, Any?>> by map
     var timeRanges: List<MutableMap<String, Any?>> by map
-    var timeRangeCount: Int by map
+    var timeRangeCount: Long by map
     var repeatingQuestId: String? by map
     var challengeId: String? by map
     var note: String by map
@@ -142,7 +142,7 @@ data class DbSubQuest(val map: MutableMap<String, Any?> = mutableMapOf()) {
 data class DbReminder(val map: MutableMap<String, Any?> = mutableMapOf()) {
     var type: String by map
     var message: String by map
-    var minute: Int? by map
+    var minute: Long? by map
     var date: Long? by map
     var minutesFromStart: Long? by map
 
@@ -162,7 +162,7 @@ data class DbBounty(val map: MutableMap<String, Any?> = mutableMapOf()) {
 
 data class DbTimeRange(val map: MutableMap<String, Any?> = mutableMapOf()) {
     var type: String by map
-    var duration: Int by map
+    var duration: Long by map
     var start: Long? by map
     var end: Long? by map
 }
@@ -622,7 +622,7 @@ class FirestoreQuestRepository(
             scheduledDate = cq.scheduledDate?.startOfDayUTC,
             originalScheduledDate = cq.originalScheduledDate?.startOfDayUTC,
             startTime = cq.startMinute?.let { Time.of(it.toInt()) },
-            duration = cq.duration,
+            duration = cq.duration.toInt(),
             priority = Priority.valueOf(cq.priority),
             preferredStartTime = TimePreference.valueOf(cq.preferredStartTime),
             experience = cq.experience?.toInt(),
@@ -647,7 +647,11 @@ class FirestoreQuestRepository(
                         Reminder.Relative(cr.message, cr.minutesFromStart!!.toLong())
 
                     DbReminder.Type.FIXED ->
-                        Reminder.Fixed(cr.message, cr.date!!.startOfDayUTC, Time.of(cr.minute!!))
+                        Reminder.Fixed(
+                            cr.message,
+                            cr.date!!.startOfDayUTC,
+                            Time.of(cr.minute!!.toInt())
+                        )
                 }
 
             },
@@ -663,7 +667,7 @@ class FirestoreQuestRepository(
                 val ctr = DbTimeRange(it)
                 TimeRange(
                     TimeRange.Type.valueOf(ctr.type),
-                    ctr.duration,
+                    ctr.duration.toInt(),
                     ctr.start?.instant,
                     ctr.end?.instant
                 )
@@ -681,7 +685,7 @@ class FirestoreQuestRepository(
         q.tagIds = entity.tags.map { it.id to true }.toMap()
         q.color = entity.color.name
         q.icon = entity.icon?.name
-        q.duration = entity.duration
+        q.duration = entity.duration.toLong()
         q.priority = entity.priority.name
         q.preferredStartTime = entity.preferredStartTime.name
         q.startDate = entity.startDate?.startOfDayUTC()
@@ -719,7 +723,7 @@ class FirestoreQuestRepository(
         q.timeRanges = entity.timeRanges.map {
             createDbTimeRange(it).map
         }
-        q.timeRangeCount = q.timeRanges.size
+        q.timeRangeCount = q.timeRanges.size.toLong()
         q.repeatingQuestId = entity.repeatingQuestId
         q.challengeId = entity.challengeId
         q.note = entity.note
@@ -729,7 +733,7 @@ class FirestoreQuestRepository(
     private fun createDbTimeRange(timeRange: TimeRange): DbTimeRange {
         val cTimeRange = DbTimeRange()
         cTimeRange.type = timeRange.type.name
-        cTimeRange.duration = timeRange.duration
+        cTimeRange.duration = timeRange.duration.toLong()
         cTimeRange.start = timeRange.start?.toEpochMilli()
         cTimeRange.end = timeRange.end?.toEpochMilli()
         return cTimeRange
@@ -743,7 +747,7 @@ class FirestoreQuestRepository(
             is Reminder.Fixed -> {
                 cr.type = DbReminder.Type.FIXED.name
                 cr.date = reminder.date.startOfDayUTC()
-                cr.minute = reminder.time.toMinuteOfDay()
+                cr.minute = reminder.time.toMinuteOfDay().toLong()
             }
 
             is Reminder.Relative -> {
