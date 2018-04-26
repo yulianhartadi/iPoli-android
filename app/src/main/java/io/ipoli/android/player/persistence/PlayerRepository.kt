@@ -134,7 +134,7 @@ class FirestorePlayerRepository(
                     userId = cap.userId,
                     displayName = cap.displayName,
                     email = cap.email,
-                    imageUrl = Uri.parse(cap.image)
+                    imageUrl = cap.image?.let { Uri.parse(it) }
                 )
             }
 
@@ -143,7 +143,7 @@ class FirestorePlayerRepository(
                     userId = cap.userId,
                     displayName = cap.displayName,
                     email = cap.email,
-                    imageUrl = Uri.parse(cap.image)
+                    imageUrl = cap.image?.let { Uri.parse(it) }
                 )
             }
 
@@ -292,7 +292,7 @@ class FirestorePlayerRepository(
                     it.userId = authProvider.userId
                     it.email = authProvider.email
                     it.displayName = authProvider.displayName
-                    it.image = authProvider.imageUrl.toString()
+                    it.image = authProvider.imageUrl?.toString()
                     it.provider = GoogleAuthProvider.PROVIDER_ID
                 }
             }
@@ -302,7 +302,7 @@ class FirestorePlayerRepository(
                     it.userId = authProvider.userId
                     it.email = authProvider.email
                     it.displayName = authProvider.displayName
-                    it.image = authProvider.imageUrl.toString()
+                    it.image = authProvider.imageUrl?.toString()
                     it.provider = FacebookAuthProvider.PROVIDER_ID
                 }
             }

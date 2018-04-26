@@ -20,6 +20,7 @@ import io.ipoli.android.quest.Color
 import io.ipoli.android.quest.Icon
 import io.ipoli.android.tag.Tag
 import space.traversal.kapsule.required
+import timber.log.Timber
 import java.nio.charset.Charset
 import java.util.regex.Pattern
 
@@ -191,6 +192,8 @@ class AuthSideEffectHandler : AppSideEffectHandler() {
             authProviders.first()
         }
 
+        Timber.d("AAA ${user.photoUrl} ${user.email} ${user.displayName}")
+
         val auth = when {
 
             authProvider.providerId == FacebookAuthProvider.PROVIDER_ID ->
@@ -198,7 +201,7 @@ class AuthSideEffectHandler : AppSideEffectHandler() {
                     authProvider.uid,
                     displayName = user.displayName!!,
                     email = user.email!!,
-                    imageUrl = user.photoUrl!!
+                    imageUrl = user.photoUrl
                 )
 
             authProvider.providerId == GoogleAuthProvider.PROVIDER_ID ->
@@ -206,7 +209,7 @@ class AuthSideEffectHandler : AppSideEffectHandler() {
                     authProvider.uid,
                     displayName = user.displayName!!,
                     email = user.email!!,
-                    imageUrl = user.photoUrl!!
+                    imageUrl = user.photoUrl
                 )
 
             authProvider.providerId == FirebaseAuthProvider.PROVIDER_ID ->

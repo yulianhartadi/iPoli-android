@@ -294,14 +294,14 @@ sealed class AuthProvider {
         val userId: String,
         val displayName: String,
         val email: String,
-        val imageUrl: Uri
+        val imageUrl: Uri?
     ) : AuthProvider()
 
     data class Google(
         val userId: String,
         val displayName: String,
         val email: String,
-        val imageUrl: Uri
+        val imageUrl: Uri?
     ) : AuthProvider()
 
     data class Guest(

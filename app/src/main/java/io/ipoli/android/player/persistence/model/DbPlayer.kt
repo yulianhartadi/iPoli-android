@@ -34,7 +34,7 @@ data class DbAuthProvider(val map: MutableMap<String, Any?> = mutableMapOf()) {
     var provider: String by map
     var displayName: String by map
     var email: String by map
-    var image: String by map
+    var image: String? by map
 }
 
 data class DbPet(val map: MutableMap<String, Any?> = mutableMapOf()) {
