@@ -12,10 +12,10 @@ data class DbPlayer(override val map: MutableMap<String, Any?> = mutableMapOf())
     override var id: String by map
     var username: String by map
     var displayName: String by map
-    var schemaVersion: Int by map
-    var level: Int by map
-    var coins: Int by map
-    var gems: Int by map
+    var schemaVersion: Long by map
+    var level: Long by map
+    var coins: Long by map
+    var gems: Long by map
     var experience: Long by map
     var authProvider: MutableMap<String, Any?> by map
     var avatar: String by map
@@ -41,8 +41,8 @@ data class DbPet(val map: MutableMap<String, Any?> = mutableMapOf()) {
     var name: String by map
     var avatar: String by map
     var equipment: MutableMap<String, Any?> by map
-    var moodPoints: Int by map
-    var healthPoints: Int by map
+    var moodPoints: Long by map
+    var healthPoints: Long by map
     var experienceBonus: Float by map
     var coinBonus: Float by map
     var itemDropBonus: Float by map
@@ -76,10 +76,10 @@ data class DbPreferences(val map: MutableMap<String, Any?> = mutableMapOf()) {
     var syncCalendars: List<MutableMap<String, Any?>> by map
     var productiveTimesOfDay: List<String> by map
     var workDays: List<String> by map
-    var workStartTime: Int by map
-    var workEndTime: Int by map
-    var sleepStartTime: Int by map
-    var sleepEndTime: Int by map
+    var workStartTime: Long by map
+    var workEndTime: Long by map
+    var sleepStartTime: Long by map
+    var sleepEndTime: Long by map
     var timeFormat: String by map
 }
 
@@ -90,6 +90,6 @@ data class DbSyncCalendar(val map: MutableMap<String, Any?> = mutableMapOf()) {
 
 data class DbUnlockedAchievement(val map: MutableMap<String, Any?> = mutableMapOf()) {
     var achievement: String by map
-    var unlockTime: Int by map
+    var unlockTime: Long by map
     var unlockDate: Long by map
 }

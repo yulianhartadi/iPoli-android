@@ -161,8 +161,8 @@ class FirestorePlayerRepository(
             name = cPet.name,
             avatar = PetAvatar.valueOf(cPet.avatar),
             equipment = createPetEquipment(cPet),
-            moodPoints = cPet.moodPoints,
-            healthPoints = cPet.healthPoints,
+            moodPoints = cPet.moodPoints.toInt(),
+            healthPoints = cPet.healthPoints.toInt(),
             coinBonus = cPet.coinBonus,
             experienceBonus = cPet.experienceBonus,
             itemDropBonus = cPet.itemDropBonus
@@ -201,10 +201,10 @@ class FirestorePlayerRepository(
             }.toSet(),
             productiveTimesOfDay = cPref.productiveTimesOfDay.map { TimeOfDay.valueOf(it) }.toSet(),
             workDays = cPref.workDays.map { DayOfWeek.valueOf(it) }.toSet(),
-            workStartTime = Time.Companion.of(cPref.workStartTime),
-            workEndTime = Time.Companion.of(cPref.workEndTime),
-            sleepStartTime = Time.Companion.of(cPref.sleepStartTime),
-            sleepEndTime = Time.Companion.of(cPref.sleepEndTime),
+            workStartTime = Time.of(cPref.workStartTime.toInt()),
+            workEndTime = Time.of(cPref.workEndTime.toInt()),
+            sleepStartTime = Time.of(cPref.sleepStartTime.toInt()),
+            sleepEndTime = Time.of(cPref.sleepEndTime.toInt()),
             timeFormat = Player.Preferences.TimeFormat.valueOf(cPref.timeFormat)
         )
 
@@ -212,7 +212,7 @@ class FirestorePlayerRepository(
         val achievements = ca.map {
             Player.UnlockedAchievement(
                 achievement = Achievement.valueOf(it.achievement),
-                unlockTime = Time.of(it.unlockTime),
+                unlockTime = Time.of(it.unlockTime.toInt()),
                 unlockDate = it.unlockDate.startOfDayUTC
             )
         }
@@ -221,10 +221,10 @@ class FirestorePlayerRepository(
             id = cp.id,
             username = cp.username,
             displayName = cp.displayName,
-            schemaVersion = cp.schemaVersion,
-            level = cp.level,
-            coins = cp.coins,
-            gems = cp.gems,
+            schemaVersion = cp.schemaVersion.toInt(),
+            level = cp.level.toInt(),
+            coins = cp.coins.toInt(),
+            gems = cp.gems.toInt(),
             experience = cp.experience,
             authProvider = authProvider,
             avatar = Avatar.valueOf(cp.avatar),
@@ -249,10 +249,10 @@ class FirestorePlayerRepository(
             it.id = entity.id
             it.username = entity.username
             it.displayName = entity.displayName
-            it.schemaVersion = entity.schemaVersion
-            it.level = entity.level
-            it.coins = entity.coins
-            it.gems = entity.gems
+            it.schemaVersion = entity.schemaVersion.toLong()
+            it.level = entity.level.toLong()
+            it.coins = entity.coins.toLong()
+            it.gems = entity.gems.toLong()
             it.experience = entity.experience
             it.authProvider = createDbAuthProvider(entity.authProvider).map
             it.avatar = entity.avatar.name
@@ -270,8 +270,8 @@ class FirestorePlayerRepository(
             it.name = pet.name
             it.avatar = pet.avatar.name
             it.equipment = createDbPetEquipment(pet.equipment).map
-            it.healthPoints = pet.healthPoints
-            it.moodPoints = pet.moodPoints
+            it.healthPoints = pet.healthPoints.toLong()
+            it.moodPoints = pet.moodPoints.toLong()
             it.coinBonus = pet.coinBonus
             it.experienceBonus = pet.experienceBonus
             it.itemDropBonus = pet.itemDropBonus
@@ -351,10 +351,10 @@ class FirestorePlayerRepository(
             }
             it.productiveTimesOfDay = preferences.productiveTimesOfDay.map { it.name }
             it.workDays = preferences.workDays.map { it.name }
-            it.workStartTime = preferences.workStartTime.toMinuteOfDay()
-            it.workEndTime = preferences.workEndTime.toMinuteOfDay()
-            it.sleepStartTime = preferences.sleepStartTime.toMinuteOfDay()
-            it.sleepEndTime = preferences.sleepEndTime.toMinuteOfDay()
+            it.workStartTime = preferences.workStartTime.toMinuteOfDay().toLong()
+            it.workEndTime = preferences.workEndTime.toMinuteOfDay().toLong()
+            it.sleepStartTime = preferences.sleepStartTime.toMinuteOfDay().toLong()
+            it.sleepEndTime = preferences.sleepEndTime.toMinuteOfDay().toLong()
             it.timeFormat = preferences.timeFormat.name
         }
 
@@ -362,7 +362,7 @@ class FirestorePlayerRepository(
         achievements.map { a ->
             DbUnlockedAchievement().also {
                 it.achievement = a.achievement.name
-                it.unlockTime = a.unlockTime.toMinuteOfDay()
+                it.unlockTime = a.unlockTime.toMinuteOfDay().toLong()
                 it.unlockDate = a.unlockDate.startOfDayUTC()
             }.map
         }
