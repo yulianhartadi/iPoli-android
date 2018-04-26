@@ -39,9 +39,7 @@ class SaveQuestsForRepeatingQuestUseCaseSpek : Spek({
                 SaveQuestsForRepeatingQuestUseCase.Params(
                     repeatingQuest = quest,
                     start = start,
-                    end = end,
-                    firstDayOfWeek = DayOfWeek.MONDAY,
-                    lastDayOfWeek = DayOfWeek.SUNDAY
+                    end = end
                 )
             )
 

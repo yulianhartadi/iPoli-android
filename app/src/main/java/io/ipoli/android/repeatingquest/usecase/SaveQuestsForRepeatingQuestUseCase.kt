@@ -1,7 +1,6 @@
 package io.ipoli.android.repeatingquest.usecase
 
 import io.ipoli.android.common.UseCase
-import io.ipoli.android.common.datetime.DateUtils
 import io.ipoli.android.common.datetime.datesBetween
 import io.ipoli.android.common.datetime.isBetween
 import io.ipoli.android.quest.Quest
@@ -275,8 +274,6 @@ class SaveQuestsForRepeatingQuestUseCase(
     data class Params(
         val repeatingQuest: RepeatingQuest,
         val start: LocalDate,
-        val end: LocalDate,
-        val firstDayOfWeek: DayOfWeek = DateUtils.firstDayOfWeek,
-        val lastDayOfWeek: DayOfWeek = DateUtils.lastDayOfWeek
+        val end: LocalDate
     )
 }
