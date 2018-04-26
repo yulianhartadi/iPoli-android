@@ -20,7 +20,6 @@ import io.ipoli.android.quest.Color
 import io.ipoli.android.quest.Icon
 import io.ipoli.android.tag.Tag
 import space.traversal.kapsule.required
-import timber.log.Timber
 import java.nio.charset.Charset
 import java.util.regex.Pattern
 
@@ -192,8 +191,6 @@ class AuthSideEffectHandler : AppSideEffectHandler() {
             authProviders.first()
         }
 
-        Timber.d("AAA ${user.photoUrl} ${user.email} ${user.displayName}")
-
         val auth = when {
 
             authProvider.providerId == FacebookAuthProvider.PROVIDER_ID ->
@@ -220,12 +217,6 @@ class AuthSideEffectHandler : AppSideEffectHandler() {
             else -> throw IllegalStateException("Unknown Auth provider")
         }
 
-        if (auth is AuthProvider.Facebook) {
-            Api.migratePlayer(auth.userId, auth.email)
-        } else if (auth is AuthProvider.Google) {
-            Api.migratePlayer(auth.userId, auth.email)
-        }
-
         val player = Player(
             authProvider = auth,
             username = if (auth !is AuthProvider.Guest) username else "",
@@ -245,6 +236,11 @@ class AuthSideEffectHandler : AppSideEffectHandler() {
         prepareAppStart()
         dispatch(AuthAction.PlayerCreated)
 
+        if (auth is AuthProvider.Facebook) {
+            Api.migratePlayer(user.uid, auth.email)
+        } else if (auth is AuthProvider.Google) {
+            Api.migratePlayer(user.uid, auth.email)
+        }
     }
 
     private fun saveDefaultTags() {
