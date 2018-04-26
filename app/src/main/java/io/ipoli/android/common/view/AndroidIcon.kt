@@ -1,6 +1,7 @@
 package io.ipoli.android.common.view
 
 import android.support.annotation.ColorRes
+import com.mikepenz.community_material_typeface_library.CommunityMaterial
 import com.mikepenz.entypo_typeface_library.Entypo
 import com.mikepenz.google_material_typeface_library.GoogleMaterial
 import com.mikepenz.iconics.typeface.IIcon
@@ -18,7 +19,7 @@ enum class AndroidIcon(val icon: IIcon, @ColorRes val color: Int) {
     PAW(Ionicons.Icon.ion_ios_paw, R.color.md_orange_500),
     BRIEFCASE(Ionicons.Icon.ion_briefcase, R.color.md_orange_500),
     BOOK(GoogleMaterial.Icon.gmd_import_contacts, R.color.md_blue_300),
-    HEART(Ionicons.Icon.ion_heart, R.color.md_pink_500),
+    HEART(Ionicons.Icon.ion_heart, R.color.md_pink_300),
     RUN(GoogleMaterial.Icon.gmd_directions_run, R.color.md_green_500),
     MED_KIT(Ionicons.Icon.ion_medkit, R.color.md_red_500),
     TREE(Entypo.Icon.ent_tree, R.color.md_green_500),
@@ -30,13 +31,13 @@ enum class AndroidIcon(val icon: IIcon, @ColorRes val color: Int) {
     WRENCH(Ionicons.Icon.ion_wrench, R.color.md_orange_500),
     STAR(Ionicons.Icon.ion_ios_star, R.color.md_yellow_600),
     FITNESS(GoogleMaterial.Icon.gmd_fitness_center, R.color.md_green_500),
-    COFFEE(Ionicons.Icon.ion_coffee, R.color.md_pink_500),
+    COFFEE(Ionicons.Icon.ion_coffee, R.color.md_pink_300),
     BUS(Ionicons.Icon.ion_android_bus, R.color.md_blue_300),
     ACADEMIC(Entypo.Icon.ent_graduation_cap, R.color.md_blue_300),
-    CAKE(Entypo.Icon.ent_cake, R.color.md_pink_500),
+    CAKE(Entypo.Icon.ent_cake, R.color.md_pink_300),
     GAME_CONTROLLER(Ionicons.Icon.ion_ios_game_controller_b, R.color.md_purple_300),
     FLASK(Ionicons.Icon.ion_erlenmeyer_flask, R.color.md_red_500),
-    SHOPPING_CART(Entypo.Icon.ent_shopping_cart, R.color.md_pink_500),
+    SHOPPING_CART(Entypo.Icon.ent_shopping_cart, R.color.md_pink_300),
     BIKE(GoogleMaterial.Icon.gmd_directions_bike, R.color.md_green_500),
     TRAIN(Ionicons.Icon.ion_android_train, R.color.md_blue_300),
     PIZZA(Ionicons.Icon.ion_pizza, R.color.md_orange_500),
@@ -64,4 +65,24 @@ enum class AndroidIcon(val icon: IIcon, @ColorRes val color: Int) {
     SHOP(Entypo.Icon.ent_shop, R.color.md_green_500),
     MEDAL(Entypo.Icon.ent_medal, R.color.md_orange_500),
     MAP(Entypo.Icon.ent_map, R.color.md_blue_300),
+    BROOM(CommunityMaterial.Icon.cmd_broom, R.color.md_orange_500),
+    COUCH(GoogleMaterial.Icon.gmd_weekend, R.color.md_pink_300),
+    HOTEL(GoogleMaterial.Icon.gmd_hotel, R.color.md_blue_300),
+    MOUNTAIN(GoogleMaterial.Icon.gmd_filter_hdr, R.color.md_green_500),
+    BEACH(CommunityMaterial.Icon.cmd_beach, R.color.md_yellow_600),
+    CHILD_CARE(GoogleMaterial.Icon.gmd_child_friendly, R.color.md_red_500),
+    SWIM(GoogleMaterial.Icon.gmd_pool, R.color.md_blue_300),
+    PEOPLE(GoogleMaterial.Icon.gmd_people, R.color.md_pink_300),
+    HEADPHONES(Ionicons.Icon.ion_headphone, R.color.md_purple_300),
+    MASK(Entypo.Icon.ent_mask, R.color.md_pink_300),
+    BRUSH(GoogleMaterial.Icon.gmd_brush, R.color.md_orange_500),
+    ICE_CREAM(Ionicons.Icon.ion_icecream, R.color.md_purple_300),
+    NATURE(GoogleMaterial.Icon.gmd_nature_people, R.color.md_green_500),
+    BIOHAZARD(Ionicons.Icon.ion_nuclear, R.color.md_yellow_600),
+    WASHING_MACHINE(CommunityMaterial.Icon.cmd_washing_machine, R.color.md_red_500),
+    GAS_STATION(GoogleMaterial.Icon.gmd_local_gas_station, R.color.md_blue_300),
+    DUCK(CommunityMaterial.Icon.cmd_duck, R.color.md_yellow_600),
+    CROISSANT(CommunityMaterial.Icon.cmd_food_croissant, R.color.md_orange_500),
+    APPLE(CommunityMaterial.Icon.cmd_apple, R.color.md_green_500),
+    FISH(CommunityMaterial.Icon.cmd_fish, R.color.md_purple_300),
 }

@@ -250,7 +250,7 @@ class AuthSideEffectHandler : AppSideEffectHandler() {
                 Tag(
                     name = "Personal",
                     color = Color.ORANGE,
-                    icon = Icon.SUN,
+                    icon = Icon.DUCK,
                     isFavorite = true
                 ),
                 Tag(
