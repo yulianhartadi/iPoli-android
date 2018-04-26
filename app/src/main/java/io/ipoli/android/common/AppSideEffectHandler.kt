@@ -28,7 +28,6 @@ import org.threeten.bp.LocalDate
 import space.traversal.kapsule.Injects
 import space.traversal.kapsule.inject
 import space.traversal.kapsule.required
-import timber.log.Timber
 
 /**
  * Created by Venelin Valkov <venelin@mypoli.fun>
@@ -185,25 +184,16 @@ class LoadAllDataSideEffectHandler : AppSideEffectHandler() {
             repeatingQuestRepository.listenForAll(c)
         },
         consumer = { rqs, _ ->
-            try {
-
-
-                Timber.d("AAA ${rqs.size}")
-                val repeatingQuests = rqs.map {
-                    findNextDateForRepeatingQuestUseCase.execute(
-                        FindNextDateForRepeatingQuestUseCase.Params(it)
-                    )
-                }.map {
-                    findPeriodProgressForRepeatingQuestUseCase.execute(
-                        FindPeriodProgressForRepeatingQuestUseCase.Params(it)
-                    )
-                }
-                Timber.d("AAA ${repeatingQuests.size}")
-                dispatch(DataLoadedAction.RepeatingQuestsChanged(repeatingQuests))
-            } catch (e: Throwable) {
-                Timber.d("AAA catch")
-                Timber.d(e)
+            val repeatingQuests = rqs.map {
+                findNextDateForRepeatingQuestUseCase.execute(
+                    FindNextDateForRepeatingQuestUseCase.Params(it)
+                )
+            }.map {
+                findPeriodProgressForRepeatingQuestUseCase.execute(
+                    FindPeriodProgressForRepeatingQuestUseCase.Params(it)
+                )
             }
+            dispatch(DataLoadedAction.RepeatingQuestsChanged(repeatingQuests))
         }
     )
 
@@ -212,7 +202,6 @@ class LoadAllDataSideEffectHandler : AppSideEffectHandler() {
             challengeRepository.listenForAll(c)
         },
         consumer = { cs, _ ->
-            Timber.d("AAA ${cs.size}")
             val challenges = cs.map {
                 findQuestsForChallengeUseCase.execute(
                     FindQuestsForChallengeUseCase.Params(it)
