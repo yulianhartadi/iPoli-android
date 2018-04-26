@@ -345,7 +345,7 @@ class BucketListViewController(args: Bundle? = null) :
         val today = LocalDate.now()
         return if (dueDate.isBefore(today)) {
             val overdueDays = dueDate.daysUntil(today)
-            "Overdue by $overdueDays"
+            "Overdue by $overdueDays days"
         } else {
             "Due " + DateFormatter.formatWithoutYear(activity!!, dueDate) + formatStartTime(quest)
         }
