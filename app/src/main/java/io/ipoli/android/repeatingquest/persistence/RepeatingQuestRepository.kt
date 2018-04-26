@@ -19,7 +19,6 @@ import io.ipoli.android.repeatingquest.persistence.DbRepeatPattern.Type.*
 import org.threeten.bp.DayOfWeek
 import org.threeten.bp.LocalDate
 import org.threeten.bp.Month
-import timber.log.Timber
 import kotlin.coroutines.experimental.CoroutineContext
 
 /**
@@ -48,7 +47,7 @@ data class DbRepeatingQuest(override val map: MutableMap<String, Any?> = mutable
     var icon: String? by map
     var tagIds: Map<String, Boolean> by map
     var startMinute: Long? by map
-    var duration: Int by map
+    var duration: Long by map
     var priority: String by map
     var preferredStartTime: String by map
     var reminders: List<MutableMap<String, Any?>> by map
@@ -65,12 +64,12 @@ data class DbRepeatPattern(val map: MutableMap<String, Any?> = mutableMapOf()) {
     var type: String by map
     var startDate: Long by map
     var endDate: Long? by map
-    var dayOfMonth: Int by map
+    var dayOfMonth: Long by map
     var month: String by map
     var daysOfWeek: List<String> by map
-    var daysOfMonth: List<Int> by map
-    var timesPerWeek: Int by map
-    var timesPerMonth: Int by map
+    var daysOfMonth: List<Long> by map
+    var timesPerWeek: Long by map
+    var timesPerMonth: Long by map
     var preferredDays: List<String> by map
     var scheduledPeriods: MutableMap<String, List<Long>> by map
 
@@ -140,9 +139,6 @@ class FirestoreRepeatingQuestRepository(
 
     override fun toEntityObject(dataMap: MutableMap<String, Any?>): RepeatingQuest {
 
-        try {
-
-
         val rq = DbRepeatingQuest(dataMap.withDefault {
             null
         })
@@ -159,7 +155,7 @@ class FirestoreRepeatingQuestRepository(
                 tags[it]!!
             },
             startTime = rq.startMinute?.let { Time.of(it.toInt()) },
-            duration = rq.duration,
+            duration = rq.duration.toInt(),
             priority = Priority.valueOf(rq.priority),
             preferredStartTime = TimePreference.valueOf(rq.preferredStartTime),
             reminders = rq.reminders.map {
@@ -170,7 +166,7 @@ class FirestoreRepeatingQuestRepository(
                         Reminder.Relative(cr.message, cr.minutesFromStart!!)
 
                     DbReminder.Type.FIXED ->
-                        Reminder.Fixed(cr.message, cr.date!!.startOfDayUTC, Time.of(cr.minute!!))
+                        Reminder.Fixed(cr.message, cr.date!!.startOfDayUTC, Time.of(cr.minute!!.toInt()))
                 }
 
             },
@@ -188,12 +184,6 @@ class FirestoreRepeatingQuestRepository(
             updatedAt = rq.updatedAt.instant,
             createdAt = rq.createdAt.instant
         )
-
-        } catch (e: Throwable) {
-            Timber.e(e)
-        }
-
-        throw IllegalArgumentException()
     }
 
     private fun createRepeatPattern(rp: DbRepeatPattern): RepeatPattern {
@@ -215,7 +205,7 @@ class FirestoreRepeatingQuestRepository(
             }
             MONTHLY -> {
                 RepeatPattern.Monthly(
-                    daysOfMonth = rp.daysOfMonth.toSet(),
+                    daysOfMonth = rp.daysOfMonth.map { it.toInt() }.toSet(),
                     startDate = rp.startDate.startOfDayUTC,
                     endDate = rp.endDate?.startOfDayUTC
                 )
@@ -223,7 +213,7 @@ class FirestoreRepeatingQuestRepository(
 
             YEARLY -> {
                 RepeatPattern.Yearly(
-                    dayOfMonth = rp.dayOfMonth,
+                    dayOfMonth = rp.dayOfMonth.toInt(),
                     month = Month.valueOf(rp.month),
                     startDate = rp.startDate.startOfDayUTC,
                     endDate = rp.endDate?.startOfDayUTC
@@ -232,7 +222,7 @@ class FirestoreRepeatingQuestRepository(
 
             FLEXIBLE_WEEKLY -> {
                 RepeatPattern.Flexible.Weekly(
-                    timesPerWeek = rp.timesPerWeek,
+                    timesPerWeek = rp.timesPerWeek.toInt(),
                     preferredDays = rp.preferredDays.map { DayOfWeek.valueOf(it) }.toSet(),
                     scheduledPeriods = rp.scheduledPeriods.entries
                         .associate { it.key.toLong().startOfDayUTC to it.value.map { it.startOfDayUTC } },
@@ -243,7 +233,7 @@ class FirestoreRepeatingQuestRepository(
 
             FLEXIBLE_MONTHLY -> {
                 RepeatPattern.Flexible.Monthly(
-                    timesPerMonth = rp.timesPerMonth,
+                    timesPerMonth = rp.timesPerMonth.toInt(),
                     preferredDays = rp.preferredDays.map { it.toInt() }.toSet(),
                     scheduledPeriods = rp.scheduledPeriods.entries
                         .associate { it.key.toLong().startOfDayUTC to it.value.map { it.startOfDayUTC } },
@@ -261,7 +251,7 @@ class FirestoreRepeatingQuestRepository(
         rq.tagIds = entity.tags.map { it.id to true }.toMap()
         rq.color = entity.color.name
         rq.icon = entity.icon?.name
-        rq.duration = entity.duration
+        rq.duration = entity.duration.toLong()
         rq.priority = entity.priority.name
         rq.preferredStartTime = entity.preferredStartTime.name
         rq.startMinute = entity.startTime?.toMinuteOfDay()?.toLong()
@@ -300,16 +290,16 @@ class FirestoreRepeatingQuestRepository(
             }
             is RepeatPattern.Monthly -> {
                 rp.type = MONTHLY.name
-                rp.daysOfMonth = repeatPattern.daysOfMonth.map { it }
+                rp.daysOfMonth = repeatPattern.daysOfMonth.map { it.toLong() }
             }
             is RepeatPattern.Yearly -> {
                 rp.type = YEARLY.name
-                rp.dayOfMonth = repeatPattern.dayOfMonth
+                rp.dayOfMonth = repeatPattern.dayOfMonth.toLong()
                 rp.month = repeatPattern.month.name
             }
             is RepeatPattern.Flexible.Weekly -> {
                 rp.type = FLEXIBLE_WEEKLY.name
-                rp.timesPerWeek = repeatPattern.timesPerWeek
+                rp.timesPerWeek = repeatPattern.timesPerWeek.toLong()
                 rp.preferredDays = repeatPattern.preferredDays.map {
                     it.name
                 }
@@ -319,7 +309,7 @@ class FirestoreRepeatingQuestRepository(
             }
             is RepeatPattern.Flexible.Monthly -> {
                 rp.type = FLEXIBLE_MONTHLY.name
-                rp.timesPerMonth = repeatPattern.timesPerMonth
+                rp.timesPerMonth = repeatPattern.timesPerMonth.toLong()
                 rp.preferredDays = repeatPattern.preferredDays.map { it.toString() }
 
                 rp.scheduledPeriods = repeatPattern.scheduledPeriods.entries
@@ -338,7 +328,7 @@ class FirestoreRepeatingQuestRepository(
             is Reminder.Fixed -> {
                 cr.type = DbReminder.Type.FIXED.name
                 cr.date = reminder.date.startOfDayUTC()
-                cr.minute = reminder.time.toMinuteOfDay()
+                cr.minute = reminder.time.toMinuteOfDay().toLong()
             }
 
             is Reminder.Relative -> {
