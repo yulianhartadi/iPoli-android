@@ -262,7 +262,7 @@ class AuthSideEffectHandler : AppSideEffectHandler() {
                 Tag(
                     name = "Wellness",
                     color = Color.GREEN,
-                    icon = Icon.TREE,
+                    icon = Icon.FLOWER,
                     isFavorite = true
                 )
             )

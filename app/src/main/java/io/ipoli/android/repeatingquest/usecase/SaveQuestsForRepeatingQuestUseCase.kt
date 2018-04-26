@@ -263,7 +263,6 @@ class SaveQuestsForRepeatingQuestUseCase(
             reminders = rq.reminders,
             repeatingQuestId = rq.id,
             challengeId = rq.challengeId,
-            note = rq.note,
             tags = rq.tags
         )
 
