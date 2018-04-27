@@ -63,8 +63,9 @@ class AuthSideEffectHandler : AppSideEffectHandler() {
                 val isNewUser =
                     metadata == null || metadata.creationTimestamp == metadata.lastSignInTimestamp
                 Timber.d("AAA $isNewUser")
+                val hasPlayer = playerRepository.hasPlayer()
                 when {
-                    !isNewUser && playerRepository.hasPlayer() -> {
+                    !isNewUser && hasPlayer -> {
                         //TODO: delete anonymous account
                         val anonymousPlayerId =
                             sharedPreferences.getString(Constants.KEY_PLAYER_ID, null)
@@ -72,11 +73,11 @@ class AuthSideEffectHandler : AppSideEffectHandler() {
                         dispatch(LoadDataAction.ChangePlayer(anonymousPlayerId))
                         dispatch(AuthAction.ExistingPlayerLoggedInFromGuest)
                     }
-                    isNewUser && playerRepository.hasPlayer() -> {
+                    isNewUser && hasPlayer -> {
                         updatePlayerAuthProvider(user)
                         dispatch(AuthAction.AccountsLinked)
                     }
-                    isNewUser && !playerRepository.hasPlayer() -> {
+                    isNewUser && !hasPlayer -> {
                         createNewPlayer(user)
                     }
                     else -> loginExistingPlayer(user)

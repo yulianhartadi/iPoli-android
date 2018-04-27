@@ -33,6 +33,7 @@ import io.ipoli.android.store.powerup.AndroidPowerUp
 import io.ipoli.android.store.powerup.buy.BuyPowerUpDialogController
 import io.ipoli.android.store.powerup.middleware.ShowBuyPowerUpAction
 import io.ipoli.android.tag.show.TagAction
+import kotlinx.coroutines.experimental.CommonPool
 import kotlinx.coroutines.experimental.android.UI
 import kotlinx.coroutines.experimental.launch
 import org.threeten.bp.LocalDate
@@ -81,10 +82,20 @@ class MainActivity : AppCompatActivity(), Injects<Module>, SideEffectHandler<App
         router.setPopsLastView(true)
         inject(myPoliApp.module(this))
 
-        if (!playerRepository.hasPlayer()) {
+        val hasPlayer = playerRepository.hasPlayer()
+        if (!hasPlayer) {
             router.setRoot(RouterTransaction.with(AuthViewController()))
         } else {
-            startApp()
+            launch(CommonPool) {
+                val player = playerRepository.find()
+                launch(UI) {
+                    if (player!!.username == null) {
+                        router.setRoot(RouterTransaction.with(AuthViewController()))
+                    } else {
+                        startApp()
+                    }
+                }
+            }
         }
     }
 
