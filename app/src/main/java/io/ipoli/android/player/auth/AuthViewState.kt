@@ -8,6 +8,7 @@ import io.ipoli.android.common.AppState
 import io.ipoli.android.common.BaseViewStateReducer
 import io.ipoli.android.common.mvi.ViewState
 import io.ipoli.android.common.redux.Action
+import io.ipoli.android.player.auth.AuthViewState.StateType.*
 
 /**
  * Created by Polina Zhelyazkova <polina@mypoli.fun>
@@ -15,19 +16,22 @@ import io.ipoli.android.common.redux.Action
  */
 sealed class AuthAction : Action {
     object Load : AuthAction()
-    data class LoadSignUp(val isGuest: Boolean) : AuthAction()
-    data class CompleteUserAuth(val user: FirebaseUser, val username: String) : AuthAction()
-    data class SignUp(val username: String, val provider: AuthViewState.Provider) : AuthAction()
+    data class Loaded(
+        val hasPlayer: Boolean,
+        val isGuest: Boolean,
+        val hasUsername: Boolean
+    ) : AuthAction()
+
+    data class UserAuthenticated(val user: FirebaseUser) : AuthAction()
+    //    data class SignUp(val username: String, val provider: AuthViewState.Provider) : AuthAction()
     data class Login(val provider: AuthViewState.Provider) : AuthAction()
     data class UsernameValidationFailed(val error: AuthViewState.ValidationError) : AuthAction()
-    data class StartSignUp(val provider: AuthViewState.Provider) : AuthAction()
     object AccountsLinked : AuthAction()
     object PlayerCreated : AuthAction()
     object PlayerLoggedIn : AuthAction()
     object SwitchViewType : AuthAction()
-    object DeleteAccount : AuthAction()
-    object SignOutAccount : AuthAction()
-    object GuestPlayerLoggedIn : AuthAction()
+    object ExistingPlayerLoggedInFromGuest : AuthAction()
+    object ShowSetUp : AuthAction()
 }
 
 object AuthReducer : BaseViewStateReducer<AuthViewState>() {
@@ -36,98 +40,86 @@ object AuthReducer : BaseViewStateReducer<AuthViewState>() {
 
     override fun reduce(state: AppState, subState: AuthViewState, action: Action) =
         when (action) {
-            is AuthAction.LoadSignUp -> {
+            is AuthAction.Loaded -> {
+                val hasPlayer = action.hasPlayer
+                val isGuest = action.isGuest
+                val hasUsername = action.hasUsername
                 subState.copy(
-                    type = AuthViewState.StateType.SHOW_SIGN_UP,
+                    type = if (!hasPlayer || isGuest) {
+                        SHOW_LOGIN
+                    } else if (!hasUsername) {
+                        SHOW_SETUP
+                    } else {
+                        throw  IllegalStateException("Player is already authenticated and has username")
+                    },
                     isGuest = action.isGuest
                 )
             }
 
-            is AuthAction.StartSignUp -> {
-                val type = when (action.provider) {
-                    AuthViewState.Provider.GOOGLE ->
-                        AuthViewState.StateType.GOOGLE_AUTH_STARTED
-
-                    AuthViewState.Provider.FACEBOOK ->
-                        AuthViewState.StateType.FACEBOOK_AUTH_STARTED
-
-                    AuthViewState.Provider.GUEST ->
-                        AuthViewState.StateType.GUEST_AUTH_STARTED
-                }
-
-                subState.copy(type = type)
-            }
-
             is AuthAction.UsernameValidationFailed -> {
                 subState.copy(
-                    type = AuthViewState.StateType.USERNAME_VALIDATION_ERROR,
+                    type = USERNAME_VALIDATION_ERROR,
                     usernameValidationError = action.error
                 )
             }
 
-            is AuthAction.Login -> {
-                val type = when (action.provider) {
-                    AuthViewState.Provider.GOOGLE ->
-                        AuthViewState.StateType.GOOGLE_AUTH_STARTED
-
-                    AuthViewState.Provider.FACEBOOK ->
-                        AuthViewState.StateType.FACEBOOK_AUTH_STARTED
-
-                    AuthViewState.Provider.GUEST ->
-                        throw IllegalArgumentException("Guest can't log in")
-                }
-                subState.copy(
-                    type = type
-                )
-            }
+//            is AuthAction.Login -> {
+//                val type = when (action.provider) {
+//                    AuthViewState.Provider.GOOGLE ->
+//                        GOOGLE_AUTH_STARTED
+//
+//                    AuthViewState.Provider.FACEBOOK ->
+//                        FACEBOOK_AUTH_STARTED
+//
+//                    AuthViewState.Provider.GUEST ->
+//                        throw IllegalArgumentException("Guest can't log in")
+//                }
+//                subState.copy(
+//                    type = type
+//                )
+//            }
 
             AuthAction.PlayerCreated -> {
                 subState.copy(
-                    type = AuthViewState.StateType.PLAYER_CREATED
+                    type = PLAYER_CREATED
                 )
             }
 
             AuthAction.PlayerLoggedIn -> {
                 subState.copy(
-                    type = AuthViewState.StateType.PLAYER_LOGGED_IN
+                    type = PLAYER_LOGGED_IN
                 )
             }
 
-            AuthAction.GuestPlayerLoggedIn -> {
+            AuthAction.ExistingPlayerLoggedInFromGuest -> {
                 subState.copy(
-                    type = AuthViewState.StateType.GUEST_PLAYER_LOGGED_IN
+                    type = EXISTING_PLAYER_LOGGED_IN_FROM_GUEST
                 )
             }
 
-            AuthAction.SwitchViewType -> {
-                val isLogin = !subState.isLogin
-
-                val type = if (isLogin)
-                    AuthViewState.StateType.SHOW_LOGIN
-                else
-                    AuthViewState.StateType.SHOW_SIGN_UP
-
+            AuthAction.ShowSetUp -> {
                 subState.copy(
-                    type = type,
-                    isLogin = isLogin
+                    type = SWITCH_TO_SETUP
                 )
             }
+
+//            AuthAction.SwitchViewType -> {
+//                val isLogin = !subState.isSetup
+//
+//                val type = if (isLogin)
+//                    SHOW_SETUP
+//                else
+//                    SHOW_LOGIN
+//
+//                subState.copy(
+//                    type = type,
+//                    isSetup = isLogin
+//                )
+//            }
 
             AuthAction.AccountsLinked -> {
                 subState.copy(
-                    type = AuthViewState.StateType.ACCOUNTS_LINKED
-                )
-            }
-
-            AuthAction.DeleteAccount -> {
-                subState.copy(
-                    type = AuthViewState.StateType.DELETE_ACCOUNT
-                )
-            }
-
-            AuthAction.SignOutAccount -> {
-                subState.copy(
-                    type = AuthViewState.StateType.SIGN_OUT_ACCOUNT
+                    type = ACCOUNTS_LINKED
                 )
             }
 
@@ -137,9 +129,9 @@ object AuthReducer : BaseViewStateReducer<AuthViewState>() {
 
     override fun defaultState() =
         AuthViewState(
-            type = AuthViewState.StateType.LOADING,
+            type = LOADING,
             usernameValidationError = null,
-            isLogin = false,
+            isSetup = false,
             isGuest = false
         )
 
@@ -148,26 +140,20 @@ object AuthReducer : BaseViewStateReducer<AuthViewState>() {
 data class AuthViewState(
     val type: AuthViewState.StateType,
     val usernameValidationError: ValidationError?,
-    val isLogin: Boolean,
+    val isSetup: Boolean,
     val isGuest: Boolean
 ) : ViewState {
     enum class StateType {
         IDLE,
         LOADING,
-        SHOW_SIGN_UP,
         SHOW_LOGIN,
-        GOOGLE_AUTH_STARTED,
-        FACEBOOK_AUTH_STARTED,
-        GUEST_AUTH_STARTED,
-        START_GOOGLE_LOGIN,
-        START_FACEBOOK_LOGIN,
+        SHOW_SETUP,
+        SWITCH_TO_SETUP,
         USERNAME_VALIDATION_ERROR,
         PLAYER_CREATED,
         PLAYER_LOGGED_IN,
-        GUEST_PLAYER_LOGGED_IN,
-        ACCOUNTS_LINKED,
-        DELETE_ACCOUNT,
-        SIGN_OUT_ACCOUNT
+        EXISTING_PLAYER_LOGGED_IN_FROM_GUEST,
+        ACCOUNTS_LINKED
     }
 
     enum class ValidationError {

@@ -44,18 +44,24 @@ class AuthSideEffectHandler : AppSideEffectHandler() {
 
         when (action) {
             AuthAction.Load -> {
-                dispatch(AuthAction.LoadSignUp(playerRepository.hasPlayer()))
+                val hasPlayer = playerRepository.hasPlayer()
+                var isGuest = false
+                var hasUsername = false
+                if (hasPlayer) {
+                    val player = playerRepository.find()
+                    isGuest = player!!.authProvider is AuthProvider.Guest
+                    hasUsername = !player.username.isNullOrEmpty()
+                }
+                dispatch(AuthAction.Loaded(hasPlayer, isGuest, hasUsername))
             }
 
-            is AuthAction.CompleteUserAuth -> {
+            is AuthAction.UserAuthenticated -> {
                 val user = action.user
-                val username = action.username
 
                 val metadata = user.metadata
                 val isNewUser =
                     metadata == null || metadata.creationTimestamp == metadata.lastSignInTimestamp
 
-                if (state.stateFor(AuthViewState::class.java).isLogin) {
                     when {
                         !isNewUser && playerRepository.hasPlayer() -> {
                             //TODO: delete anonymous account
@@ -63,80 +69,59 @@ class AuthSideEffectHandler : AppSideEffectHandler() {
                                 sharedPreferences.getString(Constants.KEY_PLAYER_ID, null)
                             savePlayerId(user)
                             dispatch(LoadDataAction.ChangePlayer(anonymousPlayerId))
-                            dispatch(AuthAction.GuestPlayerLoggedIn)
+                            dispatch(AuthAction.ExistingPlayerLoggedInFromGuest)
                         }
-                        playerRepository.hasPlayer() -> {
-                            mergeFromAnonymous()
-                        }
-                        isNewUser -> {
-                            handleMissingRegisteredUser()
-                        }
-                        else -> loginExistingPlayer(user)
-                    }
-
-                } else {
-                    when {
-                        playerRepository.hasPlayer() -> {
+                        isNewUser && playerRepository.hasPlayer() -> {
                             updatePlayerAuthProvider(user)
-                            playerRepository.addUsername(username)
                             dispatch(AuthAction.AccountsLinked)
                         }
-                        isNewUser -> {
-                            createNewPlayer(user, username)
+                        isNewUser && !playerRepository.hasPlayer() -> {
+                            createNewPlayer(user)
                         }
                         else -> loginExistingPlayer(user)
                     }
-                }
             }
 
-            is AuthAction.SignUp -> {
-                val username = action.username
-
-                when (action.provider) {
-                    AuthViewState.Provider.FACEBOOK -> {
-                        val usernameValidationError =
-                            findUsernameValidationError(username, playerRepository)
-                        if (usernameValidationError != null) {
-                            dispatch(
-                                AuthAction.UsernameValidationFailed(
-                                    usernameValidationError
-                                )
-                            )
-                            return
-                        }
-
-                        dispatch(AuthAction.StartSignUp(AuthViewState.Provider.FACEBOOK))
-                    }
-
-                    AuthViewState.Provider.GOOGLE -> {
-                        val usernameValidationError =
-                            findUsernameValidationError(username, playerRepository)
-                        if (usernameValidationError != null) {
-                            dispatch(
-                                AuthAction.UsernameValidationFailed(
-                                    usernameValidationError
-                                )
-                            )
-                            return
-                        }
-
-                        dispatch(AuthAction.StartSignUp(AuthViewState.Provider.GOOGLE))
-                    }
-
-                    AuthViewState.Provider.GUEST -> {
-                        dispatch(AuthAction.StartSignUp(AuthViewState.Provider.GUEST))
-                    }
-                }
-            }
+//            is AuthAction.SignUp -> {
+//                val username = action.username
+//
+//                when (action.provider) {
+//                    AuthViewState.Provider.FACEBOOK -> {
+//                        val usernameValidationError =
+//                            findUsernameValidationError(username, playerRepository)
+//                        if (usernameValidationError != null) {
+//                            dispatch(
+//                                AuthAction.UsernameValidationFailed(
+//                                    usernameValidationError
+//                                )
+//                            )
+//                            return
+//                        }
+//
+//                        dispatch(AuthAction.StartSignUp(AuthViewState.Provider.FACEBOOK))
+//                    }
+//
+//                    AuthViewState.Provider.GOOGLE -> {
+//                        val usernameValidationError =
+//                            findUsernameValidationError(username, playerRepository)
+//                        if (usernameValidationError != null) {
+//                            dispatch(
+//                                AuthAction.UsernameValidationFailed(
+//                                    usernameValidationError
+//                                )
+//                            )
+//                            return
+//                        }
+//
+//                        dispatch(AuthAction.StartSignUp(AuthViewState.Provider.GOOGLE))
+//                    }
+//
+//                    AuthViewState.Provider.GUEST -> {
+//                        dispatch(AuthAction.StartSignUp(AuthViewState.Provider.GUEST))
+//                    }
+//                }
+//            }
         }
-    }
-
-    private fun handleMissingRegisteredUser() {
-        dispatch(AuthAction.DeleteAccount)
-    }
-
-    private fun mergeFromAnonymous() {
-        dispatch(AuthAction.SignOutAccount)
     }
 
     private suspend fun updatePlayerAuthProvider(
@@ -178,8 +163,7 @@ class AuthSideEffectHandler : AppSideEffectHandler() {
     }
 
     private suspend fun createNewPlayer(
-        user: FirebaseUser,
-        username: String
+        user: FirebaseUser
     ) {
 
         val authProvider = if (user.providerData.size == 1) {
@@ -219,7 +203,7 @@ class AuthSideEffectHandler : AppSideEffectHandler() {
 
         val player = Player(
             authProvider = auth,
-            username = if (auth !is AuthProvider.Guest) username else "",
+            username = null,
             displayName = if (user.displayName != null) user.displayName!! else "",
             schemaVersion = Constants.SCHEMA_VERSION
         )
@@ -227,14 +211,18 @@ class AuthSideEffectHandler : AppSideEffectHandler() {
         playerRepository.create(player, user.uid)
         savePlayerId(user)
 
-        if (authProvider.providerId != FirebaseAuthProvider.PROVIDER_ID) {
-            playerRepository.addUsername(username)
-        }
+//        if (authProvider.providerId != FirebaseAuthProvider.PROVIDER_ID) {
+//            playerRepository.addUsername(username)
+//        }
 
         saveDefaultTags()
 
-        prepareAppStart()
-        dispatch(AuthAction.PlayerCreated)
+        dispatch(AuthAction.ShowSetUp)
+
+//        dispach show username
+
+//        prepareAppStart()
+//        dispatch(AuthAction.PlayerCreated)
 
 //        if (auth is AuthProvider.Facebook) {
 //            Api.migratePlayer(user.uid, auth.email)

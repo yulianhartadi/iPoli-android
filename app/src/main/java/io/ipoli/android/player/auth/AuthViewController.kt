@@ -26,12 +26,12 @@ import com.google.firebase.auth.FirebaseAuth
 import io.ipoli.android.R
 import io.ipoli.android.common.EmailUtils
 import io.ipoli.android.common.LoaderDialogController
-import io.ipoli.android.common.ViewUtils
 import io.ipoli.android.common.home.HomeViewController
 import io.ipoli.android.common.redux.android.ReduxViewController
 import io.ipoli.android.common.view.*
 import io.ipoli.android.common.view.recyclerview.BaseRecyclerViewAdapter
 import io.ipoli.android.common.view.recyclerview.SimpleViewHolder
+import io.ipoli.android.player.auth.AuthViewState.StateType.*
 import io.ipoli.android.player.auth.error.SignInError
 import io.ipoli.android.player.data.AndroidAvatar
 import io.ipoli.android.player.data.Avatar
@@ -110,15 +110,6 @@ class AuthViewController(args: Bundle? = null) :
             )
         )
 
-//        view.switchToLogin.dispatchOnClick(AuthAction.SwitchViewType)
-//        view.closeLogin.dispatchOnClick(AuthAction.SwitchViewType)
-//
-//        view.switchToLogin.setImageDrawable(
-//            IconicsDrawable(view.context)
-//                .icon(GoogleMaterial.Icon.gmd_vpn_key)
-//                .colorRes(R.color.md_white)
-//                .sizeDp(24)
-//        )
         return view
     }
 
@@ -131,169 +122,88 @@ class AuthViewController(args: Bundle? = null) :
     override fun render(state: AuthViewState, view: View) {
         when (state.type) {
 
-            AuthViewState.StateType.LOADING -> {
+            LOADING -> {
                 // show loading
             }
 
-            AuthViewState.StateType.SHOW_SIGN_UP -> {
+            SHOW_LOGIN -> {
+                renderLoginViews(view, state)
 
-//                if (view.loginContainer.visible) {
-//                    playShowSignUpAnimation(view, {
-//                        renderSighUpViews(view, state)
-//                    })
-//                } else {
-                    renderSighUpViews(view, state)
-//                }
-
-                view.anonymousSignUp.setOnClickListener {
-                    playShowLoginAnimation(view, {
-                        view.loginContainer.visibility = View.INVISIBLE
-                        view.loginPet.visible = false
-                        view.setupPet.visible = true
-//                        view.signUpHeadline.setText(R.string.welcome_back_hero)
-                    })
+                view.googleSignIn.setOnClickListener {
+                    showLoader()
+                    startActivityForResult(
+                        startSignUpForProvider(AuthUI.IdpConfig.GoogleBuilder().build()),
+                        RC_SIGN_IN
+                    )
+                }
+                view.facebookSignIn.setOnClickListener {
+                    showLoader()
+                    startActivityForResult(
+                        startSignUpForProvider(AuthUI.IdpConfig.FacebookBuilder().build()),
+                        RC_SIGN_IN
+                    )
                 }
 
-//                view.googleSignIn.setOnClickListener {
-//                    dispatch(
-//                        AuthAction.SignUp(
-//                            view.username.text.toString(),
-//                            AuthViewState.Provider.GOOGLE
-//                        )
-//                    )
-//                }
-//                view.facebookSignIn.setOnClickListener {
-//                    dispatch(
-//                        AuthAction.SignUp(
-//                            view.username.text.toString(),
-//                            AuthViewState.Provider.FACEBOOK
-//                        )
-//                    )
-//                }
-//
-//                view.anonymousSignUp.setOnClickListener {
-//                    dispatch(
-//                        AuthAction.SignUp(
-//                            view.username.text.toString(),
-//                            AuthViewState.Provider.GUEST
-//                        )
-//                    )
-//                }
-            }
-
-            AuthViewState.StateType.SHOW_LOGIN -> {
-                playShowLoginAnimation(view, {
-                    view.loginContainer.visibility = View.INVISIBLE
-                    view.loginPet.visible = false
-                    view.setupPet.visible = true
-//                    view.signUpHeadline.setText(R.string.welcome_back_hero)
-                })
-
-//                view.googleLogin.setOnClickListener {
-//                    dispatch(
-//                        AuthAction.Login(
-//                            AuthViewState.Provider.GOOGLE
-//                        )
-//                    )
-//                }
-//                view.facebookLogin.setOnClickListener {
-//                    dispatch(
-//                        AuthAction.Login(
-//                            AuthViewState.Provider.FACEBOOK
-//                        )
-//                    )
-//                }
-            }
-
-            AuthViewState.StateType.GOOGLE_AUTH_STARTED -> {
-                showLoader()
-                startActivityForResult(
-                    startSignUpForProvider(AuthUI.IdpConfig.GoogleBuilder().build()),
-                    RC_SIGN_IN
-                )
-            }
-
-            AuthViewState.StateType.FACEBOOK_AUTH_STARTED -> {
-                showLoader()
-                startActivityForResult(
-                    startSignUpForProvider(AuthUI.IdpConfig.FacebookBuilder().build()),
-                    RC_SIGN_IN
-                )
-            }
-
-            AuthViewState.StateType.GUEST_AUTH_STARTED -> {
-                showLoader()
-                FirebaseAuth.getInstance().signInAnonymously().addOnCompleteListener {
-                    if (it.isSuccessful) {
-//                        dispatch(
-//                            AuthAction.CompleteUserAuth(
-//                                FirebaseAuth.getInstance().currentUser!!,
-//                                view.username.text.toString()
-//                            )
-//                        )
-                    } else {
-                        hideLoader()
-                        showShortToast(R.string.something_went_wrong)
-                        Crashlytics.logException(it.exception)
+                view.anonymousSignUp.setOnClickListener {
+                    showLoader()
+                    FirebaseAuth.getInstance().signInAnonymously().addOnCompleteListener {
+                        if (it.isSuccessful) {
+                            dispatch(
+                                AuthAction.UserAuthenticated(
+                                    FirebaseAuth.getInstance().currentUser!!
+                                )
+                            )
+                        } else {
+                            hideLoader()
+                            showShortToast(R.string.something_went_wrong)
+                            Crashlytics.logException(it.exception)
+                        }
                     }
                 }
             }
 
-            AuthViewState.StateType.USERNAME_VALIDATION_ERROR -> {
+            SHOW_SETUP -> {
+                view.loginContainer.invisible()
+                view.setupContainer.visible()
+            }
+
+            SWITCH_TO_SETUP -> {
                 hideLoader()
+                playShowLoginAnimation(view, {
+                    view.loginContainer.invisible()
+                    view.loginPet.invisible()
+                    view.setupPet.visible()
+                })
+            }
+
+            USERNAME_VALIDATION_ERROR -> {
+//                hideLoader()
 //                view.username.error = state.usernameErrorMessage(activity!!)
             }
 
-            AuthViewState.StateType.PLAYER_CREATED -> {
+            PLAYER_CREATED -> {
                 hideLoader()
                 startHomeViewController()
             }
 
-            AuthViewState.StateType.PLAYER_LOGGED_IN -> {
+            PLAYER_LOGGED_IN -> {
                 hideLoader()
                 showShortToast(R.string.welcome_hero)
                 startHomeViewController()
             }
 
-            AuthViewState.StateType.GUEST_PLAYER_LOGGED_IN -> {
+            EXISTING_PLAYER_LOGGED_IN_FROM_GUEST -> {
                 hideLoader()
                 showShortToast(R.string.welcome_hero)
                 rootRouter.popCurrentController()
             }
 
-            AuthViewState.StateType.ACCOUNTS_LINKED -> {
+            ACCOUNTS_LINKED -> {
                 hideLoader()
                 rootRouter.popCurrentController()
             }
 
-            AuthViewState.StateType.DELETE_ACCOUNT -> {
-                AuthUI.getInstance()
-                    .delete(view.context.applicationContext)
-                    .addOnCompleteListener { task ->
-                        hideLoader()
-                        if (task.isSuccessful) {
-                            showShortToast(R.string.login_no_existing_user_error)
-                            dispatch(AuthAction.SwitchViewType)
-                        } else {
-                            Crashlytics.logException(task.exception)
-                            showHelpSnackbar(view, FirebaseAuth.getInstance().currentUser?.uid)
-                        }
-                    }
-            }
-
-            AuthViewState.StateType.SIGN_OUT_ACCOUNT -> {
-                AuthUI.getInstance()
-                    .signOut(view.context.applicationContext)
-                    .addOnCompleteListener { task ->
-                        hideLoader()
-                        if (task.isSuccessful) {
-                            showShortToast(R.string.login_anonymous_no_existing_user_error)
-                            dispatch(AuthAction.SwitchViewType)
-                        } else {
-                            Crashlytics.logException(task.exception)
-                            showHelpSnackbar(view, FirebaseAuth.getInstance().currentUser?.uid)
-                        }
-                    }
+            else -> {
             }
         }
     }
@@ -326,11 +236,11 @@ class AuthViewController(args: Bundle? = null) :
         loader!!.show(router, "loader")
     }
 
-    private fun renderSighUpViews(view: View, state: AuthViewState) {
+    private fun renderLoginViews(view: View, state: AuthViewState) {
         view.setupContainer.visibility = View.INVISIBLE
-//        if (state.isGuest)
-//            view.guestGroup.goneViews()
-//        else
+        if (state.isGuest)
+            view.guestGroup.goneViews()
+        else
             view.guestGroup.showViews()
         view.loginPet.visible = true
         view.setupPet.visible = false
@@ -338,97 +248,35 @@ class AuthViewController(args: Bundle? = null) :
 
     }
 
-    private fun playShowSignUpAnimation(
-        view: View,
-        endAnimation: () -> Unit
-    ) {
+    private fun playShowLoginAnimation(view: View, animationEnd: () -> Unit) {
+        val setupContainer = view.setupContainer
+        val loginContainer = view.loginContainer
+
         val set = AnimatorSet()
         set.playTogether(
-            createContainerRevealAnimation(view.setupContainer, reverse = true),
-            createContainerRevealAnimation(view.loginContainer)
+            createContainerRevealAnimation(setupContainer),
+            createContainerRevealAnimation(loginContainer, true)
         )
         set.interpolator = AccelerateDecelerateInterpolator()
         set.duration = longAnimTime
 
         set.addListener(object : AnimatorListenerAdapter() {
             override fun onAnimationStart(animation: Animator?) {
-                view.loginContainer.visibility = View.VISIBLE
-                (view.signUpContent.views() + view.guestGroup.views()).forEach {
+                setupContainer.visible()
+                view.setupContent.views().forEach {
                     it.alpha = 0f
                 }
             }
 
             override fun onAnimationEnd(animation: Animator?) {
-//                view.switchToLogin.visible = true
-                (view.signUpContent.views() + view.guestGroup.views()).forEach {
+                view.setupContent.views().forEach {
                     it.animate().alpha(1f).start()
                 }
-
-                endAnimation()
-
-                val translateX = view.loginContainer.width / 2
-                val translateY =
-                    view.loginContainer.height / 2 - ViewUtils.dpToPx(
-                        24f,
-                        view.context
-                    )
-
-//                view.switchToLogin
-//                    .animate()
-//                    .translationXBy(translateX.toFloat())
-//                    .translationYBy(-translateY)
-//                    .setDuration(mediumAnimTime)
-//                    .start()
-
+                animationEnd()
             }
         })
 
-        set.start()
-    }
-
-    private fun playShowLoginAnimation(view: View, animationEnd: () -> Unit) {
-        val loginContainer = view.setupContainer
-        val signUpContainer = view.loginContainer
-
-        val translateX = view.loginContainer.width / 2
-        val translateY =
-            view.loginContainer.height / 2 - ViewUtils.dpToPx(24f, view.context)
-
-//        view.switchToLogin
-//            .animate()
-//            .translationXBy((-translateX).toFloat())
-//            .translationYBy(translateY)
-//            .setDuration(mediumAnimTime)
-//            .withEndAction {
-//
-                val set = AnimatorSet()
-                set.playTogether(
-                    createContainerRevealAnimation(loginContainer),
-                    createContainerRevealAnimation(signUpContainer, true)
-                )
-                set.interpolator = AccelerateDecelerateInterpolator()
-                set.duration = longAnimTime
-
-                set.addListener(object : AnimatorListenerAdapter() {
-                    override fun onAnimationStart(animation: Animator?) {
-//                        view.switchToLogin.visible = false
-                        loginContainer.visibility = View.VISIBLE
-                        view.setupContent.views().forEach {
-                            it.alpha = 0f
-                        }
-                    }
-
-                    override fun onAnimationEnd(animation: Animator?) {
-                        view.setupContent.views().forEach {
-                            it.animate().alpha(1f).start()
-                        }
-                        animationEnd()
-                    }
-                })
-
                 set.start()
-//            }
-//            .start()
     }
 
     private fun createContainerRevealAnimation(
@@ -468,12 +316,11 @@ class AuthViewController(args: Bundle? = null) :
             val response = IdpResponse.fromResultIntent(data)
 
             if (resultCode == Activity.RESULT_OK) {
-//                dispatch(
-//                    AuthAction.CompleteUserAuth(
-//                        FirebaseAuth.getInstance().currentUser!!,
-//                        view!!.username.text.toString()
-//                    )
-//                )
+                dispatch(
+                    AuthAction.UserAuthenticated(
+                        FirebaseAuth.getInstance().currentUser!!
+                    )
+                )
                 return
             } else {
                 hideLoader()
@@ -498,11 +345,12 @@ class AuthViewController(args: Bundle? = null) :
         }
     }
 
+    override fun onCreateLoadAction() = AuthAction.Load
+
     override fun onAttach(view: View) {
         super.onAttach(view)
 //        view.username.clearFocus()
         enterFullScreen()
-        dispatch(AuthAction.Load)
     }
 
     override fun onDetach(view: View) {

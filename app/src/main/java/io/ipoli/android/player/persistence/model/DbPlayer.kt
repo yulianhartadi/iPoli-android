@@ -10,7 +10,7 @@ import io.ipoli.android.common.persistence.FirestoreModel
 data class DbPlayer(override val map: MutableMap<String, Any?> = mutableMapOf()) :
     FirestoreModel {
     override var id: String by map
-    var username: String by map
+    var username: String? by map
     var displayName: String by map
     var schemaVersion: Long by map
     var level: Long by map
