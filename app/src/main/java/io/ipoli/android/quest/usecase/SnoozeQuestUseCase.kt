@@ -38,7 +38,6 @@ class SnoozeQuestUseCase(
 
     private fun scheduleNextReminder() {
         val reminderTime = questRepository.findNextReminderTime()
-        requireNotNull(reminderTime)
         reminderTime?.let {
             reminderScheduler.schedule(it)
         }

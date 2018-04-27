@@ -20,6 +20,8 @@ import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
+import com.bluelinelabs.conductor.ControllerChangeHandler
+import com.bluelinelabs.conductor.ControllerChangeType
 import com.bluelinelabs.conductor.RouterTransaction
 import com.bluelinelabs.conductor.changehandler.FadeChangeHandler
 import com.mikepenz.iconics.IconicsDrawable
@@ -201,9 +203,14 @@ class QuestViewController : ReduxViewController<QuestAction, QuestViewState, Que
 
     override fun onCreateLoadAction() = QuestAction.Load(questId)
 
-    override fun onAttach(view: View) {
-        super.onAttach(view)
-        enterFullScreen()
+    override fun onChangeEnded(
+        changeHandler: ControllerChangeHandler,
+        changeType: ControllerChangeType
+    ) {
+        if(changeType == ControllerChangeType.PUSH_ENTER) {
+            enterFullScreen()
+        }
+        super.onChangeEnded(changeHandler, changeType)
     }
 
     override fun onDetach(view: View) {
