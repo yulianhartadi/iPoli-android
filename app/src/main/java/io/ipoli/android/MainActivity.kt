@@ -142,7 +142,8 @@ class MainActivity : AppCompatActivity(), Injects<Module>, SideEffectHandler<App
     }
 
     private fun showQuickAdd() {
-        findViewById<ViewGroup>(R.id.controllerContainer).setBackgroundResource(android.R.color.transparent)
+        findViewById<ViewGroup>(R.id.activityContainer)
+            .setBackgroundResource(android.R.color.transparent)
         router.setRoot(
             RouterTransaction.with(
                 AddQuestViewController(

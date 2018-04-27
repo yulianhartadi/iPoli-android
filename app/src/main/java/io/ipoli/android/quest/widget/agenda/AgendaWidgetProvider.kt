@@ -110,7 +110,7 @@ class AgendaWidgetProvider : AppWidgetProvider() {
             context,
             0,
             IntentUtil.showQuickAdd(context),
-            PendingIntent.FLAG_UPDATE_CURRENT
+            0
         )
 
 
@@ -127,7 +127,7 @@ class AgendaWidgetProvider : AppWidgetProvider() {
             context,
             0,
             intent,
-            PendingIntent.FLAG_UPDATE_CURRENT
+            0
         )
     }
 
@@ -136,6 +136,6 @@ class AgendaWidgetProvider : AppWidgetProvider() {
             context,
             0,
             IntentUtil.startApp(context),
-            PendingIntent.FLAG_UPDATE_CURRENT
+            0
         )
 }

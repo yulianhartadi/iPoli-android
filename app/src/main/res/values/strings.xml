@@ -62,7 +62,7 @@
     <string name="invite_friends">Invite Friends</string>
     <string name="cannot_edit_completed_quests">Completed quests cannot be edited</string>
     <string name="fragment_overview_title">Your Journey Ahead</string>
-    <string name="widget_journey_name">myPoli: Daily Journey</string>
+    <string name="widget_journey_name">Daily Journey</string>
     <string name="add">ADD</string>
     <string name="rate_dialog_initial_title">Hey Hero</string>
     <string name="rate_dialog_initial_message">Do you love myPoli?</string>
