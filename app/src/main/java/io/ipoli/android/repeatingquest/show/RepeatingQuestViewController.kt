@@ -10,6 +10,7 @@ import android.support.v7.widget.LinearLayoutManager
 import android.view.*
 import com.bluelinelabs.conductor.RouterTransaction
 import com.bluelinelabs.conductor.changehandler.FadeChangeHandler
+import com.bluelinelabs.conductor.changehandler.VerticalChangeHandler
 import io.ipoli.android.MainActivity
 import io.ipoli.android.R
 import io.ipoli.android.common.ViewUtils
@@ -38,8 +39,7 @@ class RepeatingQuestViewController(args: Bundle? = null) :
 
     private lateinit var repeatingQuestId: String
 
-
-    constructor(
+    private constructor(
         repeatingQuestId: String
     ) : this() {
         this.repeatingQuestId = repeatingQuestId
@@ -247,7 +247,7 @@ class RepeatingQuestViewController(args: Bundle? = null) :
             holder: SimpleViewHolder
         ) {
             view.subQuestIndicator.backgroundTintList =
-                    ColorStateList.valueOf(colorRes(R.color.md_dark_text_54))
+                ColorStateList.valueOf(colorRes(R.color.md_dark_text_54))
             view.subQuestName.text = vm
         }
     }
@@ -336,4 +336,12 @@ class RepeatingQuestViewController(args: Bundle? = null) :
         }
 
     data class ProgressViewModel(@LayoutRes val layout: Int, @ColorInt val color: Int)
+
+    companion object {
+
+        fun routerTransaction(repeatingQuestId: String) =
+            RouterTransaction.with(RepeatingQuestViewController(repeatingQuestId))
+                .pushChangeHandler(VerticalChangeHandler())
+                .popChangeHandler(VerticalChangeHandler())
+    }
 }

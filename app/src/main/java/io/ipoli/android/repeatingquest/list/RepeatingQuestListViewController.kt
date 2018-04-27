@@ -53,7 +53,7 @@ class RepeatingQuestListViewController(args: Bundle? = null) :
             R.layout.controller_repeating_quest_list, container, false
         )
         view.repeatingQuestList.layoutManager =
-                LinearLayoutManager(container.context, LinearLayoutManager.VERTICAL, false)
+            LinearLayoutManager(container.context, LinearLayoutManager.VERTICAL, false)
         view.repeatingQuestList.adapter = RepeatingQuestAdapter()
 
         view.addRepeatingQuest.setOnClickListener {
@@ -135,7 +135,7 @@ class RepeatingQuestListViewController(args: Bundle? = null) :
             }
 
             view.rqIcon.backgroundTintList =
-                    ColorStateList.valueOf(colorRes(vm.color))
+                ColorStateList.valueOf(colorRes(vm.color))
             view.rqIcon.setImageDrawable(
                 IconicsDrawable(view.context)
                     .icon(vm.icon)
@@ -159,11 +159,8 @@ class RepeatingQuestListViewController(args: Bundle? = null) :
             }
 
             view.setOnClickListener {
-                val changeHandler = FadeChangeHandler()
                 rootRouter.pushController(
-                    RouterTransaction.with(RepeatingQuestViewController(vm.id))
-                        .pushChangeHandler(changeHandler)
-                        .popChangeHandler(changeHandler)
+                    RepeatingQuestViewController.routerTransaction(vm.id)
                 )
             }
         }
@@ -219,7 +216,7 @@ class RepeatingQuestListViewController(args: Bundle? = null) :
                 name = it.name,
                 tags = it.tags.map { TagViewModel(it.name, it.color.androidColor.color500) },
                 icon = it.icon?.let { AndroidIcon.valueOf(it.name).icon }
-                        ?: Ionicons.Icon.ion_android_clipboard,
+                    ?: Ionicons.Icon.ion_android_clipboard,
                 color = AndroidColor.valueOf(it.color.name).color500,
                 next = next,
                 completedCount = it.periodProgress!!.completedCount,
