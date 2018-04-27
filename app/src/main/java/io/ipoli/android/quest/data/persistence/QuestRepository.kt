@@ -298,7 +298,7 @@ class FirestoreQuestRepository(
         if (doc.isEmpty()) {
             return null
         }
-        return toEntityObject(doc.first().data)
+        return toEntityObject(doc.first().data!!)
     }
 
     override suspend fun listenByTag(

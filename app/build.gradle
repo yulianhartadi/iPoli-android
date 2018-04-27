@@ -79,12 +79,12 @@ dependencies {
     implementation "com.android.support:customtabs:$support_version"
     implementation "com.android.support:gridlayout-v7:$support_version"
     implementation 'com.android.support.constraint:constraint-layout:1.1.0'
-    implementation 'com.google.android.gms:play-services-auth:11.8.0'
-    implementation 'com.google.firebase:firebase-database:11.8.0'
-    implementation 'com.google.firebase:firebase-auth:11.8.0'
-    implementation 'com.google.firebase:firebase-firestore:11.8.0'
-    implementation 'com.google.firebase:firebase-invites:11.8.0'
-    implementation "com.github.SUPERCILEX.FirebaseUI-Android:firebase-ui-auth:6a56930af6"
+    implementation 'com.google.android.gms:play-services-auth:15.0.0'
+    implementation 'com.google.firebase:firebase-database:15.0.0'
+    implementation 'com.google.firebase:firebase-auth:15.0.0'
+    implementation 'com.google.firebase:firebase-firestore:15.0.0'
+    implementation 'com.google.firebase:firebase-invites:15.0.0'
+    implementation "com.github.SUPERCILEX.FirebaseUI-Android:firebase-ui-auth:38e2ece9bb"
     implementation 'com.facebook.android:facebook-login:4.32.0'
     implementation 'com.facebook.android:facebook-share:4.32.0'
     implementation 'com.bluelinelabs:conductor:2.1.4'

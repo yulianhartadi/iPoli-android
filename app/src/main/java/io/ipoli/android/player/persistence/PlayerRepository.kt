@@ -89,7 +89,7 @@ class FirestorePlayerRepository(
                     return@addSnapshotListener
                 }
 
-                if (!snapshot.metadata.isFromCache) {
+                if (!snapshot!!.metadata.isFromCache) {
                     registration?.remove()
                     continuation.resume(!snapshot.exists())
                 }

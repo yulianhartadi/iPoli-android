@@ -50,7 +50,7 @@ abstract class BaseFirestoreRepository<E, out T>(
                     return@addSnapshotListener
                 }
 
-                continuation.resume(querySnapshot)
+                continuation.resume(querySnapshot!!)
             }
         }
     }
@@ -68,7 +68,7 @@ abstract class BaseFirestoreRepository<E, out T>(
                     logError(error)
                     return@addSnapshotListener
                 }
-                continuation.resume(querySnapshot)
+                continuation.resume(querySnapshot!!)
             }
         }
     }
@@ -165,7 +165,7 @@ abstract class BaseFirestoreRepository<E, out T>(
             return null
         }
 
-        return toEntityObject(result.data)
+        return toEntityObject(result.data!!)
     }
 
     protected fun mapChannelToRegistration(
@@ -184,7 +184,7 @@ abstract class BaseFirestoreRepository<E, out T>(
             toEntityObjects(whereEqualTo("removedAt", null).documents)
 
     protected fun toEntityObjects(snapshots: List<DocumentSnapshot>) =
-        snapshots.map { toEntityObject(it.data) }
+        snapshots.map { toEntityObject(it.data!!) }
 }
 
 abstract class BaseEntityFirestoreRepository<E, out T>(
@@ -207,7 +207,7 @@ abstract class BaseEntityFirestoreRepository<E, out T>(
                     if (shouldNotSendData(error, channel)) return@addSnapshotListener
 
                     launch(coroutineContext) {
-                        channel.send(toEntityObject(snapshot.data))
+                        channel.send(toEntityObject(snapshot!!.data!!))
                     }
                 }
             mapChannelToRegistration(channel, registration)
@@ -242,7 +242,7 @@ abstract class BaseCollectionFirestoreRepository<E, out T>(
                     if (shouldNotSendData(error, channel)) return@addSnapshotListener
 
                     launch(coroutineContext) {
-                        channel.send(toEntityObject(snapshot.data))
+                        channel.send(toEntityObject(snapshot!!.data!!))
                     }
                 }
             mapChannelToRegistration(channel, registration)
@@ -260,7 +260,7 @@ abstract class BaseCollectionFirestoreRepository<E, out T>(
                     if (shouldNotSendData(error, channel)) return@addSnapshotListener
 
                     launch(coroutineContext) {
-                        channel.send(toEntityObjects(snapshot.documents))
+                        channel.send(toEntityObjects(snapshot!!.documents))
                     }
                 }
             mapChannelToRegistration(channel, registration)
