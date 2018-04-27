@@ -8,6 +8,8 @@ import android.view.LayoutInflater
 import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
+import com.bluelinelabs.conductor.RouterTransaction
+import com.bluelinelabs.conductor.changehandler.VerticalChangeHandler
 import io.ipoli.android.BuildConfig
 import io.ipoli.android.Constants
 import io.ipoli.android.R
@@ -126,4 +128,11 @@ class SettingsViewController(args: Bundle? = null) :
         } else {
             stringRes(R.string.sync_calendars_count, selectedCalendars)
         }
+
+    companion object {
+        fun routerTransaction() =
+            RouterTransaction.with(SettingsViewController())
+                .pushChangeHandler(VerticalChangeHandler())
+                .popChangeHandler(VerticalChangeHandler())
+    }
 }

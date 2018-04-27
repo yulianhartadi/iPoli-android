@@ -20,6 +20,7 @@ import android.widget.ImageView
 import com.bluelinelabs.conductor.Controller
 import com.bluelinelabs.conductor.RouterTransaction
 import com.bluelinelabs.conductor.changehandler.FadeChangeHandler
+import com.bluelinelabs.conductor.changehandler.SimpleSwapChangeHandler
 import com.bumptech.glide.Glide
 import com.bumptech.glide.request.RequestOptions
 import com.mikepenz.iconics.IconicsDrawable
@@ -94,9 +95,9 @@ class HomeViewController(args: Bundle? = null) :
             }
 
             override fun onDrawerClosed(drawerView: View) {
-                navigationItemSelected?.let {
-                    onItemSelectedFromDrawer(it)
-                }
+//                navigationItemSelected?.let {
+//                    onItemSelectedFromDrawer(it)
+//                }
             }
         }
 
@@ -128,9 +129,7 @@ class HomeViewController(args: Bundle? = null) :
 
             R.id.store ->
                 pushWithRootRouter(
-                    RouterTransaction.with(StoreViewController())
-                        .pushChangeHandler(fadeChangeHandler)
-                        .popChangeHandler(fadeChangeHandler)
+                    StoreViewController.routerTransaction()
                 )
 
             R.id.community ->
@@ -141,13 +140,10 @@ class HomeViewController(args: Bundle? = null) :
 
             R.id.settings ->
                 pushWithRootRouter(
-                    RouterTransaction.with(SettingsViewController())
-                        .pushChangeHandler(fadeChangeHandler)
-                        .popChangeHandler(fadeChangeHandler)
+                    SettingsViewController.routerTransaction()
                 )
 
-            R.id.feedback
-            ->
+            R.id.feedback ->
                 showFeedback()
 
             else -> {
@@ -195,6 +191,11 @@ class HomeViewController(args: Bundle? = null) :
             else -> item
         }
 
+        navigationItemSelected?.let {
+            onItemSelectedFromDrawer(it)
+        }
+
+
         view!!.drawerLayout.closeDrawer(GravityCompat.START)
         return false
     }
@@ -227,8 +228,8 @@ class HomeViewController(args: Bundle? = null) :
         val childRouter = getChildRouter(view!!.childControllerContainer, null)
         childRouter.setRoot(
             RouterTransaction.with(controller)
-                .pushChangeHandler(fadeChangeHandler)
-                .popChangeHandler(fadeChangeHandler)
+                .pushChangeHandler(SimpleSwapChangeHandler())
+                .popChangeHandler(SimpleSwapChangeHandler())
         )
     }
 
@@ -290,7 +291,7 @@ class HomeViewController(args: Bundle? = null) :
         val item = view.navigationView.menu.findItem(R.id.bucketList)
 
         item.actionView =
-            LayoutInflater.from(view.context).inflate(R.layout.menu_item_tag_view, null)
+                LayoutInflater.from(view.context).inflate(R.layout.menu_item_tag_view, null)
         item.actionView.questCount.text = bucketListQuestCount.toString()
     }
 
@@ -391,7 +392,7 @@ class HomeViewController(args: Bundle? = null) :
             name
         )
         item.actionView =
-            LayoutInflater.from(view.context).inflate(R.layout.menu_item_tag_view, null)
+                LayoutInflater.from(view.context).inflate(R.layout.menu_item_tag_view, null)
         item.actionView.questCount.text = questCount.toString()
 
         item.icon = IconicsDrawable(activity!!)

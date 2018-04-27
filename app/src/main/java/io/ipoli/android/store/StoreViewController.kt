@@ -15,6 +15,7 @@ import com.bluelinelabs.conductor.Controller
 import com.bluelinelabs.conductor.RestoreViewOnCreateController
 import com.bluelinelabs.conductor.RouterTransaction
 import com.bluelinelabs.conductor.changehandler.FadeChangeHandler
+import com.bluelinelabs.conductor.changehandler.VerticalChangeHandler
 import io.ipoli.android.R
 import io.ipoli.android.common.view.*
 import io.ipoli.android.pet.store.PetStoreViewController
@@ -36,10 +37,6 @@ class StoreViewController(args: Bundle? = null) : RestoreViewOnCreateController(
     private val fadeChangeHandler = FadeChangeHandler()
 
     private var itemHeight: Int = 0
-
-    companion object {
-        const val VISIBLE_ITEMS_PER_SCREEN = 3
-    }
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -208,5 +205,14 @@ class StoreViewController(args: Bundle? = null) : RestoreViewOnCreateController(
         )
     }
 
+    companion object {
+
+        const val VISIBLE_ITEMS_PER_SCREEN = 3
+
+        fun routerTransaction() =
+            RouterTransaction.with(StoreViewController())
+                .pushChangeHandler(VerticalChangeHandler())
+                .popChangeHandler(VerticalChangeHandler())
+    }
 
 }
