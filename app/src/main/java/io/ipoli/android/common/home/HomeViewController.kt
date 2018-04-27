@@ -19,8 +19,8 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import com.bluelinelabs.conductor.Controller
 import com.bluelinelabs.conductor.RouterTransaction
-import com.bluelinelabs.conductor.changehandler.FadeChangeHandler
 import com.bluelinelabs.conductor.changehandler.SimpleSwapChangeHandler
+import com.bluelinelabs.conductor.changehandler.VerticalChangeHandler
 import com.bumptech.glide.Glide
 import com.bumptech.glide.request.RequestOptions
 import com.mikepenz.iconics.IconicsDrawable
@@ -63,11 +63,8 @@ class HomeViewController(args: Bundle? = null) :
     NavigationView.OnNavigationItemSelectedListener {
 
     private lateinit var actionBarDrawerToggle: ActionBarDrawerToggle
-    private var navigationItemSelected: MenuItem? = null
 
     override val reducer = HomeReducer
-
-    private val fadeChangeHandler = FadeChangeHandler()
 
     private val eventLogger by required { eventLogger }
 
@@ -88,18 +85,7 @@ class HomeViewController(args: Bundle? = null) :
                 contentView.drawerLayout,
                 R.string.drawer_open,
                 R.string.drawer_close
-            ) {
-
-            override fun onDrawerOpened(drawerView: View) {
-                navigationItemSelected = null
-            }
-
-            override fun onDrawerClosed(drawerView: View) {
-//                navigationItemSelected?.let {
-//                    onItemSelectedFromDrawer(it)
-//                }
-            }
-        }
+            ) {}
 
         contentView.drawerLayout.addDrawerListener(actionBarDrawerToggle)
 
@@ -185,16 +171,10 @@ class HomeViewController(args: Bundle? = null) :
     }
 
     override fun onNavigationItemSelected(item: MenuItem): Boolean {
-        navigationItemSelected = when {
-        // do not allow re-selecting the same item (creates same Controller again)
-            view!!.navigationView.menu.findItem(item.itemId).isChecked -> null
-            else -> item
-        }
 
-        navigationItemSelected?.let {
-            onItemSelectedFromDrawer(it)
+        if (!view!!.navigationView.menu.findItem(item.itemId).isChecked) {
+            onItemSelectedFromDrawer(item)
         }
-
 
         view!!.drawerLayout.closeDrawer(GravityCompat.START)
         return false
@@ -213,8 +193,8 @@ class HomeViewController(args: Bundle? = null) :
         if (!childRouter.hasRootController()) {
             childRouter.setRoot(
                 RouterTransaction.with(ScheduleViewController())
-                    .pushChangeHandler(fadeChangeHandler)
-                    .popChangeHandler(fadeChangeHandler)
+                    .pushChangeHandler(SimpleSwapChangeHandler())
+                    .popChangeHandler(SimpleSwapChangeHandler())
             )
         }
     }
@@ -247,16 +227,16 @@ class HomeViewController(args: Bundle? = null) :
     private fun showAuth() {
         router.pushController(
             RouterTransaction.with(AuthViewController())
-                .pushChangeHandler(fadeChangeHandler)
-                .popChangeHandler(fadeChangeHandler)
+                .pushChangeHandler(VerticalChangeHandler())
+                .popChangeHandler(VerticalChangeHandler())
         )
     }
 
     private fun showPet() {
         router.pushController(
             RouterTransaction.with(PetViewController())
-                .pushChangeHandler(fadeChangeHandler)
-                .popChangeHandler(fadeChangeHandler)
+                .pushChangeHandler(VerticalChangeHandler())
+                .popChangeHandler(VerticalChangeHandler())
         )
     }
 
@@ -349,8 +329,8 @@ class HomeViewController(args: Bundle? = null) :
         view.playerAvatar.setOnClickListener {
             router.pushController(
                 RouterTransaction.with(AvatarStoreViewController())
-                    .pushChangeHandler(fadeChangeHandler)
-                    .popChangeHandler(fadeChangeHandler)
+                    .pushChangeHandler(VerticalChangeHandler())
+                    .popChangeHandler(VerticalChangeHandler())
             )
         }
 
