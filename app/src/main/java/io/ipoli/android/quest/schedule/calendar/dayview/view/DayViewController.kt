@@ -20,7 +20,6 @@ import android.util.TypedValue
 import android.view.*
 import com.bluelinelabs.conductor.RouterTransaction
 import com.bluelinelabs.conductor.changehandler.FadeChangeHandler
-import com.bluelinelabs.conductor.changehandler.SimpleSwapChangeHandler
 import com.bluelinelabs.conductor.changehandler.VerticalChangeHandler
 import com.mikepenz.iconics.IconicsDrawable
 import io.ipoli.android.Constants
@@ -934,9 +933,7 @@ class DayViewController :
 
     private fun showQuest(questId: String) {
         pushWithRootRouter(
-            RouterTransaction.with(QuestViewController(questId)).tag(
-                QuestViewController.TAG
-            ).pushChangeHandler(VerticalChangeHandler()).popChangeHandler(SimpleSwapChangeHandler())
+            QuestViewController.routerTransaction(questId)
         )
     }
 

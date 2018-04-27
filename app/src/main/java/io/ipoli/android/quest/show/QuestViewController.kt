@@ -24,6 +24,7 @@ import com.bluelinelabs.conductor.ControllerChangeHandler
 import com.bluelinelabs.conductor.ControllerChangeType
 import com.bluelinelabs.conductor.RouterTransaction
 import com.bluelinelabs.conductor.changehandler.FadeChangeHandler
+import com.bluelinelabs.conductor.changehandler.VerticalChangeHandler
 import com.mikepenz.iconics.IconicsDrawable
 import com.mikepenz.ionicons_typeface_library.Ionicons
 import io.ipoli.android.R
@@ -64,7 +65,7 @@ class QuestViewController : ReduxViewController<QuestAction, QuestViewState, Que
 
     constructor(args: Bundle? = null) : super(args)
 
-    constructor(questId: String) : super() {
+    private constructor(questId: String) : super() {
         this.questId = questId
     }
 
@@ -207,8 +208,10 @@ class QuestViewController : ReduxViewController<QuestAction, QuestViewState, Que
         changeHandler: ControllerChangeHandler,
         changeType: ControllerChangeType
     ) {
-        if(changeType == ControllerChangeType.PUSH_ENTER) {
+        if (changeType == ControllerChangeType.PUSH_ENTER) {
             enterFullScreen()
+        } else if (changeType == ControllerChangeType.POP_EXIT) {
+            exitFullScreen()
         }
         super.onChangeEnded(changeHandler, changeType)
     }
@@ -216,7 +219,6 @@ class QuestViewController : ReduxViewController<QuestAction, QuestViewState, Que
     override fun onDetach(view: View) {
         handler.removeCallbacksAndMessages(null)
         cancelAnimations(view)
-        exitFullScreen()
         super.onDetach(view)
     }
 
@@ -699,6 +701,13 @@ class QuestViewController : ReduxViewController<QuestAction, QuestViewState, Que
 
     companion object {
         const val TAG = "QuestViewController"
+
+        fun routerTransaction(questId: String) =
+            RouterTransaction.with(QuestViewController(questId)).tag(
+                QuestViewController.TAG
+            )
+                .pushChangeHandler(VerticalChangeHandler())
+                .popChangeHandler(VerticalChangeHandler())
     }
 }
 

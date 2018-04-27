@@ -333,10 +333,7 @@ class TagViewController(args: Bundle? = null) :
                     view.setOnClickListener {
                         val handler = FadeChangeHandler()
                         rootRouter.pushController(
-                            RouterTransaction
-                                .with(QuestViewController(vm.id))
-                                .pushChangeHandler(handler)
-                                .popChangeHandler(handler)
+                            QuestViewController.routerTransaction(vm.id)
                         )
                     }
                 }

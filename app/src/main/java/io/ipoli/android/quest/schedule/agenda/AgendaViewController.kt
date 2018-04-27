@@ -59,8 +59,7 @@ class AgendaViewController(args: Bundle? = null) :
         val layoutManager =
             LinearLayoutManager(container.context, LinearLayoutManager.VERTICAL, false)
         view.agendaList.layoutManager = layoutManager
-        val adapter = AgendaAdapter()
-        view.agendaList.adapter = adapter
+        view.agendaList.adapter = AgendaAdapter()
 
         val swipeHandler = object : SwipeToCompleteCallback(
             view.context,
@@ -172,9 +171,7 @@ class AgendaViewController(args: Bundle? = null) :
 
     private fun showQuest(questId: String) {
         pushWithRootRouter(
-            RouterTransaction.with(QuestViewController(questId)).tag(
-                QuestViewController.TAG
-            )
+            QuestViewController.routerTransaction(questId)
         )
     }
 

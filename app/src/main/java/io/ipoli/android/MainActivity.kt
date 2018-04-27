@@ -73,11 +73,11 @@ class MainActivity : AppCompatActivity(), Injects<Module>, SideEffectHandler<App
         incrementAppRun()
 
         router =
-                Conductor.attachRouter(
-                    this,
-                    findViewById(R.id.controllerContainer),
-                    savedInstanceState
-                )
+            Conductor.attachRouter(
+                this,
+                findViewById(R.id.controllerContainer),
+                savedInstanceState
+            )
         router.setPopsLastView(true)
         inject(myPoliApp.module(this))
 
@@ -159,9 +159,7 @@ class MainActivity : AppCompatActivity(), Injects<Module>, SideEffectHandler<App
     private fun showTimer(intent: Intent) {
         val questId = intent.getStringExtra(Constants.QUEST_ID_EXTRA_KEY)
         router.setRoot(
-            RouterTransaction
-                .with(QuestViewController(questId))
-                .tag(QuestViewController.TAG)
+            QuestViewController.routerTransaction(questId)
         )
     }
 
@@ -181,13 +179,13 @@ class MainActivity : AppCompatActivity(), Injects<Module>, SideEffectHandler<App
 
     fun enterFullScreen() {
         window.decorView.systemUiVisibility = (
-                View.SYSTEM_UI_FLAG_LAYOUT_STABLE
-                        or View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
-                        or View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
-                        or View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
-                        or View.SYSTEM_UI_FLAG_FULLSCREEN
-                        or View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY
-                )
+            View.SYSTEM_UI_FLAG_LAYOUT_STABLE
+                or View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
+                or View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
+                or View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
+                or View.SYSTEM_UI_FLAG_FULLSCREEN
+                or View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY
+            )
     }
 
     fun exitFullScreen() {
@@ -261,9 +259,9 @@ class MainActivity : AppCompatActivity(), Injects<Module>, SideEffectHandler<App
 
             Snackbar.make(
                 findViewById(R.id.activityContainer),
-                "Battery optimization might prevent you from receiving Reminders on time",
+                R.string.battery_optimization_warn,
                 Snackbar.LENGTH_INDEFINITE
-            ).setAction(R.string.turn_off, { _ ->
+            ).setAction(R.string.turn_it_off, { _ ->
 
                 val name = resources.getString(R.string.app_name)
                 Toast.makeText(
