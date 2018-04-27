@@ -8,6 +8,7 @@ import android.view.ViewGroup
 import com.bluelinelabs.conductor.RestoreViewOnCreateController
 import com.bluelinelabs.conductor.RouterTransaction
 import com.bluelinelabs.conductor.changehandler.FadeChangeHandler
+import com.bluelinelabs.conductor.changehandler.VerticalChangeHandler
 import io.ipoli.android.R
 import io.ipoli.android.challenge.predefined.category.list.ChallengeListForCategoryViewController
 import io.ipoli.android.challenge.predefined.entity.PredefinedChallengeData
@@ -61,5 +62,14 @@ class ChallengeCategoryListViewController(args: Bundle? = null) :
                 .pushChangeHandler(handler)
                 .popChangeHandler(handler)
         )
+    }
+
+    companion object {
+        val routerTransaction
+            get() =
+                RouterTransaction
+                    .with(ChallengeCategoryListViewController())
+                    .pushChangeHandler(VerticalChangeHandler())
+                    .popChangeHandler(VerticalChangeHandler())
     }
 }

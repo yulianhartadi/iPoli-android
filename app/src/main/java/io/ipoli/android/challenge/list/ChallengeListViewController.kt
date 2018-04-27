@@ -55,7 +55,7 @@ class ChallengeListViewController(args: Bundle? = null) :
             R.layout.controller_challenge_list, container, false
         )
         view.challengeList.layoutManager =
-            LinearLayoutManager(container.context, LinearLayoutManager.VERTICAL, false)
+                LinearLayoutManager(container.context, LinearLayoutManager.VERTICAL, false)
         view.challengeList.adapter = ChallengeAdapter()
 
         view.addChallenge.dispatchOnClick(ChallengeListAction.AddChallenge)
@@ -77,11 +77,8 @@ class ChallengeListViewController(args: Bundle? = null) :
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         if (item.itemId == R.id.actionPredefinedChallenges) {
-            val handler = FadeChangeHandler()
             rootRouter.pushController(
-                RouterTransaction.with(ChallengeCategoryListViewController())
-                    .pushChangeHandler(handler)
-                    .popChangeHandler(handler)
+                ChallengeCategoryListViewController.routerTransaction
             )
             return true
         }
@@ -182,7 +179,7 @@ class ChallengeListViewController(args: Bundle? = null) :
             view.ccName.text = vm.name
 
             view.ccIcon.backgroundTintList =
-                ColorStateList.valueOf(colorRes(vm.color))
+                    ColorStateList.valueOf(colorRes(vm.color))
             view.ccIcon.setImageDrawable(
                 IconicsDrawable(view.context)
                     .icon(vm.icon)
@@ -215,7 +212,7 @@ class ChallengeListViewController(args: Bundle? = null) :
             view.cName.text = vm.name
 
             view.cIcon.backgroundTintList =
-                ColorStateList.valueOf(colorRes(vm.color))
+                    ColorStateList.valueOf(colorRes(vm.color))
             view.cIcon.setImageDrawable(
                 IconicsDrawable(view.context)
                     .icon(vm.icon)
@@ -359,7 +356,7 @@ class ChallengeListViewController(args: Bundle? = null) :
                         tags = c.tags.map { TagViewModel(it.name, it.color.androidColor.color500) },
                         color = AndroidColor.valueOf(c.color.name).color500,
                         icon = c.icon?.let { AndroidIcon.valueOf(it.name).icon }
-                            ?: Ionicons.Icon.ion_android_clipboard,
+                                ?: Ionicons.Icon.ion_android_clipboard,
                         next = next,
                         end = end,
                         progress = c.progress.completedCount,
@@ -383,7 +380,7 @@ class ChallengeListViewController(args: Bundle? = null) :
                             },
                             color = AndroidColor.valueOf(color.name).color500,
                             icon = icon?.let { AndroidIcon.valueOf(it.name).icon }
-                                ?: Ionicons.Icon.ion_android_clipboard,
+                                    ?: Ionicons.Icon.ion_android_clipboard,
                             start = stringRes(
                                 R.string.started_at_date,
                                 DateFormatter.format(activity!!, startDate)

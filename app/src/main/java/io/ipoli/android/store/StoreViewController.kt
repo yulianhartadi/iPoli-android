@@ -69,7 +69,7 @@ class StoreViewController(args: Bundle? = null) : RestoreViewOnCreateController(
     private fun open(item: StoreItem): () -> Unit {
         when (item) {
             StoreItem.MEMBERSHIP -> return { showController(MembershipViewController()) }
-            StoreItem.POWERUPS -> return { showController(PowerUpStoreViewController()) }
+            StoreItem.POWER_UPS -> return { showController(PowerUpStoreViewController()) }
             StoreItem.AVATARS -> return { showController(AvatarStoreViewController()) }
             StoreItem.GEMS -> return { showController(GemStoreViewController()) }
             StoreItem.PETS -> return { showController(PetStoreViewController()) }
@@ -92,9 +92,15 @@ class StoreViewController(args: Bundle? = null) : RestoreViewOnCreateController(
     }
 
     override fun onAttach(view: View) {
+        colorLayoutBars()
         super.onAttach(view)
         toolbarTitle = stringRes(R.string.drawer_store)
         showBackButton()
+    }
+
+    private fun colorLayoutBars() {
+        activity?.window?.navigationBarColor = attrData(io.ipoli.android.R.attr.colorPrimary)
+        activity?.window?.statusBarColor = attrData(io.ipoli.android.R.attr.colorPrimaryDark)
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
@@ -148,7 +154,6 @@ class StoreViewController(args: Bundle? = null) : RestoreViewOnCreateController(
         )
     }
 
-
     enum class StoreItem(
         val id: Int,
         @ColorRes val color: Int,
@@ -161,7 +166,7 @@ class StoreViewController(args: Bundle? = null) : RestoreViewOnCreateController(
             icon = R.drawable.ic_card_membership_black_24px,
             title = R.string.membership
         ),
-        POWERUPS(
+        POWER_UPS(
             id = R.id.storePowerUps,
             color = R.color.md_orange_600,
             icon = R.drawable.ic_rocket_black_24dp,
