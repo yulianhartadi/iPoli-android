@@ -95,7 +95,6 @@ class AddChallengeEndDateViewController(args: Bundle? = null) :
                     false
                 )
             )
-
     }
 
     inner class ViewHolder(view: View) : RecyclerView.ViewHolder(view)
