@@ -4,6 +4,7 @@
 
     <style name="Theme.myPoli.AlertDialog" parent="Theme.AppCompat.Light.Dialog.Alert">
         <item name="colorAccent">@color/colorAccent</item>
+        <item name="android:windowAnimationStyle">@style/SlideInDialogAnimation</item>
     </style>
 
     <style name="WhiteDrawerIconStyle" parent="Widget.AppCompat.DrawerArrowToggle">
@@ -194,8 +195,8 @@
     <style name="Theme.myPoli.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
 
     <style name="SlideInDialogAnimation">
-        <item name="android:windowEnterAnimation">@anim/slide_in_top_long</item>
-        <item name="android:windowExitAnimation">@anim/slide_out_bottom_long</item>
+        <item name="android:windowEnterAnimation">@anim/slide_in_top_short</item>
+        <item name="android:windowExitAnimation">@anim/slide_out_bottom_short</item>
     </style>
 
     <style name="ScaleInDialogAnimation">

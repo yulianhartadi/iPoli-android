@@ -737,6 +737,7 @@ class AddRepeatingQuestViewController(args: Bundle? = null) :
                 val startTime = state.startTime ?: Time.now()
                 val dialog = TimePickerDialog(
                     view.context,
+                    R.style.Theme_myPoli_AlertDialog,
                     TimePickerDialog.OnTimeSetListener { _, hour, minute ->
                         dispatch(
                             EditRepeatingQuestAction.ChangeStartTime(

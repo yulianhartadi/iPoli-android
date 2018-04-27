@@ -298,6 +298,7 @@ class AddQuestViewController(args: Bundle? = null) :
             val startTime = state.time ?: Time.now()
             val dialog = TimePickerDialog(
                 view.context,
+                R.style.Theme_myPoli_AlertDialog,
                 TimePickerDialog.OnTimeSetListener { _, hour, minute ->
                     dispatch(AddQuestAction.TimePicked(Time.at(hour, minute)))
                 }, startTime.hours, startTime.getMinutes(), false
