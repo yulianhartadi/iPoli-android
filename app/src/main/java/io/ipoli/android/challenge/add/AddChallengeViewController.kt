@@ -5,6 +5,7 @@ import android.view.*
 import com.bluelinelabs.conductor.Controller
 import com.bluelinelabs.conductor.RouterTransaction
 import com.bluelinelabs.conductor.changehandler.HorizontalChangeHandler
+import com.bluelinelabs.conductor.changehandler.VerticalChangeHandler
 import io.ipoli.android.R
 import io.ipoli.android.challenge.add.EditChallengeViewState.StateType.*
 import io.ipoli.android.common.redux.android.ReduxViewController
@@ -30,6 +31,11 @@ class AddChallengeViewController(args: Bundle? = null) :
         const val END_DATE_INDEX = 2
         const val QUEST_PICKER_INDEX = 3
         const val SUMMARY_INDEX = 4
+
+        val routerTransaction
+            get() = RouterTransaction.with(AddChallengeViewController())
+                .pushChangeHandler(VerticalChangeHandler())
+                .popChangeHandler(VerticalChangeHandler())
     }
 
     override fun onCreateView(

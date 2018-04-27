@@ -10,7 +10,6 @@ import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
 import android.view.*
 import android.widget.TextView
-import com.bluelinelabs.conductor.RouterTransaction
 import com.bluelinelabs.conductor.changehandler.FadeChangeHandler
 import com.mikepenz.iconics.IconicsDrawable
 import com.mikepenz.iconics.typeface.IIcon
@@ -118,11 +117,7 @@ class ChallengeListViewController(args: Bundle? = null) :
 
             ChallengeListViewState.ShowAdd -> {
                 val handler = FadeChangeHandler()
-                rootRouter.pushController(
-                    RouterTransaction.with(AddChallengeViewController())
-                        .pushChangeHandler(handler)
-                        .popChangeHandler(handler)
-                )
+                rootRouter.pushController(AddChallengeViewController.routerTransaction)
             }
         }
     }

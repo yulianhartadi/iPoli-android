@@ -8,7 +8,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import com.bluelinelabs.conductor.RouterTransaction
-import com.bluelinelabs.conductor.changehandler.FadeChangeHandler
+import com.bluelinelabs.conductor.changehandler.VerticalChangeHandler
 import com.mikepenz.iconics.IconicsDrawable
 import com.mikepenz.material_design_iconic_typeface_library.MaterialDesignIconic
 import io.ipoli.android.R
@@ -88,13 +88,12 @@ class TagListViewController(args: Bundle? = null) :
             }
 
             TagListViewState.ShowAdd -> {
-                val fadeChangeHandler = FadeChangeHandler()
                 pushWithRootRouter(
                     RouterTransaction.with(
                         EditTagViewController()
                     )
-                        .pushChangeHandler(fadeChangeHandler)
-                        .popChangeHandler(fadeChangeHandler)
+                        .pushChangeHandler(VerticalChangeHandler())
+                        .popChangeHandler(VerticalChangeHandler())
                 )
             }
         }
@@ -123,7 +122,7 @@ class TagListViewController(args: Bundle? = null) :
         countBackground.setColor(colorRes(color.color500))
 
         val i = tag.icon?.let { AndroidIcon.valueOf(it.name).icon }
-            ?: MaterialDesignIconic.Icon.gmi_label
+                ?: MaterialDesignIconic.Icon.gmi_label
 
         view.tagIcon.setImageDrawable(
             IconicsDrawable(activity!!)

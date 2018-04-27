@@ -12,6 +12,7 @@ import android.widget.TextView
 import com.bluelinelabs.conductor.Controller
 import com.bluelinelabs.conductor.RouterTransaction
 import com.bluelinelabs.conductor.changehandler.HorizontalChangeHandler
+import com.bluelinelabs.conductor.changehandler.VerticalChangeHandler
 import com.mikepenz.google_material_typeface_library.GoogleMaterial
 import com.mikepenz.iconics.IconicsDrawable
 import com.mikepenz.iconics.typeface.IIcon
@@ -61,6 +62,11 @@ class AddRepeatingQuestViewController(args: Bundle? = null) :
         const val PICK_RECURRENCE_INDEX = 1
         const val PICK_DURATION_INDEX = 2
         const val SUMMARY_INDEX = 3
+
+        val routerTransaction
+            get() = RouterTransaction.with(AddRepeatingQuestViewController())
+                .pushChangeHandler(VerticalChangeHandler())
+                .popChangeHandler(VerticalChangeHandler())
     }
 
     override fun onCreateView(
@@ -485,7 +491,7 @@ class AddRepeatingQuestViewController(args: Bundle? = null) :
             val view = container.inflate(R.layout.controller_add_repeating_quest_summary)
             view.summarySubQuestList.layoutManager = LinearLayoutManager(activity!!)
             view.summarySubQuestList.adapter =
-                ReadOnlySubQuestAdapter(view.summarySubQuestList, useLightTheme = true)
+                    ReadOnlySubQuestAdapter(view.summarySubQuestList, useLightTheme = true)
 
             newSubQuestWatcher = object : TextWatcher {
                 override fun afterTextChanged(editable: Editable) {

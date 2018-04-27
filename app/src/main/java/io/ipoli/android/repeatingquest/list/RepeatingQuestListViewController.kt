@@ -10,8 +10,6 @@ import android.support.v7.widget.LinearLayoutManager
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import com.bluelinelabs.conductor.RouterTransaction
-import com.bluelinelabs.conductor.changehandler.FadeChangeHandler
 import com.mikepenz.iconics.IconicsDrawable
 import com.mikepenz.iconics.typeface.IIcon
 import com.mikepenz.ionicons_typeface_library.Ionicons
@@ -53,16 +51,11 @@ class RepeatingQuestListViewController(args: Bundle? = null) :
             R.layout.controller_repeating_quest_list, container, false
         )
         view.repeatingQuestList.layoutManager =
-            LinearLayoutManager(container.context, LinearLayoutManager.VERTICAL, false)
+                LinearLayoutManager(container.context, LinearLayoutManager.VERTICAL, false)
         view.repeatingQuestList.adapter = RepeatingQuestAdapter()
 
         view.addRepeatingQuest.setOnClickListener {
-            val handler = FadeChangeHandler()
-            rootRouter.pushController(
-                RouterTransaction.with(AddRepeatingQuestViewController())
-                    .pushChangeHandler(handler)
-                    .popChangeHandler(handler)
-            )
+            rootRouter.pushController(AddRepeatingQuestViewController.routerTransaction)
         }
         view.emptyAnimation.setAnimation("empty_repeating_quest_list.json")
         return view
@@ -135,7 +128,7 @@ class RepeatingQuestListViewController(args: Bundle? = null) :
             }
 
             view.rqIcon.backgroundTintList =
-                ColorStateList.valueOf(colorRes(vm.color))
+                    ColorStateList.valueOf(colorRes(vm.color))
             view.rqIcon.setImageDrawable(
                 IconicsDrawable(view.context)
                     .icon(vm.icon)
@@ -216,7 +209,7 @@ class RepeatingQuestListViewController(args: Bundle? = null) :
                 name = it.name,
                 tags = it.tags.map { TagViewModel(it.name, it.color.androidColor.color500) },
                 icon = it.icon?.let { AndroidIcon.valueOf(it.name).icon }
-                    ?: Ionicons.Icon.ion_android_clipboard,
+                        ?: Ionicons.Icon.ion_android_clipboard,
                 color = AndroidColor.valueOf(it.color.name).color500,
                 next = next,
                 completedCount = it.periodProgress!!.completedCount,
