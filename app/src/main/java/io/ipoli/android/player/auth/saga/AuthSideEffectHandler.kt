@@ -9,17 +9,18 @@ import io.ipoli.android.Constants
 import io.ipoli.android.common.AppSideEffectHandler
 import io.ipoli.android.common.AppState
 import io.ipoli.android.common.LoadDataAction
-import io.ipoli.android.common.api.Api
 import io.ipoli.android.common.redux.Action
 import io.ipoli.android.player.AuthProvider
 import io.ipoli.android.player.Player
 import io.ipoli.android.player.auth.AuthAction
 import io.ipoli.android.player.auth.AuthViewState
+import io.ipoli.android.player.data.Avatar
 import io.ipoli.android.player.persistence.PlayerRepository
 import io.ipoli.android.quest.Color
 import io.ipoli.android.quest.Icon
 import io.ipoli.android.tag.Tag
 import space.traversal.kapsule.required
+import timber.log.Timber
 import java.nio.charset.Charset
 import java.util.regex.Pattern
 
@@ -61,25 +62,31 @@ class AuthSideEffectHandler : AppSideEffectHandler() {
                 val metadata = user.metadata
                 val isNewUser =
                     metadata == null || metadata.creationTimestamp == metadata.lastSignInTimestamp
-
-                    when {
-                        !isNewUser && playerRepository.hasPlayer() -> {
-                            //TODO: delete anonymous account
-                            val anonymousPlayerId =
-                                sharedPreferences.getString(Constants.KEY_PLAYER_ID, null)
-                            savePlayerId(user)
-                            dispatch(LoadDataAction.ChangePlayer(anonymousPlayerId))
-                            dispatch(AuthAction.ExistingPlayerLoggedInFromGuest)
-                        }
-                        isNewUser && playerRepository.hasPlayer() -> {
-                            updatePlayerAuthProvider(user)
-                            dispatch(AuthAction.AccountsLinked)
-                        }
-                        isNewUser && !playerRepository.hasPlayer() -> {
-                            createNewPlayer(user)
-                        }
-                        else -> loginExistingPlayer(user)
+                Timber.d("AAA $isNewUser")
+                when {
+                    !isNewUser && playerRepository.hasPlayer() -> {
+                        //TODO: delete anonymous account
+                        val anonymousPlayerId =
+                            sharedPreferences.getString(Constants.KEY_PLAYER_ID, null)
+                        savePlayerId(user)
+                        dispatch(LoadDataAction.ChangePlayer(anonymousPlayerId))
+                        dispatch(AuthAction.ExistingPlayerLoggedInFromGuest)
                     }
+                    isNewUser && playerRepository.hasPlayer() -> {
+                        updatePlayerAuthProvider(user)
+                        dispatch(AuthAction.AccountsLinked)
+                    }
+                    isNewUser && !playerRepository.hasPlayer() -> {
+                        createNewPlayer(user)
+                    }
+                    else -> loginExistingPlayer(user)
+                }
+            }
+
+            is AuthAction.CompleteSetup -> {
+                playerRepository.addUsernameAndAvatar(action.username, Avatar.AVATAR_03)
+                prepareAppStart()
+                dispatch(AuthAction.PlayerCreated)
             }
 
 //            is AuthAction.SignUp -> {
@@ -148,11 +155,11 @@ class AuthSideEffectHandler : AppSideEffectHandler() {
             else -> throw IllegalStateException("Unknown Auth provider")
         }
 
-        if (auth is AuthProvider.Facebook) {
-            Api.migratePlayer(auth.userId, auth.email)
-        } else if (auth is AuthProvider.Google) {
-            Api.migratePlayer(auth.userId, auth.email)
-        }
+//        if (auth is AuthProvider.Facebook) {
+//            Api.migratePlayer(auth.userId, auth.email)
+//        } else if (auth is AuthProvider.Google) {
+//            Api.migratePlayer(auth.userId, auth.email)
+//        }
 
         val player = playerRepository.find()
         playerRepository.save(
@@ -212,17 +219,17 @@ class AuthSideEffectHandler : AppSideEffectHandler() {
         savePlayerId(user)
 
 //        if (authProvider.providerId != FirebaseAuthProvider.PROVIDER_ID) {
-//            playerRepository.addUsername(username)
+//            playerRepository.addUsernameAndAvatar(username)
 //        }
 
         saveDefaultTags()
 
-        dispatch(AuthAction.ShowSetUp)
-
-//        dispach show username
-
-//        prepareAppStart()
-//        dispatch(AuthAction.PlayerCreated)
+        if (auth is AuthProvider.Guest) {
+            prepareAppStart()
+            dispatch(AuthAction.PlayerCreated)
+        } else {
+            dispatch(AuthAction.ShowSetUp)
+        }
 
 //        if (auth is AuthProvider.Facebook) {
 //            Api.migratePlayer(user.uid, auth.email)

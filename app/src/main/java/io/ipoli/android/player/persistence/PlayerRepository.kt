@@ -38,7 +38,10 @@ interface PlayerRepository : EntityRepository<Player> {
     fun create(player: Player, id: String): Player
     fun hasPlayer(): Boolean
     fun isUsernameAvailable(username: String): Boolean
-    fun addUsername(username: String)
+    fun addUsernameAndAvatar(
+        username: String,
+        avatar: Avatar
+    )
     fun removeUsername(username: String)
     fun findSchemaVersion(): Int?
     fun purge(playerId: String)
@@ -97,8 +100,18 @@ class FirestorePlayerRepository(
         }
     }
 
-    override fun addUsername(username: String) {
-        Tasks.await(usernamesReference().document(username).set(mapOf("username" to username)))
+    override fun addUsernameAndAvatar(
+        username: String,
+        avatar: Avatar
+    ) {
+        Tasks.await(
+            usernamesReference().document(username).set(
+                mapOf(
+                    "username" to username,
+                    "avatar" to avatar.name
+                )
+            )
+        )
     }
 
     override fun removeUsername(username: String) {

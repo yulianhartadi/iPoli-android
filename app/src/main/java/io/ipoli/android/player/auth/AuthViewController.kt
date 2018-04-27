@@ -69,6 +69,10 @@ class AuthViewController(args: Bundle? = null) :
             LinearLayoutManager(activity!!, LinearLayoutManager.HORIZONTAL, false)
         view.avatarList.adapter = AvatarAdapter()
 
+        view.startJourney.setOnClickListener {
+            dispatch(AuthAction.CompleteSetup(view.username.text.toString()))
+        }
+
         (view.avatarList.adapter as AvatarAdapter).updateAll(
             listOf(
                 AvatarViewModel(

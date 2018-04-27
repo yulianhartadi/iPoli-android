@@ -23,13 +23,11 @@ sealed class AuthAction : Action {
     ) : AuthAction()
 
     data class UserAuthenticated(val user: FirebaseUser) : AuthAction()
-    //    data class SignUp(val username: String, val provider: AuthViewState.Provider) : AuthAction()
-    data class Login(val provider: AuthViewState.Provider) : AuthAction()
     data class UsernameValidationFailed(val error: AuthViewState.ValidationError) : AuthAction()
+    data class CompleteSetup(val username: String) : AuthAction()
     object AccountsLinked : AuthAction()
     object PlayerCreated : AuthAction()
     object PlayerLoggedIn : AuthAction()
-    object SwitchViewType : AuthAction()
     object ExistingPlayerLoggedInFromGuest : AuthAction()
     object ShowSetUp : AuthAction()
 }
@@ -63,22 +61,6 @@ object AuthReducer : BaseViewStateReducer<AuthViewState>() {
                 )
             }
 
-//            is AuthAction.Login -> {
-//                val type = when (action.provider) {
-//                    AuthViewState.Provider.GOOGLE ->
-//                        GOOGLE_AUTH_STARTED
-//
-//                    AuthViewState.Provider.FACEBOOK ->
-//                        FACEBOOK_AUTH_STARTED
-//
-//                    AuthViewState.Provider.GUEST ->
-//                        throw IllegalArgumentException("Guest can't log in")
-//                }
-//                subState.copy(
-//                    type = type
-//                )
-//            }
-
             AuthAction.PlayerCreated -> {
                 subState.copy(
                     type = PLAYER_CREATED
@@ -103,20 +85,6 @@ object AuthReducer : BaseViewStateReducer<AuthViewState>() {
                 )
             }
 
-//            AuthAction.SwitchViewType -> {
-//                val isLogin = !subState.isSetup
-//
-//                val type = if (isLogin)
-//                    SHOW_SETUP
-//                else
-//                    SHOW_LOGIN
-//
-//                subState.copy(
-//                    type = type,
-//                    isSetup = isLogin
-//                )
-//            }
-
             AuthAction.AccountsLinked -> {
                 subState.copy(
                     type = ACCOUNTS_LINKED
@@ -131,7 +99,6 @@ object AuthReducer : BaseViewStateReducer<AuthViewState>() {
         AuthViewState(
             type = LOADING,
             usernameValidationError = null,
-            isSetup = false,
             isGuest = false
         )
 
@@ -140,7 +107,6 @@ object AuthReducer : BaseViewStateReducer<AuthViewState>() {
 data class AuthViewState(
     val type: AuthViewState.StateType,
     val usernameValidationError: ValidationError?,
-    val isSetup: Boolean,
     val isGuest: Boolean
 ) : ViewState {
     enum class StateType {
