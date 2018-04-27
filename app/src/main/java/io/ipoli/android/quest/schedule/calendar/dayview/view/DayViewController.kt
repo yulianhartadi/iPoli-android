@@ -32,6 +32,7 @@ import io.ipoli.android.common.datetime.isNotEqual
 import io.ipoli.android.common.datetime.startOfDayUTC
 import io.ipoli.android.common.redux.android.ReduxViewController
 import io.ipoli.android.common.view.*
+import io.ipoli.android.common.view.changehandler.CircularRevealChangeHandler
 import io.ipoli.android.quest.CompletedQuestViewController
 import io.ipoli.android.quest.Icon
 import io.ipoli.android.quest.Reminder
@@ -694,7 +695,21 @@ class DayViewController :
 
                     view.checkBox.visible = true
                     view.setOnClickListener {
-                        showQuest(vm.id)
+//                        showQuest(vm.id)
+                        pushWithRootRouter(
+                            RouterTransaction.with(QuestViewController(vm.id)).tag(
+                                QuestViewController.TAG
+                            ).pushChangeHandler(
+                                CircularRevealChangeHandler(
+                                    cx = 600,
+                                    cy = 800
+                                )
+//                                CircularRevealChangeHandler(
+//                                fromView = view,
+//                                containerView = DayViewController@view
+//                            )
+                        ).popChangeHandler(SimpleSwapChangeHandler())
+                        )
                     }
                 }
 
