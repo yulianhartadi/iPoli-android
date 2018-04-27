@@ -12,7 +12,6 @@ import android.view.View
 import android.view.ViewGroup
 import com.bluelinelabs.conductor.RouterTransaction
 import com.bluelinelabs.conductor.changehandler.FadeChangeHandler
-import com.bluelinelabs.conductor.changehandler.SimpleSwapChangeHandler
 import com.mikepenz.iconics.IconicsDrawable
 import com.mikepenz.iconics.typeface.IIcon
 import com.mikepenz.ionicons_typeface_library.Ionicons
@@ -22,7 +21,6 @@ import io.ipoli.android.common.redux.android.ReduxViewController
 import io.ipoli.android.common.text.DateFormatter
 import io.ipoli.android.common.text.DurationFormatter
 import io.ipoli.android.common.view.*
-import io.ipoli.android.common.view.changehandler.CircularRevealChangeHandler
 import io.ipoli.android.common.view.recyclerview.BaseRecyclerViewAdapter
 import io.ipoli.android.common.view.recyclerview.SimpleViewHolder
 import io.ipoli.android.repeatingquest.add.AddRepeatingQuestViewController
@@ -162,20 +160,10 @@ class RepeatingQuestListViewController(args: Bundle? = null) :
 
             view.setOnClickListener {
                 val changeHandler = FadeChangeHandler()
-//                rootRouter.pushController(
-//                    RouterTransaction.with(RepeatingQuestViewController(vm.id))
-//                        .pushChangeHandler(changeHandler)
-//                        .popChangeHandler(changeHandler)
-//                )
-
-                pushWithRootRouter(
+                rootRouter.pushController(
                     RouterTransaction.with(RepeatingQuestViewController(vm.id))
-                        .pushChangeHandler(
-                            CircularRevealChangeHandler(
-                                fromView = view,
-                                containerView = RepeatingQuestViewController@ view
-                            )
-                        ).popChangeHandler(SimpleSwapChangeHandler())
+                        .pushChangeHandler(changeHandler)
+                        .popChangeHandler(changeHandler)
                 )
             }
         }
