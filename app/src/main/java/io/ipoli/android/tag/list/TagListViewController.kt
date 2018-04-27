@@ -106,13 +106,8 @@ class TagListViewController(args: Bundle? = null) :
     ) {
 
         view.tagBackground.setOnClickListener {
-            val changeHandler = FadeChangeHandler()
             pushWithRootRouter(
-                RouterTransaction.with(
-                    TagViewController(tag.id)
-                )
-                    .pushChangeHandler(changeHandler)
-                    .popChangeHandler(changeHandler)
+                TagViewController.routerTransaction(tag.id)
             )
         }
 
@@ -128,7 +123,7 @@ class TagListViewController(args: Bundle? = null) :
         countBackground.setColor(colorRes(color.color500))
 
         val i = tag.icon?.let { AndroidIcon.valueOf(it.name).icon }
-                ?: MaterialDesignIconic.Icon.gmi_label
+            ?: MaterialDesignIconic.Icon.gmi_label
 
         view.tagIcon.setImageDrawable(
             IconicsDrawable(activity!!)

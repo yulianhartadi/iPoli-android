@@ -12,6 +12,7 @@ import android.support.v7.widget.helper.ItemTouchHelper
 import android.view.*
 import com.bluelinelabs.conductor.RouterTransaction
 import com.bluelinelabs.conductor.changehandler.FadeChangeHandler
+import com.bluelinelabs.conductor.changehandler.VerticalChangeHandler
 import com.github.mikephil.charting.animation.Easing
 import com.github.mikephil.charting.charts.LineChart
 import com.github.mikephil.charting.components.AxisBase
@@ -55,7 +56,7 @@ class ChallengeViewController(args: Bundle? = null) :
     private var showEdit = true
     private var showComplete = true
 
-    constructor(
+    private constructor(
         challengeId: String
     ) : this() {
         this.challengeId = challengeId
@@ -147,7 +148,7 @@ class ChallengeViewController(args: Bundle? = null) :
             axisRight.spaceTop = 0f
             axisRight.textSize = ViewUtils.spToPx(5, activity!!).toFloat()
             axisRight.textColor = colorRes(R.color.md_dark_text_87)
-            axisRight.setValueFormatter { value, axis -> "${value.toInt()}%" }
+            axisRight.setValueFormatter { value, _ -> "${value.toInt()}%" }
 
             axisLeft.isEnabled = false
 
@@ -477,4 +478,11 @@ class ChallengeViewController(args: Bundle? = null) :
             }
 
         }
+
+    companion object {
+        fun routerTransaction(challengeId: String) =
+            RouterTransaction.with(ChallengeViewController(challengeId))
+                .pushChangeHandler(VerticalChangeHandler())
+                .popChangeHandler(VerticalChangeHandler())
+    }
 }

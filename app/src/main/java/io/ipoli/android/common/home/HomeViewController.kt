@@ -278,11 +278,7 @@ class HomeViewController(args: Bundle? = null) :
 
             TAG_SELECTED ->
                 pushWithRootRouter(
-                    RouterTransaction.with(
-                        TagViewController(state.tags[state.selectedTagIndex!!].id)
-                    )
-                        .pushChangeHandler(fadeChangeHandler)
-                        .popChangeHandler(fadeChangeHandler)
+                    TagViewController.routerTransaction(state.tags[state.selectedTagIndex!!].id)
                 )
 
             UNSCHEDULED_QUESTS_CHANGED ->
@@ -294,7 +290,7 @@ class HomeViewController(args: Bundle? = null) :
         val item = view.navigationView.menu.findItem(R.id.bucketList)
 
         item.actionView =
-                LayoutInflater.from(view.context).inflate(R.layout.menu_item_tag_view, null)
+            LayoutInflater.from(view.context).inflate(R.layout.menu_item_tag_view, null)
         item.actionView.questCount.text = bucketListQuestCount.toString()
     }
 
@@ -302,7 +298,8 @@ class HomeViewController(args: Bundle? = null) :
         TAG_IDS.forEach { view.navigationView.menu.removeItem(it) }
 
         val dropDown =
-            view.navigationView.menu.findItem(R.id.tags).actionView.findViewById<ImageView>(R.id.dropDown)
+            view.navigationView.menu.findItem(R.id.tags)
+                .actionView.findViewById<ImageView>(R.id.dropDown)
 
         dropDown.visible()
 
@@ -394,7 +391,7 @@ class HomeViewController(args: Bundle? = null) :
             name
         )
         item.actionView =
-                LayoutInflater.from(view.context).inflate(R.layout.menu_item_tag_view, null)
+            LayoutInflater.from(view.context).inflate(R.layout.menu_item_tag_view, null)
         item.actionView.questCount.text = questCount.toString()
 
         item.icon = IconicsDrawable(activity!!)

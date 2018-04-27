@@ -13,6 +13,7 @@ import android.view.*
 import android.widget.TextView
 import com.bluelinelabs.conductor.RouterTransaction
 import com.bluelinelabs.conductor.changehandler.FadeChangeHandler
+import com.bluelinelabs.conductor.changehandler.VerticalChangeHandler
 import com.mikepenz.iconics.IconicsDrawable
 import com.mikepenz.iconics.typeface.IIcon
 import com.mikepenz.ionicons_typeface_library.Ionicons
@@ -45,7 +46,7 @@ class TagViewController(args: Bundle? = null) :
     private lateinit var tagId: String
     private var isFavourited: Boolean = false
 
-    constructor(tagId: String) : this() {
+    private constructor(tagId: String) : this() {
         this.tagId = tagId
     }
 
@@ -331,7 +332,6 @@ class TagViewController(args: Bundle? = null) :
                         if (vm.isFromChallenge) View.VISIBLE else View.GONE
 
                     view.setOnClickListener {
-                        val handler = FadeChangeHandler()
                         rootRouter.pushController(
                             QuestViewController.routerTransaction(vm.id)
                         )
@@ -452,5 +452,12 @@ class TagViewController(args: Bundle? = null) :
         val start = quest.startTime ?: return "Unscheduled"
         val end = start.plus(quest.actualDuration.asMinutes.intValue)
         return "$start - $end"
+    }
+
+    companion object {
+        fun routerTransaction(tagId: String) =
+            RouterTransaction.with(TagViewController(tagId))
+                .pushChangeHandler(VerticalChangeHandler())
+                .popChangeHandler(VerticalChangeHandler())
     }
 }
