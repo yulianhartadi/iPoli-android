@@ -20,12 +20,14 @@ import com.bluelinelabs.conductor.changehandler.FadeChangeHandler
 import io.ipoli.android.common.AppState
 import io.ipoli.android.common.LoadDataAction
 import io.ipoli.android.common.di.Module
+import io.ipoli.android.common.home.HomeAction
 import io.ipoli.android.common.home.HomeViewController
 import io.ipoli.android.common.redux.Action
 import io.ipoli.android.common.redux.Dispatcher
 import io.ipoli.android.common.redux.SideEffectHandler
 import io.ipoli.android.common.view.playerTheme
 import io.ipoli.android.player.auth.AuthViewController
+import io.ipoli.android.player.auth.saga.AuthSideEffectHandler
 import io.ipoli.android.quest.schedule.addquest.AddQuestViewController
 import io.ipoli.android.quest.show.QuestViewController
 import io.ipoli.android.store.membership.MembershipViewController
@@ -74,11 +76,11 @@ class MainActivity : AppCompatActivity(), Injects<Module>, SideEffectHandler<App
         incrementAppRun()
 
         router =
-            Conductor.attachRouter(
-                this,
-                findViewById(R.id.controllerContainer),
-                savedInstanceState
-            )
+                Conductor.attachRouter(
+                    this,
+                    findViewById(R.id.controllerContainer),
+                    savedInstanceState
+                )
         router.setPopsLastView(true)
         inject(myPoliApp.module(this))
 
@@ -191,13 +193,13 @@ class MainActivity : AppCompatActivity(), Injects<Module>, SideEffectHandler<App
 
     fun enterFullScreen() {
         window.decorView.systemUiVisibility = (
-            View.SYSTEM_UI_FLAG_LAYOUT_STABLE
-                or View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
-                or View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
-                or View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
-                or View.SYSTEM_UI_FLAG_FULLSCREEN
-                or View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY
-            )
+                View.SYSTEM_UI_FLAG_LAYOUT_STABLE
+                        or View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
+                        or View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
+                        or View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
+                        or View.SYSTEM_UI_FLAG_FULLSCREEN
+                        or View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY
+                )
     }
 
     fun exitFullScreen() {
@@ -216,6 +218,9 @@ class MainActivity : AppCompatActivity(), Injects<Module>, SideEffectHandler<App
                         R.string.max_tag_count_reached,
                         Toast.LENGTH_LONG
                     ).show()
+
+                is HomeAction.ShowPlayerSetup ->
+                    router.setRoot(RouterTransaction.with(AuthViewController()))
             }
         }
     }
@@ -253,7 +258,7 @@ class MainActivity : AppCompatActivity(), Injects<Module>, SideEffectHandler<App
     }
 
     override fun canHandle(action: Action) =
-        action is ShowBuyPowerUpAction || action === TagAction.TagCountLimitReached
+        action is ShowBuyPowerUpAction || action === TagAction.TagCountLimitReached || action === HomeAction.ShowPlayerSetup
 
     private val isBatteryOptimizationOn: Boolean
         get() {

@@ -26,7 +26,8 @@ sealed class AuthAction : Action {
     data class UsernameValidationFailed(val error: AuthViewState.ValidationError) : AuthAction()
     data class CompleteSetup(val username: String) : AuthAction()
     object AccountsLinked : AuthAction()
-    object PlayerCreated : AuthAction()
+    object GuestCreated : AuthAction()
+    object PlayerSetupCompleted : AuthAction()
     object PlayerLoggedIn : AuthAction()
     object ExistingPlayerLoggedInFromGuest : AuthAction()
     object ShowSetUp : AuthAction()
@@ -61,9 +62,15 @@ object AuthReducer : BaseViewStateReducer<AuthViewState>() {
                 )
             }
 
-            AuthAction.PlayerCreated -> {
+            AuthAction.GuestCreated -> {
                 subState.copy(
-                    type = PLAYER_CREATED
+                    type = GUEST_CREATED
+                )
+            }
+
+            AuthAction.PlayerSetupCompleted -> {
+                subState.copy(
+                    type = PLAYER_SETUP_COMPLETED
                 )
             }
 
@@ -116,7 +123,8 @@ data class AuthViewState(
         SHOW_SETUP,
         SWITCH_TO_SETUP,
         USERNAME_VALIDATION_ERROR,
-        PLAYER_CREATED,
+        GUEST_CREATED,
+        PLAYER_SETUP_COMPLETED,
         PLAYER_LOGGED_IN,
         EXISTING_PLAYER_LOGGED_IN_FROM_GUEST,
         ACCOUNTS_LINKED

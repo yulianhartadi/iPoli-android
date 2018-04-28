@@ -66,7 +66,7 @@ class AuthViewController(args: Bundle? = null) :
             .into(view.playerAvatar)
 
         view.avatarList.layoutManager =
-            LinearLayoutManager(activity!!, LinearLayoutManager.HORIZONTAL, false)
+                LinearLayoutManager(activity!!, LinearLayoutManager.HORIZONTAL, false)
         view.avatarList.adapter = AvatarAdapter()
 
         view.startJourney.setOnClickListener {
@@ -185,7 +185,8 @@ class AuthViewController(args: Bundle? = null) :
 //                view.username.error = state.usernameErrorMessage(activity!!)
             }
 
-            PLAYER_CREATED -> {
+            PLAYER_SETUP_COMPLETED,
+            GUEST_CREATED -> {
                 hideLoader()
                 startHomeViewController()
             }
@@ -280,7 +281,7 @@ class AuthViewController(args: Bundle? = null) :
             }
         })
 
-                set.start()
+        set.start()
     }
 
     private fun createContainerRevealAnimation(

@@ -85,9 +85,16 @@ class AuthSideEffectHandler : AppSideEffectHandler() {
             }
 
             is AuthAction.CompleteSetup -> {
-                playerRepository.addUsernameAndAvatar(action.username, Avatar.AVATAR_03)
+                val player = playerRepository.find()!!
+                playerRepository.save(
+                    player.copy(
+                        username = action.username,
+                        avatar = Avatar.AVATAR_00
+                    )
+                )
+                playerRepository.addUsername(action.username)
                 prepareAppStart()
-                dispatch(AuthAction.PlayerCreated)
+                dispatch(AuthAction.PlayerSetupCompleted)
             }
 
 //            is AuthAction.SignUp -> {
@@ -227,7 +234,7 @@ class AuthSideEffectHandler : AppSideEffectHandler() {
 
         if (auth is AuthProvider.Guest) {
             prepareAppStart()
-            dispatch(AuthAction.PlayerCreated)
+            dispatch(AuthAction.GuestCreated)
         } else {
             dispatch(AuthAction.ShowSetUp)
         }
@@ -266,8 +273,8 @@ class AuthSideEffectHandler : AppSideEffectHandler() {
 
     private fun loginExistingPlayer(user: FirebaseUser) {
         savePlayerId(user)
-        prepareAppStart()
         dispatch(AuthAction.PlayerLoggedIn)
+        prepareAppStart()
     }
 
     @SuppressLint("ApplySharedPref")

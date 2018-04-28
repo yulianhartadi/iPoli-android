@@ -8,6 +8,7 @@ import io.ipoli.android.challenge.usecase.FindNextDateForChallengeUseCase
 import io.ipoli.android.challenge.usecase.FindQuestsForChallengeUseCase
 import io.ipoli.android.common.async.ChannelRelay
 import io.ipoli.android.common.di.Module
+import io.ipoli.android.common.home.HomeAction
 import io.ipoli.android.common.redux.Action
 import io.ipoli.android.common.redux.Dispatcher
 import io.ipoli.android.common.redux.SideEffectHandler
@@ -114,12 +115,17 @@ class PreloadDataSideEffectHandler : AppSideEffectHandler() {
 
     private val tagProvider by required { tagProvider }
     private val tagRepository by required { tagRepository }
+    private val playerRepository by required { playerRepository }
 
     override suspend fun doExecute(action: Action, state: AppState) {
         when (action) {
             LoadDataAction.Preload -> {
-                tagProvider.updateTags(tagRepository.findAll())
-                dispatch(LoadDataAction.All)
+                if (playerRepository.find()!!.username.isNullOrEmpty()) {
+                    dispatch(HomeAction.ShowPlayerSetup)
+                } else {
+                    tagProvider.updateTags(tagRepository.findAll())
+                    dispatch(LoadDataAction.All)
+                }
             }
         }
     }

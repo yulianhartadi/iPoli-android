@@ -20,6 +20,8 @@ sealed class HomeAction : Action {
     object Load : HomeAction()
     object HideTags : HomeAction()
     object ShowTags : HomeAction()
+    object ShowPlayerSetup : HomeAction()
+
     data class SelectTag(val index: Int) : HomeAction()
 }
 
