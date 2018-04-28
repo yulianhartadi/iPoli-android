@@ -25,12 +25,15 @@ sealed class AuthAction : Action {
     data class UserAuthenticated(val user: FirebaseUser) : AuthAction()
     data class UsernameValidationFailed(val error: AuthViewState.ValidationError) : AuthAction()
     data class CompleteSetup(val username: String) : AuthAction()
+    data class ValidateUsername(val username: String) : AuthAction()
+
     object AccountsLinked : AuthAction()
     object GuestCreated : AuthAction()
     object PlayerSetupCompleted : AuthAction()
     object PlayerLoggedIn : AuthAction()
     object ExistingPlayerLoggedInFromGuest : AuthAction()
     object ShowSetUp : AuthAction()
+    object UsernameValid : AuthAction()
 }
 
 object AuthReducer : BaseViewStateReducer<AuthViewState>() {
@@ -59,6 +62,12 @@ object AuthReducer : BaseViewStateReducer<AuthViewState>() {
                 subState.copy(
                     type = USERNAME_VALIDATION_ERROR,
                     usernameValidationError = action.error
+                )
+            }
+
+            AuthAction.UsernameValid -> {
+                subState.copy(
+                    type = USERNAME_VALID
                 )
             }
 
@@ -123,6 +132,7 @@ data class AuthViewState(
         SHOW_SETUP,
         SWITCH_TO_SETUP,
         USERNAME_VALIDATION_ERROR,
+        USERNAME_VALID,
         GUEST_CREATED,
         PLAYER_SETUP_COMPLETED,
         PLAYER_LOGGED_IN,

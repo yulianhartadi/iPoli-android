@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/authContainer"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -196,26 +197,68 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
 
+            <TextView
+                android:id="@+id/avatarHint"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="16dp"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="8dp"
+                android:text="Your Avatar"
+                android:textAlignment="center"
+                android:textAppearance="@style/TextAppearance.AppCompat.Subhead"
+                android:textColor="@color/md_light_text_70"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/playerAvatar" />
+
             <EditText
                 android:id="@+id/username"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="16dp"
                 android:layout_marginStart="16dp"
-                android:layout_marginTop="32dp"
+                android:layout_marginTop="16dp"
                 android:background="@color/md_white"
                 android:drawablePadding="8dp"
                 android:drawableStart="@drawable/ic_user_black_24dp"
+                android:gravity="center_vertical"
                 android:hint="@string/username"
+                android:includeFontPadding="false"
                 android:inputType="textPersonName"
+                android:maxLength="20"
                 android:paddingBottom="8dp"
                 android:paddingEnd="8dp"
                 android:paddingStart="8dp"
                 android:paddingTop="8dp"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_bias="1.0"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/playerAvatar" />
+                app:layout_constraintTop_toBottomOf="@+id/avatarHint" />
+
+            <TextView
+                android:id="@+id/usernameLengthHint"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:textAppearance="@style/TextAppearance.AppCompat.Caption"
+                android:textColor="@color/md_light_text_70"
+                app:layout_constraintEnd_toEndOf="@+id/username"
+                app:layout_constraintTop_toBottomOf="@+id/username"
+                tools:text="3/15" />
+
+            <TextView
+                android:id="@+id/usernameValidationHint"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="8dp"
+                android:layout_marginTop="4dp"
+                android:text="@string/username_format_hint"
+                android:textAppearance="@style/TextAppearance.AppCompat.Caption"
+                android:textColor="@color/md_light_text_70"
+                app:layout_constraintEnd_toStartOf="@+id/usernameLengthHint"
+                app:layout_constraintHorizontal_bias="0.0"
+                app:layout_constraintStart_toStartOf="@+id/username"
+                app:layout_constraintTop_toBottomOf="@+id/username" />
 
             <android.support.v7.widget.RecyclerView
                 android:id="@+id/avatarList"
@@ -226,34 +269,20 @@
                 android:layout_marginTop="32dp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/username" />
+                app:layout_constraintTop_toBottomOf="@+id/usernameValidationHint" />
 
             <Button
                 android:id="@+id/startJourney"
-                android:layout_width="wrap_content"
                 style="@style/Widget.AppCompat.Button.Colored"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="32dp"
+                android:paddingEnd="32dp"
+                android:paddingStart="32dp"
                 android:text="Start your journey"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/avatarList" />
-
-            <TextView
-                android:id="@+id/usernameDescription"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginEnd="16dp"
-                android:layout_marginStart="16dp"
-                android:layout_marginTop="32dp"
-                android:text="@string/guest_sign_up_warning"
-                android:textAlignment="center"
-                android:textAppearance="@style/TextAppearance.AppCompat.Caption"
-                android:textColor="@color/md_light_text_50"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/startJourney" />
 
 
             <android.support.constraint.Group
@@ -261,7 +290,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:visibility="visible"
-                app:constraint_referenced_ids="playerAvatar, username, avatarList, usernameDescription, startJourney,usernameDescription" />
+                app:constraint_referenced_ids="playerAvatar, username, avatarList, startJourney" />
 
 
         </android.support.constraint.ConstraintLayout>

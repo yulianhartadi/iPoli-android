@@ -85,57 +85,48 @@ class AuthSideEffectHandler : AppSideEffectHandler() {
             }
 
             is AuthAction.CompleteSetup -> {
-                val player = playerRepository.find()!!
-                playerRepository.save(
-                    player.copy(
-                        username = action.username,
-                        avatar = Avatar.AVATAR_00
+
+                val username = action.username
+
+                val usernameValidationError =
+                    findUsernameValidationError(username, playerRepository)
+
+                if (usernameValidationError != null) {
+                    dispatch(
+                        AuthAction.UsernameValidationFailed(
+                            usernameValidationError
+                        )
                     )
-                )
-                playerRepository.addUsername(action.username)
-                prepareAppStart()
-                dispatch(AuthAction.PlayerSetupCompleted)
+                } else {
+
+                    val player = playerRepository.find()!!
+                    playerRepository.save(
+                        player.copy(
+                            username = action.username,
+                            avatar = Avatar.AVATAR_00
+                        )
+                    )
+                    playerRepository.addUsername(action.username)
+                    prepareAppStart()
+                    dispatch(AuthAction.PlayerSetupCompleted)
+                }
             }
 
-//            is AuthAction.SignUp -> {
-//                val username = action.username
-//
-//                when (action.provider) {
-//                    AuthViewState.Provider.FACEBOOK -> {
-//                        val usernameValidationError =
-//                            findUsernameValidationError(username, playerRepository)
-//                        if (usernameValidationError != null) {
-//                            dispatch(
-//                                AuthAction.UsernameValidationFailed(
-//                                    usernameValidationError
-//                                )
-//                            )
-//                            return
-//                        }
-//
-//                        dispatch(AuthAction.StartSignUp(AuthViewState.Provider.FACEBOOK))
-//                    }
-//
-//                    AuthViewState.Provider.GOOGLE -> {
-//                        val usernameValidationError =
-//                            findUsernameValidationError(username, playerRepository)
-//                        if (usernameValidationError != null) {
-//                            dispatch(
-//                                AuthAction.UsernameValidationFailed(
-//                                    usernameValidationError
-//                                )
-//                            )
-//                            return
-//                        }
-//
-//                        dispatch(AuthAction.StartSignUp(AuthViewState.Provider.GOOGLE))
-//                    }
-//
-//                    AuthViewState.Provider.GUEST -> {
-//                        dispatch(AuthAction.StartSignUp(AuthViewState.Provider.GUEST))
-//                    }
-//                }
-//            }
+            is AuthAction.ValidateUsername -> {
+                val username = action.username
+
+                val usernameValidationError =
+                    findUsernameValidationError(username, playerRepository)
+                if (usernameValidationError != null) {
+                    dispatch(
+                        AuthAction.UsernameValidationFailed(
+                            usernameValidationError
+                        )
+                    )
+                } else {
+                    dispatch(AuthAction.UsernameValid)
+                }
+            }
         }
     }
 
@@ -226,10 +217,6 @@ class AuthSideEffectHandler : AppSideEffectHandler() {
         playerRepository.create(player, user.uid)
         savePlayerId(user)
 
-//        if (authProvider.providerId != FirebaseAuthProvider.PROVIDER_ID) {
-//            playerRepository.addUsernameAndAvatar(username)
-//        }
-
         saveDefaultTags()
 
         if (auth is AuthProvider.Guest) {
@@ -296,12 +283,8 @@ class AuthSideEffectHandler : AppSideEffectHandler() {
         playerRepository: PlayerRepository
     ): AuthViewState.ValidationError? {
 
-        if (username.trim().isEmpty()) {
+        if (username.isBlank()) {
             return AuthViewState.ValidationError.EMPTY_USERNAME
-        }
-
-        if (username.length < Constants.USERNAME_MIN_LENGTH || username.length > Constants.USERNAME_MAX_LENGTH) {
-            return AuthViewState.ValidationError.INVALID_LENGTH
         }
 
         val asciiEncoder = Charset.forName("US-ASCII").newEncoder()
@@ -312,6 +295,10 @@ class AuthSideEffectHandler : AppSideEffectHandler() {
         val p = Pattern.compile("^\\w+$")
         if (!p.matcher(username).matches()) {
             return AuthViewState.ValidationError.INVALID_FORMAT
+        }
+
+        if (username.length < Constants.USERNAME_MIN_LENGTH || username.length > Constants.USERNAME_MAX_LENGTH) {
+            return AuthViewState.ValidationError.INVALID_LENGTH
         }
 
         if (!playerRepository.isUsernameAvailable(username)) {

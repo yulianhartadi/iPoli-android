@@ -887,7 +887,8 @@
     <string name="username_is_taken">Sorry, that one is taken</string>
     <string name="username_is_empty">Come on, you need username</string>
     <string name="username_picker_title">Choose your username</string>
-    <string name="username_wrong_format">Use only english letters, digits and underscore</string>
+    <string name="username_format_hint">English letters, digits and underscore</string>
+    <string name="username_wrong_format">I can see incorrect chars, use only english letters, digits and underscore</string>
     <string name="username_wrong_length">Use between %1$d and %2$d characters</string>
     <string name="enable_internet_to_do_action">You need internet to do this</string>
     <string name="sign_in_to_view_profile">Please, sign in to view your profile</string>
@@ -930,7 +931,7 @@
     <string name="current_plan">Current plan</string>
     <string name="or">OR</string>
     <string name="already_have_an_account">I already have an account</string>
-    <string name="username">Username</string>
+    <string name="username">username</string>
     <string name="achievement_first_quest_completed_name">Did that!</string>
     <string name="achievement_first_quest_completed_desc">Complete your first Quest</string>
 
@@ -1270,4 +1271,5 @@
     <string name="empty_bucket_list_text">Tasks without a scheduled date will be put here. myPoli will help you schedule and get them done!</string>
     <string name="turn_it_off">Turn It Off</string>
     <string name="battery_optimization_warn">Battery optimization might prevent you from receiving Reminders on time</string>
+    <string name="valid_username">All good</string>
 </resources>

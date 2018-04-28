@@ -10,6 +10,8 @@ import android.support.annotation.ColorRes
 import android.support.annotation.DrawableRes
 import android.support.design.widget.Snackbar
 import android.support.v7.widget.LinearLayoutManager
+import android.text.Editable
+import android.text.TextWatcher
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewAnimationUtils
@@ -23,6 +25,9 @@ import com.firebase.ui.auth.AuthUI
 import com.firebase.ui.auth.ErrorCodes
 import com.firebase.ui.auth.IdpResponse
 import com.google.firebase.auth.FirebaseAuth
+import com.mikepenz.google_material_typeface_library.GoogleMaterial
+import com.mikepenz.iconics.IconicsDrawable
+import io.ipoli.android.Constants
 import io.ipoli.android.R
 import io.ipoli.android.common.EmailUtils
 import io.ipoli.android.common.LoaderDialogController
@@ -52,6 +57,23 @@ class AuthViewController(args: Bundle? = null) :
 
     private var loader: LoaderDialogController? = null
 
+    private val usernameWatcher: TextWatcher = object : TextWatcher {
+
+        override fun afterTextChanged(s: Editable) {
+            renderUsernameLengthHint(s.length)
+            dispatch(AuthAction.ValidateUsername(s.toString()))
+        }
+
+        override fun beforeTextChanged(s: CharSequence, start: Int, count: Int, after: Int) {
+
+        }
+
+        override fun onTextChanged(s: CharSequence, start: Int, before: Int, count: Int) {
+
+        }
+
+    }
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup,
@@ -72,6 +94,10 @@ class AuthViewController(args: Bundle? = null) :
         view.startJourney.setOnClickListener {
             dispatch(AuthAction.CompleteSetup(view.username.text.toString()))
         }
+
+        view.username.setCompoundDrawablesRelativeWithIntrinsicBounds(
+            usernameIcon, null, null, null
+        )
 
         (view.avatarList.adapter as AvatarAdapter).updateAll(
             listOf(
@@ -117,11 +143,36 @@ class AuthViewController(args: Bundle? = null) :
         return view
     }
 
+    private val usernameIcon
+        get() = IconicsDrawable(activity)
+            .normalIcon(
+                GoogleMaterial.Icon.gmd_person,
+                R.color.md_dark_text_54
+            ).respectFontBounds(true)
+
+    private val errorIcon
+        get() = IconicsDrawable(activity)
+            .normalIcon(
+                GoogleMaterial.Icon.gmd_error,
+                R.color.md_red_500
+            ).respectFontBounds(true)
+
+    private val validIcon
+        get() = IconicsDrawable(activity)
+            .normalIcon(
+                GoogleMaterial.Icon.gmd_verified_user,
+                R.color.md_green_500
+            ).respectFontBounds(true)
+
     private fun createLoader() =
         LoaderDialogController(
             R.string.sign_in_loading_dialog_title,
             R.string.sign_in_loading_dialog_message
         )
+
+    private fun renderUsernameLengthHint(length: Int) {
+        view!!.usernameLengthHint.text = "$length/${Constants.USERNAME_MAX_LENGTH}"
+    }
 
     override fun render(state: AuthViewState, view: View) {
         when (state.type) {
@@ -181,8 +232,17 @@ class AuthViewController(args: Bundle? = null) :
             }
 
             USERNAME_VALIDATION_ERROR -> {
-//                hideLoader()
-//                view.username.error = state.usernameErrorMessage(activity!!)
+                view.usernameValidationHint.text = state.usernameErrorMessage(activity!!)
+                view.username.setCompoundDrawablesRelativeWithIntrinsicBounds(
+                    usernameIcon, null, errorIcon, null
+                )
+            }
+
+            USERNAME_VALID -> {
+                view.usernameValidationHint.text = stringRes(R.string.valid_username)
+                view.username.setCompoundDrawablesRelativeWithIntrinsicBounds(
+                    usernameIcon, null, validIcon, null
+                )
             }
 
             PLAYER_SETUP_COMPLETED,
@@ -354,12 +414,14 @@ class AuthViewController(args: Bundle? = null) :
 
     override fun onAttach(view: View) {
         super.onAttach(view)
-//        view.username.clearFocus()
+        view.username.addTextChangedListener(usernameWatcher)
+        renderUsernameLengthHint(0)
         enterFullScreen()
     }
 
     override fun onDetach(view: View) {
         exitFullScreen()
+        view.username.removeTextChangedListener(usernameWatcher)
         super.onDetach(view)
     }
 

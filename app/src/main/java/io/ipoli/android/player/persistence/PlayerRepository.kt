@@ -80,7 +80,7 @@ class FirestorePlayerRepository(
     override fun isUsernameAvailable(username: String): Boolean = runBlocking {
         suspendCoroutine<Boolean> { continuation ->
             val opts = DocumentListenOptions().includeMetadataChanges()
-            val usernameRef = usernamesReference().document(username)
+            val usernameRef = usernamesReference().document(username.toLowerCase())
             var registration: ListenerRegistration? = null
             registration = usernameRef.addSnapshotListener(
                 opts
@@ -104,7 +104,7 @@ class FirestorePlayerRepository(
         username: String
     ) {
         Tasks.await(
-            usernamesReference().document(username).set(
+            usernamesReference().document(username.toLowerCase()).set(
                 mapOf(
                     "username" to username
                 )
