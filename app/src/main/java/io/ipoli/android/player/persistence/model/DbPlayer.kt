@@ -32,8 +32,8 @@ data class DbPlayer(override val map: MutableMap<String, Any?> = mutableMapOf())
 data class DbAuthProvider(val map: MutableMap<String, Any?> = mutableMapOf()) {
     var userId: String by map
     var provider: String by map
-    var displayName: String by map
-    var email: String by map
+    var displayName: String? by map
+    var email: String? by map
     var image: String? by map
 }
 

@@ -292,15 +292,15 @@ data class Inventory(
 sealed class AuthProvider {
     data class Facebook(
         val userId: String,
-        val displayName: String,
-        val email: String,
+        val displayName: String?,
+        val email: String?,
         val imageUrl: Uri?
     ) : AuthProvider()
 
     data class Google(
         val userId: String,
-        val displayName: String,
-        val email: String,
+        val displayName: String?,
+        val email: String?,
         val imageUrl: Uri?
     ) : AuthProvider()
 
