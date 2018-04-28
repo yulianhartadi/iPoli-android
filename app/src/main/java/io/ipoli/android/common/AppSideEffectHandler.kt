@@ -120,7 +120,8 @@ class PreloadDataSideEffectHandler : AppSideEffectHandler() {
     override suspend fun doExecute(action: Action, state: AppState) {
         when (action) {
             LoadDataAction.Preload -> {
-                if (playerRepository.find()!!.username.isNullOrEmpty()) {
+                val p = playerRepository.find()!!
+                if (p.isLoggedIn() && p.username.isNullOrEmpty()) {
                     dispatch(HomeAction.ShowPlayerSetup)
                 } else {
                     tagProvider.updateTags(tagRepository.findAll())

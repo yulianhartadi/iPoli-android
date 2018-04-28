@@ -1,10 +1,7 @@
 package io.ipoli.android.player.auth.saga
 
 import android.annotation.SuppressLint
-import com.google.firebase.auth.FacebookAuthProvider
-import com.google.firebase.auth.FirebaseAuthProvider
-import com.google.firebase.auth.FirebaseUser
-import com.google.firebase.auth.GoogleAuthProvider
+import com.google.firebase.auth.*
 import io.ipoli.android.Constants
 import io.ipoli.android.common.AppSideEffectHandler
 import io.ipoli.android.common.AppState
@@ -138,18 +135,16 @@ class AuthSideEffectHandler : AppSideEffectHandler() {
         val authProvider = authProviders.first()
 
         val auth = when {
-            authProvider.providerId == FacebookAuthProvider.PROVIDER_ID -> AuthProvider.Facebook(
-                authProvider.uid,
-                displayName = user.displayName!!,
-                email = user.email!!,
-                imageUrl = user.photoUrl!!
-            )
-            authProvider.providerId == GoogleAuthProvider.PROVIDER_ID -> AuthProvider.Google(
-                authProvider.uid,
-                displayName = user.displayName!!,
-                email = user.email!!,
-                imageUrl = user.photoUrl!!
-            )
+            authProvider.providerId == FacebookAuthProvider.PROVIDER_ID ->
+                createFacebookAuthProvider(
+                    authProvider,
+                    user
+                )
+            authProvider.providerId == GoogleAuthProvider.PROVIDER_ID ->
+                createGoogleAuthProvider(
+                    authProvider,
+                    user
+                )
             else -> throw IllegalStateException("Unknown Auth provider")
         }
 
@@ -167,6 +162,28 @@ class AuthSideEffectHandler : AppSideEffectHandler() {
         )
     }
 
+    private fun createGoogleAuthProvider(
+        authProvider: UserInfo,
+        user: FirebaseUser
+    ) =
+        AuthProvider.Google(
+            userId = authProvider.uid,
+            displayName = user.displayName!!,
+            email = user.email!!,
+            imageUrl = user.photoUrl!!
+        )
+
+    private fun createFacebookAuthProvider(
+        authProvider: UserInfo,
+        user: FirebaseUser
+    ) =
+        AuthProvider.Facebook(
+            userId = authProvider.uid,
+            displayName = user.displayName!!,
+            email = user.email!!,
+            imageUrl = user.photoUrl
+        )
+
     private suspend fun createNewPlayer(
         user: FirebaseUser
     ) {
@@ -183,25 +200,13 @@ class AuthSideEffectHandler : AppSideEffectHandler() {
         val auth = when {
 
             authProvider.providerId == FacebookAuthProvider.PROVIDER_ID ->
-                AuthProvider.Facebook(
-                    authProvider.uid,
-                    displayName = user.displayName!!,
-                    email = user.email!!,
-                    imageUrl = user.photoUrl
-                )
+                createFacebookAuthProvider(authProvider, user)
 
             authProvider.providerId == GoogleAuthProvider.PROVIDER_ID ->
-                AuthProvider.Google(
-                    authProvider.uid,
-                    displayName = user.displayName!!,
-                    email = user.email!!,
-                    imageUrl = user.photoUrl
-                )
+                createGoogleAuthProvider(authProvider, user)
 
             authProvider.providerId == FirebaseAuthProvider.PROVIDER_ID ->
-                AuthProvider.Guest(
-                    authProvider.uid
-                )
+                AuthProvider.Guest(authProvider.uid)
 
             else -> throw IllegalStateException("Unknown Auth provider")
         }

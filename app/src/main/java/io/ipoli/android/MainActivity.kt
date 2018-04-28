@@ -89,9 +89,9 @@ class MainActivity : AppCompatActivity(), Injects<Module>, SideEffectHandler<App
             router.setRoot(RouterTransaction.with(AuthViewController()))
         } else {
             launch(CommonPool) {
-                val player = playerRepository.find()
+                val p = playerRepository.find()!!
                 launch(UI) {
-                    if (player!!.username == null) {
+                    if (p.isLoggedIn() && p.username.isNullOrEmpty()) {
                         router.setRoot(RouterTransaction.with(AuthViewController()))
                     } else {
                         startApp()
