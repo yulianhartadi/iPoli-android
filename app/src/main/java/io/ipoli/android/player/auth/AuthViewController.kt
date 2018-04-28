@@ -8,7 +8,6 @@ import android.content.Intent
 import android.os.Bundle
 import android.support.annotation.ColorRes
 import android.support.annotation.DrawableRes
-import android.support.design.widget.Snackbar
 import android.support.v7.widget.LinearLayoutManager
 import android.text.Editable
 import android.text.TextWatcher
@@ -29,7 +28,6 @@ import com.mikepenz.google_material_typeface_library.GoogleMaterial
 import com.mikepenz.iconics.IconicsDrawable
 import io.ipoli.android.Constants
 import io.ipoli.android.R
-import io.ipoli.android.common.EmailUtils
 import io.ipoli.android.common.LoaderDialogController
 import io.ipoli.android.common.home.HomeViewController
 import io.ipoli.android.common.redux.android.ReduxViewController
@@ -83,61 +81,12 @@ class AuthViewController(args: Bundle? = null) :
 
         registerForActivityResult(RC_SIGN_IN)
 
-        Glide.with(view.context).load(AndroidAvatar.AVATAR_03.image)
-            .apply(RequestOptions.circleCropTransform())
-            .into(view.playerAvatar)
-
         view.avatarList.layoutManager =
                 LinearLayoutManager(activity!!, LinearLayoutManager.HORIZONTAL, false)
         view.avatarList.adapter = AvatarAdapter()
 
-        view.startJourney.setOnClickListener {
-            dispatch(AuthAction.CompleteSetup(view.username.text.toString()))
-        }
-
         view.username.setCompoundDrawablesRelativeWithIntrinsicBounds(
             usernameIcon, null, null, null
-        )
-
-        (view.avatarList.adapter as AvatarAdapter).updateAll(
-            listOf(
-                AvatarViewModel(
-                    stringRes(AndroidAvatar.AVATAR_03.avatarName),
-                    AndroidAvatar.AVATAR_03.image,
-                    AndroidAvatar.AVATAR_03.backgroundColor,
-                    Avatar.AVATAR_03
-                ),
-                AvatarViewModel(
-                    stringRes(AndroidAvatar.AVATAR_04.avatarName),
-                    AndroidAvatar.AVATAR_04.image,
-                    AndroidAvatar.AVATAR_04.backgroundColor,
-                    Avatar.AVATAR_04
-                ),
-                AvatarViewModel(
-                    stringRes(AndroidAvatar.AVATAR_05.avatarName),
-                    AndroidAvatar.AVATAR_05.image,
-                    AndroidAvatar.AVATAR_05.backgroundColor,
-                    Avatar.AVATAR_05
-                ),
-                AvatarViewModel(
-                    stringRes(AndroidAvatar.AVATAR_06.avatarName),
-                    AndroidAvatar.AVATAR_06.image,
-                    AndroidAvatar.AVATAR_06.backgroundColor,
-                    Avatar.AVATAR_06
-                ),
-                AvatarViewModel(
-                    stringRes(AndroidAvatar.AVATAR_07.avatarName),
-                    AndroidAvatar.AVATAR_07.image,
-                    AndroidAvatar.AVATAR_07.backgroundColor,
-                    Avatar.AVATAR_07
-                ),
-                AvatarViewModel(
-                    stringRes(AndroidAvatar.AVATAR_08.avatarName),
-                    AndroidAvatar.AVATAR_08.image,
-                    AndroidAvatar.AVATAR_08.backgroundColor,
-                    Avatar.AVATAR_08
-                )
-            )
         )
 
         return view
@@ -175,6 +124,11 @@ class AuthViewController(args: Bundle? = null) :
     }
 
     override fun render(state: AuthViewState, view: View) {
+
+        view.startJourney.setOnClickListener {
+            dispatch(AuthAction.CompleteSetup(view.username.text.toString(), state.playerAvatar))
+        }
+
         when (state.type) {
 
             LOADING -> {
@@ -220,15 +174,22 @@ class AuthViewController(args: Bundle? = null) :
             SHOW_SETUP -> {
                 view.loginContainer.invisible()
                 view.setupContainer.visible()
+                renderPlayerAvatars(view, state)
+                view.signUpHeadline.setText(R.string.choose_your_avatar)
             }
 
             SWITCH_TO_SETUP -> {
                 hideLoader()
+                renderPlayerAvatars(view, state)
                 playShowLoginAnimation(view, {
                     view.loginContainer.invisible()
                     view.loginPet.invisible()
-                    view.setupPet.visible()
+                    view.signUpHeadline.setText(R.string.choose_your_avatar)
                 })
+            }
+
+            AVATAR_CHANGED -> {
+                renderPlayerAvatars(view, state)
             }
 
             USERNAME_VALIDATION_ERROR -> {
@@ -273,22 +234,14 @@ class AuthViewController(args: Bundle? = null) :
         }
     }
 
-    private fun showHelpSnackbar(view: View, playerId: String?) {
-        exitFullScreen()
-        val snackbar = Snackbar.make(
-            view.authContainer,
-            R.string.login_error_contact_us_message,
-            Snackbar.LENGTH_INDEFINITE
-        )
-        snackbar.setAction(R.string.contact_us, { _ ->
-            EmailUtils.send(
-                view.context,
-                stringRes(R.string.help_me_login),
-                playerId ?: "",
-                stringRes(R.string.contact_us_email_chooser_title)
-            )
-        })
-        snackbar.show()
+    private fun renderPlayerAvatars(
+        view: View,
+        state: AuthViewState
+    ) {
+        Glide.with(view.context).load(state.playerAvatarImage)
+            .apply(RequestOptions.circleCropTransform())
+            .into(view.playerAvatar)
+        (view.avatarList.adapter as AvatarAdapter).updateAll(state.avatarViewModels)
     }
 
     private fun hideLoader() {
@@ -308,9 +261,7 @@ class AuthViewController(args: Bundle? = null) :
         else
             view.guestGroup.showViews()
         view.loginPet.visible = true
-        view.setupPet.visible = false
         view.signUpHeadline.setText(R.string.welcome_hero)
-
     }
 
     private fun playShowLoginAnimation(view: View, animationEnd: () -> Unit) {
@@ -429,6 +380,7 @@ class AuthViewController(args: Bundle? = null) :
         val name: String,
         @DrawableRes val image: Int,
         @ColorRes val backgroundColor: Int,
+        val isSelected: Boolean,
         val avatar: Avatar
     )
 
@@ -439,8 +391,30 @@ class AuthViewController(args: Bundle? = null) :
             view.avatarName.text = vm.name
             view.avatarImage.setBackgroundResource(vm.backgroundColor)
             view.avatarImage.setImageResource(vm.image)
+            if (!vm.isSelected) {
+                view.avatarImage.dispatchOnClick(AuthAction.ChangeAvatar(vm.avatar))
+                view.avatarImageSelected.gone()
+            } else {
+                view.avatarImage.setOnClickListener(null)
+                view.avatarImageSelected.visible()
+            }
         }
 
     }
+
+    private val AuthViewState.playerAvatarImage: Int
+        get() = AndroidAvatar.valueOf(playerAvatar.name).image
+
+    private val AuthViewState.avatarViewModels: List<AvatarViewModel>
+        get() = avatars.map {
+            val androidAvatar = AndroidAvatar.valueOf(it.name)
+            AvatarViewModel(
+                name = stringRes(androidAvatar.avatarName),
+                image = androidAvatar.image,
+                backgroundColor = androidAvatar.backgroundColor,
+                isSelected = it == playerAvatar,
+                avatar = it
+            )
+        }
 
 }

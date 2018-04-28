@@ -14,7 +14,6 @@ import io.ipoli.android.player.AuthProvider
 import io.ipoli.android.player.Player
 import io.ipoli.android.player.auth.AuthAction
 import io.ipoli.android.player.auth.AuthViewState
-import io.ipoli.android.player.data.Avatar
 import io.ipoli.android.player.persistence.PlayerRepository
 import io.ipoli.android.quest.Color
 import io.ipoli.android.quest.Icon
@@ -103,7 +102,7 @@ class AuthSideEffectHandler : AppSideEffectHandler() {
                     playerRepository.save(
                         player.copy(
                             username = action.username,
-                            avatar = Avatar.AVATAR_00
+                            avatar = action.avatar
                         )
                     )
                     playerRepository.addUsername(action.username)

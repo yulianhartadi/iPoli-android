@@ -9,6 +9,7 @@ import io.ipoli.android.common.BaseViewStateReducer
 import io.ipoli.android.common.mvi.ViewState
 import io.ipoli.android.common.redux.Action
 import io.ipoli.android.player.auth.AuthViewState.StateType.*
+import io.ipoli.android.player.data.Avatar
 
 /**
  * Created by Polina Zhelyazkova <polina@mypoli.fun>
@@ -24,8 +25,12 @@ sealed class AuthAction : Action {
 
     data class UserAuthenticated(val user: FirebaseUser) : AuthAction()
     data class UsernameValidationFailed(val error: AuthViewState.ValidationError) : AuthAction()
-    data class CompleteSetup(val username: String) : AuthAction()
+    data class CompleteSetup(
+        val username: String,
+        val avatar: Avatar
+    ) : AuthAction()
     data class ValidateUsername(val username: String) : AuthAction()
+    data class ChangeAvatar(val avatar: Avatar) : AuthAction()
 
     object AccountsLinked : AuthAction()
     object GuestCreated : AuthAction()
@@ -107,6 +112,13 @@ object AuthReducer : BaseViewStateReducer<AuthViewState>() {
                 )
             }
 
+            is AuthAction.ChangeAvatar -> {
+                subState.copy(
+                    type = AVATAR_CHANGED,
+                    playerAvatar = action.avatar
+                )
+            }
+
             else -> subState
 
         }
@@ -115,7 +127,18 @@ object AuthReducer : BaseViewStateReducer<AuthViewState>() {
         AuthViewState(
             type = LOADING,
             usernameValidationError = null,
-            isGuest = false
+            isGuest = false,
+            playerAvatar = Avatar.AVATAR_03,
+            avatars = listOf(
+                Avatar.AVATAR_03,
+                Avatar.AVATAR_02,
+                Avatar.AVATAR_01,
+                Avatar.AVATAR_04,
+                Avatar.AVATAR_05,
+                Avatar.AVATAR_06,
+                Avatar.AVATAR_07,
+                Avatar.AVATAR_11
+            )
         )
 
 }
@@ -123,7 +146,9 @@ object AuthReducer : BaseViewStateReducer<AuthViewState>() {
 data class AuthViewState(
     val type: AuthViewState.StateType,
     val usernameValidationError: ValidationError?,
-    val isGuest: Boolean
+    val isGuest: Boolean,
+    val playerAvatar : Avatar,
+    val avatars : List<Avatar>
 ) : ViewState {
     enum class StateType {
         IDLE,
@@ -137,7 +162,8 @@ data class AuthViewState(
         PLAYER_SETUP_COMPLETED,
         PLAYER_LOGGED_IN,
         EXISTING_PLAYER_LOGGED_IN_FROM_GUEST,
-        ACCOUNTS_LINKED
+        ACCOUNTS_LINKED,
+        AVATAR_CHANGED
     }
 
     enum class ValidationError {

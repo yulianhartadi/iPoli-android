@@ -2,23 +2,34 @@
 
 <android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:layout_width="80dp"
-    android:layout_height="100dp"
+    android:layout_width="72dp"
+    android:layout_height="96dp"
     android:layout_marginEnd="4dp"
-    android:layout_marginStart="4dp">
+    android:layout_marginStart="4dp"
+    android:background="?attr/selectableItemBackground">
 
     <ImageView
         android:id="@+id/avatarImage"
         android:layout_width="0dp"
-        android:layout_height="match_parent"
+        android:layout_height="0dp"
         android:layout_marginEnd="4dp"
         android:layout_marginStart="4dp"
         android:adjustViewBounds="true"
-        android:scaleType="fitCenter"
+        android:scaleType="fitEnd"
         app:layout_constraintBottom_toTopOf="@+id/avatarName"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
+
+    <View
+        android:id="@+id/avatarImageSelected"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:background="@color/md_dark_text_38"
+        app:layout_constraintBottom_toBottomOf="@+id/avatarImage"
+        app:layout_constraintEnd_toEndOf="@+id/avatarImage"
+        app:layout_constraintStart_toStartOf="@+id/avatarImage"
+        app:layout_constraintTop_toTopOf="@+id/avatarImage" />
 
     <TextView
         android:id="@+id/avatarName"
@@ -26,7 +37,6 @@
         android:layout_height="wrap_content"
         android:background="@color/md_white"
         android:padding="2dp"
-        android:text="Monika"
         android:textAlignment="center"
         android:textAppearance="@style/TextAppearance.AppCompat.Body1"
         android:textColor="@color/md_dark_text_87"
