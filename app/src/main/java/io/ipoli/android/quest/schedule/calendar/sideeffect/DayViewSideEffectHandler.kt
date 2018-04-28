@@ -8,6 +8,7 @@ import io.ipoli.android.event.usecase.FindEventsBetweenDatesUseCase
 import io.ipoli.android.quest.Quest
 import io.ipoli.android.quest.Reminder
 import io.ipoli.android.quest.schedule.ScheduleAction
+import io.ipoli.android.quest.schedule.ScheduleViewState
 import io.ipoli.android.quest.schedule.calendar.CalendarAction
 import io.ipoli.android.quest.schedule.calendar.dayview.view.DayViewAction
 import io.ipoli.android.quest.schedule.calendar.dayview.view.DayViewState
@@ -19,7 +20,6 @@ import io.ipoli.android.quest.usecase.SaveQuestUseCase
 import io.ipoli.android.repeatingquest.usecase.CreatePlaceholderQuestsForRepeatingQuestsUseCase
 import org.threeten.bp.LocalDate
 import space.traversal.kapsule.required
-import timber.log.Timber
 
 class DayViewSideEffectHandler : AppSideEffectHandler() {
     private val saveQuestUseCase by required { saveQuestUseCase }
@@ -102,6 +102,14 @@ class DayViewSideEffectHandler : AppSideEffectHandler() {
             is CalendarAction.ChangeVisibleDate ->
                 startListenForCalendarQuests(a.date)
 
+            is ScheduleAction.ToggleViewMode -> {
+                val scheduleState = state.stateFor(ScheduleViewState::class.java)
+
+                if (scheduleState.viewMode == ScheduleViewState.ViewMode.CALENDAR) {
+                    startListenForCalendarQuests(scheduleState.currentDate)
+                }
+            }
+
             is DayViewAction.CompleteQuest ->
                 if (a.isStarted) {
                     completeTimeRangeUseCase.execute(
@@ -180,8 +188,9 @@ class DayViewSideEffectHandler : AppSideEffectHandler() {
     override fun canHandle(action: Action): Boolean {
         val a = (action as? NamespaceAction)?.source ?: action
         return a is DayViewAction
-            || a === LoadDataAction.All
-            || a is CalendarAction.ChangeVisibleDate
-            || a is ScheduleAction.ScheduleChangeDate
+                || a === LoadDataAction.All
+                || a is CalendarAction.ChangeVisibleDate
+                || a is ScheduleAction.ScheduleChangeDate
+                || a === ScheduleAction.ToggleViewMode
     }
 }

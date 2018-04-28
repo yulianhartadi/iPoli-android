@@ -10,11 +10,11 @@ import com.bluelinelabs.conductor.Controller
 import com.bluelinelabs.conductor.Router
 import com.bluelinelabs.conductor.RouterTransaction
 import com.bluelinelabs.conductor.support.RouterPagerAdapter
-import kotlinx.android.synthetic.main.controller_calendar.view.*
 import io.ipoli.android.R
 import io.ipoli.android.common.redux.android.ReduxViewController
 import io.ipoli.android.quest.schedule.ScheduleViewController
 import io.ipoli.android.quest.schedule.calendar.dayview.view.DayViewController
+import kotlinx.android.synthetic.main.controller_calendar.view.*
 import org.threeten.bp.LocalDate
 
 /**

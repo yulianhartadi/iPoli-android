@@ -172,11 +172,15 @@ abstract class BaseFirestoreRepository<E, out T>(
         channel: SendChannel<*>,
         registration: ListenerRegistration
     ) {
+
+        channelToRegistration[channel] = registration
+    }
+
+    protected fun removeChannelRegistration(channel: Channel<*>) {
         if (channelToRegistration.containsKey(channel)) {
             val r = channelToRegistration[channel]
             r!!.remove()
         }
-        channelToRegistration[channel] = registration
     }
 
     protected val Query.entities
@@ -200,6 +204,9 @@ abstract class BaseEntityFirestoreRepository<E, out T>(
 
     override suspend fun listen(channel: Channel<E?>): Channel<E?> {
         withContext(UI) {
+
+            removeChannelRegistration(channel)
+
             val registration: ListenerRegistration?
             registration = entityReference
                 .addSnapshotListener { snapshot, error ->
@@ -235,6 +242,9 @@ abstract class BaseCollectionFirestoreRepository<E, out T>(
 
     override suspend fun listenById(id: String, channel: Channel<E?>): Channel<E?> {
         withContext(UI) {
+
+            removeChannelRegistration(channel)
+
             val registration: ListenerRegistration?
             registration = documentReference(id)
                 .addSnapshotListener { snapshot, error ->
@@ -252,6 +262,9 @@ abstract class BaseCollectionFirestoreRepository<E, out T>(
 
     private suspend fun listen(query: Query, channel: Channel<List<E>>): Channel<List<E>> {
         withContext(UI) {
+
+            removeChannelRegistration(channel)
+
             val registration: ListenerRegistration?
             registration = query
                 .whereEqualTo("removedAt", null)

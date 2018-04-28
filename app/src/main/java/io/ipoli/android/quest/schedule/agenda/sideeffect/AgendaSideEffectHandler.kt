@@ -8,15 +8,11 @@ import io.ipoli.android.common.async.ChannelRelay
 import io.ipoli.android.common.redux.Action
 import io.ipoli.android.event.usecase.FindEventsBetweenDatesUseCase
 import io.ipoli.android.quest.Quest
-import io.ipoli.android.quest.schedule.ScheduleAction
-import io.ipoli.android.quest.schedule.ScheduleViewState
 import io.ipoli.android.quest.schedule.agenda.AgendaAction
 import io.ipoli.android.quest.schedule.agenda.AgendaReducer
 import io.ipoli.android.quest.schedule.agenda.AgendaViewState
 import io.ipoli.android.quest.schedule.agenda.usecase.CreateAgendaItemsUseCase
 import io.ipoli.android.quest.schedule.agenda.usecase.FindAgendaDatesUseCase
-import io.ipoli.android.quest.schedule.calendar.CalendarAction
-import io.ipoli.android.quest.schedule.calendar.CalendarViewState
 import io.ipoli.android.quest.show.usecase.CompleteTimeRangeUseCase
 import io.ipoli.android.quest.usecase.CompleteQuestUseCase
 import io.ipoli.android.repeatingquest.usecase.CreatePlaceholderQuestsForRepeatingQuestsUseCase
@@ -89,6 +85,17 @@ class AgendaSideEffectHandler : AppSideEffectHandler() {
     override suspend fun doExecute(action: Action, state: AppState) {
 
         when (action) {
+
+            is AgendaAction.Load -> {
+                val pair = findAllAgendaDates(action.startDate)
+                listenForAgendaItems(
+                    startDate = pair.first,
+                    endDate = pair.second,
+                    agendaDate = action.startDate,
+                    changeCurrentAgendaItem = true
+                )
+            }
+
             is AgendaAction.LoadBefore -> {
                 val agendaItems = state.stateFor(AgendaViewState::class.java).agendaItems
                 val position = action.itemPosition
@@ -167,43 +174,6 @@ class AgendaSideEffectHandler : AppSideEffectHandler() {
                 undoCompletedQuestUseCase.execute(questItem.quest.id)
             }
 
-            is LoadDataAction.All -> {
-                val pair = findAllAgendaDates(state.dataState.today)
-                listenForAgendaItems(
-                    startDate = pair.first,
-                    endDate = pair.second,
-                    agendaDate = state.dataState.today,
-                    changeCurrentAgendaItem = true
-                )
-            }
-
-            is ScheduleAction.ScheduleChangeDate -> {
-                val pair = findAllAgendaDates(action.date)
-                listenForAgendaItems(
-                    startDate = pair.first,
-                    endDate = pair.second,
-                    agendaDate = action.date,
-                    changeCurrentAgendaItem = true
-                )
-            }
-            is CalendarAction.SwipeChangeDate -> {
-                val calendarState = state.stateFor(CalendarViewState::class.java)
-                val currentPos = calendarState.adapterPosition
-                val newPos = action.adapterPosition
-                val scheduleState = state.stateFor(ScheduleViewState::class.java)
-                val curDate = scheduleState.currentDate
-                val agendaDate = if (newPos < currentPos)
-                    curDate.minusDays(1)
-                else
-                    curDate.plusDays(1)
-                val agendaDates = findAllAgendaDates(agendaDate)
-                listenForAgendaItems(
-                    startDate = agendaDates.first,
-                    endDate = agendaDates.second,
-                    agendaDate = agendaDate,
-                    changeCurrentAgendaItem = true
-                )
-            }
         }
     }
 
@@ -240,7 +210,5 @@ class AgendaSideEffectHandler : AppSideEffectHandler() {
 
     override fun canHandle(action: Action) =
         action == LoadDataAction.All
-            || action is AgendaAction
-            || action is ScheduleAction.ScheduleChangeDate
-            || action is CalendarAction.SwipeChangeDate
+                || action is AgendaAction
 }

@@ -26,7 +26,7 @@ object CalendarReducer : BaseViewStateReducer<CalendarViewState>() {
 
             is CalendarAction.Load -> {
                 subState.copy(
-                    type = CalendarViewState.StateType.IDLE,
+                    type = CalendarViewState.StateType.INITIAL,
                     currentDate = action.startDate
                 )
             }
@@ -60,7 +60,7 @@ object CalendarReducer : BaseViewStateReducer<CalendarViewState>() {
 
     override fun defaultState(): CalendarViewState {
         return CalendarViewState(
-            type = CalendarViewState.StateType.INITIAL,
+            type = CalendarViewState.StateType.IDLE,
             currentDate = LocalDate.now(),
             adapterPosition = MID_POSITION,
             adapterMidPosition = MID_POSITION

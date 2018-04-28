@@ -46,23 +46,6 @@ object AgendaReducer : BaseViewStateReducer<AgendaViewState>() {
     ): AgendaViewState {
         return when (action) {
 
-            is AgendaAction.Load -> {
-
-                val agendaItems = state.dataState.agendaItems
-
-                if (agendaItems.isEmpty()) {
-                    return subState.copy(type = AgendaViewState.StateType.LOADING)
-                }
-                subState.copy(
-                    type = AgendaViewState.StateType.DATA_CHANGED,
-                    agendaItems = agendaItems,
-                    scrollToPosition = findItemPositionToScrollTo(
-                        action.startDate,
-                        agendaItems
-                    )
-                )
-            }
-
             is DataLoadedAction.AgendaItemsChanged -> {
                 subState.copy(
                     type = AgendaViewState.StateType.DATA_CHANGED,

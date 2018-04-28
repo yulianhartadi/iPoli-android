@@ -20,7 +20,6 @@ import android.util.TypedValue
 import android.view.*
 import com.bluelinelabs.conductor.RouterTransaction
 import com.bluelinelabs.conductor.changehandler.FadeChangeHandler
-import com.bluelinelabs.conductor.changehandler.VerticalChangeHandler
 import com.mikepenz.iconics.IconicsDrawable
 import io.ipoli.android.Constants
 import io.ipoli.android.R
@@ -48,6 +47,7 @@ import kotlinx.android.synthetic.main.item_calendar_quest.view.*
 import kotlinx.android.synthetic.main.item_unscheduled_quest.view.*
 import kotlinx.android.synthetic.main.view_calendar_day.view.*
 import org.threeten.bp.LocalDate
+import timber.log.Timber
 import java.util.*
 
 class DayViewController :

@@ -64,7 +64,6 @@ data class AppDataState(
     val calendarSchedule: Map<LocalDate, Schedule>,
     val repeatingQuests: List<RepeatingQuest>,
     val challenges: List<Challenge>,
-    val agendaItems: List<CreateAgendaItemsUseCase.AgendaItem>,
     val events: List<Event>,
     val tags: List<Tag>
 ) : State
@@ -95,11 +94,6 @@ object AppDataReducer : Reducer<AppState, AppDataState> {
             is DataLoadedAction.RepeatingQuestsChanged ->
                 subState.copy(
                     repeatingQuests = action.repeatingQuests
-                )
-
-            is DataLoadedAction.AgendaItemsChanged ->
-                subState.copy(
-                    agendaItems = action.agendaItems
                 )
 
             is DataLoadedAction.ChallengesChanged ->
@@ -134,7 +128,6 @@ object AppDataReducer : Reducer<AppState, AppDataState> {
             calendarSchedule = mapOf(),
             repeatingQuests = listOf(),
             challenges = listOf(),
-            agendaItems = listOf(),
             events = listOf(),
             tags = listOf()
         )
