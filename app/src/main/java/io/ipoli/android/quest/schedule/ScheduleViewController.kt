@@ -151,7 +151,6 @@ class ScheduleViewController(args: Bundle? = null) :
     }
 
     override fun render(state: ScheduleViewState, view: View) {
-
         calendarToolbar.day.text = state.dayText(activity!!)
         calendarToolbar.date.text = state.dateText(activity!!)
         view.currentMonth.text = state.monthText

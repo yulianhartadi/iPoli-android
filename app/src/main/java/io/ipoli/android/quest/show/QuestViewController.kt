@@ -3,6 +3,7 @@ package io.ipoli.android.quest.show
 import android.animation.Animator
 import android.animation.AnimatorListenerAdapter
 import android.animation.ObjectAnimator
+import android.app.Activity
 import android.graphics.Paint
 import android.graphics.PorterDuff
 import android.graphics.drawable.GradientDrawable
@@ -134,6 +135,11 @@ class QuestViewController : ReduxViewController<QuestAction, QuestViewState, Que
         }
 
         return view
+    }
+
+    override fun onActivityResumed(activity: Activity) {
+        super.onActivityResumed(activity)
+        enterFullScreen()
     }
 
     private fun setupSubQuestList(view: View) {
@@ -340,7 +346,7 @@ class QuestViewController : ReduxViewController<QuestAction, QuestViewState, Que
                 val backgroundDrawable = drawable.getDrawable(0)
                 val backgroundColor =
                     if
-                        (state.allSubQuestsDone) colorRes(R.color.md_green_700)
+                            (state.allSubQuestsDone) colorRes(R.color.md_green_700)
                     else
                         attrData(R.attr.colorPrimaryDark)
 
@@ -352,7 +358,7 @@ class QuestViewController : ReduxViewController<QuestAction, QuestViewState, Que
                 val progressDrawable = drawable.getDrawable(1)
                 val progressColor =
                     if
-                        (state.allSubQuestsDone) colorRes(R.color.md_green_500)
+                            (state.allSubQuestsDone) colorRes(R.color.md_green_500)
                     else
                         attrData(R.attr.colorPrimary)
                 progressDrawable.setColorFilter(
@@ -636,10 +642,10 @@ class QuestViewController : ReduxViewController<QuestAction, QuestViewState, Que
 
             if (vm.isCompleted) {
                 view.editSubQuestName.paintFlags = view.editSubQuestName.paintFlags or
-                    Paint.STRIKE_THRU_TEXT_FLAG
+                        Paint.STRIKE_THRU_TEXT_FLAG
             } else {
                 view.editSubQuestName.paintFlags = view.editSubQuestName.paintFlags and
-                    Paint.STRIKE_THRU_TEXT_FLAG.inv()
+                        Paint.STRIKE_THRU_TEXT_FLAG.inv()
 
             }
 
