@@ -9,6 +9,7 @@ import android.net.Uri
 import android.os.Bundle
 import android.support.annotation.ColorRes
 import android.support.annotation.IdRes
+import android.support.design.internal.NavigationMenuView
 import android.support.design.widget.NavigationView
 import android.support.v4.view.GravityCompat
 import android.support.v7.app.ActionBarDrawerToggle
@@ -78,6 +79,8 @@ class HomeViewController(args: Bundle? = null) :
         val contentView = inflater.inflate(R.layout.controller_home, container, false)
 
         contentView.navigationView.setNavigationItemSelectedListener(this)
+        val mv =  contentView.navigationView.getChildAt(0) as NavigationMenuView
+        mv.isVerticalScrollBarEnabled = false
 
         actionBarDrawerToggle = object :
             ActionBarDrawerToggle(
