@@ -20,8 +20,6 @@ import android.widget.ImageView
 import android.widget.ProgressBar
 import android.widget.TextView
 import android.widget.Toast
-import com.bluelinelabs.conductor.RouterTransaction
-import com.bluelinelabs.conductor.changehandler.FadeChangeHandler
 import com.mikepenz.iconics.IconicsDrawable
 import com.mikepenz.ionicons_typeface_library.Ionicons
 import io.ipoli.android.R
@@ -29,7 +27,6 @@ import io.ipoli.android.common.ViewUtils
 import io.ipoli.android.common.mvi.MviViewController
 import io.ipoli.android.common.view.*
 import io.ipoli.android.pet.PetViewState.StateType.*
-import io.ipoli.android.pet.store.PetStoreViewController
 import io.ipoli.android.player.inventory.InventoryViewController
 import kotlinx.android.synthetic.main.controller_pet.view.*
 import kotlinx.android.synthetic.main.item_pet_food.view.*
@@ -106,15 +103,15 @@ class PetViewController(args: Bundle? = null) :
             return true
         }
 
-        if (item.itemId == R.id.actionStore) {
-            val handler = FadeChangeHandler()
-            router.pushController(
-                RouterTransaction.with(PetStoreViewController())
-                    .pushChangeHandler(handler)
-                    .popChangeHandler(handler)
-            )
-            return true
-        }
+//        if (item.itemId == R.id.actionStore) {
+//            val handler = FadeChangeHandler()
+//            router.pushController(
+//                RouterTransaction.with(PetStoreViewController())
+//                    .pushChangeHandler(handler)
+//                    .popChangeHandler(handler)
+//            )
+//            return true
+//        }
 
         if (item.itemId == R.id.actionRenamePet) {
             send(RenamePetRequestIntent)
