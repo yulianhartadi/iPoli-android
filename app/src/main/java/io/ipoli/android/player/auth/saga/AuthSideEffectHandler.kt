@@ -6,6 +6,7 @@ import io.ipoli.android.Constants
 import io.ipoli.android.common.AppSideEffectHandler
 import io.ipoli.android.common.AppState
 import io.ipoli.android.common.LoadDataAction
+import io.ipoli.android.common.api.Api
 import io.ipoli.android.common.redux.Action
 import io.ipoli.android.player.AuthProvider
 import io.ipoli.android.player.Player
@@ -16,7 +17,6 @@ import io.ipoli.android.quest.Color
 import io.ipoli.android.quest.Icon
 import io.ipoli.android.tag.Tag
 import space.traversal.kapsule.required
-import timber.log.Timber
 import java.nio.charset.Charset
 import java.util.regex.Pattern
 
@@ -58,7 +58,6 @@ class AuthSideEffectHandler : AppSideEffectHandler() {
                 val metadata = user.metadata
                 val isNewUser =
                     metadata == null || metadata.creationTimestamp == metadata.lastSignInTimestamp
-                Timber.d("AAA $isNewUser")
                 val hasPlayer = playerRepository.hasPlayer()
                 when {
                     !isNewUser && hasPlayer -> {
@@ -105,6 +104,13 @@ class AuthSideEffectHandler : AppSideEffectHandler() {
                     playerRepository.addUsername(action.username)
                     prepareAppStart()
                     dispatch(AuthAction.PlayerSetupCompleted)
+
+                    val auth = player.authProvider
+                    if (auth is AuthProvider.Facebook && auth.email != null) {
+                        Api.migratePlayer(player.id, auth.email)
+                    } else if (auth is AuthProvider.Google && auth.email != null) {
+                        Api.migratePlayer(player.id, auth.email)
+                    }
                 }
             }
 
@@ -147,12 +153,6 @@ class AuthSideEffectHandler : AppSideEffectHandler() {
                 )
             else -> throw IllegalStateException("Unknown Auth provider")
         }
-
-//        if (auth is AuthProvider.Facebook) {
-//            Api.migratePlayer(auth.userId, auth.email)
-//        } else if (auth is AuthProvider.Google) {
-//            Api.migratePlayer(auth.userId, auth.email)
-//        }
 
         val player = playerRepository.find()
         playerRepository.save(
@@ -229,12 +229,6 @@ class AuthSideEffectHandler : AppSideEffectHandler() {
         } else {
             dispatch(AuthAction.ShowSetUp)
         }
-
-//        if (auth is AuthProvider.Facebook) {
-//            Api.migratePlayer(user.uid, auth.email)
-//        } else if (auth is AuthProvider.Google) {
-//            Api.migratePlayer(user.uid, auth.email)
-//        }
     }
 
     private fun saveDefaultTags() {

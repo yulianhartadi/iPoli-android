@@ -7,6 +7,8 @@ import io.ipoli.android.common.redux.Action
 import io.ipoli.android.event.usecase.FindEventsBetweenDatesUseCase
 import io.ipoli.android.quest.Quest
 import io.ipoli.android.quest.Reminder
+import io.ipoli.android.quest.schedule.ScheduleAction
+import io.ipoli.android.quest.schedule.calendar.CalendarAction
 import io.ipoli.android.quest.schedule.calendar.dayview.view.DayViewAction
 import io.ipoli.android.quest.schedule.calendar.dayview.view.DayViewState
 import io.ipoli.android.quest.show.usecase.CompleteTimeRangeUseCase
@@ -17,6 +19,7 @@ import io.ipoli.android.quest.usecase.SaveQuestUseCase
 import io.ipoli.android.repeatingquest.usecase.CreatePlaceholderQuestsForRepeatingQuestsUseCase
 import org.threeten.bp.LocalDate
 import space.traversal.kapsule.required
+import timber.log.Timber
 
 class DayViewSideEffectHandler : AppSideEffectHandler() {
     private val saveQuestUseCase by required { saveQuestUseCase }
@@ -93,8 +96,11 @@ class DayViewSideEffectHandler : AppSideEffectHandler() {
             is DayViewAction.UndoRemoveQuest ->
                 undoRemoveQuestUseCase.execute(a.questId)
 
-            is DayViewAction.Load ->
-                startListenForCalendarQuests(a.currentDate)
+            is ScheduleAction.ScheduleChangeDate ->
+                startListenForCalendarQuests(a.date)
+
+            is CalendarAction.ChangeVisibleDate ->
+                startListenForCalendarQuests(a.date)
 
             is DayViewAction.CompleteQuest ->
                 if (a.isStarted) {
@@ -121,8 +127,8 @@ class DayViewSideEffectHandler : AppSideEffectHandler() {
     ) {
         scheduledQuestsChannelRelay.listen(
             ScheduledQuestsParams(
-                startDate = currentDate.minusDays(2),
-                endDate = currentDate.plusDays(2)
+                startDate = currentDate.minusDays(1),
+                endDate = currentDate.plusDays(1)
             )
         )
     }
@@ -173,6 +179,9 @@ class DayViewSideEffectHandler : AppSideEffectHandler() {
 
     override fun canHandle(action: Action): Boolean {
         val a = (action as? NamespaceAction)?.source ?: action
-        return a is DayViewAction || a === LoadDataAction.All
+        return a is DayViewAction
+            || a === LoadDataAction.All
+            || a is CalendarAction.ChangeVisibleDate
+            || a is ScheduleAction.ScheduleChangeDate
     }
 }
