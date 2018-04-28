@@ -192,5 +192,6 @@ class DayViewSideEffectHandler : AppSideEffectHandler() {
                 || a is CalendarAction.ChangeVisibleDate
                 || a is ScheduleAction.ScheduleChangeDate
                 || a === ScheduleAction.ToggleViewMode
+                || a is ScheduleAction.Load
     }
 }

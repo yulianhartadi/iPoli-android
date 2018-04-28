@@ -44,10 +44,9 @@ class ScheduleViewController(args: Bundle? = null) :
         container: ViewGroup,
         savedViewState: Bundle?
     ): View {
+
         setHasOptionsMenu(true)
         val view = inflater.inflate(R.layout.controller_schedule, container, false)
-
-        setChildController(view.contentContainer, CalendarViewController(LocalDate.now()))
 
         addQuestAnimationHelper = AddQuestAnimationHelper(
             controller = this,
@@ -57,14 +56,19 @@ class ScheduleViewController(args: Bundle? = null) :
         )
         initAddQuest(view)
 
+        parentController!!.view!!.post {
+            calendarToolbar = addToolbarView(R.layout.view_calendar_toolbar) as ViewGroup
+            initDayPicker(view, calendarToolbar)
+        }
+
         return view
     }
 
-    override fun onAttach(view: View) {
-        super.onAttach(view)
-        calendarToolbar = addToolbarView(R.layout.view_calendar_toolbar) as ViewGroup
+    override fun onCreateLoadAction() = ScheduleAction.Load
 
-        initDayPicker(view, calendarToolbar)
+    override fun onDestroyView(view: View) {
+        removeToolbarView(calendarToolbar)
+        super.onDestroyView(view)
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
@@ -160,6 +164,9 @@ class ScheduleViewController(args: Bundle? = null) :
         }
 
         when (state.type) {
+            INITIAL -> {
+                setChildController(view.contentContainer, CalendarViewController(state.currentDate))
+            }
 
             DATE_PICKER_CHANGED -> renderDatePicker(
                 state.datePickerState,
@@ -232,7 +239,7 @@ class ScheduleViewController(args: Bundle? = null) :
         CellConfig.Month2WeekPos = CellConfig.middlePosition
         CellConfig.ifMonth = false
         CellConfig.weekAnchorPointDate =
-            DateData(currentDate.year, currentDate.monthValue, currentDate.dayOfMonth)
+                DateData(currentDate.year, currentDate.monthValue, currentDate.dayOfMonth)
         view.datePicker.shrink()
         view.datePickerContainer.visibility = View.VISIBLE
         view.expander.setImageResource(R.drawable.ic_arrow_drop_down_white_24dp)
@@ -251,13 +258,13 @@ class ScheduleViewController(args: Bundle? = null) :
         CellConfig.Month2WeekPos = CellConfig.middlePosition
         CellConfig.ifMonth = false
         CellConfig.weekAnchorPointDate =
-            DateData(currentDate.year, currentDate.monthValue, currentDate.dayOfMonth)
+                DateData(currentDate.year, currentDate.monthValue, currentDate.dayOfMonth)
         view.datePicker.shrink()
     }
 
     private fun markSelectedDate(view: View, currentDate: LocalDate) {
         CellConfig.weekAnchorPointDate =
-            DateData(currentDate.year, currentDate.monthValue, currentDate.dayOfMonth)
+                DateData(currentDate.year, currentDate.monthValue, currentDate.dayOfMonth)
         view.datePicker.markedDates.removeAdd()
 
         val dateData = DateData(
@@ -271,7 +278,7 @@ class ScheduleViewController(args: Bundle? = null) :
     }
 
     override fun onDetach(view: View) {
-        removeToolbarView(calendarToolbar)
+
         super.onDetach(view)
     }
 

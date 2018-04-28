@@ -145,14 +145,14 @@ class DayViewController :
         when (state.type) {
             SCHEDULE_LOADED -> {
                 eventsAdapter =
-                    QuestScheduledEventsAdapter(
-                        activity!!,
-                        state.scheduledQuests,
-                        calendarDayView
-                    )
+                        QuestScheduledEventsAdapter(
+                            activity!!,
+                            state.scheduledQuests,
+                            calendarDayView
+                        )
                 calendarDayView.setScheduledEventsAdapter(eventsAdapter)
                 unscheduledEventsAdapter =
-                    UnscheduledQuestsAdapter(state.unscheduledQuests, calendarDayView)
+                        UnscheduledQuestsAdapter(state.unscheduledQuests, calendarDayView)
                 calendarDayView.setUnscheduledEventsAdapter(unscheduledEventsAdapter)
                 updateUnscheduledQuestsHeight(view)
             }
@@ -643,7 +643,7 @@ class DayViewController :
 
                 view.checkBox.isChecked = true
                 (view.checkBox as TintableCompoundButton).supportButtonTintList =
-                    tintList(R.color.md_grey_700)
+                        tintList(R.color.md_grey_700)
                 view.completedBackgroundView.visibility = View.VISIBLE
 
                 vm.icon?.let {
@@ -683,7 +683,7 @@ class DayViewController :
                 }
 
                 (view.checkBox as TintableCompoundButton).supportButtonTintList =
-                    tintList(vm.backgroundColor.color200)
+                        tintList(vm.backgroundColor.color200)
                 view.completedBackgroundView.visibility = View.INVISIBLE
 
                 if (vm.isPlaceholder) {
@@ -711,7 +711,7 @@ class DayViewController :
             view.checkBox.setOnCheckedChangeListener { cb, checked ->
                 if (checked) {
                     (view.checkBox as TintableCompoundButton).supportButtonTintList =
-                        tintList(R.color.md_grey_700)
+                            tintList(R.color.md_grey_700)
                     val anim = RevealAnimator().create(view.completedBackgroundView, cb)
                     anim.addListener(object : AnimatorListenerAdapter() {
                         override fun onAnimationStart(animation: Animator?) {
@@ -859,7 +859,7 @@ class DayViewController :
             }
 
             (itemView.unscheduledCheckBox as TintableCompoundButton).supportButtonTintList =
-                tintList(viewModel.backgroundColor.color500, itemView.context)
+                    tintList(viewModel.backgroundColor.color500, itemView.context)
 
             if (viewModel.isCompleted) {
                 val span = SpannableString(viewModel.name)
@@ -912,10 +912,10 @@ class DayViewController :
             }
 
             itemView.unscheduledQuestRepeatIndicator.visibility =
-                if (viewModel.isRepeating) View.VISIBLE else View.GONE
+                    if (viewModel.isRepeating) View.VISIBLE else View.GONE
 
             itemView.unscheduledQuestChallengeIndicator.visibility =
-                if (viewModel.isFromChallenge) View.VISIBLE else View.GONE
+                    if (viewModel.isFromChallenge) View.VISIBLE else View.GONE
 
             itemView.unscheduledCheckBox.setOnCheckedChangeListener { _, checked ->
                 if (checked) {

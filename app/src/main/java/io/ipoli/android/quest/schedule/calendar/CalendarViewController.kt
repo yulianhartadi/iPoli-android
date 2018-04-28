@@ -69,7 +69,8 @@ class CalendarViewController(args: Bundle? = null) :
                 dispatch(CalendarAction.ChangeVisibleDate(state.currentDate))
             }
 
-            else -> { }
+            else -> {
+            }
         }
 
     override fun onCreateLoadAction() = CalendarAction.Load(startDate)
@@ -86,11 +87,11 @@ class CalendarViewController(args: Bundle? = null) :
 
     private fun createDayViewPagerAdapter(state: CalendarViewState, view: View) {
         dayViewPagerAdapter =
-            CalendarViewController.DayViewPagerAdapter(
-                state.currentDate,
-                state.adapterPosition,
-                this
-            )
+                CalendarViewController.DayViewPagerAdapter(
+                    state.currentDate,
+                    state.adapterPosition,
+                    this
+                )
         view.pager.adapter = dayViewPagerAdapter
         view.pager.currentItem = state.adapterPosition
         view.pager.addOnPageChangeListener(pageChangeListener)

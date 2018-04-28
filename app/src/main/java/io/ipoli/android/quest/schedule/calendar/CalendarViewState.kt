@@ -20,15 +20,18 @@ object CalendarReducer : BaseViewStateReducer<CalendarViewState>() {
         state: AppState,
         subState: CalendarViewState,
         action: Action
-    ): CalendarViewState {
-
-        return when (action) {
+    ) =
+        when (action) {
 
             is CalendarAction.Load -> {
-                subState.copy(
-                    type = CalendarViewState.StateType.INITIAL,
-                    currentDate = action.startDate
-                )
+                if (subState.type == CalendarViewState.StateType.LOADING) {
+                    subState.copy(
+                        type = CalendarViewState.StateType.INITIAL,
+                        currentDate = action.startDate
+                    )
+                } else {
+                    subState
+                }
             }
 
             is CalendarAction.SwipeChangeDate -> {
@@ -56,16 +59,14 @@ object CalendarReducer : BaseViewStateReducer<CalendarViewState>() {
             }
             else -> subState
         }
-    }
 
-    override fun defaultState(): CalendarViewState {
-        return CalendarViewState(
-            type = CalendarViewState.StateType.IDLE,
+    override fun defaultState() =
+        CalendarViewState(
+            type = CalendarViewState.StateType.LOADING,
             currentDate = LocalDate.now(),
             adapterPosition = MID_POSITION,
             adapterMidPosition = MID_POSITION
         )
-    }
 
     private const val MID_POSITION = 49
 }
@@ -83,6 +84,6 @@ data class CalendarViewState(
     val adapterMidPosition: Int
 ) : ViewState {
     enum class StateType {
-        INITIAL, CALENDAR_DATE_CHANGED, SWIPE_DATE_CHANGED, IDLE
+        INITIAL, CALENDAR_DATE_CHANGED, SWIPE_DATE_CHANGED, LOADING
     }
 }

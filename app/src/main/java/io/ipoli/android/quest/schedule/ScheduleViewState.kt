@@ -26,6 +26,7 @@ sealed class ScheduleAction : Action {
 
     data class ChangeMonth(val year: Int, val month: Int) : ScheduleAction()
     object ToggleViewMode : ScheduleAction()
+    object Load : ScheduleAction()
 }
 
 object ScheduleReducer : BaseViewStateReducer<ScheduleViewState>() {
@@ -43,6 +44,7 @@ object ScheduleReducer : BaseViewStateReducer<ScheduleViewState>() {
 
     override fun reduce(state: AppState, subState: ScheduleViewState, action: Action) =
         when (action) {
+
             is ScheduleAction -> reduceCalendarAction(
                 subState,
                 action
@@ -77,6 +79,16 @@ object ScheduleReducer : BaseViewStateReducer<ScheduleViewState>() {
 
     private fun reduceCalendarAction(state: ScheduleViewState, action: ScheduleAction) =
         when (action) {
+            ScheduleAction.Load -> {
+                if (state.type != ScheduleViewState.StateType.LOADING) {
+                    state
+                } else {
+                    state.copy(
+                        type = ScheduleViewState.StateType.INITIAL
+                    )
+                }
+            }
+
             ScheduleAction.ExpandWeekToolbar -> {
                 when (state.datePickerState) {
                     ScheduleViewState.DatePickerState.SHOW_WEEK -> state.copy(
@@ -136,8 +148,7 @@ data class ScheduleViewState(
 ) : ViewState {
 
     enum class StateType {
-        LOADING, IDLE,
-        INITIAL, CALENDAR_DATE_CHANGED, SWIPE_DATE_CHANGED, DATE_PICKER_CHANGED, MONTH_CHANGED,
+        LOADING, INITIAL, IDLE, CALENDAR_DATE_CHANGED, SWIPE_DATE_CHANGED, DATE_PICKER_CHANGED, MONTH_CHANGED,
         VIEW_MODE_CHANGED, DATE_AUTO_CHANGED
     }
 
