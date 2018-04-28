@@ -263,8 +263,8 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="32dp"
-                android:paddingEnd="32dp"
                 android:backgroundTint="@color/md_indigo_A200"
+                android:paddingEnd="32dp"
                 android:paddingStart="32dp"
                 android:text="Start your journey"
                 app:layout_constraintEnd_toEndOf="parent"
@@ -277,7 +277,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:visibility="visible"
-                app:constraint_referenced_ids="playerAvatar, username, avatarList, startJourney" />
+                app:constraint_referenced_ids="playerAvatar, username, avatarList, startJourney,usernameValidationHint,usernameLengthHint,avatarHint" />
 
 
         </android.support.constraint.ConstraintLayout>

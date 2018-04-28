@@ -170,7 +170,7 @@ class AuthSideEffectHandler : AppSideEffectHandler() {
             userId = authProvider.uid,
             displayName = user.displayName!!,
             email = user.email!!,
-            imageUrl = user.photoUrl!!
+            imageUrl = user.photoUrl
         )
 
     private fun createFacebookAuthProvider(
