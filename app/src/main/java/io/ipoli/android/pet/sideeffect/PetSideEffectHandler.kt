@@ -51,47 +51,45 @@ class PetSideEffectHandler : AppSideEffectHandler() {
             }
 
             is PetAction.ShowItemListRequest -> {
-//                val petState = state.stateFor(PetViewState::class.java)
-//                val equipped =
-//// when (PetItemType.BODY_ARMOR) {
-////                    PetItemType.HAT -> {
-////                        state.equippedHatItem
-////                    }
-////                    PetItemType.MASK -> {
-////                        state.equippedMaskItem
-////                    }
-////                    PetItemType.BODY_ARMOR -> {
-//                    petState.equippedBodyArmorItem
-////                    }
-//
-//                state.dataState.player!!.pet.equipment.bodyArmor
-
-                val selectedItem = PetItem.values().first { it.type == PetItemType.BODY_ARMOR }
-
-                val cmpRes = comparePetItemsUseCase.execute(
-                    ComparePetItemsUseCase.Params(
-                        state.dataState.player!!.pet.equipment.bodyArmor,
-                        selectedItem
-                    )
-                )
-
+                val cmpRes = createCompareResult(state, PetItemType.BODY_ARMOR)
                 dispatch(PetAction.ShowItemList(cmpRes))
             }
 
             is PetAction.ShowHeadItemListRequest -> {
-                val selectedItem = PetItem.values().first { it.type == PetItemType.HAT }
-
-                val cmpRes = comparePetItemsUseCase.execute(
-                    ComparePetItemsUseCase.Params(
-                        state.dataState.player!!.pet.equipment.hat,
-                        selectedItem
-                    )
-                )
-
+                val cmpRes = createCompareResult(state, PetItemType.HAT)
                 dispatch(PetAction.ShowHeadItemList(cmpRes))
+            }
+
+            is PetAction.ShowFaceItemListRequest -> {
+                val cmpRes = createCompareResult(state, PetItemType.MASK)
+                dispatch(PetAction.ShowFaceItemList(cmpRes))
+            }
+
+            is PetAction.ShowBodyItemListRequest -> {
+                val cmpRes = createCompareResult(state, PetItemType.BODY_ARMOR)
+                dispatch(PetAction.ShowBodyArmorItemList(cmpRes))
             }
         }
 
+    }
+
+    private fun createCompareResult(
+        state: AppState,
+        itemType: PetItemType
+    ): ComparePetItemsUseCase.Result {
+        val equipment = state.dataState.player!!.pet.equipment
+        val equipped = when (itemType) {
+            PetItemType.HAT -> equipment.hat
+            PetItemType.MASK -> equipment.mask
+            PetItemType.BODY_ARMOR -> equipment.bodyArmor
+        }
+
+        return comparePetItemsUseCase.execute(
+            ComparePetItemsUseCase.Params(
+                equipped,
+                PetItem.values().first { it.type == itemType }
+            )
+        )
     }
 
     override fun canHandle(action: Action) =
