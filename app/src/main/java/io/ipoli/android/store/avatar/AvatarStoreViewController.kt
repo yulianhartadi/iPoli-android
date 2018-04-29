@@ -80,7 +80,7 @@ class AvatarStoreViewController(args: Bundle? = null) :
                 showLongToast(R.string.avatar_bought)
 
             AvatarStoreViewState.AvatarTooExpensive -> {
-                CurrencyConverterDialogController().showDialog(router, "currency-converter")
+                CurrencyConverterDialogController().show(router, "currency-converter")
                 showShortToast(R.string.avatar_too_expensive)
             }
         }

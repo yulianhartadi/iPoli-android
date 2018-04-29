@@ -19,7 +19,6 @@ sealed class GemStoreAction : Action {
     data class BuyGemPack(val gemPack: GemPack, val purchaseManager: InAppPurchaseManager) :
         GemStoreAction()
 
-    data class GemPacksLoaded(val gemPacks: List<GemPack>) : GemStoreAction()
     data class GemPackPurchased(val dogUnlocked: Boolean) : GemStoreAction()
     object PurchaseFailed : GemStoreAction()
 }
@@ -44,7 +43,7 @@ object GemStoreReducer : BaseViewStateReducer<GemStoreViewState>() {
                     isGiftPurchased = action.player.hasPet(PetAvatar.DOG)
                 )
 
-            is GemStoreAction.GemPacksLoaded ->
+            is DataLoadedAction.GemPacksLoaded ->
                 subState.copy(
                     type = GemStoreViewState.StateType.GEM_PACKS_LOADED,
                     gemPacks = action.gemPacks

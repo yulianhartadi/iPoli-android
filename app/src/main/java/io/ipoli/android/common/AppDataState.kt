@@ -12,6 +12,7 @@ import io.ipoli.android.quest.RepeatingQuest
 import io.ipoli.android.quest.schedule.agenda.usecase.CreateAgendaItemsUseCase
 import io.ipoli.android.quest.usecase.Schedule
 import io.ipoli.android.repeatingquest.usecase.CreateRepeatingQuestHistoryUseCase
+import io.ipoli.android.store.purchase.GemPack
 import io.ipoli.android.tag.Tag
 import io.ipoli.android.tag.usecase.CreateTagItemsUseCase
 import org.threeten.bp.LocalDate
@@ -54,6 +55,8 @@ sealed class DataLoadedAction : Action {
         DataLoadedAction()
 
     data class UnscheduledQuestsChanged(val quests: List<Quest>) : DataLoadedAction()
+
+    data class GemPacksLoaded(val gemPacks: List<GemPack>) : DataLoadedAction()
 }
 
 data class AppDataState(

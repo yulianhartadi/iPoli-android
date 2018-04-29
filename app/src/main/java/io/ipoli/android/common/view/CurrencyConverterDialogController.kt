@@ -14,46 +14,41 @@ import android.widget.TextView
 import android.widget.Toast
 import com.bluelinelabs.conductor.RouterTransaction
 import com.bluelinelabs.conductor.changehandler.FadeChangeHandler
-import kotlinx.android.synthetic.main.dialog_currency_converter.view.*
-import kotlinx.android.synthetic.main.view_currency_converter_dialog_header.view.*
-import kotlinx.coroutines.experimental.channels.consumeEach
-import kotlinx.coroutines.experimental.launch
 import io.ipoli.android.BillingConstants
 import io.ipoli.android.Constants
 import io.ipoli.android.R
-import io.ipoli.android.common.mvi.BaseMviPresenter
-import io.ipoli.android.common.mvi.Intent
+import io.ipoli.android.common.AppState
+import io.ipoli.android.common.BaseViewStateReducer
+import io.ipoli.android.common.DataLoadedAction
 import io.ipoli.android.common.mvi.ViewState
-import io.ipoli.android.common.mvi.ViewStateRenderer
-import io.ipoli.android.common.view.CurrencyConverterIntent.*
+import io.ipoli.android.common.redux.Action
 import io.ipoli.android.common.view.CurrencyConverterViewState.Type.*
 import io.ipoli.android.pet.AndroidPetAvatar
 import io.ipoli.android.pet.PetAvatar
 import io.ipoli.android.player.Player
 import io.ipoli.android.player.usecase.ConvertCoinsToGemsUseCase
-import io.ipoli.android.player.usecase.ListenForPlayerChangesUseCase
 import io.ipoli.android.store.gem.GemStoreViewController
 import io.ipoli.android.store.purchase.AndroidInAppPurchaseManager
 import io.ipoli.android.store.purchase.GemPack
 import io.ipoli.android.store.purchase.GemPackType
 import io.ipoli.android.store.purchase.InAppPurchaseManager
+import kotlinx.android.synthetic.main.dialog_currency_converter.view.*
+import kotlinx.android.synthetic.main.view_currency_converter_dialog_header.view.*
 import org.solovyev.android.checkout.ActivityCheckout
 import org.solovyev.android.checkout.Billing
 import org.solovyev.android.checkout.Checkout
-import space.traversal.kapsule.required
-import kotlin.coroutines.experimental.CoroutineContext
 
 /**
  * Created by Polina Zhelyazkova <polina@mypoli.fun>
  * on 12/21/17.
  */
 
-sealed class CurrencyConverterIntent : Intent {
-    object LoadData : CurrencyConverterIntent()
-    data class ChangePlayer(val player: Player) : CurrencyConverterIntent()
-    data class GemPacksLoaded(val gemPacks: List<GemPack>) : CurrencyConverterIntent()
-    data class ChangeConvertDeal(val progress: Int) : CurrencyConverterIntent()
-    data class Convert(val gems: Int) : CurrencyConverterIntent()
+sealed class CurrencyConverterAction : Action {
+    data class Load(val purchaseManager: InAppPurchaseManager) : CurrencyConverterAction()
+    data class ChangeConvertAmount(val gems: Int) : CurrencyConverterAction()
+    data class Convert(val gems: Int) : CurrencyConverterAction()
+    data class ConvertTransactionComplete(val result: ConvertCoinsToGemsUseCase.Result) :
+        CurrencyConverterAction()
 }
 
 data class CurrencyConverterViewState(
@@ -78,88 +73,78 @@ data class CurrencyConverterViewState(
     }
 }
 
-class CurrencyConverterPresenter(
-    private val listenForPlayerChangesUseCase: ListenForPlayerChangesUseCase,
-    private val convertCoinsToGemsUseCase: ConvertCoinsToGemsUseCase,
-    coroutineContext: CoroutineContext
-) :
-    BaseMviPresenter<ViewStateRenderer<CurrencyConverterViewState>, CurrencyConverterViewState, CurrencyConverterIntent>(
-        CurrencyConverterViewState(LOADING),
-        coroutineContext
-    ) {
+object CurrencyConverterReducer : BaseViewStateReducer<CurrencyConverterViewState>() {
+    override fun reduce(
+        state: AppState,
+        subState: CurrencyConverterViewState,
+        action: Action
+    ) = when (action) {
 
-    lateinit var purchaseManager: InAppPurchaseManager
-
-    override fun reduceState(intent: CurrencyConverterIntent, state: CurrencyConverterViewState) =
-        when (intent) {
-            is CurrencyConverterIntent.LoadData -> {
-                launch {
-                    listenForPlayerChangesUseCase.listen(Unit).consumeEach {
-                        sendChannel.send(ChangePlayer(it))
-                    }
-                }
-                purchaseManager.loadAll {
-                    launch {
-                        sendChannel.send(GemPacksLoaded(it))
-                    }
-                }
-                state
-            }
-
-            is ChangePlayer -> {
-                val player = intent.player
-
-                state.copy(
-                    type = DATA_CHANGED,
-                    petAvatar = player.pet.avatar,
-                    playerCoins = player.coins,
-                    playerGems = player.gems,
-                    maxGemsToConvert = player.coins / Constants.GEM_COINS_PRICE,
-                    convertCoins = player.coins,
-                    convertGems = 0,
-                    enableConvert = false,
-                    exchangeRateCoins = Constants.GEM_COINS_PRICE
-
-                )
-            }
-
-            is GemPacksLoaded -> {
-                state.copy(
-                    type = GEM_PACKS_LOADED,
-                    gemPacks = intent.gemPacks
-                )
-            }
-
-            is ChangeConvertDeal -> {
-
-                state.copy(
-                    type = CONVERT_DEAL_CHANGED,
-                    convertCoins = state.playerCoins - intent.progress * Constants.GEM_COINS_PRICE,
-                    convertGems = intent.progress,
-                    enableConvert = intent.progress > 0
-                )
-            }
-
-            is Convert -> {
-                val result =
-                    convertCoinsToGemsUseCase.execute(ConvertCoinsToGemsUseCase.Params(intent.gems))
-                val type = when (result) {
-                    is ConvertCoinsToGemsUseCase.Result.TooExpensive -> GEMS_TOO_EXPENSIVE
-                    is ConvertCoinsToGemsUseCase.Result.GemsConverted -> GEMS_CONVERTED
-                }
-                state.copy(
-                    type = type
-                )
-            }
+        is CurrencyConverterAction.Load -> {
+            val player = state.dataState.player!!
+            createPlayerChangeState(subState, player)
         }
+
+        is DataLoadedAction.PlayerChanged -> {
+            createPlayerChangeState(subState, action.player)
+        }
+
+        is DataLoadedAction.GemPacksLoaded ->
+            subState.copy(
+                type = GEM_PACKS_LOADED,
+                gemPacks = action.gemPacks
+            )
+
+        is CurrencyConverterAction.ChangeConvertAmount ->
+            subState.copy(
+                type = CONVERT_DEAL_CHANGED,
+                convertCoins = action.gems * Constants.GEM_COINS_PRICE,
+                convertGems = action.gems,
+                enableConvert = action.gems > 0
+            )
+
+        is CurrencyConverterAction.ConvertTransactionComplete -> {
+            val type = when (action.result) {
+                is ConvertCoinsToGemsUseCase.Result.TooExpensive -> GEMS_TOO_EXPENSIVE
+                is ConvertCoinsToGemsUseCase.Result.GemsConverted -> GEMS_CONVERTED
+            }
+            subState.copy(
+                type = type
+            )
+        }
+
+        else -> subState
+    }
+
+    private fun createPlayerChangeState(
+        subState: CurrencyConverterViewState,
+        player: Player
+    ): CurrencyConverterViewState {
+
+        val maxGemsToBuy = player.coins / Constants.GEM_COINS_PRICE
+
+        return subState.copy(
+            type = DATA_CHANGED,
+            petAvatar = player.pet.avatar,
+            playerCoins = player.coins,
+            playerGems = player.gems,
+            maxGemsToConvert = maxGemsToBuy,
+            convertCoins = maxGemsToBuy * Constants.GEM_COINS_PRICE,
+            convertGems = maxGemsToBuy,
+            enableConvert = maxGemsToBuy > 0,
+            exchangeRateCoins = Constants.GEM_COINS_PRICE
+        )
+    }
+
+    override fun defaultState() = CurrencyConverterViewState(LOADING)
+
+    override val stateKey = key<CurrencyConverterViewState>()
 }
 
 class CurrencyConverterDialogController :
-    MviDialogController<CurrencyConverterViewState, CurrencyConverterDialogController, CurrencyConverterPresenter, CurrencyConverterIntent>() {
+    ReduxDialogController<CurrencyConverterAction, CurrencyConverterViewState, CurrencyConverterReducer>() {
 
-    private val presenter by required { currencyConverterPresenter }
-
-    override fun createPresenter() = presenter
+    override val reducer = CurrencyConverterReducer
 
     private lateinit var checkout: ActivityCheckout
 
@@ -189,7 +174,6 @@ class CurrencyConverterDialogController :
 
         checkout = Checkout.forActivity(activity!!, billing)
         checkout.start()
-        presenter.purchaseManager = AndroidInAppPurchaseManager(checkout, activity!!.resources)
         return view
     }
 
@@ -202,24 +186,22 @@ class CurrencyConverterDialogController :
             .setNegativeButton(R.string.done, null)
             .create()
 
-    override fun onAttach(view: View) {
-        super.onAttach(view)
-        send(LoadData)
-    }
+    override fun onCreateLoadAction() =
+        CurrencyConverterAction.Load(AndroidInAppPurchaseManager(checkout, activity!!.resources))
 
     override fun render(state: CurrencyConverterViewState, view: View) {
         when (state.type) {
             DATA_CHANGED -> {
                 changeIcon(AndroidPetAvatar.valueOf(state.petAvatar!!.name).headImage)
                 dialog.findViewById<TextView>(R.id.headerCoins)!!.text =
-                    state.playerCoins.toString()
+                        state.playerCoins.toString()
                 dialog.findViewById<TextView>(R.id.headerGems)!!.text = state.playerGems.toString()
                 view.coins.text = state.convertCoins.toString()
                 view.gems.text = state.convertGems.toString()
                 view.exchangeRateCoins.text = state.exchangeRateCoins.toString()
 
                 view.seekBar.max = state.maxGemsToConvert
-                view.seekBar.progress = 0
+                view.seekBar.progress = state.maxGemsToConvert
 
                 view.seekBar.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
                     override fun onProgressChanged(
@@ -228,7 +210,7 @@ class CurrencyConverterDialogController :
                         fromUser: Boolean
                     ) {
                         if (fromUser) {
-                            send(ChangeConvertDeal(progress))
+                            dispatch(CurrencyConverterAction.ChangeConvertAmount(progress))
                         }
                     }
 
@@ -243,7 +225,9 @@ class CurrencyConverterDialogController :
                 enableConvertButton(view, state.enableConvert)
 
                 view.convert.setOnClickListener {
-                    playConvertAnimation(view, { send(Convert(view.seekBar.progress)) })
+                    playConvertAnimation(
+                        view,
+                        { dispatch(CurrencyConverterAction.Convert(view.seekBar.progress)) })
                 }
 
             }
@@ -379,7 +363,7 @@ class CurrencyConverterDialogController :
     }
 
     private fun showGemStore() {
-        dismissDialog()
+        dismiss()
         val handler = FadeChangeHandler()
         router.pushController(
             RouterTransaction.with(GemStoreViewController())

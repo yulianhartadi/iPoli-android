@@ -18,10 +18,6 @@ import android.view.ViewGroup
 import android.view.animation.AccelerateInterpolator
 import android.widget.ImageView
 import android.widget.Toast
-import kotlinx.android.synthetic.main.dialog_color_picker.view.*
-import kotlinx.android.synthetic.main.view_dialog_header.view.*
-import kotlinx.coroutines.experimental.channels.consumeEach
-import kotlinx.coroutines.experimental.launch
 import io.ipoli.android.R
 import io.ipoli.android.common.mvi.BaseMviPresenter
 import io.ipoli.android.common.mvi.Intent
@@ -35,6 +31,10 @@ import io.ipoli.android.player.usecase.BuyColorPackUseCase
 import io.ipoli.android.player.usecase.ListenForPlayerChangesUseCase
 import io.ipoli.android.quest.Color
 import io.ipoli.android.quest.ColorPack
+import kotlinx.android.synthetic.main.dialog_color_picker.view.*
+import kotlinx.android.synthetic.main.view_dialog_header.view.*
+import kotlinx.coroutines.experimental.channels.consumeEach
+import kotlinx.coroutines.experimental.launch
 import space.traversal.kapsule.required
 import kotlin.coroutines.experimental.CoroutineContext
 
@@ -242,7 +242,7 @@ class ColorPickerDialogController :
             }
 
             COLOR_PACK_TOO_EXPENSIVE -> {
-                CurrencyConverterDialogController().showDialog(router, "currency-converter")
+                CurrencyConverterDialogController().show(router, "currency-converter")
                 Toast.makeText(
                     view.context,
                     stringRes(R.string.color_pack_not_enough_coins),

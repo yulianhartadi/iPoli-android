@@ -96,7 +96,7 @@ class PetStoreViewController(args: Bundle? = null) :
     }
 
     private fun showCurrencyConverter() {
-        CurrencyConverterDialogController().showDialog(router, "currency-converter")
+        CurrencyConverterDialogController().show(router, "currency-converter")
     }
 
     private fun showGemStore() {
