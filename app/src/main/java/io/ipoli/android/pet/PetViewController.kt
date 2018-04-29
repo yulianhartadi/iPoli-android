@@ -32,7 +32,6 @@ import kotlinx.android.synthetic.main.controller_pet.view.*
 import kotlinx.android.synthetic.main.item_pet_food.view.*
 import kotlinx.android.synthetic.main.item_pet_item.view.*
 import kotlinx.android.synthetic.main.view_inventory_toolbar.view.*
-import timber.log.Timber
 
 
 /**
@@ -141,7 +140,6 @@ class PetViewController(args: Bundle? = null) :
     }
 
     override fun render(state: PetViewState, view: View) {
-        Timber.d("AAAA ${state.type}")
         when (state.type) {
             DATA_LOADED -> {
                 renderPet(state, view)
@@ -623,6 +621,7 @@ class PetViewController(args: Bundle? = null) :
         set.duration = intRes(android.R.integer.config_longAnimTime).toLong() + 100
         set.playTogether(anims)
         set.interpolator = AccelerateDecelerateInterpolator()
+        set.startDelay = 200
         set.start()
     }
 
