@@ -77,6 +77,19 @@ class PetSideEffectHandler : AppSideEffectHandler() {
 
                 dispatch(PetAction.ShowItemList(cmpRes))
             }
+
+            is PetAction.ShowHeadItemListRequest -> {
+                val selectedItem = PetItem.values().first { it.type == PetItemType.HAT }
+
+                val cmpRes = comparePetItemsUseCase.execute(
+                    ComparePetItemsUseCase.Params(
+                        state.dataState.player!!.pet.equipment.hat,
+                        selectedItem
+                    )
+                )
+
+                dispatch(PetAction.ShowHeadItemList(cmpRes))
+            }
         }
 
     }
