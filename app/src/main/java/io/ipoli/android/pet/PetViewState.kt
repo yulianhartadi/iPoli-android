@@ -3,39 +3,16 @@ package io.ipoli.android.pet
 import io.ipoli.android.common.AppState
 import io.ipoli.android.common.BaseViewStateReducer
 import io.ipoli.android.common.DataLoadedAction
-import io.ipoli.android.common.mvi.Intent
 import io.ipoli.android.common.mvi.ViewState
 import io.ipoli.android.common.redux.Action
 import io.ipoli.android.pet.PetViewState.StateType.*
 import io.ipoli.android.pet.usecase.ComparePetItemsUseCase
 import io.ipoli.android.player.Player
-import timber.log.Timber
 
 /**
  * Created by Venelin Valkov <venelin@mypoli.fun>
  * on 11/24/17.
  */
-sealed class PetIntent : Intent {
-    object ShowItemList : PetIntent()
-    object HideItemList : PetIntent()
-    data class CompareItem(val newItem: PetItem) : PetIntent()
-    object ShowHeadItemList : PetIntent()
-    object ShowFaceItemList : PetIntent()
-    object ShowBodyItemList : PetIntent()
-    data class BuyItem(val item: PetItem) : PetIntent()
-    data class EquipItem(val item: PetItem) : PetIntent()
-    data class TakeItemOff(val item: PetItem) : PetIntent()
-}
-
-object LoadDataIntent : PetIntent()
-object ShowFoodListIntent : PetIntent()
-object HideFoodListIntent : PetIntent()
-object RenamePetRequestIntent : PetIntent()
-object RevivePetIntent : PetIntent()
-data class RenamePetIntent(val name: String) : PetIntent()
-data class FeedIntent(val food: Food) : PetIntent()
-data class ChangePlayerIntent(val player: Player) : PetIntent()
-
 sealed class PetAction : Action {
     object Load : PetAction()
     object ShowRenamePet : PetAction()
@@ -66,6 +43,7 @@ sealed class PetAction : Action {
         val cmpRes: ComparePetItemsUseCase.Result,
         val item: PetItem
     ) : PetAction()
+
 }
 
 object PetReducer : BaseViewStateReducer<PetViewState>() {
@@ -191,8 +169,10 @@ object PetReducer : BaseViewStateReducer<PetViewState>() {
             else -> subState
         }
 
-    private fun createPlayerChangedState(player: Player, state: PetViewState): PetViewState {
-        Timber.d("AAAA player change")
+    private fun createPlayerChangedState(
+        player: Player,
+        state: PetViewState
+    ): PetViewState {
         val food = player.inventory.food
         val pet = player.pet
 
@@ -224,26 +204,27 @@ object PetReducer : BaseViewStateReducer<PetViewState>() {
             boughtItems = boughtItems
         )
 
-//        if (state.selectedItemType != null) {
+        if (state.selectedItemType != null) {
 
-//            return changeItemTypeState(
-//                state = newState,
-//                itemType = state.selectedItemType,
-//                stateType = type,
-//                selectedItem = state.itemViewModels.first { it.isSelected }.item
-//            )
-//        } else {
+            return changeItemTypeState(
+                state = newState,
+                itemType = state.selectedItemType,
+                stateType = type,
+                selectedItem = state.compareNewItem!!,
+                cmpRes = null
+            )
+        } else {
             return newState.copy(
                 type = type
             )
-//        }
+        }
     }
 
     private fun changeItemTypeState(
         state: PetViewState,
         itemType: PetItemType,
         stateType: PetViewState.StateType,
-        cmpRes: ComparePetItemsUseCase.Result,
+        cmpRes: ComparePetItemsUseCase.Result?,
         selectedItem: PetItem = PetItem.values().first { it.type == itemType }
     ): PetViewState {
 
@@ -264,7 +245,7 @@ object PetReducer : BaseViewStateReducer<PetViewState>() {
             compareEquippedItem = equipped,
             compareNewItem = selectedItem,
             selectedItemType = itemType,
-            comparePetItemsResult = cmpRes
+            comparePetItemsResult = cmpRes ?: state.comparePetItemsResult
         )
     }
 
@@ -304,15 +285,9 @@ data class PetViewState(
     val equippedMask: PetItem?,
     val equippedBodyArmor: PetItem?,
     val inventoryFood: Map<Food, Int>,
-
     val comparePetItemsResult: ComparePetItemsUseCase.Result?,
     val compareEquippedItem: PetItem?,
     val compareNewItem: PetItem?,
-
-//    val compareEquippedItem: PetViewController.CompareItemViewModel? = null,
-//    val newItem: PetViewController.CompareItemViewModel? = null,
-//
-//    val itemComparison: PetViewController.ItemComparisonViewModel? = null,
     val selectedItemType: PetItemType? = null,
     val boughtItems: Set<PetItem> = setOf(),
     val playerGems: Int = 0

@@ -2,7 +2,6 @@ package io.ipoli.android.pet.sideeffect
 
 import io.ipoli.android.common.AppSideEffectHandler
 import io.ipoli.android.common.AppState
-import io.ipoli.android.common.DataLoadedAction
 import io.ipoli.android.common.redux.Action
 import io.ipoli.android.pet.PetAction
 import io.ipoli.android.pet.PetItem
@@ -27,17 +26,6 @@ class PetSideEffectHandler : AppSideEffectHandler() {
 
     override suspend fun doExecute(action: Action, state: AppState) {
         when (action) {
-//            PetAction.Load -> {
-//                val petState = state.stateFor(PetViewState::class.java)
-//                if (petState.selectedItemType != null) {
-//
-//                }
-//            }
-
-            is DataLoadedAction.PlayerChanged -> {
-
-            }
-
             is PetAction.RenamePet -> {
                 renamePetUseCase.execute(RenamePetUseCase.Params(action.name))
             }
@@ -138,6 +126,5 @@ class PetSideEffectHandler : AppSideEffectHandler() {
 
     override fun canHandle(action: Action) =
         action is PetAction
-            || action is DataLoadedAction.PlayerChanged
 
 }
