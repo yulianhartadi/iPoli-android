@@ -38,6 +38,7 @@ import io.ipoli.android.pet.AndroidJobLowerPetStatsScheduler
 import io.ipoli.android.pet.LowerPetStatsScheduler
 import io.ipoli.android.pet.PetDialogPresenter
 import io.ipoli.android.pet.PetPresenter
+import io.ipoli.android.pet.sideeffect.PetSideEffectHandler
 import io.ipoli.android.pet.usecase.*
 import io.ipoli.android.player.AndroidLevelDownScheduler
 import io.ipoli.android.player.AndroidLevelUpScheduler
@@ -137,23 +138,23 @@ class FirestoreRepositoryModule : RepositoryModule, Injects<Module> {
     }
 
     override val playerRepository
-        by required {
-            FirestorePlayerRepository(
-                database,
-                job + CommonPool,
-                sharedPreferences
-            )
-        }
+            by required {
+                FirestorePlayerRepository(
+                    database,
+                    job + CommonPool,
+                    sharedPreferences
+                )
+            }
 
     override val repeatingQuestRepository
-        by required {
-            FirestoreRepeatingQuestRepository(
-                database,
-                job + CommonPool,
-                sharedPreferences,
-                tagProvider
-            )
-        }
+            by required {
+                FirestoreRepeatingQuestRepository(
+                    database,
+                    job + CommonPool,
+                    sharedPreferences,
+                    tagProvider
+                )
+            }
 
     override val challengeRepository by required {
         FirestoreChallengeRepository(
@@ -173,13 +174,13 @@ class FirestoreRepositoryModule : RepositoryModule, Injects<Module> {
     }
 
     override val tagRepository
-        by required {
-            FirestoreTagRepository(
-                database,
-                job + CommonPool,
-                sharedPreferences
-            )
-        }
+            by required {
+                FirestoreTagRepository(
+                    database,
+                    job + CommonPool,
+                    sharedPreferences
+                )
+            }
 
 }
 
@@ -733,7 +734,9 @@ class AndroidStateStoreModule : StateStoreModule, Injects<Module> {
                 TagSideEffectHandler(),
                 BucketListSideEffectHandler(),
                 GemPackSideEffectHandler(),
-                StoreSideEffectHandler()
+                StoreSideEffectHandler(),
+                PetSideEffectHandler(),
+                GemPackSideEffectHandler()
             ),
             sideEffectHandlerExecutor = CoroutineSideEffectHandlerExecutor(job + CommonPool),
             middleware = setOf(
