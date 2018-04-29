@@ -39,6 +39,9 @@ data class ChangePlayerIntent(val player: Player) : PetIntent()
 sealed class PetAction : Action {
     object Load : PetAction()
     object ShowRenamePet : PetAction()
+    object ShowItemList : PetAction()
+    object HideItemList : PetAction()
+
     data class RenamePet(val name: String) : PetAction()
     data class Feed(val food: Food) : PetAction()
     data class PetFedResult(val result: Result, val food: Food) : PetAction()
@@ -88,6 +91,18 @@ object PetReducer : BaseViewStateReducer<PetViewState>() {
                         )
                     }
                 }
+            }
+
+            is PetAction.ShowItemList -> {
+                subState.copy(
+                    type = ITEM_LIST_SHOWN
+                )
+            }
+
+            is PetAction.HideItemList -> {
+                subState.copy(
+                    type = ITEM_LIST_SHOWN
+                )
             }
 
             else -> subState

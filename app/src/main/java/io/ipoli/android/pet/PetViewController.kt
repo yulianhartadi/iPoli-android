@@ -81,11 +81,16 @@ class PetViewController(args: Bundle? = null) :
 
         setToolbar(view.toolbar)
 
-        view.fabFood.sendOnClick(ShowFoodListIntent)
-        view.fabItems.sendOnClick(PetIntent.ShowItemList)
+
+        view.fabFood.setOnClickListener {
+            showFoodList(view)
+        }
+        view.fabItems.setOnClickListener {
+            dispatch(PetAction.ShowItemList)
+        }
+
         view.itemList.adapter = PetItemAdapter(emptyList())
         view.foodList.adapter = PetFoodAdapter(emptyList())
-
 
         return view
     }
@@ -93,10 +98,6 @@ class PetViewController(args: Bundle? = null) :
     private fun View.sendOnClick(intent: PetIntent) {
 
     }
-
-//    private fun send(intent: PetIntent) {
-//
-//    }
 
     override fun onCreateLoadAction() = PetAction.Load
 
@@ -128,7 +129,6 @@ class PetViewController(args: Bundle? = null) :
 
         if (item.itemId == R.id.actionRenamePet) {
             dispatch(PetAction.ShowRenamePet)
-//            send(RenamePetRequestIntent)
             return true
         }
 
@@ -175,17 +175,17 @@ class PetViewController(args: Bundle? = null) :
             }
 
 
-            FOOD_LIST_SHOWN -> {
-                view.fabItems.isClickable = false
-                playShowListAnimation(view, view.foodList, view.fabFood, view.fabItems)
-
-                view.fabFood.setImageResource(R.drawable.ic_close_white_24dp)
-                view.fabFood.sendOnClick(HideFoodListIntent)
-            }
-
-            FOOD_LIST_HIDDEN -> {
-                resetFoodList(view)
-            }
+//            FOOD_LIST_SHOWN -> {
+//                view.fabItems.isClickable = false
+//                playShowListAnimation(view, view.foodList, view.fabFood, view.fabItems)
+//
+//                view.fabFood.setImageResource(R.drawable.ic_close_white_24dp)
+//                view.fabFood.dispatchOnClick(PetAction.HideFoodList)
+//            }
+//
+//            FOOD_LIST_HIDDEN -> {
+//                resetFoodList(view)
+//            }
 
             PET_FED -> {
                 val responseRes = if (state.wasFoodTasty)
@@ -238,7 +238,7 @@ class PetViewController(args: Bundle? = null) :
                 playShowListAnimation(view, view.itemList, view.fabItems, view.fabFood)
                 playItemFabsAnimation(view)
                 view.fabItems.setImageResource(R.drawable.ic_close_white_24dp)
-                view.fabItems.sendOnClick(PetIntent.HideItemList)
+                view.fabItems.setOnClickListener { dispatch(PetAction.HideItemList) }
 
                 renderItemCategoryFabs(view, state)
 
@@ -305,8 +305,20 @@ class PetViewController(args: Bundle? = null) :
                 .colorRes(R.color.md_white)
                 .sizeDp(24)
         )
-        view.fabItems.sendOnClick(PetIntent.ShowItemList)
+        view.fabItems.setOnClickListener {
+            dispatch(PetAction.ShowItemList)
+        }
     }
+
+        private fun showFoodList(view: View) {
+            view.fabItems.isClickable = false
+            playShowListAnimation(view, view.foodList, view.fabFood, view.fabItems)
+
+            view.fabFood.setImageResource(R.drawable.ic_close_white_24dp)
+            view.fabFood.setOnClickListener {
+                resetFoodList(view)
+            }
+        }
 
     private fun resetFoodList(view: View) {
         view.fabItems.isClickable = true
@@ -320,7 +332,7 @@ class PetViewController(args: Bundle? = null) :
                 .colorRes(R.color.md_white)
                 .sizeDp(24)
         )
-        view.fabFood.sendOnClick(ShowFoodListIntent)
+        view.fabFood.setOnClickListener { showFoodList(view) }
     }
 
     private fun playCardContainerChangeAnimation(view: View, showView: View) {
