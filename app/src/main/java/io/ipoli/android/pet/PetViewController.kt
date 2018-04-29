@@ -679,9 +679,9 @@ class PetViewController(args: Bundle? = null) :
             if (vm == null) iv.setImageDrawable(null)
             else iv.setImageResource(vm.image)
         }
-        setItem(view.hat, state.equippedHatItem)
-        setItem(view.mask, state.equippedMaskItem)
-        setItem(view.bodyArmor, state.equippedBodyArmorItem)
+        setItem(view.hat, state.toItemViewModel(state.equippedHat))
+        setItem(view.mask, state.toItemViewModel(state.equippedMask))
+        setItem(view.bodyArmor, state.toItemViewModel(state.equippedBodyArmor))
     }
 
     private fun renderNewPetItems(state: PetViewState, view: View) {
@@ -996,9 +996,9 @@ class PetViewController(args: Bundle? = null) :
                 return emptyList()
             }
             val equippedPetItems = listOfNotNull(
-                equippedHatItem?.item,
-                equippedMaskItem?.item,
-                equippedBodyArmorItem?.item
+                equippedHat,
+                equippedMask,
+                equippedBodyArmor
             ).toSet()
             val selectedItem = PetItem.values().first { it.type == selectedItemType }
             return PetItem.values()
@@ -1014,4 +1014,39 @@ class PetViewController(args: Bundle? = null) :
                     )
                 }
         }
+
+    private fun PetViewState.toItemViewModel(petItem: PetItem?): EquipmentItemViewModel? {
+        val petItems = AndroidPetAvatar.valueOf(avatar!!.name).items
+        return petItem?.let {
+            EquipmentItemViewModel(petItems[it]!!, it)
+        }
+    }
+
+    private val PetViewState.newHatItemImage: Int?
+        get() = newItemImage(PetItemType.HAT)
+
+    private val PetViewState.newMaskItemImage: Int?
+        get() = newItemImage(PetItemType.MASK)
+
+
+    private val PetViewState.newBodyArmorItemImage: Int?
+        get() = newItemImage(PetItemType.BODY_ARMOR)
+
+    private fun PetViewState.newItemImage(itemType: PetItemType): Int? {
+        val petItems = AndroidPetAvatar.valueOf(avatar!!.name).items
+        val petCompareItemImage = petItems[newItem!!.item]
+        if (itemType == newItem.item.type) {
+            return petCompareItemImage
+        }
+        val equippedItem = when (itemType) {
+            PetItemType.HAT -> equippedHat
+            PetItemType.MASK -> equippedMask
+            PetItemType.BODY_ARMOR -> equippedBodyArmor
+        }
+        return toItemViewModel(equippedItem)?.image
+    }
+
+
+    private val PetItem.androidItem: AndroidPetItem
+        get() = AndroidPetItem.valueOf(this.name)
 }

@@ -1,6 +1,5 @@
 package io.ipoli.android.pet
 
-import android.support.annotation.DrawableRes
 import io.ipoli.android.common.AppState
 import io.ipoli.android.common.BaseViewStateReducer
 import io.ipoli.android.common.DataLoadedAction
@@ -202,13 +201,13 @@ object PetReducer : BaseViewStateReducer<PetViewState>() {
                         xpBonusChange = changeOf(cmpRes.experienceBonus),
                         bountyBonusDiff = cmpRes.bountyBonus,
                         bountyBonusChange = changeOf(cmpRes.bountyBonus)
-                    ),
-                    newHatItemImage = newItemImage(PetItemType.HAT, subState.equippedHatItem),
-                    newMaskItemImage = newItemImage(PetItemType.MASK, subState.equippedMaskItem),
-                    newBodyArmorItemImage = newItemImage(
-                        PetItemType.BODY_ARMOR,
-                        subState.equippedBodyArmorItem
                     )
+//                    newHatItemImage = newItemImage(PetItemType.HAT, subState.equippedHatItem),
+//                    newMaskItemImage = newItemImage(PetItemType.MASK, subState.equippedMaskItem),
+//                    newBodyArmorItemImage = newItemImage(
+//                        PetItemType.BODY_ARMOR,
+//                        subState.equippedBodyArmorItem
+//                    )
                 )
             }
 
@@ -251,22 +250,14 @@ object PetReducer : BaseViewStateReducer<PetViewState>() {
 
         val equipment = pet.equipment
 
-        val petItems = AndroidPetAvatar.valueOf(pet.avatar.name).items
-
-        val toItemViewModel: (PetItem?) -> PetViewController.EquipmentItemViewModel? = {
-            it?.let {
-                PetViewController.EquipmentItemViewModel(petItems[it]!!, it)
-            }
-        }
-
         val boughtItems = player.inventory.getPet(pet.avatar).items
 
         val newState = state.copy(
             petName = pet.name,
             stateName = pet.mood.name.toLowerCase().capitalize(),
-            equippedHatItem = toItemViewModel(equipment.hat),
-            equippedMaskItem = toItemViewModel(equipment.mask),
-            equippedBodyArmorItem = toItemViewModel(equipment.bodyArmor),
+            equippedHat = equipment.hat,
+            equippedMask = equipment.mask,
+            equippedBodyArmor = equipment.bodyArmor,
             mp = pet.moodPoints,
             hp = pet.healthPoints,
             coinsBonus = pet.coinBonus,
@@ -304,25 +295,25 @@ object PetReducer : BaseViewStateReducer<PetViewState>() {
     ): PetViewState {
 
         val equippedPetItems = listOfNotNull(
-            state.equippedHatItem?.item,
-            state.equippedMaskItem?.item,
-            state.equippedBodyArmorItem?.item
+            state.equippedHat,
+            state.equippedMask,
+            state.equippedBodyArmor
         ).toSet()
 
         val equipped = when (itemType) {
             PetItemType.HAT -> {
-                state.equippedHatItem
+                state.equippedHat
             }
             PetItemType.MASK -> {
-                state.equippedMaskItem
+                state.equippedMask
             }
             PetItemType.BODY_ARMOR -> {
-                state.equippedBodyArmorItem
+                state.equippedBodyArmor
             }
         }
 
         val equippedItem = equipped?.let {
-            val item = it.item
+            val item = it
             val androidPetItem = AndroidPetItem.valueOf(item.name)
             PetViewController.CompareItemViewModel(
                 image = androidPetItem.image,
@@ -384,22 +375,15 @@ object PetReducer : BaseViewStateReducer<PetViewState>() {
                 xpBonusChange = changeOf(cmpRes.experienceBonus),
                 bountyBonusDiff = cmpRes.bountyBonus,
                 bountyBonusChange = changeOf(cmpRes.bountyBonus)
-            ),
-            newHatItemImage = newItemImage(PetItemType.HAT, state.equippedHatItem),
-            newMaskItemImage = newItemImage(PetItemType.MASK, state.equippedMaskItem),
-            newBodyArmorItemImage = newItemImage(
-                PetItemType.BODY_ARMOR,
-                state.equippedBodyArmorItem
             )
+//            newHatItemImage = newItemImage(PetItemType.HAT, state.equippedHatItem),
+//            newMaskItemImage = newItemImage(PetItemType.MASK, state.equippedMaskItem),
+//            newBodyArmorItemImage = newItemImage(
+//                PetItemType.BODY_ARMOR,
+//                state.equippedBodyArmorItem
+//            )
         )
     }
-
-    private fun createFoodViewModels(inventoryFood: Map<Food, Int>) =
-        Food.values().map {
-            PetViewController.PetFoodViewModel(
-                it.image, it.price, it, inventoryFood[it] ?: 0
-            )
-        }
 
     private fun changeOf(value: Int) =
         when {
@@ -413,7 +397,10 @@ object PetReducer : BaseViewStateReducer<PetViewState>() {
             type = LOADING,
             reviveCost = 0,
             inventoryFood = emptyMap(),
-            selectedItemType = null
+            selectedItemType = null,
+            equippedHat = null,
+            equippedMask = null,
+            equippedBodyArmor = null
         )
 
 
@@ -436,12 +423,9 @@ data class PetViewState(
     val avatar: PetAvatar? = null,
     val mood: PetMood? = null,
     val isDead: Boolean = false,
-    val equippedHatItem: PetViewController.EquipmentItemViewModel? = null,
-    val equippedMaskItem: PetViewController.EquipmentItemViewModel? = null,
-    val equippedBodyArmorItem: PetViewController.EquipmentItemViewModel? = null,
-    @DrawableRes val newHatItemImage: Int? = null,
-    @DrawableRes val newMaskItemImage: Int? = null,
-    @DrawableRes val newBodyArmorItemImage: Int? = null,
+    val equippedHat: PetItem?,
+    val equippedMask: PetItem?,
+    val equippedBodyArmor: PetItem?,
     val inventoryFood: Map<Food, Int>,
     val equippedItem: PetViewController.CompareItemViewModel? = null,
     val newItem: PetViewController.CompareItemViewModel? = null,
