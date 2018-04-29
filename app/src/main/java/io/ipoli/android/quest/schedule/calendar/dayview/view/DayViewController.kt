@@ -47,7 +47,6 @@ import kotlinx.android.synthetic.main.item_calendar_quest.view.*
 import kotlinx.android.synthetic.main.item_unscheduled_quest.view.*
 import kotlinx.android.synthetic.main.view_calendar_day.view.*
 import org.threeten.bp.LocalDate
-import timber.log.Timber
 import java.util.*
 
 class DayViewController :
@@ -519,7 +518,7 @@ class DayViewController :
         ColorPickerDialogController({
             dispatch(DayViewAction.ColorPicked(it.color))
         }, selectedColor)
-            .showDialog(router, "pick_color_tag")
+            .show(router, "pick_color_tag")
     }
 
     private fun onStopEditMode() {

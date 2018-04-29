@@ -76,7 +76,7 @@ class StoreViewController(args: Bundle? = null) : RestoreViewOnCreateController(
             StoreItem.THEMES -> return { showController(ThemeStoreViewController()) }
             StoreItem.COLORS -> return {
                 ColorPickerDialogController({
-                }).showDialog(
+                }).show(
                     router,
                     "pick_color_tag"
                 )

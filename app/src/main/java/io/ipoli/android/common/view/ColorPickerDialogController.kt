@@ -19,132 +19,102 @@ import android.view.animation.AccelerateInterpolator
 import android.widget.ImageView
 import android.widget.Toast
 import io.ipoli.android.R
-import io.ipoli.android.common.mvi.BaseMviPresenter
-import io.ipoli.android.common.mvi.Intent
+import io.ipoli.android.common.AppState
+import io.ipoli.android.common.BaseViewStateReducer
+import io.ipoli.android.common.DataLoadedAction
 import io.ipoli.android.common.mvi.ViewState
-import io.ipoli.android.common.mvi.ViewStateRenderer
+import io.ipoli.android.common.redux.Action
 import io.ipoli.android.common.view.ColorPickerViewState.Type.*
 import io.ipoli.android.pet.AndroidPetAvatar
 import io.ipoli.android.pet.PetAvatar
 import io.ipoli.android.player.Player
 import io.ipoli.android.player.usecase.BuyColorPackUseCase
-import io.ipoli.android.player.usecase.ListenForPlayerChangesUseCase
 import io.ipoli.android.quest.Color
 import io.ipoli.android.quest.ColorPack
 import kotlinx.android.synthetic.main.dialog_color_picker.view.*
 import kotlinx.android.synthetic.main.view_dialog_header.view.*
-import kotlinx.coroutines.experimental.channels.consumeEach
-import kotlinx.coroutines.experimental.launch
-import space.traversal.kapsule.required
-import kotlin.coroutines.experimental.CoroutineContext
 
 /**
  * Created by Venelin Valkov <venelin@mypoli.fun>
  * on 9/2/17.
  */
 
-sealed class ColorPickerIntent : Intent {
-    data class LoadData(val selectedColor: Color? = null) : ColorPickerIntent()
-    data class ChangePlayer(val player: Player) : ColorPickerIntent()
-    object UnlockColorPack : ColorPickerIntent()
-    object ShowColors : ColorPickerIntent()
-    data class BuyColorPack(val colorPack: ColorPack) : ColorPickerIntent()
+sealed class ColorPickerAction : Action {
+    data class Load(val selectedColor: Color? = null) : ColorPickerAction()
+    object ShowUnlock : ColorPickerAction()
+    data class BuyColorPack(val colorPack: ColorPack) : ColorPickerAction()
+
+    data class BuyColorPackTransactionComplete(val result: BuyColorPackUseCase.Result) :
+        ColorPickerAction()
 }
 
+object ColorPickerReducer : BaseViewStateReducer<ColorPickerViewState>() {
+
+    override fun reduce(
+        state: AppState,
+        subState: ColorPickerViewState,
+        action: Action
+    ) = when (action) {
+
+        is ColorPickerAction.Load ->
+            createPlayerState(subState, state.dataState.player!!)
+
+        is DataLoadedAction.PlayerChanged ->
+            createPlayerState(subState, action.player)
+
+        is ColorPickerAction.BuyColorPackTransactionComplete ->
+            subState.copy(
+                type = when (action.result) {
+                    is BuyColorPackUseCase.Result.ColorPackBought -> COLOR_PACK_UNLOCKED
+                    is BuyColorPackUseCase.Result.TooExpensive -> COLOR_PACK_TOO_EXPENSIVE
+                }
+            )
+
+        is ColorPickerAction.ShowUnlock ->
+            subState.copy(type = SHOW_UNLOCK)
+
+        else -> subState
+    }
+
+    private fun createPlayerState(
+        subState: ColorPickerViewState,
+        player: Player
+    ) = subState.copy(
+        type = DATA_CHANGED,
+        petAvatar = player.pet.avatar,
+        colors = Color.values().toList(),
+        colorPacks = player.inventory.colorPacks
+    )
+
+    override fun defaultState() = ColorPickerViewState(ColorPickerViewState.Type.LOADING)
+
+    override val stateKey = key<ColorPickerViewState>()
+
+}
 
 data class ColorPickerViewState(
     val type: Type,
     val petAvatar: PetAvatar? = null,
     val selectedColor: Color? = null,
-    val viewModels: List<ColorPickerDialogController.ColorViewModel> = listOf()
+    val colors: List<Color> = emptyList(),
+    val colorPacks: Set<ColorPack> = emptySet()
 ) : ViewState {
     enum class Type {
         LOADING,
         DATA_CHANGED,
+        COLOR_PACK_UNLOCKED,
         SHOW_UNLOCK,
-        SHOW_COLORS,
         COLOR_PACK_TOO_EXPENSIVE
     }
 }
 
-class ColorPickerPresenter(
-    private val listenForPlayerChangesUseCase: ListenForPlayerChangesUseCase,
-    private val buyColorPackUseCase: BuyColorPackUseCase,
-    coroutineContext: CoroutineContext
-) :
-    BaseMviPresenter<ViewStateRenderer<ColorPickerViewState>, ColorPickerViewState, ColorPickerIntent>(
-        ColorPickerViewState(ColorPickerViewState.Type.LOADING),
-        coroutineContext
-    ) {
-    override fun reduceState(intent: ColorPickerIntent, state: ColorPickerViewState) =
-        when (intent) {
-            is ColorPickerIntent.LoadData -> {
-                launch {
-                    listenForPlayerChangesUseCase.listen(Unit).consumeEach {
-                        sendChannel.send(ColorPickerIntent.ChangePlayer(it))
-                    }
-                }
-                state.copy(
-                    selectedColor = intent.selectedColor
-                )
-            }
-
-            is ColorPickerIntent.ChangePlayer -> {
-                val player = intent.player
-                state.copy(
-                    type = DATA_CHANGED,
-                    petAvatar = player.pet.avatar,
-                    viewModels = createViewModels(state, player.inventory.colorPacks)
-                )
-            }
-
-            is ColorPickerIntent.UnlockColorPack -> {
-                state.copy(
-                    type = SHOW_UNLOCK
-                )
-            }
-
-            is ColorPickerIntent.ShowColors -> {
-                state.copy(
-                    type = SHOW_COLORS
-                )
-            }
-
-            is ColorPickerIntent.BuyColorPack -> {
-                val result =
-                    buyColorPackUseCase.execute(BuyColorPackUseCase.Params(intent.colorPack))
-                val type = when (result) {
-                    is BuyColorPackUseCase.Result.ColorPackBought -> ColorPickerViewState.Type.SHOW_COLORS
-                    is BuyColorPackUseCase.Result.TooExpensive -> ColorPickerViewState.Type.COLOR_PACK_TOO_EXPENSIVE
-                }
-                state.copy(
-                    type = type
-                )
-            }
-        }
-
-    private fun createViewModels(
-        state: ColorPickerViewState,
-        colorPacks: Set<ColorPack>
-    ): List<ColorPickerDialogController.ColorViewModel> {
-        return Color.values().map {
-            val isSelected = if (state.selectedColor == null) false else state.selectedColor == it
-            ColorPickerDialogController.ColorViewModel(
-                it,
-                isSelected,
-                !colorPacks.contains(it.pack)
-            )
-        }
-    }
-}
-
 class ColorPickerDialogController :
-    MviDialogController<ColorPickerViewState, ColorPickerDialogController, ColorPickerPresenter, ColorPickerIntent> {
+    ReduxDialogController<ColorPickerAction, ColorPickerViewState, ColorPickerReducer> {
 
     private var listener: ((AndroidColor) -> Unit)? = null
     private var selectedColor: AndroidColor? = null
 
-    private val presenter by required { colorPickerPresenter }
+    override val reducer = ColorPickerReducer
 
     constructor(listener: (AndroidColor) -> Unit, selectedColor: AndroidColor? = null) : this() {
         this.listener = listener
@@ -152,8 +122,6 @@ class ColorPickerDialogController :
     }
 
     constructor(args: Bundle? = null) : super(args)
-
-    override fun createPresenter() = presenter
 
     override fun onHeaderViewCreated(headerView: View) {
         headerView.dialogHeaderTitle.setText(R.string.color_picker_title)
@@ -181,12 +149,11 @@ class ColorPickerDialogController :
         }
     }
 
-    override fun onAttach(view: View) {
-        super.onAttach(view)
+    override fun onCreateLoadAction(): ColorPickerAction? {
         val color = selectedColor?.let {
             Color.valueOf(it.name)
         }
-        send(ColorPickerIntent.LoadData(color))
+        return ColorPickerAction.Load(color)
     }
 
     override fun render(state: ColorPickerViewState, view: View) {
@@ -202,44 +169,15 @@ class ColorPickerDialogController :
 
             DATA_CHANGED -> {
                 changeIcon(AndroidPetAvatar.valueOf(state.petAvatar!!.name).headImage)
-                (view.colorGrid.adapter as ColorAdapter).updateAll(state.viewModels)
+                (view.colorGrid.adapter as ColorAdapter).updateAll(state.createViewModels)
             }
 
-            SHOW_UNLOCK -> {
-                TransitionManager.beginDelayedTransition(dialog.window.decorView as ViewGroup)
-                view.colorGrid.visibility = View.GONE
-                view.unlockContainer.visibility = View.VISIBLE
-                changeTitle(R.string.unlock_color_pack_title)
-                changeNeutralButtonText(R.string.back)
-
-                dialog.getButton(DialogInterface.BUTTON_NEUTRAL).visibility = View.VISIBLE
-
-                setNeutralButtonListener {
-                    send(ColorPickerIntent.ShowColors)
-                }
-                view.buyColorPack.setOnClickListener {
-                    send(ColorPickerIntent.BuyColorPack(ColorPack.BASIC))
-                }
-                view.colorPackPrice.text = ColorPack.BASIC.gemPrice.toString()
+            COLOR_PACK_UNLOCKED -> {
+                showShortToast(R.string.color_pack_unlocked)
+                showColors(view)
             }
 
-            SHOW_COLORS -> {
-                val fadeOut = ObjectAnimator.ofFloat(dialog.window.decorView, "alpha", 1f, 0.0f)
-                val fadeIn = ObjectAnimator.ofFloat(dialog.window.decorView, "alpha", 0.5f, 1f)
-                fadeIn.addListener(object : AnimatorListenerAdapter() {
-                    override fun onAnimationStart(animation: Animator?) {
-                        renderColorGrid(view)
-                    }
-                })
-
-                fadeIn.interpolator = AccelerateInterpolator()
-                fadeOut.duration = shortAnimTime
-                fadeIn.duration = mediumAnimTime
-
-                val set = AnimatorSet()
-                set.playSequentially(fadeOut, fadeIn)
-                set.start()
-            }
+            SHOW_UNLOCK -> showUnlock(view)
 
             COLOR_PACK_TOO_EXPENSIVE -> {
                 CurrencyConverterDialogController().show(router, "currency-converter")
@@ -252,12 +190,46 @@ class ColorPickerDialogController :
         }
     }
 
+    private fun showUnlock(view: View) {
+        TransitionManager.beginDelayedTransition(dialog.window.decorView as ViewGroup)
+        view.colorGrid.visibility = View.GONE
+        view.unlockContainer.visibility = View.VISIBLE
+        changeTitle(R.string.unlock_color_pack_title)
+        changeNeutralButtonText(R.string.back)
+
+        dialog.getButton(DialogInterface.BUTTON_NEUTRAL).visibility = View.VISIBLE
+
+        setNeutralButtonListener {
+            showColors(view)
+        }
+        view.buyColorPack.dispatchOnClick(ColorPickerAction.BuyColorPack(ColorPack.BASIC))
+        view.colorPackPrice.text = ColorPack.BASIC.gemPrice.toString()
+    }
+
     private fun renderColorGrid(view: View) {
         view.unlockContainer.visibility = View.GONE
         view.colorGrid.visibility = View.VISIBLE
         changeTitle(R.string.color_picker_title)
         setNeutralButtonListener(null)
         dialog.getButton(DialogInterface.BUTTON_NEUTRAL).visibility = View.GONE
+    }
+
+    private fun showColors(view: View) {
+        val fadeOut = ObjectAnimator.ofFloat(dialog.window.decorView, "alpha", 1f, 0.0f)
+        val fadeIn = ObjectAnimator.ofFloat(dialog.window.decorView, "alpha", 0.5f, 1f)
+        fadeIn.addListener(object : AnimatorListenerAdapter() {
+            override fun onAnimationStart(animation: Animator?) {
+                renderColorGrid(view)
+            }
+        })
+
+        fadeIn.interpolator = AccelerateInterpolator()
+        fadeOut.duration = shortAnimTime
+        fadeIn.duration = mediumAnimTime
+
+        val set = AnimatorSet()
+        set.playSequentially(fadeOut, fadeIn)
+        set.start()
     }
 
     data class ColorViewModel(val color: Color, val isSelected: Boolean, val isLocked: Boolean)
@@ -281,10 +253,10 @@ class ColorPickerDialogController :
             if (!vm.isLocked) {
                 iv.setOnClickListener {
                     listener?.invoke(androidColor)
-                    dismissDialog()
+                    dismiss()
                 }
             } else {
-                iv.sendOnClick(ColorPickerIntent.UnlockColorPack)
+                iv.dispatchOnClick(ColorPickerAction.ShowUnlock)
             }
         }
 
@@ -307,4 +279,15 @@ class ColorPickerDialogController :
         }
 
     }
+
+    private val ColorPickerViewState.createViewModels: List<ColorPickerDialogController.ColorViewModel>
+        get() =
+            colors.map {
+                val isSelected = if (selectedColor == null) false else selectedColor == it
+                ColorPickerDialogController.ColorViewModel(
+                    color = it,
+                    isSelected = isSelected,
+                    isLocked = !colorPacks.contains(it.pack)
+                )
+            }
 }

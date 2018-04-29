@@ -1273,4 +1273,5 @@
     <string name="battery_optimization_warn">Battery optimization might prevent you from receiving Reminders on time</string>
     <string name="valid_username">All good</string>
     <string name="choose_your_avatar">Choose Your Avatar</string>
+    <string name="color_pack_unlocked">Enjoy your new colors</string>
 </resources>

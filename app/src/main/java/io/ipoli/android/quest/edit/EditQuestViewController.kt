@@ -383,7 +383,7 @@ class EditQuestViewController(args: Bundle? = null) :
         view.questColor.setOnClickListener {
             ColorPickerDialogController({
                 dispatch(EditQuestAction.ChangeColor(it.color))
-            }, state.color.androidColor).showDialog(
+            }, state.color.androidColor).show(
                 router,
                 "pick_color_tag"
             )

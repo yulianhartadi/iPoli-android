@@ -24,7 +24,6 @@ import io.ipoli.android.common.rate.RatePresenter
 import io.ipoli.android.common.redux.CoroutineSideEffectHandlerExecutor
 import io.ipoli.android.common.redux.StateStore
 import io.ipoli.android.common.text.CalendarFormatter
-import io.ipoli.android.common.view.ColorPickerPresenter
 import io.ipoli.android.common.view.IconPickerDialogPresenter
 import io.ipoli.android.common.view.PetMessagePresenter
 import io.ipoli.android.event.persistence.AndroidCalendarEventRepository
@@ -94,6 +93,7 @@ import io.ipoli.android.store.powerup.sideeffect.PowerUpSideEffectHandler
 import io.ipoli.android.store.powerup.usecase.BuyPowerUpUseCase
 import io.ipoli.android.store.powerup.usecase.EnableAllPowerUpsUseCase
 import io.ipoli.android.store.powerup.usecase.RemoveExpiredPowerUpsUseCase
+import io.ipoli.android.store.sideeffect.StoreSideEffectHandler
 import io.ipoli.android.store.theme.sideeffect.ThemeSideEffectHandler
 import io.ipoli.android.store.theme.usecase.BuyThemeUseCase
 import io.ipoli.android.store.theme.usecase.ChangeThemeUseCase
@@ -636,7 +636,6 @@ interface PresenterModule {
     val reminderPickerPresenter: ReminderPickerDialogPresenter
     val petPresenter: PetPresenter
     val petDialogPresenter: PetDialogPresenter
-    val colorPickerPresenter: ColorPickerPresenter
     val iconPickerPresenter: IconPickerDialogPresenter
     val petMessagePresenter: PetMessagePresenter
     val levelUpPresenter: LevelUpPresenter
@@ -654,12 +653,10 @@ class AndroidPresenterModule : PresenterModule, Injects<Module> {
     private val timeUnitFormatter by required { timeUnitFormatter }
     private val buyIconPackUseCase by required { buyIconPackUseCase }
     private val buyColorPackUseCase by required { buyColorPackUseCase }
-    private val convertCoinsToGemsUseCase by required { convertCoinsToGemsUseCase }
     private val comparePetItemsUseCase by required { comparePetItemsUseCase }
     private val buyPetItemUseCase by required { buyPetItemUseCase }
     private val equipPetItemUseCase by required { equipPetItemUseCase }
     private val takeOffPetItemUseCase by required { takeOffPetItemUseCase }
-    private val purchaseGemPackUseCase by required { purchaseGemPackUseCase }
     private val job by required { job }
     override val reminderPickerPresenter
         get() = ReminderPickerDialogPresenter(
@@ -681,12 +678,7 @@ class AndroidPresenterModule : PresenterModule, Injects<Module> {
             job
         )
     override val petDialogPresenter get() = PetDialogPresenter(findPetUseCase, job)
-    override val colorPickerPresenter
-        get() = ColorPickerPresenter(
-            listenForPlayerChangesUseCase,
-            buyColorPackUseCase,
-            job
-        )
+
     override val iconPickerPresenter
         get() = IconPickerDialogPresenter(
             listenForPlayerChangesUseCase,
@@ -740,7 +732,8 @@ class AndroidStateStoreModule : StateStoreModule, Injects<Module> {
                 ThemeSideEffectHandler(),
                 TagSideEffectHandler(),
                 BucketListSideEffectHandler(),
-                GemPackSideEffectHandler()
+                GemPackSideEffectHandler(),
+                StoreSideEffectHandler()
             ),
             sideEffectHandlerExecutor = CoroutineSideEffectHandlerExecutor(job + CommonPool),
             middleware = setOf(

@@ -282,7 +282,7 @@ class AddQuestViewController(args: Bundle? = null) :
         view.color.setOnClickListener {
             ColorPickerDialogController({
                 dispatch(AddQuestAction.ColorPicked(it.color))
-            }, state.color?.androidColor).showDialog(
+            }, state.color?.androidColor).show(
                 router,
                 "pick_color_tag"
             )

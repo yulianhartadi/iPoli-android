@@ -261,7 +261,7 @@ class AddRepeatingQuestViewController(args: Bundle? = null) :
             view.rqColor.setOnClickListener {
                 ColorPickerDialogController({
                     dispatch(EditRepeatingQuestAction.ChangeColor(it.color))
-                }, state.color.androidColor).showDialog(
+                }, state.color.androidColor).show(
                     router,
                     "pick_color_tag"
                 )
@@ -682,7 +682,7 @@ class AddRepeatingQuestViewController(args: Bundle? = null) :
             view.summaryColor.setOnClickListener {
                 ColorPickerDialogController({
                     dispatch(EditRepeatingQuestAction.ChangeColor(it.color))
-                }, state.color.androidColor).showDialog(
+                }, state.color.androidColor).show(
                     router,
                     "pick_color_tag"
                 )
@@ -696,7 +696,6 @@ class AddRepeatingQuestViewController(args: Bundle? = null) :
             view.summarySelectedIcon.setImageDrawable(
                 IconicsDrawable(view.context).largeIcon(state.iicon)
             )
-
 
             view.summaryIcon.setOnClickListener {
                 IconPickerDialogController({ icon ->
