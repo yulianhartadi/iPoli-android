@@ -8,7 +8,9 @@ import io.ipoli.android.common.mvi.Intent
 import io.ipoli.android.common.mvi.ViewState
 import io.ipoli.android.common.redux.Action
 import io.ipoli.android.pet.PetViewState.StateType.*
+import io.ipoli.android.pet.usecase.ComparePetItemsUseCase
 import io.ipoli.android.pet.usecase.Result
+import io.ipoli.android.pet.usecase.RevivePetUseCase
 import io.ipoli.android.player.Player
 
 /**
@@ -39,12 +41,15 @@ data class ChangePlayerIntent(val player: Player) : PetIntent()
 sealed class PetAction : Action {
     object Load : PetAction()
     object ShowRenamePet : PetAction()
-    object ShowItemList : PetAction()
+    object ShowItemListRequest : PetAction()
     object HideItemList : PetAction()
+    object Revive : PetAction()
 
     data class RenamePet(val name: String) : PetAction()
     data class Feed(val food: Food) : PetAction()
     data class PetFedResult(val result: Result, val food: Food) : PetAction()
+    data class ReviveResult(val result: RevivePetUseCase.Result) : PetAction()
+    data class ShowItemList(val cmpRes: ComparePetItemsUseCase.Result) : PetAction()
 }
 
 object PetReducer : BaseViewStateReducer<PetViewState>() {
@@ -94,14 +99,27 @@ object PetReducer : BaseViewStateReducer<PetViewState>() {
             }
 
             is PetAction.ShowItemList -> {
-                subState.copy(
-                    type = ITEM_LIST_SHOWN
+                changeItemTypeState(
+                    subState,
+                    PetItemType.BODY_ARMOR,
+                    ITEM_LIST_SHOWN,
+                    action.cmpRes
                 )
             }
 
             is PetAction.HideItemList -> {
                 subState.copy(
-                    type = ITEM_LIST_SHOWN
+                    type = ITEM_LIST_HIDDEN
+                )
+            }
+
+            is PetAction.ReviveResult -> {
+                subState.copy(
+                    type = when (action.result) {
+                        is RevivePetUseCase.Result.TooExpensive ->
+                            REVIVE_TOO_EXPENSIVE
+                        else -> PET_REVIVED
+                    }
                 )
             }
 
@@ -148,25 +166,26 @@ object PetReducer : BaseViewStateReducer<PetViewState>() {
             boughtItems = boughtItems
         )
 
-        if (state.comparedItemsType != null) {
+//        if (state.comparedItemsType != null) {
 
-            return changeItemTypeState(
-                state = newState,
-                itemType = state.comparedItemsType,
-                stateType = type,
-                selectedItem = state.itemViewModels.first { it.isSelected }.item
-            )
-        } else {
+//            return changeItemTypeState(
+//                state = newState,
+//                itemType = state.comparedItemsType,
+//                stateType = type,
+//                selectedItem = state.itemViewModels.first { it.isSelected }.item
+//            )
+//        } else {
             return newState.copy(
                 type = type
             )
-        }
+//        }
     }
 
     private fun changeItemTypeState(
         state: PetViewState,
         itemType: PetItemType,
         stateType: PetViewState.StateType,
+        cmpRes: ComparePetItemsUseCase.Result,
         selectedItem: PetItem = PetItem.values().first { it.type == itemType }
     ): PetViewState {
 
@@ -247,14 +266,14 @@ object PetReducer : BaseViewStateReducer<PetViewState>() {
             equippedItem = equippedItem,
             newItem = newItem,
             comparedItemsType = itemType,
-//            itemComparison = PetViewController.ItemComparisonViewModel(
-//                coinBonusDiff = cmpRes.coinBonus,
-//                coinBonusChange = changeOf(cmpRes.coinBonus),
-//                xpBonusDiff = cmpRes.experienceBonus,
-//                xpBonusChange = changeOf(cmpRes.experienceBonus),
-//                bountyBonusDiff = cmpRes.bountyBonus,
-//                bountyBonusChange = changeOf(cmpRes.bountyBonus)
-//            ),
+            itemComparison = PetViewController.ItemComparisonViewModel(
+                coinBonusDiff = cmpRes.coinBonus,
+                coinBonusChange = changeOf(cmpRes.coinBonus),
+                xpBonusDiff = cmpRes.experienceBonus,
+                xpBonusChange = changeOf(cmpRes.experienceBonus),
+                bountyBonusDiff = cmpRes.bountyBonus,
+                bountyBonusChange = changeOf(cmpRes.bountyBonus)
+            ),
             newHatItemImage = newItemImage(PetItemType.HAT, state.equippedHatItem),
             newMaskItemImage = newItemImage(PetItemType.MASK, state.equippedMaskItem),
             newBodyArmorItemImage = newItemImage(

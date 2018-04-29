@@ -86,7 +86,7 @@ class PetViewController(args: Bundle? = null) :
             showFoodList(view)
         }
         view.fabItems.setOnClickListener {
-            dispatch(PetAction.ShowItemList)
+            dispatch(PetAction.ShowItemListRequest)
         }
 
         view.itemList.adapter = PetItemAdapter(emptyList())
@@ -158,15 +158,6 @@ class PetViewController(args: Bundle? = null) :
             }
 
             PET_CHANGED -> {
-//                view.post {
-//                    resizePet(view)
-//                    view.post {
-//                        if (!state.isDead) {
-//                            playEnterAnimation(view)
-//                        }
-//                    }
-//                }
-
                 (view.foodList.adapter as PetFoodAdapter).updateAll(state.foodViewModels)
                 (view.itemList.adapter as PetItemAdapter).updateAll(state.itemViewModels)
 
@@ -174,18 +165,6 @@ class PetViewController(args: Bundle? = null) :
                 renderPet(state, view)
             }
 
-
-//            FOOD_LIST_SHOWN -> {
-//                view.fabItems.isClickable = false
-//                playShowListAnimation(view, view.foodList, view.fabFood, view.fabItems)
-//
-//                view.fabFood.setImageResource(R.drawable.ic_close_white_24dp)
-//                view.fabFood.dispatchOnClick(PetAction.HideFoodList)
-//            }
-//
-//            FOOD_LIST_HIDDEN -> {
-//                resetFoodList(view)
-//            }
 
             PET_FED -> {
                 val responseRes = if (state.wasFoodTasty)
@@ -306,7 +285,7 @@ class PetViewController(args: Bundle? = null) :
                 .sizeDp(24)
         )
         view.fabItems.setOnClickListener {
-            dispatch(PetAction.ShowItemList)
+            dispatch(PetAction.ShowItemListRequest)
         }
     }
 
@@ -670,7 +649,7 @@ class PetViewController(args: Bundle? = null) :
 
             ViewUtils.goneViews(view.hat, view.mask, view.bodyArmor)
 
-            view.revive.sendOnClick(RevivePetIntent)
+            view.revive.setOnClickListener { dispatch(PetAction.Revive) }
         } else if (state.comparedItemsType == null) {
             view.statsContainer.visibility = View.VISIBLE
             view.reviveContainer.visibility = View.GONE
