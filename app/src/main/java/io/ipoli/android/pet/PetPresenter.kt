@@ -177,7 +177,7 @@
 //                    bountyBonus = selectedItem.bountyBonus,
 //                    bountyBonusChange = changeOf(selectedItem.bountyBonus),
 //                    isBought = state.boughtItems.contains(selectedItem),
-//                    isEquipped = selectedItem == state.equippedItem?.item ?: false
+//                    isEquipped = selectedItem == state.compareEquippedItem?.item ?: false
 //                )
 //
 //                val petItems = AndroidPetAvatar.valueOf(state.avatar!!.name).items
@@ -191,7 +191,7 @@
 //
 //                val cmpRes = comparePetItemsUseCase.execute(
 //                    ComparePetItemsUseCase.Params(
-//                        state.equippedItem?.item,
+//                        state.compareEquippedItem?.item,
 //                        intent.newItem
 //                    )
 //                )
@@ -284,7 +284,7 @@
 //            }
 //        }
 //
-//        val equippedItem = equipped?.let {
+//        val compareEquippedItem = equipped?.let {
 //            val item = it.item
 //            val androidPetItem = AndroidPetItem.valueOf(item.name)
 //            PetViewController.CompareItemViewModel(
@@ -320,7 +320,7 @@
 //
 //        val cmpRes = comparePetItemsUseCase.execute(
 //            ComparePetItemsUseCase.Params(
-//                equippedItem?.item,
+//                compareEquippedItem?.item,
 //                selectedItem
 //            )
 //        )
@@ -337,7 +337,7 @@
 //        return state.copy(
 //            type = stateType,
 //            itemViewModels = vms,
-//            equippedItem = equippedItem,
+//            compareEquippedItem = compareEquippedItem,
 //            newItem = newItem,
 //            selectedItemType = itemType,
 //            itemComparison = PetViewController.ItemComparisonViewModel(

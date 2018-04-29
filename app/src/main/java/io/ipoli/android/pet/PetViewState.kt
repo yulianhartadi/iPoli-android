@@ -157,57 +157,10 @@ object PetReducer : BaseViewStateReducer<PetViewState>() {
             }
 
             is PetAction.ItemsCompared -> {
-//                val vms = subState.itemViewModels.map {
-//                    it.copy(
-//                        isSelected = it.item == action.item
-//                    )
-//                }
-
-//                val selected = vms.first { it.isSelected }
-                val selectedItem = action.item
-                val androidPetItem = AndroidPetItem.valueOf(selectedItem.name)
-                val newItem = PetViewController.CompareItemViewModel(
-                    image = androidPetItem.image,
-                    name = androidPetItem.itemName,
-                    item = selectedItem,
-                    coinBonus = selectedItem.coinBonus,
-                    coinBonusChange = changeOf(selectedItem.coinBonus),
-                    xpBonus = selectedItem.experienceBonus,
-                    xpBonusChange = changeOf(selectedItem.experienceBonus),
-                    bountyBonus = selectedItem.bountyBonus,
-                    bountyBonusChange = changeOf(selectedItem.bountyBonus),
-                    isBought = subState.boughtItems.contains(selectedItem),
-                    isEquipped = selectedItem == subState.equippedItem?.item ?: false
-                )
-
-                val petItems = AndroidPetAvatar.valueOf(subState.avatar!!.name).items
-                val petCompareItemImage = petItems[newItem.item]
-                val itemType = newItem.item.type
-
-                val newItemImage: (PetItemType, PetViewController.EquipmentItemViewModel?) -> Int? =
-                    { type, equippedImage ->
-                        if (itemType == type) petCompareItemImage else equippedImage?.image
-                    }
-
-                val cmpRes = action.cmpRes
-
                 subState.copy(
                     type = COMPARE_ITEMS,
-                    newItem = newItem,
-                    itemComparison = PetViewController.ItemComparisonViewModel(
-                        coinBonusDiff = cmpRes.coinBonus,
-                        coinBonusChange = changeOf(cmpRes.coinBonus),
-                        xpBonusDiff = cmpRes.experienceBonus,
-                        xpBonusChange = changeOf(cmpRes.experienceBonus),
-                        bountyBonusDiff = cmpRes.bountyBonus,
-                        bountyBonusChange = changeOf(cmpRes.bountyBonus)
-                    )
-//                    newHatItemImage = newItemImage(PetItemType.HAT, subState.equippedHatItem),
-//                    newMaskItemImage = newItemImage(PetItemType.MASK, subState.equippedMaskItem),
-//                    newBodyArmorItemImage = newItemImage(
-//                        PetItemType.BODY_ARMOR,
-//                        subState.equippedBodyArmorItem
-//                    )
+                    compareNewItem = action.item,
+                    comparePetItemsResult = action.cmpRes
                 )
             }
 
@@ -294,12 +247,6 @@ object PetReducer : BaseViewStateReducer<PetViewState>() {
         selectedItem: PetItem = PetItem.values().first { it.type == itemType }
     ): PetViewState {
 
-        val equippedPetItems = listOfNotNull(
-            state.equippedHat,
-            state.equippedMask,
-            state.equippedBodyArmor
-        ).toSet()
-
         val equipped = when (itemType) {
             PetItemType.HAT -> {
                 state.equippedHat
@@ -312,85 +259,14 @@ object PetReducer : BaseViewStateReducer<PetViewState>() {
             }
         }
 
-        val equippedItem = equipped?.let {
-            val item = it
-            val androidPetItem = AndroidPetItem.valueOf(item.name)
-            PetViewController.CompareItemViewModel(
-                image = androidPetItem.image,
-                name = androidPetItem.itemName,
-                item = item,
-                coinBonus = item.coinBonus,
-                coinBonusChange = changeOf(item.coinBonus),
-                xpBonus = item.experienceBonus,
-                xpBonusChange = changeOf(item.experienceBonus),
-                bountyBonus = item.bountyBonus,
-                bountyBonusChange = changeOf(item.bountyBonus),
-                isBought = true,
-                isEquipped = true
-            )
-        }
-
-//        val selectedVM = vms.first { it.isSelected }
-        val androidPetItem = AndroidPetItem.valueOf(selectedItem.name)
-        val newItem = PetViewController.CompareItemViewModel(
-//            image = selectedVM.image,
-            image = androidPetItem.image,
-            name = androidPetItem.itemName,
-            item = selectedItem,
-            coinBonus = selectedItem.coinBonus,
-            coinBonusChange = changeOf(selectedItem.coinBonus),
-            xpBonus = selectedItem.experienceBonus,
-            xpBonusChange = changeOf(selectedItem.experienceBonus),
-            bountyBonus = selectedItem.bountyBonus,
-            bountyBonusChange = changeOf(selectedItem.bountyBonus),
-            isBought = state.boughtItems.contains(selectedItem),
-            isEquipped = equippedPetItems.contains(selectedItem)
-        )
-
-//        val cmpRes = comparePetItemsUseCase.execute(
-//            ComparePetItemsUseCase.Params(
-//                equippedItem?.item,
-//                selectedItem
-//            )
-//        )
-
-        val petItems = AndroidPetAvatar.valueOf(state.avatar!!.name).items
-        val petCompareItemImage = petItems[newItem.item]
-        val newItemType = newItem.item.type
-
-        val newItemImage: (PetItemType, PetViewController.EquipmentItemViewModel?) -> Int? =
-            { type, equippedImage ->
-                if (newItemType == type) petCompareItemImage else equippedImage?.image
-            }
-
         return state.copy(
             type = stateType,
-            equippedItem = equippedItem,
-            newItem = newItem,
+            compareEquippedItem = equipped,
+            compareNewItem = selectedItem,
             selectedItemType = itemType,
-            itemComparison = PetViewController.ItemComparisonViewModel(
-                coinBonusDiff = cmpRes.coinBonus,
-                coinBonusChange = changeOf(cmpRes.coinBonus),
-                xpBonusDiff = cmpRes.experienceBonus,
-                xpBonusChange = changeOf(cmpRes.experienceBonus),
-                bountyBonusDiff = cmpRes.bountyBonus,
-                bountyBonusChange = changeOf(cmpRes.bountyBonus)
-            )
-//            newHatItemImage = newItemImage(PetItemType.HAT, state.equippedHatItem),
-//            newMaskItemImage = newItemImage(PetItemType.MASK, state.equippedMaskItem),
-//            newBodyArmorItemImage = newItemImage(
-//                PetItemType.BODY_ARMOR,
-//                state.equippedBodyArmorItem
-//            )
+            comparePetItemsResult = cmpRes
         )
     }
-
-    private fun changeOf(value: Int) =
-        when {
-            value > 0 -> PetViewController.ItemComparisonViewModel.Change.POSITIVE
-            value < 0 -> PetViewController.ItemComparisonViewModel.Change.NEGATIVE
-            else -> PetViewController.ItemComparisonViewModel.Change.NO_CHANGE
-        }
 
     override fun defaultState() =
         PetViewState(
@@ -400,10 +276,11 @@ object PetReducer : BaseViewStateReducer<PetViewState>() {
             selectedItemType = null,
             equippedHat = null,
             equippedMask = null,
-            equippedBodyArmor = null
+            equippedBodyArmor = null,
+            comparePetItemsResult = null,
+            compareEquippedItem = null,
+            compareNewItem = null
         )
-
-
 }
 
 data class PetViewState(
@@ -427,9 +304,15 @@ data class PetViewState(
     val equippedMask: PetItem?,
     val equippedBodyArmor: PetItem?,
     val inventoryFood: Map<Food, Int>,
-    val equippedItem: PetViewController.CompareItemViewModel? = null,
-    val newItem: PetViewController.CompareItemViewModel? = null,
-    val itemComparison: PetViewController.ItemComparisonViewModel? = null,
+
+    val comparePetItemsResult: ComparePetItemsUseCase.Result?,
+    val compareEquippedItem: PetItem?,
+    val compareNewItem: PetItem?,
+
+//    val compareEquippedItem: PetViewController.CompareItemViewModel? = null,
+//    val newItem: PetViewController.CompareItemViewModel? = null,
+//
+//    val itemComparison: PetViewController.ItemComparisonViewModel? = null,
     val selectedItemType: PetItemType? = null,
     val boughtItems: Set<PetItem> = setOf(),
     val playerGems: Int = 0

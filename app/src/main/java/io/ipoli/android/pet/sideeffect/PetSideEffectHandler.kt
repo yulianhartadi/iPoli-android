@@ -84,7 +84,7 @@ class PetSideEffectHandler : AppSideEffectHandler() {
 
             is PetAction.CompareItem -> {
                 val petState = state.stateFor(PetViewState::class.java)
-                val equippedItem = petState.equippedItem?.item
+                val equippedItem = petState.compareEquippedItem
                 val cmpRes = comparePetItemsUseCase.execute(
                     ComparePetItemsUseCase.Params(
                         equippedItem,
