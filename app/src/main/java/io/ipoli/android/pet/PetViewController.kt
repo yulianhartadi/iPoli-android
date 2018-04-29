@@ -20,6 +20,8 @@ import android.widget.ImageView
 import android.widget.ProgressBar
 import android.widget.TextView
 import android.widget.Toast
+import com.bluelinelabs.conductor.RouterTransaction
+import com.bluelinelabs.conductor.changehandler.VerticalChangeHandler
 import com.mikepenz.iconics.IconicsDrawable
 import com.mikepenz.ionicons_typeface_library.Ionicons
 import io.ipoli.android.R
@@ -67,7 +69,7 @@ class PetViewController(args: Bundle? = null) :
 
         val initList: (RecyclerView) -> Unit = {
             it.layoutManager =
-                LinearLayoutManager(activity!!, LinearLayoutManager.HORIZONTAL, false)
+                    LinearLayoutManager(activity!!, LinearLayoutManager.HORIZONTAL, false)
             it.post {
                 it.x = view.width.toFloat()
             }
@@ -137,6 +139,12 @@ class PetViewController(args: Bundle? = null) :
     companion object {
         const val PET_TOP_BORDER_PERCENT = 0.33f
         const val PET_BOTTOM_BORDER_PERCENT = 0.74f
+
+        val routerTransaction: RouterTransaction
+            get() =
+                RouterTransaction.with(PetViewController())
+                    .pushChangeHandler(VerticalChangeHandler())
+                    .popChangeHandler(VerticalChangeHandler())
     }
 
     override fun render(state: PetViewState, view: View) {
@@ -345,17 +353,17 @@ class PetViewController(args: Bundle? = null) :
         view.fabHatItems.backgroundTintList = ColorStateList.valueOf(attrData(R.attr.colorPrimary))
         view.fabMaskItems.backgroundTintList = ColorStateList.valueOf(attrData(R.attr.colorPrimary))
         view.fabBodyArmorItems.backgroundTintList =
-            ColorStateList.valueOf(attrData(R.attr.colorPrimary))
+                ColorStateList.valueOf(attrData(R.attr.colorPrimary))
 
         val itemsType = state.selectedItemType!!
 
         when (itemsType) {
             PetItemType.HAT -> view.fabHatItems.backgroundTintList =
-                ColorStateList.valueOf(attrData(R.attr.colorAccent))
+                    ColorStateList.valueOf(attrData(R.attr.colorAccent))
             PetItemType.MASK -> view.fabMaskItems.backgroundTintList =
-                ColorStateList.valueOf(attrData(R.attr.colorAccent))
+                    ColorStateList.valueOf(attrData(R.attr.colorAccent))
             PetItemType.BODY_ARMOR -> view.fabBodyArmorItems.backgroundTintList =
-                ColorStateList.valueOf(attrData(R.attr.colorAccent))
+                    ColorStateList.valueOf(attrData(R.attr.colorAccent))
         }
     }
 

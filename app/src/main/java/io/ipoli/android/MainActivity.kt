@@ -9,6 +9,7 @@ import android.os.PowerManager
 import android.preference.PreferenceManager
 import android.provider.Settings
 import android.support.design.widget.Snackbar
+import android.support.v4.content.ContextCompat.startActivity
 import android.support.v7.app.AppCompatActivity
 import android.view.View
 import android.view.ViewGroup
@@ -26,6 +27,7 @@ import io.ipoli.android.common.redux.Action
 import io.ipoli.android.common.redux.Dispatcher
 import io.ipoli.android.common.redux.SideEffectHandler
 import io.ipoli.android.common.view.playerTheme
+import io.ipoli.android.pet.PetViewController
 import io.ipoli.android.player.auth.AuthViewController
 import io.ipoli.android.player.auth.saga.AuthSideEffectHandler
 import io.ipoli.android.quest.schedule.addquest.AddQuestViewController
@@ -108,6 +110,8 @@ class MainActivity : AppCompatActivity(), Injects<Module>, SideEffectHandler<App
             showTimer(intent)
         } else if (startIntent != null && startIntent.action == ACTION_SHOW_QUICK_ADD) {
             showQuickAdd()
+        } else if (startIntent != null && startIntent.action == ACTION_SHOW_PET) {
+            showPet()
         } else if (!router.hasRootController()) {
             checkForBatteryOptimization()
 //                        router.setRoot(RouterTransaction.with(RepeatingQuestViewController("")))
@@ -145,15 +149,6 @@ class MainActivity : AppCompatActivity(), Injects<Module>, SideEffectHandler<App
         }
     }
 
-    override fun onNewIntent(intent: Intent) {
-        if (ACTION_SHOW_TIMER == intent.action) {
-            showTimer(intent)
-        } else if (ACTION_SHOW_QUICK_ADD == intent.action) {
-            showQuickAdd()
-        }
-        super.onNewIntent(intent)
-    }
-
     private fun showQuickAdd() {
         findViewById<ViewGroup>(R.id.activityContainer)
             .setBackgroundResource(android.R.color.transparent)
@@ -175,6 +170,10 @@ class MainActivity : AppCompatActivity(), Injects<Module>, SideEffectHandler<App
         router.setRoot(
             QuestViewController.routerTransaction(questId)
         )
+    }
+
+    private fun showPet() {
+        router.setRoot(PetViewController.routerTransaction)
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
@@ -297,5 +296,6 @@ class MainActivity : AppCompatActivity(), Injects<Module>, SideEffectHandler<App
     companion object {
         const val ACTION_SHOW_TIMER = "mypoli.android.intent.action.SHOW_TIMER"
         const val ACTION_SHOW_QUICK_ADD = "mypoli.android.intent.action.SHOW_QUICK_ADD"
+        const val ACTION_SHOW_PET = "mypoli.android.intent.action.SHOW_PET"
     }
 }

@@ -80,6 +80,7 @@ class AgendaWidgetProvider : AppWidgetProvider() {
             rv.setTextViewText(R.id.widgetDate, date)
 
             rv.setOnClickPendingIntent(R.id.widgetAgendaHeader, createStartAppIntent(context))
+            rv.setOnClickPendingIntent(R.id.widgetAgendaPet, createShowPetIntent(context))
             rv.setOnClickPendingIntent(R.id.widgetAgendaAdd, createQuickAddIntent(context))
 
             rv.setRemoteAdapter(
@@ -110,6 +111,14 @@ class AgendaWidgetProvider : AppWidgetProvider() {
             context,
             0,
             IntentUtil.showQuickAdd(context),
+            0
+        )
+
+    private fun createShowPetIntent(context: Context)=
+        PendingIntent.getActivity(
+            context,
+            0,
+            IntentUtil.showPet(context),
             0
         )
 

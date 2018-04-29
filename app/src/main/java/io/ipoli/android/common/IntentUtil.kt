@@ -14,18 +14,26 @@ object IntentUtil {
     fun showQuickAdd(context: Context) =
         Intent(context, MainActivity::class.java).apply {
             action = MainActivity.ACTION_SHOW_QUICK_ADD
-            flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK
+            flags = startActivityFlags
+        }
+
+    fun showPet(context: Context) =
+        Intent(context, MainActivity::class.java).apply {
+            action = MainActivity.ACTION_SHOW_PET
+            flags = startActivityFlags
         }
 
     fun showTimer(questId: String, context: Context) =
         Intent(context, MainActivity::class.java).apply {
             action = MainActivity.ACTION_SHOW_TIMER
             putExtra(Constants.QUEST_ID_EXTRA_KEY, questId)
-            flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK
+            flags = startActivityFlags
         }
 
     fun startApp(context: Context) =
         Intent(context, MainActivity::class.java).apply {
-            flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK
+            flags = startActivityFlags
         }
+
+    private val startActivityFlags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK
 }

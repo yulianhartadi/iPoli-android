@@ -237,11 +237,7 @@ class HomeViewController(args: Bundle? = null) :
     }
 
     private fun showPet() {
-        router.pushController(
-            RouterTransaction.with(PetViewController())
-                .pushChangeHandler(VerticalChangeHandler())
-                .popChangeHandler(VerticalChangeHandler())
-        )
+        router.pushController(PetViewController.routerTransaction)
     }
 
     override fun render(state: HomeViewState, view: View) {
