@@ -299,10 +299,10 @@ class AddRepeatingQuestViewController(args: Bundle? = null) :
                 add.visible()
                 view.rqMaxTagMessage.gone()
 
-                val adapter = EditItemAutocompleteTagAdapter(state.tagNames, activity!!)
+                val adapter = EditItemAutocompleteTagAdapter(state.tags, activity!!)
                 add.setAdapter(adapter)
                 add.setOnItemClickListener { _, _, position, _ ->
-                    dispatch(EditRepeatingQuestAction.AddTag(adapter.getItem(position)))
+                    dispatch(EditRepeatingQuestAction.AddTag(adapter.getItem(position).name))
                     add.setText("")
                 }
                 add.threshold = 0
@@ -661,10 +661,10 @@ class AddRepeatingQuestViewController(args: Bundle? = null) :
             } else {
                 add.visible()
                 view.maxTagsMessage.gone()
-                val adapter = EditItemAutocompleteTagAdapter(state.tagNames, activity!!)
+                val adapter = EditItemAutocompleteTagAdapter(state.tags, activity!!)
                 add.setAdapter(adapter)
                 add.setOnItemClickListener { _, _, position, _ ->
-                    dispatch(EditRepeatingQuestAction.AddTag(adapter.getItem(position)))
+                    dispatch(EditRepeatingQuestAction.AddTag(adapter.getItem(position).name))
                     add.setText("")
                 }
                 add.threshold = 0
@@ -827,9 +827,6 @@ class AddRepeatingQuestViewController(args: Bundle? = null) :
                     tag = it
                 )
             }
-
-        private val EditRepeatingQuestViewState.tagNames: List<String>
-            get() = tags.map { it.name }
 
     }
 }

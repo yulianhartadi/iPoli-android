@@ -274,10 +274,10 @@ class EditQuestViewController(args: Bundle? = null) :
             add.visible()
             view.maxTagsMessage.gone()
 
-            val adapter = EditItemAutocompleteTagAdapter(state.tagNames, activity!!)
+            val adapter = EditItemAutocompleteTagAdapter(state.tags, activity!!)
             add.setAdapter(adapter)
             add.setOnItemClickListener { _, _, position, _ ->
-                dispatch(EditQuestAction.AddTag(adapter.getItem(position)))
+                dispatch(EditQuestAction.AddTag(adapter.getItem(position).name))
                 add.setText("")
             }
             add.threshold = 0
@@ -501,9 +501,6 @@ class EditQuestViewController(args: Bundle? = null) :
                 tag = it
             )
         }
-
-    private val EditQuestViewState.tagNames: List<String>
-        get() = tags.map { it.name }
 
     private val EditQuestViewState.toolbarTitle: String
         get() = stringRes(if (id.isEmpty()) R.string.title_add_quest else R.string.title_edit_quest)

@@ -71,20 +71,20 @@ open class EditChallengeViewController(args: Bundle? = null) :
 
 
         view.challengeDifficulty.onItemSelectedListener =
-            object : AdapterView.OnItemSelectedListener {
-                override fun onNothingSelected(parent: AdapterView<*>?) {
-                }
+                object : AdapterView.OnItemSelectedListener {
+                    override fun onNothingSelected(parent: AdapterView<*>?) {
+                    }
 
-                override fun onItemSelected(
-                    parent: AdapterView<*>?,
-                    view: View?,
-                    position: Int,
-                    id: Long
-                ) {
-                    dispatch(EditChallengeAction.ChangeDifficulty(position))
-                }
+                    override fun onItemSelected(
+                        parent: AdapterView<*>?,
+                        view: View?,
+                        position: Int,
+                        id: Long
+                    ) {
+                        dispatch(EditChallengeAction.ChangeDifficulty(position))
+                    }
 
-            }
+                }
 
 
         return view
@@ -182,10 +182,10 @@ open class EditChallengeViewController(args: Bundle? = null) :
             add.visible()
             view.maxTagsMessage.gone()
 
-            val adapter = EditItemAutocompleteTagAdapter(state.tagNames, activity!!)
+            val adapter = EditItemAutocompleteTagAdapter(state.tags, activity!!)
             add.setAdapter(adapter)
             add.setOnItemClickListener { _, _, position, _ ->
-                dispatch(EditChallengeAction.AddTag(adapter.getItem(position)))
+                dispatch(EditChallengeAction.AddTag(adapter.getItem(position).name))
                 add.setText("")
             }
             add.threshold = 0
@@ -243,19 +243,19 @@ open class EditChallengeViewController(args: Bundle? = null) :
         styleSelectedDifficulty(view)
 
         view.challengeDifficulty.onItemSelectedListener =
-            object : AdapterView.OnItemSelectedListener {
-                override fun onNothingSelected(parent: AdapterView<*>?) {
-                }
+                object : AdapterView.OnItemSelectedListener {
+                    override fun onNothingSelected(parent: AdapterView<*>?) {
+                    }
 
-                override fun onItemSelected(
-                    parent: AdapterView<*>?,
-                    v: View?,
-                    position: Int,
-                    id: Long
-                ) {
-                    styleSelectedDifficulty(view)
+                    override fun onItemSelected(
+                        parent: AdapterView<*>?,
+                        v: View?,
+                        position: Int,
+                        id: Long
+                    ) {
+                        styleSelectedDifficulty(view)
+                    }
                 }
-            }
     }
 
     private fun styleSelectedDifficulty(view: View) {
@@ -366,7 +366,4 @@ open class EditChallengeViewController(args: Bundle? = null) :
                 tag = it
             )
         }
-
-    private val EditChallengeViewState.tagNames: List<String>
-        get() = tags.map { it.name }
 }

@@ -121,10 +121,10 @@ class AddChallengeNameViewController(args: Bundle? = null) :
             add.visible()
             view.maxTagsMessage.gone()
 
-            val adapter = EditItemAutocompleteTagAdapter(state.tagNames, activity!!)
+            val adapter = EditItemAutocompleteTagAdapter(state.tags, activity!!)
             add.setAdapter(adapter)
             add.setOnItemClickListener { _, _, position, _ ->
-                dispatch(EditChallengeAction.AddTag(adapter.getItem(position)))
+                dispatch(EditChallengeAction.AddTag(adapter.getItem(position).name))
                 add.setText("")
             }
             add.threshold = 0
@@ -188,8 +188,4 @@ class AddChallengeNameViewController(args: Bundle? = null) :
                 tag = it
             )
         }
-
-    private val EditChallengeViewState.tagNames: List<String>
-        get() = tags.map { it.name }
-
 }
