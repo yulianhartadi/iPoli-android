@@ -7,9 +7,8 @@ import io.ipoli.android.common.redux.Action
 import io.ipoli.android.pet.PetAction
 import io.ipoli.android.pet.PetItem
 import io.ipoli.android.pet.PetItemType
-import io.ipoli.android.pet.usecase.ComparePetItemsUseCase
-import io.ipoli.android.pet.usecase.Parameters
-import io.ipoli.android.pet.usecase.RenamePetUseCase
+import io.ipoli.android.pet.PetViewState
+import io.ipoli.android.pet.usecase.*
 import space.traversal.kapsule.required
 
 /**
@@ -22,9 +21,12 @@ class PetSideEffectHandler : AppSideEffectHandler() {
     private val renamePetUseCase by required { renamePetUseCase }
     private val feedPetUseCase by required { feedPetUseCase }
     private val revivePetUseCase by required { revivePetUseCase }
+    private val takeOffPetItemUseCase by required { takeOffPetItemUseCase }
+    private val equipPetItemUseCase by required { equipPetItemUseCase }
+    private val buyPetItemUseCase by required { buyPetItemUseCase }
 
     override suspend fun doExecute(action: Action, state: AppState) {
-        when(action) {
+        when (action) {
 //            PetAction.Load -> {
 //                val petState = state.stateFor(PetViewState::class.java)
 //                if (petState.comparedItemsType != null) {
@@ -42,12 +44,22 @@ class PetSideEffectHandler : AppSideEffectHandler() {
 
             is PetAction.Feed -> {
                 val result = feedPetUseCase.execute(Parameters(action.food))
-                dispatch(PetAction.PetFedResult(result, action.food))
+                when (result) {
+                    is Result.TooExpensive -> dispatch(PetAction.FoodTooExpensive)
+                    is Result.PetFed -> {
+                        val pet = result.player.pet
+                        dispatch(PetAction.PetFed(pet, action.food, result.wasFoodTasty))
+                    }
+                }
             }
 
             is PetAction.Revive -> {
                 val result = revivePetUseCase.execute(Unit)
-                dispatch(PetAction.ReviveResult(result))
+                when (result) {
+                    is RevivePetUseCase.Result.TooExpensive ->
+                        dispatch(PetAction.ReviveTooExpensive)
+                    else -> dispatch(PetAction.PetRevived)
+                }
             }
 
             is PetAction.ShowItemListRequest -> {
@@ -69,14 +81,45 @@ class PetSideEffectHandler : AppSideEffectHandler() {
                 val cmpRes = createCompareResult(state, PetItemType.BODY_ARMOR)
                 dispatch(PetAction.ShowBodyArmorItemList(cmpRes))
             }
-        }
 
+            is PetAction.CompareItem -> {
+                val petState = state.stateFor(PetViewState::class.java)
+                val equippedItem = petState.equippedItem?.item
+                val cmpRes = comparePetItemsUseCase.execute(
+                    ComparePetItemsUseCase.Params(
+                        equippedItem,
+                        action.item
+                    )
+                )
+                dispatch(PetAction.ItemsCompared(cmpRes, action.item))
+            }
+
+            is PetAction.TakeItemOff -> {
+                takeOffPetItemUseCase.execute(TakeOffPetItemUseCase.Params(action.item))
+            }
+
+            is PetAction.EquipItem -> {
+                equipPetItemUseCase.execute(EquipPetItemUseCase.Params(action.item))
+            }
+
+            is PetAction.BuyItem -> {
+                val result = buyPetItemUseCase.execute(BuyPetItemUseCase.Params(action.item))
+                when (result) {
+                    is BuyPetItemUseCase.Result.TooExpensive ->
+                        dispatch(PetAction.ItemTooExpensive)
+                    is BuyPetItemUseCase.Result.ItemBought ->
+                        dispatch(PetAction.ItemBought)
+                }
+            }
+        }
     }
+
 
     private fun createCompareResult(
         state: AppState,
         itemType: PetItemType
-    ): ComparePetItemsUseCase.Result {
+    )
+        : ComparePetItemsUseCase.Result {
         val equipment = state.dataState.player!!.pet.equipment
         val equipped = when (itemType) {
             PetItemType.HAT -> equipment.hat
@@ -91,6 +134,7 @@ class PetSideEffectHandler : AppSideEffectHandler() {
             )
         )
     }
+
 
     override fun canHandle(action: Action) =
         action is PetAction

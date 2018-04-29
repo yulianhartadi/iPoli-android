@@ -95,9 +95,9 @@ class PetViewController(args: Bundle? = null) :
         return view
     }
 
-    private fun View.sendOnClick(intent: PetIntent) {
-
-    }
+//    private fun View.sendOnClick(intent: PetIntent) {
+//
+//    }
 
     override fun onCreateLoadAction() = PetAction.Load
 
@@ -364,31 +364,31 @@ class PetViewController(args: Bundle? = null) :
     private fun renderItemComparison(state: PetViewState, view: View) {
 
         if (state.equippedItem != null) {
-            state.equippedItem.let {
+            state.equippedItem.let { vm ->
                 view.curItems.visible = true
                 view.noItem.visible = false
-                view.curItemImage.setImageResource(it.image)
-                view.curItemName.setText(it.name)
+                view.curItemImage.setImageResource(vm.image)
+                view.curItemName.setText(vm.name)
 
                 renderItemBonus(
-                    it.coinBonus,
-                    it.coinBonusChange,
+                    vm.coinBonus,
+                    vm.coinBonusChange,
                     view.curItemCoinBonus
                 )
 
                 renderItemBonus(
-                    it.xpBonus,
-                    it.xpBonusChange,
+                    vm.xpBonus,
+                    vm.xpBonusChange,
                     view.curItemXpBonus
                 )
 
                 renderItemBonus(
-                    it.bountyBonus,
-                    it.bountyBonusChange,
+                    vm.bountyBonus,
+                    vm.bountyBonusChange,
                     view.curItemBountyBonus
                 )
 
-                view.takeOff.sendOnClick(PetIntent.TakeItemOff(it.item))
+                view.takeOff.setOnClickListener { dispatch(PetAction.TakeItemOff(vm.item)) }
             }
         } else {
 
@@ -406,11 +406,11 @@ class PetViewController(args: Bundle? = null) :
             } else if (it.isBought) {
                 view.equipItem.visible = true
                 view.buyItem.visible = false
-                view.equipItem.sendOnClick(PetIntent.EquipItem(state.newItem.item))
+                view.equipItem.setOnClickListener { dispatch(PetAction.EquipItem(state.newItem.item)) }
             } else {
                 view.equipItem.visible = false
                 view.buyItem.visible = true
-                view.buyItem.sendOnClick(PetIntent.BuyItem(state.newItem.item))
+                view.buyItem.setOnClickListener { dispatch(PetAction.BuyItem(state.newItem.item)) }
             }
 
             renderNewPetItems(state, view)
@@ -942,7 +942,7 @@ class PetViewController(args: Bundle? = null) :
                 }
             }
 
-            holder.itemView.sendOnClick(PetIntent.CompareItem(vm.item))
+            holder.itemView.setOnClickListener { dispatch(PetAction.CompareItem(vm.item)) }
         }
 
         override fun getItemCount() = petItems.size
