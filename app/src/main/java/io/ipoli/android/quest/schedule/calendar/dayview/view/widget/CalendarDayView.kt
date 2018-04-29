@@ -110,10 +110,10 @@ class CalendarDayView : FrameLayout, StateChangeListener {
     }
 
     companion object {
-        const val DEFAULT_VISIBLE_HOURS = 9
-        const val MIN_VISIBLE_HOURS = 2
-        const val MAX_VISIBLE_HOURS = 16
-        const val MIN_EVENT_DURATION = 10
+        const val DEFAULT_VISIBLE_HOURS = 7
+        const val MIN_VISIBLE_HOURS = 5
+        const val MAX_VISIBLE_HOURS = 8
+        const val MIN_EVENT_DURATION = 15
         val MAX_EVENT_DURATION = Time.h2Min(4)
         const val HOURS_IN_A_DAY = 24
         const val KEYBOARD_VISIBLE_THRESHOLD_DP = 100f
