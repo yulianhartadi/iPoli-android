@@ -5,7 +5,7 @@ package io.ipoli.android.player
  * on 12/12/17.
  */
 enum class Theme(val gemPrice: Int) {
-    RED(0),
+    RED(3),
     BLUE_GREY(1),
     ORANGE(3),
     PINK(6),
