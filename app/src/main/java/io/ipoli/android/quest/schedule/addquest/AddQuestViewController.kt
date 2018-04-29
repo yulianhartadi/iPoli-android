@@ -265,7 +265,7 @@ class AddQuestViewController(args: Bundle? = null) :
         view.icon.setOnClickListener {
             IconPickerDialogController({ icon ->
                 dispatch(AddQuestAction.IconPicked(icon))
-            }, state.icon?.androidIcon).showDialog(
+            }, state.icon).show(
                 router,
                 "pick_icon_tag"
             )

@@ -147,7 +147,7 @@ class AddChallengeNameViewController(args: Bundle? = null) :
         view.challengeIcon.setOnClickListener {
             IconPickerDialogController({ icon ->
                 dispatch(EditChallengeAction.ChangeIcon(icon))
-            }, state.icon?.androidIcon).showDialog(
+            }, state.icon).show(
                 router,
                 "pick_icon_tag"
             )

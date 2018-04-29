@@ -511,7 +511,7 @@ class DayViewController :
                 Icon.valueOf(it.name)
             }
             dispatch(DayViewAction.IconPicked(ic))
-        }, selectedIcon).showDialog(router, "icon-picker")
+        }, selectedIcon?.toIcon).show(router, "icon-picker")
     }
 
     private fun showColorPicker(selectedColor: AndroidColor?) {

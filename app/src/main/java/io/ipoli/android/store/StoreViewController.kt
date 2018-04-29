@@ -82,8 +82,7 @@ class StoreViewController(args: Bundle? = null) : RestoreViewOnCreateController(
                 )
             }
             StoreItem.ICONS -> return {
-                IconPickerDialogController({
-                }).showDialog(
+                IconPickerDialogController().show(
                     router,
                     "pick_icon_tag"
                 )
@@ -126,7 +125,7 @@ class StoreViewController(args: Bundle? = null) : RestoreViewOnCreateController(
                 val xRadius = width / 2f
                 val yRadius = view.storeItemBackground.height / 2f
                 view.storeItemBackground.background =
-                    createLeftRoundedDrawable(xRadius, yRadius, colorRes)
+                        createLeftRoundedDrawable(xRadius, yRadius, colorRes)
             }
         }
         view.storeItemIcon.setImageResource(icon)

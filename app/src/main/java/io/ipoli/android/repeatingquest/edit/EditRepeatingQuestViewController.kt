@@ -281,7 +281,7 @@ class EditRepeatingQuestViewController(args: Bundle? = null) :
         view.summaryIcon.setOnClickListener {
             IconPickerDialogController({ icon ->
                 dispatch(EditRepeatingQuestAction.ChangeIcon(icon))
-            }, state.icon?.androidIcon).showDialog(
+            }, state.icon).show(
                 router,
                 "pick_icon_tag"
             )

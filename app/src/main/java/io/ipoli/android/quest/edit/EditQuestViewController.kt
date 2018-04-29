@@ -398,7 +398,7 @@ class EditQuestViewController(args: Bundle? = null) :
         view.questIcon.setOnClickListener {
             IconPickerDialogController({ icon ->
                 dispatch(EditQuestAction.ChangeIcon(icon))
-            }, state.icon?.androidIcon).showDialog(
+            }, state.icon).show(
                 router,
                 "pick_icon_tag"
             )

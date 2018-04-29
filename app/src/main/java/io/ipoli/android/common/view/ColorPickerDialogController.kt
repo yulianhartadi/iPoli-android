@@ -57,7 +57,9 @@ object ColorPickerReducer : BaseViewStateReducer<ColorPickerViewState>() {
     ) = when (action) {
 
         is ColorPickerAction.Load ->
-            createPlayerState(subState, state.dataState.player!!)
+            createPlayerState(subState, state.dataState.player!!).copy(
+                selectedColor = action.selectedColor
+            )
 
         is DataLoadedAction.PlayerChanged ->
             createPlayerState(subState, action.player)
@@ -82,7 +84,7 @@ object ColorPickerReducer : BaseViewStateReducer<ColorPickerViewState>() {
     ) = subState.copy(
         type = DATA_CHANGED,
         petAvatar = player.pet.avatar,
-        colors = Color.values().toList(),
+        colors = Color.values().toSet(),
         colorPacks = player.inventory.colorPacks
     )
 
@@ -96,7 +98,7 @@ data class ColorPickerViewState(
     val type: Type,
     val petAvatar: PetAvatar? = null,
     val selectedColor: Color? = null,
-    val colors: List<Color> = emptyList(),
+    val colors: Set<Color> = emptySet(),
     val colorPacks: Set<ColorPack> = emptySet()
 ) : ViewState {
     enum class Type {
@@ -130,6 +132,7 @@ class ColorPickerDialogController :
     override fun onCreateContentView(inflater: LayoutInflater, savedViewState: Bundle?): View {
         val contentView = inflater.inflate(R.layout.dialog_color_picker, null)
         contentView.colorGrid.layoutManager = GridLayoutManager(activity!!, 4)
+        contentView.colorGrid.adapter = ColorAdapter()
         return contentView
     }
 
@@ -149,27 +152,15 @@ class ColorPickerDialogController :
         }
     }
 
-    override fun onCreateLoadAction(): ColorPickerAction? {
-        val color = selectedColor?.let {
-            Color.valueOf(it.name)
-        }
-        return ColorPickerAction.Load(color)
-    }
+    override fun onCreateLoadAction() =
+        ColorPickerAction.Load(selectedColor)
 
     override fun render(state: ColorPickerViewState, view: View) {
         when (state.type) {
-            LOADING -> {
-                val colorGrid = view.colorGrid
-                colorGrid.layoutManager = GridLayoutManager(activity!!, 4)
-                val colorViewModels = Color.values().map {
-                    ColorViewModel(it, it == selectedColor ?: false, false)
-                }
-                colorGrid.adapter = ColorAdapter(colorViewModels)
-            }
 
             DATA_CHANGED -> {
                 changeIcon(AndroidPetAvatar.valueOf(state.petAvatar!!.name).headImage)
-                (view.colorGrid.adapter as ColorAdapter).updateAll(state.createViewModels)
+                (view.colorGrid.adapter as ColorAdapter).updateAll(state.colorViewModels)
             }
 
             COLOR_PACK_UNLOCKED -> {
@@ -234,7 +225,7 @@ class ColorPickerDialogController :
 
     data class ColorViewModel(val color: Color, val isSelected: Boolean, val isLocked: Boolean)
 
-    inner class ColorAdapter(private var colors: List<ColorViewModel>) :
+    inner class ColorAdapter(private var colors: List<ColorViewModel> = emptyList()) :
         RecyclerView.Adapter<ColorAdapter.ViewHolder>() {
         override fun onBindViewHolder(holder: ViewHolder, position: Int) {
             val vm = colors[position]
@@ -280,7 +271,7 @@ class ColorPickerDialogController :
 
     }
 
-    private val ColorPickerViewState.createViewModels: List<ColorPickerDialogController.ColorViewModel>
+    private val ColorPickerViewState.colorViewModels: List<ColorPickerDialogController.ColorViewModel>
         get() =
             colors.map {
                 val isSelected = if (selectedColor == null) false else selectedColor == it

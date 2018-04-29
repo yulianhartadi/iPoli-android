@@ -121,7 +121,7 @@ class EditTagViewController(args: Bundle? = null) :
         view.tagIcon.setOnClickListener {
             IconPickerDialogController({ icon ->
                 dispatch(EditTagAction.ChangeIcon(icon))
-            }, state.icon?.androidIcon).showDialog(
+            }, state.icon).show(
                 router,
                 "pick_icon_tag"
             )

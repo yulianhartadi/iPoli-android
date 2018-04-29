@@ -24,7 +24,6 @@ import io.ipoli.android.common.rate.RatePresenter
 import io.ipoli.android.common.redux.CoroutineSideEffectHandlerExecutor
 import io.ipoli.android.common.redux.StateStore
 import io.ipoli.android.common.text.CalendarFormatter
-import io.ipoli.android.common.view.IconPickerDialogPresenter
 import io.ipoli.android.common.view.PetMessagePresenter
 import io.ipoli.android.event.persistence.AndroidCalendarEventRepository
 import io.ipoli.android.event.persistence.AndroidCalendarRepository
@@ -637,7 +636,6 @@ interface PresenterModule {
     val reminderPickerPresenter: ReminderPickerDialogPresenter
     val petPresenter: PetPresenter
     val petDialogPresenter: PetDialogPresenter
-    val iconPickerPresenter: IconPickerDialogPresenter
     val petMessagePresenter: PetMessagePresenter
     val levelUpPresenter: LevelUpPresenter
     val questCompletePresenter: QuestCompletePresenter
@@ -652,8 +650,6 @@ class AndroidPresenterModule : PresenterModule, Injects<Module> {
     private val findPetUseCase by required { findPetUseCase }
     private val renamePetUseCase by required { renamePetUseCase }
     private val timeUnitFormatter by required { timeUnitFormatter }
-    private val buyIconPackUseCase by required { buyIconPackUseCase }
-    private val buyColorPackUseCase by required { buyColorPackUseCase }
     private val comparePetItemsUseCase by required { comparePetItemsUseCase }
     private val buyPetItemUseCase by required { buyPetItemUseCase }
     private val equipPetItemUseCase by required { equipPetItemUseCase }
@@ -679,13 +675,6 @@ class AndroidPresenterModule : PresenterModule, Injects<Module> {
             job
         )
     override val petDialogPresenter get() = PetDialogPresenter(findPetUseCase, job)
-
-    override val iconPickerPresenter
-        get() = IconPickerDialogPresenter(
-            listenForPlayerChangesUseCase,
-            buyIconPackUseCase,
-            job
-        )
 
     override val petMessagePresenter get() = PetMessagePresenter(listenForPlayerChangesUseCase, job)
     override val levelUpPresenter get() = LevelUpPresenter(listenForPlayerChangesUseCase, job)
