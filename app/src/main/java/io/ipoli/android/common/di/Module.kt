@@ -40,6 +40,7 @@ import io.ipoli.android.pet.AndroidJobLowerPetStatsScheduler
 import io.ipoli.android.pet.LowerPetStatsScheduler
 import io.ipoli.android.pet.PetDialogPresenter
 import io.ipoli.android.pet.PetPresenter
+import io.ipoli.android.pet.sideeffect.PetSideEffectHandler
 import io.ipoli.android.pet.usecase.*
 import io.ipoli.android.player.AndroidLevelDownScheduler
 import io.ipoli.android.player.AndroidLevelUpScheduler
@@ -748,7 +749,8 @@ class AndroidStateStoreModule : StateStoreModule, Injects<Module> {
                 ThemeSideEffectHandler(),
                 TagSideEffectHandler(),
                 BucketListSideEffectHandler(),
-                GemStoreSideEffectHandler()
+                GemStoreSideEffectHandler(),
+                PetSideEffectHandler()
             ),
             sideEffectHandlerExecutor = CoroutineSideEffectHandlerExecutor(job + CommonPool),
             middleware = setOf(

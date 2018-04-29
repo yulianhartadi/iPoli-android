@@ -24,7 +24,7 @@ import com.mikepenz.iconics.IconicsDrawable
 import com.mikepenz.ionicons_typeface_library.Ionicons
 import io.ipoli.android.R
 import io.ipoli.android.common.ViewUtils
-import io.ipoli.android.common.mvi.MviViewController
+import io.ipoli.android.common.redux.android.ReduxViewController
 import io.ipoli.android.common.view.*
 import io.ipoli.android.pet.PetViewState.StateType.*
 import io.ipoli.android.player.inventory.InventoryViewController
@@ -32,7 +32,7 @@ import kotlinx.android.synthetic.main.controller_pet.view.*
 import kotlinx.android.synthetic.main.item_pet_food.view.*
 import kotlinx.android.synthetic.main.item_pet_item.view.*
 import kotlinx.android.synthetic.main.view_inventory_toolbar.view.*
-import space.traversal.kapsule.required
+import timber.log.Timber
 
 
 /**
@@ -40,11 +40,9 @@ import space.traversal.kapsule.required
  * on 11/24/17.
  */
 class PetViewController(args: Bundle? = null) :
-    MviViewController<PetViewState, PetViewController, PetPresenter, PetIntent>(args) {
+    ReduxViewController<PetAction, PetViewState, PetReducer>(args) {
 
-    private val presenter by required { petPresenter }
-
-    override fun createPresenter() = presenter
+    override val reducer = PetReducer
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -83,13 +81,28 @@ class PetViewController(args: Bundle? = null) :
 
         setToolbar(view.toolbar)
 
+        view.fabFood.sendOnClick(ShowFoodListIntent)
+        view.fabItems.sendOnClick(PetIntent.ShowItemList)
+        view.itemList.adapter = PetItemAdapter(emptyList())
+        view.foodList.adapter = PetFoodAdapter(emptyList())
+
+
         return view
     }
+
+    private fun View.sendOnClick(intent: PetIntent) {
+
+    }
+
+//    private fun send(intent: PetIntent) {
+//
+//    }
+
+    override fun onCreateLoadAction() = PetAction.Load
 
     override fun onAttach(view: View) {
         showBackButton()
         super.onAttach(view)
-        send(LoadDataIntent)
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
@@ -114,7 +127,8 @@ class PetViewController(args: Bundle? = null) :
 //        }
 
         if (item.itemId == R.id.actionRenamePet) {
-            send(RenamePetRequestIntent)
+            dispatch(PetAction.ShowRenamePet)
+//            send(RenamePetRequestIntent)
             return true
         }
 
@@ -122,17 +136,15 @@ class PetViewController(args: Bundle? = null) :
     }
 
     companion object {
-        val PET_TOP_BORDER_PERCENT = 0.33f
-        val PET_BOTTOM_BORDER_PERCENT = 0.74f
+        const val PET_TOP_BORDER_PERCENT = 0.33f
+        const val PET_BOTTOM_BORDER_PERCENT = 0.74f
     }
 
     override fun render(state: PetViewState, view: View) {
+        Timber.d("AAAA ${state.type}")
         when (state.type) {
             DATA_LOADED -> {
-                view.fabFood.sendOnClick(ShowFoodListIntent)
-                view.fabItems.sendOnClick(PetIntent.ShowItemList)
                 renderPet(state, view)
-
                 view.post {
                     resizePet(view)
                     view.post {
@@ -141,10 +153,28 @@ class PetViewController(args: Bundle? = null) :
                         }
                     }
                 }
-
-                view.itemList.adapter = PetItemAdapter(state.itemViewModels)
-                view.foodList.adapter = PetFoodAdapter(state.foodViewModels)
+                (view.foodList.adapter as PetFoodAdapter).updateAll(state.foodViewModels)
+                (view.itemList.adapter as PetItemAdapter).updateAll(state.itemViewModels)
             }
+
+            PET_CHANGED -> {
+//                view.post {
+//                    resizePet(view)
+//                    view.post {
+//                        if (!state.isDead) {
+//                            playEnterAnimation(view)
+//                        }
+//                    }
+//                }
+
+                (view.foodList.adapter as PetFoodAdapter).updateAll(state.foodViewModels)
+                (view.itemList.adapter as PetItemAdapter).updateAll(state.itemViewModels)
+
+                renderItemComparison(state, view)
+                renderPet(state, view)
+            }
+
+
             FOOD_LIST_SHOWN -> {
                 view.fabItems.isClickable = false
                 playShowListAnimation(view, view.foodList, view.fabFood, view.fabItems)
@@ -181,19 +211,10 @@ class PetViewController(args: Bundle? = null) :
                 ).show()
             }
 
-            PET_CHANGED -> {
-
-                (view.foodList.adapter as PetFoodAdapter).updateAll(state.foodViewModels)
-                (view.itemList.adapter as PetItemAdapter).updateAll(state.itemViewModels)
-
-                renderItemComparison(state, view)
-                renderPet(state, view)
-            }
-
             RENAME_PET ->
                 TextPickerDialogController(
                     { text ->
-                        send(RenamePetIntent(text))
+                        dispatch(PetAction.RenamePet(text))
                     },
                     stringRes(R.string.dialog_rename_pet_title),
                     state.petName,
@@ -850,7 +871,7 @@ class PetViewController(args: Bundle? = null) :
                 )
             }
             holder.itemView.setOnClickListener {
-                send(FeedIntent(vm.food))
+                dispatch(PetAction.Feed(vm.food))
             }
         }
 
