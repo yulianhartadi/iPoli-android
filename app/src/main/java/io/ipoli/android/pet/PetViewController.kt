@@ -222,8 +222,8 @@ class PetViewController(args: Bundle? = null) :
                 renderItemCategoryFabs(view, state)
 
                 view.fabHatItems.setOnClickListener {  dispatch(PetAction.ShowHeadItemListRequest)}
-                view.fabMaskItems.sendOnClick(PetIntent.ShowFaceItemList)
-                view.fabBodyArmorItems.sendOnClick(PetIntent.ShowBodyItemList)
+                view.fabMaskItems.setOnClickListener {  dispatch(PetAction.ShowFaceItemListRequest)}
+                view.fabBodyArmorItems.setOnClickListener {  dispatch(PetAction.ShowBodyItemListRequest)}
 
                 playCardContainerChangeAnimation(view, view.compareItemsContainer)
 

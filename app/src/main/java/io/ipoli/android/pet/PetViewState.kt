@@ -45,6 +45,8 @@ sealed class PetAction : Action {
     object HideItemList : PetAction()
     object Revive : PetAction()
     object ShowHeadItemListRequest : PetAction()
+    object ShowFaceItemListRequest : PetAction()
+    object ShowBodyItemListRequest : PetAction()
 
     data class RenamePet(val name: String) : PetAction()
     data class Feed(val food: Food) : PetAction()
@@ -52,6 +54,8 @@ sealed class PetAction : Action {
     data class ReviveResult(val result: RevivePetUseCase.Result) : PetAction()
     data class ShowItemList(val cmpRes: ComparePetItemsUseCase.Result) : PetAction()
     data class ShowHeadItemList(val cmpRes: ComparePetItemsUseCase.Result) : PetAction()
+    data class ShowFaceItemList(val cmpRes: ComparePetItemsUseCase.Result) : PetAction()
+    data class ShowBodyArmorItemList(val cmpRes: ComparePetItemsUseCase.Result) : PetAction()
 }
 
 object PetReducer : BaseViewStateReducer<PetViewState>() {
@@ -119,6 +123,24 @@ object PetReducer : BaseViewStateReducer<PetViewState>() {
                 changeItemTypeState(
                     subState,
                     PetItemType.HAT,
+                    CHANGE_ITEM_CATEGORY,
+                    action.cmpRes
+                )
+            }
+
+            is PetAction.ShowFaceItemList -> {
+                changeItemTypeState(
+                    subState,
+                    PetItemType.MASK,
+                    CHANGE_ITEM_CATEGORY,
+                    action.cmpRes
+                )
+            }
+
+            is PetAction.ShowBodyArmorItemList -> {
+                changeItemTypeState(
+                    subState,
+                    PetItemType.BODY_ARMOR,
                     CHANGE_ITEM_CATEGORY,
                     action.cmpRes
                 )
