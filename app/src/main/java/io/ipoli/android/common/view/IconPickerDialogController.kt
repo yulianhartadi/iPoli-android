@@ -157,24 +157,8 @@ class IconPickerDialogController :
                 (view.iconGrid.adapter as IconAdapter).updateAll(state.iconViewModels)
             }
 
-            SHOW_UNLOCK -> {
-
-                val fadeOut = ObjectAnimator.ofFloat(dialog.window.decorView, "alpha", 1f, 0.0f)
-                val fadeIn = ObjectAnimator.ofFloat(dialog.window.decorView, "alpha", 0.5f, 1f)
-                fadeIn.addListener(object : AnimatorListenerAdapter() {
-                    override fun onAnimationStart(animation: Animator?) {
-                        renderBuyIconPack(view)
-                    }
-                })
-
-                fadeIn.interpolator = AccelerateInterpolator()
-                fadeOut.duration = shortAnimTime
-                fadeIn.duration = mediumAnimTime
-
-                val set = AnimatorSet()
-                set.playSequentially(fadeOut, fadeIn)
-                set.start()
-            }
+            SHOW_UNLOCK ->
+                showUnlock(view)
 
             ICON_PACK_UNLOCKED -> {
                 showShortToast(R.string.icon_pack_unlocked)
@@ -190,6 +174,24 @@ class IconPickerDialogController :
                 ).show()
             }
         }
+    }
+
+    private fun showUnlock(view: View) {
+        val fadeOut = ObjectAnimator.ofFloat(dialog.window.decorView, "alpha", 1f, 0.0f)
+        val fadeIn = ObjectAnimator.ofFloat(dialog.window.decorView, "alpha", 0.5f, 1f)
+        fadeIn.addListener(object : AnimatorListenerAdapter() {
+            override fun onAnimationStart(animation: Animator?) {
+                renderBuyIconPack(view)
+            }
+        })
+
+        fadeIn.interpolator = AccelerateInterpolator()
+        fadeOut.duration = shortAnimTime
+        fadeIn.duration = mediumAnimTime
+
+        val set = AnimatorSet()
+        set.playSequentially(fadeOut, fadeIn)
+        set.start()
     }
 
     private fun showIcons(view: View) {
