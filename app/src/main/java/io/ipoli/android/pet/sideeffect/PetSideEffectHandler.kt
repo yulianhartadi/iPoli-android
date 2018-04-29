@@ -29,7 +29,7 @@ class PetSideEffectHandler : AppSideEffectHandler() {
         when (action) {
 //            PetAction.Load -> {
 //                val petState = state.stateFor(PetViewState::class.java)
-//                if (petState.comparedItemsType != null) {
+//                if (petState.selectedItemType != null) {
 //
 //                }
 //            }

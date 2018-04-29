@@ -158,17 +158,17 @@ object PetReducer : BaseViewStateReducer<PetViewState>() {
             }
 
             is PetAction.ItemsCompared -> {
-                val vms = subState.itemViewModels.map {
-                    it.copy(
-                        isSelected = it.item == action.item
-                    )
-                }
+//                val vms = subState.itemViewModels.map {
+//                    it.copy(
+//                        isSelected = it.item == action.item
+//                    )
+//                }
 
-                val selected = vms.first { it.isSelected }
-                val selectedItem = selected.item
-                val androidPetItem = AndroidPetItem.valueOf(selected.item.name)
+//                val selected = vms.first { it.isSelected }
+                val selectedItem = action.item
+                val androidPetItem = AndroidPetItem.valueOf(selectedItem.name)
                 val newItem = PetViewController.CompareItemViewModel(
-                    image = selected.image,
+                    image = androidPetItem.image,
                     name = androidPetItem.itemName,
                     item = selectedItem,
                     coinBonus = selectedItem.coinBonus,
@@ -194,7 +194,6 @@ object PetReducer : BaseViewStateReducer<PetViewState>() {
 
                 subState.copy(
                     type = COMPARE_ITEMS,
-                    itemViewModels = vms,
                     newItem = newItem,
                     itemComparison = PetViewController.ItemComparisonViewModel(
                         coinBonusDiff = cmpRes.coinBonus,
@@ -277,15 +276,15 @@ object PetReducer : BaseViewStateReducer<PetViewState>() {
             mood = pet.mood,
             isDead = pet.isDead,
             playerGems = player.gems,
-            foodViewModels = createFoodViewModels(food),
+            inventoryFood = food,
             boughtItems = boughtItems
         )
 
-//        if (state.comparedItemsType != null) {
+//        if (state.selectedItemType != null) {
 
 //            return changeItemTypeState(
 //                state = newState,
-//                itemType = state.comparedItemsType,
+//                itemType = state.selectedItemType,
 //                stateType = type,
 //                selectedItem = state.itemViewModels.first { it.isSelected }.item
 //            )
@@ -309,9 +308,6 @@ object PetReducer : BaseViewStateReducer<PetViewState>() {
             state.equippedMaskItem?.item,
             state.equippedBodyArmorItem?.item
         ).toSet()
-
-        val vms =
-            createPetItemViewModels(itemType, selectedItem, state.boughtItems, equippedPetItems)
 
         val equipped = when (itemType) {
             PetItemType.HAT -> {
@@ -343,10 +339,11 @@ object PetReducer : BaseViewStateReducer<PetViewState>() {
             )
         }
 
-        val selectedVM = vms.first { it.isSelected }
-        val androidPetItem = AndroidPetItem.valueOf(selectedVM.item.name)
+//        val selectedVM = vms.first { it.isSelected }
+        val androidPetItem = AndroidPetItem.valueOf(selectedItem.name)
         val newItem = PetViewController.CompareItemViewModel(
-            image = selectedVM.image,
+//            image = selectedVM.image,
+            image = androidPetItem.image,
             name = androidPetItem.itemName,
             item = selectedItem,
             coinBonus = selectedItem.coinBonus,
@@ -377,10 +374,9 @@ object PetReducer : BaseViewStateReducer<PetViewState>() {
 
         return state.copy(
             type = stateType,
-            itemViewModels = vms,
             equippedItem = equippedItem,
             newItem = newItem,
-            comparedItemsType = itemType,
+            selectedItemType = itemType,
             itemComparison = PetViewController.ItemComparisonViewModel(
                 coinBonusDiff = cmpRes.coinBonus,
                 coinBonusChange = changeOf(cmpRes.coinBonus),
@@ -412,27 +408,13 @@ object PetReducer : BaseViewStateReducer<PetViewState>() {
             else -> PetViewController.ItemComparisonViewModel.Change.NO_CHANGE
         }
 
-    private fun createPetItemViewModels(
-        petItemType: PetItemType,
-        selectedItem: PetItem,
-        boughtItems: Set<PetItem>,
-        equippedPetItems: Set<PetItem>
-    ) =
-        PetItem.values()
-            .filter { it.type == petItemType }
-            .map {
-                PetViewController.PetItemViewModel(
-                    image = AndroidPetItem.valueOf(it.name).image,
-                    gemPrice = it.gemPrice,
-                    item = it,
-                    isSelected = it == selectedItem,
-                    isBought = boughtItems.contains(it),
-                    isEquipped = equippedPetItems.contains(it)
-                )
-            }
-
     override fun defaultState() =
-        PetViewState(type = LOADING, reviveCost = 0)
+        PetViewState(
+            type = LOADING,
+            reviveCost = 0,
+            inventoryFood = emptyMap(),
+            selectedItemType = null
+        )
 
 
 }
@@ -460,17 +442,16 @@ data class PetViewState(
     @DrawableRes val newHatItemImage: Int? = null,
     @DrawableRes val newMaskItemImage: Int? = null,
     @DrawableRes val newBodyArmorItemImage: Int? = null,
-    val foodViewModels: List<PetViewController.PetFoodViewModel> = listOf(),
-    val itemViewModels: List<PetViewController.PetItemViewModel> = listOf(),
+    val inventoryFood: Map<Food, Int>,
     val equippedItem: PetViewController.CompareItemViewModel? = null,
     val newItem: PetViewController.CompareItemViewModel? = null,
     val itemComparison: PetViewController.ItemComparisonViewModel? = null,
-    val comparedItemsType: PetItemType? = null,
+    val selectedItemType: PetItemType? = null,
     val boughtItems: Set<PetItem> = setOf(),
     val playerGems: Int = 0
 ) : ViewState {
     enum class StateType {
-        LOADING, DATA_LOADED, FOOD_LIST_SHOWN, FOOD_LIST_HIDDEN, PET_FED,
+        LOADING, DATA_LOADED, PET_FED,
         FOOD_TOO_EXPENSIVE, PET_CHANGED, RENAME_PET, PET_RENAMED,
         PET_REVIVED, REVIVE_TOO_EXPENSIVE,
         ITEM_LIST_SHOWN, ITEM_LIST_HIDDEN, COMPARE_ITEMS, CHANGE_ITEM_CATEGORY,

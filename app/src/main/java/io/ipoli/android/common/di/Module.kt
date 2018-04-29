@@ -36,7 +36,6 @@ import io.ipoli.android.note.usecase.SaveQuestNoteUseCase
 import io.ipoli.android.pet.AndroidJobLowerPetStatsScheduler
 import io.ipoli.android.pet.LowerPetStatsScheduler
 import io.ipoli.android.pet.PetDialogPresenter
-import io.ipoli.android.pet.PetPresenter
 import io.ipoli.android.pet.sideeffect.PetSideEffectHandler
 import io.ipoli.android.pet.usecase.*
 import io.ipoli.android.player.AndroidLevelDownScheduler
@@ -634,7 +633,6 @@ interface UseCaseModule {
 
 interface PresenterModule {
     val reminderPickerPresenter: ReminderPickerDialogPresenter
-    val petPresenter: PetPresenter
     val petDialogPresenter: PetDialogPresenter
     val petMessagePresenter: PetMessagePresenter
     val levelUpPresenter: LevelUpPresenter
@@ -645,15 +643,8 @@ interface PresenterModule {
 class AndroidPresenterModule : PresenterModule, Injects<Module> {
 
     private val listenForPlayerChangesUseCase by required { listenForPlayerChangesUseCase }
-    private val revivePetUseCase by required { revivePetUseCase }
-    private val feedPetUseCase by required { feedPetUseCase }
     private val findPetUseCase by required { findPetUseCase }
-    private val renamePetUseCase by required { renamePetUseCase }
     private val timeUnitFormatter by required { timeUnitFormatter }
-    private val comparePetItemsUseCase by required { comparePetItemsUseCase }
-    private val buyPetItemUseCase by required { buyPetItemUseCase }
-    private val equipPetItemUseCase by required { equipPetItemUseCase }
-    private val takeOffPetItemUseCase by required { takeOffPetItemUseCase }
     private val job by required { job }
     override val reminderPickerPresenter
         get() = ReminderPickerDialogPresenter(
@@ -662,18 +653,6 @@ class AndroidPresenterModule : PresenterModule, Injects<Module> {
             job
         )
 
-    override val petPresenter
-        get() = PetPresenter(
-            listenForPlayerChangesUseCase,
-            feedPetUseCase,
-            renamePetUseCase,
-            revivePetUseCase,
-            comparePetItemsUseCase,
-            buyPetItemUseCase,
-            equipPetItemUseCase,
-            takeOffPetItemUseCase,
-            job
-        )
     override val petDialogPresenter get() = PetDialogPresenter(findPetUseCase, job)
 
     override val petMessagePresenter get() = PetMessagePresenter(listenForPlayerChangesUseCase, job)

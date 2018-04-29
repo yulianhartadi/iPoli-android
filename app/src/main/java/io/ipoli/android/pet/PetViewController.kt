@@ -221,9 +221,9 @@ class PetViewController(args: Bundle? = null) :
 
                 renderItemCategoryFabs(view, state)
 
-                view.fabHatItems.setOnClickListener {  dispatch(PetAction.ShowHeadItemListRequest)}
-                view.fabMaskItems.setOnClickListener {  dispatch(PetAction.ShowFaceItemListRequest)}
-                view.fabBodyArmorItems.setOnClickListener {  dispatch(PetAction.ShowBodyItemListRequest)}
+                view.fabHatItems.setOnClickListener { dispatch(PetAction.ShowHeadItemListRequest) }
+                view.fabMaskItems.setOnClickListener { dispatch(PetAction.ShowFaceItemListRequest) }
+                view.fabBodyArmorItems.setOnClickListener { dispatch(PetAction.ShowBodyItemListRequest) }
 
                 playCardContainerChangeAnimation(view, view.compareItemsContainer)
 
@@ -289,15 +289,15 @@ class PetViewController(args: Bundle? = null) :
         }
     }
 
-        private fun showFoodList(view: View) {
-            view.fabItems.isClickable = false
-            playShowListAnimation(view, view.foodList, view.fabFood, view.fabItems)
+    private fun showFoodList(view: View) {
+        view.fabItems.isClickable = false
+        playShowListAnimation(view, view.foodList, view.fabFood, view.fabItems)
 
-            view.fabFood.setImageResource(R.drawable.ic_close_white_24dp)
-            view.fabFood.setOnClickListener {
-                resetFoodList(view)
-            }
+        view.fabFood.setImageResource(R.drawable.ic_close_white_24dp)
+        view.fabFood.setOnClickListener {
+            resetFoodList(view)
         }
+    }
 
     private fun resetFoodList(view: View) {
         view.fabItems.isClickable = true
@@ -349,7 +349,7 @@ class PetViewController(args: Bundle? = null) :
         view.fabBodyArmorItems.backgroundTintList =
             ColorStateList.valueOf(attrData(R.attr.colorPrimary))
 
-        val itemsType = state.comparedItemsType!!
+        val itemsType = state.selectedItemType!!
 
         when (itemsType) {
             PetItemType.HAT -> view.fabHatItems.backgroundTintList =
@@ -650,7 +650,7 @@ class PetViewController(args: Bundle? = null) :
             ViewUtils.goneViews(view.hat, view.mask, view.bodyArmor)
 
             view.revive.setOnClickListener { dispatch(PetAction.Revive) }
-        } else if (state.comparedItemsType == null) {
+        } else if (state.selectedItemType == null) {
             view.statsContainer.visibility = View.VISIBLE
             view.reviveContainer.visibility = View.GONE
             view.compareItemsContainer.visibility = View.GONE
@@ -982,4 +982,36 @@ class PetViewController(args: Bundle? = null) :
         val isBought: Boolean,
         val isEquipped: Boolean
     )
+
+    private val PetViewState.foodViewModels: List<PetFoodViewModel>
+        get() = Food.values().map {
+            PetFoodViewModel(
+                it.image, it.price, it, inventoryFood[it] ?: 0
+            )
+        }
+
+    private val PetViewState.itemViewModels: List<PetItemViewModel>
+        get() {
+            if (selectedItemType == null) {
+                return emptyList()
+            }
+            val equippedPetItems = listOfNotNull(
+                equippedHatItem?.item,
+                equippedMaskItem?.item,
+                equippedBodyArmorItem?.item
+            ).toSet()
+            val selectedItem = PetItem.values().first { it.type == selectedItemType }
+            return PetItem.values()
+                .filter { it.type == selectedItemType }
+                .map {
+                    PetViewController.PetItemViewModel(
+                        image = AndroidPetItem.valueOf(it.name).image,
+                        gemPrice = it.gemPrice,
+                        item = it,
+                        isSelected = it == selectedItem,
+                        isBought = boughtItems.contains(it),
+                        isEquipped = equippedPetItems.contains(it)
+                    )
+                }
+        }
 }
