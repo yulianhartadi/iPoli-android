@@ -2,7 +2,10 @@ package io.ipoli.android.store.gem
 
 import io.ipoli.android.common.AppSideEffectHandler
 import io.ipoli.android.common.AppState
+import io.ipoli.android.common.DataLoadedAction
 import io.ipoli.android.common.redux.Action
+import io.ipoli.android.common.view.CurrencyConverterAction
+import io.ipoli.android.player.usecase.ConvertCoinsToGemsUseCase
 import io.ipoli.android.store.purchase.InAppPurchaseManager
 import io.ipoli.android.store.usecase.PurchaseGemPackUseCase
 import space.traversal.kapsule.required
@@ -12,16 +15,30 @@ import space.traversal.kapsule.required
  * on 04/24/2018.
  */
 
-class GemStoreSideEffectHandler : AppSideEffectHandler() {
+class GemPackSideEffectHandler : AppSideEffectHandler() {
 
     private val purchaseGemPackUseCase by required { purchaseGemPackUseCase }
+    private val convertCoinsToGemsUseCase by required { convertCoinsToGemsUseCase }
 
     override suspend fun doExecute(action: Action, state: AppState) {
         when (action) {
+
+            is CurrencyConverterAction.Load ->
+                action.purchaseManager.loadAll {
+                    dispatch(DataLoadedAction.GemPacksLoaded(it))
+                }
+
             is GemStoreAction.Load ->
                 action.purchaseManager.loadAll {
-                    dispatch(GemStoreAction.GemPacksLoaded(it))
+                    dispatch(DataLoadedAction.GemPacksLoaded(it))
                 }
+
+            is CurrencyConverterAction.Convert ->
+                dispatch(
+                    CurrencyConverterAction.ConvertTransactionComplete(
+                        convertCoinsToGemsUseCase.execute(ConvertCoinsToGemsUseCase.Params(action.gems))
+                    )
+                )
 
             is GemStoreAction.BuyGemPack ->
                 action.purchaseManager.purchase(
@@ -42,6 +59,7 @@ class GemStoreSideEffectHandler : AppSideEffectHandler() {
         }
     }
 
-    override fun canHandle(action: Action) = action is GemStoreAction
+    override fun canHandle(action: Action) =
+        action is GemStoreAction || action is CurrencyConverterAction
 
 }

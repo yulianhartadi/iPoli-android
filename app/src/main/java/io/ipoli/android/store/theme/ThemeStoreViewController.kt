@@ -9,11 +9,6 @@ import android.view.LayoutInflater
 import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
-import kotlinx.android.synthetic.main.calendar_hour_cell.view.*
-import kotlinx.android.synthetic.main.calendar_time_line.view.*
-import kotlinx.android.synthetic.main.controller_theme_store.view.*
-import kotlinx.android.synthetic.main.item_theme_store.view.*
-import kotlinx.android.synthetic.main.view_inventory_toolbar.view.*
 import io.ipoli.android.Constants
 import io.ipoli.android.R
 import io.ipoli.android.common.ViewUtils
@@ -23,6 +18,11 @@ import io.ipoli.android.common.view.pager.BasePagerAdapter
 import io.ipoli.android.player.Theme
 import io.ipoli.android.player.inventory.InventoryViewController
 import io.ipoli.android.quest.schedule.calendar.dayview.view.widget.CalendarDayView
+import kotlinx.android.synthetic.main.calendar_hour_cell.view.*
+import kotlinx.android.synthetic.main.calendar_time_line.view.*
+import kotlinx.android.synthetic.main.controller_theme_store.view.*
+import kotlinx.android.synthetic.main.item_theme_store.view.*
+import kotlinx.android.synthetic.main.view_inventory_toolbar.view.*
 
 /**
  * Created by Venelin Valkov <venelin@mypoli.fun>
@@ -114,7 +114,7 @@ class ThemeStoreViewController(args: Bundle? = null) :
                 showLongToast(R.string.theme_bought)
 
             ThemeStoreViewState.ThemeTooExpensive -> {
-                CurrencyConverterDialogController().showDialog(router, "currency-converter")
+                CurrencyConverterDialogController().show(router, "currency-converter")
                 showShortToast(R.string.theme_too_expensive)
             }
 

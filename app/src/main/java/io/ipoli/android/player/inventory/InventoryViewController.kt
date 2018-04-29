@@ -97,7 +97,7 @@ class InventoryViewController :
 
         if (showCurrencyConverter) {
             view.setOnClickListener {
-                CurrencyConverterDialogController().showDialog(
+                CurrencyConverterDialogController().show(
                     parentController!!.router,
                     "currency-converter"
                 )

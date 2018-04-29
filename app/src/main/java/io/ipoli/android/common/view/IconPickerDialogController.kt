@@ -16,11 +16,6 @@ import android.view.ViewGroup
 import android.view.animation.AccelerateInterpolator
 import android.widget.Toast
 import com.mikepenz.iconics.IconicsDrawable
-import kotlinx.android.synthetic.main.dialog_icon_picker.view.*
-import kotlinx.android.synthetic.main.item_icon_picker.view.*
-import kotlinx.android.synthetic.main.view_dialog_header.view.*
-import kotlinx.coroutines.experimental.channels.consumeEach
-import kotlinx.coroutines.experimental.launch
 import io.ipoli.android.R
 import io.ipoli.android.common.mvi.BaseMviPresenter
 import io.ipoli.android.common.mvi.Intent
@@ -34,6 +29,11 @@ import io.ipoli.android.player.usecase.BuyIconPackUseCase
 import io.ipoli.android.player.usecase.ListenForPlayerChangesUseCase
 import io.ipoli.android.quest.Icon
 import io.ipoli.android.quest.IconPack
+import kotlinx.android.synthetic.main.dialog_icon_picker.view.*
+import kotlinx.android.synthetic.main.item_icon_picker.view.*
+import kotlinx.android.synthetic.main.view_dialog_header.view.*
+import kotlinx.coroutines.experimental.channels.consumeEach
+import kotlinx.coroutines.experimental.launch
 import space.traversal.kapsule.required
 import kotlin.coroutines.experimental.CoroutineContext
 
@@ -223,7 +223,7 @@ class IconPickerDialogController :
             }
 
             ICON_PACK_TOO_EXPENSIVE -> {
-                CurrencyConverterDialogController().showDialog(router, "currency-converter")
+                CurrencyConverterDialogController().show(router, "currency-converter")
                 Toast.makeText(
                     view.context,
                     stringRes(R.string.icon_pack_not_enough_coins),

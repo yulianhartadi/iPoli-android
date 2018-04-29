@@ -71,7 +71,7 @@ class ChallengeListForCategoryViewController :
         ChallengeListForCategoryAction.LoadData(challengeCategory)
 
     private fun showCurrencyConverter() {
-        CurrencyConverterDialogController().showDialog(router, "currency-converter")
+        CurrencyConverterDialogController().show(router, "currency-converter")
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {

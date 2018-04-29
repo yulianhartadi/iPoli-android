@@ -25,7 +25,6 @@ import io.ipoli.android.common.redux.CoroutineSideEffectHandlerExecutor
 import io.ipoli.android.common.redux.StateStore
 import io.ipoli.android.common.text.CalendarFormatter
 import io.ipoli.android.common.view.ColorPickerPresenter
-import io.ipoli.android.common.view.CurrencyConverterPresenter
 import io.ipoli.android.common.view.IconPickerDialogPresenter
 import io.ipoli.android.common.view.PetMessagePresenter
 import io.ipoli.android.event.persistence.AndroidCalendarEventRepository
@@ -82,7 +81,7 @@ import io.ipoli.android.repeatingquest.usecase.*
 import io.ipoli.android.store.avatar.sideeffect.AvatarSideEffectHandler
 import io.ipoli.android.store.avatar.usecase.BuyAvatarUseCase
 import io.ipoli.android.store.avatar.usecase.ChangeAvatarUseCase
-import io.ipoli.android.store.gem.GemStoreSideEffectHandler
+import io.ipoli.android.store.gem.GemPackSideEffectHandler
 import io.ipoli.android.store.membership.MembershipSideEffectHandler
 import io.ipoli.android.store.membership.job.AndroidCheckMembershipStatusScheduler
 import io.ipoli.android.store.membership.job.CheckMembershipStatusScheduler
@@ -640,7 +639,6 @@ interface PresenterModule {
     val petDialogPresenter: PetDialogPresenter
     val colorPickerPresenter: ColorPickerPresenter
     val iconPickerPresenter: IconPickerDialogPresenter
-    val currencyConverterPresenter: CurrencyConverterPresenter
     val petMessagePresenter: PetMessagePresenter
     val levelUpPresenter: LevelUpPresenter
     val questCompletePresenter: QuestCompletePresenter
@@ -696,12 +694,6 @@ class AndroidPresenterModule : PresenterModule, Injects<Module> {
             buyIconPackUseCase,
             job
         )
-    override val currencyConverterPresenter
-        get() = CurrencyConverterPresenter(
-            listenForPlayerChangesUseCase,
-            convertCoinsToGemsUseCase,
-            job
-        )
 
     override val petMessagePresenter get() = PetMessagePresenter(listenForPlayerChangesUseCase, job)
     override val levelUpPresenter get() = LevelUpPresenter(listenForPlayerChangesUseCase, job)
@@ -749,8 +741,8 @@ class AndroidStateStoreModule : StateStoreModule, Injects<Module> {
                 ThemeSideEffectHandler(),
                 TagSideEffectHandler(),
                 BucketListSideEffectHandler(),
-                GemStoreSideEffectHandler(),
-                PetSideEffectHandler()
+                PetSideEffectHandler(),
+                GemPackSideEffectHandler()
             ),
             sideEffectHandlerExecutor = CoroutineSideEffectHandlerExecutor(job + CommonPool),
             middleware = setOf(

@@ -203,7 +203,7 @@ class PetViewController(args: Bundle? = null) :
             }
 
             FOOD_TOO_EXPENSIVE -> {
-                CurrencyConverterDialogController().showDialog(router, "currency-converter")
+                CurrencyConverterDialogController().show(router, "currency-converter")
                 Toast.makeText(
                     view.context,
                     stringRes(R.string.food_too_expensive),
@@ -270,7 +270,7 @@ class PetViewController(args: Bundle? = null) :
             }
 
             ITEM_TOO_EXPENSIVE -> {
-                CurrencyConverterDialogController().showDialog(router, "currency-converter")
+                CurrencyConverterDialogController().show(router, "currency-converter")
                 Toast.makeText(
                     view.context,
                     stringRes(R.string.pet_item_too_expensive),
