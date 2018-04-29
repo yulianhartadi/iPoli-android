@@ -48,20 +48,20 @@ class AddChallengeNameViewController(args: Bundle? = null) :
         )
 
         view.challengeDifficulty.onItemSelectedListener =
-            object : AdapterView.OnItemSelectedListener {
-                override fun onNothingSelected(parent: AdapterView<*>?) {
-                }
+                object : AdapterView.OnItemSelectedListener {
+                    override fun onNothingSelected(parent: AdapterView<*>?) {
+                    }
 
-                override fun onItemSelected(
-                    parent: AdapterView<*>?,
-                    view: View?,
-                    position: Int,
-                    id: Long
-                ) {
-                    dispatch(EditChallengeAction.ChangeDifficulty(position))
-                }
+                    override fun onItemSelected(
+                        parent: AdapterView<*>?,
+                        view: View?,
+                        position: Int,
+                        id: Long
+                    ) {
+                        dispatch(EditChallengeAction.ChangeDifficulty(position))
+                    }
 
-            }
+                }
 
         view.challengeTagList.layoutManager = LinearLayoutManager(activity!!)
         view.challengeTagList.adapter = EditItemTagAdapter(removeTagCallback = {
@@ -162,8 +162,8 @@ class AddChallengeNameViewController(args: Bundle? = null) :
         colorLayout(view, state)
         view.challengeColor.setOnClickListener {
             ColorPickerDialogController({
-                dispatch(EditChallengeAction.ChangeColor(it.color))
-            }, state.color.androidColor).show(
+                dispatch(EditChallengeAction.ChangeColor(it))
+            }, state.color).show(
                 router,
                 "pick_color_tag"
             )
@@ -175,7 +175,6 @@ class AddChallengeNameViewController(args: Bundle? = null) :
         state: EditChallengeViewState
     ) {
         view.challengeDifficulty.setPopupBackgroundResource(state.color.androidColor.color500)
-
     }
 
     private val EditChallengeViewState.iicon: IIcon

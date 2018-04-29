@@ -382,8 +382,8 @@ class EditQuestViewController(args: Bundle? = null) :
         colorLayout(view, state)
         view.questColor.setOnClickListener {
             ColorPickerDialogController({
-                dispatch(EditQuestAction.ChangeColor(it.color))
-            }, state.color.androidColor).show(
+                dispatch(EditQuestAction.ChangeColor(it))
+            }, state.color).show(
                 router,
                 "pick_color_tag"
             )

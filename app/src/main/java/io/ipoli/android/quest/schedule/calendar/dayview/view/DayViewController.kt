@@ -516,8 +516,8 @@ class DayViewController :
 
     private fun showColorPicker(selectedColor: AndroidColor?) {
         ColorPickerDialogController({
-            dispatch(DayViewAction.ColorPicked(it.color))
-        }, selectedColor)
+            dispatch(DayViewAction.ColorPicked(it))
+        }, selectedColor?.color)
             .show(router, "pick_color_tag")
     }
 

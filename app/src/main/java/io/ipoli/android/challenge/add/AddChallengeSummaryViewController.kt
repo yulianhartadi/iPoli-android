@@ -190,8 +190,8 @@ class AddChallengeSummaryViewController(args: Bundle? = null) :
     ) {
         view.challengeColor.setOnClickListener {
             ColorPickerDialogController({
-                dispatch(EditChallengeAction.ChangeColor(it.color))
-            }, state.color.androidColor).show(
+                dispatch(EditChallengeAction.ChangeColor(it))
+            }, state.color).show(
                 router,
                 "pick_color_tag"
             )

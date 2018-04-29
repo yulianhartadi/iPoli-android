@@ -136,8 +136,8 @@ class EditTagViewController(args: Bundle? = null) :
         colorLayout(view, state)
         view.tagColor.setOnClickListener {
             ColorPickerDialogController({
-                dispatch(EditTagAction.ChangeColor(it.color))
-            }, state.color.androidColor).show(
+                dispatch(EditTagAction.ChangeColor(it))
+            }, state.color).show(
                 router,
                 "pick_color_tag"
             )

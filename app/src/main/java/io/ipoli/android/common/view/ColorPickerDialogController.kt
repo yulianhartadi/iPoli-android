@@ -111,12 +111,12 @@ data class ColorPickerViewState(
 class ColorPickerDialogController :
     ReduxDialogController<ColorPickerAction, ColorPickerViewState, ColorPickerReducer> {
 
-    private var listener: ((AndroidColor) -> Unit)? = null
-    private var selectedColor: AndroidColor? = null
+    private var listener: ((Color) -> Unit)? = null
+    private var selectedColor: Color? = null
 
     override val reducer = ColorPickerReducer
 
-    constructor(listener: (AndroidColor) -> Unit, selectedColor: AndroidColor? = null) : this() {
+    constructor(listener: (Color) -> Unit, selectedColor: Color? = null) : this() {
         this.listener = listener
         this.selectedColor = selectedColor
     }
@@ -252,7 +252,7 @@ class ColorPickerDialogController :
             }
             if (!vm.isLocked) {
                 iv.setOnClickListener {
-                    listener?.invoke(androidColor)
+                    listener?.invoke(vm.color)
                     dismiss()
                 }
             } else {
