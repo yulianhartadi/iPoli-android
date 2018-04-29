@@ -221,7 +221,7 @@ class PetViewController(args: Bundle? = null) :
 
                 renderItemCategoryFabs(view, state)
 
-                view.fabHatItems.sendOnClick(PetIntent.ShowHeadItemList)
+                view.fabHatItems.setOnClickListener {  dispatch(PetAction.ShowHeadItemListRequest)}
                 view.fabMaskItems.sendOnClick(PetIntent.ShowFaceItemList)
                 view.fabBodyArmorItems.sendOnClick(PetIntent.ShowBodyItemList)
 

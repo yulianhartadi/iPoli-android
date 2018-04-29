@@ -44,12 +44,14 @@ sealed class PetAction : Action {
     object ShowItemListRequest : PetAction()
     object HideItemList : PetAction()
     object Revive : PetAction()
+    object ShowHeadItemListRequest : PetAction()
 
     data class RenamePet(val name: String) : PetAction()
     data class Feed(val food: Food) : PetAction()
     data class PetFedResult(val result: Result, val food: Food) : PetAction()
     data class ReviveResult(val result: RevivePetUseCase.Result) : PetAction()
     data class ShowItemList(val cmpRes: ComparePetItemsUseCase.Result) : PetAction()
+    data class ShowHeadItemList(val cmpRes: ComparePetItemsUseCase.Result) : PetAction()
 }
 
 object PetReducer : BaseViewStateReducer<PetViewState>() {
@@ -110,6 +112,15 @@ object PetReducer : BaseViewStateReducer<PetViewState>() {
             is PetAction.HideItemList -> {
                 subState.copy(
                     type = ITEM_LIST_HIDDEN
+                )
+            }
+
+            is PetAction.ShowHeadItemList -> {
+                changeItemTypeState(
+                    subState,
+                    PetItemType.HAT,
+                    CHANGE_ITEM_CATEGORY,
+                    action.cmpRes
                 )
             }
 
