@@ -9,9 +9,8 @@ import io.ipoli.android.common.mvi.ViewState
 import io.ipoli.android.common.redux.Action
 import io.ipoli.android.pet.PetViewState.StateType.*
 import io.ipoli.android.pet.usecase.ComparePetItemsUseCase
-import io.ipoli.android.pet.usecase.Result
-import io.ipoli.android.pet.usecase.RevivePetUseCase
 import io.ipoli.android.player.Player
+import timber.log.Timber
 
 /**
  * Created by Venelin Valkov <venelin@mypoli.fun>
@@ -47,15 +46,27 @@ sealed class PetAction : Action {
     object ShowHeadItemListRequest : PetAction()
     object ShowFaceItemListRequest : PetAction()
     object ShowBodyItemListRequest : PetAction()
+    object ItemTooExpensive : PetAction()
+    object ItemBought : PetAction()
+    object ReviveTooExpensive : PetAction()
+    object PetRevived : PetAction()
+    object FoodTooExpensive : PetAction()
 
     data class RenamePet(val name: String) : PetAction()
     data class Feed(val food: Food) : PetAction()
-    data class PetFedResult(val result: Result, val food: Food) : PetAction()
-    data class ReviveResult(val result: RevivePetUseCase.Result) : PetAction()
     data class ShowItemList(val cmpRes: ComparePetItemsUseCase.Result) : PetAction()
     data class ShowHeadItemList(val cmpRes: ComparePetItemsUseCase.Result) : PetAction()
     data class ShowFaceItemList(val cmpRes: ComparePetItemsUseCase.Result) : PetAction()
     data class ShowBodyArmorItemList(val cmpRes: ComparePetItemsUseCase.Result) : PetAction()
+    data class TakeItemOff(val item: PetItem) : PetAction()
+    data class EquipItem(val item: PetItem) : PetAction()
+    data class BuyItem(val item: PetItem) : PetAction()
+    data class PetFed(val pet: Pet, val food: Food, val wasFoodTasty: Boolean) : PetAction()
+    data class CompareItem(val item: PetItem) : PetAction()
+    class ItemsCompared(
+        val cmpRes: ComparePetItemsUseCase.Result,
+        val item: PetItem
+    ) : PetAction()
 }
 
 object PetReducer : BaseViewStateReducer<PetViewState>() {
@@ -87,21 +98,21 @@ object PetReducer : BaseViewStateReducer<PetViewState>() {
                 )
             }
 
-            is PetAction.PetFedResult -> {
-                when (action.result) {
-                    is Result.TooExpensive -> subState.copy(type = FOOD_TOO_EXPENSIVE)
-                    is Result.PetFed -> {
-                        val result = action.result
-                        val pet = result.player.pet
-                        subState.copy(
-                            type = PET_FED,
-                            food = action.food,
-                            wasFoodTasty = result.wasFoodTasty,
-                            mood = pet.mood,
-                            isDead = pet.isDead
-                        )
-                    }
-                }
+            is PetAction.FoodTooExpensive -> {
+                subState.copy(
+                    type = FOOD_TOO_EXPENSIVE
+                )
+            }
+
+            is PetAction.PetFed -> {
+                val pet = action.pet
+                subState.copy(
+                    type = PET_FED,
+                    food = action.food,
+                    wasFoodTasty = action.wasFoodTasty,
+                    mood = pet.mood,
+                    isDead = pet.isDead
+                )
             }
 
             is PetAction.ShowItemList -> {
@@ -146,13 +157,83 @@ object PetReducer : BaseViewStateReducer<PetViewState>() {
                 )
             }
 
-            is PetAction.ReviveResult -> {
-                subState.copy(
-                    type = when (action.result) {
-                        is RevivePetUseCase.Result.TooExpensive ->
-                            REVIVE_TOO_EXPENSIVE
-                        else -> PET_REVIVED
+            is PetAction.ItemsCompared -> {
+                val vms = subState.itemViewModels.map {
+                    it.copy(
+                        isSelected = it.item == action.item
+                    )
+                }
+
+                val selected = vms.first { it.isSelected }
+                val selectedItem = selected.item
+                val androidPetItem = AndroidPetItem.valueOf(selected.item.name)
+                val newItem = PetViewController.CompareItemViewModel(
+                    image = selected.image,
+                    name = androidPetItem.itemName,
+                    item = selectedItem,
+                    coinBonus = selectedItem.coinBonus,
+                    coinBonusChange = changeOf(selectedItem.coinBonus),
+                    xpBonus = selectedItem.experienceBonus,
+                    xpBonusChange = changeOf(selectedItem.experienceBonus),
+                    bountyBonus = selectedItem.bountyBonus,
+                    bountyBonusChange = changeOf(selectedItem.bountyBonus),
+                    isBought = subState.boughtItems.contains(selectedItem),
+                    isEquipped = selectedItem == subState.equippedItem?.item ?: false
+                )
+
+                val petItems = AndroidPetAvatar.valueOf(subState.avatar!!.name).items
+                val petCompareItemImage = petItems[newItem.item]
+                val itemType = newItem.item.type
+
+                val newItemImage: (PetItemType, PetViewController.EquipmentItemViewModel?) -> Int? =
+                    { type, equippedImage ->
+                        if (itemType == type) petCompareItemImage else equippedImage?.image
                     }
+
+                val cmpRes = action.cmpRes
+
+                subState.copy(
+                    type = COMPARE_ITEMS,
+                    itemViewModels = vms,
+                    newItem = newItem,
+                    itemComparison = PetViewController.ItemComparisonViewModel(
+                        coinBonusDiff = cmpRes.coinBonus,
+                        coinBonusChange = changeOf(cmpRes.coinBonus),
+                        xpBonusDiff = cmpRes.experienceBonus,
+                        xpBonusChange = changeOf(cmpRes.experienceBonus),
+                        bountyBonusDiff = cmpRes.bountyBonus,
+                        bountyBonusChange = changeOf(cmpRes.bountyBonus)
+                    ),
+                    newHatItemImage = newItemImage(PetItemType.HAT, subState.equippedHatItem),
+                    newMaskItemImage = newItemImage(PetItemType.MASK, subState.equippedMaskItem),
+                    newBodyArmorItemImage = newItemImage(
+                        PetItemType.BODY_ARMOR,
+                        subState.equippedBodyArmorItem
+                    )
+                )
+            }
+
+            is PetAction.PetRevived -> {
+                subState.copy(
+                    type = PET_REVIVED
+                )
+            }
+
+            is PetAction.ReviveTooExpensive -> {
+                subState.copy(
+                    type = REVIVE_TOO_EXPENSIVE
+                )
+            }
+
+            is PetAction.ItemTooExpensive -> {
+                subState.copy(
+                    type = ITEM_TOO_EXPENSIVE
+                )
+            }
+
+            is PetAction.ItemBought -> {
+                subState.copy(
+                    type = ITEM_BOUGHT
                 )
             }
 
@@ -160,6 +241,7 @@ object PetReducer : BaseViewStateReducer<PetViewState>() {
         }
 
     private fun createPlayerChangedState(player: Player, state: PetViewState): PetViewState {
+        Timber.d("AAAA player change")
         val food = player.inventory.food
         val pet = player.pet
 
