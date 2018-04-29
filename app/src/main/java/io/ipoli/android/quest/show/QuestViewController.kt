@@ -124,6 +124,7 @@ class QuestViewController : ReduxViewController<QuestAction, QuestViewState, Que
         })
 
         view.editQuest.setOnClickListener {
+            exitFullScreen()
             val fadeChangeHandler = FadeChangeHandler()
             pushWithRootRouter(
                 RouterTransaction.with(
@@ -215,6 +216,8 @@ class QuestViewController : ReduxViewController<QuestAction, QuestViewState, Que
         changeType: ControllerChangeType
     ) {
         if (changeType == ControllerChangeType.PUSH_ENTER) {
+            enterFullScreen()
+        } else if(changeType == ControllerChangeType.POP_ENTER) {
             enterFullScreen()
         } else if (changeType == ControllerChangeType.POP_EXIT) {
             exitFullScreen()
@@ -601,6 +604,7 @@ class QuestViewController : ReduxViewController<QuestAction, QuestViewState, Que
     }
 
     private fun showCompletedQuest(questId: String) {
+        exitFullScreen()
         pushWithRootRouter(RouterTransaction.with(CompletedQuestViewController(questId)))
     }
 
