@@ -17,13 +17,13 @@ import android.util.DisplayMetrics
 import android.view.*
 import android.widget.FrameLayout
 import android.widget.ImageView
-import kotlinx.android.synthetic.main.view_calendar_day.view.*
 import io.ipoli.android.R
 import io.ipoli.android.common.ViewUtils
 import io.ipoli.android.common.datetime.Time
 import io.ipoli.android.common.view.AndroidColor
 import io.ipoli.android.common.view.visible
 import io.ipoli.android.quest.schedule.calendar.dayview.view.widget.util.PositionToTimeMapper
+import kotlinx.android.synthetic.main.view_calendar_day.view.*
 import org.threeten.bp.Duration
 import org.threeten.bp.LocalDateTime
 import timber.log.Timber
@@ -250,8 +250,7 @@ class CalendarDayView : FrameLayout, StateChangeListener {
             lastY!! - topLocationOnScreen + scrollView.scrollY - unscheduledEvents.height
         val minuteHeight = fsm.state.minuteHeight
         val timeMapper = PositionToTimeMapper(minuteHeight)
-        val eventStartTime = timeMapper
-            .timeAt(yPosition, 15)
+        val eventStartTime = timeMapper.timeRoundedToStart(yPosition, 30)
 
         positionDragView(
             eventStartTime.toPosition(minuteHeight) - scrollView.scrollY + unscheduledEvents.height,

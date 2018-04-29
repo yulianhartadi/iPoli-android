@@ -8,6 +8,13 @@ import io.ipoli.android.common.datetime.Time
  */
 class PositionToTimeMapper(private val minuteHeight: Float) {
 
+    fun timeRoundedToStart(yPosition: Float, roundedToMinutes: Int = 5): Time {
+        val minutes = getMinutesFor(yPosition)
+        val remainder = Math.floor(minutes % roundedToMinutes.toDouble())
+        val minutesAfterMidnight = minutes - remainder
+        return boundMinutes(minutesAfterMidnight.toInt())
+    }
+
     fun timeAt(yPosition: Float, roundedToMinutes: Int = 5): Time {
         val minutes = getMinutesFor(yPosition)
         val remainder = minutes % roundedToMinutes.toFloat()
@@ -16,8 +23,11 @@ class PositionToTimeMapper(private val minuteHeight: Float) {
         } else {
             minutes - remainder
         }
-        return Time.of(Math.min(minutesAfterMidnight.toInt(), 23 * 60 + 59))
+        return boundMinutes(minutesAfterMidnight.toInt())
     }
+
+    private fun boundMinutes(minutes: Int) =
+        Time.of(Math.min(minutes, 23 * 60 + 59))
 
     private fun cutoff(roundedToMinutes: Int): Float =
         Math.floor(roundedToMinutes.toDouble() / 2).toFloat()
