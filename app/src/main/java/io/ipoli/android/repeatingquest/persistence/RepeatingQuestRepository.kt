@@ -176,7 +176,7 @@ class FirestoreRepeatingQuestRepository(
                 SubQuest(
                     name = dsq.name,
                     completedAtDate = dsq.completedAtDate?.startOfDayUTC,
-                    completedAtTime = dsq.completedAtTime?.let { Time.of(it.toInt()) }
+                    completedAtTime = dsq.completedAtMinute?.let { Time.of(it.toInt()) }
                 )
             },
             challengeId = rq.challengeId,
@@ -262,7 +262,7 @@ class FirestoreRepeatingQuestRepository(
             DbSubQuest().apply {
                 name = it.name
                 completedAtDate = it.completedAtDate?.startOfDayUTC()
-                completedAtTime = it.completedAtTime?.toMinuteOfDay()?.toLong()
+                completedAtMinute = it.completedAtTime?.toMinuteOfDay()?.toLong()
             }.map
         }
         rq.repeatPattern = createDbRepeatingPattern(entity.repeatPattern).map

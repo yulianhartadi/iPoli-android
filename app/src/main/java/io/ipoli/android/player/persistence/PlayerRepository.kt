@@ -212,10 +212,10 @@ class FirestorePlayerRepository(
             }.toSet(),
             productiveTimesOfDay = cPref.productiveTimesOfDay.map { TimeOfDay.valueOf(it) }.toSet(),
             workDays = cPref.workDays.map { DayOfWeek.valueOf(it) }.toSet(),
-            workStartTime = Time.of(cPref.workStartTime.toInt()),
-            workEndTime = Time.of(cPref.workEndTime.toInt()),
-            sleepStartTime = Time.of(cPref.sleepStartTime.toInt()),
-            sleepEndTime = Time.of(cPref.sleepEndTime.toInt()),
+            workStartTime = Time.of(cPref.workStartMinute.toInt()),
+            workEndTime = Time.of(cPref.workEndMinute.toInt()),
+            sleepStartTime = Time.of(cPref.sleepStartMinute.toInt()),
+            sleepEndTime = Time.of(cPref.sleepEndMinute.toInt()),
             timeFormat = Player.Preferences.TimeFormat.valueOf(cPref.timeFormat)
         )
 
@@ -223,7 +223,7 @@ class FirestorePlayerRepository(
         val achievements = ca.map {
             Player.UnlockedAchievement(
                 achievement = Achievement.valueOf(it.achievement),
-                unlockTime = Time.of(it.unlockTime.toInt()),
+                unlockTime = Time.of(it.unlockMinute.toInt()),
                 unlockDate = it.unlockDate.startOfDayUTC
             )
         }
@@ -362,10 +362,10 @@ class FirestorePlayerRepository(
             }
             it.productiveTimesOfDay = preferences.productiveTimesOfDay.map { it.name }
             it.workDays = preferences.workDays.map { it.name }
-            it.workStartTime = preferences.workStartTime.toMinuteOfDay().toLong()
-            it.workEndTime = preferences.workEndTime.toMinuteOfDay().toLong()
-            it.sleepStartTime = preferences.sleepStartTime.toMinuteOfDay().toLong()
-            it.sleepEndTime = preferences.sleepEndTime.toMinuteOfDay().toLong()
+            it.workStartMinute = preferences.workStartTime.toMinuteOfDay().toLong()
+            it.workEndMinute = preferences.workEndTime.toMinuteOfDay().toLong()
+            it.sleepStartMinute = preferences.sleepStartTime.toMinuteOfDay().toLong()
+            it.sleepEndMinute = preferences.sleepEndTime.toMinuteOfDay().toLong()
             it.timeFormat = preferences.timeFormat.name
         }
 
@@ -373,7 +373,7 @@ class FirestorePlayerRepository(
         achievements.map { a ->
             DbUnlockedAchievement().also {
                 it.achievement = a.achievement.name
-                it.unlockTime = a.unlockTime.toMinuteOfDay().toLong()
+                it.unlockMinute = a.unlockTime.toMinuteOfDay().toLong()
                 it.unlockDate = a.unlockDate.startOfDayUTC()
             }.map
         }

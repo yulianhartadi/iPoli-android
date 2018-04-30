@@ -76,10 +76,10 @@ data class DbPreferences(val map: MutableMap<String, Any?> = mutableMapOf()) {
     var syncCalendars: List<MutableMap<String, Any?>> by map
     var productiveTimesOfDay: List<String> by map
     var workDays: List<String> by map
-    var workStartTime: Long by map
-    var workEndTime: Long by map
-    var sleepStartTime: Long by map
-    var sleepEndTime: Long by map
+    var workStartMinute: Long by map
+    var workEndMinute: Long by map
+    var sleepStartMinute: Long by map
+    var sleepEndMinute: Long by map
     var timeFormat: String by map
 }
 
@@ -90,6 +90,6 @@ data class DbSyncCalendar(val map: MutableMap<String, Any?> = mutableMapOf()) {
 
 data class DbUnlockedAchievement(val map: MutableMap<String, Any?> = mutableMapOf()) {
     var achievement: String by map
-    var unlockTime: Long by map
+    var unlockMinute: Long by map
     var unlockDate: Long by map
 }

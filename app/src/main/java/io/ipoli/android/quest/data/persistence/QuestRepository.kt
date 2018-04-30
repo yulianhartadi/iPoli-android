@@ -136,7 +136,7 @@ data class DbQuest(override val map: MutableMap<String, Any?> = mutableMapOf()) 
 data class DbSubQuest(val map: MutableMap<String, Any?> = mutableMapOf()) {
     var name: String by map
     var completedAtDate: Long? by map
-    var completedAtTime: Long? by map
+    var completedAtMinute: Long? by map
 }
 
 data class DbReminder(val map: MutableMap<String, Any?> = mutableMapOf()) {
@@ -660,7 +660,7 @@ class FirestoreQuestRepository(
                 SubQuest(
                     name = dsq.name,
                     completedAtDate = dsq.completedAtDate?.startOfDayUTC,
-                    completedAtTime = dsq.completedAtTime?.let { Time.of(it.toInt()) }
+                    completedAtTime = dsq.completedAtMinute?.let { Time.of(it.toInt()) }
                 )
             },
             timeRanges = cq.timeRanges.map {
@@ -699,7 +699,7 @@ class FirestoreQuestRepository(
             DbSubQuest().apply {
                 name = it.name
                 completedAtDate = it.completedAtDate?.startOfDayUTC()
-                completedAtTime = it.completedAtTime?.toMinuteOfDay()?.toLong()
+                completedAtMinute = it.completedAtTime?.toMinuteOfDay()?.toLong()
             }.map
         }
         q.experience = entity.experience?.toLong()
