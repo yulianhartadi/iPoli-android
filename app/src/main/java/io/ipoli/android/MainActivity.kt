@@ -121,11 +121,7 @@ class MainActivity : AppCompatActivity(), Injects<Module>, SideEffectHandler<App
             showPet()
         } else if (!router.hasRootController()) {
             checkForBatteryOptimization()
-//                        router.setRoot(RouterTransaction.with(RepeatingQuestViewController("")))
             router.setRoot(RouterTransaction.with(HomeViewController()))
-//            router.setRoot(RouterTransaction.with(AddRepeatingQuestViewController()))
-//            router.setRoot(RouterTransaction.with(NoteDialogViewController(note = "")))
-//                        router.setRoot(RouterTransaction.with(PowerUpStoreViewController()))
         }
 
         stateStore.dispatch(LoadDataAction.Preload)
