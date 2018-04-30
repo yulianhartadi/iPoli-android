@@ -171,7 +171,10 @@ class AddQuestViewController(args: Bundle? = null) :
             VALIDATION_ERROR_EMPTY_NAME ->
                 view.questName.error = stringRes(R.string.think_of_a_name)
 
-            QUEST_SAVED -> resetForm(view)
+            QUEST_SAVED -> {
+                showShortToast(R.string.quest_added)
+                resetForm(view)
+            }
 
             else -> {
             }
