@@ -126,6 +126,7 @@ class AuthViewController(args: Bundle? = null) :
     override fun render(state: AuthViewState, view: View) {
 
         view.startJourney.setOnClickListener {
+            view.startJourney.isClickable = false
             dispatch(AuthAction.CompleteSetup(view.username.text.toString(), state.playerAvatar))
         }
 
@@ -193,6 +194,7 @@ class AuthViewController(args: Bundle? = null) :
             }
 
             USERNAME_VALIDATION_ERROR -> {
+                view.startJourney.isClickable = true
                 view.usernameValidationHint.text = state.usernameErrorMessage(activity!!)
                 view.username.setCompoundDrawablesRelativeWithIntrinsicBounds(
                     usernameIcon, null, errorIcon, null
@@ -200,6 +202,7 @@ class AuthViewController(args: Bundle? = null) :
             }
 
             USERNAME_VALID -> {
+                view.startJourney.isClickable = true
                 view.usernameValidationHint.text = stringRes(R.string.valid_username)
                 view.username.setCompoundDrawablesRelativeWithIntrinsicBounds(
                     usernameIcon, null, validIcon, null
