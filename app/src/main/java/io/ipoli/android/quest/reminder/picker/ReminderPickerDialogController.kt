@@ -11,12 +11,13 @@ import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import io.ipoli.android.R
 import io.ipoli.android.common.ViewUtils
-import io.ipoli.android.common.view.MviDialogController
+import io.ipoli.android.common.view.ReduxDialogController
 import io.ipoli.android.common.view.stringRes
 import io.ipoli.android.pet.AndroidPetAvatar
+import io.ipoli.android.quest.reminder.formatter.ReminderTimeFormatter
+import io.ipoli.android.quest.reminder.formatter.TimeUnitFormatter
 import kotlinx.android.synthetic.main.dialog_reminder_picker.view.*
 import kotlinx.android.synthetic.main.view_dialog_header.view.*
-import space.traversal.kapsule.required
 
 typealias TimeUnitConverter = java.util.concurrent.TimeUnit
 
@@ -36,13 +37,13 @@ enum class TimeUnit(val minutes: Long) {
 data class ReminderViewModel(val message: String, val minutesFromStart: Long)
 
 class ReminderPickerDialogController :
-    MviDialogController<ReminderPickerViewState, ReminderPickerDialogController, ReminderPickerDialogPresenter, ReminderPickerIntent> {
+    ReduxDialogController<ReminderPickerAction, ReminderPickerViewState, ReminderPickerReducer> {
 
     private var listener: ReminderPickedListener? = null
 
     private var reminder: ReminderViewModel? = null
 
-    private val presenter by required { reminderPickerPresenter }
+    override val reducer = ReminderPickerReducer
 
     constructor(
         listener: ReminderPickedListener,
@@ -53,8 +54,6 @@ class ReminderPickerDialogController :
     }
 
     constructor(args: Bundle? = null) : super(args)
-
-    override fun createPresenter() = presenter
 
     override fun onHeaderViewCreated(headerView: View) {
         headerView.dialogHeaderTitle.setText(R.string.reminder_dialog_title)
@@ -78,7 +77,7 @@ class ReminderPickerDialogController :
                 }
 
                 override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-                    send(ChangeMessageIntent(s.toString()))
+                    dispatch(ReminderPickerAction.ChangeMessage(s.toString()))
                 }
 
             })
@@ -93,7 +92,7 @@ class ReminderPickerDialogController :
                     position: Int,
                     id: Long
                 ) {
-                    send(ChangePredefinedTimeIntent(position))
+                    dispatch(ReminderPickerAction.ChangePredefinedTime(position))
                 }
             }
 
@@ -107,7 +106,7 @@ class ReminderPickerDialogController :
                     position: Int,
                     id: Long
                 ) {
-                    send(ChangeTimeUnitIntent(position))
+                    dispatch(ReminderPickerAction.ChangeTimeUnit(position))
                 }
 
             }
@@ -125,7 +124,7 @@ class ReminderPickerDialogController :
                 }
 
                 override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-                    send(ChangeCustomTimeIntent(s.toString()))
+                    dispatch(ReminderPickerAction.ChangeCustomTime(s.toString()))
                 }
 
             })
@@ -149,15 +148,12 @@ class ReminderPickerDialogController :
     override fun onDialogCreated(dialog: AlertDialog, contentView: View) {
         dialog.setOnShowListener {
             dialog.getButton(DialogInterface.BUTTON_POSITIVE).setOnClickListener {
-                send(PickReminderIntent)
+                dispatch(ReminderPickerAction.PickReminder)
             }
         }
     }
 
-    override fun onAttach(view: View) {
-        super.onAttach(view)
-        send(LoadReminderDataIntent(reminder))
-    }
+    override fun onCreateLoadAction() = ReminderPickerAction.Load(reminder)
 
     override fun render(state: ReminderPickerViewState, view: View) {
 
@@ -229,7 +225,7 @@ class ReminderPickerDialogController :
 
             ReminderPickerViewState.StateType.FINISHED -> {
                 listener?.onReminderPicked(state.viewModel!!)
-                dismissDialog()
+                dismiss()
             }
 
             ReminderPickerViewState.StateType.TIME_VALUE_VALIDATION_ERROR -> {
@@ -246,4 +242,10 @@ class ReminderPickerDialogController :
     interface ReminderPickedListener {
         fun onReminderPicked(reminder: ReminderViewModel?)
     }
+
+    private val ReminderPickerViewState.timeUnits
+        get() = TimeUnitFormatter(activity!!).customTimeUnits
+
+    private val ReminderPickerViewState.predefinedValues: List<String>
+        get() = ReminderTimeFormatter.predefinedTimes(activity!!)
 }

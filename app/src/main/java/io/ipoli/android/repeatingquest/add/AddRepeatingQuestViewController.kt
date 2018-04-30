@@ -767,7 +767,7 @@ class AddRepeatingQuestViewController(args: Bundle? = null) :
                             dispatch(EditRepeatingQuestAction.ChangeReminder(reminder))
                         }
                     }, state.reminder
-                ).showDialog(router, "pick_reminder_tag")
+                ).show(router, "pick_reminder_tag")
             }
         }
 

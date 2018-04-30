@@ -502,7 +502,7 @@ class DayViewController :
                 dispatch(DayViewAction.ReminderPicked(reminder))
             }
         }, selectedReminder)
-            .showDialog(router, "reminder-picker")
+            .show(router, "reminder-picker")
     }
 
     private fun showIconPicker(selectedIcon: AndroidIcon?) {

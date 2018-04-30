@@ -1,12 +1,10 @@
 package io.ipoli.android.challenge.predefined
 
-import io.ipoli.android.challenge.predefined.PersonalizeChallengeViewController.ChallengeQuestViewModel
 import io.ipoli.android.challenge.predefined.PersonalizeChallengeViewState.StateType.*
 import io.ipoli.android.challenge.predefined.entity.PredefinedChallenge
 import io.ipoli.android.challenge.predefined.entity.PredefinedChallengeData
 import io.ipoli.android.common.AppState
 import io.ipoli.android.common.BaseViewStateReducer
-import io.ipoli.android.common.mvi.Intent
 import io.ipoli.android.common.mvi.ViewState
 import io.ipoli.android.common.redux.Action
 
@@ -14,12 +12,6 @@ import io.ipoli.android.common.redux.Action
  * Created by Venelin Valkov <venelin@mypoli.fun>
  * on 12/29/17.
  */
-
-sealed class PersonalizeChallengeIntent : Intent {
-    data class LoadData(val challenge: PredefinedChallenge) : PersonalizeChallengeIntent()
-    data class AcceptChallenge(val challenge: PredefinedChallenge) : PersonalizeChallengeIntent()
-    data class ToggleSelected(val quest: ChallengeQuestViewModel) : PersonalizeChallengeIntent()
-}
 
 sealed class PersonalizeChallengeAction : Action {
     data class Load(val challenge: PredefinedChallenge) : PersonalizeChallengeAction()

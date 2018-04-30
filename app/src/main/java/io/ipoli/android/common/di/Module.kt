@@ -57,7 +57,6 @@ import io.ipoli.android.quest.job.AndroidJobReminderScheduler
 import io.ipoli.android.quest.job.QuestCompleteScheduler
 import io.ipoli.android.quest.job.ReminderScheduler
 import io.ipoli.android.quest.reminder.formatter.TimeUnitFormatter
-import io.ipoli.android.quest.reminder.picker.ReminderPickerDialogPresenter
 import io.ipoli.android.quest.schedule.agenda.sideeffect.AgendaSideEffectHandler
 import io.ipoli.android.quest.schedule.agenda.usecase.CreateAgendaItemsUseCase
 import io.ipoli.android.quest.schedule.agenda.usecase.FindAgendaDatesUseCase
@@ -632,7 +631,6 @@ interface UseCaseModule {
 }
 
 interface PresenterModule {
-    val reminderPickerPresenter: ReminderPickerDialogPresenter
     val petDialogPresenter: PetDialogPresenter
     val petMessagePresenter: PetMessagePresenter
     val levelUpPresenter: LevelUpPresenter
@@ -646,12 +644,6 @@ class AndroidPresenterModule : PresenterModule, Injects<Module> {
     private val findPetUseCase by required { findPetUseCase }
     private val timeUnitFormatter by required { timeUnitFormatter }
     private val job by required { job }
-    override val reminderPickerPresenter
-        get() = ReminderPickerDialogPresenter(
-            timeUnitFormatter,
-            findPetUseCase,
-            job
-        )
 
     override val petDialogPresenter get() = PetDialogPresenter(findPetUseCase, job)
 

@@ -429,7 +429,7 @@ class EditQuestViewController(args: Bundle? = null) :
                 override fun onReminderPicked(reminder: ReminderViewModel?) {
                     dispatch(EditQuestAction.ChangeReminder(reminder))
                 }
-            }, state.reminder).showDialog(router, "pick_reminder_tag")
+            }, state.reminder).show(router, "pick_reminder_tag")
         }
 
     }
