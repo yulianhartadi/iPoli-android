@@ -10,6 +10,7 @@ import android.preference.PreferenceManager
 import android.provider.Settings
 import android.support.design.widget.Snackbar
 import android.support.v7.app.AppCompatActivity
+import android.util.TypedValue
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
@@ -62,9 +63,13 @@ class MainActivity : AppCompatActivity(), Injects<Module>, SideEffectHandler<App
         setTheme(playerTheme)
         setContentView(R.layout.activity_main)
         if (!shouldShowQuickAdd(intent)) {
-            getWindow().setBackgroundDrawableResource(R.color.md_green_200)
+            val backgroundColor = TypedValue().let {
+                theme.resolveAttribute(android.R.attr.colorBackground, it, true)
+                it.resourceId
+            }
+            window.setBackgroundDrawableResource(backgroundColor)
             findViewById<ViewGroup>(R.id.activityContainer)
-                .setBackgroundResource(R.color.md_green_200)
+                .setBackgroundResource(backgroundColor)
         }
 
         if (BuildConfig.DEBUG) {

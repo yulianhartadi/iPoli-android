@@ -111,7 +111,7 @@ class AddQuestViewController(args: Bundle? = null) :
 
     override fun colorLayoutBars() {
         if(isFullscreen) {
-            activity?.window?.statusBarColor = colorRes(R.color.md_dark_text_38)
+            activity?.window?.statusBarColor = colorRes(android.R.color.transparent)
         }
     }
 
