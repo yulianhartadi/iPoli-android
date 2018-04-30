@@ -58,10 +58,29 @@
         android:id="@+id/unscheduledQuestChallengeIndicator"
         android:layout_width="24dp"
         android:layout_height="24dp"
+        android:layout_marginEnd="8dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/questTagName"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/ic_sword_black_24dp" />
+
+    <TextView
+        android:id="@+id/questTagName"
+        android:layout_width="0dp"
+        android:layout_height="16dp"
+        android:layout_gravity="center_vertical"
         android:layout_marginEnd="16dp"
+        android:drawablePadding="4dp"
+        android:drawableStart="@drawable/tag_indicator"
+        android:ellipsize="end"
+        android:includeFontPadding="false"
+        android:maxLines="1"
+        android:textAppearance="@style/TextAppearance.AppCompat.Body1"
+        android:textColor="@color/md_dark_text_54"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@drawable/ic_sword_black_24dp" />
+        app:layout_constraintWidth_max="88dp"
+        tools:text="texty " />
 
 </android.support.constraint.ConstraintLayout>

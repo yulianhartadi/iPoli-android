@@ -7,6 +7,7 @@ import android.app.DatePickerDialog
 import android.app.Dialog
 import android.content.Context
 import android.graphics.drawable.ColorDrawable
+import android.graphics.drawable.GradientDrawable
 import android.os.Bundle
 import android.support.annotation.ColorRes
 import android.support.v4.content.ContextCompat
@@ -18,6 +19,7 @@ import android.text.TextWatcher
 import android.text.style.StrikethroughSpan
 import android.util.TypedValue
 import android.view.*
+import android.widget.TextView
 import com.bluelinelabs.conductor.RouterTransaction
 import com.bluelinelabs.conductor.changehandler.FadeChangeHandler
 import com.mikepenz.iconics.IconicsDrawable
@@ -815,6 +817,8 @@ class DayViewController :
         pushWithRootRouter(RouterTransaction.with(CompletedQuestViewController(questId)))
     }
 
+    data class TagViewModel(val name: String, @ColorRes val color: Int)
+
     data class UnscheduledQuestViewModel(
         override val id: String,
         val name: String,
@@ -827,7 +831,8 @@ class DayViewController :
         val reminder: ReminderViewModel? = null,
         val repeatingQuestId: String?,
         val challengeId: String?,
-        val isPlaceholder: Boolean
+        val isPlaceholder: Boolean,
+        val tags: List<TagViewModel>
     ) : UnscheduledEvent {
         val isRepeating: Boolean
             get() = repeatingQuestId != null && repeatingQuestId.isNotEmpty()
@@ -844,29 +849,36 @@ class DayViewController :
             (R.layout.item_unscheduled_quest, items.toMutableList(), calendarDayView) {
 
         override fun ViewHolder.bind(
-            viewModel: UnscheduledQuestViewModel,
+            vm: UnscheduledQuestViewModel,
             calendarDayView: CalendarDayView
         ) {
             itemView.setOnLongClickListener {
-                if (viewModel.isStarted) {
+                if (vm.isStarted) {
                     showShortToast(R.string.validation_timer_running)
                 } else {
-                    dispatch(DayViewAction.StartEditUnscheduledQuest(viewModel))
+                    dispatch(DayViewAction.StartEditUnscheduledQuest(vm))
                     calendarDayView.startEventRescheduling(events[adapterPosition])
                 }
                 true
             }
 
             (itemView.unscheduledCheckBox as TintableCompoundButton).supportButtonTintList =
-                    tintList(viewModel.backgroundColor.color500, itemView.context)
+                    tintList(vm.backgroundColor.color500, itemView.context)
 
-            if (viewModel.isCompleted) {
-                val span = SpannableString(viewModel.name)
-                span.setSpan(StrikethroughSpan(), 0, viewModel.name.length, 0)
+            if (vm.tags.isNotEmpty()) {
+                itemView.questTagName.visible()
+                renderTag(itemView.questTagName, vm.tags.first())
+            } else {
+                itemView.questTagName.gone()
+            }
+
+            if (vm.isCompleted) {
+                val span = SpannableString(vm.name)
+                span.setSpan(StrikethroughSpan(), 0, vm.name.length, 0)
                 itemView.unscheduledQuestName.text = span
                 itemView.unscheduledCheckBox.isChecked = true
 
-                viewModel.icon?.let {
+                vm.icon?.let {
                     val icon = IconicsDrawable(itemView.context)
                         .icon(it.icon)
                         .colorRes(R.color.md_dark_text_38)
@@ -876,19 +888,19 @@ class DayViewController :
                 }
 
                 itemView.setOnClickListener {
-                    showCompletedQuest(viewModel.id)
+                    showCompletedQuest(vm.id)
                 }
 
             } else {
-                itemView.unscheduledQuestName.text = viewModel.name
+                itemView.unscheduledQuestName.text = vm.name
                 itemView.unscheduledQuestName.setTextColor(
                     ContextCompat.getColor(
                         itemView.context,
-                        viewModel.textColor
+                        vm.textColor
                     )
                 )
 
-                viewModel.icon?.let {
+                vm.icon?.let {
                     val icon = IconicsDrawable(itemView.context)
                         .icon(it.icon)
                         .colorRes(it.color)
@@ -897,33 +909,53 @@ class DayViewController :
                     itemView.unscheduledQuestIcon.setImageDrawable(icon)
                 }
 
-                if (viewModel.isPlaceholder) {
+                if (vm.isPlaceholder) {
                     itemView.setOnClickListener(null)
                     itemView.unscheduledCheckBox.visible = false
                 } else {
 
                     itemView.unscheduledCheckBox.visible = true
                     itemView.setOnClickListener {
-                        showQuest(viewModel.id)
+                        showQuest(vm.id)
                     }
                 }
 
             }
 
             itemView.unscheduledQuestRepeatIndicator.visibility =
-                    if (viewModel.isRepeating) View.VISIBLE else View.GONE
+                    if (vm.isRepeating) View.VISIBLE else View.GONE
 
             itemView.unscheduledQuestChallengeIndicator.visibility =
-                    if (viewModel.isFromChallenge) View.VISIBLE else View.GONE
+                    if (vm.isFromChallenge) View.VISIBLE else View.GONE
 
             itemView.unscheduledCheckBox.setOnCheckedChangeListener { _, checked ->
                 if (checked) {
-                    dispatch(DayViewAction.CompleteQuest(viewModel.id, viewModel.isStarted))
+                    dispatch(DayViewAction.CompleteQuest(vm.id, vm.isStarted))
                 } else {
-                    dispatch(DayViewAction.UndoCompleteQuest(viewModel.id))
+                    dispatch(DayViewAction.UndoCompleteQuest(vm.id))
                 }
 
             }
+        }
+
+        private fun renderTag(view: TextView, tag: TagViewModel) {
+            view.text = tag.name
+            TextViewCompat.setTextAppearance(
+                view.questTagName,
+                R.style.TextAppearance_AppCompat_Caption
+            )
+
+            val indicator = view.questTagName.compoundDrawablesRelative[0] as GradientDrawable
+            indicator.mutate()
+            val size = ViewUtils.dpToPx(8f, view.context).toInt()
+            indicator.setSize(size, size)
+            indicator.setColor(colorRes(tag.color))
+            view.questTagName.setCompoundDrawablesRelativeWithIntrinsicBounds(
+                indicator,
+                null,
+                null,
+                null
+            )
         }
 
         private fun tintList(@ColorRes color: Int, context: Context) =
@@ -950,7 +982,13 @@ class DayViewController :
                 isStarted = it.isStarted,
                 repeatingQuestId = it.repeatingQuestId,
                 challengeId = it.challengeId,
-                isPlaceholder = it.id.isEmpty()
+                isPlaceholder = it.id.isEmpty(),
+                tags = it.tags.map {
+                    TagViewModel(
+                        it.name,
+                        AndroidColor.valueOf(it.color.name).color500
+                    )
+                }
             )
         }
 
