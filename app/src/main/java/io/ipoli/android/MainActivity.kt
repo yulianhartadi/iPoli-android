@@ -113,12 +113,11 @@ class MainActivity : AppCompatActivity(), Injects<Module>, SideEffectHandler<App
 
     private fun startApp() {
 
-        val startIntent = intent
-        if (startIntent != null && startIntent.action == ACTION_SHOW_TIMER) {
+        if (intent.action == ACTION_SHOW_TIMER) {
             showTimer(intent)
-        } else if (shouldShowQuickAdd(startIntent)) {
+        } else if (shouldShowQuickAdd(intent)) {
             showQuickAdd()
-        } else if (startIntent != null && startIntent.action == ACTION_SHOW_PET) {
+        } else if (intent.action == ACTION_SHOW_PET) {
             showPet()
         } else if (!router.hasRootController()) {
             checkForBatteryOptimization()
@@ -133,7 +132,7 @@ class MainActivity : AppCompatActivity(), Injects<Module>, SideEffectHandler<App
     }
 
     private fun shouldShowQuickAdd(startIntent: Intent) =
-        startIntent != null && startIntent.action == ACTION_SHOW_QUICK_ADD
+        startIntent.action == ACTION_SHOW_QUICK_ADD
 
     private fun incrementAppRun() {
         val pm = PreferenceManager.getDefaultSharedPreferences(this)

@@ -72,7 +72,6 @@ class BuyPowerUpDialogController :
     override fun onDialogCreated(dialog: AlertDialog, contentView: View) {
         dialog.setOnShowListener {
             setPositiveButtonListener {
-                dismiss()
                 dispatch(BuyPowerUpAction.Buy(powerUp))
             }
             setNegativeButtonListener {
