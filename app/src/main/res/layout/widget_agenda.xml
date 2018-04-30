@@ -47,7 +47,6 @@
             android:paddingBottom="16dp"
             android:paddingEnd="8dp"
             android:paddingStart="8dp"
-            android:visibility="gone"
             android:src="@drawable/ic_pets_white_24dp" />
 
         <ImageButton

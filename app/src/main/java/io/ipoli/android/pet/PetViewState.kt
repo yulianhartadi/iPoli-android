@@ -1,5 +1,6 @@
 package io.ipoli.android.pet
 
+import io.ipoli.android.Constants
 import io.ipoli.android.common.AppState
 import io.ipoli.android.common.BaseViewStateReducer
 import io.ipoli.android.common.DataLoadedAction
@@ -252,7 +253,7 @@ object PetReducer : BaseViewStateReducer<PetViewState>() {
     override fun defaultState() =
         PetViewState(
             type = LOADING,
-            reviveCost = 0,
+            reviveCost = Constants.REVIVE_PET_GEM_PRICE,
             inventoryFood = emptyMap(),
             selectedItemType = null,
             equippedHat = null,

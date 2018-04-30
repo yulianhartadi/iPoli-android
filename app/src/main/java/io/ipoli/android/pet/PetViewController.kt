@@ -34,6 +34,7 @@ import kotlinx.android.synthetic.main.controller_pet.view.*
 import kotlinx.android.synthetic.main.item_pet_food.view.*
 import kotlinx.android.synthetic.main.item_pet_item.view.*
 import kotlinx.android.synthetic.main.view_inventory_toolbar.view.*
+import timber.log.Timber
 
 
 /**
@@ -148,6 +149,7 @@ class PetViewController(args: Bundle? = null) :
     }
 
     override fun render(state: PetViewState, view: View) {
+        Timber.d("AAAA state $state")
         when (state.type) {
             DATA_LOADED -> {
                 renderPet(state, view)
@@ -1053,15 +1055,17 @@ class PetViewController(args: Bundle? = null) :
         return toItemViewModel(equippedItem)?.image
     }
 
-    private val PetViewState.itemComparison: ItemComparisonViewModel
-        get() = ItemComparisonViewModel(
-            coinBonusDiff = comparePetItemsResult!!.coinBonus,
-            coinBonusChange = changeOf(comparePetItemsResult.coinBonus),
-            xpBonusDiff = comparePetItemsResult.experienceBonus,
-            xpBonusChange = changeOf(comparePetItemsResult.experienceBonus),
-            bountyBonusDiff = comparePetItemsResult.bountyBonus,
-            bountyBonusChange = changeOf(comparePetItemsResult.bountyBonus)
-        )
+    private val PetViewState.itemComparison: ItemComparisonViewModel?
+        get() = comparePetItemsResult?.let {
+            ItemComparisonViewModel(
+                coinBonusDiff = it.coinBonus,
+                coinBonusChange = changeOf(it.coinBonus),
+                xpBonusDiff = it.experienceBonus,
+                xpBonusChange = changeOf(it.experienceBonus),
+                bountyBonusDiff = it.bountyBonus,
+                bountyBonusChange = changeOf(it.bountyBonus)
+            )
+        }
 
     private val PetViewState.compareEquippedItemViewModel: CompareItemViewModel
         get() {
@@ -1082,7 +1086,7 @@ class PetViewController(args: Bundle? = null) :
         }
 
     private val PetViewState.compareNewItemViewModel: CompareItemViewModel?
-        get() = compareNewItem?.androidItem!!.let {
+        get() = compareNewItem?.androidItem?.let {
             val equippedPetItems = listOfNotNull(
                 equippedHat,
                 equippedMask,
