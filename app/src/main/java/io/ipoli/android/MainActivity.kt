@@ -9,7 +9,6 @@ import android.os.PowerManager
 import android.preference.PreferenceManager
 import android.provider.Settings
 import android.support.design.widget.Snackbar
-import android.support.v4.content.ContextCompat.startActivity
 import android.support.v7.app.AppCompatActivity
 import android.view.View
 import android.view.ViewGroup
@@ -29,7 +28,6 @@ import io.ipoli.android.common.redux.SideEffectHandler
 import io.ipoli.android.common.view.playerTheme
 import io.ipoli.android.pet.PetViewController
 import io.ipoli.android.player.auth.AuthViewController
-import io.ipoli.android.player.auth.saga.AuthSideEffectHandler
 import io.ipoli.android.quest.schedule.addquest.AddQuestViewController
 import io.ipoli.android.quest.show.QuestViewController
 import io.ipoli.android.store.membership.MembershipViewController
@@ -63,6 +61,11 @@ class MainActivity : AppCompatActivity(), Injects<Module>, SideEffectHandler<App
         super.onCreate(savedInstanceState)
         setTheme(playerTheme)
         setContentView(R.layout.activity_main)
+        if (!shouldShowQuickAdd(intent)) {
+            getWindow().setBackgroundDrawableResource(R.color.md_green_200)
+            findViewById<ViewGroup>(R.id.activityContainer)
+                .setBackgroundResource(R.color.md_green_200)
+        }
 
         if (BuildConfig.DEBUG) {
 
@@ -108,7 +111,7 @@ class MainActivity : AppCompatActivity(), Injects<Module>, SideEffectHandler<App
         val startIntent = intent
         if (startIntent != null && startIntent.action == ACTION_SHOW_TIMER) {
             showTimer(intent)
-        } else if (startIntent != null && startIntent.action == ACTION_SHOW_QUICK_ADD) {
+        } else if (shouldShowQuickAdd(startIntent)) {
             showQuickAdd()
         } else if (startIntent != null && startIntent.action == ACTION_SHOW_PET) {
             showPet()
@@ -123,6 +126,9 @@ class MainActivity : AppCompatActivity(), Injects<Module>, SideEffectHandler<App
 
         stateStore.dispatch(LoadDataAction.Preload)
     }
+
+    private fun shouldShowQuickAdd(startIntent: Intent) =
+        startIntent != null && startIntent.action == ACTION_SHOW_QUICK_ADD
 
     private fun incrementAppRun() {
         val pm = PreferenceManager.getDefaultSharedPreferences(this)
@@ -150,8 +156,6 @@ class MainActivity : AppCompatActivity(), Injects<Module>, SideEffectHandler<App
     }
 
     private fun showQuickAdd() {
-        findViewById<ViewGroup>(R.id.activityContainer)
-            .setBackgroundResource(android.R.color.transparent)
         router.setRoot(
             RouterTransaction.with(
                 AddQuestViewController(
