@@ -35,6 +35,7 @@ object GemStoreReducer : BaseViewStateReducer<GemStoreViewState>() {
                 subState.copy(
                     type = GemStoreViewState.StateType.PLAYER_CHANGED,
                     isGiftPurchased = state.dataState.player!!.hasPet(PetAvatar.DOG)
+
                 )
 
             is DataLoadedAction.PlayerChanged ->
@@ -84,6 +85,7 @@ data class GemStoreViewState(
     val playerGems: Int = 0,
     val isGiftPurchased: Boolean = false,
     val gemPacks: List<GemPack> = listOf()
+//    val gems: Int
 ) : ViewState {
     enum class StateType {
         LOADING,

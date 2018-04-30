@@ -14,6 +14,7 @@ import io.ipoli.android.common.redux.android.ReduxViewController
 import io.ipoli.android.common.view.CurrencyConverterDialogController
 import io.ipoli.android.common.view.gone
 import kotlinx.android.synthetic.main.controller_inventory.view.*
+import java.util.*
 
 /**
  * Created by Venelin Valkov <venelin@mypoli.fun>
@@ -25,9 +26,9 @@ sealed class InventoryViewState : ViewState {
     data class Changed(val gems: Int, val coins: Int) : InventoryViewState()
 }
 
-object InventoryReducer : BaseViewStateReducer<InventoryViewState>() {
+class InventoryReducer(private val someKey: String) : BaseViewStateReducer<InventoryViewState>() {
 
-    override val stateKey = key<InventoryViewState>()
+    override val stateKey = key<InventoryViewState>() + someKey
 
     override fun reduce(
         state: AppState,
@@ -62,7 +63,7 @@ class InventoryViewController :
     private var showGems: Boolean = true
     private var showCoins: Boolean = false
 
-    override val reducer = InventoryReducer
+    override val reducer = InventoryReducer(UUID.randomUUID().toString())
 
     constructor(args: Bundle? = null) : super(args)
 

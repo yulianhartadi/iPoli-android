@@ -21,6 +21,7 @@ import android.widget.ProgressBar
 import android.widget.TextView
 import android.widget.Toast
 import com.bluelinelabs.conductor.RouterTransaction
+import com.bluelinelabs.conductor.changehandler.FadeChangeHandler
 import com.bluelinelabs.conductor.changehandler.VerticalChangeHandler
 import com.mikepenz.iconics.IconicsDrawable
 import com.mikepenz.ionicons_typeface_library.Ionicons
@@ -29,6 +30,7 @@ import io.ipoli.android.common.ViewUtils
 import io.ipoli.android.common.redux.android.ReduxViewController
 import io.ipoli.android.common.view.*
 import io.ipoli.android.pet.PetViewState.StateType.*
+import io.ipoli.android.pet.store.PetStoreViewController
 import io.ipoli.android.player.inventory.InventoryViewController
 import kotlinx.android.synthetic.main.controller_pet.view.*
 import kotlinx.android.synthetic.main.item_pet_food.view.*
@@ -97,10 +99,6 @@ class PetViewController(args: Bundle? = null) :
         return view
     }
 
-//    private fun View.sendOnClick(intent: PetIntent) {
-//
-//    }
-
     override fun onCreateLoadAction() = PetAction.Load
 
     override fun onAttach(view: View) {
@@ -119,15 +117,15 @@ class PetViewController(args: Bundle? = null) :
             return true
         }
 
-//        if (item.itemId == R.id.actionStore) {
-//            val handler = FadeChangeHandler()
-//            router.pushController(
-//                RouterTransaction.with(PetStoreViewController())
-//                    .pushChangeHandler(handler)
-//                    .popChangeHandler(handler)
-//            )
-//            return true
-//        }
+        if (item.itemId == R.id.actionStore) {
+            val handler = FadeChangeHandler()
+            router.pushController(
+                RouterTransaction.with(PetStoreViewController())
+                    .pushChangeHandler(handler)
+                    .popChangeHandler(handler)
+            )
+            return true
+        }
 
         if (item.itemId == R.id.actionRenamePet) {
             dispatch(PetAction.ShowRenamePet)
