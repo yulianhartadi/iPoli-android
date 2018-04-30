@@ -10,6 +10,7 @@ import io.ipoli.android.note.NoteAction
 import io.ipoli.android.player.Inventory
 import io.ipoli.android.quest.show.QuestAction
 import io.ipoli.android.repeatingquest.add.EditRepeatingQuestAction
+import io.ipoli.android.settings.SettingsAction
 import io.ipoli.android.store.powerup.PowerUp
 import io.ipoli.android.tag.list.TagListAction
 
@@ -49,6 +50,9 @@ class CheckEnabledPowerUpMiddleWare : MiddleWare<AppState> {
 
             is NoteAction.Save ->
                 checkForAvailablePowerUp(PowerUp.Type.NOTES, inventory, dispatcher)
+
+            is SettingsAction.ToggleSyncCalendar ->
+                checkForAvailablePowerUp(PowerUp.Type.CALENDAR_SYNC, inventory, dispatcher)
 
             else -> MiddleWare.Result.Continue
         }

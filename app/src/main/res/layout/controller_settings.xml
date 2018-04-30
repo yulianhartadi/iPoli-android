@@ -60,13 +60,13 @@
                     android:layout_width="match_parent"
                     android:layout_height="72dp"
                     android:background="?android:attr/selectableItemBackground"
-                    android:clickable="true"
                     android:orientation="vertical"
                     android:paddingEnd="16dp"
                     android:paddingStart="16dp"
                     android:weightSum="2">
 
                     <TextView
+                        android:id="@+id/calendarsToSyncTitle"
                         android:layout_width="match_parent"
                         android:layout_height="0dp"
                         android:layout_weight="1"

@@ -34,17 +34,20 @@ class CalendarSideEffectHandler : AppSideEffectHandler() {
                     SaveSyncCalendarsUseCase.Params(action.calendars)
                 )
 
-            SettingsAction.DisableCalendarsSync ->
-                saveSyncCalendarsUseCase.execute(SaveSyncCalendarsUseCase.Params(setOf()))
+            is SettingsAction.ToggleSyncCalendar -> {
+                if (!action.isChecked) {
+                    saveSyncCalendarsUseCase.execute(SaveSyncCalendarsUseCase.Params(setOf()))
+                }
+            }
 
         }
     }
 
     override fun canHandle(action: Action) =
         action == CalendarPickerAction.Load
-            || action == SettingsAction.DisableCalendarsSync
-            || action is SettingsAction.SyncCalendarsSelected
-            || action is PowerUpStoreAction.SyncCalendarsSelected
+                || action is SettingsAction.ToggleSyncCalendar
+                || action is SettingsAction.SyncCalendarsSelected
+                || action is PowerUpStoreAction.SyncCalendarsSelected
 
 
 }

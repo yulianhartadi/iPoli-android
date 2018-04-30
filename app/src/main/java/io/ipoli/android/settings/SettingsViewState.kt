@@ -6,6 +6,9 @@ import io.ipoli.android.common.DataLoadedAction
 import io.ipoli.android.common.mvi.ViewState
 import io.ipoli.android.common.redux.Action
 import io.ipoli.android.player.Player
+import io.ipoli.android.settings.SettingsViewState.StateType.*
+import io.ipoli.android.store.powerup.PowerUp
+import io.ipoli.android.store.powerup.middleware.ShowBuyPowerUpAction
 
 /**
  * Created by Polina Zhelyazkova <polina@mypoli.fun>
@@ -15,8 +18,8 @@ sealed class SettingsAction : Action {
     data class SyncCalendarsSelected(val calendars: Set<Player.Preferences.SyncCalendar>) :
         SettingsAction()
 
+    data class ToggleSyncCalendar(val isChecked: Boolean) : SettingsAction()
     object Load : SettingsAction()
-    object DisableCalendarsSync : SettingsAction()
 }
 
 object SettingsReducer : BaseViewStateReducer<SettingsViewState>() {
@@ -29,37 +32,74 @@ object SettingsReducer : BaseViewStateReducer<SettingsViewState>() {
         SettingsAction.Load -> {
             val selectedCalendars = state.dataState.player!!.preferences.syncCalendars.size
             createChangedState(
-                playerId = state.dataState.player.id,
+                state = subState,
+                player = state.dataState.player,
                 selectedCalendars = selectedCalendars
             )
         }
 
+        is SettingsAction.ToggleSyncCalendar -> {
+            if (action.isChecked) {
+                subState.copy(
+                    type = ENABLE_SYNC_CALENDARS,
+                    isCalendarSyncEnabled = action.isChecked
+                )
+            } else subState
+
+        }
+
         is DataLoadedAction.PlayerChanged -> {
             val selectedCalendars = action.player.preferences.syncCalendars.size
-            createChangedState(playerId = action.player.id, selectedCalendars = selectedCalendars)
+            createChangedState(
+                player = action.player,
+                selectedCalendars = selectedCalendars,
+                state = subState
+            )
+        }
+
+        is ShowBuyPowerUpAction -> {
+            if (action.powerUp == PowerUp.Type.CALENDAR_SYNC) {
+                subState.copy(
+                    type = DATA_CHANGED,
+                    isCalendarSyncEnabled = false
+                )
+            } else subState
         }
 
         else -> subState
     }
 
-    private fun createChangedState(playerId: String, selectedCalendars: Int) =
-        SettingsViewState.Changed(
-            playerId = playerId,
+    private fun createChangedState(
+        player: Player,
+        selectedCalendars: Int,
+        state: SettingsViewState
+    ) =
+        state.copy(
+            type = DATA_CHANGED,
+            playerId = player.id,
             selectedCalendars = selectedCalendars,
-            isCalendarSyncEnabled = selectedCalendars > 0
+            isCalendarSyncEnabled = player.isPowerUpEnabled(PowerUp.Type.CALENDAR_SYNC) && selectedCalendars > 0
         )
 
-    override fun defaultState() = SettingsViewState.Loading
+    override fun defaultState() = SettingsViewState(
+        type = LOADING,
+        playerId = "",
+        isCalendarSyncEnabled = false,
+        selectedCalendars = 0
+    )
 
     override val stateKey = key<SettingsViewState>()
 
 }
 
-sealed class SettingsViewState : ViewState {
-    object Loading : SettingsViewState()
-    data class Changed(
-        val playerId: String,
-        val isCalendarSyncEnabled: Boolean,
-        val selectedCalendars: Int
-    ) : SettingsViewState()
+data class SettingsViewState(
+    val type: StateType,
+    val playerId: String,
+    val isCalendarSyncEnabled: Boolean,
+    val selectedCalendars: Int
+) : ViewState {
+
+    enum class StateType {
+        LOADING, DATA_CHANGED, ENABLE_SYNC_CALENDARS
+    }
 }
