@@ -4,7 +4,7 @@
     android:id="@+id/container"
     android:layout_height="match_parent"
     android:layout_width="match_parent"
-    android:background="@color/md_dark_text_38"
+    android:background="@android:color/transparent"
     android:clickable="true"
     android:focusable="true">
 
