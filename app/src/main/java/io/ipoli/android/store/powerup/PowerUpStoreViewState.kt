@@ -20,7 +20,8 @@ import org.threeten.bp.LocalDate
 sealed class PowerUpStoreAction : Action {
     object Load : PowerUpStoreAction()
     data class Enable(val type: PowerUp.Type) : PowerUpStoreAction()
-    data class SyncCalendarsSelected(val calendars: Set<Player.Preferences.SyncCalendar>) : PowerUpStoreAction()
+    data class SyncCalendarsSelected(val calendars: Set<Player.Preferences.SyncCalendar>) :
+        PowerUpStoreAction()
 }
 
 object PowerUpStoreReducer : BaseViewStateReducer<PowerUpStoreViewState>() {
@@ -58,7 +59,8 @@ object PowerUpStoreReducer : BaseViewStateReducer<PowerUpStoreViewState>() {
 
     private fun createPowerUps(player: Player): List<PowerUpItem> {
         val inventory = player.inventory
-        return PowerUp.Type.values().map {
+        return PowerUp.Type.values()
+            .filter { it != PowerUp.Type.CUSTOM_DURATION && it != PowerUp.Type.GROWTH }.map {
             when {
                 inventory.isPowerUpEnabled(it) -> {
                     val p = inventory.getPowerUp(it)!!
