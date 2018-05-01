@@ -16,15 +16,15 @@ myPoli combines Calendar, ToDo list and Habit tracking app, all in one place to 
 
 # Join the Community
 
-Have a question about **myPoli**? Found a bug or a feature is missing? Join us at <a href="https://discord.gg/7AMKs28">Discord</a>:
+Have a question about **myPoli**? Found a bug or a feature is missing? Join us at <a href="https://discord.gg/7AMKs28" target="_blank">Discord</a>:
 
-<a href="https://discord.gg/7AMKs28"><img src="./.github/discord.png" width="256px"/></a>
+<a href="https://discord.gg/7AMKs28" target="_blank"><img src="./.github/discord.png" width="256px"/></a>
 
 # Download
 
 **myPoli** can be download from [Google Play](http://bit.ly/ipoli-android):
 
-<a href="http://bit.ly/ipoli-android"><img alt="Get it on Google Play" src="https://play.google.com/intl/en_us/badges/images/generic/en-play-badge.png" height="80"/></a>
+<a href="http://bit.ly/ipoli-android" target="_blank"><img alt="Get it on Google Play" src="https://play.google.com/intl/en_us/badges/images/generic/en-play-badge.png" height="80"/></a>
 
 # Features
 
