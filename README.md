@@ -18,7 +18,7 @@ myPoli combines Calendar, ToDo list and Habit tracking app, all in one place to 
 
 Have a question about **myPoli**? Found a bug or a feature is missing? Join us at Discord:
 
-<a href="https://discord.gg/7AMKs28"><img src="https://discordapp.com/assets/e7a3b51fdac2aa5ec71975d257d5c405.png" width="128px"/></a>
+<a href="https://discord.gg/7AMKs28"><img src="./.github/discord.png" width="128px"/></a>
 
 # Download
 
