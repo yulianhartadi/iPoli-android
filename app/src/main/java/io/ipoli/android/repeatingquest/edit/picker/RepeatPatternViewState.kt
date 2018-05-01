@@ -43,24 +43,41 @@ object RepeatPatternReducer : BaseViewStateReducer<RepeatPatternViewState>() {
         return when (action) {
             is RepeatPatternAction.LoadData -> {
                 val pattern = action.repeatPattern
-                val repeatType =
-                    if (pattern != null) pattern.repeatType
-                    else subState.repeatType
+                val repeatType = pattern?.repeatType ?: defaultState().repeatType
 
                 val selectedWeekDays =
                     if (pattern != null) selectedWeekDaysFor(pattern) else subState.selectedWeekDays
-                val weekDaysCount = Math.max(1, selectedWeekDays.size)
-                val weekDaysCountIndex = subState.weekCountValues.indexOfFirst { weekDaysCount == it }
+
+                val selectedDaysPerWeek = pattern?.let {
+                    if (it is RepeatPattern.Weekly || it is RepeatPattern.Flexible.Weekly)
+                        it.periodCount
+                    else
+                        defaultState().weekDaysCount
+                } ?: defaultState().monthDaysCount
+
+                val weekDaysCountIndex =
+                    subState.weekCountValues.indexOfFirst { it == selectedDaysPerWeek }
 
                 val selectedMonthDays =
                     if (pattern != null) selectedMonthDaysFor(pattern) else subState.selectedMonthDays
-                val monthDaysCount = Math.max(1, selectedMonthDays.size)
-                val monthDaysCountIndex = subState.monthCountValues.indexOfFirst { monthDaysCount == it }
+
+                val selectedDaysPerMonth = pattern?.let {
+                    if (it is RepeatPattern.Monthly || it is RepeatPattern.Flexible.Monthly)
+                        it.periodCount
+                    else
+                        defaultState().monthDaysCount
+                } ?: defaultState().monthDaysCount
+
+                val monthDaysCountIndex =
+                    subState.monthCountValues.indexOfFirst { it == selectedDaysPerMonth }
 
                 val startDate = pattern?.startDate ?: subState.startDate
                 val endDate = pattern?.endDate ?: subState.endDate
 
                 val petAvatar = AndroidPetAvatar.valueOf(state.dataState.player!!.pet.avatar.name)
+
+                val isFlexible =
+                    pattern?.let { it is RepeatPattern.Flexible } ?: defaultState().isFlexible
 
                 subState.copy(
                     type = DATA_LOADED,
@@ -70,7 +87,7 @@ object RepeatPatternReducer : BaseViewStateReducer<RepeatPatternViewState>() {
                     monthDaysCountIndex = monthDaysCountIndex,
                     selectedWeekDays = selectedWeekDays,
                     selectedMonthDays = selectedMonthDays,
-                    isFlexible = isFlexible(repeatType, subState),
+                    isFlexible = isFlexible,
                     startDate = startDate,
                     endDate = endDate,
                     pickerEndDate = endDate ?: subState.pickerEndDate,
@@ -179,7 +196,7 @@ object RepeatPatternReducer : BaseViewStateReducer<RepeatPatternViewState>() {
             RepeatType.WEEKLY -> {
                 if (state.isFlexible) {
                     RepeatPattern.Flexible.Weekly(
-                        timesPerWeek = state.weekCountValues[state.weekDaysCountIndex],
+                        timesPerWeek = state.weekDaysCount,
                         preferredDays = state.selectedWeekDays,
                         startDate = state.startDate,
                         endDate = state.endDate
@@ -296,7 +313,7 @@ data class RepeatPatternViewState(
     val pickerEndDate: LocalDate,
     val resultPattern: RepeatPattern?,
     @DrawableRes val petAvatar: Int?
-    ) : ViewState {
+) : ViewState {
     enum class StateType {
         LOADING,
         DATA_LOADED,

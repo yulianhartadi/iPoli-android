@@ -149,7 +149,7 @@ class AddRepeatingQuestViewController(args: Bundle? = null) :
     private fun createControllerForPosition(position: Int): Controller =
         when (position) {
             NAME_INDEX -> NameViewController()
-            PICK_RECURRENCE_INDEX -> PickRecurrenceViewController()
+            PICK_RECURRENCE_INDEX -> PickRepeatPatternViewController()
             PICK_DURATION_INDEX -> PickDurationViewController()
             SUMMARY_INDEX -> SummaryViewController()
             else -> throw IllegalArgumentException("Unknown controller position $position")
@@ -329,7 +329,7 @@ class AddRepeatingQuestViewController(args: Bundle? = null) :
             get() = icon?.androidIcon?.icon ?: GoogleMaterial.Icon.gmd_local_florist
     }
 
-    class PickRecurrenceViewController(args: Bundle? = null) :
+    class PickRepeatPatternViewController(args: Bundle? = null) :
         BaseViewController<EditRepeatingQuestAction, EditRepeatingQuestViewState>(
             args
         ) {
@@ -364,16 +364,6 @@ class AddRepeatingQuestViewController(args: Bundle? = null) :
         }
 
         override fun render(state: EditRepeatingQuestViewState, view: View) {
-            when (state.type) {
-                EditRepeatingQuestViewState.StateType.SHOW_REPEATING_PATTERN_PICKER -> {
-                    RepeatPatternPickerDialogController(
-                        state.repeatPattern,
-                        { dispatch(EditRepeatingQuestAction.RepeatPatternPicked(it)) },
-                        { }
-                    )
-                        .show(router, "pick_repeating_pattern_tag")
-                }
-            }
         }
 
         inner class RepeatPatternOptionAdapter :
@@ -386,7 +376,17 @@ class AddRepeatingQuestViewController(args: Bundle? = null) :
             ) {
                 (view as TextView).text = vm.text
                 view.setOnClickListener {
-                    dispatch(EditRepeatingQuestAction.PickRepeatPattern(vm))
+                    if (vm == MORE_OPTIONS) {
+                        RepeatPatternPickerDialogController(
+                            null,
+                            {
+                                dispatch(EditRepeatingQuestAction.RepeatPatternPicked(it)) },
+                            { }
+                        )
+                            .show(router, "pick_repeating_pattern_tag")
+                    } else {
+                        dispatch(EditRepeatingQuestAction.PickRepeatPattern(vm))
+                    }
                 }
             }
         }
