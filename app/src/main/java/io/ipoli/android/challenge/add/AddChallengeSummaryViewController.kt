@@ -20,6 +20,7 @@ import io.ipoli.android.common.redux.android.BaseViewController
 import io.ipoli.android.common.text.DateFormatter
 import io.ipoli.android.common.view.*
 import io.ipoli.android.common.view.recyclerview.BaseRecyclerViewAdapter
+import io.ipoli.android.common.view.recyclerview.RecyclerViewViewModel
 import io.ipoli.android.common.view.recyclerview.SimpleViewHolder
 import io.ipoli.android.note.NoteDialogViewController
 import io.ipoli.android.quest.Quest
@@ -313,10 +314,11 @@ class AddChallengeSummaryViewController(args: Bundle? = null) :
     }
 
     data class QuestViewModel(
+        override val id: String,
         val icon: IIcon,
         val name: String,
         val isRepeating: Boolean
-    )
+    ) : RecyclerViewViewModel
 
     inner class QuestAdapter :
         BaseRecyclerViewAdapter<QuestViewModel>(R.layout.item_challenge_summary_quest) {
@@ -337,11 +339,13 @@ class AddChallengeSummaryViewController(args: Bundle? = null) :
         get() = quests.map {
             when (it) {
                 is Quest -> QuestViewModel(
+                    id = it.id,
                     icon = it.icon?.androidIcon?.icon ?: GoogleMaterial.Icon.gmd_local_florist,
                     name = it.name,
                     isRepeating = false
                 )
                 is RepeatingQuest -> QuestViewModel(
+                    id = it.id,
                     icon = it.icon?.androidIcon?.icon ?: GoogleMaterial.Icon.gmd_local_florist,
                     name = it.name,
                     isRepeating = true

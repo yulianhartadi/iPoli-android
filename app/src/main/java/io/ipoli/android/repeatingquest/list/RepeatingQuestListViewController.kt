@@ -20,6 +20,7 @@ import io.ipoli.android.common.text.DateFormatter
 import io.ipoli.android.common.text.DurationFormatter
 import io.ipoli.android.common.view.*
 import io.ipoli.android.common.view.recyclerview.BaseRecyclerViewAdapter
+import io.ipoli.android.common.view.recyclerview.RecyclerViewViewModel
 import io.ipoli.android.common.view.recyclerview.SimpleViewHolder
 import io.ipoli.android.repeatingquest.add.AddRepeatingQuestViewController
 import io.ipoli.android.repeatingquest.entity.repeatType
@@ -98,7 +99,7 @@ class RepeatingQuestListViewController(args: Bundle? = null) :
     data class TagViewModel(val name: String, @ColorRes val color: Int)
 
     data class RepeatingQuestViewModel(
-        val id: String,
+        override val id: String,
         val name: String,
         val tags: List<TagViewModel>,
         val icon: IIcon,
@@ -108,7 +109,7 @@ class RepeatingQuestListViewController(args: Bundle? = null) :
         val allCount: Int,
         val isCompleted: Boolean,
         val frequency: String
-    )
+    ) : RecyclerViewViewModel
 
     inner class RepeatingQuestAdapter :
         BaseRecyclerViewAdapter<RepeatingQuestViewModel>(R.layout.item_repeating_quest) {

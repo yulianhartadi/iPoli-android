@@ -15,6 +15,7 @@ import io.ipoli.android.common.view.children
 import io.ipoli.android.common.view.gone
 import io.ipoli.android.common.view.normalIcon
 import io.ipoli.android.common.view.recyclerview.BaseRecyclerViewAdapter
+import io.ipoli.android.common.view.recyclerview.RecyclerViewViewModel
 import io.ipoli.android.common.view.recyclerview.ReorderItemHelper
 import io.ipoli.android.common.view.recyclerview.SimpleViewHolder
 import io.ipoli.android.common.view.visible
@@ -32,7 +33,7 @@ class ReadOnlySubQuestAdapter(
                 R.layout.item_edit_repeating_quest_sub_quest
         ) {
 
-    data class ReadOnlySubQuestViewModel(val id: String, val name: String)
+    data class ReadOnlySubQuestViewModel(override val id: String, val name: String) : RecyclerViewViewModel
 
     data class ItemColorConfig(
             @ColorRes val indicatorColor: Int,

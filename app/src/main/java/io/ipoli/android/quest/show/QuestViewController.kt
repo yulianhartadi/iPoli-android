@@ -33,6 +33,7 @@ import io.ipoli.android.common.ViewUtils
 import io.ipoli.android.common.redux.android.ReduxViewController
 import io.ipoli.android.common.view.*
 import io.ipoli.android.common.view.recyclerview.BaseRecyclerViewAdapter
+import io.ipoli.android.common.view.recyclerview.RecyclerViewViewModel
 import io.ipoli.android.common.view.recyclerview.ReorderItemHelper
 import io.ipoli.android.common.view.recyclerview.SimpleViewHolder
 import io.ipoli.android.note.NoteViewController
@@ -623,7 +624,10 @@ class QuestViewController : ReduxViewController<QuestAction, QuestViewState, Que
     data class SubQuestViewModel(
         val name: String,
         val isCompleted: Boolean
-    )
+    ) : RecyclerViewViewModel {
+        override val id: String
+            get() = name + isCompleted
+    }
 
     inner class SubQuestAdapter :
         BaseRecyclerViewAdapter<SubQuestViewModel>(R.layout.item_quest_sub_quest) {

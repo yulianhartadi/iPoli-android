@@ -20,6 +20,7 @@ import io.ipoli.android.common.text.DateFormatter
 import io.ipoli.android.common.text.DurationFormatter
 import io.ipoli.android.common.view.*
 import io.ipoli.android.common.view.recyclerview.BaseRecyclerViewAdapter
+import io.ipoli.android.common.view.recyclerview.SimpleRecyclerViewViewModel
 import io.ipoli.android.common.view.recyclerview.SimpleViewHolder
 import io.ipoli.android.repeatingquest.edit.EditRepeatingQuestViewController
 import io.ipoli.android.tag.Tag
@@ -180,7 +181,7 @@ class RepeatingQuestViewController(args: Bundle? = null) :
     }
 
     private fun renderSubQuests(state: RepeatingQuestViewState.Changed, view: View) {
-        (view.subQuestList.adapter as SubQuestsAdapter).updateAll(state.subQuestNames)
+        (view.subQuestList.adapter as SubQuestsAdapter).updateAll(state.subQuestNames.map { SimpleRecyclerViewViewModel(it) })
     }
 
     private fun renderSummaryStats(
@@ -238,17 +239,17 @@ class RepeatingQuestViewController(args: Bundle? = null) :
     }
 
     inner class SubQuestsAdapter :
-        BaseRecyclerViewAdapter<String>(
+        BaseRecyclerViewAdapter<SimpleRecyclerViewViewModel<String>>(
             R.layout.item_repeating_quest_sub_quest
         ) {
         override fun onBindViewModel(
-            vm: String,
+            vm: SimpleRecyclerViewViewModel<String>,
             view: View,
             holder: SimpleViewHolder
         ) {
             view.subQuestIndicator.backgroundTintList =
                 ColorStateList.valueOf(colorRes(R.color.md_dark_text_54))
-            view.subQuestName.text = vm
+            view.subQuestName.text = vm.value
         }
     }
 

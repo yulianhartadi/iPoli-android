@@ -15,6 +15,7 @@ import io.ipoli.android.common.view.AndroidColor
 import io.ipoli.android.common.view.AndroidIcon
 import io.ipoli.android.common.view.normalIcon
 import io.ipoli.android.common.view.recyclerview.BaseRecyclerViewAdapter
+import io.ipoli.android.common.view.recyclerview.RecyclerViewViewModel
 import io.ipoli.android.common.view.recyclerview.SimpleViewHolder
 import io.ipoli.android.quest.Color
 import io.ipoli.android.tag.Tag
@@ -47,7 +48,8 @@ class EditItemAutocompleteTagAdapter(tags: List<Tag>, context: Context) :
         val item = getItem(position)
         view.text = item.name
 
-        val icon = item.icon?.let { AndroidIcon.valueOf(it.name).icon } ?: MaterialDesignIconic.Icon.gmi_label
+        val icon = item.icon?.let { AndroidIcon.valueOf(it.name).icon }
+                ?: MaterialDesignIconic.Icon.gmi_label
         val color = AndroidColor.valueOf(item.color.name).color500
 
         view.setCompoundDrawablesWithIntrinsicBounds(
@@ -73,7 +75,10 @@ class EditItemTagAdapter(
         val icon: IIcon,
         val tag: Tag,
         val iconColor: Color = tag.color
-    )
+    ) : RecyclerViewViewModel {
+        override val id: String
+            get() = tag.id
+    }
 
     override fun onBindViewModel(vm: TagViewModel, view: View, holder: SimpleViewHolder) {
         view.tagName.text = vm.name

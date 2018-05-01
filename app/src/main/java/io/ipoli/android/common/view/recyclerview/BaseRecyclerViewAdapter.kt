@@ -7,17 +7,25 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 
-private class DiffCallback<VM> : DiffUtil.ItemCallback<VM>() {
-    override fun areItemsTheSame(oldItem: VM?, newItem: VM?) = oldItem == newItem
+interface RecyclerViewViewModel {
+    val id: String
+}
+
+data class SimpleRecyclerViewViewModel<VM>(val value: VM) : RecyclerViewViewModel {
+    override val id: String
+        get() = value.toString()
+}
+
+private class DiffCallback<VM : RecyclerViewViewModel> : DiffUtil.ItemCallback<VM>() {
+    override fun areItemsTheSame(oldItem: VM?, newItem: VM?) = oldItem?.id == newItem?.id
 
     override fun areContentsTheSame(oldItem: VM?, newItem: VM?) =
         oldItem == newItem
 }
 
-abstract class BaseRecyclerViewAdapter<VM>(
-    @LayoutRes private val itemLayout: Int,
-    private val diffCallback: DiffUtil.ItemCallback<VM> = DiffCallback()
-) : ListAdapter<VM, SimpleViewHolder>(diffCallback) {
+abstract class BaseRecyclerViewAdapter<VM : RecyclerViewViewModel>(
+    @LayoutRes private val itemLayout: Int
+) : ListAdapter<VM, SimpleViewHolder>(DiffCallback<VM>()) {
 
     override fun onCreateViewHolder(
         parent: ViewGroup,
@@ -61,15 +69,15 @@ abstract class BaseRecyclerViewAdapter<VM>(
         updateAll(vms)
     }
 
-    public val items: MutableList<VM>
+    val items: MutableList<VM>
         get() = 0.until(itemCount).map {
             getItem(it)
         }.toMutableList()
 
 }
 
-abstract class MultiViewRecyclerViewAdapter :
-    ListAdapter<Any, SimpleViewHolder>(DiffCallback<Any>()) {
+abstract class MultiViewRecyclerViewAdapter<VM : RecyclerViewViewModel> :
+    ListAdapter<VM, SimpleViewHolder>(DiffCallback<VM>()) {
 
     val viewTypeToItemBinder = mutableMapOf<Int, ItemBinder>()
     val itemTypeToViewType = mutableMapOf<Class<*>, Int>()
@@ -93,8 +101,8 @@ abstract class MultiViewRecyclerViewAdapter :
         }
     }
 
-    fun updateAll(items: List<*>) {
-        submitList(items)
+    fun updateAll(items: List<VM>) {
+        submitList(items.toMutableList())
     }
 
     inline fun <reified ITEM> getItemAt(position: Int): ITEM {

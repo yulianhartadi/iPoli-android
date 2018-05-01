@@ -21,6 +21,7 @@ import io.ipoli.android.common.datetime.daysUntil
 import io.ipoli.android.common.redux.android.ReduxViewController
 import io.ipoli.android.common.text.DateFormatter
 import io.ipoli.android.common.view.*
+import io.ipoli.android.common.view.recyclerview.RecyclerViewViewModel
 import io.ipoli.android.common.view.recyclerview.MultiViewRecyclerViewAdapter
 import io.ipoli.android.common.view.recyclerview.SwipeToCompleteCallback
 import io.ipoli.android.quest.CompletedQuestViewController
@@ -163,29 +164,29 @@ class BucketListViewController(args: Bundle? = null) :
         (view.questList.adapter as QuestAdapter).updateAll(state.itemViewModels)
     }
 
-    sealed class ItemViewModel {
+    sealed class ItemViewModel(override val id: String) : RecyclerViewViewModel {
 
-        data class SectionItem(val text: String) : ItemViewModel()
+        data class SectionItem(val text: String) : ItemViewModel(text)
 
         data class QuestItem(
-            val id: String,
+            override val id: String,
             val name: String,
             val startTime: String,
             @ColorRes val color: Int,
             val icon: IIcon,
             val isRepeating: Boolean,
             val isFromChallenge: Boolean
-        ) : ItemViewModel()
+        ) : ItemViewModel(id)
 
         data class CompletedQuestItem(
-            val id: String,
+            override val id: String,
             val name: String,
             val startTime: String,
             @ColorRes val color: Int,
             val icon: IIcon,
             val isRepeating: Boolean,
             val isFromChallenge: Boolean
-        ) : ItemViewModel()
+        ) : ItemViewModel(id)
     }
 
     enum class ViewType(val value: Int) {
@@ -194,7 +195,7 @@ class BucketListViewController(args: Bundle? = null) :
         COMPLETED_QUEST(2)
     }
 
-    inner class QuestAdapter : MultiViewRecyclerViewAdapter() {
+    inner class QuestAdapter : MultiViewRecyclerViewAdapter<ItemViewModel>() {
 
         override fun onRegisterItemBinders() {
 

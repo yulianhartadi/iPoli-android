@@ -33,6 +33,7 @@ import io.ipoli.android.common.home.HomeViewController
 import io.ipoli.android.common.redux.android.ReduxViewController
 import io.ipoli.android.common.view.*
 import io.ipoli.android.common.view.recyclerview.BaseRecyclerViewAdapter
+import io.ipoli.android.common.view.recyclerview.RecyclerViewViewModel
 import io.ipoli.android.common.view.recyclerview.SimpleViewHolder
 import io.ipoli.android.player.auth.AuthViewState.StateType.*
 import io.ipoli.android.player.auth.error.SignInError
@@ -385,7 +386,11 @@ class AuthViewController(args: Bundle? = null) :
         @ColorRes val backgroundColor: Int,
         val isSelected: Boolean,
         val avatar: Avatar
-    )
+    ) : RecyclerViewViewModel {
+        override val id: String
+            get() = avatar.name
+
+    }
 
     inner class AvatarAdapter :
         BaseRecyclerViewAdapter<AvatarViewModel>(R.layout.item_auth_avatar) {

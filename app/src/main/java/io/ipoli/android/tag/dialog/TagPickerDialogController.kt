@@ -2,7 +2,6 @@ package io.ipoli.android.tag.dialog
 
 import android.os.Bundle
 import android.support.v7.app.AlertDialog
-import android.support.v7.util.DiffUtil
 import android.support.v7.widget.LinearLayoutManager
 import android.view.LayoutInflater
 import android.view.View
@@ -16,6 +15,7 @@ import io.ipoli.android.common.mvi.ViewState
 import io.ipoli.android.common.redux.Action
 import io.ipoli.android.common.view.*
 import io.ipoli.android.common.view.recyclerview.BaseRecyclerViewAdapter
+import io.ipoli.android.common.view.recyclerview.RecyclerViewViewModel
 import io.ipoli.android.common.view.recyclerview.SimpleViewHolder
 import io.ipoli.android.pet.AndroidPetAvatar
 import io.ipoli.android.pet.PetAvatar
@@ -230,9 +230,7 @@ class TagPickerDialogController(args: Bundle? = null) :
 
             TAGS_CHANGED -> {
                 renderAllTags(view, state)
-//                if (state.showAll) {
-                    renderFavouriteTags(view, state)
-//                }
+                renderFavouriteTags(view, state)
             }
 
             SHOW_MAX_TAGS -> {
@@ -287,25 +285,15 @@ class TagPickerDialogController(args: Bundle? = null) :
         val color: Color,
         val isChecked: Boolean,
         val tag: Tag
-    )
+    ) : RecyclerViewViewModel {
+        override val id: String
+            get() = tag.id
+    }
 
     inner class FavouriteTagAdapter :
-        BaseRecyclerViewAdapter<FavouriteTagViewModel>(R.layout.item_tag_picker_favourite, object : DiffUtil.ItemCallback<FavouriteTagViewModel>() {
-            override fun areItemsTheSame(
-                oldItem: FavouriteTagViewModel?,
-                newItem: FavouriteTagViewModel?
-            ): Boolean {
-                return oldItem?.tag?.id == newItem?.tag?.id
-            }
-
-            override fun areContentsTheSame(
-                oldItem: FavouriteTagViewModel?,
-                newItem: FavouriteTagViewModel?
-            ): Boolean {
-                return oldItem == newItem
-            }
-
-        }) {
+        BaseRecyclerViewAdapter<FavouriteTagViewModel>(
+            R.layout.item_tag_picker_favourite
+        ) {
         override fun onBindViewModel(
             vm: FavouriteTagViewModel,
             view: View,

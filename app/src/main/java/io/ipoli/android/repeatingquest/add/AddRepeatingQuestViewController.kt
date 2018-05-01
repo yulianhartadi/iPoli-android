@@ -26,6 +26,7 @@ import io.ipoli.android.common.text.DurationFormatter
 import io.ipoli.android.common.text.RepeatPatternFormatter
 import io.ipoli.android.common.view.*
 import io.ipoli.android.common.view.recyclerview.BaseRecyclerViewAdapter
+import io.ipoli.android.common.view.recyclerview.SimpleRecyclerViewViewModel
 import io.ipoli.android.common.view.recyclerview.SimpleViewHolder
 import io.ipoli.android.note.NoteDialogViewController
 import io.ipoli.android.quest.Color
@@ -347,7 +348,7 @@ class AddRepeatingQuestViewController(args: Bundle? = null) :
             view.wizardOptions.setHasFixedSize(true)
             val adapter = RepeatPatternOptionAdapter()
             view.wizardOptions.adapter = adapter
-            adapter.updateAll(EditRepeatingQuestViewState.RepeatPatternOption.values().toList())
+            adapter.updateAll(EditRepeatingQuestViewState.RepeatPatternOption.values().map { SimpleRecyclerViewViewModel(it) })
             return view
         }
 
@@ -367,25 +368,26 @@ class AddRepeatingQuestViewController(args: Bundle? = null) :
         }
 
         inner class RepeatPatternOptionAdapter :
-            BaseRecyclerViewAdapter<EditRepeatingQuestViewState.RepeatPatternOption>(R.layout.item_wizard_option) {
+            BaseRecyclerViewAdapter<SimpleRecyclerViewViewModel<EditRepeatingQuestViewState.RepeatPatternOption>>(R.layout.item_wizard_option) {
 
             override fun onBindViewModel(
-                vm: EditRepeatingQuestViewState.RepeatPatternOption,
+                vm: SimpleRecyclerViewViewModel<EditRepeatingQuestViewState.RepeatPatternOption>,
                 view: View,
                 holder: SimpleViewHolder
             ) {
-                (view as TextView).text = vm.text
+                (view as TextView).text = vm.value.text
                 view.setOnClickListener {
                     if (vm == MORE_OPTIONS) {
                         RepeatPatternPickerDialogController(
                             null,
                             {
-                                dispatch(EditRepeatingQuestAction.RepeatPatternPicked(it)) },
+                                dispatch(EditRepeatingQuestAction.RepeatPatternPicked(it))
+                            },
                             { }
                         )
                             .show(router, "pick_repeating_pattern_tag")
                     } else {
-                        dispatch(EditRepeatingQuestAction.PickRepeatPattern(vm))
+                        dispatch(EditRepeatingQuestAction.PickRepeatPattern(vm.value))
                     }
                 }
             }
@@ -420,7 +422,11 @@ class AddRepeatingQuestViewController(args: Bundle? = null) :
             view.wizardOptions.setHasFixedSize(true)
             val adapter = DurationOptionAdapter()
             view.wizardOptions.adapter = adapter
-            adapter.updateAll(EditRepeatingQuestViewState.DurationOption.values().toList())
+            adapter.updateAll(EditRepeatingQuestViewState.DurationOption.values().map {
+                SimpleRecyclerViewViewModel(
+                    it
+                )
+            })
             return view
         }
 
@@ -448,16 +454,16 @@ class AddRepeatingQuestViewController(args: Bundle? = null) :
         }
 
         inner class DurationOptionAdapter :
-            BaseRecyclerViewAdapter<EditRepeatingQuestViewState.DurationOption>(R.layout.item_wizard_option) {
+            BaseRecyclerViewAdapter<SimpleRecyclerViewViewModel<EditRepeatingQuestViewState.DurationOption>>(R.layout.item_wizard_option) {
 
             override fun onBindViewModel(
-                vm: EditRepeatingQuestViewState.DurationOption,
+                vm: SimpleRecyclerViewViewModel<EditRepeatingQuestViewState.DurationOption>,
                 view: View,
                 holder: SimpleViewHolder
             ) {
-                (view as TextView).text = vm.text
+                (view as TextView).text = vm.value.text
                 view.setOnClickListener {
-                    dispatch(EditRepeatingQuestAction.PickDuration(vm))
+                    dispatch(EditRepeatingQuestAction.PickDuration(vm.value))
                 }
             }
         }
