@@ -195,7 +195,7 @@ class TagPickerDialogController(args: Bundle? = null) :
         return dialogBuilder
             .setPositiveButton(R.string.dialog_ok, null)
             .setNegativeButton(R.string.cancel, null)
-            .setNeutralButton(R.string.all, null)
+            .setNeutralButton(R.string.all_tags, null)
             .create()
     }
 
@@ -225,7 +225,7 @@ class TagPickerDialogController(args: Bundle? = null) :
                 if (state.showAll) {
                     changeNeutralButtonText(R.string.favorite)
                 } else {
-                    changeNeutralButtonText(R.string.all)
+                    changeNeutralButtonText(R.string.all_tags)
                 }
             }
 

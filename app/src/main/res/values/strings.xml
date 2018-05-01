@@ -1276,6 +1276,6 @@
     <string name="color_pack_unlocked">Enjoy your new colors</string>
     <string name="icon_pack_unlocked">Enjoy your new icons</string>
     <string name="quest_added">Quest added</string>
-    <string name="all">All</string>
+    <string name="all_tags">All tags</string>
     <string name="tag_picker_title">Pick some tags</string>
 </resources>

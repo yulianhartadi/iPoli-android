@@ -164,7 +164,7 @@ class ScheduleViewController(args: Bundle? = null) :
 //            addQuestAnimationHelper.openAddContainer(state.currentDate)
 //        }
         view.addQuest.setOnClickListener {
-            TagPickerDialogController().show(router)
+            TagPickerDialogController(emptySet(), {}).show(router)
         }
 
         when (state.type) {
