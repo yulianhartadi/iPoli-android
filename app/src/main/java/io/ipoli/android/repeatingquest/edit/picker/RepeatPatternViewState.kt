@@ -52,8 +52,8 @@ object RepeatPatternReducer : BaseViewStateReducer<RepeatPatternViewState>() {
                     if (it is RepeatPattern.Weekly || it is RepeatPattern.Flexible.Weekly)
                         it.periodCount
                     else
-                        1
-                } ?: 1
+                        defaultState().weekDaysCount
+                } ?: defaultState().monthDaysCount
 
                 val weekDaysCountIndex =
                     subState.weekCountValues.indexOfFirst { it == selectedDaysPerWeek }
@@ -65,8 +65,8 @@ object RepeatPatternReducer : BaseViewStateReducer<RepeatPatternViewState>() {
                     if (it is RepeatPattern.Monthly || it is RepeatPattern.Flexible.Monthly)
                         it.periodCount
                     else
-                        1
-                } ?: 1
+                        defaultState().monthDaysCount
+                } ?: defaultState().monthDaysCount
 
                 val monthDaysCountIndex =
                     subState.monthCountValues.indexOfFirst { it == selectedDaysPerMonth }
