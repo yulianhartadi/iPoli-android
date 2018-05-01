@@ -6,6 +6,7 @@ import android.support.v7.util.DiffUtil
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import timber.log.Timber
 
 private class DiffCallback<VM> : DiffUtil.ItemCallback<VM>() {
     override fun areItemsTheSame(oldItem: VM?, newItem: VM?) = oldItem == newItem
@@ -31,12 +32,15 @@ abstract class BaseRecyclerViewAdapter<VM>(
         )
 
     override fun onBindViewHolder(holder: SimpleViewHolder, position: Int) {
+//        onBindViewModel(getItem(holder.adapterPosition), holder.itemView, holder)
+        Timber.d("BBB ${holder.adapterPosition} $position")
         onBindViewModel(getItem(holder.adapterPosition), holder.itemView, holder)
     }
 
     abstract fun onBindViewModel(vm: VM, view: View, holder: SimpleViewHolder)
 
     fun updateAll(viewModels: List<VM>) {
+        submitList(null)
         submitList(viewModels)
     }
 
