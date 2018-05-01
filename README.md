@@ -4,7 +4,7 @@
 [![Discord](https://img.shields.io/discord/367715831913906176.svg?style=flat-square)](https://discord.gg/7AMKs28)
 [![License](https://img.shields.io/github/license/iPoli/iPoli-android.svg?style=flat-square)](https://github.com/iPoli/iPoli-android/blob/master/LICENSE)
 
-# [myPoli](http://bit.ly/ipoli-android): AI-Powered Calendar & Habit Tracking for your Life!
+# [myPoli](http://bit.ly/ipoli-android): Personal smart time-management app for you
 
 <p align="center"><img src="./.github/icon.png" width="128px"/></p>
 
@@ -24,6 +24,7 @@ myPoli combines Calendar, ToDo list and Habit tracking app, all in one place to 
 
 * Calendar + ToDo list for your daily schedule
 * Have your own Pet - choose a Pet and take care of it by completing your Tasks
+* Pomodoro Timer, Markdown notes & Subtasks
 * Sync between Android devices
 * Flexible habit scheduling - Workout 3 times per week every Mon, Tue, Fri and Sat
 * Sync with Google Calendar/Outlook
