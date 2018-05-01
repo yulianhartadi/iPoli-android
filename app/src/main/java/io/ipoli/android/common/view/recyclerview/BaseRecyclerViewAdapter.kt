@@ -6,7 +6,6 @@ import android.support.v7.util.DiffUtil
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import timber.log.Timber
 
 private class DiffCallback<VM> : DiffUtil.ItemCallback<VM>() {
     override fun areItemsTheSame(oldItem: VM?, newItem: VM?) = oldItem == newItem
@@ -23,7 +22,7 @@ abstract class BaseRecyclerViewAdapter<VM>(
     override fun onCreateViewHolder(
         parent: ViewGroup,
         viewType: Int
-    ): SimpleViewHolder =
+    ) =
         SimpleViewHolder(
             LayoutInflater.from(parent.context).inflate(
                 itemLayout,
@@ -33,8 +32,6 @@ abstract class BaseRecyclerViewAdapter<VM>(
         )
 
     override fun onBindViewHolder(holder: SimpleViewHolder, position: Int) {
-//        onBindViewModel(getItem(holder.adapterPosition), holder.itemView, holder)
-        Timber.d("BBB ${holder.adapterPosition} $position")
         onBindViewModel(getItem(holder.adapterPosition), holder.itemView, holder)
     }
 
@@ -110,9 +107,9 @@ abstract class MultiViewRecyclerViewAdapter :
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): SimpleViewHolder {
         val resId = viewTypeToItemBinder[viewType]?.layoutResId
-            ?: throw IllegalArgumentException(
-                "Unknown view type $viewType. Have you used registerBinder() for it?"
-            )
+                ?: throw IllegalArgumentException(
+                    "Unknown view type $viewType. Have you used registerBinder() for it?"
+                )
         val itemView = LayoutInflater
             .from(parent.context)
             .inflate(resId, parent, false)

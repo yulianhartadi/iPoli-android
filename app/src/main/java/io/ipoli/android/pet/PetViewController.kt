@@ -147,7 +147,6 @@ class PetViewController(args: Bundle? = null) :
     }
 
     override fun render(state: PetViewState, view: View) {
-        Timber.d("AAAA state $state")
         when (state.type) {
             DATA_LOADED -> {
                 renderPet(state, view)

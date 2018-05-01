@@ -152,7 +152,6 @@ class IconPickerDialogController :
 
         when (state.type) {
             DATA_CHANGED -> {
-                Timber.d("AAA DATA_CHANGED $state")
                 changeIcon(AndroidPetAvatar.valueOf(state.petAvatar!!.name).headImage)
                 (view.iconGrid.adapter as IconAdapter).updateAll(state.iconViewModels)
             }
