@@ -16,12 +16,21 @@
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
 
-        <TextView
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/allTagList"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
+        <AutoCompleteTextView
+            style="@style/TagAutocompleteThemeDark"
+            android:id="@+id/addTag"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="texty"/>
+            android:maxLines="1"
+            android:hint="@string/add_tag" />
     </LinearLayout>
 
 </ViewSwitcher>

@@ -8,17 +8,22 @@ import android.view.View
 import com.mikepenz.iconics.IconicsDrawable
 import com.mikepenz.iconics.typeface.IIcon
 import com.mikepenz.material_design_iconic_typeface_library.MaterialDesignIconic
+import io.ipoli.android.Constants
 import io.ipoli.android.R
 import io.ipoli.android.common.AppState
 import io.ipoli.android.common.BaseViewStateReducer
 import io.ipoli.android.common.mvi.ViewState
 import io.ipoli.android.common.redux.Action
 import io.ipoli.android.common.view.ReduxDialogController
+import io.ipoli.android.common.view.gone
 import io.ipoli.android.common.view.normalIcon
 import io.ipoli.android.common.view.recyclerview.BaseRecyclerViewAdapter
 import io.ipoli.android.common.view.recyclerview.SimpleViewHolder
+import io.ipoli.android.common.view.visible
 import io.ipoli.android.tag.Tag
 import io.ipoli.android.tag.dialog.TagPickerViewState.StateType.*
+import io.ipoli.android.tag.widget.EditItemAutocompleteTagAdapter
+import io.ipoli.android.tag.widget.EditItemTagAdapter
 import kotlinx.android.synthetic.main.dialog_tag_picker.view.*
 import kotlinx.android.synthetic.main.item_tag_picker_favourite.view.*
 
@@ -27,6 +32,10 @@ import kotlinx.android.synthetic.main.item_tag_picker_favourite.view.*
  * on 5/1/18.
  */
 sealed class TagPickerAction : Action {
+    data class ToggleFavouriteTagSelection(val tag: Tag, val isChecked: Boolean) : TagPickerAction()
+    data class RemoveTag(val tag: Tag) : TagPickerAction()
+    data class AddTag(val tagName: String) : TagPickerAction()
+
     object Load : TagPickerAction()
     object Switch : TagPickerAction()
 }
@@ -52,13 +61,47 @@ object TagPickerReducer : BaseViewStateReducer<TagPickerViewState>() {
                 showAll = !subState.showAll
             )
         }
+
+        is TagPickerAction.ToggleFavouriteTagSelection -> {
+            val selectedTags = if (subState.selectedTags.contains(action.tag)) {
+                subState.selectedTags - action.tag
+            } else {
+                subState.selectedTags + action.tag
+            }
+            subState.copy(
+                type = SELECTED_TAGS_CHANGED,
+                selectedTags = selectedTags,
+                maxTagsReached = selectedTags.size >= Constants.MAX_TAGS_PER_ITEM
+            )
+        }
+
+        is TagPickerAction.RemoveTag -> {
+            val selectedTags = subState.selectedTags - action.tag
+            subState.copy(
+                type = SELECTED_TAGS_CHANGED,
+                selectedTags = selectedTags,
+                maxTagsReached = selectedTags.size >= Constants.MAX_TAGS_PER_ITEM
+            )
+        }
+
+        is TagPickerAction.AddTag -> {
+            val tag = subState.tags.first { it.name == action.tagName }
+            val selectedTags = subState.selectedTags + tag
+            subState.copy(
+                type = SELECTED_TAGS_CHANGED,
+                selectedTags = selectedTags,
+                maxTagsReached = selectedTags.size >= Constants.MAX_TAGS_PER_ITEM
+            )
+        }
         else -> subState
     }
 
     override fun defaultState() = TagPickerViewState(
         type = LOADING,
         tags = emptyList(),
-        showAll = false
+        selectedTags = emptySet(),
+        showAll = false,
+        maxTagsReached = false
     )
 
 
@@ -67,10 +110,16 @@ object TagPickerReducer : BaseViewStateReducer<TagPickerViewState>() {
 data class TagPickerViewState(
     val type: StateType,
     val tags: List<Tag>,
-    val showAll: Boolean
+    val selectedTags: Set<Tag>,
+    val showAll: Boolean,
+    val maxTagsReached: Boolean
 ) : ViewState {
+
     enum class StateType {
-        LOADING, DATA_LOADED, SWITCH
+        LOADING,
+        DATA_LOADED,
+        SWITCH,
+        SELECTED_TAGS_CHANGED
     }
 }
 
@@ -82,6 +131,12 @@ class TagPickerDialogController(args: Bundle? = null) :
         val view = inflater.inflate(R.layout.dialog_tag_picker, null)
         view.favouriteTagList.layoutManager = LinearLayoutManager(activity!!)
         view.favouriteTagList.adapter = FavouriteTagAdapter()
+
+        view.allTagList.layoutManager = LinearLayoutManager(activity!!)
+        view.allTagList.adapter = EditItemTagAdapter(removeTagCallback = {
+            dispatch(TagPickerAction.RemoveTag(it))
+        }, useWhiteTheme = false)
+
         return view
     }
 
@@ -115,7 +170,8 @@ class TagPickerDialogController(args: Bundle? = null) :
     override fun render(state: TagPickerViewState, view: View) {
         when (state.type) {
             DATA_LOADED -> {
-                (view.favouriteTagList.adapter as FavouriteTagAdapter).updateAll(state.favouriteViewModels)
+                renderFavouriteTags(view, state)
+                renderAllTags(view, state)
             }
 
             SWITCH -> {
@@ -126,6 +182,48 @@ class TagPickerDialogController(args: Bundle? = null) :
                     changeNeutralButtonText(R.string.all)
                 }
             }
+
+            SELECTED_TAGS_CHANGED -> {
+                renderAllTags(view, state)
+                if (state.showAll) {
+                    renderFavouriteTags(view, state)
+                }
+            }
+        }
+    }
+
+    private fun renderFavouriteTags(
+        view: View,
+        state: TagPickerViewState
+    ) {
+        (view.favouriteTagList.adapter as FavouriteTagAdapter).updateAll(state.favouriteViewModels)
+    }
+
+    private fun renderAllTags(
+        view: View,
+        state: TagPickerViewState
+    ) {
+        (view.allTagList.adapter as EditItemTagAdapter).updateAll(state.tagViewModels)
+        val add = view.addTag
+        if (state.maxTagsReached) {
+            add.gone()
+//            view.maxTagsMessage.visible()
+        } else {
+            add.visible()
+//            view.maxTagsMessage.gone()
+
+            val adapter =
+                EditItemAutocompleteTagAdapter(state.tags - state.selectedTags, activity!!)
+            add.setAdapter(adapter)
+            add.setOnItemClickListener { _, _, position, _ ->
+                dispatch(TagPickerAction.AddTag(adapter.getItem(position).name))
+                add.setText("")
+            }
+            add.threshold = 0
+            add.setOnTouchListener { _, _ ->
+                add.showDropDown()
+                false
+            }
         }
     }
 
@@ -133,6 +231,7 @@ class TagPickerDialogController(args: Bundle? = null) :
         val name: String,
         val icon: IIcon,
         val color: Int,
+        val isChecked: Boolean,
         val tag: Tag
     )
 
@@ -152,6 +251,16 @@ class TagPickerDialogController(args: Bundle? = null) :
                     ).respectFontBounds(true),
                 null, null, null
             )
+            view.tagCheckBox.setOnCheckedChangeListener(null)
+            view.tagCheckBox.isChecked = vm.isChecked
+            view.setOnClickListener {
+                view.tagCheckBox.isChecked = !vm.isChecked
+//                dispatch(TagPickerAction.ToggleFavouriteTagSelection(vm.tag, !vm.isChecked))
+            }
+            view.tagCheckBox.setOnCheckedChangeListener { _, isChecked ->
+                dispatch(TagPickerAction.ToggleFavouriteTagSelection(vm.tag, isChecked))
+            }
+
         }
 
     }
@@ -162,6 +271,16 @@ class TagPickerDialogController(args: Bundle? = null) :
                 name = it.name,
                 icon = it.icon?.androidIcon?.icon ?: MaterialDesignIconic.Icon.gmi_label,
                 color = it.color.androidColor.color500,
+                isChecked = selectedTags.contains(it),
+                tag = it
+            )
+        }
+
+    private val TagPickerViewState.tagViewModels: List<EditItemTagAdapter.TagViewModel>
+        get() = selectedTags.map {
+            EditItemTagAdapter.TagViewModel(
+                name = it.name,
+                icon = it.icon?.androidIcon?.icon ?: MaterialDesignIconic.Icon.gmi_label,
                 tag = it
             )
         }

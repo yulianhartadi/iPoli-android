@@ -1,6 +1,7 @@
 package io.ipoli.android.tag.widget
 
 import android.content.Context
+import android.support.v4.content.ContextCompat
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -10,6 +11,7 @@ import com.mikepenz.iconics.IconicsDrawable
 import com.mikepenz.iconics.typeface.IIcon
 import com.mikepenz.material_design_iconic_typeface_library.MaterialDesignIconic
 import io.ipoli.android.R
+import io.ipoli.android.common.view.AndroidColor
 import io.ipoli.android.common.view.AndroidIcon
 import io.ipoli.android.common.view.normalIcon
 import io.ipoli.android.common.view.recyclerview.BaseRecyclerViewAdapter
@@ -59,24 +61,38 @@ class EditItemAutocompleteTagAdapter(tags: List<Tag>, context: Context) :
     }
 }
 
-class EditItemTagAdapter(private val removeTagCallback: (Tag) -> Unit = {}) :
+class EditItemTagAdapter(
+    private val removeTagCallback: (Tag) -> Unit = {},
+    private val useWhiteTheme: Boolean = true
+) :
     BaseRecyclerViewAdapter<EditItemTagAdapter.TagViewModel>(R.layout.item_edit_quest_tag) {
 
     data class TagViewModel(
         val name: String,
         val icon: IIcon,
-        val tag: Tag
+        val tag: Tag,
+        val iconColor: Int = AndroidColor.valueOf(tag.color.name).color500
     )
 
     override fun onBindViewModel(vm: TagViewModel, view: View, holder: SimpleViewHolder) {
         view.tagName.text = vm.name
+        view.tagName.setTextColor(
+            ContextCompat.getColor(
+                view.context,
+                if (useWhiteTheme) R.color.md_white else R.color.md_dark_text_87
+            )
+        )
+
         view.tagName.setCompoundDrawablesWithIntrinsicBounds(
             IconicsDrawable(view.context)
                 .normalIcon(
                     vm.icon,
-                    R.color.md_white
+                    if (useWhiteTheme) R.color.md_white else vm.iconColor
                 ).respectFontBounds(true), null, null, null
         )
+
+        view.tagRemove.setImageResource(if (useWhiteTheme) R.drawable.ic_clear_white_24dp else R.drawable.ic_clear_black_24dp)
+
         view.tagRemove.setOnClickListener {
             removeTagCallback(vm.tag)
         }

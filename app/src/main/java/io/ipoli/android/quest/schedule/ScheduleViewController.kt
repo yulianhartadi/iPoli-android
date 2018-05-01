@@ -17,6 +17,7 @@ import io.ipoli.android.quest.schedule.ScheduleViewState.StateType.*
 import io.ipoli.android.quest.schedule.addquest.AddQuestAnimationHelper
 import io.ipoli.android.quest.schedule.agenda.AgendaViewController
 import io.ipoli.android.quest.schedule.calendar.CalendarViewController
+import io.ipoli.android.tag.dialog.TagPickerDialogController
 import kotlinx.android.synthetic.main.controller_schedule.view.*
 import kotlinx.android.synthetic.main.view_calendar_toolbar.view.*
 import org.threeten.bp.LocalDate
@@ -159,8 +160,11 @@ class ScheduleViewController(args: Bundle? = null) :
         calendarToolbar.date.text = state.dateText(activity!!)
         view.currentMonth.text = state.monthText
 
+//        view.addQuest.setOnClickListener {
+//            addQuestAnimationHelper.openAddContainer(state.currentDate)
+//        }
         view.addQuest.setOnClickListener {
-            addQuestAnimationHelper.openAddContainer(state.currentDate)
+            TagPickerDialogController().show(router)
         }
 
         when (state.type) {

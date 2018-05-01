@@ -172,8 +172,22 @@
         <item name="android:textColorPrimary">@color/md_light_text_100</item>
     </style>
 
+    <style name="TagAutocompleteDark" parent="TextAppearance.AppCompat.Subhead">
+        <item name="android:textColorHint">@color/md_dark_text_87</item>
+        <item name="android:textColor">@color/md_dark_text_100</item>
+        <item name="colorAccent">@color/md_dark_text_87</item>
+        <item name="colorControlNormal">@color/md_dark_text_87</item>
+        <item name="colorControlActivated">@color/md_dark_text_87</item>
+        <item name="android:colorControlHighlight">@color/md_dark_text_87</item>
+        <item name="android:textColorPrimary">@color/md_dark_text_100</item>
+    </style>
+
     <style name="TagAutocompleteTheme">
         <item name="android:theme">@style/TagAutocomplete</item>
+    </style>
+
+    <style name="TagAutocompleteThemeDark">
+        <item name="android:theme">@style/TagAutocompleteDark</item>
     </style>
 
     <style name="CategoryIndicator">
