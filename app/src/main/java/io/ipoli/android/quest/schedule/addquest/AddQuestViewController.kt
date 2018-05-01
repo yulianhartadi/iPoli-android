@@ -167,7 +167,11 @@ class AddQuestViewController(args: Bundle? = null) :
 
             DURATION_PICKED -> renderDuration(state, view)
 
-            TAGS_PICKED -> renderTags(view, state)
+            TAGS_PICKED -> {
+                renderTags(view, state)
+                renderColor(view, state)
+                renderIcon(view, state)
+            }
 
             COLOR_PICKED -> renderColor(view, state)
 

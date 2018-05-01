@@ -60,8 +60,17 @@ object AddQuestReducer : BaseViewStateReducer<AddQuestViewState>() {
             is AddQuestAction.DurationPicked ->
                 subState.copy(type = StateType.DURATION_PICKED, duration = action.minutes)
 
-            is AddQuestAction.TagsPicked ->
-                subState.copy(type = StateType.TAGS_PICKED, tags = action.tags.toList())
+            is AddQuestAction.TagsPicked -> {
+                val useTagColorAndIcon =
+                    action.tags.isNotEmpty() && subState.icon == null && subState.color == null
+                val tags = action.tags.toList()
+                subState.copy(
+                    type = StateType.TAGS_PICKED,
+                    tags = tags,
+                    icon = if(useTagColorAndIcon) tags.first().icon else subState.icon,
+                    color = if(useTagColorAndIcon) tags.first().color else subState.color
+                )
+            }
 
             is AddQuestAction.ColorPicked ->
                 subState.copy(type = StateType.COLOR_PICKED, color = action.color)
