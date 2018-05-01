@@ -189,7 +189,7 @@ class AddQuestViewController(args: Bundle? = null) :
     private fun renderTags(view: View, state: AddQuestViewState) {
         setIcon(MaterialDesignIconic.Icon.gmi_label, view.tags, state.tags.isNotEmpty())
         view.tags.setOnClickListener {
-            TagPickerDialogController(state.tags, { tags ->
+            TagPickerDialogController(state.tags.toSet(), { tags ->
                 dispatch(AddQuestAction.TagsPicked(tags))
             }).show(router)
         }

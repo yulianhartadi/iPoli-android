@@ -43,7 +43,7 @@ class EditQuestSideEffectHandler : AppSideEffectHandler() {
                 val scheduledDate = addQuestState.date
                 val questParams = SaveQuestUseCase.Parameters(
                     name = action.name,
-                    tags = emptyList(),
+                    tags = addQuestState.tags,
                     subQuests = emptyList(),
                     color = addQuestState.color ?: Color.GREEN,
                     icon = addQuestState.icon,

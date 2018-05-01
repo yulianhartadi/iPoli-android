@@ -61,7 +61,7 @@ object AddQuestReducer : BaseViewStateReducer<AddQuestViewState>() {
                 subState.copy(type = StateType.DURATION_PICKED, duration = action.minutes)
 
             is AddQuestAction.TagsPicked ->
-                subState.copy(type = StateType.TAGS_PICKED, tags = action.tags)
+                subState.copy(type = StateType.TAGS_PICKED, tags = action.tags.toList())
 
             is AddQuestAction.ColorPicked ->
                 subState.copy(type = StateType.COLOR_PICKED, color = action.color)
@@ -93,7 +93,7 @@ object AddQuestReducer : BaseViewStateReducer<AddQuestViewState>() {
             duration = null,
             time = null,
             icon = null,
-            tags = emptySet()
+            tags = emptyList()
         )
 }
 
@@ -106,7 +106,7 @@ data class AddQuestViewState(
     val duration: Int?,
     val color: Color?,
     val icon: Icon?,
-    val tags : Set<Tag>
+    val tags: List<Tag>
 ) : ViewState
 
 enum class StateType {
