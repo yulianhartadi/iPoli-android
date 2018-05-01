@@ -8,7 +8,7 @@
 
 <p align="center"><img src="./.github/icon.png" width="128px"/></p>
 
-myPoli is a combination of Calendar, ToDo list and Habit tracking app, all in one place! It's goal is to find time for the things that matter most in your life, make you stick to good habits and free you from the burden of scheduling tasks by yourself.
+myPoli combines Calendar, ToDo list and Habit tracking app, all in one place to give you the best way to achieve your goals! Find time to exercise, learn new skills, focus deeply on meaningful work, stick to good habits and free you from the burden of scheduling tasks by yourself.
 
 <img src="./.github/screens/calendar.png" width="250px"/> &nbsp;&nbsp;&nbsp;
 <img src="./.github/screens/challenges.png" width="250px"/> &nbsp;&nbsp;&nbsp;
@@ -32,22 +32,25 @@ myPoli is a combination of Calendar, ToDo list and Habit tracking app, all in on
 
 # Libraries used
 
-* Otto
-* Couchbase Lite
-* Butterknife
+* Conductor
+* Kotlin Coroutines
+* Firestore
+* Firebase
 * Dagger2
 * MPAndroidChart
-* OkHttp
+* Timber
+* Android-Job
 * probably some more
 
 # Have a question or just want to get in touch?
 
-Join the community on [Slack](https://slofile.com/slack/productivityhackers) or write us at [hi@mypoli.fun](mailto:hi@mypoli.fun)
+Join the community on [Discord](https://discord.gg/7AMKs28) or write us at [hi@mypoli.fun](mailto:hi@mypoli.fun)
 
 # Contributing
 
-You love **myPoli**? You want new features or bug fixes?  
-Please **contribute** to the  project either by [_creating a PR_](https://github.com/iPoli/iPoli-android/compare) or [_submitting an issue_](https://github.com/iPoli/iPoli-android/issues/new) on GitHub.  
+Want to learn more about the source code of **myPoli**? Join the community on [Discord](https://discord.gg/7AMKs28) and we will help you get up to speed!  
+
+Want new features or bug fixes? Please **contribute** to the  project either by [_creating a PR_](https://github.com/iPoli/iPoli-android/compare) or [_submitting an issue_](https://github.com/iPoli/iPoli-android/issues/new) on GitHub.  
 You can help translate **myPoli** at [OneSky](https://ossiudx.oneskyapp.com/collaboration/project?id=110776).
 
 # License
