@@ -39,8 +39,9 @@ sealed class TagPickerAction : Action {
     data class RemoveTag(val tag: Tag) : TagPickerAction()
     data class AddTag(val tagName: String) : TagPickerAction()
 
-    object Load : TagPickerAction()
+    data class Load(val selectedTags: Set<Tag>) : TagPickerAction()
     object Switch : TagPickerAction()
+    object Close : TagPickerAction()
 }
 
 object TagPickerReducer : BaseViewStateReducer<TagPickerViewState>() {
@@ -56,7 +57,8 @@ object TagPickerReducer : BaseViewStateReducer<TagPickerViewState>() {
                 type = DATA_LOADED,
                 petAvatar = state.dataState.player!!.pet.avatar,
                 tags = state.dataState.tags,
-                favouriteTags = state.dataState.tags.filter { it.isFavorite }
+                favouriteTags = state.dataState.tags.filter { it.isFavorite },
+                selectedTags = action.selectedTags
             )
         }
 
@@ -110,6 +112,13 @@ object TagPickerReducer : BaseViewStateReducer<TagPickerViewState>() {
                 maxTagsReached = selectedTags.size >= Constants.MAX_TAGS_PER_ITEM
             )
         }
+
+        is TagPickerAction.Close -> {
+            subState.copy(
+                type = CLOSE
+            )
+        }
+
         else -> subState
     }
 
@@ -139,7 +148,8 @@ data class TagPickerViewState(
         DATA_LOADED,
         SWITCH,
         TAGS_CHANGED,
-        SHOW_MAX_TAGS
+        SHOW_MAX_TAGS,
+        CLOSE
     }
 }
 
@@ -160,7 +170,17 @@ class TagPickerDialogController(args: Bundle? = null) :
         return view
     }
 
-    override fun onCreateLoadAction() = TagPickerAction.Load
+    private lateinit var listener: (Set<Tag>) -> Unit
+
+    private lateinit var selectedTags: Set<Tag>
+
+    constructor(selectedTags: Set<Tag> = emptySet(), listener: (Set<Tag>) -> Unit) : this() {
+        this.selectedTags = selectedTags
+        this.listener = listener
+    }
+
+
+    override fun onCreateLoadAction() = TagPickerAction.Load(selectedTags)
 
     override fun onHeaderViewCreated(headerView: View) {
         headerView.dialogHeaderTitle.setText(R.string.tag_picker_title)
@@ -182,7 +202,7 @@ class TagPickerDialogController(args: Bundle? = null) :
     override fun onDialogCreated(dialog: AlertDialog, contentView: View) {
         dialog.setOnShowListener {
             setPositiveButtonListener {
-                dismiss()
+                dispatch(TagPickerAction.Close)
             }
 
             setNeutralButtonListener {
@@ -218,6 +238,11 @@ class TagPickerDialogController(args: Bundle? = null) :
             SHOW_MAX_TAGS -> {
                 renderFavouriteTags(view, state)
                 showShortToast(R.string.max_tags_message)
+            }
+
+            CLOSE -> {
+                listener(state.selectedTags)
+                dismiss()
             }
         }
     }
