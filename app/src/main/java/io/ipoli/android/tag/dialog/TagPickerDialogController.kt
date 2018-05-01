@@ -28,7 +28,6 @@ import io.ipoli.android.tag.widget.EditItemTagAdapter
 import kotlinx.android.synthetic.main.dialog_tag_picker.view.*
 import kotlinx.android.synthetic.main.item_tag_picker_favourite.view.*
 import kotlinx.android.synthetic.main.view_dialog_header.view.*
-import timber.log.Timber
 
 /**
  * Created by Polina Zhelyazkova <polina@mypoli.fun>
@@ -237,6 +236,7 @@ class TagPickerDialogController(args: Bundle? = null) :
             }
 
             SHOW_MAX_TAGS -> {
+                view.favouriteTagList.adapter = FavouriteTagAdapter()
                 renderFavouriteTags(view, state)
                 showShortToast(R.string.max_tags_message)
             }
@@ -253,7 +253,6 @@ class TagPickerDialogController(args: Bundle? = null) :
         state: TagPickerViewState
     ) {
         (view.favouriteTagList.adapter as FavouriteTagAdapter).updateAll(state.favouriteViewModels)
-        Timber.d("AAAA ${(view.favouriteTagList.adapter as FavouriteTagAdapter).items}")
     }
 
     private fun renderAllTags(
@@ -264,10 +263,8 @@ class TagPickerDialogController(args: Bundle? = null) :
         val add = view.addTag
         if (state.maxTagsReached) {
             add.gone()
-//            view.maxTagsMessage.visible()
         } else {
             add.visible()
-//            view.maxTagsMessage.gone()
 
             val adapter =
                 EditItemAutocompleteTagAdapter(state.tags - state.selectedTags, activity!!)
@@ -314,7 +311,6 @@ class TagPickerDialogController(args: Bundle? = null) :
             view: View,
             holder: SimpleViewHolder
         ) {
-            Timber.d("AAA tag ${vm}")
             view.tagName.text = vm.name
             view.tagName.setCompoundDrawablesRelativeWithIntrinsicBounds(
                 IconicsDrawable(view.context)
@@ -327,11 +323,9 @@ class TagPickerDialogController(args: Bundle? = null) :
             view.tagCheckBox.setOnCheckedChangeListener(null)
             view.tagCheckBox.isChecked = vm.isChecked
             view.setOnClickListener {
-                //                view.tagCheckBox.isChecked = !vm.isChecked
-//                dispatch(TagPickerAction.ToggleFavouriteTagSelection(vm.tag, !vm.isChecked))
+                view.tagCheckBox.isChecked = !vm.isChecked
             }
             view.tagCheckBox.setOnCheckedChangeListener { _, isChecked ->
-                Timber.d("AAAA selected ${vm.tag}")
                 if (isChecked) {
                     dispatch(TagPickerAction.AddFavouriteTag(vm.tag))
                 } else {
@@ -345,7 +339,6 @@ class TagPickerDialogController(args: Bundle? = null) :
 
     private val TagPickerViewState.favouriteViewModels: List<FavouriteTagViewModel>
         get() = favouriteTags.map {
-            Timber.d("AAA favourite ${selectedTags.contains(it)}" )
             FavouriteTagViewModel(
                 name = it.name,
                 icon = it.icon,
