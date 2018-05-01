@@ -4,7 +4,7 @@
 [![Discord](https://img.shields.io/discord/367715831913906176.svg?style=flat-square)](https://discord.gg/7AMKs28)
 [![License](https://img.shields.io/github/license/iPoli/iPoli-android.svg?style=flat-square)](https://github.com/iPoli/iPoli-android/blob/master/LICENSE)
 
-# [myPoli](http://bit.ly/ipoli-android): Personal smart time-management app for you
+# [myPoli](http://bit.ly/ipoli-android): Personal smart time-management for you
 
 <p align="center"><img src="./.github/icon.png" width="128px"/></p>
 
@@ -13,6 +13,12 @@ myPoli combines Calendar, ToDo list and Habit tracking app, all in one place to 
 <img src="./.github/screens/calendar.png" width="250px"/> &nbsp;&nbsp;&nbsp;
 <img src="./.github/screens/challenges.png" width="250px"/> &nbsp;&nbsp;&nbsp;
 <img src="./.github/screens/pet.png" width="250px"/> &nbsp;&nbsp;&nbsp;
+
+# Join the Community
+
+Have a question about **myPoli**? Found a bug or a feature is missing? Join us at Discord:
+
+<a href="https://discord.gg/7AMKs28"><img src="https://discordapp.com/assets/e7a3b51fdac2aa5ec71975d257d5c405.png" width="128px"/></a>
 
 # Download
 
