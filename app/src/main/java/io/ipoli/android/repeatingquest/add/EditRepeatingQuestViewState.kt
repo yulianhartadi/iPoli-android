@@ -18,7 +18,6 @@ import io.ipoli.android.quest.Reminder
 import io.ipoli.android.quest.reminder.picker.ReminderViewModel
 import io.ipoli.android.repeatingquest.add.EditRepeatingQuestViewState.DurationOption.*
 import io.ipoli.android.repeatingquest.add.EditRepeatingQuestViewState.RepeatPatternOption.*
-import io.ipoli.android.repeatingquest.add.EditRepeatingQuestViewState.RepeatPatternOption.MORE_OPTIONS
 import io.ipoli.android.repeatingquest.add.EditRepeatingQuestViewState.StateType.*
 import io.ipoli.android.repeatingquest.entity.RepeatPattern
 import io.ipoli.android.tag.Tag
@@ -140,16 +139,11 @@ object EditRepeatingQuestReducer : BaseViewStateReducer<EditRepeatingQuestViewSt
                     )
 
             is EditRepeatingQuestAction.PickRepeatPattern ->
-                if (action.repeatPatternOption == MORE_OPTIONS)
-                    subState.copy(
-                        type = SHOW_REPEATING_PATTERN_PICKER
-                    )
-                else
-                    subState.copy(
-                        type = NEXT_PAGE,
-                        repeatPattern = createRepeatingPatternFromOption(action.repeatPatternOption),
-                        adapterPosition = subState.adapterPosition + 1
-                    )
+                subState.copy(
+                    type = NEXT_PAGE,
+                    repeatPattern = createRepeatingPatternFromOption(action.repeatPatternOption),
+                    adapterPosition = subState.adapterPosition + 1
+                )
 
             is EditRepeatingQuestAction.RepeatPatternPicked ->
                 subState.copy(
@@ -384,7 +378,6 @@ data class EditRepeatingQuestViewState(
         VALID_NAME,
         VALIDATION_ERROR_EMPTY_NAME,
         TAGS_CHANGED,
-        SHOW_REPEATING_PATTERN_PICKER,
         NEXT_PAGE,
         PREVIOUS_PAGE,
         SUB_QUEST_ADDED,
