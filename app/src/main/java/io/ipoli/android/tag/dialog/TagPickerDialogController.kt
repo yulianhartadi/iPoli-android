@@ -2,6 +2,7 @@ package io.ipoli.android.tag.dialog
 
 import android.os.Bundle
 import android.support.v7.app.AlertDialog
+import android.support.v7.util.DiffUtil
 import android.support.v7.widget.LinearLayoutManager
 import android.view.LayoutInflater
 import android.view.View
@@ -242,7 +243,22 @@ class TagPickerDialogController(args: Bundle? = null) :
     )
 
     inner class FavouriteTagAdapter :
-        BaseRecyclerViewAdapter<FavouriteTagViewModel>(R.layout.item_tag_picker_favourite) {
+        BaseRecyclerViewAdapter<FavouriteTagViewModel>(R.layout.item_tag_picker_favourite, object : DiffUtil.ItemCallback<FavouriteTagViewModel>() {
+            override fun areItemsTheSame(
+                oldItem: FavouriteTagViewModel?,
+                newItem: FavouriteTagViewModel?
+            ): Boolean {
+                return oldItem?.tag?.id == newItem?.tag?.id
+            }
+
+            override fun areContentsTheSame(
+                oldItem: FavouriteTagViewModel?,
+                newItem: FavouriteTagViewModel?
+            ): Boolean {
+                return oldItem == newItem
+            }
+
+        }) {
         override fun onBindViewModel(
             vm: FavouriteTagViewModel,
             view: View,

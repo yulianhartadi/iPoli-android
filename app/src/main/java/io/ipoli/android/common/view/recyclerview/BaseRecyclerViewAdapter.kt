@@ -16,8 +16,9 @@ private class DiffCallback<VM> : DiffUtil.ItemCallback<VM>() {
 }
 
 abstract class BaseRecyclerViewAdapter<VM>(
-    @LayoutRes private val itemLayout: Int
-) : ListAdapter<VM, SimpleViewHolder>(DiffCallback<VM>()) {
+    @LayoutRes private val itemLayout: Int,
+    private val diffCallback: DiffUtil.ItemCallback<VM> = DiffCallback()
+) : ListAdapter<VM, SimpleViewHolder>(diffCallback) {
 
     override fun onCreateViewHolder(
         parent: ViewGroup,
@@ -40,8 +41,7 @@ abstract class BaseRecyclerViewAdapter<VM>(
     abstract fun onBindViewModel(vm: VM, view: View, holder: SimpleViewHolder)
 
     fun updateAll(viewModels: List<VM>) {
-        submitList(null)
-        submitList(viewModels)
+        submitList(viewModels.toMutableList())
     }
 
     fun add(viewModel: VM) {
