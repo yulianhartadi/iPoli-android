@@ -17,6 +17,7 @@ import com.bluelinelabs.conductor.changehandler.FadeChangeHandler
 import com.mikepenz.google_material_typeface_library.GoogleMaterial
 import com.mikepenz.iconics.IconicsDrawable
 import com.mikepenz.iconics.typeface.IIcon
+import com.mikepenz.material_design_iconic_typeface_library.MaterialDesignIconic
 import io.ipoli.android.R
 import io.ipoli.android.common.ViewUtils
 import io.ipoli.android.common.datetime.Time
@@ -25,6 +26,7 @@ import io.ipoli.android.common.view.*
 import io.ipoli.android.quest.Color
 import io.ipoli.android.quest.edit.EditQuestViewController
 import io.ipoli.android.quest.schedule.addquest.StateType.*
+import io.ipoli.android.tag.dialog.TagPickerDialogController
 import kotlinx.android.synthetic.main.controller_add_quest.view.*
 import org.threeten.bp.LocalDate
 
@@ -156,6 +158,7 @@ class AddQuestViewController(args: Bundle? = null) :
                 renderDuration(state, view)
                 renderColor(view, state)
                 renderIcon(view, state)
+                renderTags(view, state)
             }
 
             DATE_PICKED -> renderDate(view, state)
@@ -163,6 +166,8 @@ class AddQuestViewController(args: Bundle? = null) :
             TIME_PICKED -> renderStartTime(view, state)
 
             DURATION_PICKED -> renderDuration(state, view)
+
+            TAGS_PICKED -> renderTags(view, state)
 
             COLOR_PICKED -> renderColor(view, state)
 
@@ -178,6 +183,15 @@ class AddQuestViewController(args: Bundle? = null) :
 
             else -> {
             }
+        }
+    }
+
+    private fun renderTags(view: View, state: AddQuestViewState) {
+        setIcon(MaterialDesignIconic.Icon.gmi_label, view.tags, state.tags.isNotEmpty())
+        view.tags.setOnClickListener {
+            TagPickerDialogController(state.tags, { tags ->
+                dispatch(AddQuestAction.TagsPicked(tags))
+            }).show(router)
         }
     }
 
@@ -321,6 +335,7 @@ class AddQuestViewController(args: Bundle? = null) :
         setIcon(GoogleMaterial.Icon.gmd_event, view.scheduleDate, true)
         setIcon(GoogleMaterial.Icon.gmd_access_time, view.startTime)
         setIcon(GoogleMaterial.Icon.gmd_timer, view.duration)
+        setIcon(MaterialDesignIconic.Icon.gmi_label, view.tags)
         setIcon(GoogleMaterial.Icon.gmd_local_florist, view.icon)
         setColor(Color.GREEN, view)
         setIcon(GoogleMaterial.Icon.gmd_send, view.done)

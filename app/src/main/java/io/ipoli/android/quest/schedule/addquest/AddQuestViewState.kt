@@ -9,6 +9,7 @@ import io.ipoli.android.quest.Color
 import io.ipoli.android.quest.Icon
 import io.ipoli.android.quest.schedule.agenda.AgendaReducer
 import io.ipoli.android.quest.usecase.Result
+import io.ipoli.android.tag.Tag
 import org.threeten.bp.LocalDate
 
 /**
@@ -27,6 +28,7 @@ sealed class AddQuestAction : Action {
     object QuestSaved : AddQuestAction()
     data class SaveInvalidQuest(val error: Result.ValidationError) : AddQuestAction()
     data class DurationPicked(val minutes: Int) : AddQuestAction()
+    data class TagsPicked(val tags: Set<Tag>) : AddQuestAction()
 }
 
 object AddQuestReducer : BaseViewStateReducer<AddQuestViewState>() {
@@ -58,6 +60,9 @@ object AddQuestReducer : BaseViewStateReducer<AddQuestViewState>() {
             is AddQuestAction.DurationPicked ->
                 subState.copy(type = StateType.DURATION_PICKED, duration = action.minutes)
 
+            is AddQuestAction.TagsPicked ->
+                subState.copy(type = StateType.TAGS_PICKED, tags = action.tags)
+
             is AddQuestAction.ColorPicked ->
                 subState.copy(type = StateType.COLOR_PICKED, color = action.color)
 
@@ -87,7 +92,8 @@ object AddQuestReducer : BaseViewStateReducer<AddQuestViewState>() {
             color = null,
             duration = null,
             time = null,
-            icon = null
+            icon = null,
+            tags = emptySet()
         )
 }
 
@@ -99,7 +105,8 @@ data class AddQuestViewState(
     val time: Time?,
     val duration: Int?,
     val color: Color?,
-    val icon: Icon?
+    val icon: Icon?,
+    val tags : Set<Tag>
 ) : ViewState
 
 enum class StateType {
@@ -109,6 +116,7 @@ enum class StateType {
     DURATION_PICKED,
     COLOR_PICKED,
     ICON_PICKED,
+    TAGS_PICKED,
     VALIDATION_ERROR_EMPTY_NAME,
     QUEST_SAVED,
     PICK_DATE_CANCELED

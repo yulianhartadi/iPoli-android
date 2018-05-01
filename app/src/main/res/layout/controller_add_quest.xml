@@ -82,7 +82,7 @@
         android:background="?selectableItemBackgroundBorderless"
         android:padding="2dp"
         app:layout_constraintBottom_toBottomOf="@+id/scheduleDate"
-        app:layout_constraintEnd_toStartOf="@+id/icon"
+        app:layout_constraintEnd_toStartOf="@+id/tags"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toEndOf="@+id/startTime" />
 
@@ -95,6 +95,18 @@
         android:padding="2dp"
         app:layout_constraintBottom_toBottomOf="@+id/scheduleDate"
         app:layout_constraintEnd_toStartOf="@+id/color"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toEndOf="@+id/tags" />
+
+    <ImageView
+        android:id="@+id/tags"
+        android:layout_width="40dp"
+        android:layout_height="28dp"
+        android:layout_marginStart="12dp"
+        android:background="?selectableItemBackgroundBorderless"
+        android:padding="2dp"
+        app:layout_constraintBottom_toBottomOf="@+id/scheduleDate"
+        app:layout_constraintEnd_toStartOf="@+id/icon"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toEndOf="@+id/duration" />
 
