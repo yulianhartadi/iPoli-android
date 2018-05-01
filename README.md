@@ -16,19 +16,18 @@ myPoli combines Calendar, ToDo list and Habit tracking app, all in one place to 
 
 # Download
 
-**myPoli** can be download on [Google Play](http://bit.ly/ipoli-android):
+**myPoli** can be download from [Google Play](http://bit.ly/ipoli-android):
 
 <a href="http://bit.ly/ipoli-android"><img alt="Get it on Google Play" src="https://play.google.com/intl/en_us/badges/images/generic/en-play-badge.png" height="80"/></a>
 
 # Features
 
 * Calendar + ToDo list for your daily schedule
-* Smart Add - adding tasks using natural language
-* Progress Charts - Which tasks take most of your time? Did you work on more important tasks last week?
-* Sync between device & server
+* Have your own Pet - choose a Pet and take care of it by completing your Tasks
+* Sync between Android devices
 * Flexible habit scheduling - Workout 3 times per week every Mon, Tue, Fri and Sat
-* Sync with Google Calendar/Outlook (something else?)
-* Automatic task scheduling - find the best slot (time) to start/do a task
+* Sync with Google Calendar/Outlook
+* Amazing customization - choose your own theme, icons & colors
 
 # Libraries used
 
