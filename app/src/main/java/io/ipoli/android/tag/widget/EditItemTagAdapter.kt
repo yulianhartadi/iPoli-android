@@ -16,6 +16,7 @@ import io.ipoli.android.common.view.AndroidIcon
 import io.ipoli.android.common.view.normalIcon
 import io.ipoli.android.common.view.recyclerview.BaseRecyclerViewAdapter
 import io.ipoli.android.common.view.recyclerview.SimpleViewHolder
+import io.ipoli.android.quest.Color
 import io.ipoli.android.tag.Tag
 import kotlinx.android.synthetic.main.item_edit_quest_tag.view.*
 
@@ -47,7 +48,7 @@ class EditItemAutocompleteTagAdapter(tags: List<Tag>, context: Context) :
         view.text = item.name
 
         val icon = item.icon?.let { AndroidIcon.valueOf(it.name).icon } ?: MaterialDesignIconic.Icon.gmi_label
-        val color = item.icon?.let { AndroidIcon.valueOf(it.name).color } ?: R.color.md_green_500
+        val color = AndroidColor.valueOf(item.color.name).color500
 
         view.setCompoundDrawablesWithIntrinsicBounds(
             IconicsDrawable(view.context)
@@ -71,7 +72,7 @@ class EditItemTagAdapter(
         val name: String,
         val icon: IIcon,
         val tag: Tag,
-        val iconColor: Int = AndroidColor.valueOf(tag.color.name).color500
+        val iconColor: Color = tag.color
     )
 
     override fun onBindViewModel(vm: TagViewModel, view: View, holder: SimpleViewHolder) {
@@ -87,7 +88,7 @@ class EditItemTagAdapter(
             IconicsDrawable(view.context)
                 .normalIcon(
                     vm.icon,
-                    if (useWhiteTheme) R.color.md_white else vm.iconColor
+                    if (useWhiteTheme) R.color.md_white else AndroidColor.valueOf(vm.iconColor.name).color500
                 ).respectFontBounds(true), null, null, null
         )
 

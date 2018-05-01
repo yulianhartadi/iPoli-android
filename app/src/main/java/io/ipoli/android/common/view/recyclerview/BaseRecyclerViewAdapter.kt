@@ -60,7 +60,7 @@ abstract class BaseRecyclerViewAdapter<VM>(
         updateAll(vms)
     }
 
-    private val items: MutableList<VM>
+    public val items: MutableList<VM>
         get() = 0.until(itemCount).map {
             getItem(it)
         }.toMutableList()
