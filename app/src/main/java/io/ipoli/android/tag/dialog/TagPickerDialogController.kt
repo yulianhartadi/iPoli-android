@@ -11,6 +11,7 @@ import io.ipoli.android.Constants
 import io.ipoli.android.R
 import io.ipoli.android.common.AppState
 import io.ipoli.android.common.BaseViewStateReducer
+import io.ipoli.android.common.DataLoadedAction
 import io.ipoli.android.common.mvi.ViewState
 import io.ipoli.android.common.redux.Action
 import io.ipoli.android.common.view.*
@@ -59,6 +60,16 @@ object TagPickerReducer : BaseViewStateReducer<TagPickerViewState>() {
                 tags = state.dataState.tags,
                 favouriteTags = state.dataState.tags.filter { it.isFavorite },
                 selectedTags = action.selectedTags
+            )
+        }
+
+        is DataLoadedAction.TagsChanged -> {
+            val tags = action.tags
+            subState.copy(
+                type = TAGS_CHANGED,
+                tags = tags,
+                favouriteTags = tags.filter { it.isFavorite },
+                selectedTags = subState.selectedTags.filter { tags.contains(it) }.toSet()
             )
         }
 
