@@ -20,6 +20,7 @@ import android.view.LayoutInflater
 import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
+import android.view.inputmethod.EditorInfo
 import android.widget.ImageView
 import com.bluelinelabs.conductor.ControllerChangeHandler
 import com.bluelinelabs.conductor.ControllerChangeType
@@ -218,7 +219,7 @@ class QuestViewController : ReduxViewController<QuestAction, QuestViewState, Que
     ) {
         if (changeType == ControllerChangeType.PUSH_ENTER) {
             enterFullScreen()
-        } else if(changeType == ControllerChangeType.POP_ENTER) {
+        } else if (changeType == ControllerChangeType.POP_ENTER) {
             enterFullScreen()
         } else if (changeType == ControllerChangeType.POP_EXIT) {
             exitFullScreen()
@@ -332,8 +333,14 @@ class QuestViewController : ReduxViewController<QuestAction, QuestViewState, Que
         val adapter = view.subQuestList.adapter as SubQuestAdapter
         adapter.updateAll(state.subQuestViewModels)
         view.addSubQuest.setOnClickListener {
-            val name = view.newSubQuestName.text.toString()
-            dispatch(QuestAction.AddSubQuest(name))
+            addSubQuest(view)
+        }
+
+        view.newSubQuestName.setOnEditorActionListener { _, actionId, _ ->
+            if (actionId == EditorInfo.IME_ACTION_DONE) {
+                addSubQuest(view)
+            }
+            true
         }
 
         val animator = ObjectAnimator.ofInt(
@@ -386,6 +393,11 @@ class QuestViewController : ReduxViewController<QuestAction, QuestViewState, Que
             view.doneLabel.setAllCaps(false)
         }
 
+    }
+
+    private fun addSubQuest(view: View) {
+        val name = view.newSubQuestName.text.toString()
+        dispatch(QuestAction.AddSubQuest(name))
     }
 
     private fun cancelAnimations(view: View) {
