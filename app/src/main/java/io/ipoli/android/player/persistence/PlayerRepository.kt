@@ -4,13 +4,11 @@ import android.content.SharedPreferences
 import android.net.Uri
 import com.google.android.gms.tasks.Tasks
 import com.google.firebase.auth.FacebookAuthProvider
-import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseAuthProvider
 import com.google.firebase.auth.GoogleAuthProvider
 import com.google.firebase.firestore.DocumentListenOptions
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.ListenerRegistration
-import io.ipoli.android.Constants
 import io.ipoli.android.achievement.Achievement
 import io.ipoli.android.challenge.predefined.entity.PredefinedChallenge
 import io.ipoli.android.common.datetime.Time
@@ -121,12 +119,10 @@ class FirestorePlayerRepository(
         collectionReference.document(playerId).delete()
     }
 
-
     private fun usernamesReference() = database.collection("usernames")
 
     override fun hasPlayer(): Boolean =
-        sharedPreferences.getString(Constants.KEY_PLAYER_ID, null) != null
-            && FirebaseAuth.getInstance().currentUser != null
+        entityReference.getSync().exists()
 
     override fun findSchemaVersion(): Int? {
         val result = entityReference.getSync()

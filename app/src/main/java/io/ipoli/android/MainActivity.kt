@@ -96,11 +96,13 @@ class MainActivity : AppCompatActivity(), Injects<Module>, SideEffectHandler<App
         router.setPopsLastView(true)
         inject(myPoliApp.module(this))
 
-        val hasPlayer = playerRepository.hasPlayer()
-        if (!hasPlayer) {
-            router.setRoot(RouterTransaction.with(AuthViewController()))
-        } else {
-            launch(CommonPool) {
+        launch(CommonPool) {
+            val hasPlayer = playerRepository.hasPlayer()
+            if (!hasPlayer) {
+                withContext(UI) {
+                    router.setRoot(RouterTransaction.with(AuthViewController()))
+                }
+            } else {
                 val p = playerRepository.find()!!
                 withContext(UI) {
                     if (p.isLoggedIn() && p.username.isNullOrEmpty()) {
