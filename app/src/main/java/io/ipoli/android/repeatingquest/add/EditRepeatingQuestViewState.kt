@@ -127,16 +127,11 @@ object EditRepeatingQuestReducer : BaseViewStateReducer<EditRepeatingQuestViewSt
             }
 
             is EditRepeatingQuestAction.PickDuration ->
-                if (action.durationOption == EditRepeatingQuestViewState.DurationOption.MORE_OPTIONS)
-                    subState.copy(
-                        type = SHOW_DURATION_PICKER
-                    )
-                else
-                    subState.copy(
-                        type = NEXT_PAGE,
-                        duration = createDurationFromOption(action.durationOption),
-                        adapterPosition = subState.adapterPosition + 1
-                    )
+                subState.copy(
+                    type = NEXT_PAGE,
+                    duration = createDurationFromOption(action.durationOption),
+                    adapterPosition = subState.adapterPosition + 1
+                )
 
             is EditRepeatingQuestAction.PickRepeatPattern ->
                 subState.copy(
@@ -390,7 +385,6 @@ data class EditRepeatingQuestViewState(
         COLOR_CHANGED,
         ICON_CHANGED,
         NOTE_CHANGED,
-        SHOW_DURATION_PICKER,
         SUMMARY_DATA_LOADED,
         NAME_DATA_LOADED
     }

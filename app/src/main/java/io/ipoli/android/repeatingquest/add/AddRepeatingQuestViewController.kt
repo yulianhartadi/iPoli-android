@@ -348,7 +348,11 @@ class AddRepeatingQuestViewController(args: Bundle? = null) :
             view.wizardOptions.setHasFixedSize(true)
             val adapter = RepeatPatternOptionAdapter()
             view.wizardOptions.adapter = adapter
-            adapter.updateAll(EditRepeatingQuestViewState.RepeatPatternOption.values().map { SimpleRecyclerViewViewModel(it) })
+            adapter.updateAll(EditRepeatingQuestViewState.RepeatPatternOption.values().map {
+                SimpleRecyclerViewViewModel(
+                    it
+                )
+            })
             return view
         }
 
@@ -368,7 +372,9 @@ class AddRepeatingQuestViewController(args: Bundle? = null) :
         }
 
         inner class RepeatPatternOptionAdapter :
-            BaseRecyclerViewAdapter<SimpleRecyclerViewViewModel<EditRepeatingQuestViewState.RepeatPatternOption>>(R.layout.item_wizard_option) {
+            BaseRecyclerViewAdapter<SimpleRecyclerViewViewModel<EditRepeatingQuestViewState.RepeatPatternOption>>(
+                R.layout.item_wizard_option
+            ) {
 
             override fun onBindViewModel(
                 vm: SimpleRecyclerViewViewModel<EditRepeatingQuestViewState.RepeatPatternOption>,
@@ -377,7 +383,7 @@ class AddRepeatingQuestViewController(args: Bundle? = null) :
             ) {
                 (view as TextView).text = vm.value.text
                 view.setOnClickListener {
-                    if (vm == MORE_OPTIONS) {
+                    if (vm.value == MORE_OPTIONS) {
                         RepeatPatternPickerDialogController(
                             null,
                             {
@@ -443,18 +449,12 @@ class AddRepeatingQuestViewController(args: Bundle? = null) :
         }
 
         override fun render(state: EditRepeatingQuestViewState, view: View) {
-            when (state.type) {
-                EditRepeatingQuestViewState.StateType.SHOW_DURATION_PICKER -> {
-                    DurationPickerDialogController(
-                        state.duration.intValue,
-                        { dispatch(EditRepeatingQuestAction.DurationPicked(it)) }
-                    ).show(router, "pick_duration_tag")
-                }
-            }
         }
 
         inner class DurationOptionAdapter :
-            BaseRecyclerViewAdapter<SimpleRecyclerViewViewModel<EditRepeatingQuestViewState.DurationOption>>(R.layout.item_wizard_option) {
+            BaseRecyclerViewAdapter<SimpleRecyclerViewViewModel<EditRepeatingQuestViewState.DurationOption>>(
+                R.layout.item_wizard_option
+            ) {
 
             override fun onBindViewModel(
                 vm: SimpleRecyclerViewViewModel<EditRepeatingQuestViewState.DurationOption>,
@@ -463,7 +463,14 @@ class AddRepeatingQuestViewController(args: Bundle? = null) :
             ) {
                 (view as TextView).text = vm.value.text
                 view.setOnClickListener {
-                    dispatch(EditRepeatingQuestAction.PickDuration(vm.value))
+                    if (vm.value == EditRepeatingQuestViewState.DurationOption.MORE_OPTIONS) {
+                        DurationPickerDialogController(
+                            null,
+                            { dispatch(EditRepeatingQuestAction.DurationPicked(it)) }
+                        ).show(router, "pick_duration_tag")
+                    } else {
+                        dispatch(EditRepeatingQuestAction.PickDuration(vm.value))
+                    }
                 }
             }
         }
@@ -497,7 +504,7 @@ class AddRepeatingQuestViewController(args: Bundle? = null) :
             val view = container.inflate(R.layout.controller_add_repeating_quest_summary)
             view.summarySubQuestList.layoutManager = LinearLayoutManager(activity!!)
             view.summarySubQuestList.adapter =
-                    ReadOnlySubQuestAdapter(view.summarySubQuestList, useLightTheme = true)
+                ReadOnlySubQuestAdapter(view.summarySubQuestList, useLightTheme = true)
 
             newSubQuestWatcher = object : TextWatcher {
                 override fun afterTextChanged(editable: Editable) {
