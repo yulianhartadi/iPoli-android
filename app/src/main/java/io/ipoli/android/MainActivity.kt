@@ -19,7 +19,6 @@ import com.bluelinelabs.conductor.Router
 import com.bluelinelabs.conductor.RouterTransaction
 import com.bluelinelabs.conductor.changehandler.FadeChangeHandler
 import io.ipoli.android.common.AppState
-import io.ipoli.android.common.DataLoadedAction
 import io.ipoli.android.common.LoadDataAction
 import io.ipoli.android.common.di.Module
 import io.ipoli.android.common.home.HomeAction
@@ -40,6 +39,7 @@ import io.ipoli.android.tag.show.TagAction
 import kotlinx.coroutines.experimental.CommonPool
 import kotlinx.coroutines.experimental.android.UI
 import kotlinx.coroutines.experimental.launch
+import kotlinx.coroutines.experimental.withContext
 import org.threeten.bp.LocalDate
 import space.traversal.kapsule.Injects
 import space.traversal.kapsule.inject
@@ -73,13 +73,13 @@ class MainActivity : AppCompatActivity(), Injects<Module>, SideEffectHandler<App
                 .setBackgroundResource(backgroundColor)
         }
 
-        if (BuildConfig.DEBUG) {
-
+        if (BuildConfig.DEBUG && Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             if (!Settings.canDrawOverlays(this)) {
-                val intent = Intent(
-                    Settings.ACTION_MANAGE_OVERLAY_PERMISSION,
-                    Uri.parse("package:$packageName")
-                )
+                val intent =
+                    Intent(
+                        Settings.ACTION_MANAGE_OVERLAY_PERMISSION,
+                        Uri.parse("package:$packageName")
+                    )
                 startActivityForResult(intent, 0)
             }
         }
@@ -101,7 +101,7 @@ class MainActivity : AppCompatActivity(), Injects<Module>, SideEffectHandler<App
         } else {
             launch(CommonPool) {
                 val p = playerRepository.find()!!
-                launch(UI) {
+                withContext(UI) {
                     if (p.isLoggedIn() && p.username.isNullOrEmpty()) {
                         router.setRoot(RouterTransaction.with(AuthViewController()))
                     } else {
@@ -209,7 +209,7 @@ class MainActivity : AppCompatActivity(), Injects<Module>, SideEffectHandler<App
     }
 
     override suspend fun execute(action: Action, state: AppState, dispatcher: Dispatcher) {
-        launch(UI) {
+        withContext(UI) {
             when (action) {
                 is ShowBuyPowerUpAction ->
                     showPowerUpDialog(action)
@@ -271,7 +271,6 @@ class MainActivity : AppCompatActivity(), Injects<Module>, SideEffectHandler<App
     private val isBatteryOptimizationOn: Boolean
         get() {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-
                 val p = getSystemService(Context.POWER_SERVICE) as PowerManager
                 return !p.isIgnoringBatteryOptimizations(packageName)
             } else {
@@ -295,8 +294,11 @@ class MainActivity : AppCompatActivity(), Injects<Module>, SideEffectHandler<App
                     Toast.LENGTH_LONG
                 ).show()
 
-                val intent = Intent(Settings.ACTION_IGNORE_BATTERY_OPTIMIZATION_SETTINGS)
-                startActivity(intent)
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                    val intent =
+                        Intent(Settings.ACTION_IGNORE_BATTERY_OPTIMIZATION_SETTINGS)
+                    startActivity(intent)
+                }
 
             }).show()
         }
