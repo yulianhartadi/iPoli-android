@@ -12,7 +12,6 @@ import android.view.animation.AccelerateDecelerateInterpolator
 import com.bluelinelabs.conductor.RestoreViewOnCreateController
 import com.bluelinelabs.conductor.RouterTransaction
 import io.ipoli.android.R
-import io.ipoli.android.R.id.addContainer
 import io.ipoli.android.common.ViewUtils
 import io.ipoli.android.common.view.*
 import io.ipoli.android.common.view.changehandler.CircularRevealChangeHandler
@@ -64,7 +63,8 @@ class AddQuestAnimationHelper(
 
     fun closeAddContainer() {
         background.gone()
-        val duration = controller.activity!!.resources.getInteger(android.R.integer.config_shortAnimTime).toLong()
+        val duration =
+            background.resources.getInteger(android.R.integer.config_shortAnimTime).toLong()
 
         val revealAnim = RevealAnimator().createWithEndRadius(
             view = addContainer,
@@ -77,6 +77,9 @@ class AddQuestAnimationHelper(
         revealAnim.addListener(object : AnimatorListenerAdapter() {
 
             override fun onAnimationEnd(animation: Animator?) {
+                if (controller.view == null) {
+                    return
+                }
                 addContainer.invisible()
                 addContainer.requestFocus()
                 fab.visible()
@@ -100,7 +103,7 @@ class AddQuestAnimationHelper(
         reverse: Boolean = false
     ): AnimatorSet {
         val duration =
-            controller.activity!!.resources.getInteger(android.R.integer.config_shortAnimTime)
+            fab.resources.getInteger(android.R.integer.config_shortAnimTime)
                 .toLong()
         val fabTranslation = ObjectAnimator.ofFloat(fab, "x", x)
 
