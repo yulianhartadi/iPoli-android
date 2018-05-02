@@ -144,7 +144,9 @@ class HomeViewController(args: Bundle? = null) :
 
             else -> {
                 if (TAG_IDS.contains(item.itemId)) {
-                    dispatch(HomeAction.SelectTag(TAG_IDS.indexOf(item.itemId)))
+                    pushWithRootRouter(
+                        TagViewController.routerTransaction(item.actionView.tag as String)
+                    )
                 }
             }
         }
@@ -257,11 +259,6 @@ class HomeViewController(args: Bundle? = null) :
             TAGS_CHANGED ->
                 renderTags(view, state)
 
-            TAG_SELECTED ->
-                pushWithRootRouter(
-                    TagViewController.routerTransaction(state.tags[state.selectedTagIndex!!].id)
-                )
-
             UNSCHEDULED_QUESTS_CHANGED ->
                 renderBucketList(state.bucketListQuestCount, view)
         }
@@ -294,7 +291,8 @@ class HomeViewController(args: Bundle? = null) :
             tagItems.add(
                 createTagForNavigationDrawer(
                     view = view,
-                    tagId = TAG_IDS[index],
+                    tagId = tag.id,
+                    viewId = TAG_IDS[index],
                     name = tag.name,
                     icon = state.tagIcon(tag),
                     iconColor = tag.color.androidColor.color500,
@@ -358,22 +356,25 @@ class HomeViewController(args: Bundle? = null) :
 
     private fun createTagForNavigationDrawer(
         view: View,
-        @IdRes tagId: Int,
+        @IdRes viewId: Int,
         name: String,
         icon: IIcon,
         questCount: Int,
         @ColorRes iconColor: Int,
-        isVisible: Boolean
+        isVisible: Boolean,
+        tagId: String
     ): MenuItem {
         val item = view.navigationView.menu.add(
             R.id.drawerMainGroup,
-            tagId,
+            viewId,
             0,
             name
         )
+
         item.actionView =
                 LayoutInflater.from(view.context).inflate(R.layout.menu_item_tag_view, null)
         item.actionView.questCount.text = questCount.toString()
+        item.actionView.tag = tagId
 
         item.icon = IconicsDrawable(activity!!)
             .icon(icon)
@@ -384,7 +385,8 @@ class HomeViewController(args: Bundle? = null) :
         ic.mutate()
         ic.setColorFilter(colorRes(iconColor), PorterDuff.Mode.SRC_ATOP)
         item.isVisible = isVisible
-        item.isCheckable = true
+        item.isCheckable = false
+        item.isChecked = false
         return item
     }
 

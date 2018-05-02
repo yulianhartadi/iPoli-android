@@ -21,8 +21,6 @@ sealed class HomeAction : Action {
     object HideTags : HomeAction()
     object ShowTags : HomeAction()
     object ShowPlayerSetup : HomeAction()
-
-    data class SelectTag(val index: Int) : HomeAction()
 }
 
 object HomeReducer : BaseViewStateReducer<HomeViewState>() {
@@ -75,13 +73,6 @@ object HomeReducer : BaseViewStateReducer<HomeViewState>() {
                     type = TAGS_SHOWN,
                     showTags = true
                 )
-
-            is HomeAction.SelectTag ->
-                subState.copy(
-                    type = TAG_SELECTED,
-                    selectedTagIndex = action.index
-                )
-
             else -> subState
         }
 
@@ -146,7 +137,6 @@ data class HomeViewState(
         UNSCHEDULED_QUESTS_CHANGED,
         TAGS_CHANGED,
         TAGS_SHOWN,
-        TAGS_HIDDEN,
-        TAG_SELECTED
+        TAGS_HIDDEN
     }
 }

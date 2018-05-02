@@ -29,7 +29,6 @@ import io.ipoli.android.quest.schedule.addquest.StateType.*
 import io.ipoli.android.tag.dialog.TagPickerDialogController
 import kotlinx.android.synthetic.main.controller_add_quest.view.*
 import org.threeten.bp.LocalDate
-import timber.log.Timber
 
 /**
  * Created by Polina Zhelyazkova <polina@mypoli.fun>
