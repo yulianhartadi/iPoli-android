@@ -11,7 +11,6 @@ import kotlinx.coroutines.experimental.channels.Channel
 import kotlinx.coroutines.experimental.channels.SendChannel
 import kotlinx.coroutines.experimental.launch
 import kotlinx.coroutines.experimental.runBlocking
-import kotlinx.coroutines.experimental.withContext
 import org.threeten.bp.Instant
 import timber.log.Timber
 import java.util.concurrent.ConcurrentHashMap
@@ -202,22 +201,20 @@ abstract class BaseEntityFirestoreRepository<E, out T>(
     abstract val entityReference: DocumentReference
 
     override suspend fun listen(channel: Channel<E?>): Channel<E?> {
-        withContext(UI) {
 
-            removeChannelRegistration(channel)
+        removeChannelRegistration(channel)
 
-            val registration: ListenerRegistration?
-            registration = entityReference
-                .addSnapshotListener { snapshot, error ->
+        val registration: ListenerRegistration?
+        registration = entityReference
+            .addSnapshotListener { snapshot, error ->
 
-                    if (shouldNotSendData(error, channel)) return@addSnapshotListener
+                if (shouldNotSendData(error, channel)) return@addSnapshotListener
 
-                    launch(coroutineContext) {
-                        channel.send(toEntityObject(snapshot!!.data!!))
-                    }
+                launch(coroutineContext) {
+                    channel.send(toEntityObject(snapshot!!.data!!))
                 }
-            mapChannelToRegistration(channel, registration)
-        }
+            }
+        mapChannelToRegistration(channel, registration)
         return channel
     }
 
@@ -240,43 +237,37 @@ abstract class BaseCollectionFirestoreRepository<E, out T>(
     override fun findAll() = collectionReference.entities
 
     override suspend fun listenById(id: String, channel: Channel<E?>): Channel<E?> {
-        withContext(UI) {
 
-            removeChannelRegistration(channel)
+        removeChannelRegistration(channel)
 
-            val registration: ListenerRegistration?
-            registration = documentReference(id)
-                .addSnapshotListener { snapshot, error ->
+        val registration: ListenerRegistration?
+        registration = documentReference(id)
+            .addSnapshotListener { snapshot, error ->
 
-                    if (shouldNotSendData(error, channel)) return@addSnapshotListener
+                if (shouldNotSendData(error, channel)) return@addSnapshotListener
 
-                    launch(coroutineContext) {
-                        channel.send(toEntityObject(snapshot!!.data!!))
-                    }
+                launch(coroutineContext) {
+                    channel.send(toEntityObject(snapshot!!.data!!))
                 }
-            mapChannelToRegistration(channel, registration)
-        }
+            }
+        mapChannelToRegistration(channel, registration)
         return channel
     }
 
     private suspend fun listen(query: Query, channel: Channel<List<E>>): Channel<List<E>> {
-        withContext(UI) {
+        removeChannelRegistration(channel)
+        val registration: ListenerRegistration?
+        registration = query
+            .whereEqualTo("removedAt", null)
+            .addSnapshotListener { snapshot, error ->
 
-            removeChannelRegistration(channel)
+                if (shouldNotSendData(error, channel)) return@addSnapshotListener
 
-            val registration: ListenerRegistration?
-            registration = query
-                .whereEqualTo("removedAt", null)
-                .addSnapshotListener { snapshot, error ->
-
-                    if (shouldNotSendData(error, channel)) return@addSnapshotListener
-
-                    launch(coroutineContext) {
-                        channel.send(toEntityObjects(snapshot!!.documents))
-                    }
+                launch(coroutineContext) {
+                    channel.send(toEntityObjects(snapshot!!.documents))
                 }
-            mapChannelToRegistration(channel, registration)
-        }
+            }
+        mapChannelToRegistration(channel, registration)
         return channel
     }
 
