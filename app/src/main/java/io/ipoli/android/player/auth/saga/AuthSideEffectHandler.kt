@@ -269,7 +269,7 @@ class AuthSideEffectHandler : AppSideEffectHandler() {
     }
 
     private fun prepareAppStart() {
-        dispatch(LoadDataAction.Preload)
+        dispatch(LoadDataAction.All)
         petStatsChangeScheduler.schedule()
         saveQuestsForRepeatingQuestScheduler.schedule()
         removeExpiredPowerUpsScheduler.schedule()

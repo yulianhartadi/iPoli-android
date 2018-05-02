@@ -1,7 +1,6 @@
 package io.ipoli.android.common.async
 
 import kotlinx.coroutines.experimental.CommonPool
-import kotlinx.coroutines.experimental.android.UI
 import kotlinx.coroutines.experimental.channels.Channel
 import kotlinx.coroutines.experimental.channels.consumeEach
 import kotlinx.coroutines.experimental.launch
@@ -24,7 +23,7 @@ class ChannelRelay<E, in P>(
 
     fun listen(params: P) {
         this.params = params
-        launch(UI) {
+        launch(CommonPool) {
             producer(channel, this@ChannelRelay.params!!)
         }
     }

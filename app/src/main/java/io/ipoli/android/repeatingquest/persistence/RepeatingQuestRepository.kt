@@ -1,6 +1,7 @@
 package io.ipoli.android.repeatingquest.persistence
 
 import android.content.SharedPreferences
+import com.google.firebase.firestore.CollectionReference
 import com.google.firebase.firestore.FirebaseFirestore
 import io.ipoli.android.common.datetime.Time
 import io.ipoli.android.common.datetime.TimePreference
@@ -9,16 +10,18 @@ import io.ipoli.android.common.datetime.startOfDayUTC
 import io.ipoli.android.common.persistence.BaseCollectionFirestoreRepository
 import io.ipoli.android.common.persistence.CollectionRepository
 import io.ipoli.android.common.persistence.FirestoreModel
-import io.ipoli.android.common.persistence.TagProvider
 import io.ipoli.android.quest.*
 import io.ipoli.android.quest.data.persistence.DbReminder
 import io.ipoli.android.quest.data.persistence.DbSubQuest
 import io.ipoli.android.quest.subquest.SubQuest
 import io.ipoli.android.repeatingquest.entity.RepeatPattern
 import io.ipoli.android.repeatingquest.persistence.DbRepeatPattern.Type.*
+import io.ipoli.android.tag.Tag
+import io.ipoli.android.tag.persistence.TagRepository
 import org.threeten.bp.DayOfWeek
 import org.threeten.bp.LocalDate
 import org.threeten.bp.Month
+import java.util.concurrent.ConcurrentHashMap
 import kotlin.coroutines.experimental.CoroutineContext
 
 /**
@@ -82,22 +85,29 @@ class FirestoreRepeatingQuestRepository(
     database: FirebaseFirestore,
     coroutineContext: CoroutineContext,
     sharedPreferences: SharedPreferences,
-    tagProvider: TagProvider
+    private val tagRepository: TagRepository
 ) : BaseCollectionFirestoreRepository<RepeatingQuest, DbRepeatingQuest>(
     database,
     coroutineContext,
     sharedPreferences
 ), RepeatingQuestRepository {
 
-    private val tags by tagProvider
+    private val tags = ConcurrentHashMap<String, Tag>()
 
     override fun findActiveNotForChallenge(
         challengeId: String,
         currentDate: LocalDate
     ) = findAllActive(currentDate).filter { it.challengeId != challengeId }
 
-    override val collectionReference
-        get() = database.collection("players").document(playerId).collection("repeatingQuests")
+    override val collectionReference: CollectionReference
+        get() {
+            val t = tagRepository.findAll()
+            tags.clear()
+            t.forEach {
+                tags[it.id] = it
+            }
+            return database.collection("players").document(playerId).collection("repeatingQuests")
+        }
 
     override fun findAllActive(currentDate: LocalDate): List<RepeatingQuest> {
         val rqsWithEndDate = collectionReference

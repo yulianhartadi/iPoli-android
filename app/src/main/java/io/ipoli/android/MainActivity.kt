@@ -54,6 +54,7 @@ class MainActivity : AppCompatActivity(), Injects<Module>, SideEffectHandler<App
     lateinit var router: Router
 
     private val playerRepository by required { playerRepository }
+    private val tagRepository by required { tagRepository }
 
     private val stateStore by required { stateStore }
 
@@ -105,7 +106,8 @@ class MainActivity : AppCompatActivity(), Injects<Module>, SideEffectHandler<App
                     if (p.isLoggedIn() && p.username.isNullOrEmpty()) {
                         router.setRoot(RouterTransaction.with(AuthViewController()))
                     } else {
-                        stateStore.dispatch(LoadDataAction.Preload)
+                        stateStore.dispatch(LoadDataAction.All)
+                        startApp()
                     }
                 }
             }
@@ -113,7 +115,6 @@ class MainActivity : AppCompatActivity(), Injects<Module>, SideEffectHandler<App
     }
 
     private fun startApp() {
-
         if (intent.action == ACTION_SHOW_TIMER) {
             showTimer(intent)
         } else if (shouldShowQuickAdd(intent)) {
@@ -223,9 +224,6 @@ class MainActivity : AppCompatActivity(), Injects<Module>, SideEffectHandler<App
 
                 is HomeAction.ShowPlayerSetup ->
                     router.setRoot(RouterTransaction.with(AuthViewController()))
-
-                is LoadDataAction.All ->
-                    startApp()
             }
         }
     }
@@ -266,7 +264,6 @@ class MainActivity : AppCompatActivity(), Injects<Module>, SideEffectHandler<App
         action is ShowBuyPowerUpAction
                 || action === TagAction.TagCountLimitReached
                 || action === HomeAction.ShowPlayerSetup
-                || action === LoadDataAction.All
 
     private val isBatteryOptimizationOn: Boolean
         get() {

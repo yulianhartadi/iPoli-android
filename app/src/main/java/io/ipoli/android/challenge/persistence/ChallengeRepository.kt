@@ -1,6 +1,7 @@
 package io.ipoli.android.challenge.persistence
 
 import android.content.SharedPreferences
+import com.google.firebase.firestore.CollectionReference
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.Query
 import io.ipoli.android.challenge.entity.Challenge
@@ -10,10 +11,12 @@ import io.ipoli.android.common.datetime.startOfDayUTC
 import io.ipoli.android.common.persistence.BaseCollectionFirestoreRepository
 import io.ipoli.android.common.persistence.CollectionRepository
 import io.ipoli.android.common.persistence.FirestoreModel
-import io.ipoli.android.common.persistence.TagProvider
 import io.ipoli.android.quest.Color
 import io.ipoli.android.quest.Icon
+import io.ipoli.android.tag.Tag
+import io.ipoli.android.tag.persistence.TagRepository
 import kotlinx.coroutines.experimental.channels.Channel
+import java.util.concurrent.ConcurrentHashMap
 import kotlin.coroutines.experimental.CoroutineContext
 
 /**
@@ -28,17 +31,24 @@ class FirestoreChallengeRepository(
     database: FirebaseFirestore,
     coroutineContext: CoroutineContext,
     sharedPreferences: SharedPreferences,
-    tagProvider: TagProvider
+    private val tagRepository: TagRepository
 ) : BaseCollectionFirestoreRepository<Challenge, DbChallenge>(
     database,
     coroutineContext,
     sharedPreferences
 ), ChallengeRepository {
 
-    private val tags by tagProvider
+    private val tags = ConcurrentHashMap<String, Tag>()
 
-    override val collectionReference
-        get() = database.collection("players").document(playerId).collection("challenges")
+    override val collectionReference: CollectionReference
+        get() {
+            val t = tagRepository.findAll()
+            tags.clear()
+            t.forEach {
+                tags[it.id] = it
+            }
+            return database.collection("players").document(playerId).collection("challenges")
+        }
 
     override suspend fun listenForAll(channel: Channel<List<Challenge>>) =
         collectionReference

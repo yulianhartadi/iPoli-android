@@ -1,6 +1,7 @@
 package io.ipoli.android.quest.data.persistence
 
 import android.content.SharedPreferences
+import com.google.firebase.firestore.CollectionReference
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.Query
 import com.google.firebase.firestore.WriteBatch
@@ -8,12 +9,14 @@ import io.ipoli.android.common.datetime.*
 import io.ipoli.android.common.persistence.BaseCollectionFirestoreRepository
 import io.ipoli.android.common.persistence.CollectionRepository
 import io.ipoli.android.common.persistence.FirestoreModel
-import io.ipoli.android.common.persistence.TagProvider
 import io.ipoli.android.pet.Food
 import io.ipoli.android.quest.*
 import io.ipoli.android.quest.subquest.SubQuest
+import io.ipoli.android.tag.Tag
+import io.ipoli.android.tag.persistence.TagRepository
 import kotlinx.coroutines.experimental.channels.Channel
 import org.threeten.bp.*
+import java.util.concurrent.ConcurrentHashMap
 import kotlin.coroutines.experimental.CoroutineContext
 
 interface QuestRepository : CollectionRepository<Quest> {
@@ -171,14 +174,14 @@ class FirestoreQuestRepository(
     database: FirebaseFirestore,
     coroutineContext: CoroutineContext,
     sharedPreferences: SharedPreferences,
-    tagProvider: TagProvider
+    private val tagRepository: TagRepository
 ) : BaseCollectionFirestoreRepository<Quest, DbQuest>(
     database,
     coroutineContext,
     sharedPreferences
 ), QuestRepository {
 
-    private val tags by tagProvider
+    private val tags = ConcurrentHashMap<String, Tag>()
 
     override fun findAllForRepeatingQuestAfterDate(
         repeatingQuestId: String,
@@ -459,8 +462,15 @@ class FirestoreQuestRepository(
         return startDateQuests.last().scheduledDate
     }
 
-    override val collectionReference
-        get() = database.collection("players").document(playerId).collection("quests")
+    override val collectionReference: CollectionReference
+        get() {
+            val t = tagRepository.findAll()
+            tags.clear()
+            t.forEach {
+                tags[it.id] = it
+            }
+            return database.collection("players").document(playerId).collection("quests")
+        }
 
     private val remindersReference
         get() = database.collection("players").document(playerId).collection("questReminders")

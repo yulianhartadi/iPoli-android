@@ -8,7 +8,6 @@ import io.ipoli.android.challenge.usecase.FindNextDateForChallengeUseCase
 import io.ipoli.android.challenge.usecase.FindQuestsForChallengeUseCase
 import io.ipoli.android.common.async.ChannelRelay
 import io.ipoli.android.common.di.Module
-import io.ipoli.android.common.home.HomeAction
 import io.ipoli.android.common.redux.Action
 import io.ipoli.android.common.redux.Dispatcher
 import io.ipoli.android.common.redux.SideEffectHandler
@@ -109,29 +108,6 @@ class BuyPetSideEffectHandler : AppSideEffectHandler() {
     }
 
     override fun canHandle(action: Action) = action is PetStoreAction.BuyPet
-}
-
-class PreloadDataSideEffectHandler : AppSideEffectHandler() {
-
-    private val tagProvider by required { tagProvider }
-    private val tagRepository by required { tagRepository }
-    private val playerRepository by required { playerRepository }
-
-    override suspend fun doExecute(action: Action, state: AppState) {
-        when (action) {
-            LoadDataAction.Preload -> {
-                val p = playerRepository.find()!!
-                if (p.isLoggedIn() && p.username.isNullOrEmpty()) {
-                    dispatch(HomeAction.ShowPlayerSetup)
-                } else {
-                    tagProvider.updateTags(tagRepository.findAll())
-                    dispatch(LoadDataAction.All)
-                }
-            }
-        }
-    }
-
-    override fun canHandle(action: Action) = action === LoadDataAction.Preload
 }
 
 class LoadAllDataSideEffectHandler : AppSideEffectHandler() {

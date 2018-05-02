@@ -130,7 +130,7 @@ class FirestoreRepositoryModule : RepositoryModule, Injects<Module> {
             database,
             job + CommonPool,
             sharedPreferences,
-            tagProvider
+            FirestoreTagRepository(database, job + CommonPool, sharedPreferences)
         )
     }
 
@@ -149,7 +149,7 @@ class FirestoreRepositoryModule : RepositoryModule, Injects<Module> {
                     database,
                     job + CommonPool,
                     sharedPreferences,
-                    tagProvider
+                    FirestoreTagRepository(database, job + CommonPool, sharedPreferences)
                 )
             }
 
@@ -158,7 +158,7 @@ class FirestoreRepositoryModule : RepositoryModule, Injects<Module> {
             database,
             job + CommonPool,
             sharedPreferences,
-            tagProvider
+            FirestoreTagRepository(database, job + CommonPool, sharedPreferences)
         )
     }
 
@@ -674,7 +674,6 @@ class AndroidStateStoreModule : StateStoreModule, Injects<Module> {
                 AppDataReducer
             ),
             sideEffectHandlers = setOf(
-                PreloadDataSideEffectHandler(),
                 LoadAllDataSideEffectHandler(),
                 AuthSideEffectHandler(),
                 AgendaSideEffectHandler(),
