@@ -127,8 +127,16 @@ class AuthViewController(args: Bundle? = null) :
     override fun render(state: AuthViewState, view: View) {
 
         view.startJourney.setOnClickListener {
-            view.startJourney.isClickable = false
-            dispatch(AuthAction.CompleteSetup(view.username.text.toString(), state.playerAvatar))
+            if(state.type != USERNAME_VALIDATION_ERROR) {
+                view.startJourney.isClickable = false
+                dispatch(
+                    AuthAction.CompleteSetup(
+                        view.username.text.toString(),
+                        state.playerAvatar
+                    )
+                )
+                showLoader()
+            }
         }
 
         when (state.type) {
