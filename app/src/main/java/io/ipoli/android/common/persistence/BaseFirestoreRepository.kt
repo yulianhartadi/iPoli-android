@@ -2,8 +2,8 @@ package io.ipoli.android.common.persistence
 
 import android.content.SharedPreferences
 import com.crashlytics.android.Crashlytics
+import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.*
-import io.ipoli.android.Constants
 import io.ipoli.android.quest.Entity
 import io.ipoli.android.tag.Tag
 import kotlinx.coroutines.experimental.android.UI
@@ -34,7 +34,7 @@ abstract class BaseFirestoreRepository<E, out T>(
 
     protected val playerId: String
         get() =
-            sharedPreferences.getString(Constants.KEY_PLAYER_ID, null)
+            FirebaseAuth.getInstance().currentUser!!.uid
 
     protected fun Query.execute(): QuerySnapshot = runBlocking(UI) {
         suspendCoroutine<QuerySnapshot> { continuation ->

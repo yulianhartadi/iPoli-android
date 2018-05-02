@@ -2,6 +2,7 @@ package io.ipoli.android.player.auth.saga
 
 import android.annotation.SuppressLint
 import com.google.firebase.auth.*
+import io.ipoli.android.BuildConfig
 import io.ipoli.android.Constants
 import io.ipoli.android.common.AppSideEffectHandler
 import io.ipoli.android.common.AppState
@@ -105,11 +106,13 @@ class AuthSideEffectHandler : AppSideEffectHandler() {
                     prepareAppStart()
                     dispatch(AuthAction.PlayerSetupCompleted)
 
-                    val auth = player.authProvider
-                    if (auth is AuthProvider.Facebook && auth.email != null) {
-                        Api.migratePlayer(player.id, auth.email)
-                    } else if (auth is AuthProvider.Google && auth.email != null) {
-                        Api.migratePlayer(player.id, auth.email)
+                    if (!BuildConfig.DEBUG) {
+                        val auth = player.authProvider
+                        if (auth is AuthProvider.Facebook && auth.email != null) {
+                            Api.migratePlayer(player.id, auth.email)
+                        } else if (auth is AuthProvider.Google && auth.email != null) {
+                            Api.migratePlayer(player.id, auth.email)
+                        }
                     }
                 }
             }

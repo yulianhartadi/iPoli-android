@@ -4,6 +4,7 @@ import android.content.SharedPreferences
 import android.net.Uri
 import com.google.android.gms.tasks.Tasks
 import com.google.firebase.auth.FacebookAuthProvider
+import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseAuthProvider
 import com.google.firebase.auth.GoogleAuthProvider
 import com.google.firebase.firestore.DocumentListenOptions
@@ -121,8 +122,10 @@ class FirestorePlayerRepository(
 
     private fun usernamesReference() = database.collection("usernames")
 
-    override fun hasPlayer(): Boolean =
-        entityReference.getSync().exists()
+    override fun hasPlayer(): Boolean {
+        val u = FirebaseAuth.getInstance().currentUser ?: return false
+        return collectionReference.document(u.uid).getSync().exists()
+    }
 
     override fun findSchemaVersion(): Int? {
         val result = entityReference.getSync()
