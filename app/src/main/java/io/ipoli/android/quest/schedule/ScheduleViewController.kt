@@ -61,6 +61,8 @@ class ScheduleViewController(args: Bundle? = null) :
             initDayPicker(view, calendarToolbar)
         }
 
+        setChildController(view.contentContainer, CalendarViewController(LocalDate.now()))
+
         return view
     }
 
@@ -164,9 +166,6 @@ class ScheduleViewController(args: Bundle? = null) :
         }
 
         when (state.type) {
-            INITIAL -> {
-                setChildController(view.contentContainer, CalendarViewController(state.currentDate))
-            }
 
             DATE_PICKER_CHANGED -> renderDatePicker(
                 state.datePickerState,

@@ -172,7 +172,6 @@ abstract class BaseFirestoreRepository<E, out T>(
         channel: SendChannel<*>,
         registration: ListenerRegistration
     ) {
-
         channelToRegistration[channel] = registration
     }
 

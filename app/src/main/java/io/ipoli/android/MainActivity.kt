@@ -19,6 +19,7 @@ import com.bluelinelabs.conductor.Router
 import com.bluelinelabs.conductor.RouterTransaction
 import com.bluelinelabs.conductor.changehandler.FadeChangeHandler
 import io.ipoli.android.common.AppState
+import io.ipoli.android.common.DataLoadedAction
 import io.ipoli.android.common.LoadDataAction
 import io.ipoli.android.common.di.Module
 import io.ipoli.android.common.home.HomeAction
@@ -104,7 +105,7 @@ class MainActivity : AppCompatActivity(), Injects<Module>, SideEffectHandler<App
                     if (p.isLoggedIn() && p.username.isNullOrEmpty()) {
                         router.setRoot(RouterTransaction.with(AuthViewController()))
                     } else {
-                        startApp()
+                        stateStore.dispatch(LoadDataAction.Preload)
                     }
                 }
             }
@@ -123,8 +124,6 @@ class MainActivity : AppCompatActivity(), Injects<Module>, SideEffectHandler<App
             checkForBatteryOptimization()
             router.setRoot(RouterTransaction.with(HomeViewController()))
         }
-
-        stateStore.dispatch(LoadDataAction.Preload)
     }
 
     private fun shouldShowQuickAdd(startIntent: Intent) =
@@ -224,6 +223,9 @@ class MainActivity : AppCompatActivity(), Injects<Module>, SideEffectHandler<App
 
                 is HomeAction.ShowPlayerSetup ->
                     router.setRoot(RouterTransaction.with(AuthViewController()))
+
+                is LoadDataAction.All ->
+                    startApp()
             }
         }
     }
@@ -261,7 +263,10 @@ class MainActivity : AppCompatActivity(), Injects<Module>, SideEffectHandler<App
     }
 
     override fun canHandle(action: Action) =
-        action is ShowBuyPowerUpAction || action === TagAction.TagCountLimitReached || action === HomeAction.ShowPlayerSetup
+        action is ShowBuyPowerUpAction
+                || action === TagAction.TagCountLimitReached
+                || action === HomeAction.ShowPlayerSetup
+                || action === LoadDataAction.All
 
     private val isBatteryOptimizationOn: Boolean
         get() {
