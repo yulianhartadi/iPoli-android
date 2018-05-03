@@ -674,32 +674,32 @@ class AndroidStateStoreModule : StateStoreModule, Injects<Module> {
                 AppDataReducer
             ),
             sideEffectHandlers = setOf(
-                LoadAllDataSideEffectHandler(),
-                AuthSideEffectHandler(),
-                AgendaSideEffectHandler(),
-                BuyPredefinedChallengeSideEffectHandler(),
-                ChangePetSideEffectHandler(),
-                BuyPetSideEffectHandler(),
-                DayViewSideEffectHandler(),
-                RepeatingQuestSideEffectHandler(),
-                ChallengeSideEffectHandler(),
-                CalendarSideEffectHandler(),
-                MembershipSideEffectHandler(),
-                PowerUpSideEffectHandler(),
-                QuestSideEffectHandler(),
-                EditQuestSideEffectHandler(),
-                AvatarSideEffectHandler(),
-                ThemeSideEffectHandler(),
-                TagSideEffectHandler(),
-                BucketListSideEffectHandler(),
-                GemPackSideEffectHandler(),
-                StoreSideEffectHandler(),
-                PetSideEffectHandler()
+                LoadAllDataSideEffectHandler,
+                AuthSideEffectHandler,
+                AgendaSideEffectHandler,
+                BuyPredefinedChallengeSideEffectHandler,
+                ChangePetSideEffectHandler,
+                BuyPetSideEffectHandler,
+                DayViewSideEffectHandler,
+                RepeatingQuestSideEffectHandler,
+                ChallengeSideEffectHandler,
+                CalendarSideEffectHandler,
+                MembershipSideEffectHandler,
+                PowerUpSideEffectHandler,
+                QuestSideEffectHandler,
+                EditQuestSideEffectHandler,
+                AvatarSideEffectHandler,
+                ThemeSideEffectHandler,
+                TagSideEffectHandler,
+                BucketListSideEffectHandler,
+                GemPackSideEffectHandler,
+                StoreSideEffectHandler,
+                PetSideEffectHandler
             ),
             sideEffectHandlerExecutor = CoroutineSideEffectHandlerExecutor(job + CommonPool),
             middleware = setOf(
-                LogEventsMiddleWare(),
-                CheckEnabledPowerUpMiddleWare()
+                LogEventsMiddleWare,
+                CheckEnabledPowerUpMiddleWare
             )
         )
     }

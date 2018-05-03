@@ -15,7 +15,7 @@ import space.traversal.kapsule.required
  * on 04/24/2018.
  */
 
-class GemPackSideEffectHandler : AppSideEffectHandler() {
+object GemPackSideEffectHandler : AppSideEffectHandler() {
 
     private val purchaseGemPackUseCase by required { purchaseGemPackUseCase }
     private val convertCoinsToGemsUseCase by required { convertCoinsToGemsUseCase }
