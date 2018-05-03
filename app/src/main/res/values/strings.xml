@@ -1278,4 +1278,5 @@
     <string name="quest_added">Quest added</string>
     <string name="all_tags">All tags</string>
     <string name="tag_picker_title">Choose some tags</string>
+    <string name="allow_overlay_request">Please, allow myPoli to show over other apps for cute Reminders</string>
 </resources>
