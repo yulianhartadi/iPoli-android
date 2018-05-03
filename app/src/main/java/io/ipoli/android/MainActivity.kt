@@ -28,6 +28,8 @@ import io.ipoli.android.common.redux.Dispatcher
 import io.ipoli.android.common.redux.SideEffectHandler
 import io.ipoli.android.common.view.playerTheme
 import io.ipoli.android.pet.PetViewController
+import io.ipoli.android.player.Membership
+import io.ipoli.android.player.auth.AuthAction
 import io.ipoli.android.player.auth.AuthViewController
 import io.ipoli.android.quest.schedule.addquest.AddQuestViewController
 import io.ipoli.android.quest.show.QuestViewController
@@ -44,6 +46,7 @@ import org.threeten.bp.LocalDate
 import space.traversal.kapsule.Injects
 import space.traversal.kapsule.inject
 import space.traversal.kapsule.required
+import java.util.*
 
 /**
  * Created by Venelin Valkov <venelin@mypoli.fun>
@@ -109,6 +112,9 @@ class MainActivity : AppCompatActivity(), Injects<Module>, SideEffectHandler<App
                     } else {
                         stateStore.dispatch(LoadDataAction.All)
                         startApp()
+                        if(Random().nextInt(10) == 1 && p.membership == Membership.NONE) {
+                            showPremiumSnackbar()
+                        }
                     }
                 }
             }
@@ -210,6 +216,19 @@ class MainActivity : AppCompatActivity(), Injects<Module>, SideEffectHandler<App
         window.decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_VISIBLE
     }
 
+    private fun showPremiumSnackbar() {
+        Snackbar.make(
+            findViewById(R.id.activityContainer),
+            getString(
+                R.string.trial_membership_message,
+                Constants.POWER_UPS_TRIAL_PERIOD_DAYS
+            ),
+            Snackbar.LENGTH_INDEFINITE
+        ).setAction(R.string.go_premium, { _ ->
+            router.pushController(RouterTransaction.with(MembershipViewController()))
+        }).show()
+    }
+
     override suspend fun execute(action: Action, state: AppState, dispatcher: Dispatcher) {
         withContext(UI) {
             when (action) {
@@ -225,6 +244,11 @@ class MainActivity : AppCompatActivity(), Injects<Module>, SideEffectHandler<App
 
                 is HomeAction.ShowPlayerSetup ->
                     router.setRoot(RouterTransaction.with(AuthViewController()))
+
+                AuthAction.GuestCreated,
+                AuthAction.PlayerSetupCompleted -> {
+                    showPremiumSnackbar()
+                }
             }
         }
     }
@@ -265,6 +289,8 @@ class MainActivity : AppCompatActivity(), Injects<Module>, SideEffectHandler<App
         action is ShowBuyPowerUpAction
             || action === TagAction.TagCountLimitReached
             || action === HomeAction.ShowPlayerSetup
+            || action === AuthAction.PlayerSetupCompleted
+            || action === AuthAction.GuestCreated
 
     private val isBatteryOptimizationOn: Boolean
         get() {
