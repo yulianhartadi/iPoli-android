@@ -48,6 +48,14 @@ fun View.visible() {
     visibility = View.VISIBLE
 }
 
+fun View.enableClick() {
+    isClickable = true
+}
+
+fun View.disableClick() {
+    isClickable = false
+}
+
 fun View.visibleOrGone(isVisible: Boolean) {
     if (isVisible) visible()
     else gone()

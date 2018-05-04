@@ -9,6 +9,7 @@ import io.ipoli.android.player.usecase.ConvertCoinsToGemsUseCase
 import io.ipoli.android.store.purchase.InAppPurchaseManager
 import io.ipoli.android.store.usecase.PurchaseGemPackUseCase
 import space.traversal.kapsule.required
+import timber.log.Timber
 
 /**
  * Created by Venelin Valkov <venelin@mypoli.fun>
@@ -46,22 +47,27 @@ object GemPackSideEffectHandler : AppSideEffectHandler() {
                     )
                 )
 
-            is GemStoreAction.BuyGemPack ->
-                inAppPurchaseManager.purchase(
-                    action.gemPack.type,
-                    object : InAppPurchaseManager.PurchaseListener {
-                        override fun onPurchased() {
-                            val result =
-                                purchaseGemPackUseCase
-                                    .execute(PurchaseGemPackUseCase.Params(action.gemPack))
-                            dispatch(GemStoreAction.GemPackPurchased(result.hasUnlockedPet))
-                        }
+            is GemStoreAction.BuyGemPack -> {
+                try {
+                    inAppPurchaseManager.purchase(
+                        action.gemPack.type,
+                        object : InAppPurchaseManager.PurchaseListener {
+                            override fun onPurchased() {
+                                val result =
+                                    purchaseGemPackUseCase
+                                        .execute(PurchaseGemPackUseCase.Params(action.gemPack))
+                                dispatch(GemStoreAction.GemPackPurchased(result.hasUnlockedPet))
+                            }
 
-                        override fun onError() {
-                            dispatch(GemStoreAction.PurchaseFailed)
-                        }
+                            override fun onError() {
+                                dispatch(GemStoreAction.PurchaseFailed)
+                            }
 
-                    })
+                        })
+                }catch (e : Exception) {
+                    Timber.d("AAAA ex : $e")
+                }
+            }
         }
     }
 

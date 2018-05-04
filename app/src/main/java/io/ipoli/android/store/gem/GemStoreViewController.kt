@@ -12,9 +12,7 @@ import com.mikepenz.iconics.IconicsDrawable
 import io.ipoli.android.BillingConstants
 import io.ipoli.android.R
 import io.ipoli.android.common.redux.android.ReduxViewController
-import io.ipoli.android.common.view.setChildController
-import io.ipoli.android.common.view.setToolbar
-import io.ipoli.android.common.view.showBackButton
+import io.ipoli.android.common.view.*
 import io.ipoli.android.player.inventory.InventoryViewController
 import io.ipoli.android.store.gem.GemStoreViewState.StateType.*
 import io.ipoli.android.store.purchase.AndroidInAppPurchaseManager
@@ -25,6 +23,7 @@ import kotlinx.android.synthetic.main.view_inventory_toolbar.view.*
 import org.solovyev.android.checkout.Billing
 import org.solovyev.android.checkout.Checkout
 import org.solovyev.android.checkout.UiCheckout
+import timber.log.Timber
 
 /**
  * Created by Venelin Valkov <venelin@io.ipoli.io>
@@ -103,6 +102,10 @@ class GemStoreViewController(args: Bundle? = null) :
     }
 
     override fun render(state: GemStoreViewState, view: View) {
+        view.setOnClickListener {
+            Timber.d("AAAA clicky")
+        }
+
         when (state.type) {
             PLAYER_CHANGED ->
                 if (state.isGiftPurchased)
@@ -110,45 +113,65 @@ class GemStoreViewController(args: Bundle? = null) :
 
             GEM_PACKS_LOADED ->
                 state.gemPacks.forEach {
+                    val gp = it
                     when (it.type) {
                         GemPackType.BASIC -> {
                             view.basicPackPrice.text = it.price
                             view.basicPackTitle.text = it.title
                             view.basicPackGems.text = "x ${it.gems}"
-                            view.basicPackBuy.dispatchOnClick(
-                                GemStoreAction.BuyGemPack(it)
-                            )
+                            view.basicPackBuy.setOnClickListener {
+                                disableButtons()
+                                dispatch(GemStoreAction.BuyGemPack(gp))
+                            }
                         }
                         GemPackType.SMART -> {
                             view.smartPackPrice.text = it.price
                             view.smartPackTitle.text = it.title
                             view.smartPackGems.text = "x ${it.gems}"
-                            view.smartPackBuy.dispatchOnClick(
-                                GemStoreAction.BuyGemPack(it)
-                            )
+                            view.smartPackBuy.setOnClickListener {
+                                disableButtons()
+                                dispatch(GemStoreAction.BuyGemPack(gp))
+                            }
                         }
                         GemPackType.PLATINUM -> {
                             view.platinumPackPrice.text = it.price
                             view.platinumPackTitle.text = it.title
                             view.platinumPackGems.text = "x ${it.gems}"
-                            view.platinumPackBuy.dispatchOnClick(
-                                GemStoreAction.BuyGemPack(it)
-                            )
+                            view.platinumPackBuy.setOnClickListener {
+                                disableButtons()
+                                dispatch(GemStoreAction.BuyGemPack(gp))
+                            }
                         }
                     }
                 }
 
-            GEM_PACK_PURCHASED ->
+            GEM_PACK_PURCHASED -> {
+                enableButtons()
                 Toast.makeText(view.context, R.string.gem_pack_purchased, Toast.LENGTH_LONG).show()
+            }
 
             DOG_UNLOCKED -> {
                 showMostPopular(view)
                 Toast.makeText(view.context, R.string.gift_unlocked, Toast.LENGTH_LONG).show()
             }
 
-            PURCHASE_FAILED ->
+            PURCHASE_FAILED -> {
+                enableButtons()
                 Toast.makeText(view.context, R.string.purchase_failed, Toast.LENGTH_LONG).show()
+            }
         }
+    }
+
+    private fun enableButtons() {
+        view!!.basicPackBuy.enableClick()
+        view!!.smartPackBuy.enableClick()
+        view!!.platinumPackBuy.enableClick()
+    }
+
+    private fun disableButtons() {
+        view!!.basicPackBuy.disableClick()
+        view!!.smartPackBuy.disableClick()
+        view!!.platinumPackBuy.disableClick()
     }
 
     private fun showMostPopular(view: View) {
