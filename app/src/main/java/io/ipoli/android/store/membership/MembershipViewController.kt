@@ -139,15 +139,15 @@ class MembershipViewController(args: Bundle? = null) :
                 renderReasons(view, state)
                 renderPrices(view, state)
 
-                view.monthlyPlanContainer.dispatchOnClick(MembershipAction.SelectPlan(io.ipoli.android.store.membership.MembershipPlan.MONTHLY))
-                view.yearlyPlanContainer.dispatchOnClick(MembershipAction.SelectPlan(io.ipoli.android.store.membership.MembershipPlan.YEARLY))
-                view.quarterlyPlanContainer.dispatchOnClick(MembershipAction.SelectPlan(io.ipoli.android.store.membership.MembershipPlan.QUARTERLY))
+                view.monthlyPlanContainer.dispatchOnClick { MembershipAction.SelectPlan(io.ipoli.android.store.membership.MembershipPlan.MONTHLY) }
+                view.yearlyPlanContainer.dispatchOnClick { MembershipAction.SelectPlan(io.ipoli.android.store.membership.MembershipPlan.YEARLY) }
+                view.quarterlyPlanContainer.dispatchOnClick { MembershipAction.SelectPlan(io.ipoli.android.store.membership.MembershipPlan.QUARTERLY) }
 
                 if (!state.showCurrentPlan) {
                     playGoPremiumAnimation(view)
                     view.goPremium.enableClick()
                     view.goPremium.text = state.premiumButtonText
-                    view.goPremium.setOnClickListener {
+                    view.goPremium.onDebounceClick {
                         view.goPremium.disableClick()
                         dispatch(MembershipAction.GoPremium(state.selectedPlan, state.activeSkus))
                     }

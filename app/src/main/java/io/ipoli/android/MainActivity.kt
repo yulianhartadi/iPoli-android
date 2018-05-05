@@ -57,7 +57,6 @@ class MainActivity : AppCompatActivity(), Injects<Module>, SideEffectHandler<App
     lateinit var router: Router
 
     private val playerRepository by required { playerRepository }
-    private val tagRepository by required { tagRepository }
 
     private val stateStore by required { stateStore }
 
@@ -112,7 +111,7 @@ class MainActivity : AppCompatActivity(), Injects<Module>, SideEffectHandler<App
                     } else {
                         stateStore.dispatch(LoadDataAction.All)
                         startApp()
-                        if(Random().nextInt(10) == 1 && p.membership == Membership.NONE) {
+                        if (Random().nextInt(10) == 1 && p.membership == Membership.NONE) {
                             showPremiumSnackbar()
                         }
                     }

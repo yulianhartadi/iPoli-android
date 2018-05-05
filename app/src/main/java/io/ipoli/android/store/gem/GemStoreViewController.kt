@@ -23,7 +23,6 @@ import kotlinx.android.synthetic.main.view_inventory_toolbar.view.*
 import org.solovyev.android.checkout.Billing
 import org.solovyev.android.checkout.Checkout
 import org.solovyev.android.checkout.UiCheckout
-import timber.log.Timber
 
 /**
  * Created by Venelin Valkov <venelin@io.ipoli.io>
@@ -102,9 +101,6 @@ class GemStoreViewController(args: Bundle? = null) :
     }
 
     override fun render(state: GemStoreViewState, view: View) {
-        view.setOnClickListener {
-            Timber.d("AAAA clicky")
-        }
 
         when (state.type) {
             PLAYER_CHANGED ->
@@ -119,7 +115,7 @@ class GemStoreViewController(args: Bundle? = null) :
                             view.basicPackPrice.text = it.price
                             view.basicPackTitle.text = it.title
                             view.basicPackGems.text = "x ${it.gems}"
-                            view.basicPackBuy.setOnClickListener {
+                            view.basicPackBuy.onDebounceClick {
                                 disableButtons()
                                 dispatch(GemStoreAction.BuyGemPack(gp))
                             }
@@ -128,7 +124,7 @@ class GemStoreViewController(args: Bundle? = null) :
                             view.smartPackPrice.text = it.price
                             view.smartPackTitle.text = it.title
                             view.smartPackGems.text = "x ${it.gems}"
-                            view.smartPackBuy.setOnClickListener {
+                            view.smartPackBuy.onDebounceClick  {
                                 disableButtons()
                                 dispatch(GemStoreAction.BuyGemPack(gp))
                             }
@@ -137,7 +133,7 @@ class GemStoreViewController(args: Bundle? = null) :
                             view.platinumPackPrice.text = it.price
                             view.platinumPackTitle.text = it.title
                             view.platinumPackGems.text = "x ${it.gems}"
-                            view.platinumPackBuy.setOnClickListener {
+                            view.platinumPackBuy.onDebounceClick {
                                 disableButtons()
                                 dispatch(GemStoreAction.BuyGemPack(gp))
                             }
