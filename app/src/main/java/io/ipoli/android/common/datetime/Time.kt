@@ -182,5 +182,5 @@ enum class TimePreference {
 }
 
 enum class TimeOfDay {
-    MORNING, AFTERNOON, EVENING, ANY
+    MORNING, AFTERNOON, EVENING, ANY_TIME
 }
