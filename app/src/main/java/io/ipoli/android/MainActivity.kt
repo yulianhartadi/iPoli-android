@@ -26,6 +26,7 @@ import io.ipoli.android.common.home.HomeViewController
 import io.ipoli.android.common.redux.Action
 import io.ipoli.android.common.redux.Dispatcher
 import io.ipoli.android.common.redux.SideEffectHandler
+import io.ipoli.android.common.view.Debounce
 import io.ipoli.android.common.view.playerTheme
 import io.ipoli.android.pet.PetViewController
 import io.ipoli.android.player.Membership
@@ -223,7 +224,7 @@ class MainActivity : AppCompatActivity(), Injects<Module>, SideEffectHandler<App
                 Constants.POWER_UPS_TRIAL_PERIOD_DAYS
             ),
             Snackbar.LENGTH_INDEFINITE
-        ).setAction(R.string.go_premium, { _ ->
+        ).setAction(R.string.go_premium, Debounce.clickListener { _ ->
             router.pushController(RouterTransaction.with(MembershipViewController()))
         }).show()
     }
