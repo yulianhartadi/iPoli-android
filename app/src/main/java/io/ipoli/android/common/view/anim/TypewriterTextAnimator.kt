@@ -10,6 +10,7 @@ class TypewriterTextAnimator private constructor(
     private val typeSpeed: Int = DEFAULT_TYPE_SPEED
 ) : Animator() {
 
+    private var appendMode = true
     private var isRunning = false
     private var textIndex = 0
     private var startDelay = 0L
@@ -23,10 +24,9 @@ class TypewriterTextAnimator private constructor(
         fun of(
             textView: TextView,
             text: String,
-            typeSpeed: Int = DEFAULT_TYPE_SPEED
-        ): TypewriterTextAnimator {
-            return TypewriterTextAnimator(textView, text, typeSpeed)
-        }
+            typeSpeed: Int = DEFAULT_TYPE_SPEED,
+            appendMode: Boolean = true
+        ) = TypewriterTextAnimator(textView, text, typeSpeed)
     }
 
     override fun isRunning() = isRunning
@@ -59,7 +59,7 @@ class TypewriterTextAnimator private constructor(
     }
 
     override fun end() {
-        textView.text = text
+//        textView.text = text
         endAnimation()
     }
 
@@ -81,12 +81,17 @@ class TypewriterTextAnimator private constructor(
                 return
             }
 
-            if (textIndex > text.length) {
+            if (textIndex >= text.length) {
                 endAnimation()
                 return
             }
 
-            textView.text = text.substring(0, textIndex)
+            if (appendMode) {
+                textView.append(text, textIndex, textIndex + 1)
+            } else {
+                textView.text = text
+            }
+
             textIndex++
             textView.postDelayed(addCharRunnable, typeSpeed.toLong())
         }

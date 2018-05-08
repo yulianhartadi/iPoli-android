@@ -332,4 +332,18 @@
         <item name="android:gravity">center_vertical</item>
         <item name="android:textColor">?attr/colorAccent</item>
     </style>
+
+    <style name="OnboardText">
+        <item name="android:layout_marginBottom">8dp</item>
+        <item name="android:layout_marginEnd">16dp</item>
+        <item name="android:layout_marginStart">16dp</item>
+        <item name="android:fontFamily">@font/mystery_quest_regular</item>
+        <item name="android:gravity">bottom</item>
+        <item name="android:maxLines">5</item>
+        <item name="android:scrollbarFadeDuration">50000</item>
+        <item name="android:scrollbarThumbVertical">@color/md_light_text_50</item>
+        <item name="android:scrollbars">vertical</item>
+        <item name="android:textColor">@color/md_white</item>
+        <item name="android:textSize">18sp</item>
+    </style>
 </resources>

@@ -35,6 +35,7 @@ import io.ipoli.android.common.view.*
 import io.ipoli.android.common.view.recyclerview.BaseRecyclerViewAdapter
 import io.ipoli.android.common.view.recyclerview.RecyclerViewViewModel
 import io.ipoli.android.common.view.recyclerview.SimpleViewHolder
+import io.ipoli.android.onboarding.OnboardData
 import io.ipoli.android.player.auth.AuthViewState.StateType.*
 import io.ipoli.android.player.auth.error.SignInError
 import io.ipoli.android.player.data.AndroidAvatar
@@ -73,6 +74,12 @@ class AuthViewController(args: Bundle? = null) :
 
     }
 
+    private var onboardData: OnboardData? = null
+
+    constructor(onboardData: OnboardData) : this() {
+        this.onboardData = onboardData
+    }
+    
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup,
@@ -182,6 +189,8 @@ class AuthViewController(args: Bundle? = null) :
             }
 
             SHOW_SETUP -> {
+                view.username.setText(state.username)
+                view.username.setSelection(state.username.length)
                 view.loginContainer.invisible()
                 view.setupContainer.visible()
                 renderPlayerAvatars(view, state)
@@ -189,6 +198,8 @@ class AuthViewController(args: Bundle? = null) :
             }
 
             SWITCH_TO_SETUP -> {
+                view.username.setText(state.username)
+                view.username.setSelection(state.username.length)
                 hideLoader()
                 renderPlayerAvatars(view, state)
                 playShowLoginAnimation(view, {
@@ -373,7 +384,7 @@ class AuthViewController(args: Bundle? = null) :
         }
     }
 
-    override fun onCreateLoadAction() = AuthAction.Load
+    override fun onCreateLoadAction() = AuthAction.Load(onboardData)
 
     override fun onAttach(view: View) {
         super.onAttach(view)

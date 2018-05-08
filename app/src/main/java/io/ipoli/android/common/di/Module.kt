@@ -33,6 +33,7 @@ import io.ipoli.android.event.sideeffect.CalendarSideEffectHandler
 import io.ipoli.android.event.usecase.FindEventsBetweenDatesUseCase
 import io.ipoli.android.event.usecase.SaveSyncCalendarsUseCase
 import io.ipoli.android.note.usecase.SaveQuestNoteUseCase
+import io.ipoli.android.onboarding.sideeffecthandler.OnboardingSideEffectHandler
 import io.ipoli.android.pet.AndroidJobLowerPetStatsScheduler
 import io.ipoli.android.pet.LowerPetStatsScheduler
 import io.ipoli.android.pet.PetDialogPresenter
@@ -708,7 +709,8 @@ class AndroidStateStoreModule : StateStoreModule, Injects<Module> {
                 BucketListSideEffectHandler,
                 GemPackSideEffectHandler,
                 StoreSideEffectHandler,
-                PetSideEffectHandler
+                PetSideEffectHandler,
+                OnboardingSideEffectHandler
             ),
             sideEffectHandlerExecutor = CoroutineSideEffectHandlerExecutor(job + CommonPool),
             middleware = setOf(

@@ -33,7 +33,7 @@ data class Player(
     val membership: Membership = Membership.NONE,
     val pet: Pet = Pet(
         name = Constants.DEFAULT_PET_NAME,
-        avatar = PetAvatar.ELEPHANT
+        avatar = Constants.DEFAULT_PET_AVATAR
     ),
     val inventory: Inventory = Inventory(
         food = mapOf(

@@ -4,22 +4,23 @@ import android.annotation.SuppressLint
 import com.google.firebase.auth.*
 import io.ipoli.android.BuildConfig
 import io.ipoli.android.Constants
+import io.ipoli.android.R.id.startTime
 import io.ipoli.android.common.AppSideEffectHandler
 import io.ipoli.android.common.AppState
 import io.ipoli.android.common.LoadDataAction
 import io.ipoli.android.common.api.Api
 import io.ipoli.android.common.redux.Action
+import io.ipoli.android.pet.Pet
 import io.ipoli.android.player.AuthProvider
 import io.ipoli.android.player.Player
 import io.ipoli.android.player.auth.AuthAction
 import io.ipoli.android.player.auth.AuthViewState
-import io.ipoli.android.player.persistence.PlayerRepository
+import io.ipoli.android.player.auth.UsernameValidator
 import io.ipoli.android.quest.Color
 import io.ipoli.android.quest.Icon
+import io.ipoli.android.repeatingquest.usecase.SaveRepeatingQuestUseCase
 import io.ipoli.android.tag.Tag
 import space.traversal.kapsule.required
-import java.nio.charset.Charset
-import java.util.regex.Pattern
 
 /**
  * Created by Venelin Valkov <venelin@mypoli.fun>
@@ -35,13 +36,14 @@ object AuthSideEffectHandler : AppSideEffectHandler() {
     private val saveQuestsForRepeatingQuestScheduler by required { saveQuestsForRepeatingQuestScheduler }
     private val removeExpiredPowerUpsScheduler by required { removeExpiredPowerUpsScheduler }
     private val checkMembershipStatusScheduler by required { checkMembershipStatusScheduler }
+    private val saveRepeatingQuestUseCase by required { saveRepeatingQuestUseCase }
 
     override fun canHandle(action: Action) = action is AuthAction
 
     override suspend fun doExecute(action: Action, state: AppState) {
 
         when (action) {
-            AuthAction.Load -> {
+            is AuthAction.Load -> {
                 val hasPlayer = playerRepository.hasPlayer()
                 var isGuest = false
                 var hasUsername = false
@@ -50,7 +52,7 @@ object AuthSideEffectHandler : AppSideEffectHandler() {
                     isGuest = player!!.authProvider is AuthProvider.Guest
                     hasUsername = !player.username.isNullOrEmpty()
                 }
-                dispatch(AuthAction.Loaded(hasPlayer, isGuest, hasUsername))
+                dispatch(AuthAction.Loaded(hasPlayer, isGuest, hasUsername, action.onboardData))
             }
 
             is AuthAction.UserAuthenticated -> {
@@ -74,7 +76,7 @@ object AuthSideEffectHandler : AppSideEffectHandler() {
                         dispatch(AuthAction.AccountsLinked)
                     }
                     isNewUser && !hasPlayer -> {
-                        createNewPlayer(user)
+                        createNewPlayer(user, state.stateFor(AuthViewState::class.java))
                     }
                     else -> loginExistingPlayer(user)
                 }
@@ -85,7 +87,7 @@ object AuthSideEffectHandler : AppSideEffectHandler() {
                 val username = action.username
 
                 val usernameValidationError =
-                    findUsernameValidationError(username, playerRepository)
+                    UsernameValidator(playerRepository).validate(username)
 
                 if (usernameValidationError != null) {
                     dispatch(
@@ -121,7 +123,7 @@ object AuthSideEffectHandler : AppSideEffectHandler() {
                 val username = action.username
 
                 val usernameValidationError =
-                    findUsernameValidationError(username, playerRepository)
+                    UsernameValidator(playerRepository).validate(username)
                 if (usernameValidationError != null) {
                     dispatch(
                         AuthAction.UsernameValidationFailed(
@@ -188,7 +190,8 @@ object AuthSideEffectHandler : AppSideEffectHandler() {
         )
 
     private fun createNewPlayer(
-        user: FirebaseUser
+        user: FirebaseUser,
+        state: AuthViewState
     ) {
 
         val authProvider = if (user.providerData.size == 1) {
@@ -214,17 +217,40 @@ object AuthSideEffectHandler : AppSideEffectHandler() {
             else -> throw IllegalStateException("Unknown Auth provider")
         }
 
-        val player = Player(
+        var player = Player(
             authProvider = auth,
             username = null,
             displayName = if (user.displayName != null) user.displayName!! else "",
-            schemaVersion = Constants.SCHEMA_VERSION
+            schemaVersion = Constants.SCHEMA_VERSION,
+            pet = state.petAvatar?.let { Pet(state.petName!!, state.petAvatar) }
+                    ?: Pet(Constants.DEFAULT_PET_NAME, Constants.DEFAULT_PET_AVATAR),
+            avatar = state.playerAvatar
         )
 
         playerRepository.create(player, user.uid)
         savePlayerId(user)
 
-        saveDefaultTags()
+        val tags = saveDefaultTags()
+
+        state.repeatingQuests.forEach {
+            val rq = it.first
+            val ts = it.second?.let { onboardTag ->
+                listOf(tags.first { it.name.toUpperCase() == onboardTag.name })
+            } ?: listOf()
+            saveRepeatingQuestUseCase.execute(
+                SaveRepeatingQuestUseCase.Params(
+                    name = rq.name,
+                    subQuestNames = rq.subQuests.map { it.name },
+                    color = rq.color,
+                    icon = rq.icon,
+                    tags = ts,
+                    startTime = rq.startTime,
+                    duration = rq.duration,
+                    reminders = rq.reminders,
+                    repeatPattern = rq.repeatPattern
+                )
+            )
+        }
 
         if (auth is AuthProvider.Guest) {
             prepareAppStart()
@@ -234,7 +260,7 @@ object AuthSideEffectHandler : AppSideEffectHandler() {
         }
     }
 
-    private fun saveDefaultTags() {
+    private fun saveDefaultTags() =
         tagRepository.save(
             listOf(
                 Tag(
@@ -257,7 +283,6 @@ object AuthSideEffectHandler : AppSideEffectHandler() {
                 )
             )
         )
-    }
 
     private fun loginExistingPlayer(user: FirebaseUser) {
         savePlayerId(user)
@@ -277,35 +302,5 @@ object AuthSideEffectHandler : AppSideEffectHandler() {
         saveQuestsForRepeatingQuestScheduler.schedule()
         removeExpiredPowerUpsScheduler.schedule()
         checkMembershipStatusScheduler.schedule()
-    }
-
-    private fun findUsernameValidationError(
-        username: String,
-        playerRepository: PlayerRepository
-    ): AuthViewState.ValidationError? {
-
-        if (username.isBlank()) {
-            return AuthViewState.ValidationError.EMPTY_USERNAME
-        }
-
-        val asciiEncoder = Charset.forName("US-ASCII").newEncoder()
-        if (!asciiEncoder.canEncode(username)) {
-            return AuthViewState.ValidationError.INVALID_FORMAT
-        }
-
-        val p = Pattern.compile("^\\w+$")
-        if (!p.matcher(username).matches()) {
-            return AuthViewState.ValidationError.INVALID_FORMAT
-        }
-
-        if (username.length < Constants.USERNAME_MIN_LENGTH || username.length > Constants.USERNAME_MAX_LENGTH) {
-            return AuthViewState.ValidationError.INVALID_LENGTH
-        }
-
-        if (!playerRepository.isUsernameAvailable(username)) {
-            return AuthViewState.ValidationError.EXISTING_USERNAME
-        }
-
-        return null
     }
 }

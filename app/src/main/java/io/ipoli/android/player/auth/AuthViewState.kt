@@ -8,23 +8,30 @@ import io.ipoli.android.common.AppState
 import io.ipoli.android.common.BaseViewStateReducer
 import io.ipoli.android.common.mvi.ViewState
 import io.ipoli.android.common.redux.Action
+import io.ipoli.android.onboarding.OnboardData
+import io.ipoli.android.onboarding.OnboardViewController
+import io.ipoli.android.pet.PetAvatar
 import io.ipoli.android.player.auth.AuthViewState.StateType.*
+import io.ipoli.android.player.auth.UsernameValidator.ValidationError
+import io.ipoli.android.player.auth.UsernameValidator.ValidationError.*
 import io.ipoli.android.player.data.Avatar
+import io.ipoli.android.quest.RepeatingQuest
 
 /**
  * Created by Polina Zhelyazkova <polina@mypoli.fun>
  * on 2/5/18.
  */
 sealed class AuthAction : Action {
-    object Load : AuthAction()
+    data class Load(val onboardData: OnboardData?) : AuthAction()
     data class Loaded(
         val hasPlayer: Boolean,
         val isGuest: Boolean,
-        val hasUsername: Boolean
+        val hasUsername: Boolean,
+        val onboardData: OnboardData?
     ) : AuthAction()
 
     data class UserAuthenticated(val user: FirebaseUser) : AuthAction()
-    data class UsernameValidationFailed(val error: AuthViewState.ValidationError) : AuthAction()
+    data class UsernameValidationFailed(val error: ValidationError) : AuthAction()
     data class CompleteSetup(
         val username: String,
         val avatar: Avatar
@@ -51,6 +58,7 @@ object AuthReducer : BaseViewStateReducer<AuthViewState>() {
                 val hasPlayer = action.hasPlayer
                 val isGuest = action.isGuest
                 val hasUsername = action.hasUsername
+                val onboardData = action.onboardData
                 subState.copy(
                     type = if (!hasPlayer || isGuest) {
                         SHOW_LOGIN
@@ -59,7 +67,12 @@ object AuthReducer : BaseViewStateReducer<AuthViewState>() {
                     } else {
                         throw  IllegalStateException("Player is already authenticated and has username")
                     },
-                    isGuest = action.isGuest
+                    isGuest = action.isGuest,
+                    username = onboardData?.username ?: subState.username,
+                    playerAvatar = onboardData?.avatar ?: subState.playerAvatar,
+                    petName = onboardData?.petName ?: subState.petName,
+                    petAvatar = onboardData?.petAvatar ?: subState.petAvatar,
+                    repeatingQuests = onboardData?.repeatingQuests ?: subState.repeatingQuests
                 )
             }
 
@@ -128,6 +141,7 @@ object AuthReducer : BaseViewStateReducer<AuthViewState>() {
             type = LOADING,
             usernameValidationError = null,
             isGuest = false,
+            username = "",
             playerAvatar = Avatar.AVATAR_03,
             avatars = listOf(
                 Avatar.AVATAR_03,
@@ -138,7 +152,10 @@ object AuthReducer : BaseViewStateReducer<AuthViewState>() {
                 Avatar.AVATAR_06,
                 Avatar.AVATAR_07,
                 Avatar.AVATAR_11
-            )
+            ),
+            petName = null,
+            petAvatar = null,
+            repeatingQuests = emptyList()
         )
 
 }
@@ -147,8 +164,12 @@ data class AuthViewState(
     val type: AuthViewState.StateType,
     val usernameValidationError: ValidationError?,
     val isGuest: Boolean,
+    val username: String,
     val playerAvatar : Avatar,
-    val avatars : List<Avatar>
+    val avatars: List<Avatar>,
+    val petName: String?,
+    val petAvatar: PetAvatar?,
+    val repeatingQuests: List<Pair<RepeatingQuest, OnboardViewController.OnboardTag?>>
 ) : ViewState {
     enum class StateType {
         IDLE,
@@ -165,26 +186,15 @@ data class AuthViewState(
         ACCOUNTS_LINKED,
         AVATAR_CHANGED
     }
-
-    enum class ValidationError {
-        EMPTY_USERNAME,
-        EXISTING_USERNAME,
-        INVALID_FORMAT,
-        INVALID_LENGTH
-    }
-
-    enum class Provider {
-        FACEBOOK, GOOGLE, GUEST
-    }
 }
 
 fun AuthViewState.usernameErrorMessage(context: Context) =
     usernameValidationError?.let {
         when (it) {
-            AuthViewState.ValidationError.EMPTY_USERNAME -> context.getString(R.string.username_is_empty)
-            AuthViewState.ValidationError.EXISTING_USERNAME -> context.getString(R.string.username_is_taken)
-            AuthViewState.ValidationError.INVALID_FORMAT -> context.getString(R.string.username_wrong_format)
-            AuthViewState.ValidationError.INVALID_LENGTH -> context.getString(
+            EMPTY_USERNAME -> context.getString(R.string.username_is_empty)
+            EXISTING_USERNAME -> context.getString(R.string.username_is_taken)
+            INVALID_FORMAT -> context.getString(R.string.username_wrong_format)
+            INVALID_LENGTH -> context.getString(
                 R.string.username_wrong_length,
                 Constants.USERNAME_MIN_LENGTH,
                 Constants.USERNAME_MAX_LENGTH

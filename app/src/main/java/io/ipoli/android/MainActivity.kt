@@ -28,6 +28,7 @@ import io.ipoli.android.common.redux.Dispatcher
 import io.ipoli.android.common.redux.SideEffectHandler
 import io.ipoli.android.common.view.Debounce
 import io.ipoli.android.common.view.playerTheme
+import io.ipoli.android.onboarding.OnboardViewController
 import io.ipoli.android.pet.PetViewController
 import io.ipoli.android.player.Membership
 import io.ipoli.android.player.auth.AuthAction
@@ -97,12 +98,12 @@ class MainActivity : AppCompatActivity(), Injects<Module>, SideEffectHandler<App
             )
         router.setPopsLastView(true)
         inject(myPoliApp.module(this))
-
+        
         launch(CommonPool) {
             val hasPlayer = playerRepository.hasPlayer()
             if (!hasPlayer) {
                 withContext(UI) {
-                    router.setRoot(RouterTransaction.with(AuthViewController()))
+                    router.setRoot(RouterTransaction.with(OnboardViewController()))
                 }
             } else {
                 val p = playerRepository.find()!!
