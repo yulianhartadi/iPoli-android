@@ -1,8 +1,10 @@
 package io.ipoli.android.quest.bucketlist
 
 import android.content.res.ColorStateList
+import android.graphics.drawable.GradientDrawable
 import android.os.Bundle
 import android.support.annotation.ColorRes
+import android.support.v4.widget.TextViewCompat
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
 import android.support.v7.widget.helper.ItemTouchHelper
@@ -28,6 +30,7 @@ import io.ipoli.android.quest.CompletedQuestViewController
 import io.ipoli.android.quest.Quest
 import io.ipoli.android.quest.bucketlist.usecase.CreateBucketListItemsUseCase
 import io.ipoli.android.quest.schedule.addquest.AddQuestAnimationHelper
+import io.ipoli.android.quest.schedule.agenda.AgendaViewController
 import io.ipoli.android.quest.show.QuestViewController
 import kotlinx.android.synthetic.main.animation_empty_list.view.*
 import kotlinx.android.synthetic.main.controller_bucket_list.view.*
@@ -168,11 +171,14 @@ class BucketListViewController(args: Bundle? = null) :
 
         data class SectionItem(val text: String) : ItemViewModel(text)
 
+        data class TagViewModel(val name: String, @ColorRes val color: Int)
+
         data class QuestItem(
             override val id: String,
             val name: String,
             val startTime: String,
             @ColorRes val color: Int,
+            val tags: List<TagViewModel>,
             val icon: IIcon,
             val isRepeating: Boolean,
             val isFromChallenge: Boolean
@@ -183,6 +189,7 @@ class BucketListViewController(args: Bundle? = null) :
             val name: String,
             val startTime: String,
             @ColorRes val color: Int,
+            val tags: List<TagViewModel>,
             val icon: IIcon,
             val isRepeating: Boolean,
             val isFromChallenge: Boolean
@@ -212,10 +219,10 @@ class BucketListViewController(args: Bundle? = null) :
                 R.layout.item_agenda_quest,
                 { vm, view ->
                     view.questName.text = vm.name
-                    view.questTagName.gone()
 
                     view.questIcon.backgroundTintList =
-                        ColorStateList.valueOf(colorRes(vm.color))
+                            ColorStateList.valueOf(colorRes(vm.color))
+
                     view.questIcon.setImageDrawable(
                         IconicsDrawable(view.context)
                             .icon(vm.icon)
@@ -227,9 +234,16 @@ class BucketListViewController(args: Bundle? = null) :
                     view.questStartTime.text = vm.startTime
 
                     view.questRepeatIndicator.visibility =
-                        if (vm.isRepeating) View.VISIBLE else View.GONE
+                            if (vm.isRepeating) View.VISIBLE else View.GONE
                     view.questChallengeIndicator.visibility =
-                        if (vm.isFromChallenge) View.VISIBLE else View.GONE
+                            if (vm.isFromChallenge) View.VISIBLE else View.GONE
+
+                    if (vm.tags.isNotEmpty()) {
+                        view.questTagName.visible()
+                        renderTag(view, vm.tags.first())
+                    } else {
+                        view.questTagName.gone()
+                    }
 
                     view.setOnClickListener {
                         rootRouter.pushController(
@@ -246,7 +260,7 @@ class BucketListViewController(args: Bundle? = null) :
                     view.questName.text = vm.name
 
                     view.questIcon.backgroundTintList =
-                        ColorStateList.valueOf(colorRes(vm.color))
+                            ColorStateList.valueOf(colorRes(vm.color))
                     view.questIcon.setImageDrawable(
                         IconicsDrawable(view.context)
                             .icon(vm.icon)
@@ -258,9 +272,16 @@ class BucketListViewController(args: Bundle? = null) :
                     view.questStartTime.text = vm.startTime
 
                     view.questRepeatIndicator.visibility =
-                        if (vm.isRepeating) View.VISIBLE else View.GONE
+                            if (vm.isRepeating) View.VISIBLE else View.GONE
                     view.questChallengeIndicator.visibility =
-                        if (vm.isFromChallenge) View.VISIBLE else View.GONE
+                            if (vm.isFromChallenge) View.VISIBLE else View.GONE
+
+                    if (vm.tags.isNotEmpty()) {
+                        view.questTagName.visible()
+                        renderTag(view, vm.tags.first())
+                    } else {
+                        view.questTagName.gone()
+                    }
 
                     view.setOnClickListener {
                         val handler = FadeChangeHandler()
@@ -271,8 +292,29 @@ class BucketListViewController(args: Bundle? = null) :
                                 .popChangeHandler(handler)
                         )
                     }
+
                 })
         }
+    }
+
+    private fun renderTag(view: View, tag: ItemViewModel.TagViewModel) {
+        view.questTagName.text = tag.name
+        TextViewCompat.setTextAppearance(
+            view.questTagName,
+            R.style.TextAppearance_AppCompat_Caption
+        )
+
+        val indicator = view.questTagName.compoundDrawablesRelative[0] as GradientDrawable
+        indicator.mutate()
+        val size = ViewUtils.dpToPx(8f, view.context).toInt()
+        indicator.setSize(size, size)
+        indicator.setColor(colorRes(tag.color))
+        view.questTagName.setCompoundDrawablesRelativeWithIntrinsicBounds(
+            indicator,
+            null,
+            null,
+            null
+        )
     }
 
     private val BucketListViewState.Changed.itemViewModels: List<ItemViewModel>
@@ -294,7 +336,13 @@ class BucketListViewController(args: Bundle? = null) :
                             startTime = formatStartTime(q),
                             color = color,
                             icon = q.icon?.androidIcon?.icon
-                                ?: Ionicons.Icon.ion_android_clipboard,
+                                    ?: Ionicons.Icon.ion_android_clipboard,
+                            tags = q.tags.map {
+                                ItemViewModel.TagViewModel(
+                                    it.name,
+                                    AndroidColor.valueOf(it.color.name).color500
+                                )
+                            },
                             isRepeating = q.isFromRepeatingQuest,
                             isFromChallenge = q.isFromChallenge
                         )
@@ -306,7 +354,13 @@ class BucketListViewController(args: Bundle? = null) :
                             startTime = formatDueDate(q),
                             color = color,
                             icon = q.icon?.androidIcon?.icon
-                                ?: Ionicons.Icon.ion_android_clipboard,
+                                    ?: Ionicons.Icon.ion_android_clipboard,
+                            tags = q.tags.map {
+                                ItemViewModel.TagViewModel(
+                                    it.name,
+                                    AndroidColor.valueOf(it.color.name).color500
+                                )
+                            },
                             isRepeating = q.isFromRepeatingQuest,
                             isFromChallenge = q.isFromChallenge
                         )
