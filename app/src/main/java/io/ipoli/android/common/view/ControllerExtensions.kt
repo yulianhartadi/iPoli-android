@@ -75,12 +75,11 @@ fun Controller.setToolbar(toolbar: Toolbar) {
     (activity!! as MainActivity).setSupportActionBar(toolbar)
 }
 
-fun Controller.addToolbarView(@LayoutRes viewLayout: Int): View {
-    return activity!!.layoutInflater.inflate(viewLayout, toolbar, false).also {
+fun Controller.addToolbarView(@LayoutRes viewLayout: Int): View =
+    activity!!.layoutInflater.inflate(viewLayout, toolbar, false).also {
         toolbar.addView(it)
         return it
     }
-}
 
 fun Controller.removeToolbarView(view: View) {
     toolbar.removeView(view)

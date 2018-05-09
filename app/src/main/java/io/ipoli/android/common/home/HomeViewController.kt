@@ -53,6 +53,7 @@ import kotlinx.android.synthetic.main.controller_home.view.*
 import kotlinx.android.synthetic.main.drawer_header_home.view.*
 import kotlinx.android.synthetic.main.menu_item_tag_view.view.*
 import space.traversal.kapsule.required
+import timber.log.Timber
 
 
 /**

@@ -63,7 +63,6 @@ object AuthSideEffectHandler : AppSideEffectHandler() {
                     metadata == null || metadata.creationTimestamp == metadata.lastSignInTimestamp
                 val currentPlayerId = sharedPreferences.getString(Constants.KEY_PLAYER_ID, null)
                 val hasDevicePlayer = currentPlayerId != null
-                Timber.d("AAA $isNewUser $hasDevicePlayer")
                 when {
                     !isNewUser && hasDevicePlayer -> {
                         //TODO: delete anonymous account

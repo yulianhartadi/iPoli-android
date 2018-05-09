@@ -79,7 +79,7 @@ class AuthViewController(args: Bundle? = null) :
     constructor(onboardData: OnboardData) : this() {
         this.onboardData = onboardData
     }
-    
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup,
@@ -229,7 +229,15 @@ class AuthViewController(args: Bundle? = null) :
                 )
             }
 
-            PLAYER_SETUP_COMPLETED,
+            PLAYER_SETUP_COMPLETED -> {
+                hideLoader()
+                if (state.isGuest) {
+                    router.handleBack()
+                } else {
+                    startHomeViewController()
+                }
+            }
+
             GUEST_CREATED -> {
                 hideLoader()
                 startHomeViewController()
@@ -244,12 +252,7 @@ class AuthViewController(args: Bundle? = null) :
             EXISTING_PLAYER_LOGGED_IN_FROM_GUEST -> {
                 hideLoader()
                 showShortToast(R.string.welcome_hero)
-                rootRouter.popCurrentController()
-            }
-
-            ACCOUNTS_LINKED -> {
-                hideLoader()
-                rootRouter.popCurrentController()
+                router.handleBack()
             }
 
             else -> {

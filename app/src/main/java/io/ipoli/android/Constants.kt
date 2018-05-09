@@ -19,8 +19,8 @@ interface Constants {
         val FACEBOOK_APP_LINK = "https://fb.me/1609677589354576"
         val IPOLI_LOGO_URL = "https://i.imgur.com/Gz3rUi1.png"
         val INVITE_IMAGE_URL = "https://i.imgur.com/fLToavB.png"
-        val SHARE_URL = "http://bit.ly/io.ipoli-android"
-        val TWITTER_USERNAME = "@iPoliHQ"
+        val SHARE_URL = "http://bit.ly/ipoli-android"
+        val TWITTER_USERNAME = "@myPoliHQ"
 
         val REMIND_DAILY_CHALLENGE_NOTIFICATION_ID = 101
         val ONGOING_NOTIFICATION_ID = 102

@@ -184,7 +184,6 @@ data class AuthViewState(
         PLAYER_SETUP_COMPLETED,
         PLAYER_LOGGED_IN,
         EXISTING_PLAYER_LOGGED_IN_FROM_GUEST,
-        ACCOUNTS_LINKED,
         AVATAR_CHANGED
     }
 }
