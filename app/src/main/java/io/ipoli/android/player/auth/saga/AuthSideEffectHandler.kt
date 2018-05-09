@@ -57,24 +57,22 @@ object AuthSideEffectHandler : AppSideEffectHandler() {
             is AuthAction.UserAuthenticated -> {
                 val user = action.user
 
-                val metadata = user.metadata
-                val isNewUser =
-                    metadata == null || metadata.creationTimestamp == metadata.lastSignInTimestamp
-                val hasPlayer = playerRepository.hasPlayer()
+                val isNewUser = !playerRepository.hasPlayer()
+                val currentPlayerId = sharedPreferences.getString(Constants.KEY_PLAYER_ID, null)
+                val hasDevicePlayer = currentPlayerId != null
+
                 when {
-                    !isNewUser && hasPlayer -> {
+                    !isNewUser && hasDevicePlayer -> {
                         //TODO: delete anonymous account
-                        val anonymousPlayerId =
-                            sharedPreferences.getString(Constants.KEY_PLAYER_ID, null)
                         savePlayerId(user)
-                        dispatch(LoadDataAction.ChangePlayer(anonymousPlayerId))
+                        dispatch(LoadDataAction.ChangePlayer(currentPlayerId))
                         dispatch(AuthAction.ExistingPlayerLoggedInFromGuest)
                     }
-                    isNewUser && hasPlayer -> {
+                    isNewUser && hasDevicePlayer -> {
                         updatePlayerAuthProvider(user)
                         dispatch(AuthAction.AccountsLinked)
                     }
-                    isNewUser && !hasPlayer -> {
+                    isNewUser && !hasDevicePlayer -> {
                         createNewPlayer(user, state.stateFor(AuthViewState::class.java))
                     }
                     else -> loginExistingPlayer(user)
