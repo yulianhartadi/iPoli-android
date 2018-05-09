@@ -4,7 +4,6 @@ import android.annotation.SuppressLint
 import com.google.firebase.auth.*
 import io.ipoli.android.BuildConfig
 import io.ipoli.android.Constants
-import io.ipoli.android.R.id.startTime
 import io.ipoli.android.common.AppSideEffectHandler
 import io.ipoli.android.common.AppState
 import io.ipoli.android.common.LoadDataAction
@@ -173,8 +172,8 @@ object AuthSideEffectHandler : AppSideEffectHandler() {
     ) =
         AuthProvider.Google(
             userId = authProvider.uid,
-            displayName = user.displayName!!,
-            email = user.email!!,
+            displayName = user.displayName,
+            email = user.email,
             imageUrl = user.photoUrl
         )
 
@@ -184,8 +183,8 @@ object AuthSideEffectHandler : AppSideEffectHandler() {
     ) =
         AuthProvider.Facebook(
             userId = authProvider.uid,
-            displayName = user.displayName!!,
-            email = user.email!!,
+            displayName = user.displayName,
+            email = user.email,
             imageUrl = user.photoUrl
         )
 
@@ -223,7 +222,7 @@ object AuthSideEffectHandler : AppSideEffectHandler() {
             displayName = if (user.displayName != null) user.displayName!! else "",
             schemaVersion = Constants.SCHEMA_VERSION,
             pet = state.petAvatar?.let { Pet(state.petName!!, state.petAvatar) }
-                    ?: Pet(Constants.DEFAULT_PET_NAME, Constants.DEFAULT_PET_AVATAR),
+                ?: Pet(Constants.DEFAULT_PET_NAME, Constants.DEFAULT_PET_AVATAR),
             avatar = state.playerAvatar
         )
 
