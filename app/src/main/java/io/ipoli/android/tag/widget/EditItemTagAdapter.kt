@@ -28,13 +28,11 @@ class EditItemAutocompleteTagAdapter(tags: List<Tag>, context: Context) :
         R.layout.item_tag_autocomplete,
         tags
     ) {
-    override fun getDropDownView(position: Int, convertView: View?, parent: ViewGroup): View {
-        return bindView(position, convertView, parent)
-    }
+    override fun getDropDownView(position: Int, convertView: View?, parent: ViewGroup) =
+        bindView(position, convertView, parent)
 
-    override fun getView(position: Int, convertView: View?, parent: ViewGroup): View {
-        return bindView(position, convertView, parent)
-    }
+    override fun getView(position: Int, convertView: View?, parent: ViewGroup) =
+        bindView(position, convertView, parent)
 
     private fun bindView(position: Int, convertView: View?, parent: ViewGroup): View {
 

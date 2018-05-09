@@ -18,4 +18,12 @@ data class Tag(
     val questCount: Int = -1,
     override val createdAt: Instant = Instant.now(),
     override val updatedAt: Instant = Instant.now()
-) : Entity
+) : Entity {
+    override fun equals(other: Any?): Boolean {
+        if (other == null) return false
+        if (other !is Tag) return false
+        return id == other.id
+    }
+
+    override fun hashCode() = id.hashCode()
+}
