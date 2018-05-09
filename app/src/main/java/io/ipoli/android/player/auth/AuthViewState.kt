@@ -36,6 +36,7 @@ sealed class AuthAction : Action {
         val username: String,
         val avatar: Avatar
     ) : AuthAction()
+
     data class ValidateUsername(val username: String) : AuthAction()
     data class ChangeAvatar(val avatar: Avatar) : AuthAction()
 
@@ -121,7 +122,7 @@ object AuthReducer : BaseViewStateReducer<AuthViewState>() {
 
             AuthAction.AccountsLinked -> {
                 subState.copy(
-                    type = ACCOUNTS_LINKED
+                    type = SWITCH_TO_SETUP
                 )
             }
 
@@ -165,7 +166,7 @@ data class AuthViewState(
     val usernameValidationError: ValidationError?,
     val isGuest: Boolean,
     val username: String,
-    val playerAvatar : Avatar,
+    val playerAvatar: Avatar,
     val avatars: List<Avatar>,
     val petName: String?,
     val petAvatar: PetAvatar?,

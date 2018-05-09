@@ -20,6 +20,7 @@ import io.ipoli.android.quest.Icon
 import io.ipoli.android.repeatingquest.usecase.SaveRepeatingQuestUseCase
 import io.ipoli.android.tag.Tag
 import space.traversal.kapsule.required
+import timber.log.Timber
 
 /**
  * Created by Venelin Valkov <venelin@mypoli.fun>
@@ -57,10 +58,12 @@ object AuthSideEffectHandler : AppSideEffectHandler() {
             is AuthAction.UserAuthenticated -> {
                 val user = action.user
 
-                val isNewUser = !playerRepository.hasPlayer()
+                val metadata = user.metadata
+                val isNewUser =
+                    metadata == null || metadata.creationTimestamp == metadata.lastSignInTimestamp
                 val currentPlayerId = sharedPreferences.getString(Constants.KEY_PLAYER_ID, null)
                 val hasDevicePlayer = currentPlayerId != null
-
+                Timber.d("AAA $isNewUser $hasDevicePlayer")
                 when {
                     !isNewUser && hasDevicePlayer -> {
                         //TODO: delete anonymous account
@@ -220,7 +223,7 @@ object AuthSideEffectHandler : AppSideEffectHandler() {
             displayName = if (user.displayName != null) user.displayName!! else "",
             schemaVersion = Constants.SCHEMA_VERSION,
             pet = state.petAvatar?.let { Pet(state.petName!!, state.petAvatar) }
-                ?: Pet(Constants.DEFAULT_PET_NAME, Constants.DEFAULT_PET_AVATAR),
+                    ?: Pet(Constants.DEFAULT_PET_NAME, Constants.DEFAULT_PET_AVATAR),
             avatar = state.playerAvatar
         )
 
