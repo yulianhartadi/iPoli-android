@@ -110,8 +110,7 @@ object AuthSideEffectHandler : AppSideEffectHandler() {
                         if (auth is AuthProvider.Facebook && auth.email != null) {
                             Api.migratePlayer(player.id, auth.email)
                         } else if (auth is AuthProvider.Google && auth.email != null) {
-//                            Api.migratePlayer(player.id, auth.email)
-                            Api.migratePlayer(player.id, "rachelm25@gmail.com")
+                            Api.migratePlayer(player.id, auth.email)
                         }
 //                    }
                 }
