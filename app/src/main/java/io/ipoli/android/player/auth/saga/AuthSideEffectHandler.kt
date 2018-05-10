@@ -2,7 +2,6 @@ package io.ipoli.android.player.auth.saga
 
 import android.annotation.SuppressLint
 import com.google.firebase.auth.*
-import io.ipoli.android.BuildConfig
 import io.ipoli.android.Constants
 import io.ipoli.android.common.AppSideEffectHandler
 import io.ipoli.android.common.AppState
@@ -20,7 +19,6 @@ import io.ipoli.android.quest.Icon
 import io.ipoli.android.repeatingquest.usecase.SaveRepeatingQuestUseCase
 import io.ipoli.android.tag.Tag
 import space.traversal.kapsule.required
-import timber.log.Timber
 
 /**
  * Created by Venelin Valkov <venelin@mypoli.fun>
@@ -107,14 +105,15 @@ object AuthSideEffectHandler : AppSideEffectHandler() {
                     prepareAppStart()
                     dispatch(AuthAction.PlayerSetupCompleted)
 
-                    if (!BuildConfig.DEBUG) {
+//                    if (!BuildConfig.DEBUG) {
                         val auth = player.authProvider
                         if (auth is AuthProvider.Facebook && auth.email != null) {
                             Api.migratePlayer(player.id, auth.email)
                         } else if (auth is AuthProvider.Google && auth.email != null) {
-                            Api.migratePlayer(player.id, auth.email)
+//                            Api.migratePlayer(player.id, auth.email)
+                            Api.migratePlayer(player.id, "rachelm25@gmail.com")
                         }
-                    }
+//                    }
                 }
             }
 

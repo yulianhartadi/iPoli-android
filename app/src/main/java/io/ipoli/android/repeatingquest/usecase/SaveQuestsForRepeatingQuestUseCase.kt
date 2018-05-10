@@ -160,7 +160,7 @@ class SaveQuestsForRepeatingQuestUseCase(
     ): List<LocalDate> {
         val preferredDays = pattern.preferredDays
         val timesPerMonth = pattern.timesPerMonth
-        require(timesPerMonth != preferredDays.size)
+//        require(timesPerMonth != preferredDays.size)
         require(timesPerMonth >= 1)
         require(timesPerMonth <= 31)
 
@@ -208,7 +208,7 @@ class SaveQuestsForRepeatingQuestUseCase(
 
         val preferredDays = pattern.preferredDays
         val timesPerWeek = pattern.timesPerWeek
-        require(timesPerWeek != preferredDays.size)
+//        require(timesPerWeek != preferredDays.size)
         require(timesPerWeek >= 1)
         require(timesPerWeek <= 7)
 

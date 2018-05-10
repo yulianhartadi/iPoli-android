@@ -20,6 +20,7 @@ import io.ipoli.android.quest.Quest
 import io.ipoli.android.quest.RepeatingQuest
 import io.ipoli.android.repeatingquest.usecase.FindNextDateForRepeatingQuestUseCase
 import io.ipoli.android.repeatingquest.usecase.FindPeriodProgressForRepeatingQuestUseCase
+import io.ipoli.android.repeatingquest.usecase.SaveQuestsForRepeatingQuestUseCase
 import io.ipoli.android.tag.Tag
 import io.ipoli.android.tag.usecase.AddQuestCountToTagUseCase
 import kotlinx.coroutines.experimental.android.UI
@@ -124,6 +125,7 @@ object LoadAllDataSideEffectHandler : AppSideEffectHandler() {
     private val findNextDateForChallengeUseCase by required { findNextDateForChallengeUseCase }
     private val findChallengeProgressUseCase by required { findChallengeProgressUseCase }
     private val addQuestCountToTagUseCase by required { addQuestCountToTagUseCase }
+    private val saveQuestsForRepeatingQuestUseCase by required { saveQuestsForRepeatingQuestUseCase }
 
     private val playerChannelRelay = ChannelRelay<Player?, Unit>(
         producer = { c, _ ->
@@ -168,6 +170,21 @@ object LoadAllDataSideEffectHandler : AppSideEffectHandler() {
         },
         consumer = { rqs, _ ->
             val repeatingQuests = rqs.map {
+                if (it.isActive()) {
+                    val currentPeriod = it.repeatPattern.periodRangeFor(LocalDate.now())
+                    val nextPeriodFirstDate = currentPeriod.end.plusDays(1)
+                    val end = it.repeatPattern.periodRangeFor(nextPeriodFirstDate).end
+                    saveQuestsForRepeatingQuestUseCase.execute(
+                        SaveQuestsForRepeatingQuestUseCase.Params(
+                            repeatingQuest = it,
+                            start = LocalDate.now(),
+                            end = end
+                        )
+                    ).repeatingQuest
+                } else {
+                    it
+                }
+            }.map {
                 findNextDateForRepeatingQuestUseCase.execute(
                     FindNextDateForRepeatingQuestUseCase.Params(it)
                 )

@@ -131,8 +131,6 @@ sealed class RepeatPattern(
 
                 val periodStart =
                     from.with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY))
-                require(scheduledPeriods.contains(periodStart))
-
                 val nextDate = scheduledPeriods[periodStart]!!.firstOrNull { !it.isBefore(from) }
                 return nextDate ?: firstDateForNextPeriod(periodStart)
             }
@@ -142,7 +140,7 @@ sealed class RepeatPattern(
                 if (!scheduledPeriods.containsKey(nextPeriodStart)) {
                     return null
                 }
-                return scheduledPeriods[nextPeriodStart]!!.first()
+                return scheduledPeriods[nextPeriodStart]!!.firstOrNull()
             }
         }
 
@@ -175,7 +173,7 @@ sealed class RepeatPattern(
                 if (!scheduledPeriods.containsKey(nextPeriodStart)) {
                     return null
                 }
-                return scheduledPeriods[nextPeriodStart]!!.first()
+                return scheduledPeriods[nextPeriodStart]!!.firstOrNull()
             }
         }
     }
