@@ -29,6 +29,7 @@ import org.threeten.bp.LocalDate
 import space.traversal.kapsule.Injects
 import space.traversal.kapsule.inject
 import space.traversal.kapsule.required
+import timber.log.Timber
 
 /**
  * Created by Venelin Valkov <venelin@mypoli.fun>
@@ -170,6 +171,8 @@ object LoadAllDataSideEffectHandler : AppSideEffectHandler() {
         },
         consumer = { rqs, _ ->
             val repeatingQuests = rqs.map {
+                Timber.d("AAA ==============================================")
+                Timber.d("AAA schedule")
                 if (it.isActive()) {
                     val currentPeriod = it.repeatPattern.periodRangeFor(LocalDate.now())
                     val nextPeriodFirstDate = currentPeriod.end.plusDays(1)
@@ -184,6 +187,36 @@ object LoadAllDataSideEffectHandler : AppSideEffectHandler() {
                 } else {
                     it
                 }
+
+//                if (it.isActive() && it.isFlexible) {
+//                    val rp = it.repeatPattern as RepeatPattern.Flexible
+//
+//                    Timber.d("AAA rq ${it.name}")
+//                    val currentPeriod = it.repeatPattern.periodRangeFor(LocalDate.now())
+//                    val nextPeriodFirstDate = currentPeriod.end.plusDays(1)
+//                    Timber.d("AAA current period $currentPeriod")
+//                    if (rp.scheduledPeriods.containsKey(currentPeriod.start) && rp.scheduledPeriods.containsKey(
+//                            nextPeriodFirstDate
+//                        )) {
+//                        it
+//                    } else {
+//                        val start = if (!rp.scheduledPeriods.containsKey(currentPeriod.start)) {
+//                            LocalDate.now()
+//                        } else {
+//                            nextPeriodFirstDate
+//                        }
+//                        val end = it.repeatPattern.periodRangeFor(nextPeriodFirstDate).end
+//                        saveQuestsForRepeatingQuestUseCase.execute(
+//                            SaveQuestsForRepeatingQuestUseCase.Params(
+//                                repeatingQuest = it,
+//                                start = start,
+//                                end = end
+//                            )
+//                        ).repeatingQuest
+//                    }
+//                } else {
+//                    it
+//                }
             }.map {
                 findNextDateForRepeatingQuestUseCase.execute(
                     FindNextDateForRepeatingQuestUseCase.Params(it)

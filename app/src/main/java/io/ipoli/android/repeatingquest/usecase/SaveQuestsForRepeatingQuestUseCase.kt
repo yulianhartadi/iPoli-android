@@ -16,6 +16,7 @@ import io.ipoli.android.repeatingquest.entity.RepeatPattern.Companion.yearlyDate
 import org.threeten.bp.DayOfWeek
 import org.threeten.bp.LocalDate
 import org.threeten.bp.temporal.TemporalAdjusters.nextOrSame
+import timber.log.Timber
 
 /**
  * Created by Venelin Valkov <venelin@mypoli.fun>
@@ -39,6 +40,8 @@ class SaveQuestsForRepeatingQuestUseCase(
 
         val start = if (parameters.start.isBefore(rq.start)) rq.start else parameters.start
         val end = if (rqEnd != null && rqEnd.isBefore(parameters.end)) rqEnd else parameters.end
+
+        Timber.d("AAAA start $start end $end")
 
         var newRQ: RepeatingQuest? = null
 
@@ -130,10 +133,17 @@ class SaveQuestsForRepeatingQuestUseCase(
 
         val scheduledQuests =
             questRepository.findScheduledForRepeatingQuestBetween(rq.id, start, end)
+
+        Timber.d("AAAA scheduledQuests $scheduledQuests")
+
         val (removed, existing) = scheduledQuests.partition { it.isRemoved }
         val scheduledDateToQuest = existing.associateBy({ it.originalScheduledDate }, { it })
         val removedDates = removed.map { it.originalScheduledDate!! }
+        Timber.d("AAAA scheduledDateToQuest ${scheduledDateToQuest.keys} ${scheduledDateToQuest.values.size}")
+
         val resultDates = scheduleDates - removedDates
+
+        Timber.d("AAAA resultDates $resultDates")
 
         val questsToSave = mutableListOf<Quest>()
 
@@ -148,6 +158,7 @@ class SaveQuestsForRepeatingQuestUseCase(
             }
         }
 
+        Timber.d("AAAA questsToSave ${questsToSave.size}")
         questRepository.save(questsToSave)
         return Result(quests, newRQ ?: rq)
     }

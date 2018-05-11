@@ -107,13 +107,14 @@ sealed class RepeatPattern(
 
     sealed class Flexible(
         override val startDate: LocalDate,
-        override val endDate: LocalDate?
+        override val endDate: LocalDate?,
+        open val scheduledPeriods: Map<LocalDate, List<LocalDate>> = mapOf()
     ) : RepeatPattern(startDate, endDate) {
 
         data class Weekly(
             val timesPerWeek: Int,
             val preferredDays: Set<DayOfWeek> = DayOfWeek.values().toSet(),
-            val scheduledPeriods: Map<LocalDate, List<LocalDate>> = mapOf(),
+            override val scheduledPeriods: Map<LocalDate, List<LocalDate>> = mapOf(),
             override val startDate: LocalDate = LocalDate.now(),
             override val endDate: LocalDate? = null
         ) : Flexible(startDate, endDate) {
@@ -130,6 +131,10 @@ sealed class RepeatPattern(
 
                 val periodStart =
                     from.with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY))
+                if(!scheduledPeriods.containsKey(periodStart)) {
+                    return null
+                }
+
                 val nextDate = scheduledPeriods[periodStart]!!.firstOrNull { !it.isBefore(from) }
                 return nextDate ?: firstDateForNextPeriod(periodStart)
             }
@@ -146,7 +151,7 @@ sealed class RepeatPattern(
         data class Monthly(
             val timesPerMonth: Int,
             val preferredDays: Set<Int>,
-            val scheduledPeriods: Map<LocalDate, List<LocalDate>> = mapOf(),
+            override val scheduledPeriods: Map<LocalDate, List<LocalDate>> = mapOf(),
             override val startDate: LocalDate = LocalDate.now(),
             override val endDate: LocalDate? = null
         ) : Flexible(startDate, endDate) {
@@ -161,7 +166,10 @@ sealed class RepeatPattern(
             override fun nextDateWithoutRange(from: LocalDate): LocalDate? {
                 require(scheduledPeriods.isNotEmpty())
                 val periodStart = from.with(TemporalAdjusters.firstDayOfMonth())
-                require(scheduledPeriods.contains(periodStart))
+
+                if(!scheduledPeriods.containsKey(periodStart)) {
+                    return null
+                }
 
                 val nextDate = scheduledPeriods[periodStart]!!.firstOrNull { !it.isBefore(from) }
                 return nextDate ?: firstDateFromNextPeriod(periodStart)
