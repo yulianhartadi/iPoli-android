@@ -1,6 +1,5 @@
 package io.ipoli.android.repeatingquest.entity
 
-import io.ipoli.android.common.datetime.DateUtils
 import io.ipoli.android.common.datetime.isBetween
 import org.threeten.bp.DayOfWeek
 import org.threeten.bp.LocalDate
@@ -23,8 +22,8 @@ sealed class RepeatPattern(
     ) : RepeatPattern(startDate, endDate) {
         override fun periodRangeFor(date: LocalDate) =
             PeriodRange(
-                start = date.with(TemporalAdjusters.previousOrSame(DateUtils.firstDayOfWeek)),
-                end = date.with(TemporalAdjusters.nextOrSame(DateUtils.lastDayOfWeek))
+                start = date.with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY)),
+                end = date.with(TemporalAdjusters.nextOrSame(DayOfWeek.SUNDAY))
             )
 
         override val periodCount get() = DayOfWeek.values().size
@@ -62,8 +61,8 @@ sealed class RepeatPattern(
     ) : RepeatPattern(startDate, endDate) {
         override fun periodRangeFor(date: LocalDate) =
             PeriodRange(
-                start = date.with(TemporalAdjusters.previousOrSame(DateUtils.firstDayOfWeek)),
-                end = date.with(TemporalAdjusters.nextOrSame(DateUtils.lastDayOfWeek))
+                start = date.with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY)),
+                end = date.with(TemporalAdjusters.nextOrSame(DayOfWeek.SUNDAY))
             )
 
         override val periodCount get() = daysOfWeek.size
