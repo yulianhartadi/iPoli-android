@@ -59,7 +59,11 @@ class FindNextDateForRepeatingQuestUseCase(
             )
         } else {
             var nextDate: LocalDate? = rq.repeatPattern.nextDate(fromDate)
-
+            if (nextDate == null) {
+                return rq.copy(
+                    nextDate = null
+                )
+            }
             while (true) {
 
                 val originalScheduled =
