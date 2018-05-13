@@ -21,8 +21,8 @@ android {
         applicationId "io.ipoli.android"
         minSdkVersion 21
         targetSdkVersion 27
-        versionCode 427
-        versionName "2.0.17"
+        versionCode 428
+        versionName "2.0.18"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
 
