@@ -1,6 +1,6 @@
 package io.ipoli.android.common.redux
 
-import io.ipoli.android.common.UIAction
+import io.ipoli.android.common.UiAction
 import io.ipoli.android.common.mvi.ViewState
 import kotlinx.coroutines.experimental.Unconfined
 import kotlinx.coroutines.experimental.runBlocking
@@ -8,7 +8,6 @@ import org.amshove.kluent.`should be equal to`
 import org.jetbrains.spek.api.Spek
 import org.jetbrains.spek.api.dsl.describe
 import org.jetbrains.spek.api.dsl.it
-import org.jetbrains.spek.api.dsl.xdescribe
 
 /**
  * Created by Venelin Valkov <venelin@io.ipoli.io>
@@ -123,7 +122,7 @@ object StateStoreSpek : Spek({
             it("should attach and call") {
                 vsReduceCount = 0
                 val store = createStore()
-                store.dispatch(UIAction.Attach(vsReducer))
+                store.dispatch(UiAction.Attach(vsReducer))
                 store.dispatch(ViewAction("test"))
                 vsReduceCount.`should be equal to`(1)
             }
@@ -131,8 +130,8 @@ object StateStoreSpek : Spek({
             it("should detach and not call") {
                 vsReduceCount = 0
                 val store = createStore()
-                store.dispatch(UIAction.Attach(vsReducer))
-                store.dispatch(UIAction.Detach(vsReducer))
+                store.dispatch(UiAction.Attach(vsReducer))
+                store.dispatch(UiAction.Detach(vsReducer))
                 store.dispatch(ViewAction("test"))
                 vsReduceCount.`should be equal to`(0)
             }

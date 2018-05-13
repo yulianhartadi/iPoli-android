@@ -70,7 +70,7 @@ abstract class BaseViewController<A : Action, VS : ViewState> protected construc
         val lifecycleListener = object : LifecycleListener() {
 
             override fun postAttach(controller: Controller, view: View) {
-                eventLogger.logCurrentScreen(activity!!, javaClass.simpleName, javaClass)
+                eventLogger.logCurrentScreen(activity!!, this@BaseViewController.javaClass.simpleName.replace("ViewController",""))
                 stateStore.subscribe(this@BaseViewController)
                 onSubscribedToStore()
                 onCreateLoadAction()?.let {
@@ -350,11 +350,11 @@ abstract class ReduxViewController<A : Action, VS : ViewState, out R : ViewState
         val lifecycleListener = object : LifecycleListener() {
 
             override fun postCreateView(controller: Controller, view: View) {
-                stateStore.dispatch(UIAction.Attach(reducer))
+                stateStore.dispatch(UiAction.Attach(reducer))
             }
 
             override fun preDestroyView(controller: Controller, view: View) {
-                stateStore.dispatch(UIAction.Detach(reducer))
+                stateStore.dispatch(UiAction.Detach(reducer))
             }
         }
         addLifecycleListener(lifecycleListener)

@@ -1,6 +1,6 @@
 package io.ipoli.android.common.redux
 
-import io.ipoli.android.common.UIAction
+import io.ipoli.android.common.UiAction
 import io.ipoli.android.common.mvi.ViewState
 import kotlinx.coroutines.experimental.CommonPool
 import kotlinx.coroutines.experimental.channels.Channel
@@ -187,7 +187,7 @@ class StateStore<S : CompositeState<S>>(
 
     inner class CompositeReducer {
         fun reduce(state: S, action: Action): S {
-            if (action is UIAction.Attach<*>) {
+            if (action is UiAction.Attach<*>) {
                 val stateKey = action.reducer.stateKey
                 require(
                     !state.keys.contains(stateKey),
@@ -198,7 +198,7 @@ class StateStore<S : CompositeState<S>>(
                 return state.update(stateKey, reducer.defaultState())
             }
 
-            if (action is UIAction.Detach<*>) {
+            if (action is UiAction.Detach<*>) {
                 val stateKey = action.reducer.stateKey
                 @Suppress("UNCHECKED_CAST")
                 val reducer = action.reducer as ViewStateReducer<S, *>

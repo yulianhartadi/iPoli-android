@@ -15,11 +15,10 @@ import android.util.AttributeSet
 import android.util.DisplayMetrics
 import android.view.*
 import android.widget.RelativeLayout
-import com.google.firebase.components.Dependency.required
 import io.ipoli.android.R
 import io.ipoli.android.common.AppState
 import io.ipoli.android.common.NamespaceAction
-import io.ipoli.android.common.UIAction
+import io.ipoli.android.common.UiAction
 import io.ipoli.android.common.ViewUtils
 import io.ipoli.android.common.di.Module
 import io.ipoli.android.common.mvi.Intent
@@ -319,7 +318,7 @@ abstract class ReduxPopup<A : Action, VS : ViewState, out VSR : ViewStateReducer
         contentView = createView(LayoutInflater.from(context)) as ViewGroup
         contentView.visibility = View.INVISIBLE
 
-        stateStore.dispatch(UIAction.Attach(reducer))
+        stateStore.dispatch(UiAction.Attach(reducer))
 
         overlayView = PopupBackgroundLayout(context)
         overlayView.layoutParams = ViewGroup.LayoutParams(
@@ -455,7 +454,7 @@ abstract class ReduxPopup<A : Action, VS : ViewState, out VSR : ViewStateReducer
     private fun onDestroy() {
         windowManager.removeViewImmediate(overlayView)
         stateStore.unsubscribe(this)
-        stateStore.dispatch(UIAction.Detach(reducer))
+        stateStore.dispatch(UiAction.Detach(reducer))
         currentState = null
     }
 

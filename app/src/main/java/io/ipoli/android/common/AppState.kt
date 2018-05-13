@@ -17,10 +17,10 @@ sealed class LoadDataAction : Action {
     data class ChangePlayer(val oldPlayerId: String) : LoadDataAction()
 }
 
-sealed class UIAction : Action {
-    data class Attach<S : CompositeState<S>>(val reducer: ViewStateReducer<S, *>) : UIAction()
+sealed class UiAction : Action {
+    data class Attach<S : CompositeState<S>>(val reducer: ViewStateReducer<S, *>) : UiAction()
 
-    data class Detach<S : CompositeState<S>>(val reducer: ViewStateReducer<S, *>) : UIAction()
+    data class Detach<S : CompositeState<S>>(val reducer: ViewStateReducer<S, *>) : UiAction()
 }
 
 data class NamespaceAction(val source: Action, val namespace: String) : Action
