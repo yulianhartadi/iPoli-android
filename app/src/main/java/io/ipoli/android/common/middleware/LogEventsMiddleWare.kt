@@ -45,7 +45,7 @@ object LogEventsMiddleWare : MiddleWare<AppState>, Injects<Module> {
             .replace("Action", "")
             .split(".")
             .filter { it[0].isUpperCase() }
-            .joinToString(".")
+            .joinToString("_")
             { it.toSnakeCase() }
     }
 
