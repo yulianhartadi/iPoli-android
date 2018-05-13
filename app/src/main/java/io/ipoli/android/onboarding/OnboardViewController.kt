@@ -346,7 +346,7 @@ class OnboardViewController(args: Bundle? = null) :
         const val ADD_QUEST_INDEX = 4
         const val PICK_REPEATING_QUESTS_INDEX = 5
 
-        const val TYPE_SPEED = 40
+        const val TYPE_SPEED = 50
     }
 
     enum class OnboardTag { WELLNESS, PERSONAL, WORK }
