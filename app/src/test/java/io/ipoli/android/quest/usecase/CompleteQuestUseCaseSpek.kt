@@ -82,7 +82,7 @@ class CompleteQuestUseCaseSpek : Spek({
 
         it("should schedule next reminder") {
             useCase.execute(WithQuestId(questId))
-            Verify on reminderScheduler that reminderScheduler.schedule(any()) was called
+            Verify on reminderScheduler that reminderScheduler.schedule() was called
         }
 
         it("should schedule show quest complete message") {

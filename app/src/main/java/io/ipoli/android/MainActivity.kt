@@ -1,11 +1,9 @@
 package io.ipoli.android
 
-import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
-import android.os.PowerManager
 import android.preference.PreferenceManager
 import android.provider.Settings
 import android.support.design.widget.Snackbar
@@ -91,14 +89,14 @@ class MainActivity : AppCompatActivity(), Injects<Module>, SideEffectHandler<App
         incrementAppRun()
 
         router =
-            Conductor.attachRouter(
-                this,
-                findViewById(R.id.controllerContainer),
-                savedInstanceState
-            )
+                Conductor.attachRouter(
+                    this,
+                    findViewById(R.id.controllerContainer),
+                    savedInstanceState
+                )
         router.setPopsLastView(true)
         inject(myPoliApp.module(this))
-        
+
         launch(CommonPool) {
             val hasPlayer = playerRepository.hasPlayer()
             if (!hasPlayer) {
@@ -130,7 +128,6 @@ class MainActivity : AppCompatActivity(), Injects<Module>, SideEffectHandler<App
         } else if (intent.action == ACTION_SHOW_PET) {
             showPet()
         } else if (!router.hasRootController()) {
-            checkForBatteryOptimization()
             router.setRoot(RouterTransaction.with(HomeViewController()))
         }
     }
@@ -204,13 +201,13 @@ class MainActivity : AppCompatActivity(), Injects<Module>, SideEffectHandler<App
 
     fun enterFullScreen() {
         window.decorView.systemUiVisibility = (
-            View.SYSTEM_UI_FLAG_LAYOUT_STABLE
-                or View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
-                or View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
-                or View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
-                or View.SYSTEM_UI_FLAG_FULLSCREEN
-                or View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY
-            )
+                View.SYSTEM_UI_FLAG_LAYOUT_STABLE
+                        or View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
+                        or View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
+                        or View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
+                        or View.SYSTEM_UI_FLAG_FULLSCREEN
+                        or View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY
+                )
     }
 
     fun exitFullScreen() {
@@ -288,50 +285,14 @@ class MainActivity : AppCompatActivity(), Injects<Module>, SideEffectHandler<App
 
     override fun canHandle(action: Action) =
         action is ShowBuyPowerUpAction
-            || action === TagAction.TagCountLimitReached
-            || action === HomeAction.ShowPlayerSetup
-            || action === AuthAction.PlayerSetupCompleted
-            || action === AuthAction.GuestCreated
-
-    private val isBatteryOptimizationOn: Boolean
-        get() {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                val p = getSystemService(Context.POWER_SERVICE) as PowerManager
-                return !p.isIgnoringBatteryOptimizations(packageName)
-            } else {
-                return false
-            }
-        }
-
-    private fun checkForBatteryOptimization() {
-        if (isBatteryOptimizationOn && Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP_MR1) {
-
-            Snackbar.make(
-                findViewById(R.id.activityContainer),
-                R.string.battery_optimization_warn,
-                Snackbar.LENGTH_INDEFINITE
-            ).setAction(R.string.turn_it_off, { _ ->
-
-                val name = resources.getString(R.string.app_name)
-                Toast.makeText(
-                    applicationContext,
-                    "Battery optimization -> All apps -> $name -> Don't optimize",
-                    Toast.LENGTH_LONG
-                ).show()
-
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                    val intent =
-                        Intent(Settings.ACTION_IGNORE_BATTERY_OPTIMIZATION_SETTINGS)
-                    startActivity(intent)
-                }
-
-            }).show()
-        }
-    }
+                || action === TagAction.TagCountLimitReached
+                || action === HomeAction.ShowPlayerSetup
+                || action === AuthAction.PlayerSetupCompleted
+                || action === AuthAction.GuestCreated
 
     companion object {
-        const val ACTION_SHOW_TIMER = "mypoli.android.intent.action.SHOW_TIMER"
-        const val ACTION_SHOW_QUICK_ADD = "mypoli.android.intent.action.SHOW_QUICK_ADD"
-        const val ACTION_SHOW_PET = "mypoli.android.intent.action.SHOW_PET"
+        const val ACTION_SHOW_TIMER = "io.ipoli.android.intent.action.SHOW_TIMER"
+        const val ACTION_SHOW_QUICK_ADD = "io.ipoli.android.intent.action.SHOW_QUICK_ADD"
+        const val ACTION_SHOW_PET = "io.ipoli.android.intent.action.SHOW_PET"
     }
 }

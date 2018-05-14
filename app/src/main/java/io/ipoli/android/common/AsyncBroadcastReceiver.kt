@@ -20,10 +20,10 @@ abstract class AsyncBroadcastReceiver : BroadcastReceiver(), Injects<Module> {
         inject(myPoliApp.module(context))
         val res = goAsync()
         launch(CommonPool) {
-            onReceiveAsync(intent)
+            onReceiveAsync(context, intent)
             res.finish()
         }
     }
 
-    abstract fun onReceiveAsync(intent: Intent)
+    abstract suspend fun onReceiveAsync(context: Context, intent: Intent)
 }

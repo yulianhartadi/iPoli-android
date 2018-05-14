@@ -35,14 +35,13 @@ class SaveQuestsForRepeatingQuestUseCaseSpek : Spek({
             end: LocalDate,
             questRepo: QuestRepository = TestUtil.questRepoMock()
         ) =
-            SaveQuestsForRepeatingQuestUseCase(questRepo).execute(
+            SaveQuestsForRepeatingQuestUseCase(questRepo, mock()).execute(
                 SaveQuestsForRepeatingQuestUseCase.Params(
                     repeatingQuest = quest,
                     start = start,
                     end = end
                 )
             )
-
 
         fun executeUseCaseWithRepeatingQuestResult(
             quest: RepeatingQuest,

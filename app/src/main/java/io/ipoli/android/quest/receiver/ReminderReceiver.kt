@@ -1,29 +1,23 @@
-package io.ipoli.android.quest.job
+package io.ipoli.android.quest.receiver
 
-import android.annotation.SuppressLint
 import android.app.Notification
 import android.app.NotificationManager
 import android.content.Context
+import android.content.Intent
 import android.net.Uri
 import android.os.Build
 import android.support.v4.app.NotificationCompat
 import android.widget.Toast
-import com.evernote.android.job.Job
-import com.evernote.android.job.JobManager
-import com.evernote.android.job.JobRequest
-import com.evernote.android.job.util.support.PersistableBundleCompat
 import com.mikepenz.google_material_typeface_library.GoogleMaterial
 import com.mikepenz.iconics.IconicsDrawable
 import io.ipoli.android.Constants
 import io.ipoli.android.R
+import io.ipoli.android.common.AsyncBroadcastReceiver
 import io.ipoli.android.common.IntentUtil
 import io.ipoli.android.common.datetime.Time
-import io.ipoli.android.common.datetime.toMillis
-import io.ipoli.android.common.di.Module
 import io.ipoli.android.common.view.AndroidIcon
 import io.ipoli.android.common.view.asThemedWrapper
 import io.ipoli.android.common.view.largeIcon
-import io.ipoli.android.myPoliApp
 import io.ipoli.android.quest.Quest
 import io.ipoli.android.quest.reminder.ReminderNotificationPopup
 import io.ipoli.android.quest.reminder.ReminderNotificationViewModel
@@ -35,30 +29,27 @@ import org.threeten.bp.LocalDate
 import org.threeten.bp.LocalDateTime
 import org.threeten.bp.ZoneId
 import org.threeten.bp.temporal.ChronoUnit
-import space.traversal.kapsule.Injects
-import space.traversal.kapsule.Kapsule
+import space.traversal.kapsule.required
 import java.util.*
 
-/**
- * Created by Venelin Valkov <venelin@mypoli.fun>
- * on 10/26/17.
- */
-class ReminderNotificationJob : Job(), Injects<Module> {
+class ReminderReceiver : AsyncBroadcastReceiver() {
 
-    @SuppressLint("NewApi")
-    override fun onRunJob(params: Job.Params): Job.Result {
+    private val findQuestsToRemindUseCase by required { findQuestsToRemindUseCase }
+    private val snoozeQuestUseCase by required { snoozeQuestUseCase }
+    private val findPetUseCase by required { findPetUseCase }
+    private val reminderScheduler by required { reminderScheduler }
+
+    override suspend fun onReceiveAsync(context: Context, intent: Intent) {
+
+        if (intent.action != ReminderReceiver.ACTION_SHOW_REMINDER) {
+            return
+        }
 
         val notificationManager =
             context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
 
-        val kap = Kapsule<Module>()
-        val findQuestsToRemindUseCase by kap.required { findQuestToRemindUseCase }
-        val snoozeQuestUseCase by kap.required { snoozeQuestUseCase }
-        val findPetUseCase by kap.required { findPetUseCase }
-        kap.inject(myPoliApp.module(context))
-
         val c = context.asThemedWrapper()
-        val remindAt = params.extras.getLong("remindAtUTC", -1)
+        val remindAt = intent.extras.getLong("remindAtUTC", -1)
 
         require(remindAt >= 0)
 
@@ -66,6 +57,7 @@ class ReminderNotificationJob : Job(), Injects<Module> {
             Instant.ofEpochMilli(remindAt),
             ZoneId.systemDefault()
         )
+
         val quests = findQuestsToRemindUseCase.execute(remindDateTime)
         val pet = findPetUseCase.execute(Unit)
 
@@ -78,7 +70,7 @@ class ReminderNotificationJob : Job(), Injects<Module> {
 
                 val startTimeMessage = startTimeMessage(it)
 
-                val iconicsDrawable = IconicsDrawable(this@ReminderNotificationJob.context)
+                val iconicsDrawable = IconicsDrawable(context)
                 val icon = it.icon?.let {
                     val androidIcon = AndroidIcon.valueOf(it.name)
                     iconicsDrawable.largeIcon(
@@ -92,6 +84,7 @@ class ReminderNotificationJob : Job(), Injects<Module> {
 
                 val questName = it.name
                 val notificationId = showNotification(
+                    context,
                     questName,
                     message,
                     icon,
@@ -126,11 +119,11 @@ class ReminderNotificationJob : Job(), Injects<Module> {
                     }).show(c)
             }
         }
-
-        return Job.Result.SUCCESS
+        reminderScheduler.schedule()
     }
 
     private fun showNotification(
+        context: Context,
         questName: String,
         message: String,
         icon: IconicsDrawable,
@@ -138,7 +131,7 @@ class ReminderNotificationJob : Job(), Injects<Module> {
     ): Int {
         val sound =
             Uri.parse("android.resource://" + context.packageName + "/" + R.raw.notification)
-        val notification = createNotification(questName, icon, message, sound)
+        val notification = createNotification(context, questName, icon, message, sound)
 
         val notificationId = Random().nextInt()
 
@@ -147,6 +140,7 @@ class ReminderNotificationJob : Job(), Injects<Module> {
     }
 
     private fun createNotification(
+        context: Context,
         title: String,
         icon: IconicsDrawable,
         message: String,
@@ -190,35 +184,15 @@ class ReminderNotificationJob : Job(), Injects<Module> {
         } else {
             val minutesDiff = quest.startTime!!.toMinuteOfDay() - Time.now().toMinuteOfDay()
 
-            if (minutesDiff > Time.MINUTES_IN_AN_HOUR) {
-                "Starts at ${quest.startTime.toString(false)}"
-            } else if (minutesDiff > 0) {
-                "Starts in $minutesDiff min"
-            } else {
-                "Starts now"
+            when {
+                minutesDiff > Time.MINUTES_IN_AN_HOUR -> "Starts at ${quest.startTime.toString(false)}"
+                minutesDiff > 0 -> "Starts in $minutesDiff min"
+                else -> "Starts now"
             }
         }
     }
 
     companion object {
-        const val TAG = "job_reminder_notification_tag"
-    }
-}
-
-interface ReminderScheduler {
-    fun schedule(remindAt: LocalDateTime)
-}
-
-class AndroidJobReminderScheduler : ReminderScheduler {
-    override fun schedule(remindAt: LocalDateTime) {
-        JobManager.instance().cancelAllForTag(ReminderNotificationJob.TAG)
-
-        val bundle = PersistableBundleCompat()
-        bundle.putLong("remindAtUTC", remindAt.toMillis())
-        JobRequest.Builder(ReminderNotificationJob.TAG)
-            .setExtras(bundle)
-            .setExact(remindAt.toMillis() - System.currentTimeMillis())
-            .build()
-            .schedule()
+        const val ACTION_SHOW_REMINDER = "io.ipoli.android.intent.action.SHOW_REMINDER"
     }
 }

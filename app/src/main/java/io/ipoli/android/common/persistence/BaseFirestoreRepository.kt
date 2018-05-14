@@ -46,6 +46,17 @@ abstract class BaseFirestoreRepository<E, out T>(
         }
     }
 
+    protected fun Query.serverExecute(): QuerySnapshot {
+        return try {
+            Tasks.await(get(Source.SERVER))
+        } catch (e: Throwable) {
+            Tasks.await(get(Source.CACHE))
+        }
+    }
+
+
+    protected val Query.serverDocuments: List<DocumentSnapshot> get() = serverExecute().documents
+
     protected val Query.documents: List<DocumentSnapshot> get() = execute().documents
 
     protected fun DocumentReference.getSync(): DocumentSnapshot {

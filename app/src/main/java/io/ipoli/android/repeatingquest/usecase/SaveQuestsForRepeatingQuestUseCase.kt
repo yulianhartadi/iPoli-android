@@ -6,6 +6,7 @@ import io.ipoli.android.common.datetime.isBetween
 import io.ipoli.android.quest.Quest
 import io.ipoli.android.quest.RepeatingQuest
 import io.ipoli.android.quest.data.persistence.QuestRepository
+import io.ipoli.android.quest.job.ReminderScheduler
 import io.ipoli.android.repeatingquest.entity.Period
 import io.ipoli.android.repeatingquest.entity.RepeatPattern
 import io.ipoli.android.repeatingquest.entity.RepeatPattern.Companion.findMonthlyPeriods
@@ -22,7 +23,8 @@ import org.threeten.bp.temporal.TemporalAdjusters.nextOrSame
  * on 02/14/2018.
  */
 class SaveQuestsForRepeatingQuestUseCase(
-    private val questRepository: QuestRepository
+    private val questRepository: QuestRepository,
+    private val reminderScheduler: ReminderScheduler
 ) : UseCase<SaveQuestsForRepeatingQuestUseCase.Params, SaveQuestsForRepeatingQuestUseCase.Result> {
 
     override fun execute(parameters: Params): SaveQuestsForRepeatingQuestUseCase.Result {
@@ -151,6 +153,7 @@ class SaveQuestsForRepeatingQuestUseCase(
         }
 
         questRepository.save(questsToSave)
+        reminderScheduler.schedule()
         return Result(quests, newRQ ?: rq)
     }
 

@@ -4,6 +4,7 @@ import io.ipoli.android.challenge.persistence.ChallengeRepository
 import io.ipoli.android.common.UseCase
 import io.ipoli.android.quest.Quest
 import io.ipoli.android.quest.data.persistence.QuestRepository
+import io.ipoli.android.quest.job.ReminderScheduler
 import io.ipoli.android.repeatingquest.persistence.RepeatingQuestRepository
 
 /**
@@ -13,7 +14,8 @@ import io.ipoli.android.repeatingquest.persistence.RepeatingQuestRepository
 class RemoveChallengeUseCase(
     private val challengeRepository: ChallengeRepository,
     private val questRepository: QuestRepository,
-    private val repeatingQuestRepository: RepeatingQuestRepository
+    private val repeatingQuestRepository: RepeatingQuestRepository,
+    private val reminderScheduler: ReminderScheduler
 ) : UseCase<RemoveChallengeUseCase.Params, Unit> {
 
     override fun execute(parameters: Params) {
@@ -45,6 +47,7 @@ class RemoveChallengeUseCase(
         val rqs = repeatingQuestRepository
             .findAllForChallenge(c.id)
         repeatingQuestRepository.purge(rqs.map { it.id })
+        reminderScheduler.schedule()
         challengeRepository.remove(c)
     }
 

@@ -1,10 +1,10 @@
 package io.ipoli.android.quest.data.persistence
 
 import android.content.SharedPreferences
+import com.google.android.gms.tasks.Tasks
 import com.google.firebase.firestore.CollectionReference
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.Query
-import com.google.firebase.firestore.WriteBatch
 import io.ipoli.android.common.datetime.*
 import io.ipoli.android.common.persistence.BaseCollectionFirestoreRepository
 import io.ipoli.android.common.persistence.CollectionRepository
@@ -100,7 +100,6 @@ interface QuestRepository : CollectionRepository<Quest> {
 
     fun findByTag(tagId: String): List<Quest>
 
-    fun purge(questId: String)
     fun purge(questIds: List<String>)
 }
 
@@ -382,7 +381,7 @@ class FirestoreQuestRepository(
                 )
                 .limit(1)
 
-        val documents = query.documents
+        val documents = query.serverDocuments
         if (documents.isEmpty()) {
             return null
         }
@@ -403,7 +402,7 @@ class FirestoreQuestRepository(
             .whereEqualTo(
                 "millisOfDay", remindTime.toLocalTime().toSecondOfDay().seconds.millisValue
             )
-        val documents = query.documents
+        val documents = query.serverDocuments
         if (documents.isEmpty()) {
             return listOf()
         }
@@ -489,39 +488,54 @@ class FirestoreQuestRepository(
         val questToReminder = quests.map { q -> q.reminders.map { Pair(q, it) } }.flatten()
 
         val questIds = quests.map { it.id }
-
-        purgeReminders(questIds, batch)
-
-        questToReminder.forEach {
-            val ref = remindersReference.document()
-            createReminderData(it.second, it.first)?.let {
-                batch.set(ref, it)
-            }
-        }
-
         batch.commit()
+
+        bulkPurgeReminders(questIds, questToReminder)
         return quests
     }
 
-    private fun purgeReminders(
+    private fun bulkPurgeReminders(
         questIds: List<String>,
-        batch: WriteBatch
+        questToReminder: List<Pair<Quest, Reminder>>
     ) {
+
+        purgeReminders(questIds)
+
+        val batch = database.batch()
+        questToReminder.forEach {
+            if (!it.first.isCompleted) {
+                createReminderData(it.second, it.first)?.let {
+                    val ref = remindersReference.document()
+                    batch.set(ref, it)
+                }
+            }
+        }
+        batch.commit()
+
+    }
+
+    private fun purgeReminders(
+        questIds: List<String>
+    ) {
+        val batch = database.batch()
         var allRemindersQuery: Query = remindersReference
 
         questIds.forEach {
             allRemindersQuery = allRemindersQuery.whereEqualTo("questId", it)
         }
 
-        allRemindersQuery.documents.forEach {
+        allRemindersQuery.serverDocuments.forEach {
             val ref = remindersReference.document(it.id)
             batch.delete(ref)
         }
+        Tasks.await(batch.commit())
     }
 
     private fun saveReminders(quest: Quest, reminders: List<Reminder>) {
-        purgeReminders(quest.id)
-        addReminders(reminders, quest)
+        purgeQuestReminders(quest.id)
+        if (!quest.isCompleted) {
+            addReminders(reminders, quest)
+        }
     }
 
     private fun addReminders(
@@ -571,20 +585,20 @@ class FirestoreQuestRepository(
             "millisOfDay" to time.toMillisOfDay()
         )
 
-    private fun purgeReminders(questId: String) {
+    private fun purgeQuestReminders(questId: String) {
         val batch = database.batch()
 
         val query = remindersReference.whereEqualTo("questId", questId)
-        query.documents.forEach {
+        query.serverDocuments.forEach {
             val ref = remindersReference.document(it.id)
             batch.delete(ref)
         }
-        batch.commit()
+        Tasks.await(batch.commit())
     }
 
     override fun remove(id: String) {
         super.remove(id)
-        purgeReminders(id)
+        purgeQuestReminders(id)
     }
 
     override fun undoRemove(id: String) {
@@ -595,11 +609,6 @@ class FirestoreQuestRepository(
         }
     }
 
-    override fun purge(questId: String) {
-        purgeReminders(questId)
-        collectionReference.document(questId).delete()
-    }
-
     override fun purge(questIds: List<String>) {
         val batch = database.batch()
         questIds.forEach {
@@ -607,9 +616,9 @@ class FirestoreQuestRepository(
             batch.delete(ref)
         }
 
-        purgeReminders(questIds, batch)
-
         batch.commit()
+
+        purgeReminders(questIds)
     }
 
     override fun toEntityObject(dataMap: MutableMap<String, Any?>): Quest {

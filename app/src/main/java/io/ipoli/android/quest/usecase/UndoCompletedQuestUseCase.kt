@@ -25,10 +25,7 @@ class UndoCompletedQuestUseCase(
         )
         questRepository.save(newQuest)
 
-        val reminderTime = questRepository.findNextReminderTime()
-        reminderTime?.let {
-            reminderScheduler.schedule(it)
-        }
+        reminderScheduler.schedule()
 
         removeRewardFromPlayerUseCase.execute(SimpleReward.of(newQuest))
 

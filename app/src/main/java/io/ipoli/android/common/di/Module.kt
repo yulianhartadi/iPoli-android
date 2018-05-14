@@ -136,23 +136,23 @@ class FirestoreRepositoryModule : RepositoryModule, Injects<Module> {
     }
 
     override val playerRepository
-        by required {
-            FirestorePlayerRepository(
-                database,
-                job + CommonPool,
-                sharedPreferences
-            )
-        }
+            by required {
+                FirestorePlayerRepository(
+                    database,
+                    job + CommonPool,
+                    sharedPreferences
+                )
+            }
 
     override val repeatingQuestRepository
-        by required {
-            FirestoreRepeatingQuestRepository(
-                database,
-                job + CommonPool,
-                sharedPreferences,
-                FirestoreTagRepository(database, job + CommonPool, sharedPreferences)
-            )
-        }
+            by required {
+                FirestoreRepeatingQuestRepository(
+                    database,
+                    job + CommonPool,
+                    sharedPreferences,
+                    FirestoreTagRepository(database, job + CommonPool, sharedPreferences)
+                )
+            }
 
     override val challengeRepository by required {
         FirestoreChallengeRepository(
@@ -172,20 +172,20 @@ class FirestoreRepositoryModule : RepositoryModule, Injects<Module> {
     }
 
     override val tagRepository
-        by required {
-            FirestoreTagRepository(
-                database,
-                job + CommonPool,
-                sharedPreferences
-            )
-        }
+            by required {
+                FirestoreTagRepository(
+                    database,
+                    job + CommonPool,
+                    sharedPreferences
+                )
+            }
 
 }
 
 class Firestore {
     companion object {
         val instance: FirebaseFirestore by lazy {
-            return@lazy synchronized(Firestore::class){
+            return@lazy synchronized(Firestore::class) {
                 FirebaseFirestore.getInstance().apply { lock() }
             }
         }
@@ -310,8 +310,8 @@ class MainUseCaseModule : UseCaseModule, Injects<Module> {
             timerCompleteScheduler,
             reminderScheduler
         )
-    override val undoRemoveQuestUseCase get() = UndoRemovedQuestUseCase(questRepository)
-    override val findQuestToRemindUseCase get() = FindQuestsToRemindUseCase(questRepository)
+    override val undoRemoveQuestUseCase get() = UndoRemovedQuestUseCase(questRepository, reminderScheduler)
+    override val findQuestsToRemindUseCase get() = FindQuestsToRemindUseCase(questRepository)
     override val snoozeQuestUseCase get() = SnoozeQuestUseCase(questRepository, reminderScheduler)
     override val completeQuestUseCase
         get() = CompleteQuestUseCase(
@@ -402,7 +402,8 @@ class MainUseCaseModule : UseCaseModule, Injects<Module> {
         get() = SaveRepeatingQuestUseCase(
             questRepository,
             repeatingQuestRepository,
-            saveQuestsForRepeatingQuestUseCase
+            saveQuestsForRepeatingQuestUseCase,
+            reminderScheduler
         )
 
     override val findNextDateForRepeatingQuestUseCase
@@ -417,12 +418,14 @@ class MainUseCaseModule : UseCaseModule, Injects<Module> {
 
     override val saveQuestsForRepeatingQuestUseCase
         get() = SaveQuestsForRepeatingQuestUseCase(
-            questRepository
+            questRepository,
+            reminderScheduler
         )
     override val removeRepeatingQuestUseCase
         get() = RemoveRepeatingQuestUseCase(
             questRepository,
-            repeatingQuestRepository
+            repeatingQuestRepository,
+            reminderScheduler
         )
     override val createRepeatingQuestHistoryUseCase
         get() = CreateRepeatingQuestHistoryUseCase(
@@ -452,7 +455,8 @@ class MainUseCaseModule : UseCaseModule, Injects<Module> {
         get() = RemoveChallengeUseCase(
             challengeRepository,
             questRepository,
-            repeatingQuestRepository
+            repeatingQuestRepository,
+            reminderScheduler
         )
 
     override val loadQuestPickerQuestsUseCase
@@ -560,7 +564,7 @@ class MainUseCaseModule : UseCaseModule, Injects<Module> {
         get() = CreateBucketListItemsUseCase()
 
     override val rescheduleQuestUseCase
-        get() = RescheduleQuestUseCase(questRepository)
+        get() = RescheduleQuestUseCase(questRepository, reminderScheduler)
 }
 
 interface UseCaseModule {
@@ -568,7 +572,7 @@ interface UseCaseModule {
     val saveQuestUseCase: SaveQuestUseCase
     val removeQuestUseCase: RemoveQuestUseCase
     val undoRemoveQuestUseCase: UndoRemovedQuestUseCase
-    val findQuestToRemindUseCase: FindQuestsToRemindUseCase
+    val findQuestsToRemindUseCase: FindQuestsToRemindUseCase
     val snoozeQuestUseCase: SnoozeQuestUseCase
     val completeQuestUseCase: CompleteQuestUseCase
     val undoCompletedQuestUseCase: UndoCompletedQuestUseCase

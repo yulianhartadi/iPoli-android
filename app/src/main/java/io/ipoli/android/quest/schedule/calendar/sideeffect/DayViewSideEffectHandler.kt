@@ -149,14 +149,29 @@ object DayViewSideEffectHandler : AppSideEffectHandler() {
             "${(action as NamespaceAction).namespace}/${DayViewState::class.java.simpleName}"
         )
 
+        val errors = Validator.validate(dayViewState).check<ValidationError> {
+            "name" {
+                given { name.isBlank() } addError ValidationError.EMPTY_NAME
+            }
+        }
+
+        if (errors.isNotEmpty()) {
+            dispatch(DayViewAction.SaveInvalidQuestName)
+            return
+        }
+
+        dispatch(DayViewAction.QuestSaved)
+
         val scheduledDate = dayViewState.scheduledDate ?: dayViewState.currentDate
         val r = dayViewState.reminder
         val reminder = when {
-            dayViewState.editId.isEmpty() ->
+            dayViewState.editId.isEmpty() && r == null ->
                 Reminder.Relative(
                     "",
                     Constants.DEFAULT_RELATIVE_REMINDER_MINUTES_FROM_START
                 )
+            dayViewState.editId.isEmpty() && r != null ->
+                Reminder.Relative(r.message, r.minutesFromStart)
             r != null -> Reminder.Relative(r.message, r.minutesFromStart)
             else -> null
         }
@@ -175,14 +190,13 @@ object DayViewSideEffectHandler : AppSideEffectHandler() {
             tags = null
         )
         val result = saveQuestUseCase.execute(questParams)
-
-        when (result) {
-
-            is Result.Invalid ->
+        if (result is Result.Invalid) {
                 dispatch(DayViewAction.SaveInvalidQuest(result))
-
-            else -> dispatch(DayViewAction.QuestSaved)
         }
+    }
+
+    enum class ValidationError {
+        EMPTY_NAME
     }
 
     override fun canHandle(action: Action): Boolean {

@@ -124,7 +124,7 @@ object LoadAllDataSideEffectHandler : AppSideEffectHandler() {
     private val findNextDateForChallengeUseCase by required { findNextDateForChallengeUseCase }
     private val findChallengeProgressUseCase by required { findChallengeProgressUseCase }
     private val addQuestCountToTagUseCase by required { addQuestCountToTagUseCase }
-    private val saveQuestsForRepeatingQuestUseCase by required { saveQuestsForRepeatingQuestUseCase }
+    private val reminderScheduler by required { reminderScheduler }
 
     private val playerChannelRelay = ChannelRelay<Player?, Unit>(
         producer = { c, _ ->
@@ -231,6 +231,7 @@ object LoadAllDataSideEffectHandler : AppSideEffectHandler() {
         challengesChannelRelay.listen(Unit)
         tagsChannelRelay.listen(Unit)
         unscheduledQuestsChannelRelay.listen(Unit)
+        reminderScheduler.schedule()
     }
 
     private fun updateWidgets() {

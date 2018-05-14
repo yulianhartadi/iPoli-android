@@ -7,6 +7,7 @@ import io.ipoli.android.quest.Icon
 import io.ipoli.android.quest.Reminder
 import io.ipoli.android.quest.RepeatingQuest
 import io.ipoli.android.quest.data.persistence.QuestRepository
+import io.ipoli.android.quest.job.ReminderScheduler
 import io.ipoli.android.quest.subquest.SubQuest
 import io.ipoli.android.repeatingquest.entity.RepeatPattern
 import io.ipoli.android.repeatingquest.persistence.RepeatingQuestRepository
@@ -21,7 +22,8 @@ import org.threeten.bp.LocalDate
 class SaveRepeatingQuestUseCase(
     private val questRepository: QuestRepository,
     private val repeatingQuestRepository: RepeatingQuestRepository,
-    private val saveQuestsForRepeatingQuestUseCase: SaveQuestsForRepeatingQuestUseCase
+    private val saveQuestsForRepeatingQuestUseCase: SaveQuestsForRepeatingQuestUseCase,
+    private val reminderScheduler: ReminderScheduler
 ) : UseCase<SaveRepeatingQuestUseCase.Params, RepeatingQuest> {
 
     override fun execute(parameters: Params): RepeatingQuest {
@@ -74,6 +76,7 @@ class SaveRepeatingQuestUseCase(
             questRepository.purgeAllNotCompletedForRepeating(repeatingQuest.id, LocalDate.now())
             saveQuestsFor(repeatingQuest)
         }
+        reminderScheduler.schedule()
         return repeatingQuestRepository.save(rq)
     }
 

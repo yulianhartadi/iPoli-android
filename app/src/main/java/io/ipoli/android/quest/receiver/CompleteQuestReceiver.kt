@@ -7,10 +7,12 @@ import android.content.Intent
 import kotlinx.coroutines.experimental.CommonPool
 import kotlinx.coroutines.experimental.launch
 import io.ipoli.android.Constants
+import io.ipoli.android.common.AsyncBroadcastReceiver
 import io.ipoli.android.common.di.Module
 import io.ipoli.android.common.view.AppWidgetUtil
 import io.ipoli.android.myPoliApp
 import io.ipoli.android.quest.show.usecase.CompleteTimeRangeUseCase
+import kotlinx.coroutines.experimental.android.UI
 import space.traversal.kapsule.Injects
 import space.traversal.kapsule.inject
 import space.traversal.kapsule.required
@@ -19,24 +21,18 @@ import space.traversal.kapsule.required
  * Created by Venelin Valkov <venelin@mypoli.fun>
  * on 02/10/2018.
  */
-class CompleteQuestReceiver : BroadcastReceiver(), Injects<Module> {
+class CompleteQuestReceiver : AsyncBroadcastReceiver() {
 
     private val completeTimeRangeUseCase by required { completeTimeRangeUseCase }
 
-    override fun onReceive(context: Context, intent: Intent) {
-        inject(myPoliApp.module(context))
-        removeTimerNotification(context)
+    override suspend fun onReceiveAsync(context: Context, intent: Intent) {
         val questId = intent.getStringExtra(Constants.QUEST_ID_EXTRA_KEY)
-        val res = goAsync()
-        launch(CommonPool) {
+        completeTimeRangeUseCase.execute(CompleteTimeRangeUseCase.Params(questId))
 
-            completeTimeRangeUseCase.execute(CompleteTimeRangeUseCase.Params(questId))
-
+        launch(UI) {
+            removeTimerNotification(context)
             AppWidgetUtil.updateAgendaWidget(context)
-
-            res.finish()
         }
-
     }
 
     private fun removeTimerNotification(context: Context) {

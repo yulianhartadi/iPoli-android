@@ -13,6 +13,7 @@ import kotlinx.coroutines.experimental.channels.consumeEach
 import kotlinx.coroutines.experimental.launch
 import io.ipoli.android.Constants
 import io.ipoli.android.R
+import io.ipoli.android.common.IntentUtil
 import io.ipoli.android.common.ViewUtils
 import io.ipoli.android.common.mvi.BaseMviPresenter
 import io.ipoli.android.common.mvi.Intent
@@ -169,10 +170,7 @@ class RatePopup :
                 positive.setOnClickListener {
                     logEvent("rate_positive", "answer", "yes")
                     saveDoNotShowAgainPref(view.context)
-                    val uri = Uri.parse("market://details?id=" + view.context.packageName)
-                    val linkToMarket =
-                        android.content.Intent(android.content.Intent.ACTION_VIEW, uri)
-                    view.context.startActivity(linkToMarket)
+                    view.context.startActivity(IntentUtil.startRatePage(view.context))
                     hide()
                 }
                 negative.setOnClickListener {

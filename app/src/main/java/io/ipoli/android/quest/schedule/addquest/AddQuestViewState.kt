@@ -7,8 +7,8 @@ import io.ipoli.android.common.mvi.ViewState
 import io.ipoli.android.common.redux.Action
 import io.ipoli.android.quest.Color
 import io.ipoli.android.quest.Icon
+import io.ipoli.android.quest.edit.sideeffect.EditQuestSideEffectHandler
 import io.ipoli.android.quest.schedule.agenda.AgendaReducer
-import io.ipoli.android.quest.usecase.Result
 import io.ipoli.android.tag.Tag
 import org.threeten.bp.LocalDate
 
@@ -26,7 +26,7 @@ sealed class AddQuestAction : Action {
     data class IconPicked(val icon: Icon?) : AddQuestAction()
     data class Load(val date: LocalDate?) : AddQuestAction()
     object QuestSaved : AddQuestAction()
-    data class SaveInvalidQuest(val error: Result.ValidationError) : AddQuestAction()
+    object SaveInvalidQuestName : AddQuestAction()
     data class DurationPicked(val minutes: Int) : AddQuestAction()
     data class TagsPicked(val tags: Set<Tag>) : AddQuestAction()
 }
@@ -78,7 +78,7 @@ object AddQuestReducer : BaseViewStateReducer<AddQuestViewState>() {
             is AddQuestAction.IconPicked ->
                 subState.copy(type = StateType.ICON_PICKED, icon = action.icon)
 
-            is AddQuestAction.SaveInvalidQuest -> {
+            AddQuestAction.SaveInvalidQuestName -> {
                 subState.copy(type = StateType.VALIDATION_ERROR_EMPTY_NAME)
             }
 

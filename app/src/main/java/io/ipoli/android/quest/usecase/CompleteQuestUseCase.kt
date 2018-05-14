@@ -13,6 +13,7 @@ import io.ipoli.android.quest.job.QuestCompleteScheduler
 import io.ipoli.android.quest.job.ReminderScheduler
 import io.ipoli.android.common.rate.RatePopupScheduler
 import org.threeten.bp.LocalDate
+import timber.log.Timber
 import java.util.*
 
 /**
@@ -55,10 +56,7 @@ open class CompleteQuestUseCase(
 
         questRepository.save(newQuest)
 
-        val remindTime = questRepository.findNextReminderTime()
-        remindTime?.let {
-            reminderScheduler.schedule(it)
-        }
+        reminderScheduler.schedule()
 
         val reward = SimpleReward(
             newQuest.experience!!,

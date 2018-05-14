@@ -1,7 +1,6 @@
 package io.ipoli.android.quest.usecase
 
 import io.ipoli.android.common.UseCase
-import io.ipoli.android.common.Validator.Companion.validate
 import io.ipoli.android.common.datetime.Time
 import io.ipoli.android.quest.Color
 import io.ipoli.android.quest.Icon
@@ -10,8 +9,8 @@ import io.ipoli.android.quest.Reminder
 import io.ipoli.android.quest.data.persistence.QuestRepository
 import io.ipoli.android.quest.job.ReminderScheduler
 import io.ipoli.android.quest.subquest.SubQuest
-import io.ipoli.android.quest.usecase.Result.*
-import io.ipoli.android.quest.usecase.Result.ValidationError.EMPTY_NAME
+import io.ipoli.android.quest.usecase.Result.Added
+import io.ipoli.android.quest.usecase.Result.Invalid
 import io.ipoli.android.quest.usecase.Result.ValidationError.TIMER_RUNNING
 import io.ipoli.android.tag.Tag
 import org.threeten.bp.LocalDate
@@ -23,7 +22,6 @@ import org.threeten.bp.LocalDate
 sealed class Result {
 
     enum class ValidationError {
-        EMPTY_NAME,
         TIMER_RUNNING
     }
 
@@ -53,15 +51,7 @@ class SaveQuestUseCase(
     )
 
     override fun execute(parameters: Parameters): Result {
-        val errors = validate(parameters).check<ValidationError> {
-            "name" {
-                given { name.isBlank() } addError EMPTY_NAME
-            }
-        }
 
-        if (errors.isNotEmpty()) {
-            return Invalid(errors.first())
-        }
         val quest = if (parameters.id.isEmpty()) {
 
             val subQuests = parameters.subQuests
@@ -113,10 +103,7 @@ class SaveQuestUseCase(
 
         questRepository.save(quest)
 
-        val reminderTime = questRepository.findNextReminderTime()
-        reminderTime?.let {
-            reminderScheduler.schedule(it)
-        }
+        reminderScheduler.schedule()
         return Added(quest)
     }
 }

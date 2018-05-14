@@ -3,6 +3,7 @@ package io.ipoli.android.quest.edit.sideeffect
 import io.ipoli.android.Constants
 import io.ipoli.android.common.AppSideEffectHandler
 import io.ipoli.android.common.AppState
+import io.ipoli.android.common.Validator
 import io.ipoli.android.common.redux.Action
 import io.ipoli.android.quest.Color
 import io.ipoli.android.quest.Reminder
@@ -14,7 +15,6 @@ import io.ipoli.android.quest.schedule.addquest.AddQuestViewState
 import io.ipoli.android.quest.subquest.SubQuest
 import io.ipoli.android.quest.usecase.CompleteQuestUseCase
 import io.ipoli.android.quest.usecase.RescheduleQuestUseCase
-import io.ipoli.android.quest.usecase.Result
 import io.ipoli.android.quest.usecase.SaveQuestUseCase
 import io.ipoli.android.tag.show.TagAction
 import org.threeten.bp.LocalDate
@@ -39,6 +39,20 @@ object EditQuestSideEffectHandler : AppSideEffectHandler() {
             }
 
             is AddQuestAction.Save -> {
+
+                val errors = Validator.validate(action).check<ValidationError> {
+                    "name" {
+                        given { name.isBlank() } addError ValidationError.EMPTY_NAME
+                    }
+                }
+
+                if (errors.isNotEmpty()) {
+                    dispatch(AddQuestAction.SaveInvalidQuestName)
+                    return
+                }
+
+                dispatch(AddQuestAction.QuestSaved)
+
                 val addQuestState = state.stateFor(AddQuestViewState::class.java)
                 val scheduledDate = addQuestState.date
                 val questParams = SaveQuestUseCase.Parameters(
@@ -57,15 +71,7 @@ object EditQuestSideEffectHandler : AppSideEffectHandler() {
                         )
                     )
                 )
-
-                val result = saveQuestUseCase.execute(questParams)
-
-                when (result) {
-                    is Result.Invalid -> {
-                        dispatch(AddQuestAction.SaveInvalidQuest(result.error))
-                    }
-                    else -> dispatch(AddQuestAction.QuestSaved)
-                }
+                saveQuestUseCase.execute(questParams)
             }
 
             is EditQuestAction.Save -> {
@@ -121,6 +127,10 @@ object EditQuestSideEffectHandler : AppSideEffectHandler() {
                     )
                 )
         }
+    }
+
+    enum class ValidationError {
+        EMPTY_NAME
     }
 
     private fun completeQuest(questId: String) {

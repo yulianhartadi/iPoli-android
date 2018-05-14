@@ -18,7 +18,6 @@ class SnoozeQuestUseCase(
     override fun execute(parameters: String) {
         updateQuest(parameters)
         scheduleNextReminder()
-
     }
 
     private fun updateQuest(parameters: String) {
@@ -37,10 +36,7 @@ class SnoozeQuestUseCase(
     }
 
     private fun scheduleNextReminder() {
-        val reminderTime = questRepository.findNextReminderTime()
-        reminderTime?.let {
-            reminderScheduler.schedule(it)
-        }
+        reminderScheduler.schedule()
     }
 
     private fun calculateNewDateTime(date: LocalDate, time: Time): Pair<LocalDate, Time> {

@@ -1,5 +1,6 @@
 package io.ipoli.android.common
 
+import android.content.Context
 import android.content.Intent
 import space.traversal.kapsule.required
 
@@ -10,17 +11,12 @@ import space.traversal.kapsule.required
 class BootCompleteReceiver : AsyncBroadcastReceiver() {
 
     private val playerRepository by required { playerRepository }
-    private val petStatsChangeScheduler by required { lowerPetStatsScheduler }
-    private val saveQuestsForRepeatingQuestScheduler by required { saveQuestsForRepeatingQuestScheduler }
-    private val removeExpiredPowerUpsScheduler by required { removeExpiredPowerUpsScheduler }
-    private val checkMembershipStatusScheduler by required { checkMembershipStatusScheduler }
+    private val questRepository by required { questRepository }
+    private val reminderScheduler by required { reminderScheduler }
 
-    override fun onReceiveAsync(intent: Intent) {
+    override suspend fun onReceiveAsync(context: Context, intent: Intent) {
         if (playerRepository.hasPlayer()) {
-            petStatsChangeScheduler.schedule()
-            saveQuestsForRepeatingQuestScheduler.schedule()
-            removeExpiredPowerUpsScheduler.schedule()
-            checkMembershipStatusScheduler.schedule()
+            reminderScheduler.schedule()
         }
     }
 
