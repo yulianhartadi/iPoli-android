@@ -1,6 +1,7 @@
 package io.ipoli.android
 
 import android.content.Intent
+import android.content.pm.ActivityInfo
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
@@ -64,6 +65,7 @@ class MainActivity : AppCompatActivity(), Injects<Module>, SideEffectHandler<App
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
         setTheme(playerTheme)
         setContentView(R.layout.activity_main)
         if (!shouldShowQuickAdd(intent)) {
