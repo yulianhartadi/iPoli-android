@@ -65,7 +65,9 @@ class MainActivity : AppCompatActivity(), Injects<Module>, SideEffectHandler<App
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
+        if(Build.VERSION.SDK_INT != Build.VERSION_CODES.O) {
+            requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
+        }
         setTheme(playerTheme)
         setContentView(R.layout.activity_main)
         if (!shouldShowQuickAdd(intent)) {
