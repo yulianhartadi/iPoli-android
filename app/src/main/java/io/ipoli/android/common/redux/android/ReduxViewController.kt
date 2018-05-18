@@ -5,6 +5,7 @@ import android.content.pm.PackageManager
 import android.os.Bundle
 import android.support.annotation.IdRes
 import android.support.annotation.LayoutRes
+import android.text.format.DateFormat
 import android.text.method.LinkMovementMethod
 import android.text.style.ForegroundColorSpan
 import android.view.View
@@ -12,17 +13,18 @@ import android.widget.TextView
 import com.bluelinelabs.conductor.Controller
 import com.bluelinelabs.conductor.RestoreViewOnCreateController
 import com.github.florent37.tutoshowcase.TutoShowcase
+import com.mikepenz.iconics.IconicsDrawable
+import com.mikepenz.iconics.typeface.IIcon
+import io.ipoli.android.Constants
 import io.ipoli.android.common.*
 import io.ipoli.android.common.di.Module
 import io.ipoli.android.common.mvi.ViewState
 import io.ipoli.android.common.redux.Action
 import io.ipoli.android.common.redux.StateStore
 import io.ipoli.android.common.redux.ViewStateReducer
-import io.ipoli.android.common.view.AndroidColor
-import io.ipoli.android.common.view.AndroidIcon
-import io.ipoli.android.common.view.attrData
-import io.ipoli.android.common.view.colorRes
+import io.ipoli.android.common.view.*
 import io.ipoli.android.myPoliApp
+import io.ipoli.android.player.Player
 import io.ipoli.android.quest.Color
 import io.ipoli.android.quest.Icon
 import kotlinx.coroutines.experimental.CoroutineStart
@@ -54,6 +56,7 @@ abstract class BaseViewController<A : Action, VS : ViewState> protected construc
 
     private val stateStore by required { stateStore }
     private val eventLogger by required { eventLogger }
+    private val sharedPreferences by required { sharedPreferences }
 
     protected open var namespace: String? = null
 
@@ -70,7 +73,10 @@ abstract class BaseViewController<A : Action, VS : ViewState> protected construc
         val lifecycleListener = object : LifecycleListener() {
 
             override fun postAttach(controller: Controller, view: View) {
-                eventLogger.logCurrentScreen(activity!!, this@BaseViewController.javaClass.simpleName.replace("ViewController",""))
+                eventLogger.logCurrentScreen(
+                    activity!!,
+                    this@BaseViewController.javaClass.simpleName.replace("ViewController", "")
+                )
                 stateStore.subscribe(this@BaseViewController)
                 onSubscribedToStore()
                 onCreateLoadAction()?.let {
@@ -266,6 +272,25 @@ abstract class BaseViewController<A : Action, VS : ViewState> protected construc
         return showcase
     }
 
+    protected val shouldUse24HourFormat: Boolean
+        get() {
+            val timeFormat = Player.Preferences.TimeFormat.valueOf(
+                sharedPreferences.getString(
+                    Constants.KEY_TIME_FORMAT,
+                    Player.Preferences.TimeFormat.DEVICE_DEFAULT.name
+                )
+            )
+            if (timeFormat == Player.Preferences.TimeFormat.DEVICE_DEFAULT) {
+                return DateFormat.is24HourFormat(activity)
+            }
+
+            if (timeFormat == Player.Preferences.TimeFormat.TWELVE_HOURS) {
+                return false
+            }
+
+            return true
+        }
+
     protected val Color.androidColor: AndroidColor
         get() = AndroidColor.valueOf(this.name)
 
@@ -277,6 +302,9 @@ abstract class BaseViewController<A : Action, VS : ViewState> protected construc
 
     protected val AndroidIcon.toIcon: Icon
         get() = Icon.valueOf(this.name)
+
+    fun listItemIcon(icon: IIcon): IconicsDrawable =
+        IconicsDrawable(activity!!).listItemIcon(icon)
 
     fun TextView.setMarkdown(markdown: String) {
         val parser = Markwon.createParser()

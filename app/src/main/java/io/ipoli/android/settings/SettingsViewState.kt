@@ -1,14 +1,19 @@
 package io.ipoli.android.settings
 
+import io.ipoli.android.Constants
 import io.ipoli.android.common.AppState
 import io.ipoli.android.common.BaseViewStateReducer
 import io.ipoli.android.common.DataLoadedAction
+import io.ipoli.android.common.datetime.Time
 import io.ipoli.android.common.mvi.ViewState
 import io.ipoli.android.common.redux.Action
 import io.ipoli.android.player.Player
+import io.ipoli.android.player.Player.Preferences.TemperatureUnit.FAHRENHEIT
+import io.ipoli.android.player.Player.Preferences.TimeFormat.TWELVE_HOURS
 import io.ipoli.android.settings.SettingsViewState.StateType.*
 import io.ipoli.android.store.powerup.PowerUp
 import io.ipoli.android.store.powerup.middleware.ShowBuyPowerUpAction
+import org.threeten.bp.DayOfWeek
 
 /**
  * Created by Polina Zhelyazkova <polina@mypoli.fun>
@@ -19,6 +24,11 @@ sealed class SettingsAction : Action {
         SettingsAction()
 
     data class ToggleSyncCalendar(val isChecked: Boolean) : SettingsAction()
+    data class PlanDayTimeChanged(val time: Time) : SettingsAction()
+    data class PlanDaysChanged(val days: Set<DayOfWeek>) : SettingsAction()
+    data class TimeFormatChanged(val format: Player.Preferences.TimeFormat) : SettingsAction()
+    data class TemperatureUnitChanged(val unit: Player.Preferences.TemperatureUnit) : SettingsAction()
+
     object Load : SettingsAction()
 }
 
@@ -77,6 +87,10 @@ object SettingsReducer : BaseViewStateReducer<SettingsViewState>() {
         state.copy(
             type = DATA_CHANGED,
             playerId = player.id,
+            timeFormat = player.preferences.timeFormat,
+            temperatureUnit = player.preferences.temperatureUnit,
+            planTime = player.preferences.planDayTime,
+            planDays = player.preferences.planDays,
             selectedCalendars = selectedCalendars,
             isCalendarSyncEnabled = player.isPowerUpEnabled(PowerUp.Type.CALENDAR_SYNC) && selectedCalendars > 0
         )
@@ -84,6 +98,10 @@ object SettingsReducer : BaseViewStateReducer<SettingsViewState>() {
     override fun defaultState() = SettingsViewState(
         type = LOADING,
         playerId = "",
+        timeFormat = TWELVE_HOURS,
+        temperatureUnit = FAHRENHEIT,
+        planDays = Constants.DEFAULT_PLAN_DAYS,
+        planTime = Time.of(Constants.DEFAULT_PLAN_DAY_REMINDER_START_MINUTE),
         isCalendarSyncEnabled = false,
         selectedCalendars = 0
     )
@@ -95,6 +113,10 @@ object SettingsReducer : BaseViewStateReducer<SettingsViewState>() {
 data class SettingsViewState(
     val type: StateType,
     val playerId: String,
+    val timeFormat: Player.Preferences.TimeFormat,
+    val temperatureUnit : Player.Preferences.TemperatureUnit,
+    val planTime: Time,
+    val planDays: Set<DayOfWeek>,
     val isCalendarSyncEnabled: Boolean,
     val selectedCalendars: Int
 ) : ViewState {

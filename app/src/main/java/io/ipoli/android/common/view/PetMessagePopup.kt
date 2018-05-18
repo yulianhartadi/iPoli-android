@@ -2,9 +2,6 @@ package io.ipoli.android.common.view
 
 import android.view.LayoutInflater
 import android.view.View
-import kotlinx.android.synthetic.main.popup_pet_message.view.*
-import kotlinx.coroutines.experimental.channels.consumeEach
-import kotlinx.coroutines.experimental.launch
 import io.ipoli.android.R
 import io.ipoli.android.common.mvi.BaseMviPresenter
 import io.ipoli.android.common.mvi.Intent
@@ -14,6 +11,9 @@ import io.ipoli.android.pet.AndroidPetAvatar
 import io.ipoli.android.pet.PetAvatar
 import io.ipoli.android.player.Player
 import io.ipoli.android.player.usecase.ListenForPlayerChangesUseCase
+import kotlinx.android.synthetic.main.popup_pet_message.view.*
+import kotlinx.coroutines.experimental.channels.consumeEach
+import kotlinx.coroutines.experimental.launch
 import space.traversal.kapsule.required
 import java.util.concurrent.TimeUnit
 import kotlin.coroutines.experimental.CoroutineContext
@@ -60,7 +60,8 @@ class PetMessagePresenter(
 
 class PetMessagePopup(
     private val message: String,
-    private val undoListener: () -> Unit
+    private val actionListener: () -> Unit = {},
+    private val actionText: String = ""
 ) : MviPopup<PetMessageViewState, PetMessagePopup, PetMessagePresenter, PetMessageIntent>(
     position = MviPopup.Position.BOTTOM,
     isAutoHide = true
@@ -85,8 +86,12 @@ class PetMessagePopup(
     override fun createView(inflater: LayoutInflater): View {
         val v = inflater.inflate(R.layout.popup_pet_message, null)
 
-        v.undoAction.setOnClickListener {
-            undoListener()
+        if(actionText.isNotBlank()) {
+            v.petAction.text = actionText
+        }
+
+        v.petAction.setOnClickListener {
+            actionListener()
             hide()
         }
 

@@ -2,15 +2,14 @@ package io.ipoli.android
 
 import android.content.Intent
 import android.content.pm.ActivityInfo
+import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
-import android.preference.PreferenceManager
 import android.provider.Settings
 import android.support.design.widget.Snackbar
 import android.support.v7.app.AppCompatActivity
 import android.util.TypedValue
-import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import com.bluelinelabs.conductor.Conductor
@@ -18,6 +17,7 @@ import com.bluelinelabs.conductor.Router
 import com.bluelinelabs.conductor.RouterTransaction
 import com.bluelinelabs.conductor.changehandler.FadeChangeHandler
 import io.ipoli.android.common.AppState
+import io.ipoli.android.common.DataLoadedAction
 import io.ipoli.android.common.LoadDataAction
 import io.ipoli.android.common.di.Module
 import io.ipoli.android.common.home.HomeAction
@@ -29,7 +29,9 @@ import io.ipoli.android.common.view.Debounce
 import io.ipoli.android.common.view.playerTheme
 import io.ipoli.android.onboarding.OnboardViewController
 import io.ipoli.android.pet.PetViewController
+import io.ipoli.android.planday.PlanDayViewController
 import io.ipoli.android.player.Membership
+import io.ipoli.android.player.Player
 import io.ipoli.android.player.auth.AuthAction
 import io.ipoli.android.player.auth.AuthViewController
 import io.ipoli.android.quest.schedule.addquest.AddQuestViewController
@@ -49,6 +51,7 @@ import space.traversal.kapsule.inject
 import space.traversal.kapsule.required
 import java.util.*
 
+
 /**
  * Created by Venelin Valkov <venelin@mypoli.fun>
  * on 7/6/17.
@@ -58,14 +61,17 @@ class MainActivity : AppCompatActivity(), Injects<Module>, SideEffectHandler<App
     lateinit var router: Router
 
     private val playerRepository by required { playerRepository }
+    private val sharedPreferences by required { sharedPreferences }
 
     private val stateStore by required { stateStore }
+
+    private val planDayScheduler by required { planDayScheduler }
 
     val rootRouter get() = router
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        if(Build.VERSION.SDK_INT != Build.VERSION_CODES.O) {
+        if (Build.VERSION.SDK_INT != Build.VERSION_CODES.O) {
             requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
         }
         setTheme(playerTheme)
@@ -90,7 +96,12 @@ class MainActivity : AppCompatActivity(), Injects<Module>, SideEffectHandler<App
             Toast.makeText(this, R.string.allow_overlay_request, Toast.LENGTH_LONG).show()
         }
 
+        inject(myPoliApp.module(this))
         incrementAppRun()
+
+        if (isInstallFromUpdate()) {
+            planDayScheduler.scheduleForNextTime()
+        }
 
         router =
                 Conductor.attachRouter(
@@ -99,7 +110,6 @@ class MainActivity : AppCompatActivity(), Injects<Module>, SideEffectHandler<App
                     savedInstanceState
                 )
         router.setPopsLastView(true)
-        inject(myPoliApp.module(this))
 
         launch(CommonPool) {
             val hasPlayer = playerRepository.hasPlayer()
@@ -114,25 +124,27 @@ class MainActivity : AppCompatActivity(), Injects<Module>, SideEffectHandler<App
                         router.setRoot(RouterTransaction.with(AuthViewController()))
                     } else {
                         stateStore.dispatch(LoadDataAction.All)
-                        startApp()
-                        if (Random().nextInt(10) == 1 && p.membership == Membership.NONE) {
-                            showPremiumSnackbar()
-                        }
+                        startApp(p)
                     }
                 }
             }
         }
     }
 
-    private fun startApp() {
+    private fun startApp(player : Player) {
         if (intent.action == ACTION_SHOW_TIMER) {
             showTimer(intent)
         } else if (shouldShowQuickAdd(intent)) {
             showQuickAdd()
         } else if (intent.action == ACTION_SHOW_PET) {
             showPet()
+        } else if (intent.action == ACTION_PLAN_DAY) {
+            router.setRoot(RouterTransaction.with(PlanDayViewController()))
         } else if (!router.hasRootController()) {
             router.setRoot(RouterTransaction.with(HomeViewController()))
+            if (Random().nextInt(10) == 1 && player.membership == Membership.NONE) {
+                showPremiumSnackbar()
+            }
         }
     }
 
@@ -140,9 +152,8 @@ class MainActivity : AppCompatActivity(), Injects<Module>, SideEffectHandler<App
         startIntent.action == ACTION_SHOW_QUICK_ADD
 
     private fun incrementAppRun() {
-        val pm = PreferenceManager.getDefaultSharedPreferences(this)
-        val run = pm.getInt(Constants.KEY_APP_RUN_COUNT, 0)
-        pm.edit().putInt(Constants.KEY_APP_RUN_COUNT, run + 1).apply()
+        val run = sharedPreferences.getInt(Constants.KEY_APP_RUN_COUNT, 0)
+        sharedPreferences.edit().putInt(Constants.KEY_APP_RUN_COUNT, run + 1).apply()
     }
 
     override fun onResume() {
@@ -203,21 +214,6 @@ class MainActivity : AppCompatActivity(), Injects<Module>, SideEffectHandler<App
         router.pushController(transaction)
     }
 
-    fun enterFullScreen() {
-        window.decorView.systemUiVisibility = (
-                View.SYSTEM_UI_FLAG_LAYOUT_STABLE
-                        or View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
-                        or View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
-                        or View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
-                        or View.SYSTEM_UI_FLAG_FULLSCREEN
-                        or View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY
-                )
-    }
-
-    fun exitFullScreen() {
-        window.decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_VISIBLE
-    }
-
     private fun showPremiumSnackbar() {
         Snackbar.make(
             findViewById(R.id.activityContainer),
@@ -230,6 +226,17 @@ class MainActivity : AppCompatActivity(), Injects<Module>, SideEffectHandler<App
             router.pushController(RouterTransaction.with(MembershipViewController()))
         }).show()
     }
+
+    fun isInstallFromUpdate() =
+        try {
+            val firstInstallTime =
+                packageManager.getPackageInfo(packageName, 0).firstInstallTime
+            val lastUpdateTime =
+                packageManager.getPackageInfo(packageName, 0).lastUpdateTime
+            firstInstallTime != lastUpdateTime
+        } catch (e: PackageManager.NameNotFoundException) {
+            false
+        }
 
     override suspend fun execute(action: Action, state: AppState, dispatcher: Dispatcher) {
         withContext(UI) {
@@ -251,6 +258,12 @@ class MainActivity : AppCompatActivity(), Injects<Module>, SideEffectHandler<App
                 AuthAction.PlayerSetupCompleted -> {
                     showPremiumSnackbar()
                 }
+
+                is DataLoadedAction.PlayerChanged ->
+                    sharedPreferences.edit().putString(
+                        Constants.KEY_TIME_FORMAT,
+                        action.player.preferences.timeFormat.name
+                    ).apply()
             }
         }
     }
@@ -293,10 +306,12 @@ class MainActivity : AppCompatActivity(), Injects<Module>, SideEffectHandler<App
                 || action === HomeAction.ShowPlayerSetup
                 || action === AuthAction.PlayerSetupCompleted
                 || action === AuthAction.GuestCreated
+                || action is DataLoadedAction.PlayerChanged
 
     companion object {
         const val ACTION_SHOW_TIMER = "io.ipoli.android.intent.action.SHOW_TIMER"
         const val ACTION_SHOW_QUICK_ADD = "io.ipoli.android.intent.action.SHOW_QUICK_ADD"
         const val ACTION_SHOW_PET = "io.ipoli.android.intent.action.SHOW_PET"
+        const val ACTION_PLAN_DAY = "io.ipoli.android.intent.action.PLAN_DAY"
     }
 }

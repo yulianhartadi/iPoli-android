@@ -17,21 +17,30 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import com.bluelinelabs.conductor.RouterTransaction
-import com.mikepenz.iconics.IconicsDrawable
+import com.mikepenz.google_material_typeface_library.GoogleMaterial
 import com.mikepenz.iconics.typeface.IIcon
+import com.mikepenz.ionicons_typeface_library.Ionicons
 import io.ipoli.android.R
 import io.ipoli.android.common.ViewUtils
 import io.ipoli.android.common.redux.android.ReduxViewController
+import io.ipoli.android.common.text.DateFormatter
+import io.ipoli.android.common.text.QuestStartTimeFormatter
 import io.ipoli.android.common.view.*
+import io.ipoli.android.common.view.recyclerview.SimpleSwipeCallback
 import io.ipoli.android.common.view.recyclerview.SimpleViewHolder
-import io.ipoli.android.common.view.recyclerview.SwipeToCompleteCallback
+import io.ipoli.android.event.Event
 import io.ipoli.android.quest.CompletedQuestViewController
+import io.ipoli.android.quest.schedule.agenda.usecase.CreateAgendaItemsUseCase
 import io.ipoli.android.quest.show.QuestViewController
 import kotlinx.android.synthetic.main.controller_agenda.view.*
 import kotlinx.android.synthetic.main.item_agenda_event.view.*
 import kotlinx.android.synthetic.main.item_agenda_month_divider.view.*
 import kotlinx.android.synthetic.main.item_agenda_quest.view.*
 import org.threeten.bp.LocalDate
+import org.threeten.bp.Month
+import org.threeten.bp.format.DateTimeFormatter
+import org.threeten.bp.format.TextStyle
+import java.util.*
 
 /**
  * Created by Polina Zhelyazkova <polina@mypoli.fun>
@@ -45,6 +54,21 @@ class AgendaViewController(args: Bundle? = null) :
     private lateinit var scrollToPositionListener: RecyclerView.OnScrollListener
 
     private lateinit var startDate: LocalDate
+
+    private val monthToImage = mapOf(
+        Month.JANUARY to R.drawable.agenda_january,
+        Month.FEBRUARY to R.drawable.agenda_february,
+        Month.MARCH to R.drawable.agenda_march,
+        Month.APRIL to R.drawable.agenda_april,
+        Month.MAY to R.drawable.agenda_may,
+        Month.JUNE to R.drawable.agenda_june,
+        Month.JULY to R.drawable.agenda_july,
+        Month.AUGUST to R.drawable.agenda_august,
+        Month.SEPTEMBER to R.drawable.agenda_september,
+        Month.OCTOBER to R.drawable.agenda_october,
+        Month.NOVEMBER to R.drawable.agenda_november,
+        Month.DECEMBER to R.drawable.agenda_december
+    )
 
     constructor(startDate: LocalDate) : this() {
         this.startDate = startDate
@@ -61,7 +85,7 @@ class AgendaViewController(args: Bundle? = null) :
         view.agendaList.layoutManager = layoutManager
         view.agendaList.adapter = AgendaAdapter()
 
-        val swipeHandler = object : SwipeToCompleteCallback(
+        val swipeHandler = object : SimpleSwipeCallback(
             view.context,
             R.drawable.ic_done_white_24dp,
             R.color.md_green_500,
@@ -261,14 +285,8 @@ class AgendaViewController(args: Bundle? = null) :
             view.eventStartTime.text = viewModel.startTime
 
             view.eventIcon.backgroundTintList =
-                ColorStateList.valueOf(viewModel.color)
-            view.eventIcon.setImageDrawable(
-                IconicsDrawable(view.context)
-                    .icon(viewModel.icon)
-                    .colorRes(R.color.md_white)
-                    .paddingDp(3)
-                    .sizeDp(24)
-            )
+                    ColorStateList.valueOf(viewModel.color)
+            view.eventIcon.setImageDrawable(listItemIcon(viewModel.icon))
         }
 
         private fun bindWeekHeaderViewModel(
@@ -328,14 +346,8 @@ class AgendaViewController(args: Bundle? = null) :
             vm: QuestViewModel
         ) {
             view.questIcon.backgroundTintList =
-                ColorStateList.valueOf(colorRes(vm.color))
-            view.questIcon.setImageDrawable(
-                IconicsDrawable(view.context)
-                    .icon(vm.icon)
-                    .colorRes(R.color.md_white)
-                    .paddingDp(3)
-                    .sizeDp(24)
-            )
+                    ColorStateList.valueOf(colorRes(vm.color))
+            view.questIcon.setImageDrawable(listItemIcon(vm.icon))
 
             if (vm.tags.isNotEmpty()) {
                 view.questTagName.visible()
@@ -349,7 +361,7 @@ class AgendaViewController(args: Bundle? = null) :
 
             view.questRepeatIndicator.visibility = if (vm.isRepeating) View.VISIBLE else View.GONE
             view.questChallengeIndicator.visibility =
-                if (vm.isFromChallenge) View.VISIBLE else View.GONE
+                    if (vm.isFromChallenge) View.VISIBLE else View.GONE
         }
 
         private fun renderTag(view: View, tag: TagViewModel) {
@@ -482,5 +494,100 @@ class AgendaViewController(args: Bundle? = null) :
                 vm1 == vm2
             })
         }
+    }
+
+
+    fun AgendaViewState.toAgendaItemViewModels() =
+        agendaItems.mapIndexed { index, item ->
+            toAgendaViewModel(
+                item,
+                if (agendaItems.lastIndex >= index + 1) agendaItems[index + 1] else null
+            )
+        }
+
+    private fun toAgendaViewModel(
+        agendaItem: CreateAgendaItemsUseCase.AgendaItem,
+        nextAgendaItem: CreateAgendaItemsUseCase.AgendaItem? = null
+    ): AgendaViewController.AgendaViewModel {
+
+        return when (agendaItem) {
+            is CreateAgendaItemsUseCase.AgendaItem.QuestItem -> {
+                val quest = agendaItem.quest
+                val color = if (quest.isCompleted)
+                    R.color.md_grey_500
+                else
+                    AndroidColor.valueOf(quest.color.name).color500
+
+                AgendaViewController.QuestViewModel(
+                    id = quest.id,
+                    name = quest.name,
+                    tags = quest.tags.map {
+                        AgendaViewController.TagViewModel(
+                            it.name,
+                            AndroidColor.valueOf(it.color.name).color500
+                        )
+                    },
+                    startTime = QuestStartTimeFormatter.formatWithDuration(quest, activity!!, shouldUse24HourFormat),
+                    color = color,
+                    icon = quest.icon?.let { AndroidIcon.valueOf(it.name).icon }
+                            ?: Ionicons.Icon.ion_android_clipboard,
+                    isCompleted = quest.isCompleted,
+                    showDivider = shouldShowDivider(nextAgendaItem),
+                    isRepeating = quest.isFromRepeatingQuest,
+                    isFromChallenge = quest.isFromChallenge,
+                    isPlaceholder = quest.id.isEmpty()
+                )
+            }
+
+            is CreateAgendaItemsUseCase.AgendaItem.EventItem -> {
+                val event = agendaItem.event
+
+                AgendaViewController.EventViewModel(
+                    name = event.name,
+                    startTime = formatStartTime(event),
+                    color = event.color,
+                    icon = GoogleMaterial.Icon.gmd_event_available,
+                    showDivider = shouldShowDivider(nextAgendaItem)
+                )
+            }
+
+            is CreateAgendaItemsUseCase.AgendaItem.Date -> {
+                val date = agendaItem.date
+                val dayOfMonth = date.dayOfMonth
+                val dayOfWeek = date.dayOfWeek.getDisplayName(TextStyle.SHORT, Locale.getDefault())
+                    .toUpperCase()
+                AgendaViewController.DateHeaderViewModel("$dayOfMonth $dayOfWeek")
+            }
+            is CreateAgendaItemsUseCase.AgendaItem.Week -> {
+                val start = agendaItem.start
+                val end = agendaItem.end
+                val label = if (start.month != end.month) {
+                    "${DateFormatter.formatDayWithWeek(start)} - ${DateFormatter.formatDayWithWeek(
+                        end
+                    )}"
+                } else {
+                    "${start.dayOfMonth} - ${DateFormatter.formatDayWithWeek(end)}"
+                }
+
+                AgendaViewController.WeekHeaderViewModel(label)
+            }
+            is CreateAgendaItemsUseCase.AgendaItem.Month -> {
+                AgendaViewController.MonthDividerViewModel(
+                    monthToImage[agendaItem.month.month]!!,
+                    agendaItem.month.format(
+                        DateTimeFormatter.ofPattern("MMMM yyyy")
+                    )
+                )
+            }
+        }
+    }
+
+    private fun shouldShowDivider(nextAgendaItem: CreateAgendaItemsUseCase.AgendaItem?) =
+        !(nextAgendaItem == null || (nextAgendaItem !is CreateAgendaItemsUseCase.AgendaItem.QuestItem && nextAgendaItem !is CreateAgendaItemsUseCase.AgendaItem.EventItem))
+
+    private fun formatStartTime(event: Event): String {
+        val start = event.startTime
+        val end = start.plus(event.duration.intValue)
+        return "$start - $end"
     }
 }

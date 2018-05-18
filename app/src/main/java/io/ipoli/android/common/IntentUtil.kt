@@ -31,6 +31,12 @@ object IntentUtil {
             flags = startActivityFlags
         }
 
+    fun startPlanDay(context: Context) =
+        Intent(context, MainActivity::class.java).apply {
+            action = MainActivity.ACTION_PLAN_DAY
+            flags = startActivityFlags
+        }
+
     fun startApp(context: Context) =
         Intent(context, MainActivity::class.java).apply {
             flags = startActivityFlags

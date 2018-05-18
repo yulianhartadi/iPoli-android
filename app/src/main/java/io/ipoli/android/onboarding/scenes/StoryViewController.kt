@@ -43,7 +43,6 @@ class StoryViewController(args: Bundle? = null) :
         val view = container.inflate(R.layout.controller_onboard_story_start)
 
         view.storySnail.setAnimation("onboarding_snail.json")
-
         view.storySnail.playAnimation()
 
         view.storyNext.dispatchOnClick { OnboardAction.ShowNext }

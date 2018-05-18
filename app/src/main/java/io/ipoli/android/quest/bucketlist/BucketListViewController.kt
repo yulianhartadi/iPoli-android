@@ -8,13 +8,14 @@ import android.support.v4.widget.TextViewCompat
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
 import android.support.v7.widget.helper.ItemTouchHelper
+import android.text.SpannableString
+import android.text.style.StrikethroughSpan
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import com.bluelinelabs.conductor.RouterTransaction
 import com.bluelinelabs.conductor.changehandler.FadeChangeHandler
-import com.mikepenz.iconics.IconicsDrawable
 import com.mikepenz.iconics.typeface.IIcon
 import com.mikepenz.ionicons_typeface_library.Ionicons
 import io.ipoli.android.R
@@ -22,15 +23,15 @@ import io.ipoli.android.common.ViewUtils
 import io.ipoli.android.common.datetime.daysUntil
 import io.ipoli.android.common.redux.android.ReduxViewController
 import io.ipoli.android.common.text.DateFormatter
+import io.ipoli.android.common.text.QuestStartTimeFormatter
 import io.ipoli.android.common.view.*
-import io.ipoli.android.common.view.recyclerview.RecyclerViewViewModel
 import io.ipoli.android.common.view.recyclerview.MultiViewRecyclerViewAdapter
-import io.ipoli.android.common.view.recyclerview.SwipeToCompleteCallback
+import io.ipoli.android.common.view.recyclerview.RecyclerViewViewModel
+import io.ipoli.android.common.view.recyclerview.SimpleSwipeCallback
 import io.ipoli.android.quest.CompletedQuestViewController
 import io.ipoli.android.quest.Quest
 import io.ipoli.android.quest.bucketlist.usecase.CreateBucketListItemsUseCase
 import io.ipoli.android.quest.schedule.addquest.AddQuestAnimationHelper
-import io.ipoli.android.quest.schedule.agenda.AgendaViewController
 import io.ipoli.android.quest.show.QuestViewController
 import kotlinx.android.synthetic.main.animation_empty_list.view.*
 import kotlinx.android.synthetic.main.controller_bucket_list.view.*
@@ -55,8 +56,7 @@ class BucketListViewController(args: Bundle? = null) :
         view.questList.layoutManager = LinearLayoutManager(activity!!)
         view.questList.adapter = QuestAdapter()
 
-
-        val swipeHandler = object : SwipeToCompleteCallback(
+        val swipeHandler = object : SimpleSwipeCallback(
             view.context,
             R.drawable.ic_done_white_24dp,
             R.color.md_green_500,
@@ -176,7 +176,7 @@ class BucketListViewController(args: Bundle? = null) :
         data class QuestItem(
             override val id: String,
             val name: String,
-            val startTime: String,
+            val dueDate: String,
             @ColorRes val color: Int,
             val tags: List<TagViewModel>,
             val icon: IIcon,
@@ -223,15 +223,9 @@ class BucketListViewController(args: Bundle? = null) :
                     view.questIcon.backgroundTintList =
                             ColorStateList.valueOf(colorRes(vm.color))
 
-                    view.questIcon.setImageDrawable(
-                        IconicsDrawable(view.context)
-                            .icon(vm.icon)
-                            .colorRes(R.color.md_white)
-                            .paddingDp(3)
-                            .sizeDp(24)
-                    )
+                    view.questIcon.setImageDrawable(listItemIcon(vm.icon))
 
-                    view.questStartTime.text = vm.startTime
+                    view.questStartTime.text = vm.dueDate
 
                     view.questRepeatIndicator.visibility =
                             if (vm.isRepeating) View.VISIBLE else View.GONE
@@ -257,17 +251,14 @@ class BucketListViewController(args: Bundle? = null) :
                 ViewType.COMPLETED_QUEST.value,
                 R.layout.item_agenda_quest,
                 { vm, view ->
-                    view.questName.text = vm.name
+                    val span = SpannableString(vm.name)
+                    span.setSpan(StrikethroughSpan(), 0, vm.name.length, 0)
+
+                    view.questName.text = span
 
                     view.questIcon.backgroundTintList =
                             ColorStateList.valueOf(colorRes(vm.color))
-                    view.questIcon.setImageDrawable(
-                        IconicsDrawable(view.context)
-                            .icon(vm.icon)
-                            .colorRes(R.color.md_white)
-                            .paddingDp(3)
-                            .sizeDp(24)
-                    )
+                    view.questIcon.setImageDrawable(listItemIcon(vm.icon))
 
                     view.questStartTime.text = vm.startTime
 
@@ -333,7 +324,7 @@ class BucketListViewController(args: Bundle? = null) :
                         ItemViewModel.CompletedQuestItem(
                             id = q.id,
                             name = q.name,
-                            startTime = formatStartTime(q),
+                            startTime = QuestStartTimeFormatter.formatWithDuration(q, activity!!, shouldUse24HourFormat),
                             color = color,
                             icon = q.icon?.androidIcon?.icon
                                     ?: Ionicons.Icon.ion_android_clipboard,
@@ -351,7 +342,7 @@ class BucketListViewController(args: Bundle? = null) :
                         ItemViewModel.QuestItem(
                             id = q.id,
                             name = q.name,
-                            startTime = formatDueDate(q),
+                            dueDate = formatDueDate(q),
                             color = color,
                             icon = q.icon?.androidIcon?.icon
                                     ?: Ionicons.Icon.ion_android_clipboard,
@@ -390,7 +381,7 @@ class BucketListViewController(args: Bundle? = null) :
 
     private fun formatDueDate(quest: Quest): String {
         if (quest.dueDate == null) {
-            return formatStartTime(quest)
+            return QuestStartTimeFormatter.formatWithDuration(quest, activity!!, shouldUse24HourFormat)
         }
         val dueDate = quest.dueDate
         val today = LocalDate.now()
@@ -398,13 +389,10 @@ class BucketListViewController(args: Bundle? = null) :
             val overdueDays = dueDate.daysUntil(today)
             "Overdue by $overdueDays days"
         } else {
-            "Due " + DateFormatter.formatWithoutYear(activity!!, dueDate) + formatStartTime(quest)
+            "Due " + DateFormatter.formatWithoutYear(
+                activity!!,
+                dueDate
+            ) + QuestStartTimeFormatter.formatWithDuration(quest, activity!!, shouldUse24HourFormat)
         }
-    }
-
-    private fun formatStartTime(quest: Quest): String {
-        val start = quest.startTime ?: return "Unscheduled"
-        val end = start.plus(quest.actualDuration.asMinutes.intValue)
-        return "$start - $end"
     }
 }

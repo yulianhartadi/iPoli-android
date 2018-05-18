@@ -124,13 +124,7 @@ class TagListViewController(args: Bundle? = null) :
         val i = tag.icon?.let { AndroidIcon.valueOf(it.name).icon }
                 ?: MaterialDesignIconic.Icon.gmi_label
 
-        view.tagIcon.setImageDrawable(
-            IconicsDrawable(activity!!)
-                .icon(i)
-                .paddingDp(3)
-                .colorRes(R.color.md_white)
-                .sizeDp(24)
-        )
+        view.tagIcon.setImageDrawable(listItemIcon(i))
         view.tagName.text = tag.name
 
         TextViewCompat.setAutoSizeTextTypeUniformWithConfiguration(

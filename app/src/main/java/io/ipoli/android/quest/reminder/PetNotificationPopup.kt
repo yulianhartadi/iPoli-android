@@ -11,36 +11,34 @@ import android.util.DisplayMetrics
 import android.view.*
 import android.view.animation.AccelerateDecelerateInterpolator
 import android.view.animation.AnticipateInterpolator
-import kotlinx.android.synthetic.main.view_reminder.view.*
 import io.ipoli.android.R
 import io.ipoli.android.common.view.MviPopup
+import io.ipoli.android.common.view.gone
 import io.ipoli.android.common.view.views
 import io.ipoli.android.pet.AndroidPetAvatar
-import io.ipoli.android.pet.Pet
+import io.ipoli.android.pet.PetAvatar
+import io.ipoli.android.pet.PetState
+import kotlinx.android.synthetic.main.view_reminder.view.*
 
 /**
  * Created by Venelin Valkov <venelin@mypoli.fun>
  * on 10/13/17.
  */
 
-data class ReminderNotificationViewModel(
-    val questId: String,
-    val name: String,
-    val message: String,
-    val startTimeMessage: String,
-    val pet: Pet
-)
-
-class ReminderNotificationPopup(
-    private val viewModel: ReminderNotificationViewModel,
-    private val listener: OnClickListener
+class PetNotificationPopup(
+    private val viewModel: PetNotificationPopup.ViewModel,
+    private val onStart: () -> Unit = {},
+    private val onSnooze: () -> Unit = {},
+    private val onDismiss: () -> Unit = {}
 ) {
 
-    interface OnClickListener {
-        fun onDismiss()
-        fun onSnooze()
-        fun onStart()
-    }
+    data class ViewModel(
+        val headline: String,
+        val title: String?,
+        val body: String?,
+        val petAvatar: PetAvatar,
+        val petState: PetState
+    )
 
     private lateinit var overlayView: ViewGroup
     private lateinit var windowManager: WindowManager
@@ -57,12 +55,20 @@ class ReminderNotificationPopup(
 
     private fun initUI() {
         with(overlayView) {
-            name.text = viewModel.name
-            message.text = viewModel.message
-            startTimeMessage.text = viewModel.startTimeMessage
-            val petAvatar = AndroidPetAvatar.valueOf(viewModel.pet.avatar.name)
+            headline.text = viewModel.headline
+            if (viewModel.title != null) {
+                title.text = viewModel.title
+            } else {
+                title.gone()
+            }
+            if (viewModel.body != null) {
+                body.text = viewModel.body
+            } else {
+                body.gone()
+            }
+            val petAvatar = AndroidPetAvatar.valueOf(viewModel.petAvatar.name)
             pet.setImageResource(petAvatar.image)
-            petState.setImageResource(petAvatar.stateImage[viewModel.pet.state]!!)
+            petState.setImageResource(petAvatar.stateImage[viewModel.petState]!!)
         }
         initButtons()
     }
@@ -77,20 +83,23 @@ class ReminderNotificationPopup(
         with(overlayView) {
             dismiss.setOnClickListener {
                 dismiss.isClickable = false
-                listener.onDismiss()
-                hide()
+                hide({
+                    onDismiss()
+                })
             }
 
             snooze.setOnClickListener {
                 snooze.isClickable = false
-                listener.onSnooze()
-                hide()
+                hide({
+                    onSnooze()
+                })
             }
 
             start.setOnClickListener {
                 start.isClickable = false
-                listener.onStart()
-                hide()
+                hide({
+                    onStart()
+                })
             }
         }
 
@@ -120,9 +129,10 @@ class ReminderNotificationPopup(
         windowManager.removeViewImmediate(view)
     }
 
-    private fun hide() {
+    private fun hide(onEnd: () -> Unit) {
         startHideAnimation(overlayView, object : AnimatorListenerAdapter() {
             override fun onAnimationEnd(animation: Animator?) {
+                onEnd()
                 removeViewFromWindowManager(overlayView)
             }
         })
@@ -156,7 +166,9 @@ class ReminderNotificationPopup(
         backgroundAnim.duration = duration
 
         val animators =
-            view.group.views().map { ObjectAnimator.ofFloat(it, "alpha", 0f, 1f).setDuration(duration * 4 / 5) }
+            view.group.views().map {
+                ObjectAnimator.ofFloat(it, "alpha", 0f, 1f).setDuration(duration * 4 / 5)
+            }
                 .toMutableList() as MutableList<Animator>
         animators.add(backgroundAnim)
 

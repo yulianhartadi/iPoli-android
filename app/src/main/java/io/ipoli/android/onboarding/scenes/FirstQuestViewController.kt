@@ -92,7 +92,8 @@ class FirstQuestViewController(args: Bundle? = null) :
                             "",
                             view.firstQuestName.text.toString(),
                             60,
-                            Time.now().toMinuteOfDay()
+                            Time.now().toMinuteOfDay(),
+                            shouldUse24HourFormat
                         )
                     )
                 )
@@ -118,7 +119,7 @@ class FirstQuestViewController(args: Bundle? = null) :
             CalendarDayView.HourCellAdapter {
             override fun bind(view: View, hour: Int) {
                 if (hour > 0) {
-                    view.timeLabel.text = hour.toString() + ":00"
+                    view.timeLabel.text = Time.atHours(hour).toString(shouldUse24HourFormat)
                 }
             }
         })
@@ -187,12 +188,13 @@ class FirstQuestViewController(args: Bundle? = null) :
         override val id: String,
         val name: String,
         override val duration: Int,
-        override val startMinute: Int
+        override val startMinute: Int,
+        val use24HourFormat: Boolean
     ) : CalendarEvent {
 
-        val startTime: String get() = Time.of(startMinute).toString()
+        val startTime: String get() = Time.of(startMinute).toString(use24HourFormat)
 
-        val endTime: String get() = Time.of(startMinute).plus(duration).toString()
+        val endTime: String get() = Time.of(startMinute).plus(duration).toString(use24HourFormat)
     }
 
     inner class OnboardQuestAdapter(

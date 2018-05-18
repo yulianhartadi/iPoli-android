@@ -3,9 +3,9 @@ package io.ipoli.android
 import io.ipoli.android.common.datetime.Time
 import io.ipoli.android.common.datetime.TimeOfDay
 import io.ipoli.android.pet.PetAvatar
+import io.ipoli.android.player.Player
 import io.ipoli.android.player.Theme
 import org.threeten.bp.DayOfWeek
-import java.util.*
 
 /**
  * Created by Venelin Valkov <venelin@mypoli.fun>
@@ -74,6 +74,7 @@ interface Constants {
         val KEY_APP_VERSION_CODE = "APP_VERSION_CODE"
 
         val KEY_PLAYER_ID = "PLAYER_ID"
+        val KEY_TIME_FORMAT = "TIME_FORMAT"
 
         val KEY_DAILY_CHALLENGE_DAYS = "DAILY_CHALLENGE_DAYS"
 
@@ -103,6 +104,9 @@ interface Constants {
         val DEFAULT_PLAYER_SLEEP_END_TIME = Time.atHours(8)
         val DEFAULT_PLAYER_COMPLETE_DAILY_QUESTS_MINUTE = 0
 
+        val DEFAULT_TIME_FORMAT = Player.Preferences.TimeFormat.DEVICE_DEFAULT
+        val DEFAULT_TEMPERATURE_UNIT = Player.Preferences.TemperatureUnit.FAHRENHEIT
+
         val DEFAULT_PLAYER_WORK_DAYS = setOf(
             DayOfWeek.MONDAY,
             DayOfWeek.TUESDAY,
@@ -125,7 +129,7 @@ interface Constants {
 
         val REWARD_MIN_PRICE = 1
 
-        val DEFAULT_DAILY_CHALLENGE_REMINDER_START_MINUTE = 10 * 60
+        const val DEFAULT_PLAN_DAY_REMINDER_START_MINUTE = 10 * 60
 
         val DEFAULT_DAILY_CHALLENGE_ENABLE_REMINDER = true
 
@@ -137,14 +141,13 @@ interface Constants {
         val MIN_FLEXIBLE_TIMES_A_MONTH_COUNT = 1
         val MAX_FLEXIBLE_TIMES_A_MONTH_COUNT = 15
 
-        val DEFAULT_DAILY_CHALLENGE_DAYS: Set<Int> = HashSet<Int>(
-            Arrays.asList(
-                DayOfWeek.MONDAY.getValue(),
-                DayOfWeek.TUESDAY.getValue(),
-                DayOfWeek.WEDNESDAY.getValue(),
-                DayOfWeek.THURSDAY.getValue(),
-                DayOfWeek.FRIDAY.getValue()
-            )
+        val DEFAULT_PLAN_DAYS: Set<DayOfWeek> =
+            setOf(
+                DayOfWeek.MONDAY,
+                DayOfWeek.TUESDAY,
+                DayOfWeek.WEDNESDAY,
+                DayOfWeek.THURSDAY,
+                DayOfWeek.FRIDAY
         )
 
         val DAILY_CHALLENGE_QUEST_COUNT = 3
@@ -169,7 +172,7 @@ interface Constants {
         val PREDEFINED_CHALLENGE_INDEX = "predefined_challenge_index"
         val RANDOM_SEED = 42 // duh!
         val MAX_TIMES_A_DAY_COUNT = 8
-        val SCHEMA_VERSION = 100
+        val SCHEMA_VERSION = 101
 
         val MAX_PENALTY_COEFFICIENT = 0.5
         val NO_QUESTS_PENALTY_COEFFICIENT = 0.3
@@ -182,6 +185,7 @@ interface Constants {
 
         val XP_BAR_MAX_VALUE = 100
         const val RC_CALENDAR_PERM = 102
+        const val RC_LOCATION_PERM = 103
         val KEY_LAST_ANDROID_CALENDAR_SYNC_DATE = "LAST_ANDROID_CALENDAR_SYNC_DATE"
         val FACEBOOK_PACKAGE = "com.facebook.katana"
         val TWITTER_PACKAGE = "com.twitter.android"
@@ -213,8 +217,11 @@ interface Constants {
         const val DEFAULT_POMODORO_BREAK_DURATION = 5
         const val DEFAULT_POMODORO_LONG_BREAK_DURATION = 15
 
-        const val NOTIFICATION_CHANNEL_ID = "myPoli"
-        const val NOTIFICATION_CHANNEL_NAME = "myPoli"
+        const val REMINDERS_NOTIFICATION_CHANNEL_ID = "myPoli"
+        const val REMINDERS_NOTIFICATION_CHANNEL_NAME = "myPoli"
+
+        const val PLAN_DAY_NOTIFICATION_CHANNEL_ID = "myPoli_plan_day"
+        const val PLAN_DAY_NOTIFICATION_CHANNEL_NAME = "Plan Day Reminder"
 
         const val USERNAME_MIN_LENGTH = 3
         const val USERNAME_MAX_LENGTH = 20

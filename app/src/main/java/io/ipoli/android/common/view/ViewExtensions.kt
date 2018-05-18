@@ -1,5 +1,7 @@
 package io.ipoli.android.common.view
 
+import android.animation.Animator
+import android.animation.AnimatorListenerAdapter
 import android.support.annotation.LayoutRes
 import android.support.constraint.Group
 import android.view.LayoutInflater
@@ -71,6 +73,34 @@ val ViewGroup.children: List<View>
 
 fun ViewGroup.inflate(@LayoutRes layout: Int, attachToRoot: Boolean = false): View =
     LayoutInflater.from(context).inflate(layout, this, attachToRoot)
+
+fun View.fadeIn(animationDuration: Long, onComplete: () -> Unit = {}) {
+    alpha = 0f
+    animate().apply {
+        alpha(1f)
+        duration = animationDuration
+        setListener(object : AnimatorListenerAdapter() {
+            override fun onAnimationEnd(animation: Animator?) {
+                alpha = 1f
+                onComplete()
+            }
+        })
+    }
+}
+
+fun View.fadeOut(animationDuration: Long, onComplete: () -> Unit = {}) {
+    alpha = 1f
+    animate().apply {
+        alpha(0f)
+        duration = animationDuration
+        setListener(object : AnimatorListenerAdapter() {
+            override fun onAnimationEnd(animation: Animator?) {
+                alpha = 0f
+                onComplete()
+            }
+        })
+    }
+}
 
 object Debounce {
 

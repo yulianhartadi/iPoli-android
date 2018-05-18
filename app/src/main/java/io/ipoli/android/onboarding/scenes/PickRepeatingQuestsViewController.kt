@@ -347,13 +347,7 @@ class PickRepeatingQuestsViewController(args: Bundle? = null) :
 
             view.rqIcon.backgroundTintList =
                     ColorStateList.valueOf(colorRes(vm.repeatingQuest.color.androidColor.color500))
-            view.rqIcon.setImageDrawable(
-                IconicsDrawable(view.context)
-                    .icon(vm.repeatingQuest.icon!!.androidIcon.icon)
-                    .colorRes(R.color.md_white)
-                    .paddingDp(3)
-                    .sizeDp(24)
-            )
+            view.rqIcon.setImageDrawable(listItemIcon(vm.repeatingQuest.icon!!.androidIcon.icon))
 
             view.rqCheck.setOnCheckedChangeListener(null)
             view.rqCheck.isChecked = vm.isSelected

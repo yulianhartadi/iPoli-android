@@ -36,6 +36,8 @@ interface QuestRepository : CollectionRepository<Quest> {
 
     suspend fun listenForAllUnscheduled(channel: Channel<List<Quest>>): Channel<List<Quest>>
 
+    fun findRandomUnscheduled(count: Int): List<Quest>
+
     fun findScheduledAt(date: LocalDate): List<Quest>
     fun findScheduledForRepeatingQuestBetween(
         repeatingQuestId: String,
@@ -339,6 +341,13 @@ class FirestoreQuestRepository(
             .orderBy("startMinute")
             .listenForChanges(channel)
 
+    override fun findRandomUnscheduled(count: Int) =
+        collectionReference
+            .whereEqualTo("scheduledDate", null)
+            .entities
+            .shuffled()
+            .take(count)
+
     override fun findScheduledAt(date: LocalDate) =
         collectionReference
             .whereGreaterThan("scheduledDate", date.startOfDayUTC() - 1)
@@ -363,6 +372,7 @@ class FirestoreQuestRepository(
     ) =
         collectionReference
             .whereEqualTo("scheduledDate", date.startOfDayUTC())
+            .orderBy("startMinute")
             .listenForChanges(channel)
 
     override fun findNextReminderTime(afterTime: ZonedDateTime): LocalDateTime? {

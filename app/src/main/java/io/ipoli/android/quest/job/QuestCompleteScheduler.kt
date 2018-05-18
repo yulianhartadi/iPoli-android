@@ -45,7 +45,7 @@ class QuestCompleteJob : Job(), Injects<Module> {
     }
 
     companion object {
-        val TAG = "job_quest_complete_tag"
+        const val TAG = "job_quest_complete_tag"
     }
 }
 

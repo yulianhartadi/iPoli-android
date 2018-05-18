@@ -11,6 +11,7 @@
     <uses-permission android:name="android.permission.WRITE_CALENDAR" />
     <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
     <uses-permission android:name="android.permission.SET_WALLPAPER" />
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="com.android.vending.BILLING" />
     <uses-permission android:name="android.permission.REQUEST_IGNORE_BATTERY_OPTIMIZATIONS" />
 
@@ -77,6 +78,10 @@
         <meta-data
             android:name="io.fabric.ApiKey"
             android:value="95b02b4f720064a454d0d0a5484e95d756741950" />
+
+        <meta-data
+            android:name="com.google.android.awareness.API_KEY"
+            android:value="@string/awareness_api_key" />
     </application>
 
 </manifest>

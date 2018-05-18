@@ -10,8 +10,6 @@ import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
 import android.view.*
 import android.widget.TextView
-import com.bluelinelabs.conductor.changehandler.FadeChangeHandler
-import com.mikepenz.iconics.IconicsDrawable
 import com.mikepenz.iconics.typeface.IIcon
 import com.mikepenz.ionicons_typeface_library.Ionicons
 import io.ipoli.android.R
@@ -116,7 +114,6 @@ class ChallengeListViewController(args: Bundle? = null) :
             }
 
             ChallengeListViewState.ShowAdd -> {
-                val handler = FadeChangeHandler()
                 rootRouter.pushController(AddChallengeViewController.routerTransaction)
             }
         }
@@ -175,13 +172,7 @@ class ChallengeListViewController(args: Bundle? = null) :
 
             view.ccIcon.backgroundTintList =
                     ColorStateList.valueOf(colorRes(vm.color))
-            view.ccIcon.setImageDrawable(
-                IconicsDrawable(view.context)
-                    .icon(vm.icon)
-                    .colorRes(R.color.md_white)
-                    .paddingDp(3)
-                    .sizeDp(24)
-            )
+            view.ccIcon.setImageDrawable(listItemIcon(vm.icon))
 
             view.ccStart.text = vm.start
             view.ccComplete.text = vm.complete
@@ -208,13 +199,7 @@ class ChallengeListViewController(args: Bundle? = null) :
 
             view.cIcon.backgroundTintList =
                     ColorStateList.valueOf(colorRes(vm.color))
-            view.cIcon.setImageDrawable(
-                IconicsDrawable(view.context)
-                    .icon(vm.icon)
-                    .colorRes(R.color.md_white)
-                    .paddingDp(3)
-                    .sizeDp(24)
-            )
+            view.cIcon.setImageDrawable(listItemIcon(vm.icon))
 
             if (vm.tags.isNotEmpty()) {
                 view.cTagName.visible()
@@ -314,7 +299,7 @@ class ChallengeListViewController(args: Bundle? = null) :
                                 " ${c.nextStartTime} - ${c.nextEndTime}"
                             } else {
                                 " " + stringRes(
-                                    R.string.quest_for_time,
+                                    R.string.for_time,
                                     DurationFormatter.formatShort(view!!.context, c.nextDuration!!)
                                 )
                             }

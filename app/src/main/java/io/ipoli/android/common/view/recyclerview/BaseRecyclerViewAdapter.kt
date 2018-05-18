@@ -69,6 +69,8 @@ abstract class BaseRecyclerViewAdapter<VM : RecyclerViewViewModel>(
         updateAll(vms)
     }
 
+    fun getItemAt(position: Int): VM = getItem(position)
+
     val items: MutableList<VM>
         get() = 0.until(itemCount).map {
             getItem(it)
@@ -115,9 +117,9 @@ abstract class MultiViewRecyclerViewAdapter<VM : RecyclerViewViewModel> :
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): SimpleViewHolder {
         val resId = viewTypeToItemBinder[viewType]?.layoutResId
-                ?: throw IllegalArgumentException(
-                    "Unknown view type $viewType. Have you used registerBinder() for it?"
-                )
+            ?: throw IllegalArgumentException(
+                "Unknown view type $viewType. Have you used registerBinder() for it?"
+            )
         val itemView = LayoutInflater
             .from(parent.context)
             .inflate(resId, parent, false)

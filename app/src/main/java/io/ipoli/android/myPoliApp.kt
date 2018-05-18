@@ -87,7 +87,7 @@ class myPoliApp : Application() {
 
         module = Module(
             androidModule = MainAndroidModule(this, analytics),
-            repositoryModule = FirestoreRepositoryModule(),
+            repositoryModule = AndroidRepositoryModule(this),
             useCaseModule = MainUseCaseModule(),
             presenterModule = AndroidPresenterModule(),
             stateStoreModule = AndroidStateStoreModule()
@@ -98,23 +98,46 @@ class myPoliApp : Application() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             val notificationManager =
                 getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
-            val importance = NotificationManager.IMPORTANCE_HIGH
-            val channel = NotificationChannel(
-                Constants.NOTIFICATION_CHANNEL_ID,
-                Constants.NOTIFICATION_CHANNEL_NAME,
-                importance
-            )
-            channel.description = "Reminder notifications"
-            channel.enableLights(true)
-            channel.enableVibration(true)
-            channel.setSound(
-                Uri.parse("android.resource://" + packageName + "/" + R.raw.notification),
-                Notification.AUDIO_ATTRIBUTES_DEFAULT
-            )
-            channel.lockscreenVisibility = Notification.VISIBILITY_PUBLIC
-            notificationManager.createNotificationChannel(channel)
+            notificationManager.createNotificationChannel(createReminderChannel())
+            notificationManager.createNotificationChannel(createPlanDayChannel())
         }
 
 //        TinyDancer.create().show(this)
+    }
+
+    @SuppressLint("NewApi")
+    private fun createPlanDayChannel(): NotificationChannel {
+        val channel = NotificationChannel(
+            Constants.PLAN_DAY_NOTIFICATION_CHANNEL_ID,
+            Constants.PLAN_DAY_NOTIFICATION_CHANNEL_NAME,
+            NotificationManager.IMPORTANCE_DEFAULT
+        )
+        channel.description = "Notifications to plan your day"
+        channel.enableLights(true)
+        channel.enableVibration(true)
+        channel.setSound(
+            Uri.parse("android.resource://" + packageName + "/" + R.raw.notification),
+            Notification.AUDIO_ATTRIBUTES_DEFAULT
+        )
+        channel.lockscreenVisibility = Notification.VISIBILITY_PUBLIC
+        return channel
+    }
+
+    @SuppressLint("NewApi")
+    private fun createReminderChannel(): NotificationChannel {
+        val channel = NotificationChannel(
+            Constants.REMINDERS_NOTIFICATION_CHANNEL_ID,
+            Constants.REMINDERS_NOTIFICATION_CHANNEL_NAME,
+            NotificationManager.IMPORTANCE_HIGH
+        )
+        channel.description = "Reminder notifications"
+        channel.enableLights(true)
+        channel.enableVibration(true)
+        channel.setSound(
+            Uri.parse("android.resource://" + packageName + "/" + R.raw.notification),
+            Notification.AUDIO_ATTRIBUTES_DEFAULT
+        )
+        channel.lockscreenVisibility = Notification.VISIBILITY_PUBLIC
+        return channel
     }
 }

@@ -3,7 +3,9 @@ package io.ipoli.android.onboarding
 import android.content.Context
 import android.graphics.drawable.GradientDrawable
 import android.os.Bundle
-import android.view.*
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
 import com.bluelinelabs.conductor.Controller
 import com.bluelinelabs.conductor.RouterTransaction
 import com.bluelinelabs.conductor.changehandler.HorizontalChangeHandler
@@ -45,8 +47,14 @@ sealed class OnboardAction : Action {
     object Skip : OnboardAction()
 
     data class UsernameValid(val username: String) : OnboardAction()
-    data class LoadRepeatingQuests(val repeatingQuests: Map<Int, Pair<RepeatingQuest, OnboardViewController.OnboardTag?>>) : OnboardAction()
-    data class SelectRepeatingQuest(val index: Int, val repeatingQuest: RepeatingQuest, val tag: OnboardViewController.OnboardTag?) :
+    data class LoadRepeatingQuests(val repeatingQuests: Map<Int, Pair<RepeatingQuest, OnboardViewController.OnboardTag?>>) :
+        OnboardAction()
+
+    data class SelectRepeatingQuest(
+        val index: Int,
+        val repeatingQuest: RepeatingQuest,
+        val tag: OnboardViewController.OnboardTag?
+    ) :
         OnboardAction()
 
     data class DeselectRepeatingQuest(val index: Int) : OnboardAction()
@@ -58,8 +66,8 @@ object OnboardReducer : BaseViewStateReducer<OnboardViewState>() {
         state: AppState,
         subState: OnboardViewState,
         action: Action
-    ): OnboardViewState {
-        return when (action) {
+    ) =
+        when (action) {
             OnboardAction.ShowNext ->
                 subState.copy(
                     type = NEXT_PAGE,
@@ -131,7 +139,7 @@ object OnboardReducer : BaseViewStateReducer<OnboardViewState>() {
                 subState.copy(
                     type = REPEATING_QUESTS_LOADED,
                     repeatingQuests = subState.repeatingQuests +
-                            Pair(action.index, Pair(action.repeatingQuest, action.tag))
+                        Pair(action.index, Pair(action.repeatingQuest, action.tag))
                 )
 
             is OnboardAction.DeselectRepeatingQuest ->
@@ -152,7 +160,6 @@ object OnboardReducer : BaseViewStateReducer<OnboardViewState>() {
 
             else -> subState
         }
-    }
 
     override fun defaultState() =
         OnboardViewState(

@@ -8,6 +8,7 @@ import android.graphics.drawable.GradientDrawable
 import android.os.Bundle
 import android.support.annotation.ColorInt
 import android.support.v4.content.ContextCompat
+import android.text.format.DateFormat
 import android.view.View
 import android.widget.RemoteViews
 import android.widget.RemoteViewsService
@@ -17,11 +18,14 @@ import com.mikepenz.ionicons_typeface_library.Ionicons
 import io.ipoli.android.Constants
 import io.ipoli.android.R
 import io.ipoli.android.common.di.Module
+import io.ipoli.android.common.text.QuestStartTimeFormatter
 import io.ipoli.android.common.view.AndroidColor
 import io.ipoli.android.common.view.AndroidIcon
+import io.ipoli.android.common.view.listItemIcon
 import io.ipoli.android.event.Event
 import io.ipoli.android.event.usecase.FindEventsBetweenDatesUseCase
 import io.ipoli.android.myPoliApp
+import io.ipoli.android.player.Player
 import io.ipoli.android.quest.Quest
 import org.threeten.bp.LocalDate
 import space.traversal.kapsule.Injects
@@ -45,6 +49,7 @@ class AgendaWidgetViewsFactory(private val context: Context) :
     private var items = CopyOnWriteArrayList<Item>()
 
     private val questRepository by required { questRepository }
+    private val sharedPreferences by required { sharedPreferences }
     private val findEventsBetweenDatesUseCase by required { findEventsBetweenDatesUseCase }
 
     override fun onCreate() {
@@ -97,7 +102,7 @@ class AgendaWidgetViewsFactory(private val context: Context) :
                     RemoteViews(context.packageName, R.layout.item_widget_agenda).apply {
 
                         setTextViewText(R.id.widgetQuestName, q.name)
-                        setTextViewText(R.id.widgetQuestStartTime, formatStartTime(q))
+                        setTextViewText(R.id.widgetQuestStartTime, QuestStartTimeFormatter.formatWithDuration(q, context, use24HourFormat))
 
                         if (q.tags.isEmpty()) {
                             setViewVisibility(R.id.widgetTagIndicator, View.GONE)
@@ -124,11 +129,7 @@ class AgendaWidgetViewsFactory(private val context: Context) :
                                 ?: Ionicons.Icon.ion_android_clipboard
 
                         val iconDrawable =
-                            IconicsDrawable(context)
-                                .icon(icon)
-                                .colorRes(R.color.md_white)
-                                .paddingDp(3)
-                                .sizeDp(24)
+                            IconicsDrawable(context).listItemIcon(icon)
 
                         setImageViewBitmap(R.id.widgetQuestIcon, iconDrawable.toBitmap())
 
@@ -165,11 +166,7 @@ class AgendaWidgetViewsFactory(private val context: Context) :
                         setTextViewText(R.id.widgetQuestStartTime, formatStartTime(e))
 
                         val iconDrawable =
-                            IconicsDrawable(context)
-                                .icon(GoogleMaterial.Icon.gmd_event_available)
-                                .colorRes(R.color.md_white)
-                                .paddingDp(3)
-                                .sizeDp(24)
+                            IconicsDrawable(context).listItemIcon(GoogleMaterial.Icon.gmd_event_available)
 
                         setImageViewBitmap(R.id.widgetQuestIcon, iconDrawable.toBitmap())
 
@@ -224,17 +221,30 @@ class AgendaWidgetViewsFactory(private val context: Context) :
         return bitmap
     }
 
-    private fun formatStartTime(quest: Quest): String {
-        val start = quest.startTime ?: return "Unscheduled"
-        val end = start.plus(quest.actualDuration.asMinutes.intValue)
-        return "$start - $end"
-    }
-
     private fun formatStartTime(event: Event): String {
         val start = event.startTime
         val end = start.plus(event.duration.intValue)
-        return "$start - $end"
+        return "${start.toString(use24HourFormat)} - ${end.toString(use24HourFormat)}"
     }
+
+    private val use24HourFormat: Boolean
+        get() {
+            val timeFormat = Player.Preferences.TimeFormat.valueOf(
+                sharedPreferences.getString(
+                    Constants.KEY_TIME_FORMAT,
+                    Player.Preferences.TimeFormat.DEVICE_DEFAULT.name
+                )
+            )
+            if (timeFormat == Player.Preferences.TimeFormat.DEVICE_DEFAULT) {
+                return DateFormat.is24HourFormat(context)
+            }
+
+            if (timeFormat == Player.Preferences.TimeFormat.TWELVE_HOURS) {
+                return false
+            }
+
+            return true
+        }
 
     override fun getCount() = items.size
 

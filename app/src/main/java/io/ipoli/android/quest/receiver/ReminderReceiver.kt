@@ -1,12 +1,9 @@
 package io.ipoli.android.quest.receiver
 
-import android.app.Notification
 import android.app.NotificationManager
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
-import android.os.Build
-import android.support.v4.app.NotificationCompat
 import android.widget.Toast
 import com.mikepenz.google_material_typeface_library.GoogleMaterial
 import com.mikepenz.iconics.IconicsDrawable
@@ -14,13 +11,13 @@ import io.ipoli.android.Constants
 import io.ipoli.android.R
 import io.ipoli.android.common.AsyncBroadcastReceiver
 import io.ipoli.android.common.IntentUtil
+import io.ipoli.android.common.NotificationUtil
 import io.ipoli.android.common.datetime.Time
 import io.ipoli.android.common.view.AndroidIcon
 import io.ipoli.android.common.view.asThemedWrapper
 import io.ipoli.android.common.view.largeIcon
 import io.ipoli.android.quest.Quest
-import io.ipoli.android.quest.reminder.ReminderNotificationPopup
-import io.ipoli.android.quest.reminder.ReminderNotificationViewModel
+import io.ipoli.android.quest.reminder.PetNotificationPopup
 import kotlinx.coroutines.experimental.CommonPool
 import kotlinx.coroutines.experimental.android.UI
 import kotlinx.coroutines.experimental.launch
@@ -91,32 +88,30 @@ class ReminderReceiver : AsyncBroadcastReceiver() {
                     notificationManager
                 )
 
-                val viewModel = ReminderNotificationViewModel(
-                    it.id,
-                    questName,
-                    message,
-                    startTimeMessage,
-                    pet
+                val viewModel = PetNotificationPopup.ViewModel(
+                    headline = questName,
+                    title = message,
+                    body = startTimeMessage,
+                    petAvatar = pet.avatar,
+                    petState = pet.state
                 )
-                ReminderNotificationPopup(viewModel,
-                    object : ReminderNotificationPopup.OnClickListener {
-                        override fun onDismiss() {
-                            notificationManager.cancel(notificationId)
+                PetNotificationPopup(
+                    viewModel,
+                    onDismiss = {
+                        notificationManager.cancel(notificationId)
+                    },
+                    onSnooze = {
+                        notificationManager.cancel(notificationId)
+                        launch(CommonPool) {
+                            snoozeQuestUseCase.execute(it.id)
                         }
-
-                        override fun onSnooze() {
-                            notificationManager.cancel(notificationId)
-                            launch(CommonPool) {
-                                snoozeQuestUseCase.execute(it.id)
-                            }
-                            Toast.makeText(c, "Quest snoozed", Toast.LENGTH_SHORT).show()
-                        }
-
-                        override fun onStart() {
-                            notificationManager.cancel(notificationId)
-                            c.startActivity(IntentUtil.showTimer(it.id, c))
-                        }
-                    }).show(c)
+                        Toast.makeText(c, "Quest snoozed", Toast.LENGTH_SHORT).show()
+                    },
+                    onStart = {
+                        notificationManager.cancel(notificationId)
+                        c.startActivity(IntentUtil.showTimer(it.id, c))
+                    }
+                ).show(c)
             }
         }
         reminderScheduler.schedule()
@@ -131,51 +126,20 @@ class ReminderReceiver : AsyncBroadcastReceiver() {
     ): Int {
         val sound =
             Uri.parse("android.resource://" + context.packageName + "/" + R.raw.notification)
-        val notification = createNotification(context, questName, icon, message, sound)
+        val notification = NotificationUtil.createDefaultNotification(
+            context = context,
+            title = questName,
+            icon = icon.toBitmap(),
+            message = message,
+            sound = sound,
+            channelId = Constants.REMINDERS_NOTIFICATION_CHANNEL_ID
+        )
 
         val notificationId = Random().nextInt()
 
         notificationManager.notify(notificationId, notification)
         return notificationId
     }
-
-    private fun createNotification(
-        context: Context,
-        title: String,
-        icon: IconicsDrawable,
-        message: String,
-        sound: Uri
-    ) =
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-            val builder = Notification.Builder(context)
-                .setContentTitle(title)
-                .setContentText(message)
-                .setSmallIcon(android.graphics.drawable.Icon.createWithBitmap(icon.toBitmap()))
-                .setLargeIcon(icon.toBitmap())
-                .setSound(sound)
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                builder.setChannelId(Constants.NOTIFICATION_CHANNEL_ID)
-            }
-
-            builder.setDefaults(Notification.DEFAULT_ALL)
-                .setVisibility(Notification.VISIBILITY_PUBLIC)
-                .setAutoCancel(true)
-                .build()
-        } else {
-            NotificationCompat.Builder(
-                context,
-                Constants.NOTIFICATION_CHANNEL_ID
-            )
-                .setSmallIcon(R.drawable.ic_notification_small)
-                .setContentTitle(title)
-                .setContentText(message)
-                .setSound(sound)
-                .setLargeIcon(icon.toBitmap())
-                .setDefaults(NotificationCompat.DEFAULT_ALL)
-                .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
-                .setAutoCancel(true)
-                .build()
-        }
 
     private fun startTimeMessage(quest: Quest): String {
         val daysDiff = ChronoUnit.DAYS.between(quest.scheduledDate, LocalDate.now())

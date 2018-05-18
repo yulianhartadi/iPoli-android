@@ -10,7 +10,6 @@ import android.support.v7.widget.LinearLayoutManager
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import com.mikepenz.iconics.IconicsDrawable
 import com.mikepenz.iconics.typeface.IIcon
 import com.mikepenz.ionicons_typeface_library.Ionicons
 import io.ipoli.android.R
@@ -130,13 +129,7 @@ class RepeatingQuestListViewController(args: Bundle? = null) :
 
             view.rqIcon.backgroundTintList =
                     ColorStateList.valueOf(colorRes(vm.color))
-            view.rqIcon.setImageDrawable(
-                IconicsDrawable(view.context)
-                    .icon(vm.icon)
-                    .colorRes(R.color.md_white)
-                    .paddingDp(3)
-                    .sizeDp(24)
-            )
+            view.rqIcon.setImageDrawable(listItemIcon(vm.icon))
             view.rqNext.text = vm.next
             view.rqFrequency.text = vm.frequency
 
@@ -194,7 +187,7 @@ class RepeatingQuestListViewController(args: Bundle? = null) :
                         " ${it.startTime} - ${it.endTime}"
                     } else {
                         " " + stringRes(
-                            R.string.quest_for_time,
+                            R.string.for_time,
                             DurationFormatter.formatShort(view!!.context, it.duration)
                         )
                     }

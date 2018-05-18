@@ -6,6 +6,10 @@ import io.ipoli.android.common.redux.Reducer
 import io.ipoli.android.common.redux.State
 import io.ipoli.android.event.Calendar
 import io.ipoli.android.event.Event
+import io.ipoli.android.planday.data.Weather
+import io.ipoli.android.planday.persistence.MotivationalImage
+import io.ipoli.android.planday.persistence.Quote
+import io.ipoli.android.planday.usecase.CalculateAwesomenessScoreUseCase
 import io.ipoli.android.player.Player
 import io.ipoli.android.quest.Quest
 import io.ipoli.android.quest.RepeatingQuest
@@ -57,6 +61,18 @@ sealed class DataLoadedAction : Action {
     data class UnscheduledQuestsChanged(val quests: List<Quest>) : DataLoadedAction()
 
     data class GemPacksLoaded(val gemPacks: List<GemPack>) : DataLoadedAction()
+    data class ReviewDayQuestsChanged(
+        val quests: List<Quest>,
+        val awesomenessScore: CalculateAwesomenessScoreUseCase.AwesomenessScore
+    ) : DataLoadedAction()
+
+    data class WeatherChanged(val weather: Weather?) : DataLoadedAction()
+
+    data class SuggestionsChanged(val quests: List<Quest>) : DataLoadedAction()
+    data class MotivationalImageChanged(val motivationalImage: MotivationalImage?) :
+        DataLoadedAction()
+
+    data class QuoteChanged(val quote: Quote?) : DataLoadedAction()
 }
 
 data class AppDataState(

@@ -33,8 +33,8 @@ import io.ipoli.android.common.ViewUtils
 import io.ipoli.android.common.redux.android.ReduxViewController
 import io.ipoli.android.common.text.DateFormatter
 import io.ipoli.android.common.view.*
+import io.ipoli.android.common.view.recyclerview.SimpleSwipeCallback
 import io.ipoli.android.common.view.recyclerview.SimpleViewHolder
-import io.ipoli.android.common.view.recyclerview.SwipeToCompleteCallback
 import io.ipoli.android.quest.Quest
 import io.ipoli.android.quest.RepeatingQuest
 import io.ipoli.android.tag.Tag
@@ -80,7 +80,7 @@ class ChallengeViewController(args: Bundle? = null) :
             LinearLayoutManager(container.context, LinearLayoutManager.VERTICAL, false)
         view.questList.adapter = QuestAdapter()
 
-        val swipeHandler = object : SwipeToCompleteCallback(
+        val swipeHandler = object : SimpleSwipeCallback(
             view.context,
             R.drawable.ic_done_white_24dp,
             R.color.md_green_500,

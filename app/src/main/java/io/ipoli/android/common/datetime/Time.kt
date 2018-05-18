@@ -25,17 +25,27 @@ data class Time constructor(private val minutesAfterMidnight: Int) {
         return minutesAfterMidnight - hours * 60
     }
 
+    val timeOfDay: TimeOfDay
+        get() =
+            when (hours) {
+                in 5..12 -> TimeOfDay.MORNING
+                in 13..17 -> TimeOfDay.AFTERNOON
+                in 18..21 -> TimeOfDay.EVENING
+                else -> TimeOfDay.NIGHT
+            }
+
     override fun toString(): String {
         return String.format(Locale.getDefault(), "%02d:%02d", hours, getMinutes())
     }
 
-    fun toString(use24HourFormat: Boolean): String {
+
+    fun toString(shouldUse24HourFormat: Boolean): String {
         val c = Calendar.getInstance()
         c.set(Calendar.MINUTE, getMinutes())
         c.set(Calendar.HOUR_OF_DAY, hours)
 
         var format = "HH:mm"
-        if (!use24HourFormat) {
+        if (!shouldUse24HourFormat) {
             format = if (getMinutes() > 0) "h:mm a" else "h a"
         }
         return SimpleDateFormat(format, Locale.getDefault()).format(c.time)
@@ -182,5 +192,5 @@ enum class TimePreference {
 }
 
 enum class TimeOfDay {
-    MORNING, AFTERNOON, EVENING, ANY_TIME
+    MORNING, AFTERNOON, EVENING, NIGHT, ANY_TIME
 }

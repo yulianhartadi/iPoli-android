@@ -216,7 +216,10 @@ class FirestorePlayerRepository(
             workEndTime = Time.of(cPref.workEndMinute.toInt()),
             sleepStartTime = Time.of(cPref.sleepStartMinute.toInt()),
             sleepEndTime = Time.of(cPref.sleepEndMinute.toInt()),
-            timeFormat = Player.Preferences.TimeFormat.valueOf(cPref.timeFormat)
+            timeFormat = Player.Preferences.TimeFormat.valueOf(cPref.timeFormat),
+            temperatureUnit = Player.Preferences.TemperatureUnit.valueOf(cPref.temperatureUnit),
+            planDayTime = Time.of(cPref.planDayStartMinute.toInt()),
+            planDays = cPref.planDays.map { DayOfWeek.valueOf(it) }.toSet()
         )
 
         val ca = cp.achievements.map { DbUnlockedAchievement(it) }
@@ -367,6 +370,9 @@ class FirestorePlayerRepository(
             it.sleepStartMinute = preferences.sleepStartTime.toMinuteOfDay().toLong()
             it.sleepEndMinute = preferences.sleepEndTime.toMinuteOfDay().toLong()
             it.timeFormat = preferences.timeFormat.name
+            it.temperatureUnit = preferences.temperatureUnit.name
+            it.planDayStartMinute = preferences.planDayTime.toMinuteOfDay().toLong()
+            it.planDays = preferences.planDays.map { it.name }
         }
 
     private fun createDbAchievements(achievements: List<Player.UnlockedAchievement>) =

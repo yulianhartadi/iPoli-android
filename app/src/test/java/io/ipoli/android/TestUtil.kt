@@ -42,7 +42,7 @@ object TestUtil {
         )
     )
 
-    fun playerRepoMock(player: Player) = mock<PlayerRepository> {
+    fun playerRepoMock(player: Player?) = mock<PlayerRepository> {
         on { find() } doReturn player
         on { save(any<Player>()) } doAnswer { invocation ->
             invocation.getArgument(0)

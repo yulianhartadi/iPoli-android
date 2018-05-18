@@ -26,8 +26,8 @@ object DayViewSideEffectHandler : AppSideEffectHandler() {
     private val questRepository by required { questRepository }
     private val findEventsBetweenDatesUseCase by required { findEventsBetweenDatesUseCase }
     private val removeQuestUseCase by required { removeQuestUseCase }
-    private val loadScheduleForDateUseCase by required { loadScheduleForDateUseCase }
     private val undoRemoveQuestUseCase by required { undoRemoveQuestUseCase }
+    private val loadScheduleForDateUseCase by required { loadScheduleForDateUseCase }
     private val createPlaceholderQuestsForRepeatingQuestsUseCase by required { createPlaceholderQuestsForRepeatingQuestsUseCase }
     private val completeTimeRangeUseCase by required { completeTimeRangeUseCase }
     private val completeQuestUseCase by required { completeQuestUseCase }

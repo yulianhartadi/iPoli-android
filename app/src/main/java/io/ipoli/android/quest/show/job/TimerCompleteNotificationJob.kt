@@ -51,7 +51,7 @@ class TimerCompleteNotificationJob : Job(), Injects<Module> {
         val petAvatar = AndroidPetAvatar.valueOf(pet.avatar.name)
 
         val notificationBuilder =
-            NotificationCompat.Builder(context, Constants.NOTIFICATION_CHANNEL_ID)
+            NotificationCompat.Builder(context, Constants.REMINDERS_NOTIFICATION_CHANNEL_ID)
                 .setSmallIcon(R.drawable.ic_notification_small)
                 .setLargeIcon(BitmapFactory.decodeResource(context.resources, petAvatar.headImage))
 
@@ -175,11 +175,10 @@ interface TimerCompleteScheduler {
 class AndroidJobTimerCompleteScheduler : TimerCompleteScheduler {
 
     override fun schedule(questId: String, after: Duration<Second>) {
-        cancelAll()
-
         val bundle = PersistableBundleCompat()
         bundle.putString("questId", questId)
         JobRequest.Builder(TimerCompleteNotificationJob.TAG)
+            .setUpdateCurrent(true)
             .setExtras(bundle)
             .setExact(after.millisValue)
             .build()

@@ -296,17 +296,3 @@ abstract class BaseCollectionFirestoreRepository<E, out T>(
     protected suspend fun Query.listenForChanges(channel: Channel<List<E>>) =
         listen(this, channel)
 }
-
-class TagProvider {
-
-    private val tags = ConcurrentHashMap<String, Tag>()
-
-    operator fun getValue(thisRef: Any?, property: KProperty<*>): Map<String, Tag> {
-        return tags
-    }
-
-    fun updateTags(tags: List<Tag>) {
-        this.tags.clear()
-        this.tags.putAll(tags.map { it.id to it })
-    }
-}

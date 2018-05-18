@@ -1,9 +1,11 @@
 package io.ipoli.android
 
 import io.ipoli.android.common.datetime.Time
+import io.ipoli.android.common.datetime.TimeOfDay
 import org.amshove.kluent.`should be equal to`
 import org.amshove.kluent.`should be false`
 import org.amshove.kluent.`should be true`
+import org.amshove.kluent.`should be`
 import org.jetbrains.spek.api.Spek
 import org.jetbrains.spek.api.dsl.describe
 import org.jetbrains.spek.api.dsl.it
@@ -77,6 +79,24 @@ class TimeSpek : Spek({
 
             it("should have 240 minutes to 2 a.m.") {
                 Time.atHours(22).minutesTo(Time.atHours(2)).`should be equal to`(240)
+            }
+        }
+
+        describe("toTimeOfDay") {
+            it("should be morning at 9:00") {
+                Time.atHours(9).timeOfDay.`should be`(TimeOfDay.MORNING)
+            }
+
+            it("should be afternoon at 13:00") {
+                Time.atHours(13).timeOfDay.`should be`(TimeOfDay.AFTERNOON)
+            }
+
+            it("should be evening at 18:00") {
+                Time.atHours(18).timeOfDay.`should be`(TimeOfDay.EVENING)
+            }
+
+            it("should be night at 22:00") {
+                Time.atHours(22).timeOfDay.`should be`(TimeOfDay.NIGHT)
             }
         }
 

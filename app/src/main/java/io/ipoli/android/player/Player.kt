@@ -66,13 +66,20 @@ data class Player(
         val workEndTime: Time = Constants.DEFAULT_PLAYER_WORK_END_TIME,
         val sleepStartTime: Time = Constants.DEFAULT_PLAYER_SLEEP_START_TIME,
         val sleepEndTime: Time = Constants.DEFAULT_PLAYER_SLEEP_START_TIME,
-        val timeFormat: TimeFormat = TimeFormat.DEVICE_DEFAULT
+        val timeFormat: TimeFormat = Constants.DEFAULT_TIME_FORMAT,
+        val temperatureUnit: TemperatureUnit = Constants.DEFAULT_TEMPERATURE_UNIT,
+        val planDays: Set<DayOfWeek> = Constants.DEFAULT_PLAN_DAYS,
+        val planDayTime: Time = Time.of(Constants.DEFAULT_PLAN_DAY_REMINDER_START_MINUTE)
     ) {
         val nonWorkDays: Set<DayOfWeek>
             get() = DayOfWeek.values().toSet() - workDays
 
         enum class TimeFormat {
             TWELVE_HOURS, TWENTY_FOUR_HOURS, DEVICE_DEFAULT
+        }
+
+        enum class TemperatureUnit {
+            CELSIUS, FAHRENHEIT
         }
 
         data class SyncCalendar(val id: String, val name: String)

@@ -81,6 +81,9 @@ data class DbPreferences(val map: MutableMap<String, Any?> = mutableMapOf()) {
     var sleepStartMinute: Long by map
     var sleepEndMinute: Long by map
     var timeFormat: String by map
+    var temperatureUnit: String by map
+    var planDays: List<String> by map
+    var planDayStartMinute: Long by map
 }
 
 data class DbSyncCalendar(val map: MutableMap<String, Any?> = mutableMapOf()) {

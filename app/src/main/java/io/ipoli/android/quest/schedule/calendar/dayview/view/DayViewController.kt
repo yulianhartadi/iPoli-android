@@ -106,7 +106,7 @@ class DayViewController :
         calendarDayView.setHourAdapter(object : CalendarDayView.HourCellAdapter {
             override fun bind(view: View, hour: Int) {
                 if (hour > 0) {
-                    view.timeLabel.text = hour.toString() + ":00"
+                    view.timeLabel.text = Time.atHours(hour).toString(shouldUse24HourFormat)
                 }
             }
         })
@@ -219,7 +219,8 @@ class DayViewController :
             EVENT_REMOVED -> {
                 PetMessagePopup(
                     stringRes(R.string.remove_quest_undo_message),
-                    { dispatch(DayViewAction.UndoRemoveQuest(state.removedEventId)) }
+                    { dispatch(DayViewAction.UndoRemoveQuest(state.removedEventId)) },
+                    stringRes(R.string.undo)
                 ).show(view.context)
             }
 
@@ -277,11 +278,11 @@ class DayViewController :
                 }
                 if (state.startTime != null) {
                     dragView.dragStartTime.visibility = View.VISIBLE
-                    dragView.dragStartTime.text = state.startTime.toString()
+                    dragView.dragStartTime.text = state.startTime.toString(shouldUse24HourFormat)
                 }
                 if (state.endTime != null) {
                     dragView.dragEndTime.visibility = View.VISIBLE
-                    dragView.dragEndTime.text = state.endTime.toString()
+                    dragView.dragEndTime.text = state.endTime.toString(shouldUse24HourFormat)
                 }
             }
 
@@ -335,8 +336,8 @@ class DayViewController :
     }
 
     private fun startEditScheduledEvent(dragView: View, startTime: Time, endTime: Time) {
-        dragView.dragStartTime.text = startTime.toString()
-        dragView.dragEndTime.text = endTime.toString()
+        dragView.dragStartTime.text = startTime.toString(shouldUse24HourFormat)
+        dragView.dragEndTime.text = endTime.toString(shouldUse24HourFormat)
         TextViewCompat.setAutoSizeTextTypeUniformWithConfiguration(
             dragView.dragStartTime,
             8,
@@ -769,9 +770,9 @@ class DayViewController :
             val vm = getItem(position) as ScheduledEventViewModel.Quest
             events[position] = vm.copy(
                 startMinute = startTime.toMinuteOfDay(),
-                startTime = startTime.toString(),
+                startTime = startTime.toString(shouldUse24HourFormat),
                 duration = duration,
-                endTime = Time.plusMinutes(startTime, duration).toString()
+                endTime = Time.plusMinutes(startTime, duration).toString(shouldUse24HourFormat)
             )
             notifyDataSetChanged()
         }
@@ -1013,8 +1014,8 @@ class DayViewController :
                     tags = q.tags.map { it.name },
                     duration = q.duration,
                     startMinute = q.startTime!!.toMinuteOfDay(),
-                    startTime = q.startTime.toString(),
-                    endTime = q.endTime.toString(),
+                    startTime = q.startTime.toString(shouldUse24HourFormat),
+                    endTime = q.endTime?.toString(shouldUse24HourFormat) ?: "",
                     icon = q.icon?.androidIcon,
                     backgroundColor = color,
                     reminder = reminder,
@@ -1032,8 +1033,8 @@ class DayViewController :
                     name = e.name,
                     duration = e.duration.intValue,
                     startMinute = e.startTime.toMinuteOfDay(),
-                    startTime = e.startTime.toString(),
-                    endTime = e.endTime.toString(),
+                    startTime = e.startTime.toString(shouldUse24HourFormat),
+                    endTime = e.endTime.toString(shouldUse24HourFormat),
                     backgroundColor = e.color,
                     isRepeating = e.isRepeating
                 )

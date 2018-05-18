@@ -12,6 +12,7 @@ import android.view.ViewGroup
 import io.ipoli.android.Constants
 import io.ipoli.android.R
 import io.ipoli.android.common.ViewUtils
+import io.ipoli.android.common.datetime.Time
 import io.ipoli.android.common.redux.android.ReduxViewController
 import io.ipoli.android.common.view.*
 import io.ipoli.android.common.view.pager.BasePagerAdapter
@@ -175,7 +176,7 @@ class ThemeStoreViewController(args: Bundle? = null) :
             view.themeCalendar.setHourAdapter(object : CalendarDayView.HourCellAdapter {
                 override fun bind(view: View, hour: Int) {
                     if (hour > 0) {
-                        view.timeLabel.text = hour.toString() + ":00"
+                        view.timeLabel.text = Time.atHours(hour).toString(shouldUse24HourFormat)
                     }
                 }
             })

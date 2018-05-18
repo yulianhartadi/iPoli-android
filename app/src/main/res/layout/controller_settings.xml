@@ -21,7 +21,166 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
+                android:layout_marginTop="8dp"
+                android:orientation="vertical">
+
+                <TextView
+                    style="@style/SectionTitle"
+                    android:text="@string/settings_general_title" />
+
+                <LinearLayout
+                    android:id="@+id/timeFormatContainer"
+                    android:layout_width="match_parent"
+                    android:layout_height="72dp"
+                    android:background="?android:attr/selectableItemBackground"
+                    android:clickable="true"
+                    android:orientation="vertical"
+                    android:paddingEnd="16dp"
+                    android:paddingStart="16dp"
+                    android:weightSum="2">
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="0dp"
+                        android:layout_weight="1"
+                        android:gravity="bottom"
+                        android:text="@string/time_format"
+                        android:textColor="@color/md_dark_text_87"
+                        android:textSize="16sp" />
+
+                    <TextView
+                        android:id="@+id/timeFormat"
+                        android:layout_width="match_parent"
+                        android:layout_height="0dp"
+                        android:layout_weight="1"
+                        android:gravity="top"
+                        android:textColor="@color/md_dark_text_54"
+                        android:textSize="14sp" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/temperatureUnitContainer"
+                    android:layout_width="match_parent"
+                    android:layout_height="72dp"
+                    android:background="?android:attr/selectableItemBackground"
+                    android:clickable="true"
+                    android:orientation="vertical"
+                    android:paddingEnd="16dp"
+                    android:paddingStart="16dp"
+                    android:weightSum="2">
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="0dp"
+                        android:layout_weight="1"
+                        android:gravity="bottom"
+                        android:text="@string/temperature_unit"
+                        android:textColor="@color/md_dark_text_87"
+                        android:textSize="16sp" />
+
+                    <TextView
+                        android:id="@+id/temperatureUnit"
+                        android:layout_width="match_parent"
+                        android:layout_height="0dp"
+                        android:layout_weight="1"
+                        android:gravity="top"
+                        android:textColor="@color/md_dark_text_54"
+                        android:textSize="14sp" />
+                </LinearLayout>
+
+            </LinearLayout>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:layout_marginTop="8dp"
+                android:background="@color/md_dark_text_12" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:orientation="vertical">
+
+                <TextView
+                    style="@style/SectionTitle"
+                    android:text="@string/settings_plan_day" />
+
+                <LinearLayout
+                    android:id="@+id/planMyDayTimeContainer"
+                    android:layout_width="match_parent"
+                    android:layout_height="72dp"
+                    android:background="?android:attr/selectableItemBackground"
+                    android:clickable="true"
+                    android:orientation="vertical"
+                    android:paddingEnd="16dp"
+                    android:paddingStart="16dp"
+                    android:weightSum="2">
+
+                    <TextView
+                        android:id="@+id/daily_challenge_start_time_hint"
+                        android:layout_width="match_parent"
+                        android:layout_height="0dp"
+                        android:layout_weight="1"
+                        android:gravity="bottom"
+                        android:text="@string/plan_my_day_at"
+                        android:textColor="@color/md_dark_text_87"
+                        android:textSize="16sp" />
+
+                    <TextView
+                        android:id="@+id/planDayTime"
+                        android:layout_width="match_parent"
+                        android:layout_height="0dp"
+                        android:layout_weight="1"
+                        android:gravity="top"
+                        android:text="10:00"
+                        android:textColor="@color/md_dark_text_54"
+                        android:textSize="14sp" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/planDaysContainer"
+                    android:layout_width="match_parent"
+                    android:layout_height="72dp"
+                    android:background="?android:attr/selectableItemBackground"
+                    android:clickable="true"
+                    android:orientation="vertical"
+                    android:paddingEnd="16dp"
+                    android:paddingStart="16dp"
+                    android:weightSum="2">
+
+                    <TextView
+                        android:id="@+id/daily_challenge_days_hint"
+                        android:layout_width="match_parent"
+                        android:layout_height="0dp"
+                        android:layout_weight="1"
+                        android:gravity="bottom"
+                        android:text="@string/days_to_plan"
+                        android:textColor="@color/md_dark_text_87"
+                        android:textSize="16sp" />
+
+                    <TextView
+                        android:id="@+id/planDays"
+                        android:layout_width="match_parent"
+                        android:layout_height="0dp"
+                        android:layout_weight="1"
+                        android:gravity="top"
+                        android:text="Mon, Tue, Wed, Thu, Fri"
+                        android:textColor="@color/md_dark_text_54"
+                        android:textSize="14sp" />
+                </LinearLayout>
+            </LinearLayout>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:layout_marginTop="8dp"
+                android:background="@color/md_dark_text_12" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
                 android:orientation="vertical">
 
                 <TextView

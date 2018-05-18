@@ -14,7 +14,7 @@
         <item
             android:id="@+id/bucketList"
             android:checked="false"
-            android:icon="@drawable/ic_bucket_black_24dp"
+            android:icon="@drawable/ic_bucket_white_24dp"
             android:orderInCategory="0"
             android:title="@string/title_bucket_list" />
 

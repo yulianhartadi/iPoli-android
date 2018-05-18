@@ -35,6 +35,7 @@ object AuthSideEffectHandler : AppSideEffectHandler() {
     private val saveQuestsForRepeatingQuestScheduler by required { saveQuestsForRepeatingQuestScheduler }
     private val removeExpiredPowerUpsScheduler by required { removeExpiredPowerUpsScheduler }
     private val checkMembershipStatusScheduler by required { checkMembershipStatusScheduler }
+    private val planDayScheduler by required { planDayScheduler }
     private val saveRepeatingQuestUseCase by required { saveRepeatingQuestUseCase }
 
     override fun canHandle(action: Action) = action is AuthAction
@@ -215,7 +216,7 @@ object AuthSideEffectHandler : AppSideEffectHandler() {
             else -> throw IllegalStateException("Unknown Auth provider")
         }
 
-        var player = Player(
+        val player = Player(
             authProvider = auth,
             username = null,
             displayName = if (user.displayName != null) user.displayName!! else "",
@@ -300,5 +301,6 @@ object AuthSideEffectHandler : AppSideEffectHandler() {
         saveQuestsForRepeatingQuestScheduler.schedule()
         removeExpiredPowerUpsScheduler.schedule()
         checkMembershipStatusScheduler.schedule()
+        planDayScheduler.scheduleForNextTime()
     }
 }

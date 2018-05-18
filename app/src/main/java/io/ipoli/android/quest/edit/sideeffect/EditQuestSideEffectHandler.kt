@@ -5,6 +5,7 @@ import io.ipoli.android.common.AppSideEffectHandler
 import io.ipoli.android.common.AppState
 import io.ipoli.android.common.Validator
 import io.ipoli.android.common.redux.Action
+import io.ipoli.android.planday.PlanDayAction
 import io.ipoli.android.quest.Color
 import io.ipoli.android.quest.Reminder
 import io.ipoli.android.quest.bucketlist.BucketListAction
@@ -29,7 +30,10 @@ object EditQuestSideEffectHandler : AppSideEffectHandler() {
     private val questRepository by required { questRepository }
     private val saveQuestUseCase by required { saveQuestUseCase }
     private val completeQuestUseCase by required { completeQuestUseCase }
+    private val undoCompletedQuestUseCase by required { undoCompletedQuestUseCase }
     private val rescheduleQuestUseCase by required { rescheduleQuestUseCase }
+    private val removeQuestUseCase by required { removeQuestUseCase }
+    private val undoRemoveQuestUseCase by required { undoRemoveQuestUseCase }
 
     override suspend fun doExecute(action: Action, state: AppState) {
         when (action) {
@@ -110,11 +114,48 @@ object EditQuestSideEffectHandler : AppSideEffectHandler() {
                 )
 
                 saveQuestUseCase.execute(questParams)
-
             }
 
-            is TagAction.CompleteQuest ->
+            is PlanDayAction.ScheduleQuestForToday ->
+                rescheduleQuestUseCase.execute(
+                    RescheduleQuestUseCase.Params(
+                        action.questId,
+                        LocalDate.now()
+                    )
+                )
+
+            is PlanDayAction.RescheduleQuest ->
+                rescheduleQuestUseCase.execute(
+                    RescheduleQuestUseCase.Params(
+                        action.questId,
+                        action.date
+                    )
+                )
+
+            is PlanDayAction.AcceptSuggestion ->
+                rescheduleQuestUseCase.execute(
+                    RescheduleQuestUseCase.Params(
+                        action.questId,
+                        LocalDate.now()
+                    )
+                )
+
+            is PlanDayAction.MoveQuestToBucketList ->
+                rescheduleQuestUseCase.execute(
+                    RescheduleQuestUseCase.Params(action.questId, null)
+                )
+
+            is PlanDayAction.RemoveQuest ->
+                removeQuestUseCase.execute(action.questId)
+
+            is PlanDayAction.UndoRemoveQuest ->
+                undoRemoveQuestUseCase.execute(action.questId)
+
+            is PlanDayAction.CompleteQuest ->
                 completeQuest(action.questId)
+
+            is PlanDayAction.UndoCompleteQuest ->
+                undoCompletedQuestUseCase.execute(action.questId)
 
             is BucketListAction.CompleteQuest ->
                 completeQuest(action.questId)
@@ -126,6 +167,9 @@ object EditQuestSideEffectHandler : AppSideEffectHandler() {
                         LocalDate.now()
                     )
                 )
+
+            is TagAction.CompleteQuest ->
+                completeQuest(action.questId)
         }
     }
 
@@ -143,5 +187,6 @@ object EditQuestSideEffectHandler : AppSideEffectHandler() {
                 || action is TagAction.CompleteQuest
                 || action is BucketListAction.CompleteQuest
                 || action is BucketListAction.ScheduleForToday
+                || action is PlanDayAction
 
 }

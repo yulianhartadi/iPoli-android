@@ -1,9 +1,11 @@
 package io.ipoli.android.settings
 
 import android.Manifest
+import android.app.TimePickerDialog
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
+import android.text.format.DateFormat
 import android.view.LayoutInflater
 import android.view.MenuItem
 import android.view.View
@@ -14,13 +16,20 @@ import io.ipoli.android.BuildConfig
 import io.ipoli.android.Constants
 import io.ipoli.android.R
 import io.ipoli.android.common.EmailUtils
+import io.ipoli.android.common.datetime.Time
 import io.ipoli.android.common.redux.android.ReduxViewController
 import io.ipoli.android.common.view.*
 import io.ipoli.android.event.calendar.picker.CalendarPickerDialogController
+import io.ipoli.android.player.Player
 import io.ipoli.android.settings.SettingsViewState.StateType.DATA_CHANGED
 import io.ipoli.android.settings.SettingsViewState.StateType.ENABLE_SYNC_CALENDARS
+import io.ipoli.android.settings.view.DaysPickerDialogController
+import io.ipoli.android.settings.view.TemperatureUnitPickerDialogController
+import io.ipoli.android.settings.view.TimeFormatPickerDialogController
 import kotlinx.android.synthetic.main.controller_settings.view.*
 import kotlinx.android.synthetic.main.view_default_toolbar.view.*
+import org.threeten.bp.format.TextStyle
+import java.util.*
 
 /**
  * Created by Polina Zhelyazkova <polina@mypoli.fun>
@@ -64,6 +73,9 @@ class SettingsViewController(args: Bundle? = null) :
         when (state.type) {
             DATA_CHANGED -> {
                 renderAboutSection(state, view)
+                renderTimeFormat(state, view)
+                renderTemperatureUnit(state, view)
+                renderPlanMyDay(state, view)
                 renderSyncCalendarsSection(state, view)
             }
 
@@ -71,6 +83,58 @@ class SettingsViewController(args: Bundle? = null) :
                 renderSyncCalendarsSection(state, view)
                 showSyncCalendars()
             }
+        }
+    }
+
+    private fun renderTemperatureUnit(state: SettingsViewState, view: View) {
+        view.temperatureUnit.text = state.temperatureUnitText
+        view.temperatureUnitContainer.onDebounceClick {
+            TemperatureUnitPickerDialogController(state.temperatureUnit, { unit ->
+                dispatch(SettingsAction.TemperatureUnitChanged(unit))
+            }).show(router)
+        }
+
+    }
+
+    private fun renderTimeFormat(state: SettingsViewState, view: View) {
+        view.timeFormat.text = state.timeFormatText
+        view.timeFormatContainer.onDebounceClick {
+            TimeFormatPickerDialogController(state.timeFormat, { format ->
+                dispatch(SettingsAction.TimeFormatChanged(format))
+            }).show(router)
+        }
+    }
+
+    private fun renderPlanMyDay(state: SettingsViewState, view: View) {
+        val use24HourFormat = if (state.timeFormat == Player.Preferences.TimeFormat.DEVICE_DEFAULT) {
+            DateFormat.is24HourFormat(activity)
+        } else state.timeFormat != Player.Preferences.TimeFormat.TWELVE_HOURS
+
+
+        view.planDayTime.text = state.planTime.toString(use24HourFormat)
+        view.planMyDayTimeContainer.onDebounceClick {
+            TimePickerDialog(
+                view.context,
+                R.style.Theme_myPoli_AlertDialog,
+                TimePickerDialog.OnTimeSetListener { _, hour, minute ->
+                    dispatch(SettingsAction.PlanDayTimeChanged(Time.at(hour, minute)))
+                }, state.planTime.hours, state.planTime.getMinutes(), false
+            ).show()
+        }
+
+        val daysText = state.planDays.joinToString(", ") {
+            it.getDisplayName(
+                TextStyle.FULL,
+                Locale.getDefault()
+            ).substring(0, 3)
+        }
+        view.planDays.text =
+            if (daysText.isNotEmpty()) daysText else stringRes(R.string.no_challenge_days)
+
+        view.planDaysContainer.onDebounceClick {
+            DaysPickerDialogController(state.planDays, { days ->
+                dispatch(SettingsAction.PlanDaysChanged(days))
+            }).show(router)
         }
     }
 
@@ -145,6 +209,26 @@ class SettingsViewController(args: Bundle? = null) :
             stringRes(R.string.no_calendars_selected_to_sync)
         } else {
             stringRes(R.string.sync_calendars_count, selectedCalendars)
+        }
+
+    private val SettingsViewState.timeFormatText: String
+        get() = if (timeFormat == Player.Preferences.TimeFormat.TWELVE_HOURS) {
+            stringRes(R.string.twelve_hour_format, Time.now().toString(false))
+        } else if (timeFormat == Player.Preferences.TimeFormat.TWENTY_FOUR_HOURS) {
+            stringRes(R.string.twenty_four_hour_format, Time.now().toString(true))
+        } else {
+            stringRes(
+                R.string.device_default_time_format, Time.now().toString(
+                    DateFormat.is24HourFormat(view!!.context)
+                )
+            )
+        }
+
+    private val SettingsViewState.temperatureUnitText: String
+        get() = if (temperatureUnit == Player.Preferences.TemperatureUnit.FAHRENHEIT) {
+            stringRes(R.string.temperature_unit_fahrenheit)
+        } else {
+            stringRes(R.string.temperature_unit_celsius)
         }
 
     companion object {

@@ -14,10 +14,11 @@ import io.ipoli.android.challenge.usecase.*
 import io.ipoli.android.common.*
 import io.ipoli.android.common.analytics.EventLogger
 import io.ipoli.android.common.analytics.FirebaseEventLogger
+import io.ipoli.android.common.image.AndroidImageLoader
+import io.ipoli.android.common.image.ImageLoader
 import io.ipoli.android.common.middleware.LogEventsMiddleWare
 import io.ipoli.android.common.permission.AndroidPermissionChecker
 import io.ipoli.android.common.permission.PermissionChecker
-import io.ipoli.android.common.persistence.TagProvider
 import io.ipoli.android.common.rate.AndroidRatePopupScheduler
 import io.ipoli.android.common.rate.RatePopupScheduler
 import io.ipoli.android.common.rate.RatePresenter
@@ -39,6 +40,17 @@ import io.ipoli.android.pet.LowerPetStatsScheduler
 import io.ipoli.android.pet.PetDialogPresenter
 import io.ipoli.android.pet.sideeffect.PetSideEffectHandler
 import io.ipoli.android.pet.usecase.*
+import io.ipoli.android.planday.data.AndroidWeatherRepository
+import io.ipoli.android.planday.data.WeatherRepository
+import io.ipoli.android.planday.job.AndroidPlanDayScheduler
+import io.ipoli.android.planday.job.PlanDayScheduler
+import io.ipoli.android.planday.persistence.FirestoreMotivationalImageRepository
+import io.ipoli.android.planday.persistence.FirestoreQuoteRepository
+import io.ipoli.android.planday.persistence.MotivationalImageRepository
+import io.ipoli.android.planday.persistence.QuoteRepository
+import io.ipoli.android.planday.sideeffect.PlanDaySideEffectHandler
+import io.ipoli.android.planday.usecase.CalculateAwesomenessScoreUseCase
+import io.ipoli.android.planday.usecase.FindNextPlanDayTimeUseCase
 import io.ipoli.android.player.AndroidLevelDownScheduler
 import io.ipoli.android.player.AndroidLevelUpScheduler
 import io.ipoli.android.player.LevelDownScheduler
@@ -75,6 +87,11 @@ import io.ipoli.android.repeatingquest.persistence.FirestoreRepeatingQuestReposi
 import io.ipoli.android.repeatingquest.persistence.RepeatingQuestRepository
 import io.ipoli.android.repeatingquest.sideeffect.RepeatingQuestSideEffectHandler
 import io.ipoli.android.repeatingquest.usecase.*
+import io.ipoli.android.settings.sideeffect.SettingsSideEffectHandler
+import io.ipoli.android.settings.usecase.SavePlanDayTimeUseCase
+import io.ipoli.android.settings.usecase.SavePlanDaysUseCase
+import io.ipoli.android.settings.usecase.SaveTemperatureUnitUseCase
+import io.ipoli.android.settings.usecase.SaveTimeFormatUseCase
 import io.ipoli.android.store.avatar.sideeffect.AvatarSideEffectHandler
 import io.ipoli.android.store.avatar.usecase.BuyAvatarUseCase
 import io.ipoli.android.store.avatar.usecase.ChangeAvatarUseCase
@@ -112,7 +129,6 @@ import space.traversal.kapsule.required
  * on 9/10/17.
  */
 interface RepositoryModule {
-    val tagProvider: TagProvider
     val questRepository: QuestRepository
     val playerRepository: PlayerRepository
     val repeatingQuestRepository: RepeatingQuestRepository
@@ -120,11 +136,12 @@ interface RepositoryModule {
     val eventRepository: EventRepository
     val calendarRepository: CalendarRepository
     val tagRepository: TagRepository
+    val weatherRepository: WeatherRepository
+    val motivationalImageRepository: MotivationalImageRepository
+    val quoteRepository: QuoteRepository
 }
 
-class FirestoreRepositoryModule : RepositoryModule, Injects<Module> {
-
-    override val tagProvider = TagProvider()
+class AndroidRepositoryModule(private val appContext: Context) : RepositoryModule, Injects<Module> {
 
     override val questRepository by required {
         FirestoreQuestRepository(
@@ -136,23 +153,23 @@ class FirestoreRepositoryModule : RepositoryModule, Injects<Module> {
     }
 
     override val playerRepository
-            by required {
-                FirestorePlayerRepository(
-                    database,
-                    job + CommonPool,
-                    sharedPreferences
-                )
-            }
+        by required {
+            FirestorePlayerRepository(
+                database,
+                job + CommonPool,
+                sharedPreferences
+            )
+        }
 
     override val repeatingQuestRepository
-            by required {
-                FirestoreRepeatingQuestRepository(
-                    database,
-                    job + CommonPool,
-                    sharedPreferences,
-                    FirestoreTagRepository(database, job + CommonPool, sharedPreferences)
-                )
-            }
+        by required {
+            FirestoreRepeatingQuestRepository(
+                database,
+                job + CommonPool,
+                sharedPreferences,
+                FirestoreTagRepository(database, job + CommonPool, sharedPreferences)
+            )
+        }
 
     override val challengeRepository by required {
         FirestoreChallengeRepository(
@@ -172,14 +189,25 @@ class FirestoreRepositoryModule : RepositoryModule, Injects<Module> {
     }
 
     override val tagRepository
-            by required {
-                FirestoreTagRepository(
-                    database,
-                    job + CommonPool,
-                    sharedPreferences
-                )
-            }
+        by required {
+            FirestoreTagRepository(
+                database,
+                job + CommonPool,
+                sharedPreferences
+            )
+        }
 
+    override val weatherRepository by required { AndroidWeatherRepository(appContext) }
+
+    override val motivationalImageRepository by required {
+        FirestoreMotivationalImageRepository(
+            database
+        )
+    }
+
+    override val quoteRepository by required {
+        FirestoreQuoteRepository(database)
+    }
 }
 
 class Firestore {
@@ -229,9 +257,13 @@ interface AndroidModule {
 
     val ratePopupScheduler: RatePopupScheduler
 
+    val planDayScheduler: PlanDayScheduler
+
     val permissionChecker: PermissionChecker
 
     val job: Job
+
+    val imageLoader: ImageLoader
 }
 
 class MainAndroidModule(
@@ -273,13 +305,17 @@ class MainAndroidModule(
 
     override val database get() = Firestore.instance
 
-
     override val eventLogger = FirebaseEventLogger(firebaseAnalytics)
+
+    override val planDayScheduler
+        get() = AndroidPlanDayScheduler()
 
     override val permissionChecker
         get() = AndroidPermissionChecker()
 
     override val job get() = Job()
+
+    override val imageLoader = AndroidImageLoader()
 }
 
 class MainUseCaseModule : UseCaseModule, Injects<Module> {
@@ -296,6 +332,7 @@ class MainUseCaseModule : UseCaseModule, Injects<Module> {
     private val levelDownScheduler by required { levelDownScheduler }
     private val rateDialogScheduler by required { ratePopupScheduler }
     private val timerCompleteScheduler by required { timerCompleteScheduler }
+    private val planDayScheduler by required { planDayScheduler }
 
     override val loadScheduleForDateUseCase
         get() = LoadScheduleForDateUseCase()
@@ -310,7 +347,11 @@ class MainUseCaseModule : UseCaseModule, Injects<Module> {
             timerCompleteScheduler,
             reminderScheduler
         )
-    override val undoRemoveQuestUseCase get() = UndoRemovedQuestUseCase(questRepository, reminderScheduler)
+    override val undoRemoveQuestUseCase
+        get() = UndoRemovedQuestUseCase(
+            questRepository,
+            reminderScheduler
+        )
     override val findQuestsToRemindUseCase get() = FindQuestsToRemindUseCase(questRepository)
     override val snoozeQuestUseCase get() = SnoozeQuestUseCase(questRepository, reminderScheduler)
     override val completeQuestUseCase
@@ -565,6 +606,24 @@ class MainUseCaseModule : UseCaseModule, Injects<Module> {
 
     override val rescheduleQuestUseCase
         get() = RescheduleQuestUseCase(questRepository, reminderScheduler)
+
+    override val calculateAwesomenessScoreUseCase
+        get() = CalculateAwesomenessScoreUseCase()
+
+    override val savePlanDayTimeUseCase
+        get() = SavePlanDayTimeUseCase(playerRepository, planDayScheduler)
+
+    override val savePlanDaysUseCase
+        get() = SavePlanDaysUseCase(playerRepository, planDayScheduler)
+
+    override val saveTimeFormatUseCase
+        get() = SaveTimeFormatUseCase(playerRepository)
+
+    override val saveTemperatureUnitUseCase
+        get() = SaveTemperatureUnitUseCase(playerRepository)
+
+    override val findNextPlanDayTimeUseCase
+        get() = FindNextPlanDayTimeUseCase(playerRepository)
 }
 
 interface UseCaseModule {
@@ -648,6 +707,12 @@ interface UseCaseModule {
     val removeTagUseCase: RemoveTagUseCase
     val createBucketListItemsUseCase: CreateBucketListItemsUseCase
     val rescheduleQuestUseCase: RescheduleQuestUseCase
+    val calculateAwesomenessScoreUseCase: CalculateAwesomenessScoreUseCase
+    val savePlanDayTimeUseCase: SavePlanDayTimeUseCase
+    val savePlanDaysUseCase: SavePlanDaysUseCase
+    val saveTimeFormatUseCase: SaveTimeFormatUseCase
+    val saveTemperatureUnitUseCase: SaveTemperatureUnitUseCase
+    val findNextPlanDayTimeUseCase: FindNextPlanDayTimeUseCase
 }
 
 interface PresenterModule {
@@ -714,7 +779,9 @@ class AndroidStateStoreModule : StateStoreModule, Injects<Module> {
                 GemPackSideEffectHandler,
                 StoreSideEffectHandler,
                 PetSideEffectHandler,
-                OnboardingSideEffectHandler
+                OnboardingSideEffectHandler,
+                PlanDaySideEffectHandler,
+                SettingsSideEffectHandler
             ),
             sideEffectHandlerExecutor = CoroutineSideEffectHandlerExecutor(job + CommonPool),
             middleware = setOf(

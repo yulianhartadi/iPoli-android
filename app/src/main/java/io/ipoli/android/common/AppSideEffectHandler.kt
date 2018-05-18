@@ -112,7 +112,6 @@ object BuyPetSideEffectHandler : AppSideEffectHandler() {
 
 object LoadAllDataSideEffectHandler : AppSideEffectHandler() {
 
-    private val tagProvider by required { tagProvider }
     private val playerRepository by required { playerRepository }
     private val questRepository by required { questRepository }
     private val challengeRepository by required { challengeRepository }
@@ -158,7 +157,6 @@ object LoadAllDataSideEffectHandler : AppSideEffectHandler() {
                 .map {
                     addQuestCountToTagUseCase.execute(AddQuestCountToTagUseCase.Params(it))
                 }
-            tagProvider.updateTags(tags)
             dispatch(DataLoadedAction.TagsChanged(tags))
         }
     )

@@ -9,6 +9,8 @@ import android.support.v4.content.ContextCompat
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
 import android.support.v7.widget.helper.ItemTouchHelper
+import android.text.SpannableString
+import android.text.style.StrikethroughSpan
 import android.view.*
 import android.widget.TextView
 import com.bluelinelabs.conductor.RouterTransaction
@@ -21,12 +23,12 @@ import com.mikepenz.material_design_iconic_typeface_library.MaterialDesignIconic
 import io.ipoli.android.MainActivity
 import io.ipoli.android.R
 import io.ipoli.android.common.redux.android.ReduxViewController
+import io.ipoli.android.common.text.QuestStartTimeFormatter
 import io.ipoli.android.common.view.*
-import io.ipoli.android.common.view.recyclerview.RecyclerViewViewModel
 import io.ipoli.android.common.view.recyclerview.MultiViewRecyclerViewAdapter
-import io.ipoli.android.common.view.recyclerview.SwipeToCompleteCallback
+import io.ipoli.android.common.view.recyclerview.RecyclerViewViewModel
+import io.ipoli.android.common.view.recyclerview.SimpleSwipeCallback
 import io.ipoli.android.quest.CompletedQuestViewController
-import io.ipoli.android.quest.Quest
 import io.ipoli.android.quest.show.QuestViewController
 import io.ipoli.android.tag.edit.EditTagViewController
 import io.ipoli.android.tag.show.TagViewState.TagChanged
@@ -68,7 +70,7 @@ class TagViewController(args: Bundle? = null) :
         view.tagQuests.layoutManager = LinearLayoutManager(activity!!)
         view.tagQuests.adapter = ItemAdapter()
 
-        val swipeHandler = object : SwipeToCompleteCallback(
+        val swipeHandler = object : SimpleSwipeCallback(
             view.context,
             R.drawable.ic_done_white_24dp,
             R.color.md_green_500,
@@ -316,21 +318,15 @@ class TagViewController(args: Bundle? = null) :
                     view.questTagName.gone()
 
                     view.questIcon.backgroundTintList =
-                        ColorStateList.valueOf(colorRes(vm.color))
-                    view.questIcon.setImageDrawable(
-                        IconicsDrawable(view.context)
-                            .icon(vm.icon)
-                            .colorRes(R.color.md_white)
-                            .paddingDp(3)
-                            .sizeDp(24)
-                    )
+                            ColorStateList.valueOf(colorRes(vm.color))
+                    view.questIcon.setImageDrawable(listItemIcon(vm.icon))
 
                     view.questStartTime.text = vm.startTime
 
                     view.questRepeatIndicator.visibility =
-                        if (vm.isRepeating) View.VISIBLE else View.GONE
+                            if (vm.isRepeating) View.VISIBLE else View.GONE
                     view.questChallengeIndicator.visibility =
-                        if (vm.isFromChallenge) View.VISIBLE else View.GONE
+                            if (vm.isFromChallenge) View.VISIBLE else View.GONE
 
                     view.setOnClickListener {
                         rootRouter.pushController(
@@ -344,24 +340,23 @@ class TagViewController(args: Bundle? = null) :
                 ViewType.COMPLETED_QUEST.value,
                 R.layout.item_agenda_quest,
                 { vm, view ->
-                    view.questName.text = vm.name
+                    val span = SpannableString(vm.name)
+                    span.setSpan(StrikethroughSpan(), 0, vm.name.length, 0)
+
+                    view.questName.text = span
+
+                    view.questTagName.gone()
 
                     view.questIcon.backgroundTintList =
-                        ColorStateList.valueOf(colorRes(vm.color))
-                    view.questIcon.setImageDrawable(
-                        IconicsDrawable(view.context)
-                            .icon(vm.icon)
-                            .colorRes(R.color.md_white)
-                            .paddingDp(3)
-                            .sizeDp(24)
-                    )
+                            ColorStateList.valueOf(colorRes(vm.color))
+                    view.questIcon.setImageDrawable(listItemIcon(vm.icon))
 
                     view.questStartTime.text = vm.startTime
 
                     view.questRepeatIndicator.visibility =
-                        if (vm.isRepeating) View.VISIBLE else View.GONE
+                            if (vm.isRepeating) View.VISIBLE else View.GONE
                     view.questChallengeIndicator.visibility =
-                        if (vm.isFromChallenge) View.VISIBLE else View.GONE
+                            if (vm.isFromChallenge) View.VISIBLE else View.GONE
 
                     view.setOnClickListener {
                         val handler = FadeChangeHandler()
@@ -406,10 +401,10 @@ class TagViewController(args: Bundle? = null) :
                         ItemViewModel.CompletedQuestItem(
                             id = q.id,
                             name = q.name,
-                            startTime = formatStartTime(q),
+                            startTime = QuestStartTimeFormatter.formatWithDuration(q, activity!!, shouldUse24HourFormat),
                             color = color,
                             icon = q.icon?.androidIcon?.icon
-                                ?: Ionicons.Icon.ion_android_clipboard,
+                                    ?: Ionicons.Icon.ion_android_clipboard,
                             isRepeating = q.isFromRepeatingQuest,
                             isFromChallenge = q.isFromChallenge
                         )
@@ -418,10 +413,10 @@ class TagViewController(args: Bundle? = null) :
                         ItemViewModel.QuestItem(
                             id = q.id,
                             name = q.name,
-                            startTime = formatStartTime(q),
+                            startTime = QuestStartTimeFormatter.formatWithDuration(q, activity!!, shouldUse24HourFormat),
                             color = color,
                             icon = q.icon?.androidIcon?.icon
-                                ?: Ionicons.Icon.ion_android_clipboard,
+                                    ?: Ionicons.Icon.ion_android_clipboard,
                             isRepeating = q.isFromRepeatingQuest,
                             isFromChallenge = q.isFromChallenge
                         )
@@ -448,12 +443,6 @@ class TagViewController(args: Bundle? = null) :
             }
 
         }
-
-    private fun formatStartTime(quest: Quest): String {
-        val start = quest.startTime ?: return "Unscheduled"
-        val end = start.plus(quest.actualDuration.asMinutes.intValue)
-        return "$start - $end"
-    }
 
     companion object {
         fun routerTransaction(tagId: String) =

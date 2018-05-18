@@ -161,7 +161,6 @@ class ScheduleViewController(args: Bundle? = null) :
 
 
     override fun render(state: ScheduleViewState, view: View) {
-
         view.currentMonth.text = state.monthText
 
         view.addQuest.setOnClickListener {
@@ -171,7 +170,6 @@ class ScheduleViewController(args: Bundle? = null) :
         when (state.type) {
 
             INITIAL -> {
-
                 renderCalendarToolbar(state)
             }
 

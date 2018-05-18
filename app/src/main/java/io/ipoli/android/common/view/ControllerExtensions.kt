@@ -11,7 +11,6 @@ import com.bluelinelabs.conductor.Controller
 import com.bluelinelabs.conductor.RouterTransaction
 import io.ipoli.android.MainActivity
 import io.ipoli.android.R
-import timber.log.Timber
 
 /**
  * Created by Venelin Valkov <venelin@mypoli.fun>
@@ -102,11 +101,20 @@ fun Controller.showLongToast(@StringRes text: Int) {
 }
 
 fun Controller.enterFullScreen() {
-    (activity as MainActivity).enterFullScreen()
+    activity?.let {
+        it.window.decorView.systemUiVisibility = (
+            View.SYSTEM_UI_FLAG_LAYOUT_STABLE
+                or View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
+                or View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
+                or View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
+                or View.SYSTEM_UI_FLAG_FULLSCREEN
+                or View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY
+            )
+    }
 }
 
 fun Controller.exitFullScreen() {
-    (activity as MainActivity).exitFullScreen()
+    activity?.let { it.window.decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_VISIBLE }
 }
 
 fun Controller.setChildController(view: ViewGroup, controller: Controller) {

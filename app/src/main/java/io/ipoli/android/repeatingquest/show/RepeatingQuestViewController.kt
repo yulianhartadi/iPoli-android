@@ -279,7 +279,7 @@ class RepeatingQuestViewController(args: Bundle? = null) :
         }
 
     private val RepeatingQuestViewState.Changed.timeSpentText
-        get() = Time.of(totalDuration.intValue).toString()
+        get() = Time.of(totalDuration.intValue).toString(shouldUse24HourFormat)
 
     private val RepeatingQuestViewState.Changed.nextScheduledDateText
         get() = when {
@@ -293,7 +293,7 @@ class RepeatingQuestViewController(args: Bundle? = null) :
                     " $startTime - $endTime"
                 } else {
                     " " + stringRes(
-                        R.string.quest_for_time,
+                        R.string.for_time,
                         DurationFormatter.formatShort(view!!.context, duration)
                     )
                 }
