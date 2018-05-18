@@ -7,10 +7,10 @@ import android.widget.TextView
 class TypewriterTextAnimator private constructor(
     private val textView: TextView,
     private val text: String,
-    private val typeSpeed: Int = DEFAULT_TYPE_SPEED
+    private val typeSpeed: Int = DEFAULT_TYPE_SPEED,
+    private val appendMode: Boolean
 ) : Animator() {
 
-    private var appendMode = true
     private var isRunning = false
     private var textIndex = 0
     private var startDelay = 0L
@@ -26,7 +26,7 @@ class TypewriterTextAnimator private constructor(
             text: String,
             typeSpeed: Int = DEFAULT_TYPE_SPEED,
             appendMode: Boolean = true
-        ) = TypewriterTextAnimator(textView, text, typeSpeed)
+        ) = TypewriterTextAnimator(textView, text, typeSpeed, appendMode)
     }
 
     override fun isRunning() = isRunning
@@ -53,13 +53,9 @@ class TypewriterTextAnimator private constructor(
         listeners?.toMutableList()?.forEach {
             it.onAnimationCancel(this)
         }
-        listeners?.toMutableList()?.forEach {
-            it.onAnimationEnd(this)
-        }
     }
 
     override fun end() {
-//        textView.text = text
         endAnimation()
     }
 

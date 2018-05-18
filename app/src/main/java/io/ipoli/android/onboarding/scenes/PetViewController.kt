@@ -40,6 +40,8 @@ class PetViewController(args: Bundle? = null) :
 
     override val stateKey = OnboardReducer.stateKey
 
+    private val animations = mutableListOf<Animator>()
+
     private val petNameWatcher: TextWatcher = object : TextWatcher {
 
         override fun afterTextChanged(s: Editable) {
@@ -106,10 +108,14 @@ class PetViewController(args: Bundle? = null) :
             }
         })
         anim.start()
-
+        animations.add(anim)
     }
 
     override fun onDetach(view: View) {
+        for(a in animations) {
+            a.cancel()
+        }
+        animations.clear()
         activity!!.window.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE)
         view.petName.removeTextChangedListener(petNameWatcher)
         super.onDetach(view)

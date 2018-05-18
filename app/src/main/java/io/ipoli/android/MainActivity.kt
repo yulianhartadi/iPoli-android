@@ -99,10 +99,6 @@ class MainActivity : AppCompatActivity(), Injects<Module>, SideEffectHandler<App
         inject(myPoliApp.module(this))
         incrementAppRun()
 
-        if (isInstallFromUpdate()) {
-            planDayScheduler.scheduleForNextTime()
-        }
-
         router =
                 Conductor.attachRouter(
                     this,
@@ -123,6 +119,9 @@ class MainActivity : AppCompatActivity(), Injects<Module>, SideEffectHandler<App
                     if (p.isLoggedIn() && p.username.isNullOrEmpty()) {
                         router.setRoot(RouterTransaction.with(AuthViewController()))
                     } else {
+                        if (isInstallFromUpdate()) {
+                            planDayScheduler.scheduleForNextTime()
+                        }
                         stateStore.dispatch(LoadDataAction.All)
                         startApp(p)
                     }
@@ -227,7 +226,7 @@ class MainActivity : AppCompatActivity(), Injects<Module>, SideEffectHandler<App
         }).show()
     }
 
-    fun isInstallFromUpdate() =
+    private fun isInstallFromUpdate() =
         try {
             val firstInstallTime =
                 packageManager.getPackageInfo(packageName, 0).firstInstallTime

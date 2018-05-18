@@ -20,7 +20,6 @@ import io.ipoli.android.R
 import io.ipoli.android.common.redux.android.BaseViewController
 import io.ipoli.android.common.view.anim.TypewriterTextAnimator
 import io.ipoli.android.common.view.inflate
-import io.ipoli.android.common.view.longAnimTime
 import io.ipoli.android.common.view.stringRes
 import io.ipoli.android.onboarding.OnboardAction
 import io.ipoli.android.onboarding.OnboardReducer
@@ -34,6 +33,8 @@ class StoryViewController(args: Bundle? = null) :
     ) {
 
     override val stateKey = OnboardReducer.stateKey
+
+    private val animations = mutableListOf<Animator>()
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -52,7 +53,6 @@ class StoryViewController(args: Bundle? = null) :
 
     override fun onAttach(view: View) {
         super.onAttach(view)
-
         view.storyText.movementMethod = ScrollingMovementMethod()
         view.storyText.isVerticalScrollBarEnabled = false
         val anim = TypewriterTextAnimator.of(
@@ -66,11 +66,20 @@ class StoryViewController(args: Bundle? = null) :
             }
         })
         anim.start()
+        animations.add(anim)
+    }
+
+    override fun onDetach(view: View) {
+        for(a in animations) {
+            a.cancel()
+        }
+        animations.clear()
+        super.onDetach(view)
     }
 
     private fun showEvilSnail(view: View) {
         val constraintSet = ConstraintSet()
-        constraintSet.clone(activity!!, R.layout.controller_onboard_story)
+        constraintSet.clone(view.context, R.layout.controller_onboard_story)
 
         val transition = AutoTransition()
         transition.interpolator = AnticipateOvershootInterpolator(1.0f)
@@ -99,6 +108,7 @@ class StoryViewController(args: Bundle? = null) :
             }
         })
         anim.start()
+        animations.add(anim)
     }
 
     private fun showStars(view: View) {
@@ -126,6 +136,7 @@ class StoryViewController(args: Bundle? = null) :
             }
         })
         anim.start()
+        animations.add(anim)
     }
 
     override fun render(state: OnboardViewState, view: View) {

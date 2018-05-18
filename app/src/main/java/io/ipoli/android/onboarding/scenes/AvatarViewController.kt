@@ -31,6 +31,8 @@ class AvatarViewController(args: Bundle? = null) :
 
     override val stateKey = OnboardReducer.stateKey
 
+    private val animations = mutableListOf<Animator>()
+
     private val usernameWatcher: TextWatcher = object : TextWatcher {
 
         override fun afterTextChanged(s: Editable) {
@@ -97,10 +99,14 @@ class AvatarViewController(args: Bundle? = null) :
             }
         })
         anim.start()
-
+        animations.add(anim)
     }
 
     override fun onDetach(view: View) {
+        for(a in animations) {
+            a.cancel()
+        }
+        animations.clear()
         view.avatarUsername.removeTextChangedListener(usernameWatcher)
         super.onDetach(view)
     }
