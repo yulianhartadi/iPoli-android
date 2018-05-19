@@ -122,11 +122,9 @@ class MainActivity : AppCompatActivity(), Injects<Module>, SideEffectHandler<App
                     val playerId = FirebaseAuth.getInstance().currentUser!!.uid
                     val updateData = mutableMapOf(
                         "schemaVersion" to Constants.SCHEMA_VERSION,
-                        "preferences" to mutableMapOf(
-                            "planDayStartMinute" to Constants.DEFAULT_PLAN_DAY_REMINDER_START_MINUTE,
-                            "planDays" to Constants.DEFAULT_PLAN_DAYS.map { it.name },
-                            "temperatureUnit" to Player.Preferences.TemperatureUnit.FAHRENHEIT.name
-                        )
+                        "preferences.planDayStartMinute" to Constants.DEFAULT_PLAN_DAY_REMINDER_START_MINUTE,
+                        "preferences.planDays" to Constants.DEFAULT_PLAN_DAYS.map { it.name },
+                        "preferences.temperatureUnit" to Player.Preferences.TemperatureUnit.FAHRENHEIT.name
                     )
                     Tasks.await(
                         database
