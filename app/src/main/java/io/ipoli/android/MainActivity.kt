@@ -16,6 +16,8 @@ import com.bluelinelabs.conductor.Conductor
 import com.bluelinelabs.conductor.Router
 import com.bluelinelabs.conductor.RouterTransaction
 import com.bluelinelabs.conductor.changehandler.FadeChangeHandler
+import com.google.android.gms.tasks.Tasks
+import com.google.firebase.auth.FirebaseAuth
 import io.ipoli.android.common.AppState
 import io.ipoli.android.common.DataLoadedAction
 import io.ipoli.android.common.LoadDataAction
@@ -67,6 +69,8 @@ class MainActivity : AppCompatActivity(), Injects<Module>, SideEffectHandler<App
 
     private val planDayScheduler by required { planDayScheduler }
 
+    private val database by required { database }
+
     val rootRouter get() = router
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -100,11 +104,11 @@ class MainActivity : AppCompatActivity(), Injects<Module>, SideEffectHandler<App
         incrementAppRun()
 
         router =
-                Conductor.attachRouter(
-                    this,
-                    findViewById(R.id.controllerContainer),
-                    savedInstanceState
-                )
+            Conductor.attachRouter(
+                this,
+                findViewById(R.id.controllerContainer),
+                savedInstanceState
+            )
         router.setPopsLastView(true)
 
         launch(CommonPool) {
@@ -114,6 +118,23 @@ class MainActivity : AppCompatActivity(), Injects<Module>, SideEffectHandler<App
                     router.setRoot(RouterTransaction.with(OnboardViewController()))
                 }
             } else {
+                if (playerRepository.findSchemaVersion()!! == 100) {
+                    val playerId = FirebaseAuth.getInstance().currentUser!!.uid
+                    val updateData = mutableMapOf(
+                        "schemaVersion" to Constants.SCHEMA_VERSION,
+                        "preferences" to mutableMapOf(
+                            "planDayStartMinute" to Constants.DEFAULT_PLAN_DAY_REMINDER_START_MINUTE,
+                            "planDays" to Constants.DEFAULT_PLAN_DAYS.map { it.name },
+                            "temperatureUnit" to Player.Preferences.TemperatureUnit.FAHRENHEIT.name
+                        )
+                    )
+                    Tasks.await(
+                        database
+                            .collection("players")
+                            .document(playerId)
+                            .update(updateData)
+                    )
+                }
                 val p = playerRepository.find()!!
                 withContext(UI) {
                     if (p.isLoggedIn() && p.username.isNullOrEmpty()) {
@@ -130,7 +151,7 @@ class MainActivity : AppCompatActivity(), Injects<Module>, SideEffectHandler<App
         }
     }
 
-    private fun startApp(player : Player) {
+    private fun startApp(player: Player) {
         if (intent.action == ACTION_SHOW_TIMER) {
             showTimer(intent)
         } else if (shouldShowQuickAdd(intent)) {
@@ -258,11 +279,14 @@ class MainActivity : AppCompatActivity(), Injects<Module>, SideEffectHandler<App
                     showPremiumSnackbar()
                 }
 
-                is DataLoadedAction.PlayerChanged ->
-                    sharedPreferences.edit().putString(
-                        Constants.KEY_TIME_FORMAT,
-                        action.player.preferences.timeFormat.name
-                    ).apply()
+                is DataLoadedAction.PlayerChanged -> {
+                    val editor = sharedPreferences.edit()
+                    val player = action.player
+                    editor
+                        .putString(Constants.KEY_TIME_FORMAT, player.preferences.timeFormat.name)
+                        .putInt(Constants.KEY_SCHEMA_VERSION, player.schemaVersion)
+                        .apply()
+                }
             }
         }
     }
@@ -301,11 +325,11 @@ class MainActivity : AppCompatActivity(), Injects<Module>, SideEffectHandler<App
 
     override fun canHandle(action: Action) =
         action is ShowBuyPowerUpAction
-                || action === TagAction.TagCountLimitReached
-                || action === HomeAction.ShowPlayerSetup
-                || action === AuthAction.PlayerSetupCompleted
-                || action === AuthAction.GuestCreated
-                || action is DataLoadedAction.PlayerChanged
+            || action === TagAction.TagCountLimitReached
+            || action === HomeAction.ShowPlayerSetup
+            || action === AuthAction.PlayerSetupCompleted
+            || action === AuthAction.GuestCreated
+            || action is DataLoadedAction.PlayerChanged
 
     companion object {
         const val ACTION_SHOW_TIMER = "io.ipoli.android.intent.action.SHOW_TIMER"

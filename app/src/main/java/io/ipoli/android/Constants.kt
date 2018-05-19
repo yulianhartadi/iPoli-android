@@ -75,6 +75,7 @@ interface Constants {
 
         val KEY_PLAYER_ID = "PLAYER_ID"
         val KEY_TIME_FORMAT = "TIME_FORMAT"
+        val KEY_SCHEMA_VERSION = "SCHEMA_VERSION"
 
         val KEY_DAILY_CHALLENGE_DAYS = "DAILY_CHALLENGE_DAYS"
 
