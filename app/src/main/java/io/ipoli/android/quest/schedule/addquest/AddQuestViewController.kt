@@ -148,6 +148,7 @@ class AddQuestViewController(args: Bundle? = null) :
     override fun onCreateLoadAction() = AddQuestAction.Load(currentDate)
 
     override fun render(state: AddQuestViewState, view: View) {
+
         setupFullAdd(view, state)
 
         when (state.type) {
@@ -181,6 +182,13 @@ class AddQuestViewController(args: Bundle? = null) :
 
             QUEST_SAVED -> {
                 showShortToast(R.string.quest_added)
+
+                renderDate(view, state)
+                renderStartTime(view, state)
+                renderDuration(state, view)
+                renderColor(view, state)
+                renderIcon(view, state)
+                renderTags(view, state)
                 resetForm(view)
             }
 
