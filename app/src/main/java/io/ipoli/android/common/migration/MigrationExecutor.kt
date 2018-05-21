@@ -78,7 +78,8 @@ class MigrationFrom101To102 : FirestoreMigration() {
                 .get(Source.SERVER)
         ).documents
 
-        val batch = database.batch()
+        var batch = database.batch()
+        var batchCount = 0
 
         for (qDoc in qDocs) {
             if (!qDoc.contains("tagIds")) {
@@ -91,6 +92,14 @@ class MigrationFrom101To102 : FirestoreMigration() {
             val tagIdsData = qDoc.get("tagIds") as Map<String, Any?>
 
             batch.update(qRef, createUpdateTagsData(tagIdsData, tagDocs))
+
+            batchCount++
+
+            if (batchCount == 500) {
+                Tasks.await(batch.commit())
+                batchCount = 0
+                batch = database.batch()
+            }
         }
 
         for (rqDoc in rqDocs) {
@@ -104,6 +113,14 @@ class MigrationFrom101To102 : FirestoreMigration() {
             val tagIdsData = rqDoc.get("tagIds") as Map<String, Any?>
 
             batch.update(rqRef, createUpdateTagsData(tagIdsData, tagDocs))
+
+            batchCount++
+
+            if (batchCount == 500) {
+                Tasks.await(batch.commit())
+                batchCount = 0
+                batch = database.batch()
+            }
         }
 
         for (cDoc in csDocs) {
@@ -117,6 +134,14 @@ class MigrationFrom101To102 : FirestoreMigration() {
             val tagIdsData = cDoc.get("tagIds") as Map<String, Any?>
 
             batch.update(cRef, createUpdateTagsData(tagIdsData, tagDocs))
+
+            batchCount++
+
+            if (batchCount == 500) {
+                Tasks.await(batch.commit())
+                batchCount = 0
+                batch = database.batch()
+            }
         }
 
         batch.update(
@@ -170,7 +195,8 @@ class MigrationFrom102To103 : FirestoreMigration() {
                 .get(Source.SERVER)
         ).documents
 
-        val batch = database.batch()
+        var batch = database.batch()
+        var batchCount = 0
 
         for (qDoc in qDocs) {
             if (!qDoc.contains("tags")) {
@@ -179,6 +205,14 @@ class MigrationFrom102To103 : FirestoreMigration() {
                     .document(qDoc.id)
 
                 batch.update(qRef, mapOf("tags" to mapOf<String, Any?>()))
+
+                batchCount++
+
+                if (batchCount == 500) {
+                    Tasks.await(batch.commit())
+                    batchCount = 0
+                    batch = database.batch()
+                }
             }
         }
 
@@ -190,6 +224,14 @@ class MigrationFrom102To103 : FirestoreMigration() {
                     .document(rqDoc.id)
 
                 batch.update(rqRef, mapOf("tags" to mapOf<String, Any?>()))
+
+                batchCount++
+
+                if (batchCount == 500) {
+                    Tasks.await(batch.commit())
+                    batchCount = 0
+                    batch = database.batch()
+                }
             }
         }
 
@@ -200,6 +242,14 @@ class MigrationFrom102To103 : FirestoreMigration() {
                     .document(cDoc.id)
 
                 batch.update(cRef, mapOf("tags" to mapOf<String, Any?>()))
+
+                batchCount++
+
+                if (batchCount == 500) {
+                    Tasks.await(batch.commit())
+                    batchCount = 0
+                    batch = database.batch()
+                }
             }
         }
 

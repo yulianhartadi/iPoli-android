@@ -41,6 +41,8 @@ import io.ipoli.android.player.auth.AuthViewState.StateType.*
 import io.ipoli.android.player.auth.error.SignInError
 import io.ipoli.android.player.data.AndroidAvatar
 import io.ipoli.android.player.data.Avatar
+import kotlinx.android.synthetic.main.controller_auth.view.*
+import kotlinx.android.synthetic.main.item_auth_avatar.view.*
 
 
 /**
