@@ -230,22 +230,10 @@ abstract class BaseViewController<A : Action, VS : ViewState> protected construc
 
     }
 
-    protected fun showcaseRect(@LayoutRes layout: Int, @IdRes view: Int, onClick: (TutoShowcase) -> Unit = {}): TutoShowcase {
-        val showcase = TutoShowcase.from(activity!!)
-        showcase
-            .setContentView(layout)
-            .on(view)
-            .addRoundRect()
-            .withBorder()
-            .onClick {
-                onClick(showcase)
-            }
-            .show()
-        return showcase
-    }
-
     protected fun showcaseRect(
-        @LayoutRes layout: Int, view: View,
+        @LayoutRes layout: Int,
+        @IdRes view: Int,
+        @IdRes containerView: Int,
         onClick: (TutoShowcase) -> Unit = {}
     ): TutoShowcase {
         val showcase = TutoShowcase.from(activity!!)
@@ -258,10 +246,36 @@ abstract class BaseViewController<A : Action, VS : ViewState> protected construc
                 onClick(showcase)
             }
             .show()
+            .onClickContentView(containerView, null)
         return showcase
     }
 
-    protected fun showcaseCircle(@LayoutRes layout: Int, @IdRes view: Int, onClick: (TutoShowcase) -> Unit = {}): TutoShowcase {
+    protected fun showcaseRect(
+        @LayoutRes layout: Int,
+        view: View,
+        @IdRes containerView: Int,
+        onClick: (TutoShowcase) -> Unit = {}
+    ): TutoShowcase {
+        val showcase = TutoShowcase.from(activity!!)
+        showcase
+            .setContentView(layout)
+            .on(view)
+            .addRoundRect()
+            .withBorder()
+            .onClick {
+                onClick(showcase)
+            }
+            .show()
+            .onClickContentView(containerView, null)
+        return showcase
+    }
+
+    protected fun showcaseCircle(
+        @LayoutRes layout: Int,
+        @IdRes view: Int,
+        @IdRes containerView: Int,
+        onClick: (TutoShowcase) -> Unit = {}
+    ): TutoShowcase {
         val showcase = TutoShowcase.from(activity!!)
         showcase
             .setContentView(layout)
@@ -272,6 +286,7 @@ abstract class BaseViewController<A : Action, VS : ViewState> protected construc
                 onClick(showcase)
             }
             .show()
+            .onClickContentView(containerView, null)
         return showcase
     }
 

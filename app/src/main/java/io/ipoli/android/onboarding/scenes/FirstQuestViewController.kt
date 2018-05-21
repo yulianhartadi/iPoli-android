@@ -103,6 +103,7 @@ class FirstQuestViewController(args: Bundle? = null) :
                 showcaseRect(
                     layout = R.layout.view_onboard_complete_quest,
                     view = R.id.calendarQuestContainer,
+                    containerView = R.id.completeQuestContainer,
                     onClick = {
                         it.dismiss()
                         onQuestComplete(view)
@@ -150,7 +151,8 @@ class FirstQuestViewController(args: Bundle? = null) :
     private fun onQuestCompleteAnimationEnd(popup: Popup, contentView: View) {
         val showcase = showcaseRect(
             layout = R.layout.view_onboard_bounty,
-            view = contentView
+            view = contentView,
+            containerView = R.id.bountyContainer
         )
         contentView.setOnClickListener {
             showcase.dismiss()
@@ -177,6 +179,7 @@ class FirstQuestViewController(args: Bundle? = null) :
             showcaseCircle(
                 layout = R.layout.view_onboard_calendar,
                 view = R.id.addQuest,
+                containerView = R.id.onboardCalendarContainer,
                 onClick = {
                     it.dismiss()
                     onAddQuest(view)
