@@ -47,6 +47,12 @@ class PetViewController(args: Bundle? = null) :
 
     override val reducer = PetReducer
 
+    private var showBackButton = true
+
+    constructor(showBackButton: Boolean) : this() {
+        this.showBackButton = showBackButton
+    }
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup,
@@ -71,7 +77,7 @@ class PetViewController(args: Bundle? = null) :
 
         val initList: (RecyclerView) -> Unit = {
             it.layoutManager =
-                    LinearLayoutManager(activity!!, LinearLayoutManager.HORIZONTAL, false)
+                LinearLayoutManager(activity!!, LinearLayoutManager.HORIZONTAL, false)
             it.post {
                 it.x = view.width.toFloat()
             }
@@ -101,7 +107,9 @@ class PetViewController(args: Bundle? = null) :
     override fun onCreateLoadAction() = PetAction.Load
 
     override fun onAttach(view: View) {
-        showBackButton()
+        if (showBackButton) {
+            showBackButton()
+        }
         super.onAttach(view)
     }
 
@@ -112,8 +120,7 @@ class PetViewController(args: Bundle? = null) :
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         if (item.itemId == android.R.id.home) {
-            router.popCurrentController()
-            return true
+            return router.handleBack()
         }
 
         if (item.itemId == R.id.actionStore) {
@@ -347,17 +354,17 @@ class PetViewController(args: Bundle? = null) :
         view.fabHatItems.backgroundTintList = ColorStateList.valueOf(attrData(R.attr.colorPrimary))
         view.fabMaskItems.backgroundTintList = ColorStateList.valueOf(attrData(R.attr.colorPrimary))
         view.fabBodyArmorItems.backgroundTintList =
-                ColorStateList.valueOf(attrData(R.attr.colorPrimary))
+            ColorStateList.valueOf(attrData(R.attr.colorPrimary))
 
         val itemsType = state.selectedItemType!!
 
         when (itemsType) {
             PetItemType.HAT -> view.fabHatItems.backgroundTintList =
-                    ColorStateList.valueOf(attrData(R.attr.colorAccent))
+                ColorStateList.valueOf(attrData(R.attr.colorAccent))
             PetItemType.MASK -> view.fabMaskItems.backgroundTintList =
-                    ColorStateList.valueOf(attrData(R.attr.colorAccent))
+                ColorStateList.valueOf(attrData(R.attr.colorAccent))
             PetItemType.BODY_ARMOR -> view.fabBodyArmorItems.backgroundTintList =
-                    ColorStateList.valueOf(attrData(R.attr.colorAccent))
+                ColorStateList.valueOf(attrData(R.attr.colorAccent))
         }
     }
 

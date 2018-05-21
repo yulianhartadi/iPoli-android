@@ -206,7 +206,7 @@ class MainActivity : AppCompatActivity(), Injects<Module>, SideEffectHandler<App
     }
 
     private fun showPet() {
-        router.setRoot(PetViewController.routerTransaction)
+        router.pushController(RouterTransaction.with(PetViewController(showBackButton = false)))
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
