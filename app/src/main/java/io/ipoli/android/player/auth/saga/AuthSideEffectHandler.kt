@@ -68,7 +68,6 @@ object AuthSideEffectHandler : AppSideEffectHandler() {
                     !isNewUser && hasDevicePlayer -> {
                         //TODO: delete anonymous account
                         savePlayerId(user)
-                        dispatch(LoadDataAction.ChangePlayer(currentPlayerId))
 
                         val pSchemaVersion = playerRepository.findServerSchemaVersion()!!
                         if (migrationExecutor.shouldMigrate(pSchemaVersion)) {
@@ -79,6 +78,7 @@ object AuthSideEffectHandler : AppSideEffectHandler() {
                                 )
                             )
                         } else {
+                            dispatch(LoadDataAction.ChangePlayer(currentPlayerId))
                             dispatch(
                                 AuthAction.ExistingPlayerLoggedInFromGuest(
                                     false,
@@ -308,8 +308,8 @@ object AuthSideEffectHandler : AppSideEffectHandler() {
             dispatch(AuthAction.PlayerLoggedIn(true, pSchemaVersion))
         } else {
             dispatch(AuthAction.PlayerLoggedIn(false, pSchemaVersion))
+            prepareAppStart()
         }
-        prepareAppStart()
     }
 
     @SuppressLint("ApplySharedPref")
