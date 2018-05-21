@@ -9,10 +9,7 @@ import com.bluelinelabs.conductor.changehandler.VerticalChangeHandler
 import io.ipoli.android.R
 import io.ipoli.android.challenge.add.EditChallengeViewState.StateType.*
 import io.ipoli.android.common.redux.android.ReduxViewController
-import io.ipoli.android.common.view.colorRes
-import io.ipoli.android.common.view.setToolbar
-import io.ipoli.android.common.view.showBackButton
-import io.ipoli.android.common.view.toolbarTitle
+import io.ipoli.android.common.view.*
 import kotlinx.android.synthetic.main.controller_add_challenge.view.*
 import kotlinx.android.synthetic.main.view_no_elevation_toolbar.view.*
 
@@ -77,11 +74,12 @@ class AddChallengeViewController(args: Bundle? = null) :
 
     }
 
+    override fun onCreateLoadAction() = EditChallengeAction.LoadFirstPage
+
     override fun render(state: EditChallengeViewState, view: View) {
         when (state.type) {
-
-            INITIAL -> {
-                toolbarTitle = "New Challenge"
+            LOADING -> {
+                toolbarTitle = stringRes(R.string.new_challenge)
                 colorLayout(view, state)
                 changeChildController(
                     view = view,

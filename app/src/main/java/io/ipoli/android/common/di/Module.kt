@@ -17,6 +17,10 @@ import io.ipoli.android.common.analytics.FirebaseEventLogger
 import io.ipoli.android.common.image.AndroidImageLoader
 import io.ipoli.android.common.image.ImageLoader
 import io.ipoli.android.common.middleware.LogEventsMiddleWare
+import io.ipoli.android.common.migration.MigrationExecutor
+import io.ipoli.android.common.migration.MigrationFrom100To101
+import io.ipoli.android.common.migration.MigrationFrom101To102
+import io.ipoli.android.common.migration.MigrationSideEffectHandler
 import io.ipoli.android.common.permission.AndroidPermissionChecker
 import io.ipoli.android.common.permission.PermissionChecker
 import io.ipoli.android.common.rate.AndroidRatePopupScheduler
@@ -147,8 +151,7 @@ class AndroidRepositoryModule(private val appContext: Context) : RepositoryModul
         FirestoreQuestRepository(
             database,
             job + CommonPool,
-            sharedPreferences,
-            FirestoreTagRepository(database, job + CommonPool, sharedPreferences)
+            sharedPreferences
         )
     }
 
@@ -166,8 +169,7 @@ class AndroidRepositoryModule(private val appContext: Context) : RepositoryModul
             FirestoreRepeatingQuestRepository(
                 database,
                 job + CommonPool,
-                sharedPreferences,
-                FirestoreTagRepository(database, job + CommonPool, sharedPreferences)
+                sharedPreferences
             )
         }
 
@@ -175,8 +177,7 @@ class AndroidRepositoryModule(private val appContext: Context) : RepositoryModul
         FirestoreChallengeRepository(
             database,
             job + CommonPool,
-            sharedPreferences,
-            FirestoreTagRepository(database, job + CommonPool, sharedPreferences)
+            sharedPreferences
         )
     }
 
@@ -264,6 +265,10 @@ interface AndroidModule {
     val job: Job
 
     val imageLoader: ImageLoader
+
+    val migrationExecutor: MigrationExecutor
+
+    val internetConnectionChecker: InternetConnectionChecker
 }
 
 class MainAndroidModule(
@@ -316,6 +321,17 @@ class MainAndroidModule(
     override val job get() = Job()
 
     override val imageLoader = AndroidImageLoader()
+
+    override val migrationExecutor =
+        MigrationExecutor(
+            database = database,
+            migrations = listOf(
+                MigrationFrom100To101(),
+                MigrationFrom101To102()
+            )
+        )
+
+    override val internetConnectionChecker = InternetConnectionChecker(context)
 }
 
 class MainUseCaseModule : UseCaseModule, Injects<Module> {
@@ -579,13 +595,18 @@ class MainUseCaseModule : UseCaseModule, Injects<Module> {
         get() = SaveSyncCalendarsUseCase(playerRepository)
 
     override val saveTagUseCase
-        get() = SaveTagUseCase(tagRepository)
+        get() = SaveTagUseCase(
+            tagRepository,
+            questRepository,
+            repeatingQuestRepository,
+            challengeRepository
+        )
 
     override val favoriteTagUseCase
-        get() = FavoriteTagUseCase(tagRepository)
+        get() = FavoriteTagUseCase(tagRepository, saveTagUseCase)
 
     override val unfavoriteTagUseCase
-        get() = UnfavoriteTagUseCase(tagRepository)
+        get() = UnfavoriteTagUseCase(tagRepository, saveTagUseCase)
 
     override val createTagItemsUseCase
         get() = CreateTagItemsUseCase()
@@ -781,7 +802,8 @@ class AndroidStateStoreModule : StateStoreModule, Injects<Module> {
                 PetSideEffectHandler,
                 OnboardingSideEffectHandler,
                 PlanDaySideEffectHandler,
-                SettingsSideEffectHandler
+                SettingsSideEffectHandler,
+                MigrationSideEffectHandler
             ),
             sideEffectHandlerExecutor = CoroutineSideEffectHandlerExecutor(job + CommonPool),
             middleware = setOf(

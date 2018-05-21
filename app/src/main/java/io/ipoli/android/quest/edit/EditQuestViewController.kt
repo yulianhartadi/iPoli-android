@@ -2,7 +2,6 @@ package io.ipoli.android.quest.edit
 
 import android.app.DatePickerDialog
 import android.app.Dialog
-import android.app.TimePickerDialog
 import android.graphics.drawable.Drawable
 import android.os.Bundle
 import android.support.v4.content.ContextCompat
@@ -352,20 +351,15 @@ class EditQuestViewController(args: Bundle? = null) :
         view.questStartTime.text = state.startTimeText
         view.questStartTime.onDebounceClick {
             val startTime = state.startTime ?: Time.now()
-            val dialog = TimePickerDialog(
-                view.context,
-                R.style.Theme_myPoli_AlertDialog,
-                TimePickerDialog.OnTimeSetListener { _, hour, minute ->
-                    dispatch(
-                        EditQuestAction.ChangeStartTime(
-                            Time.at(
-                                hour,
-                                minute
-                            )
-                        )
-                    )
-                }, startTime.hours, startTime.getMinutes(), false
+
+            val dialog = createTimePickerDialog(
+                context = view.context,
+                startTime = startTime,
+                onTimePicked = {
+                    dispatch(EditQuestAction.ChangeStartTime(it))
+                }
             )
+
             dialog.setButton(
                 Dialog.BUTTON_NEUTRAL,
                 view.context.getString(R.string.do_not_know),

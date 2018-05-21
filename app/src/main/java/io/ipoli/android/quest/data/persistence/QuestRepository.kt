@@ -13,10 +13,8 @@ import io.ipoli.android.pet.Food
 import io.ipoli.android.quest.*
 import io.ipoli.android.quest.subquest.SubQuest
 import io.ipoli.android.tag.Tag
-import io.ipoli.android.tag.persistence.TagRepository
 import kotlinx.coroutines.experimental.channels.Channel
 import org.threeten.bp.*
-import java.util.concurrent.ConcurrentHashMap
 import kotlin.coroutines.experimental.CoroutineContext
 
 interface QuestRepository : CollectionRepository<Quest> {
@@ -111,7 +109,7 @@ data class DbQuest(override val map: MutableMap<String, Any?> = mutableMapOf()) 
     var name: String by map
     var color: String by map
     var icon: String? by map
-    var tagIds: Map<String, Boolean> by map
+    var tags: Map<String, MutableMap<String, Any?>> by map
     var duration: Long by map
     var priority: String by map
     var preferredStartTime: String by map
@@ -174,15 +172,12 @@ data class DbTimeRange(val map: MutableMap<String, Any?> = mutableMapOf()) {
 class FirestoreQuestRepository(
     database: FirebaseFirestore,
     coroutineContext: CoroutineContext,
-    sharedPreferences: SharedPreferences,
-    private val tagRepository: TagRepository
+    sharedPreferences: SharedPreferences
 ) : BaseCollectionFirestoreRepository<Quest, DbQuest>(
     database,
     coroutineContext,
     sharedPreferences
 ), QuestRepository {
-
-    private val tags = ConcurrentHashMap<String, Tag>()
 
     override fun findAllForRepeatingQuestAfterDate(
         repeatingQuestId: String,
@@ -310,7 +305,7 @@ class FirestoreQuestRepository(
         channel: Channel<List<Quest>>
     ) =
         collectionReference
-            .whereEqualTo("tagIds.$tagId", true)
+            .whereEqualTo("tags.$tagId.id", tagId)
             .listenForChanges(channel)
 
     override suspend fun listenForAllUnscheduled(channel: Channel<List<Quest>>) =
@@ -321,12 +316,12 @@ class FirestoreQuestRepository(
 
     override fun findByTag(tagId: String) =
         collectionReference
-            .whereEqualTo("tagIds.$tagId", true)
+            .whereEqualTo("tags.$tagId.id", tagId)
             .entities
 
     override fun findCountForTag(tagId: String): Int =
         collectionReference
-            .whereEqualTo("tagIds.$tagId", true)
+            .whereEqualTo("tags.$tagId.id", tagId)
             .documents.size
 
     override suspend fun listenForScheduledBetween(
@@ -473,11 +468,6 @@ class FirestoreQuestRepository(
 
     override val collectionReference: CollectionReference
         get() {
-            val t = tagRepository.findAll()
-            tags.clear()
-            t.forEach {
-                tags[it.id] = it
-            }
             return database.collection("players").document(playerId).collection("quests")
         }
 
@@ -643,8 +633,8 @@ class FirestoreQuestRepository(
             icon = cq.icon?.let {
                 Icon.valueOf(it)
             },
-            tags = cq.tagIds.keys.map {
-                tags[it]!!
+            tags = cq.tags.values.map {
+                createTag(it)
             },
             startDate = cq.startDate?.startOfDayUTC,
             dueDate = cq.dueDate?.startOfDayUTC,
@@ -711,7 +701,7 @@ class FirestoreQuestRepository(
         val q = DbQuest()
         q.id = entity.id
         q.name = entity.name
-        q.tagIds = entity.tags.map { it.id to true }.toMap()
+        q.tags = entity.tags.map { it.id to createDbTag(it).map }.toMap()
         q.color = entity.color.name
         q.icon = entity.icon?.name
         q.duration = entity.duration.toLong()
@@ -787,4 +777,37 @@ class FirestoreQuestRepository(
         return cr
     }
 
+    private fun createDbTag(tag: Tag) =
+        DbEmbedTag().apply {
+            id = tag.id
+            name = tag.name
+            isFavorite = tag.isFavorite
+            color = tag.color.name
+            icon = tag.icon?.name
+        }
+
+    private fun createTag(dataMap: MutableMap<String, Any?>) =
+        with(
+            DbEmbedTag(dataMap.withDefault {
+                null
+            })
+        ) {
+            Tag(
+                id = id,
+                name = name,
+                color = Color.valueOf(color),
+                icon = icon?.let {
+                    Icon.valueOf(it)
+                },
+                isFavorite = isFavorite
+            )
+        }
+}
+
+class DbEmbedTag(val map: MutableMap<String, Any?> = mutableMapOf()) {
+    var id: String by map
+    var name: String by map
+    var color: String by map
+    var icon: String? by map
+    var isFavorite: Boolean by map
 }

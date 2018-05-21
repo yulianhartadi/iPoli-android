@@ -73,7 +73,6 @@ class PetViewController(args: Bundle? = null) :
 
     override fun onCreateLoadAction() = OnboardAction.LoadPets
 
-
     override fun onAttach(view: View) {
         super.onAttach(view)
         activity!!.window.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN)

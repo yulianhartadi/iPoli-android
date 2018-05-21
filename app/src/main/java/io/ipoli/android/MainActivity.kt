@@ -16,14 +16,13 @@ import com.bluelinelabs.conductor.Conductor
 import com.bluelinelabs.conductor.Router
 import com.bluelinelabs.conductor.RouterTransaction
 import com.bluelinelabs.conductor.changehandler.FadeChangeHandler
-import com.google.android.gms.tasks.Tasks
-import com.google.firebase.auth.FirebaseAuth
 import io.ipoli.android.common.AppState
 import io.ipoli.android.common.DataLoadedAction
 import io.ipoli.android.common.LoadDataAction
 import io.ipoli.android.common.di.Module
 import io.ipoli.android.common.home.HomeAction
 import io.ipoli.android.common.home.HomeViewController
+import io.ipoli.android.common.migration.MigrationViewController
 import io.ipoli.android.common.redux.Action
 import io.ipoli.android.common.redux.Dispatcher
 import io.ipoli.android.common.redux.SideEffectHandler
@@ -69,7 +68,7 @@ class MainActivity : AppCompatActivity(), Injects<Module>, SideEffectHandler<App
 
     private val planDayScheduler by required { planDayScheduler }
 
-    private val database by required { database }
+    private val migrationExecutor by required { migrationExecutor }
 
     val rootRouter get() = router
 
@@ -118,31 +117,23 @@ class MainActivity : AppCompatActivity(), Injects<Module>, SideEffectHandler<App
                     router.setRoot(RouterTransaction.with(OnboardViewController()))
                 }
             } else {
-                if (playerRepository.findSchemaVersion()!! == 100) {
-                    val playerId = FirebaseAuth.getInstance().currentUser!!.uid
-                    val updateData = mutableMapOf(
-                        "schemaVersion" to Constants.SCHEMA_VERSION,
-                        "preferences.planDayStartMinute" to Constants.DEFAULT_PLAN_DAY_REMINDER_START_MINUTE,
-                        "preferences.planDays" to Constants.DEFAULT_PLAN_DAYS.map { it.name },
-                        "preferences.temperatureUnit" to Player.Preferences.TemperatureUnit.FAHRENHEIT.name
-                    )
-                    Tasks.await(
-                        database
-                            .collection("players")
-                            .document(playerId)
-                            .update(updateData)
-                    )
-                }
-                val p = playerRepository.find()!!
-                withContext(UI) {
-                    if (p.isLoggedIn() && p.username.isNullOrEmpty()) {
-                        router.setRoot(RouterTransaction.with(AuthViewController()))
-                    } else {
-                        if (isInstallFromUpdate()) {
-                            planDayScheduler.scheduleForNextTime()
+                val pSchemaVersion = playerRepository.findSchemaVersion()!!
+                if (migrationExecutor.shouldMigrate(pSchemaVersion)) {
+                    withContext(UI) {
+                        router.setRoot(RouterTransaction.with(MigrationViewController(pSchemaVersion)))
+                    }
+                } else {
+                    val p = playerRepository.find()!!
+                    withContext(UI) {
+                        if (p.isLoggedIn() && p.username.isNullOrEmpty()) {
+                            router.setRoot(RouterTransaction.with(AuthViewController()))
+                        } else {
+                            stateStore.dispatch(LoadDataAction.All)
+                            startApp(p)
+                            if (isInstallFromUpdate()) {
+                                planDayScheduler.scheduleForNextTime()
+                            }
                         }
-                        stateStore.dispatch(LoadDataAction.All)
-                        startApp(p)
                     }
                 }
             }

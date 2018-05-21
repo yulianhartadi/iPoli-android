@@ -19,7 +19,7 @@ class TypewriterTextAnimator private constructor(
 
     companion object {
 
-        private const val DEFAULT_TYPE_SPEED = 40
+        private const val DEFAULT_TYPE_SPEED = 25
 
         fun of(
             textView: TextView,

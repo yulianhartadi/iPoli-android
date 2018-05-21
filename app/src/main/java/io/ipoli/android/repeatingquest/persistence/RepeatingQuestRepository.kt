@@ -11,17 +11,16 @@ import io.ipoli.android.common.persistence.BaseCollectionFirestoreRepository
 import io.ipoli.android.common.persistence.CollectionRepository
 import io.ipoli.android.common.persistence.FirestoreModel
 import io.ipoli.android.quest.*
+import io.ipoli.android.quest.data.persistence.DbEmbedTag
 import io.ipoli.android.quest.data.persistence.DbReminder
 import io.ipoli.android.quest.data.persistence.DbSubQuest
 import io.ipoli.android.quest.subquest.SubQuest
 import io.ipoli.android.repeatingquest.entity.RepeatPattern
 import io.ipoli.android.repeatingquest.persistence.DbRepeatPattern.Type.*
 import io.ipoli.android.tag.Tag
-import io.ipoli.android.tag.persistence.TagRepository
 import org.threeten.bp.DayOfWeek
 import org.threeten.bp.LocalDate
 import org.threeten.bp.Month
-import java.util.concurrent.ConcurrentHashMap
 import kotlin.coroutines.experimental.CoroutineContext
 
 /**
@@ -48,7 +47,7 @@ data class DbRepeatingQuest(override val map: MutableMap<String, Any?> = mutable
     var name: String by map
     var color: String by map
     var icon: String? by map
-    var tagIds: Map<String, Boolean> by map
+    var tags: Map<String, MutableMap<String, Any?>> by map
     var startMinute: Long? by map
     var duration: Long by map
     var priority: String by map
@@ -84,15 +83,12 @@ data class DbRepeatPattern(val map: MutableMap<String, Any?> = mutableMapOf()) {
 class FirestoreRepeatingQuestRepository(
     database: FirebaseFirestore,
     coroutineContext: CoroutineContext,
-    sharedPreferences: SharedPreferences,
-    private val tagRepository: TagRepository
+    sharedPreferences: SharedPreferences
 ) : BaseCollectionFirestoreRepository<RepeatingQuest, DbRepeatingQuest>(
     database,
     coroutineContext,
     sharedPreferences
 ), RepeatingQuestRepository {
-
-    private val tags = ConcurrentHashMap<String, Tag>()
 
     override fun findActiveNotForChallenge(
         challengeId: String,
@@ -101,11 +97,6 @@ class FirestoreRepeatingQuestRepository(
 
     override val collectionReference: CollectionReference
         get() {
-            val t = tagRepository.findAll()
-            tags.clear()
-            t.forEach {
-                tags[it.id] = it
-            }
             return database.collection("players").document(playerId).collection("repeatingQuests")
         }
 
@@ -128,7 +119,7 @@ class FirestoreRepeatingQuestRepository(
 
     override fun findByTag(tagId: String) =
         collectionReference
-            .whereEqualTo("tagIds.$tagId", true)
+            .whereEqualTo("tags.$tagId.id", tagId)
             .entities
 
     override fun generateId() = collectionReference.document().id
@@ -153,7 +144,6 @@ class FirestoreRepeatingQuestRepository(
             null
         })
 
-
         return RepeatingQuest(
             id = rq.id,
             name = rq.name,
@@ -161,8 +151,8 @@ class FirestoreRepeatingQuestRepository(
             icon = rq.icon?.let {
                 Icon.valueOf(it)
             },
-            tags = rq.tagIds.keys.map {
-                tags[it]!!
+            tags = rq.tags.values.map {
+                createTag(it)
             },
             startTime = rq.startMinute?.let { Time.of(it.toInt()) },
             duration = rq.duration.toInt(),
@@ -176,7 +166,11 @@ class FirestoreRepeatingQuestRepository(
                         Reminder.Relative(cr.message, cr.minutesFromStart!!)
 
                     DbReminder.Type.FIXED ->
-                        Reminder.Fixed(cr.message, cr.date!!.startOfDayUTC, Time.of(cr.minute!!.toInt()))
+                        Reminder.Fixed(
+                            cr.message,
+                            cr.date!!.startOfDayUTC,
+                            Time.of(cr.minute!!.toInt())
+                        )
                 }
 
             },
@@ -258,7 +252,7 @@ class FirestoreRepeatingQuestRepository(
         val rq = DbRepeatingQuest()
         rq.id = entity.id
         rq.name = entity.name
-        rq.tagIds = entity.tags.map { it.id to true }.toMap()
+        rq.tags = entity.tags.map { it.id to createDbTag(it).map }.toMap()
         rq.color = entity.color.name
         rq.icon = entity.icon?.name
         rq.duration = entity.duration.toLong()
@@ -348,4 +342,30 @@ class FirestoreRepeatingQuestRepository(
         }
         return cr
     }
+
+    private fun createDbTag(tag: Tag) =
+        DbEmbedTag().apply {
+            id = tag.id
+            name = tag.name
+            isFavorite = tag.isFavorite
+            color = tag.color.name
+            icon = tag.icon?.name
+        }
+
+    private fun createTag(dataMap: MutableMap<String, Any?>) =
+        with(
+            DbEmbedTag(dataMap.withDefault {
+                null
+            })
+        ) {
+            Tag(
+                id = id,
+                name = name,
+                color = Color.valueOf(color),
+                icon = icon?.let {
+                    Icon.valueOf(it)
+                },
+                isFavorite = isFavorite
+            )
+        }
 }

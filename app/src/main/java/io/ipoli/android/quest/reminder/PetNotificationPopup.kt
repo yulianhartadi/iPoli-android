@@ -12,6 +12,7 @@ import android.view.*
 import android.view.animation.AccelerateDecelerateInterpolator
 import android.view.animation.AnticipateInterpolator
 import io.ipoli.android.R
+import io.ipoli.android.R.id.*
 import io.ipoli.android.common.view.MviPopup
 import io.ipoli.android.common.view.gone
 import io.ipoli.android.common.view.views
@@ -69,6 +70,9 @@ class PetNotificationPopup(
             val petAvatar = AndroidPetAvatar.valueOf(viewModel.petAvatar.name)
             pet.setImageResource(petAvatar.image)
             petState.setImageResource(petAvatar.stateImage[viewModel.petState]!!)
+
+            reminderAnimation.setAnimation("bell.json")
+            reminderAnimation.playAnimation()
         }
         initButtons()
     }

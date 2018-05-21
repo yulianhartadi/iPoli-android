@@ -1,7 +1,6 @@
 package io.ipoli.android.settings
 
 import android.Manifest
-import android.app.TimePickerDialog
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
@@ -106,20 +105,23 @@ class SettingsViewController(args: Bundle? = null) :
     }
 
     private fun renderPlanMyDay(state: SettingsViewState, view: View) {
-        val use24HourFormat = if (state.timeFormat == Player.Preferences.TimeFormat.DEVICE_DEFAULT) {
-            DateFormat.is24HourFormat(activity)
-        } else state.timeFormat != Player.Preferences.TimeFormat.TWELVE_HOURS
+        val use24HourFormat =
+            if (state.timeFormat == Player.Preferences.TimeFormat.DEVICE_DEFAULT) {
+                DateFormat.is24HourFormat(activity)
+            } else state.timeFormat != Player.Preferences.TimeFormat.TWELVE_HOURS
 
 
         view.planDayTime.text = state.planTime.toString(use24HourFormat)
         view.planMyDayTimeContainer.onDebounceClick {
-            TimePickerDialog(
-                view.context,
-                R.style.Theme_myPoli_AlertDialog,
-                TimePickerDialog.OnTimeSetListener { _, hour, minute ->
-                    dispatch(SettingsAction.PlanDayTimeChanged(Time.at(hour, minute)))
-                }, state.planTime.hours, state.planTime.getMinutes(), false
-            ).show()
+
+            val dialog = createTimePickerDialog(
+                context = view.context,
+                startTime = state.planTime,
+                onTimePicked = {
+                    dispatch(SettingsAction.PlanDayTimeChanged(it))
+                }
+            )
+            dialog.show()
         }
 
         val daysText = state.planDays.joinToString(", ") {

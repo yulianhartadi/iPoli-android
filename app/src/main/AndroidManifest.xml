@@ -81,7 +81,7 @@
 
         <meta-data
             android:name="com.google.android.awareness.API_KEY"
-            android:value="@string/awareness_api_key" />
+            android:value="AIzaSyD9v3aYRcGcbUb2UKFPuPQfMCP7YMM-xVo" />
     </application>
 
 </manifest>

@@ -16,6 +16,7 @@ import io.ipoli.android.quest.Color
 import io.ipoli.android.quest.Icon
 import io.ipoli.android.tag.Tag
 import org.threeten.bp.LocalDate
+import timber.log.Timber
 
 /**
  * Created by Polina Zhelyazkova <polina@mypoli.fun>
@@ -46,6 +47,7 @@ sealed class EditChallengeAction : Action {
 
     object Back : EditChallengeAction()
     object Save : EditChallengeAction()
+    object LoadFirstPage : EditChallengeAction()
 }
 
 object EditChallengeReducer : BaseViewStateReducer<EditChallengeViewState>() {
@@ -59,6 +61,12 @@ object EditChallengeReducer : BaseViewStateReducer<EditChallengeViewState>() {
         action: Action
     ) =
         when (action) {
+            EditChallengeAction.LoadFirstPage -> {
+                subState.copy(
+                    type = LOADING
+                )
+            }
+
             is EditChallengeAction.Load -> {
                 val dataState = state.dataState
                 val c = dataState.challenges.first { it.id == action.challengeId }
@@ -91,14 +99,14 @@ object EditChallengeReducer : BaseViewStateReducer<EditChallengeViewState>() {
             is EditChallengeAction.LoadTags -> {
                 subState.copy(
                     type = TAGS_CHANGED,
-                    tags = state.dataState.tags - subState.tags
+                    tags = state.dataState.tags - subState.challengeTags
                 )
             }
 
             is DataLoadedAction.TagsChanged -> {
                 subState.copy(
                     type = TAGS_CHANGED,
-                    tags = action.tags
+                    tags = action.tags - subState.challengeTags
                 )
             }
 
@@ -306,6 +314,7 @@ data class EditChallengeViewState(
 ) : ViewState {
     enum class StateType {
         INITIAL,
+        LOADING,
         DATA_CHANGED,
         NEXT_PAGE,
         PREVIOUS_PAGE,

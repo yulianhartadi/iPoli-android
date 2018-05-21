@@ -249,7 +249,7 @@ object EditRepeatingQuestReducer : BaseViewStateReducer<EditRepeatingQuestViewSt
             is DataLoadedAction.TagsChanged ->
                 subState.copy(
                     type = TAGS_CHANGED,
-                    tags = action.tags
+                    tags = action.tags - subState.questTags
                 )
 
             is EditRepeatingQuestAction.RemoveTag -> {

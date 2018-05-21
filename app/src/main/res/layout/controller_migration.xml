@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <TextView
+        android:id="@+id/migrationTitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="8dp"
+        android:layout_marginStart="8dp"
+        android:textAppearance="@style/TextAppearance.AppCompat.Title"
+        app:layout_constraintBottom_toTopOf="@+id/migrationAnimation"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        tools:text="Migrating you to new version" />
+
+    <com.airbnb.lottie.LottieAnimationView
+        android:id="@+id/migrationAnimation"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="16dp"
+        android:adjustViewBounds="true"
+        app:layout_constraintBottom_toTopOf="@+id/logo"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent"
+        app:lottie_colorFilter="?attr/colorAccent"
+        app:lottie_loop="true" />
+
+    <TextView
+        android:id="@+id/migrationMessage"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="8dp"
+        android:layout_marginStart="8dp"
+        android:drawablePadding="4dp"
+        android:textAppearance="@style/TextAppearance.AppCompat.Body1"
+        app:layout_constraintBottom_toBottomOf="@+id/logo"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/logo"
+        app:layout_constraintTop_toTopOf="@+id/logo"
+        app:layout_constraintVertical_bias="0.4"
+        tools:text="Looking for my biscuits... Have you seen em?" />
+
+    <Button
+        android:id="@+id/migrationAction"
+        style="@style/Widget.AppCompat.Button.Colored"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="8dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="16dp"
+        android:visibility="gone"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/logo"
+        app:layout_constraintTop_toBottomOf="@+id/migrationMessage" />
+
+    <ImageView
+        android:id="@+id/logo"
+        android:layout_width="160dp"
+        android:layout_height="160dp"
+        android:rotation="60"
+        android:scaleType="fitCenter"
+        android:src="@drawable/logo"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="parent"
+        app:layout_constraintHorizontal_bias="1.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.95" />
+
+</android.support.constraint.ConstraintLayout>

@@ -2,7 +2,6 @@ package io.ipoli.android.quest.schedule.addquest
 
 import android.app.DatePickerDialog
 import android.app.Dialog
-import android.app.TimePickerDialog
 import android.graphics.drawable.GradientDrawable
 import android.os.Bundle
 import android.text.Editable
@@ -70,7 +69,7 @@ class AddQuestViewController(args: Bundle? = null) :
             }
         })
 
-        if(isFullscreen) {
+        if (isFullscreen) {
             view.onDebounceClick {
                 ViewUtils.hideKeyboard(view)
                 closeListener()
@@ -112,7 +111,7 @@ class AddQuestViewController(args: Bundle? = null) :
     }
 
     override fun colorLayoutBars() {
-        if(isFullscreen) {
+        if (isFullscreen) {
             activity?.window?.statusBarColor = colorRes(android.R.color.transparent)
         }
     }
@@ -318,12 +317,13 @@ class AddQuestViewController(args: Bundle? = null) :
         setIcon(GoogleMaterial.Icon.gmd_access_time, view.startTime, state.time != null)
         view.startTime.onDebounceClick {
             val startTime = state.time ?: Time.now()
-            val dialog = TimePickerDialog(
-                view.context,
-                R.style.Theme_myPoli_AlertDialog,
-                TimePickerDialog.OnTimeSetListener { _, hour, minute ->
-                    dispatch(AddQuestAction.TimePicked(Time.at(hour, minute)))
-                }, startTime.hours, startTime.getMinutes(), false
+
+            val dialog = createTimePickerDialog(
+                context = view.context,
+                startTime = startTime,
+                onTimePicked = {
+                    dispatch(AddQuestAction.TimePicked(it))
+                }
             )
             dialog.setButton(
                 Dialog.BUTTON_NEUTRAL,

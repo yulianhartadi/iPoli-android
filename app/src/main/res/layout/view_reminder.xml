@@ -93,17 +93,36 @@
         app:layout_constraintStart_toStartOf="@+id/guideline5"
         app:layout_constraintTop_toTopOf="@+id/snooze" />
 
+    <com.airbnb.lottie.LottieAnimationView
+        android:id="@+id/reminderAnimation"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="16dp"
+        android:adjustViewBounds="true"
+        android:elevation="2dp"
+        app:layout_constraintBottom_toBottomOf="@+id/petState"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="1.0"
+        app:layout_constraintStart_toEndOf="@+id/headline"
+        app:layout_constraintTop_toTopOf="@+id/headline"
+        app:lottie_colorFilter="?attr/colorAccent"
+        app:lottie_loop="true" />
+
     <TextView
         android:id="@+id/headline"
         style="@style/Base.TextAppearance.AppCompat.Headline"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginBottom="16dp"
-        android:layout_marginEnd="16dp"
-        android:layout_marginStart="16dp"
+        android:layout_marginEnd="48dp"
+        android:layout_marginStart="48dp"
         android:elevation="2dp"
         android:gravity="center_horizontal"
         android:paddingTop="16dp"
+        android:maxLines="2"
+        android:ellipsize="end"
         app:layout_constraintBottom_toTopOf="@+id/title"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -195,7 +214,7 @@
         android:id="@+id/group"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        app:constraint_referenced_ids="time,message,name,start,snooze,dismiss,startHint,snoozeHint,dismissHint" />
+        app:constraint_referenced_ids="body,headline,title,start,snooze,dismiss,startHint,snoozeHint,dismissHint,reminderAnimation" />
 
 
 </android.support.constraint.ConstraintLayout>

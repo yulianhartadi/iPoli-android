@@ -1,7 +1,6 @@
 package io.ipoli.android.repeatingquest.add
 
 import android.app.Dialog
-import android.app.TimePickerDialog
 import android.os.Bundle
 import android.support.v7.widget.LinearLayoutManager
 import android.text.Editable
@@ -746,20 +745,15 @@ class AddRepeatingQuestViewController(args: Bundle? = null) :
             view.summaryStartTime.text = state.startTimeText
             view.summaryStartTime.onDebounceClick {
                 val startTime = state.startTime ?: Time.now()
-                val dialog = TimePickerDialog(
-                    view.context,
-                    R.style.Theme_myPoli_AlertDialog,
-                    TimePickerDialog.OnTimeSetListener { _, hour, minute ->
-                        dispatch(
-                            EditRepeatingQuestAction.ChangeStartTime(
-                                Time.at(
-                                    hour,
-                                    minute
-                                )
-                            )
-                        )
-                    }, startTime.hours, startTime.getMinutes(), false
+
+                val dialog = createTimePickerDialog(
+                    context = view.context,
+                    startTime = startTime,
+                    onTimePicked = {
+                        dispatch(EditRepeatingQuestAction.ChangeStartTime(it))
+                    }
                 )
+
                 dialog.setButton(
                     Dialog.BUTTON_NEUTRAL,
                     view.context.getString(R.string.do_not_know),

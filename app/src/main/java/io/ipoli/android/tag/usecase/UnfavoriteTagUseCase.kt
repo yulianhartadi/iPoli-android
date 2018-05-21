@@ -9,16 +9,21 @@ import io.ipoli.android.tag.persistence.TagRepository
  * on 4/5/18.
  */
 class UnfavoriteTagUseCase(
-    private val tagRepository: TagRepository
+    private val tagRepository: TagRepository,
+    private val saveTagUseCase: SaveTagUseCase
 ) : UseCase<UnfavoriteTagUseCase.Params, Tag> {
 
     override fun execute(parameters: Params): Tag {
         val tag = when (parameters) {
             is Params.WithTag -> parameters.tag
-            is Params.WithTagId -> tagRepository.findById(parameters.tagId)
+            is Params.WithTagId -> tagRepository.findById(parameters.tagId)!!
         }
-        return tagRepository.save(
-            tag!!.copy(
+        return saveTagUseCase.execute(
+            SaveTagUseCase.Params(
+                id = tag.id,
+                name = tag.name,
+                icon = tag.icon,
+                color = tag.color,
                 isFavorite = false
             )
         )

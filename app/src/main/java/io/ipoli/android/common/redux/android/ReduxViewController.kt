@@ -1,5 +1,6 @@
 package io.ipoli.android.common.redux.android
 
+import android.app.TimePickerDialog
 import android.content.Context
 import android.content.pm.PackageManager
 import android.os.Bundle
@@ -16,7 +17,9 @@ import com.github.florent37.tutoshowcase.TutoShowcase
 import com.mikepenz.iconics.IconicsDrawable
 import com.mikepenz.iconics.typeface.IIcon
 import io.ipoli.android.Constants
+import io.ipoli.android.R
 import io.ipoli.android.common.*
+import io.ipoli.android.common.datetime.Time
 import io.ipoli.android.common.di.Module
 import io.ipoli.android.common.mvi.ViewState
 import io.ipoli.android.common.redux.Action
@@ -87,8 +90,8 @@ abstract class BaseViewController<A : Action, VS : ViewState> protected construc
             }
 
             override fun preDetach(controller: Controller, view: View) {
-                eventActor!!.close()
                 stateStore.unsubscribe(this@BaseViewController)
+                eventActor!!.close()
             }
 
             override fun preDestroyView(controller: Controller, view: View) {
@@ -272,6 +275,21 @@ abstract class BaseViewController<A : Action, VS : ViewState> protected construc
         return showcase
     }
 
+    protected fun createTimePickerDialog(
+        context: Context,
+        startTime: Time,
+        onTimePicked: (Time) -> Unit
+    ) =
+        TimePickerDialog(
+            context,
+            R.style.Theme_myPoli_AlertDialog,
+            TimePickerDialog.OnTimeSetListener { _, hour, minute ->
+                onTimePicked(Time.at(hour, minute))
+            },
+            startTime.hours, startTime.getMinutes(),
+            shouldUse24HourFormat
+        )
+
     protected val shouldUse24HourFormat: Boolean
         get() {
             val timeFormat = Player.Preferences.TimeFormat.valueOf(
@@ -366,7 +384,7 @@ abstract class BaseViewController<A : Action, VS : ViewState> protected construc
 
 abstract class ReduxViewController<A : Action, VS : ViewState, out R : ViewStateReducer<AppState, VS>> protected constructor(
     args: Bundle? = null, private val renderDuplicateStates: Boolean = false
-) : BaseViewController<A, VS>(args) {
+) : BaseViewController<A, VS>(args, renderDuplicateStates) {
 
     private val stateStore by required { stateStore }
 

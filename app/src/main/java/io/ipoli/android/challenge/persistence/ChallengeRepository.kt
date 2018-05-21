@@ -13,10 +13,9 @@ import io.ipoli.android.common.persistence.CollectionRepository
 import io.ipoli.android.common.persistence.FirestoreModel
 import io.ipoli.android.quest.Color
 import io.ipoli.android.quest.Icon
+import io.ipoli.android.quest.data.persistence.DbEmbedTag
 import io.ipoli.android.tag.Tag
-import io.ipoli.android.tag.persistence.TagRepository
 import kotlinx.coroutines.experimental.channels.Channel
-import java.util.concurrent.ConcurrentHashMap
 import kotlin.coroutines.experimental.CoroutineContext
 
 /**
@@ -30,23 +29,16 @@ interface ChallengeRepository : CollectionRepository<Challenge> {
 class FirestoreChallengeRepository(
     database: FirebaseFirestore,
     coroutineContext: CoroutineContext,
-    sharedPreferences: SharedPreferences,
-    private val tagRepository: TagRepository
+    sharedPreferences: SharedPreferences
 ) : BaseCollectionFirestoreRepository<Challenge, DbChallenge>(
     database,
     coroutineContext,
     sharedPreferences
 ), ChallengeRepository {
 
-    private val tags = ConcurrentHashMap<String, Tag>()
 
     override val collectionReference: CollectionReference
         get() {
-            val t = tagRepository.findAll()
-            tags.clear()
-            t.forEach {
-                tags[it.id] = it
-            }
             return database.collection("players").document(playerId).collection("challenges")
         }
 
@@ -57,7 +49,7 @@ class FirestoreChallengeRepository(
 
     override fun findByTag(tagId: String) =
         collectionReference
-            .whereEqualTo("tagIds.$tagId", true)
+            .whereEqualTo("tags.$tagId.id", tagId)
             .entities
 
     override fun toEntityObject(dataMap: MutableMap<String, Any?>): Challenge {
@@ -73,8 +65,8 @@ class FirestoreChallengeRepository(
                 Icon.valueOf(it)
             },
             difficulty = Challenge.Difficulty.valueOf(c.difficulty),
-            tags = c.tagIds.keys.map {
-                tags[it]!!
+            tags = c.tags.values.map {
+                createTag(it)
             },
             startDate = c.startDate.startOfDayUTC,
             endDate = c.endDate.startOfDayUTC,
@@ -98,7 +90,7 @@ class FirestoreChallengeRepository(
         c.color = entity.color.name
         c.icon = entity.icon?.name
         c.difficulty = entity.difficulty.name
-        c.tagIds = entity.tags.map { it.id to true }.toMap()
+        c.tags = entity.tags.map { it.id to createDbTag(it).map }.toMap()
         c.startDate = entity.startDate.startOfDayUTC()
         c.endDate = entity.endDate.startOfDayUTC()
         c.motivations = entity.motivations
@@ -111,6 +103,32 @@ class FirestoreChallengeRepository(
         c.createdAt = entity.createdAt.toEpochMilli()
         return c
     }
+
+    private fun createDbTag(tag: Tag) =
+        DbEmbedTag().apply {
+            id = tag.id
+            name = tag.name
+            isFavorite = tag.isFavorite
+            color = tag.color.name
+            icon = tag.icon?.name
+        }
+
+    private fun createTag(dataMap: MutableMap<String, Any?>) =
+        with(
+            DbEmbedTag(dataMap.withDefault {
+                null
+            })
+        ) {
+            Tag(
+                id = id,
+                name = name,
+                color = Color.valueOf(color),
+                icon = icon?.let {
+                    Icon.valueOf(it)
+                },
+                isFavorite = isFavorite
+            )
+        }
 }
 
 
@@ -121,7 +139,7 @@ data class DbChallenge(override val map: MutableMap<String, Any?> = mutableMapOf
     var color: String by map
     var icon: String? by map
     var difficulty: String by map
-    var tagIds: Map<String, Boolean> by map
+    var tags: Map<String, MutableMap<String, Any?>> by map
     var startDate: Long by map
     var endDate: Long by map
     var motivations: List<String> by map
