@@ -17,10 +17,7 @@ import io.ipoli.android.common.analytics.FirebaseEventLogger
 import io.ipoli.android.common.image.AndroidImageLoader
 import io.ipoli.android.common.image.ImageLoader
 import io.ipoli.android.common.middleware.LogEventsMiddleWare
-import io.ipoli.android.common.migration.MigrationExecutor
-import io.ipoli.android.common.migration.MigrationFrom100To101
-import io.ipoli.android.common.migration.MigrationFrom101To102
-import io.ipoli.android.common.migration.MigrationSideEffectHandler
+import io.ipoli.android.common.migration.*
 import io.ipoli.android.common.permission.AndroidPermissionChecker
 import io.ipoli.android.common.permission.PermissionChecker
 import io.ipoli.android.common.rate.AndroidRatePopupScheduler
@@ -327,7 +324,8 @@ class MainAndroidModule(
             database = database,
             migrations = listOf(
                 MigrationFrom100To101(),
-                MigrationFrom101To102()
+                MigrationFrom101To102(),
+                MigrationFrom102To103()
             )
         )
 

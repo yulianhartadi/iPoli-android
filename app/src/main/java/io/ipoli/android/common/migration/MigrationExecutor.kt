@@ -148,6 +148,71 @@ class MigrationFrom101To102 : FirestoreMigration() {
 
 }
 
+class MigrationFrom102To103 : FirestoreMigration() {
+
+    override val fromVersion = 102
+    override val toVersion = 103
+
+    override suspend fun execute(database: FirebaseFirestore, playerId: String) {
+
+        val qDocs = Tasks.await(
+            playerCollectionRef("quests", database, playerId)
+                .get(Source.SERVER)
+        ).documents
+
+        val rqDocs = Tasks.await(
+            playerCollectionRef("repeatingQuests", database, playerId)
+                .get(Source.SERVER)
+        ).documents
+
+        val csDocs = Tasks.await(
+            playerCollectionRef("challenges", database, playerId)
+                .get(Source.SERVER)
+        ).documents
+
+        val batch = database.batch()
+
+        for (qDoc in qDocs) {
+            if (!qDoc.contains("tags")) {
+
+                val qRef = playerCollectionRef("quests", database, playerId)
+                    .document(qDoc.id)
+
+                batch.update(qRef, mapOf("tags" to mapOf<String, Any?>()))
+            }
+        }
+
+        for (rqDoc in rqDocs) {
+
+            if (!rqDoc.contains("tags")) {
+
+                val rqRef = playerCollectionRef("repeatingQuests", database, playerId)
+                    .document(rqDoc.id)
+
+                batch.update(rqRef, mapOf("tags" to mapOf<String, Any?>()))
+            }
+        }
+
+        for (cDoc in csDocs) {
+            if (!cDoc.contains("tags")) {
+
+                val cRef = playerCollectionRef("challenges", database, playerId)
+                    .document(cDoc.id)
+
+                batch.update(cRef, mapOf("tags" to mapOf<String, Any?>()))
+            }
+        }
+
+        batch.update(
+            playerRef(database, playerId),
+            mapOf("schemaVersion" to Constants.SCHEMA_VERSION)
+        )
+
+        Tasks.await(batch.commit())
+    }
+
+}
+
 class MigrationException(message: String, cause: Throwable? = null) :
     Exception(message, cause)
 
