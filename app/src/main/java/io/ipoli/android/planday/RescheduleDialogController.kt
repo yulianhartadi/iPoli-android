@@ -162,7 +162,7 @@ class RescheduleDialogController(args: Bundle? = null) :
                             listener(LocalDate.of(year, month + 1, dayOfMonth))
                             dismiss()
                         }, date.year, date.month.value - 1, date.dayOfMonth
-                    )
+                    ).show()
                 }
             }
 

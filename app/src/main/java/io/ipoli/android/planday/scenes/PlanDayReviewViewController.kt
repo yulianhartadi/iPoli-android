@@ -125,7 +125,7 @@ class PlanDayReviewViewController(args: Bundle? = null) :
                     viewHolder.itemViewType == ViewType.QUEST.value && direction == ItemTouchHelper.START -> {
                         val questId = questId(viewHolder)
                         RescheduleDialogController(
-                            includeToday = false,
+                            includeToday = true,
                             listener = { date ->
                                 dispatch(PlanDayAction.RescheduleQuest(questId, date))
                             },
