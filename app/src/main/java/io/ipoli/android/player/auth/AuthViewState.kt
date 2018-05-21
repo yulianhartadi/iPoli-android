@@ -43,8 +43,8 @@ sealed class AuthAction : Action {
     object AccountsLinked : AuthAction()
     object GuestCreated : AuthAction()
     object PlayerSetupCompleted : AuthAction()
-    object PlayerLoggedIn : AuthAction()
-    object ExistingPlayerLoggedInFromGuest : AuthAction()
+    data class PlayerLoggedIn(val shouldMigrate: Boolean, val schemaVersion: Int) : AuthAction()
+    data class ExistingPlayerLoggedInFromGuest(val shouldMigrate: Boolean, val schemaVersion: Int) : AuthAction()
     object ShowSetUp : AuthAction()
     object UsernameValid : AuthAction()
 }
@@ -102,15 +102,19 @@ object AuthReducer : BaseViewStateReducer<AuthViewState>() {
                 )
             }
 
-            AuthAction.PlayerLoggedIn -> {
+            is AuthAction.PlayerLoggedIn -> {
                 subState.copy(
-                    type = PLAYER_LOGGED_IN
+                    type = PLAYER_LOGGED_IN,
+                    shouldMigrate = action.shouldMigrate,
+                    schemaVersion = action.schemaVersion
                 )
             }
 
-            AuthAction.ExistingPlayerLoggedInFromGuest -> {
+            is AuthAction.ExistingPlayerLoggedInFromGuest -> {
                 subState.copy(
-                    type = EXISTING_PLAYER_LOGGED_IN_FROM_GUEST
+                    type = EXISTING_PLAYER_LOGGED_IN_FROM_GUEST,
+                    shouldMigrate = action.shouldMigrate,
+                    schemaVersion = action.schemaVersion
                 )
             }
 
@@ -156,7 +160,9 @@ object AuthReducer : BaseViewStateReducer<AuthViewState>() {
             ),
             petName = null,
             petAvatar = null,
-            repeatingQuests = emptyList()
+            repeatingQuests = emptyList(),
+            shouldMigrate = false,
+            schemaVersion = Constants.SCHEMA_VERSION
         )
 
 }
@@ -170,7 +176,9 @@ data class AuthViewState(
     val avatars: List<Avatar>,
     val petName: String?,
     val petAvatar: PetAvatar?,
-    val repeatingQuests: List<Pair<RepeatingQuest, OnboardViewController.OnboardTag?>>
+    val repeatingQuests: List<Pair<RepeatingQuest, OnboardViewController.OnboardTag?>>,
+    val shouldMigrate : Boolean,
+    val schemaVersion: Int
 ) : ViewState {
     enum class StateType {
         IDLE,

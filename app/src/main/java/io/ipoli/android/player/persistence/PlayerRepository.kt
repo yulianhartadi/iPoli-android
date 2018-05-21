@@ -10,6 +10,7 @@ import com.google.firebase.auth.GoogleAuthProvider
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.ListenerRegistration
 import com.google.firebase.firestore.MetadataChanges
+import com.google.firebase.firestore.Source
 import io.ipoli.android.achievement.Achievement
 import io.ipoli.android.challenge.predefined.entity.PredefinedChallenge
 import io.ipoli.android.common.datetime.Time
@@ -44,6 +45,7 @@ interface PlayerRepository : EntityRepository<Player> {
 
     fun removeUsername(username: String)
     fun findSchemaVersion(): Int?
+    fun findServerSchemaVersion(): Int?
     fun purge(playerId: String)
 }
 
@@ -128,6 +130,14 @@ class FirestorePlayerRepository(
 
     override fun findSchemaVersion(): Int? {
         val result = entityReference.getSync()
+        val schemaVer = result["schemaVersion"]
+        return schemaVer?.let {
+            (schemaVer as Long).toInt()
+        }
+    }
+
+    override fun findServerSchemaVersion(): Int? {
+        val result = Tasks.await(entityReference.get(Source.SERVER))
         val schemaVer = result["schemaVersion"]
         return schemaVer?.let {
             (schemaVer as Long).toInt()

@@ -37,6 +37,7 @@ object AuthSideEffectHandler : AppSideEffectHandler() {
     private val checkMembershipStatusScheduler by required { checkMembershipStatusScheduler }
     private val planDayScheduler by required { planDayScheduler }
     private val saveRepeatingQuestUseCase by required { saveRepeatingQuestUseCase }
+    private val migrationExecutor by required { migrationExecutor }
 
     override fun canHandle(action: Action) = action is AuthAction
 
@@ -68,7 +69,23 @@ object AuthSideEffectHandler : AppSideEffectHandler() {
                         //TODO: delete anonymous account
                         savePlayerId(user)
                         dispatch(LoadDataAction.ChangePlayer(currentPlayerId))
-                        dispatch(AuthAction.ExistingPlayerLoggedInFromGuest)
+
+                        val pSchemaVersion = playerRepository.findServerSchemaVersion()!!
+                        if (migrationExecutor.shouldMigrate(pSchemaVersion)) {
+                            dispatch(
+                                AuthAction.ExistingPlayerLoggedInFromGuest(
+                                    true,
+                                    pSchemaVersion
+                                )
+                            )
+                        } else {
+                            dispatch(
+                                AuthAction.ExistingPlayerLoggedInFromGuest(
+                                    false,
+                                    pSchemaVersion
+                                )
+                            )
+                        }
                     }
                     isNewUser && hasDevicePlayer -> {
                         updatePlayerAuthProvider(user)
@@ -285,7 +302,13 @@ object AuthSideEffectHandler : AppSideEffectHandler() {
 
     private fun loginExistingPlayer(user: FirebaseUser) {
         savePlayerId(user)
-        dispatch(AuthAction.PlayerLoggedIn)
+
+        val pSchemaVersion = playerRepository.findServerSchemaVersion()!!
+        if (migrationExecutor.shouldMigrate(pSchemaVersion)) {
+            dispatch(AuthAction.PlayerLoggedIn(true, pSchemaVersion))
+        } else {
+            dispatch(AuthAction.PlayerLoggedIn(false, pSchemaVersion))
+        }
         prepareAppStart()
     }
 

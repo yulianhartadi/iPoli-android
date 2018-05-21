@@ -30,6 +30,7 @@ import io.ipoli.android.Constants
 import io.ipoli.android.R
 import io.ipoli.android.common.LoaderDialogController
 import io.ipoli.android.common.home.HomeViewController
+import io.ipoli.android.common.migration.MigrationViewController
 import io.ipoli.android.common.redux.android.ReduxViewController
 import io.ipoli.android.common.view.*
 import io.ipoli.android.common.view.recyclerview.BaseRecyclerViewAdapter
@@ -40,8 +41,6 @@ import io.ipoli.android.player.auth.AuthViewState.StateType.*
 import io.ipoli.android.player.auth.error.SignInError
 import io.ipoli.android.player.data.AndroidAvatar
 import io.ipoli.android.player.data.Avatar
-import kotlinx.android.synthetic.main.controller_auth.view.*
-import kotlinx.android.synthetic.main.item_auth_avatar.view.*
 
 
 /**
@@ -246,13 +245,21 @@ class AuthViewController(args: Bundle? = null) :
             PLAYER_LOGGED_IN -> {
                 hideLoader()
                 showShortToast(R.string.welcome_hero)
-                startHomeViewController()
+                if (state.shouldMigrate) {
+                    router.setRoot(RouterTransaction.with(MigrationViewController(state.schemaVersion)))
+                } else {
+                    startHomeViewController()
+                }
             }
 
             EXISTING_PLAYER_LOGGED_IN_FROM_GUEST -> {
                 hideLoader()
                 showShortToast(R.string.welcome_hero)
-                router.handleBack()
+                if (state.shouldMigrate) {
+                    router.setRoot(RouterTransaction.with(MigrationViewController(state.schemaVersion)))
+                } else {
+                    router.handleBack()
+                }
             }
 
             else -> {
