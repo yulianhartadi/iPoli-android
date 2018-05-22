@@ -2,7 +2,6 @@ package io.ipoli.android
 
 import android.content.Intent
 import android.content.pm.ActivityInfo
-import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
@@ -66,8 +65,6 @@ class MainActivity : AppCompatActivity(), Injects<Module>, SideEffectHandler<App
 
     private val stateStore by required { stateStore }
 
-    private val planDayScheduler by required { planDayScheduler }
-
     private val migrationExecutor by required { migrationExecutor }
 
     val rootRouter get() = router
@@ -130,9 +127,6 @@ class MainActivity : AppCompatActivity(), Injects<Module>, SideEffectHandler<App
                         } else {
                             stateStore.dispatch(LoadDataAction.All)
                             startApp(p)
-                            if (isInstallFromUpdate()) {
-                                planDayScheduler.scheduleForNextTime()
-                            }
                         }
                     }
                 }
@@ -235,17 +229,6 @@ class MainActivity : AppCompatActivity(), Injects<Module>, SideEffectHandler<App
             router.pushController(RouterTransaction.with(MembershipViewController()))
         }).show()
     }
-
-    private fun isInstallFromUpdate() =
-        try {
-            val firstInstallTime =
-                packageManager.getPackageInfo(packageName, 0).firstInstallTime
-            val lastUpdateTime =
-                packageManager.getPackageInfo(packageName, 0).lastUpdateTime
-            firstInstallTime != lastUpdateTime
-        } catch (e: PackageManager.NameNotFoundException) {
-            false
-        }
 
     override suspend fun execute(action: Action, state: AppState, dispatcher: Dispatcher) {
         withContext(UI) {
