@@ -51,18 +51,17 @@ class PlanDayMotivationViewController(args: Bundle? = null) :
         view.motivationAnimation.setAnimation("plan_day_rising_sun.json")
         view.motivationAnimation.addAnimatorListener(object : AnimatorListenerAdapter() {
             override fun onAnimationEnd(animation: Animator?) {
+                dispatch(PlanDayAction.RisingSunAnimationDone)
                 view.motivationAnimation.setMinProgress(0.33f)
                 view.motivationAnimation.repeatCount = LottieDrawable.INFINITE
                 view.motivationAnimation.playAnimation()
             }
         })
         view.motivationAnimation.playAnimation()
-
-        view.postDelayed({
-            dispatch(PlanDayAction.RisingSunAnimationDone)
-        }, 6000)
         return view
     }
+
+    override fun onCreateLoadAction() = PlanDayAction.LoadMotivation
 
     override fun onAttach(view: View) {
         super.onAttach(view)
@@ -88,10 +87,15 @@ class PlanDayMotivationViewController(args: Bundle? = null) :
     }
 
     override fun render(state: PlanDayViewState, view: View) {
+
         when (state.type) {
+
             PlanDayViewState.StateType.MOTIVATION_DATA_LOADED -> {
+
                 view.motivationAnimationBackground.fadeOut(mediumAnimTime)
                 view.motivationAnimation.fadeOut(animationDuration = mediumAnimTime, onComplete = {
+                    view.motivationAnimationBackground.gone()
+                    view.motivationAnimation.gone()
                     view.postDelayed({
                         renderMotivationData(state, view)
                     }, 2000)
@@ -114,6 +118,9 @@ class PlanDayMotivationViewController(args: Bundle? = null) :
                         }
                     )
                 } ?: dispatch(PlanDayAction.ImageLoaded)
+            }
+
+            else -> {
             }
         }
     }

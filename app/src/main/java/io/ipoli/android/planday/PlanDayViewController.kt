@@ -16,7 +16,7 @@ import io.ipoli.android.common.DataLoadedAction
 import io.ipoli.android.common.datetime.Time
 import io.ipoli.android.common.datetime.TimeOfDay
 import io.ipoli.android.common.home.HomeViewController
-import io.ipoli.android.common.mvi.ViewState
+import io.ipoli.android.common.mvi.BaseViewState
 import io.ipoli.android.common.redux.Action
 import io.ipoli.android.common.redux.android.ReduxViewController
 import io.ipoli.android.common.text.DateFormatter
@@ -56,6 +56,7 @@ sealed class PlanDayAction : Action {
     object Done : PlanDayAction()
     object Back : PlanDayAction()
     object LoadToday : PlanDayAction()
+    object LoadMotivation : PlanDayAction()
 }
 
 object PlanDayReducer : BaseViewStateReducer<PlanDayViewState>() {
@@ -79,12 +80,16 @@ object PlanDayReducer : BaseViewStateReducer<PlanDayViewState>() {
                 }
 
                 subState.copy(
+                    type = if (subState.type == PlanDayViewState.StateType.INITIAL)
+                        PlanDayViewState.StateType.FIRST_PAGE
+                    else
+                        subState.type,
                     playerName = playerName,
                     dateText = "$weekDayText, ${DateFormatter.formatDayWithWeek(today)}",
                     petAvatar = player?.pet?.avatar ?: subState.petAvatar,
                     timeFormat = player?.preferences?.timeFormat ?: subState.timeFormat,
                     temperatureUnit = player?.preferences?.temperatureUnit
-                            ?: subState.temperatureUnit
+                        ?: subState.temperatureUnit
                 )
             }
 
@@ -104,6 +109,9 @@ object PlanDayReducer : BaseViewStateReducer<PlanDayViewState>() {
                     temperatureUnit = player.preferences.temperatureUnit
                 )
             }
+
+            is PlanDayAction.LoadMotivation ->
+                createNewStateIfMotivationalDataIsLoaded(subState)
 
             is PlanDayAction.LoadReviewDay ->
                 createNewStateIfReviewDataIsLoaded(subState)
@@ -245,10 +253,10 @@ object PlanDayReducer : BaseViewStateReducer<PlanDayViewState>() {
 
     private fun hasMotivationalDataLoaded(state: PlanDayViewState) =
         state.weatherLoaded &&
-                state.quoteLoaded &&
-                state.imageLoaded &&
-                state.imageViewLoaded &&
-                state.risingSunAnimationDone
+            state.quoteLoaded &&
+            state.imageLoaded &&
+            state.imageViewLoaded &&
+            state.risingSunAnimationDone
 
     private fun createNewStateIfTodayDataIsLoaded(newState: PlanDayViewState) =
         if (hasTodayDataLoaded(newState))
@@ -325,10 +333,10 @@ data class PlanDayViewState(
     val awesomenessScore: CalculateAwesomenessScoreUseCase.AwesomenessScore?,
     val temperatureUnit: Player.Preferences.TemperatureUnit,
     val timeFormat: Player.Preferences.TimeFormat
-) :
-    ViewState {
+) : BaseViewState() {
     enum class StateType {
         INITIAL,
+        FIRST_PAGE,
         NEXT_PAGE,
         BACK_TO_REVIEW,
         CLOSE,
@@ -370,12 +378,13 @@ class PlanDayViewController(args: Bundle? = null) :
 
     override fun render(state: PlanDayViewState, view: View) {
         when (state.type) {
-            PlanDayViewState.StateType.INITIAL ->
+            PlanDayViewState.StateType.FIRST_PAGE -> {
                 changeChildController(
                     view = view,
                     adapterPosition = state.adapterPosition,
                     animate = false
                 )
+            }
 
             PlanDayViewState.StateType.NEXT_PAGE ->
                 changeChildController(

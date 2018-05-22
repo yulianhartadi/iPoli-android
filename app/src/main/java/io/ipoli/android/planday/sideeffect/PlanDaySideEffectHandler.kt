@@ -6,6 +6,7 @@ import io.ipoli.android.common.DataLoadedAction
 import io.ipoli.android.common.async.ChannelRelay
 import io.ipoli.android.common.redux.Action
 import io.ipoli.android.planday.PlanDayAction
+import io.ipoli.android.planday.PlanDayViewState
 import io.ipoli.android.planday.usecase.CalculateAwesomenessScoreUseCase
 import io.ipoli.android.quest.Quest
 import io.ipoli.android.quest.usecase.RescheduleQuestUseCase
@@ -40,10 +41,23 @@ object PlanDaySideEffectHandler : AppSideEffectHandler() {
     override suspend fun doExecute(action: Action, state: AppState) {
         when (action) {
             is PlanDayAction.Load -> {
+                val vs = state.stateFor(PlanDayViewState::class.java)
                 yesterdayQuestsChannelRelay.listen(Unit)
-                dispatch(DataLoadedAction.SuggestionsChanged(questRepository.findRandomUnscheduled(3)))
-                dispatch(DataLoadedAction.QuoteChanged(quoteRepository.findRandomQuote()))
-                dispatch(DataLoadedAction.MotivationalImageChanged(motivationalImageRepository.findRandomImage()))
+                if(vs.suggestedQuests == null) {
+                    dispatch(
+                        DataLoadedAction.SuggestionsChanged(
+                            questRepository.findRandomUnscheduled(
+                                3
+                            )
+                        )
+                    )
+                }
+                if(!vs.quoteLoaded) {
+                    dispatch(DataLoadedAction.QuoteChanged(quoteRepository.findRandomQuote()))
+                }
+                if(!vs.imageLoaded) {
+                    dispatch(DataLoadedAction.MotivationalImageChanged(motivationalImageRepository.findRandomImage()))
+                }
             }
 
             is PlanDayAction.GetWeather ->
