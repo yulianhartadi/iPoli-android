@@ -119,10 +119,10 @@
         android:layout_marginEnd="48dp"
         android:layout_marginStart="48dp"
         android:elevation="2dp"
-        android:gravity="center_horizontal"
-        android:paddingTop="16dp"
-        android:maxLines="2"
         android:ellipsize="end"
+        android:gravity="center_horizontal"
+        android:maxLines="2"
+        android:paddingTop="16dp"
         app:layout_constraintBottom_toTopOf="@+id/title"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -214,7 +214,7 @@
         android:id="@+id/group"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        app:constraint_referenced_ids="body,headline,title,start,snooze,dismiss,startHint,snoozeHint,dismissHint,reminderAnimation" />
+        app:constraint_referenced_ids="headline,start,snooze,dismiss,startHint,snoozeHint,dismissHint,reminderAnimation" />
 
 
 </android.support.constraint.ConstraintLayout>

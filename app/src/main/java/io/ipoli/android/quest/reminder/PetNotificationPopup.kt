@@ -12,7 +12,6 @@ import android.view.*
 import android.view.animation.AccelerateDecelerateInterpolator
 import android.view.animation.AnticipateInterpolator
 import io.ipoli.android.R
-import io.ipoli.android.R.id.*
 import io.ipoli.android.common.view.MviPopup
 import io.ipoli.android.common.view.gone
 import io.ipoli.android.common.view.views
@@ -170,7 +169,7 @@ class PetNotificationPopup(
         backgroundAnim.duration = duration
 
         val animators =
-            view.group.views().map {
+            contentViews(view).map {
                 ObjectAnimator.ofFloat(it, "alpha", 0f, 1f).setDuration(duration * 4 / 5)
             }
                 .toMutableList() as MutableList<Animator>
@@ -205,7 +204,7 @@ class PetNotificationPopup(
             }
         })
 
-        val animators = view.group.views().map {
+        val animators = contentViews(view).map {
             ObjectAnimator.ofFloat(it, "alpha", 1f, 0f).setDuration((duration / 1.5).toLong())
         }
             .toMutableList() as MutableList<Animator>
@@ -217,6 +216,8 @@ class PetNotificationPopup(
         set.addListener(listener)
         set.start()
     }
+
+    private fun contentViews(view: ViewGroup) = view.group.views() + view.title + view.body
 
     private fun playHidePetAnimation(view: ViewGroup) {
         val petSet = AnimatorSet()
