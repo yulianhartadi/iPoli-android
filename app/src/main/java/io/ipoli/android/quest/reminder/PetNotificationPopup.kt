@@ -14,7 +14,6 @@ import android.view.animation.AnticipateInterpolator
 import io.ipoli.android.R
 import io.ipoli.android.common.view.MviPopup
 import io.ipoli.android.common.view.gone
-import io.ipoli.android.common.view.invisible
 import io.ipoli.android.common.view.views
 import io.ipoli.android.pet.AndroidPetAvatar
 import io.ipoli.android.pet.PetAvatar
@@ -65,7 +64,7 @@ class PetNotificationPopup(
             if (viewModel.body != null) {
                 body.text = viewModel.body
             } else {
-                body.invisible()
+                body.height = 0
             }
             val petAvatar = AndroidPetAvatar.valueOf(viewModel.petAvatar.name)
             pet.setImageResource(petAvatar.image)
