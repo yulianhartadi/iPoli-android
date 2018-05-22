@@ -5,7 +5,7 @@ import io.ipoli.android.common.AppState
 import io.ipoli.android.common.BaseViewStateReducer
 import io.ipoli.android.common.DataLoadedAction
 import io.ipoli.android.common.datetime.Time
-import io.ipoli.android.common.mvi.ViewState
+import io.ipoli.android.common.mvi.BaseViewState
 import io.ipoli.android.common.redux.Action
 import io.ipoli.android.player.Player
 import io.ipoli.android.player.Player.Preferences.TemperatureUnit.FAHRENHEIT
@@ -119,7 +119,7 @@ data class SettingsViewState(
     val planDays: Set<DayOfWeek>,
     val isCalendarSyncEnabled: Boolean,
     val selectedCalendars: Int
-) : ViewState {
+) : BaseViewState() {
 
     enum class StateType {
         LOADING, DATA_CHANGED, ENABLE_SYNC_CALENDARS

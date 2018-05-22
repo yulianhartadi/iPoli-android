@@ -11,6 +11,7 @@ import io.ipoli.android.Constants
 import io.ipoli.android.R
 import io.ipoli.android.common.AppState
 import io.ipoli.android.common.BaseViewStateReducer
+import io.ipoli.android.common.mvi.BaseViewState
 import io.ipoli.android.common.mvi.ViewState
 import io.ipoli.android.common.redux.Action
 import io.ipoli.android.common.view.ReduxDialogController
@@ -65,7 +66,7 @@ object RescheduleDialogReducer : BaseViewStateReducer<RescheduleDialogViewState>
 data class RescheduleDialogViewState(
     val type: StateType,
     val petAvatar: PetAvatar
-) : ViewState {
+) : BaseViewState() {
     enum class StateType {
         LOADING,
         DATA_LOADED

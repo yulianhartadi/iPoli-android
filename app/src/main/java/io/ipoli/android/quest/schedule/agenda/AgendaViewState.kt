@@ -1,26 +1,13 @@
 package io.ipoli.android.quest.schedule.agenda
 
-import com.mikepenz.google_material_typeface_library.GoogleMaterial
-import com.mikepenz.ionicons_typeface_library.Ionicons
-import io.ipoli.android.R
 import io.ipoli.android.common.AppState
 import io.ipoli.android.common.BaseViewStateReducer
 import io.ipoli.android.common.DataLoadedAction
 import io.ipoli.android.common.datetime.isBetween
-import io.ipoli.android.common.mvi.ViewState
+import io.ipoli.android.common.mvi.BaseViewState
 import io.ipoli.android.common.redux.Action
-import io.ipoli.android.common.text.DateFormatter
-import io.ipoli.android.common.text.QuestStartTimeFormatter
-import io.ipoli.android.common.view.AndroidColor
-import io.ipoli.android.common.view.AndroidIcon
-import io.ipoli.android.event.Event
-import io.ipoli.android.quest.Quest
 import io.ipoli.android.quest.schedule.agenda.usecase.CreateAgendaItemsUseCase.AgendaItem
 import org.threeten.bp.LocalDate
-import org.threeten.bp.Month
-import org.threeten.bp.format.DateTimeFormatter
-import org.threeten.bp.format.TextStyle
-import java.util.*
 
 /**
  * Created by Venelin Valkov <venelin@mypoli.fun>
@@ -112,7 +99,7 @@ data class AgendaViewState(
     val type: AgendaViewState.StateType,
     val scrollToPosition: Int?,
     val agendaItems: List<AgendaItem>
-) : ViewState {
+) : BaseViewState() {
 
     enum class StateType {
         LOADING,

@@ -5,14 +5,14 @@ import io.ipoli.android.common.AppState
 import io.ipoli.android.common.BaseViewStateReducer
 import io.ipoli.android.common.DataLoadedAction
 import io.ipoli.android.common.datetime.*
-import io.ipoli.android.common.mvi.ViewState
+import io.ipoli.android.common.mvi.BaseViewState
 import io.ipoli.android.common.redux.Action
 import io.ipoli.android.quest.Quest
 import io.ipoli.android.quest.TimeRange
-import io.ipoli.android.quest.subquest.SubQuest
 import io.ipoli.android.quest.show.QuestViewState.StateType.*
 import io.ipoli.android.quest.show.sideeffect.TimerStartedAction
 import io.ipoli.android.quest.show.view.formatter.TimerFormatter
+import io.ipoli.android.quest.subquest.SubQuest
 import io.ipoli.android.tag.Tag
 import org.threeten.bp.Instant
 
@@ -324,7 +324,7 @@ data class QuestViewState(
     val showCompletePomodoroButton: Boolean = false,
     val tags: List<Tag>,
     val note: String = ""
-) : ViewState {
+) : BaseViewState() {
 
     enum class StateType {
         LOADING,

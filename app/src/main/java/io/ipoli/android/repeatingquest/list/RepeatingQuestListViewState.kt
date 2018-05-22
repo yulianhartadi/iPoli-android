@@ -3,7 +3,7 @@ package io.ipoli.android.repeatingquest.list
 import io.ipoli.android.common.AppState
 import io.ipoli.android.common.BaseViewStateReducer
 import io.ipoli.android.common.DataLoadedAction
-import io.ipoli.android.common.mvi.ViewState
+import io.ipoli.android.common.mvi.BaseViewState
 import io.ipoli.android.common.redux.Action
 import io.ipoli.android.quest.RepeatingQuest
 import io.ipoli.android.repeatingquest.list.RepeatingQuestListViewState.StateType.CHANGED
@@ -62,7 +62,7 @@ data class RepeatingQuestListViewState(
     val type: RepeatingQuestListViewState.StateType,
     val repeatingQuests: List<RepeatingQuest>,
     val showEmptyView: Boolean
-) : ViewState {
+) : BaseViewState() {
     enum class StateType {
         LOADING,
         CHANGED

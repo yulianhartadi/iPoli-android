@@ -4,7 +4,7 @@ import io.ipoli.android.common.AppState
 import io.ipoli.android.common.DataLoadedAction
 import io.ipoli.android.common.NamespaceViewStateReducer
 import io.ipoli.android.common.datetime.Time
-import io.ipoli.android.common.mvi.ViewState
+import io.ipoli.android.common.mvi.BaseViewState
 import io.ipoli.android.common.redux.Action
 import io.ipoli.android.quest.Color
 import io.ipoli.android.quest.Icon
@@ -293,7 +293,7 @@ data class DayViewState(
     val reminder: ReminderViewModel?,
     val icon: Icon?,
     val repeatingQuestId: String?
-) : ViewState {
+) : BaseViewState() {
 
     enum class StateType {
         LOADING,

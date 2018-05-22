@@ -14,7 +14,7 @@ import io.ipoli.android.Constants
 import io.ipoli.android.R
 import io.ipoli.android.common.AppState
 import io.ipoli.android.common.BaseViewStateReducer
-import io.ipoli.android.common.mvi.ViewState
+import io.ipoli.android.common.mvi.BaseViewState
 import io.ipoli.android.common.redux.Action
 import io.ipoli.android.common.redux.android.ReduxViewController
 import io.ipoli.android.common.view.*
@@ -200,7 +200,7 @@ data class OnboardViewState(
     val pet1: PetAvatar,
     val pet2: PetAvatar,
     val repeatingQuests: Map<Int, Pair<RepeatingQuest, OnboardViewController.OnboardTag?>>
-) : ViewState {
+) : BaseViewState() {
     enum class StateType {
         INITIAL,
         NEXT_PAGE,

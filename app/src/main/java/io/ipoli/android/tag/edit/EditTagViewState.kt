@@ -3,7 +3,7 @@ package io.ipoli.android.tag.edit
 import io.ipoli.android.common.AppState
 import io.ipoli.android.common.BaseViewStateReducer
 import io.ipoli.android.common.Validator
-import io.ipoli.android.common.mvi.ViewState
+import io.ipoli.android.common.mvi.BaseViewState
 import io.ipoli.android.common.redux.Action
 import io.ipoli.android.quest.Color
 import io.ipoli.android.quest.Icon
@@ -106,7 +106,7 @@ data class EditTagViewState(
     val color: Color,
     val icon: Icon?,
     val isFavorite: Boolean
-) : ViewState {
+) : BaseViewState() {
 
     enum class StateType {
         LOADING,

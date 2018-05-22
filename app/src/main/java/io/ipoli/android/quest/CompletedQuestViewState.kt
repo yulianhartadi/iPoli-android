@@ -7,7 +7,7 @@ import io.ipoli.android.common.datetime.Duration
 import io.ipoli.android.common.datetime.Minute
 import io.ipoli.android.common.datetime.Time
 import io.ipoli.android.common.datetime.minutes
-import io.ipoli.android.common.mvi.ViewState
+import io.ipoli.android.common.mvi.BaseViewState
 import io.ipoli.android.common.redux.Action
 import io.ipoli.android.common.view.AndroidColor
 import io.ipoli.android.common.view.AndroidIcon
@@ -126,7 +126,7 @@ data class CompletedQuestViewState(
     val playerLevel: Int? = null,
     val playerLevelProgress: Int? = null,
     val playerLevelMaxProgress: Int? = null
-) : ViewState {
+) : BaseViewState() {
 
     enum class StateType {
         LOADING,

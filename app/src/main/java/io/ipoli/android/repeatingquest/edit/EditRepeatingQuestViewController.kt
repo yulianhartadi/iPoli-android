@@ -41,7 +41,7 @@ import java.util.*
  */
 class EditRepeatingQuestViewController(args: Bundle? = null) :
     ReduxViewController<EditRepeatingQuestAction, EditRepeatingQuestViewState, EditRepeatingQuestReducer>(
-        args, renderDuplicateStates = true
+        args
     ) {
     override val reducer = EditRepeatingQuestReducer
 

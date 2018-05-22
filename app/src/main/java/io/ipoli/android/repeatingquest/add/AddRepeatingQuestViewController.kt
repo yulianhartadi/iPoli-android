@@ -487,7 +487,7 @@ class AddRepeatingQuestViewController(args: Bundle? = null) :
 
     class SummaryViewController(args: Bundle? = null) :
         BaseViewController<EditRepeatingQuestAction, EditRepeatingQuestViewState>(
-            args, renderDuplicateStates = true
+            args
         ) {
         override val stateKey = EditRepeatingQuestReducer.stateKey
 

@@ -5,7 +5,7 @@ import io.ipoli.android.challenge.predefined.entity.PredefinedChallenge
 import io.ipoli.android.challenge.predefined.entity.PredefinedChallengeData
 import io.ipoli.android.common.AppState
 import io.ipoli.android.common.BaseViewStateReducer
-import io.ipoli.android.common.mvi.ViewState
+import io.ipoli.android.common.mvi.BaseViewState
 import io.ipoli.android.common.redux.Action
 
 /**
@@ -77,7 +77,7 @@ data class PersonalizeChallengeViewState(
     val type: StateType,
     val challenge: PredefinedChallenge?,
     val selectedQuests: Set<PredefinedChallengeData.Quest>
-) : ViewState {
+) : BaseViewState() {
     enum class StateType {
         LOADING,
         DATA_LOADED,

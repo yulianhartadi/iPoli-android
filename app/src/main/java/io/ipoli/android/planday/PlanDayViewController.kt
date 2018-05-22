@@ -16,7 +16,7 @@ import io.ipoli.android.common.DataLoadedAction
 import io.ipoli.android.common.datetime.Time
 import io.ipoli.android.common.datetime.TimeOfDay
 import io.ipoli.android.common.home.HomeViewController
-import io.ipoli.android.common.mvi.ViewState
+import io.ipoli.android.common.mvi.BaseViewState
 import io.ipoli.android.common.redux.Action
 import io.ipoli.android.common.redux.android.ReduxViewController
 import io.ipoli.android.common.text.DateFormatter
@@ -325,8 +325,7 @@ data class PlanDayViewState(
     val awesomenessScore: CalculateAwesomenessScoreUseCase.AwesomenessScore?,
     val temperatureUnit: Player.Preferences.TemperatureUnit,
     val timeFormat: Player.Preferences.TimeFormat
-) :
-    ViewState {
+) : BaseViewState() {
     enum class StateType {
         INITIAL,
         NEXT_PAGE,

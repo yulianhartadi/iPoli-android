@@ -53,7 +53,7 @@ import space.traversal.kapsule.required
  */
 
 abstract class BaseViewController<A : Action, VS : ViewState> protected constructor(
-    args: Bundle? = null, private val renderDuplicateStates: Boolean = false
+    args: Bundle? = null
 ) : RestoreViewOnCreateController(args), Injects<Module>,
     StateStore.StateChangeSubscriber<AppState> {
 
@@ -144,9 +144,7 @@ abstract class BaseViewController<A : Action, VS : ViewState> protected construc
 
             val viewState = newState.stateFor<VS>(stateKey)
 
-            if (renderDuplicateStates) {
-                renderViewState(viewState)
-            } else if (viewState != currentState) {
+            if (viewState != currentState) {
                 currentState = viewState
                 renderViewState(viewState)
             }
@@ -397,9 +395,8 @@ abstract class BaseViewController<A : Action, VS : ViewState> protected construc
     }
 }
 
-abstract class ReduxViewController<A : Action, VS : ViewState, out R : ViewStateReducer<AppState, VS>> protected constructor(
-    args: Bundle? = null, private val renderDuplicateStates: Boolean = false
-) : BaseViewController<A, VS>(args, renderDuplicateStates) {
+abstract class ReduxViewController<A : Action, VS : ViewState, out R : ViewStateReducer<AppState, VS>>
+protected constructor(args: Bundle? = null) : BaseViewController<A, VS>(args) {
 
     private val stateStore by required { stateStore }
 

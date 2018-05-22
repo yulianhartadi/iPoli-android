@@ -3,7 +3,7 @@ package io.ipoli.android.tag.show
 import io.ipoli.android.common.AppState
 import io.ipoli.android.common.BaseViewStateReducer
 import io.ipoli.android.common.DataLoadedAction
-import io.ipoli.android.common.mvi.ViewState
+import io.ipoli.android.common.mvi.BaseViewState
 import io.ipoli.android.common.redux.Action
 import io.ipoli.android.quest.Color
 import io.ipoli.android.quest.Icon
@@ -80,7 +80,7 @@ object TagReducer : BaseViewStateReducer<TagViewState>() {
     override val stateKey = key<TagViewState>()
 }
 
-sealed class TagViewState(open val id: String) : ViewState {
+sealed class TagViewState(open val id: String) : BaseViewState() {
 
     data class Loading(override val id: String) : TagViewState(id)
 

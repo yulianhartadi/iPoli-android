@@ -22,7 +22,7 @@ import io.ipoli.android.R
 import io.ipoli.android.common.AppState
 import io.ipoli.android.common.BaseViewStateReducer
 import io.ipoli.android.common.DataLoadedAction
-import io.ipoli.android.common.mvi.ViewState
+import io.ipoli.android.common.mvi.BaseViewState
 import io.ipoli.android.common.redux.Action
 import io.ipoli.android.common.view.ColorPickerViewState.Type.*
 import io.ipoli.android.pet.AndroidPetAvatar
@@ -100,7 +100,7 @@ data class ColorPickerViewState(
     val selectedColor: Color? = null,
     val colors: Set<Color> = emptySet(),
     val colorPacks: Set<ColorPack> = emptySet()
-) : ViewState {
+) : BaseViewState() {
     enum class Type {
         LOADING,
         DATA_CHANGED,

@@ -3,7 +3,7 @@ package io.ipoli.android.tag.list
 import io.ipoli.android.common.AppState
 import io.ipoli.android.common.BaseViewStateReducer
 import io.ipoli.android.common.DataLoadedAction
-import io.ipoli.android.common.mvi.ViewState
+import io.ipoli.android.common.mvi.BaseViewState
 import io.ipoli.android.common.redux.Action
 import io.ipoli.android.tag.Tag
 
@@ -58,7 +58,7 @@ object TagListReducer : BaseViewStateReducer<TagListViewState>() {
 
 }
 
-sealed class TagListViewState : ViewState {
+sealed class TagListViewState : BaseViewState() {
     object Loading : TagListViewState()
     data class Changed(val tags: List<Tag>) : TagListViewState()
     object Empty : TagListViewState()

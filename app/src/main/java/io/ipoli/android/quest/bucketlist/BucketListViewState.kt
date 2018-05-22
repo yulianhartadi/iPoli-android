@@ -2,7 +2,7 @@ package io.ipoli.android.quest.bucketlist
 
 import io.ipoli.android.common.AppState
 import io.ipoli.android.common.BaseViewStateReducer
-import io.ipoli.android.common.mvi.ViewState
+import io.ipoli.android.common.mvi.BaseViewState
 import io.ipoli.android.common.redux.Action
 import io.ipoli.android.quest.bucketlist.usecase.CreateBucketListItemsUseCase
 
@@ -42,7 +42,7 @@ object BucketListReducer : BaseViewStateReducer<BucketListViewState>() {
     override fun defaultState() = BucketListViewState.Loading
 }
 
-sealed class BucketListViewState : ViewState {
+sealed class BucketListViewState : BaseViewState() {
     object Loading : BucketListViewState()
     data class Changed(val items: List<CreateBucketListItemsUseCase.BucketListItem>) :
         BucketListViewState()

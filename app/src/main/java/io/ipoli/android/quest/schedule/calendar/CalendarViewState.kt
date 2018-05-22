@@ -2,6 +2,7 @@ package io.ipoli.android.quest.schedule.calendar
 
 import io.ipoli.android.common.AppState
 import io.ipoli.android.common.BaseViewStateReducer
+import io.ipoli.android.common.mvi.BaseViewState
 import io.ipoli.android.common.mvi.ViewState
 import io.ipoli.android.common.redux.Action
 import io.ipoli.android.quest.schedule.ScheduleAction
@@ -82,7 +83,7 @@ data class CalendarViewState(
     val currentDate: LocalDate,
     val adapterPosition: Int,
     val adapterMidPosition: Int
-) : ViewState {
+) : BaseViewState() {
     enum class StateType {
         INITIAL, CALENDAR_DATE_CHANGED, SWIPE_DATE_CHANGED, LOADING
     }

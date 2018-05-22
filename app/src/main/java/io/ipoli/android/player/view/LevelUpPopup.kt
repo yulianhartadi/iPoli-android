@@ -10,14 +10,11 @@ import android.view.LayoutInflater
 import android.view.View
 import android.widget.ImageView
 import com.bumptech.glide.Glide
-import kotlinx.android.synthetic.main.popup_level_up.view.*
-import kotlinx.coroutines.experimental.channels.consumeEach
-import kotlinx.coroutines.experimental.launch
 import io.ipoli.android.Constants
 import io.ipoli.android.R
 import io.ipoli.android.common.mvi.BaseMviPresenter
+import io.ipoli.android.common.mvi.BaseViewState
 import io.ipoli.android.common.mvi.Intent
-import io.ipoli.android.common.mvi.ViewState
 import io.ipoli.android.common.mvi.ViewStateRenderer
 import io.ipoli.android.common.view.MviPopup
 import io.ipoli.android.common.view.anim.TypewriterTextAnimator
@@ -26,6 +23,9 @@ import io.ipoli.android.pet.AndroidPetAvatar
 import io.ipoli.android.pet.PetAvatar
 import io.ipoli.android.player.Player
 import io.ipoli.android.player.usecase.ListenForPlayerChangesUseCase
+import kotlinx.android.synthetic.main.popup_level_up.view.*
+import kotlinx.coroutines.experimental.channels.consumeEach
+import kotlinx.coroutines.experimental.launch
 import space.traversal.kapsule.required
 import kotlin.coroutines.experimental.CoroutineContext
 
@@ -33,7 +33,7 @@ import kotlin.coroutines.experimental.CoroutineContext
 data class LevelUpViewState(
     val level: Int? = null,
     val avatar: PetAvatar? = null
-) : ViewState
+) : BaseViewState()
 
 sealed class LevelUpIntent : Intent {
     data class LoadData(val newLevel: Int) : LevelUpIntent()

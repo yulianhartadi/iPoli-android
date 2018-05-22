@@ -2,6 +2,7 @@ package io.ipoli.android.note
 
 import io.ipoli.android.common.AppState
 import io.ipoli.android.common.BaseViewStateReducer
+import io.ipoli.android.common.mvi.BaseViewState
 import io.ipoli.android.common.mvi.ViewState
 import io.ipoli.android.common.redux.Action
 import io.ipoli.android.note.NoteViewState.Type.*
@@ -95,7 +96,7 @@ data class NoteViewState(
     val showEmpty: Boolean,
     val showText: Boolean,
     val isClosable: Boolean
-) : ViewState {
+) : BaseViewState() {
     enum class Type {
         LOADING,
         VIEW,

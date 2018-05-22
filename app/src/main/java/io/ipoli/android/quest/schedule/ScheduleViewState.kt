@@ -3,7 +3,7 @@ package io.ipoli.android.quest.schedule
 import android.content.Context
 import io.ipoli.android.common.AppState
 import io.ipoli.android.common.BaseViewStateReducer
-import io.ipoli.android.common.mvi.ViewState
+import io.ipoli.android.common.mvi.BaseViewState
 import io.ipoli.android.common.redux.Action
 import io.ipoli.android.common.text.CalendarFormatter
 import io.ipoli.android.quest.schedule.agenda.AgendaAction
@@ -145,7 +145,7 @@ data class ScheduleViewState(
     val currentDate: LocalDate,
     val datePickerState: DatePickerState,
     val viewMode: ViewMode
-) : ViewState {
+) : BaseViewState() {
 
     enum class StateType {
         LOADING, INITIAL, IDLE, CALENDAR_DATE_CHANGED, SWIPE_DATE_CHANGED, DATE_PICKER_CHANGED, MONTH_CHANGED,

@@ -35,7 +35,7 @@ import org.threeten.bp.LocalDate
  */
 class AddQuestViewController(args: Bundle? = null) :
     ReduxViewController<AddQuestAction, AddQuestViewState, AddQuestReducer>(
-        args, true
+        args
     ) {
     override val reducer = AddQuestReducer
 

@@ -4,7 +4,7 @@ import io.ipoli.android.challenge.entity.Challenge
 import io.ipoli.android.challenge.picker.ChallengePickerViewState.StateType.*
 import io.ipoli.android.common.AppState
 import io.ipoli.android.common.BaseViewStateReducer
-import io.ipoli.android.common.mvi.ViewState
+import io.ipoli.android.common.mvi.BaseViewState
 import io.ipoli.android.common.redux.Action
 import io.ipoli.android.pet.PetAvatar
 
@@ -69,7 +69,7 @@ data class ChallengePickerViewState(
     val challenges: List<Challenge>,
     val selectedChallenge: Challenge?,
     val showEmpty: Boolean
-) : ViewState {
+) : BaseViewState() {
     enum class StateType {
         LOADING,
         DATA_LOADED,
