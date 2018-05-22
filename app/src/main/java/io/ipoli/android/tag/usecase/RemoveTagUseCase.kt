@@ -21,7 +21,7 @@ class RemoveTagUseCase(
 
     override fun execute(parameters: Params) {
         val newQuests = questRepository
-            .findByTag(parameters.tagId).map {
+            .findByTagWithRemoved(parameters.tagId).map {
                 it.copy(
                     tags = removeTag(parameters.tagId, it.tags)
                 )
@@ -29,7 +29,7 @@ class RemoveTagUseCase(
         questRepository.save(newQuests)
 
         val newRepeatingQuests = repeatingQuestRepository
-            .findByTag(parameters.tagId)
+            .findByTagWithRemoved(parameters.tagId)
             .map {
                 it.copy(
                     tags = removeTag(parameters.tagId, it.tags)
@@ -39,7 +39,7 @@ class RemoveTagUseCase(
         repeatingQuestRepository.save(newRepeatingQuests)
 
         val newChallenges = challengeRepository
-            .findByTag(parameters.tagId)
+            .findByTagWithRemoved(parameters.tagId)
             .map {
                 it.copy(
                     tags = removeTag(parameters.tagId, it.tags)

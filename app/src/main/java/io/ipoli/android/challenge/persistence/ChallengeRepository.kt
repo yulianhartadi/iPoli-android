@@ -24,6 +24,7 @@ import kotlin.coroutines.experimental.CoroutineContext
  */
 interface ChallengeRepository : CollectionRepository<Challenge> {
     fun findByTag(tagId: String): List<Challenge>
+    fun findByTagWithRemoved(tagId: String): List<Challenge>
 }
 
 class FirestoreChallengeRepository(
@@ -48,6 +49,11 @@ class FirestoreChallengeRepository(
             .listenForChanges(channel)
 
     override fun findByTag(tagId: String) =
+        collectionReference
+            .whereEqualTo("tags.$tagId.id", tagId)
+            .notRemovedEntities
+
+    override fun findByTagWithRemoved(tagId: String) =
         collectionReference
             .whereEqualTo("tags.$tagId.id", tagId)
             .entities

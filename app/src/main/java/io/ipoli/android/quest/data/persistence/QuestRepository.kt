@@ -99,6 +99,7 @@ interface QuestRepository : CollectionRepository<Quest> {
     fun findCountForTag(tagId: String): Int
 
     fun findByTag(tagId: String): List<Quest>
+    fun findByTagWithRemoved(tagId: String): List<Quest>
 
     fun purge(questIds: List<String>)
 }
@@ -190,7 +191,7 @@ class FirestoreQuestRepository(
         return if (includeRemoved)
             toEntityObjects(query.documents)
         else
-            query.entities
+            query.notRemovedEntities
     }
 
     /**
@@ -210,7 +211,7 @@ class FirestoreQuestRepository(
         val quests = collectionReference
             .whereEqualTo("repeatingQuestId", null)
             .whereEqualTo("completedAtDate", null)
-            .whereGreaterThanOrEqualTo("scheduledDate", start.startOfDayUTC()).entities
+            .whereGreaterThanOrEqualTo("scheduledDate", start.startOfDayUTC()).notRemovedEntities
 
         return quests.filter { it.challengeId != challengeId }
     }
@@ -224,7 +225,7 @@ class FirestoreQuestRepository(
         return if (includeRemoved)
             toEntityObjects(query.documents)
         else
-            query.entities
+            query.notRemovedEntities
     }
 
 
@@ -244,14 +245,14 @@ class FirestoreQuestRepository(
         collectionReference
             .whereEqualTo("challengeId", challengeId)
             .whereEqualTo("repeatingQuestId", null)
-            .entities
+            .notRemovedEntities
 
 
     override fun findCompletedForRepeatingQuestInPeriod(
         repeatingQuestId: String,
         start: LocalDate,
         end: LocalDate?
-    ) = createCompletedForRepeatingInPeriodQuery(repeatingQuestId, start, end).entities
+    ) = createCompletedForRepeatingInPeriodQuery(repeatingQuestId, start, end).notRemovedEntities
 
     override fun findCompletedCountForRepeatingQuestInPeriod(
         repeatingQuestId: String,
@@ -283,7 +284,7 @@ class FirestoreQuestRepository(
             .whereEqualTo("completedAtDate", null)
             .orderBy("scheduledDate", Query.Direction.ASCENDING)
             .limit(1)
-            .entities.firstOrNull()
+            .notRemovedEntities.firstOrNull()
 
     override fun findOriginalScheduledForRepeatingQuestAtDate(
         repeatingQuestId: String,
@@ -317,6 +318,11 @@ class FirestoreQuestRepository(
     override fun findByTag(tagId: String) =
         collectionReference
             .whereEqualTo("tags.$tagId.id", tagId)
+            .notRemovedEntities
+
+    override fun findByTagWithRemoved(tagId: String) =
+        collectionReference
+            .whereEqualTo("tags.$tagId.id", tagId)
             .entities
 
     override fun findCountForTag(tagId: String): Int =
@@ -339,7 +345,7 @@ class FirestoreQuestRepository(
     override fun findRandomUnscheduled(count: Int) =
         collectionReference
             .whereEqualTo("scheduledDate", null)
-            .entities
+            .notRemovedEntities
             .shuffled()
             .take(count)
 
@@ -349,7 +355,7 @@ class FirestoreQuestRepository(
             .whereLessThanOrEqualTo("scheduledDate", date.startOfDayUTC())
             .orderBy("scheduledDate")
             .orderBy("startMinute")
-            .entities
+            .notRemovedEntities
 
     override fun findScheduledForRepeatingQuestBetween(
         repeatingQuestId: String,
@@ -359,7 +365,7 @@ class FirestoreQuestRepository(
         collectionReference
             .whereEqualTo("repeatingQuestId", repeatingQuestId)
             .whereGreaterThan("scheduledDate", start.startOfDayUTC() - 1)
-            .whereLessThanOrEqualTo("scheduledDate", end.startOfDayUTC()).entities
+            .whereLessThanOrEqualTo("scheduledDate", end.startOfDayUTC()).notRemovedEntities
 
     override suspend fun listenForScheduledAt(
         date: LocalDate,
@@ -419,14 +425,14 @@ class FirestoreQuestRepository(
         questIds.forEach {
             questRef = questRef.whereEqualTo("id", it)
         }
-        return questRef.entities
+        return questRef.notRemovedEntities
     }
 
     override fun findStartedQuests(): List<Quest> {
         val query = collectionReference
             .whereEqualTo("completedAtDate", null)
             .whereGreaterThan("timeRangeCount", 0)
-        return query.entities
+        return query.notRemovedEntities
     }
 
     override fun findCompletedForDate(date: LocalDate): List<Quest> {
@@ -435,7 +441,7 @@ class FirestoreQuestRepository(
             // see https://stackoverflow.com/a/47379643/6336582
             .whereGreaterThan("completedAtDate", date.startOfDayUTC() - 1)
             .whereLessThanOrEqualTo("completedAtDate", date.startOfDayUTC())
-        return query.entities
+        return query.notRemovedEntities
     }
 
     override fun findLastScheduledDate(currentDate: LocalDate, maxQuests: Int): LocalDate? {
@@ -443,7 +449,7 @@ class FirestoreQuestRepository(
             .whereGreaterThan("scheduledDate", currentDate.startOfDayUTC())
             .limit(maxQuests.toLong())
             .orderBy("scheduledDate", Query.Direction.ASCENDING)
-        val endDateQuests = endDateQuery.entities
+        val endDateQuests = endDateQuery.notRemovedEntities
 
         if (endDateQuests.isEmpty()) {
             return null
@@ -457,7 +463,7 @@ class FirestoreQuestRepository(
             .whereLessThan("scheduledDate", currentDate.startOfDayUTC())
             .limit(maxQuests.toLong())
             .orderBy("scheduledDate", Query.Direction.DESCENDING)
-        val startDateQuests = startDateQuery.entities
+        val startDateQuests = startDateQuery.notRemovedEntities
 
         if (startDateQuests.isEmpty()) {
             return null

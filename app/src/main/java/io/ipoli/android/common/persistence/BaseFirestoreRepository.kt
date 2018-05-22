@@ -1,24 +1,19 @@
 package io.ipoli.android.common.persistence
 
 import android.content.SharedPreferences
-import android.os.Looper
 import com.crashlytics.android.Crashlytics
 import com.google.android.gms.tasks.Tasks
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.*
 import io.ipoli.android.quest.Entity
-import io.ipoli.android.tag.Tag
-import kotlinx.coroutines.experimental.CommonPool
 import kotlinx.coroutines.experimental.CoroutineStart
 import kotlinx.coroutines.experimental.channels.Channel
 import kotlinx.coroutines.experimental.channels.SendChannel
 import kotlinx.coroutines.experimental.launch
 import org.threeten.bp.Instant
 import timber.log.Timber
-import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.Executors
 import kotlin.coroutines.experimental.CoroutineContext
-import kotlin.reflect.KProperty
 
 /**
  * Created by Venelin Valkov <venelin@mypoli.fun>
@@ -176,9 +171,13 @@ abstract class BaseFirestoreRepository<E, out T>(
         }
     }
 
-    protected val Query.entities
+    protected val Query.notRemovedEntities
         get() =
             toEntityObjects(whereEqualTo("removedAt", null).documents)
+
+    protected val Query.entities
+        get() =
+            toEntityObjects(documents)
 
     protected fun toEntityObjects(snapshots: List<DocumentSnapshot>) =
         snapshots.map { toEntityObject(it.data!!) }
@@ -230,7 +229,7 @@ abstract class BaseCollectionFirestoreRepository<E, out T>(
     override fun findById(id: String): E? =
         extractDocument(documentReference(id))
 
-    override fun findAll() = collectionReference.entities
+    override fun findAll() = collectionReference.notRemovedEntities
 
     override suspend fun listenById(id: String, channel: Channel<E?>): Channel<E?> {
 

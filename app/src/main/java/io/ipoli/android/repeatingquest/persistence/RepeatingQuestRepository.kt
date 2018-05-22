@@ -36,6 +36,7 @@ interface RepeatingQuestRepository : CollectionRepository<RepeatingQuest> {
 
     fun findAllForChallenge(challengeId: String): List<RepeatingQuest>
     fun findByTag(tagId: String): List<RepeatingQuest>
+    fun findByTagWithRemoved(tagId: String): List<RepeatingQuest>
     fun generateId(): String
     fun purge(id: String)
     fun purge(ids: List<String>)
@@ -103,11 +104,11 @@ class FirestoreRepeatingQuestRepository(
     override fun findAllActive(currentDate: LocalDate): List<RepeatingQuest> {
         val rqsWithEndDate = collectionReference
             .whereGreaterThanOrEqualTo("repeatPattern.endDate", currentDate.startOfDayUTC())
-            .entities
+            .notRemovedEntities
 
         val rqsWithoutEndDate = collectionReference
             .whereEqualTo("repeatPattern.endDate", null)
-            .entities
+            .notRemovedEntities
 
         return rqsWithEndDate + rqsWithoutEndDate
     }
@@ -115,9 +116,14 @@ class FirestoreRepeatingQuestRepository(
     override fun findAllForChallenge(challengeId: String) =
         collectionReference
             .whereEqualTo("challengeId", challengeId)
-            .entities
+            .notRemovedEntities
 
     override fun findByTag(tagId: String) =
+        collectionReference
+            .whereEqualTo("tags.$tagId.id", tagId)
+            .notRemovedEntities
+
+    override fun findByTagWithRemoved(tagId: String) =
         collectionReference
             .whereEqualTo("tags.$tagId.id", tagId)
             .entities
