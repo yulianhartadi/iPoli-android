@@ -144,7 +144,7 @@ abstract class BaseViewController<A : Action, VS : ViewState> protected construc
 
             val viewState = newState.stateFor<VS>(stateKey)
 
-            if (viewState != currentState) {
+            if (currentState == null || !viewState.hasSameStateId(currentState as VS)) {
                 currentState = viewState
                 renderViewState(viewState)
             }

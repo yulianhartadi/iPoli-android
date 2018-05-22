@@ -9,19 +9,12 @@ import java.util.*
  */
 interface ViewState : State {
     val stateId: String
+
+    fun hasSameStateId(other: ViewState) = stateId == other.stateId
 }
 
 abstract class BaseViewState : ViewState {
-
     override val stateId = UUID.randomUUID().toString()
-
-    override fun equals(other: Any?): Boolean {
-        if (other == null) return false
-        if (other !is ViewState) return false
-        return stateId == other.stateId
-    }
-
-    override fun hashCode() = stateId.hashCode()
 }
 
 interface Intent
