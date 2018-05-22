@@ -118,7 +118,7 @@ class EditTagViewController(args: Bundle? = null) :
                 .largeIcon(state.iicon)
         )
 
-        view.tagIcon.setOnClickListener {
+        view.tagIcon.onDebounceClick {
             IconPickerDialogController({ icon ->
                 dispatch(EditTagAction.ChangeIcon(icon))
             }, state.icon).show(
@@ -134,7 +134,7 @@ class EditTagViewController(args: Bundle? = null) :
         state: EditTagViewState
     ) {
         colorLayout(view, state)
-        view.tagColor.setOnClickListener {
+        view.tagColor.onDebounceClick {
             ColorPickerDialogController({
                 dispatch(EditTagAction.ChangeColor(it))
             }, state.color).show(

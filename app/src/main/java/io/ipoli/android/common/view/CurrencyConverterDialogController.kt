@@ -224,7 +224,7 @@ class CurrencyConverterDialogController :
 
                 enableConvertButton(view, state.enableConvert)
 
-                view.convert.setOnClickListener {
+                view.convert.onDebounceClick {
                     playConvertAnimation(
                         view,
                         { dispatch(CurrencyConverterAction.Convert(view.seekBar.progress)) })

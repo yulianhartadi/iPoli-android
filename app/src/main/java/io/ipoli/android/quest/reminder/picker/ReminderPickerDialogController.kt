@@ -147,7 +147,7 @@ class ReminderPickerDialogController :
 
     override fun onDialogCreated(dialog: AlertDialog, contentView: View) {
         dialog.setOnShowListener {
-            dialog.getButton(DialogInterface.BUTTON_POSITIVE).setOnClickListener {
+            dialog.getButton(DialogInterface.BUTTON_POSITIVE).onDebounceClick {
                 dispatch(ReminderPickerAction.PickReminder)
             }
         }

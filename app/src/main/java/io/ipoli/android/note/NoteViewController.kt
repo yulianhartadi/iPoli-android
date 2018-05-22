@@ -89,7 +89,9 @@ class NoteViewController(args: Bundle? = null) :
 
                 view.noteAction.visible()
                 view.noteAction.text = stringRes(R.string.preview)
-                view.noteAction.setOnClickListener { dispatch(NoteAction.Preview(view.editNoteText.text.toString())) }
+                view.noteAction.onDebounceClick {
+                    dispatch(NoteAction.Preview(view.editNoteText.text.toString()))
+                }
 
                 view.editNoteText.setText(state.text)
                 view.editNoteText.animate().apply {
@@ -128,7 +130,7 @@ class NoteViewController(args: Bundle? = null) :
         enterFullScreen()
         view.noteAction.visible()
         view.noteAction.text = stringRes(R.string.save)
-        view.noteAction.setOnClickListener {
+        view.noteAction.onDebounceClick {
             val note = view.editNoteText.text.toString()
             dispatch(NoteAction.Save(note))
         }
@@ -157,7 +159,7 @@ class NoteViewController(args: Bundle? = null) :
     private fun renderClose(state: NoteViewState, view: View) {
         if (state.isClosable) {
             view.closeNote.visible()
-            view.closeNote.setOnClickListener {
+            view.closeNote.onDebounceClick {
                 closeListener?.invoke()
             }
         } else {
@@ -216,10 +218,9 @@ class NoteDialogViewController(args: Bundle? = null) : BaseFullscreenDialogContr
             })
         )
 
-
-        view.closeNote.setOnClickListener {
+        view.closeNote.setOnClickListener(Debounce.clickListener {
             dismiss()
-        }
+        })
         return view
     }
 

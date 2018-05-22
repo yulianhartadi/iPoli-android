@@ -125,16 +125,16 @@ class StoreViewController(args: Bundle? = null) : RestoreViewOnCreateController(
                 val xRadius = width / 2f
                 val yRadius = view.storeItemBackground.height / 2f
                 view.storeItemBackground.background =
-                        createLeftRoundedDrawable(xRadius, yRadius, colorRes)
+                    createLeftRoundedDrawable(xRadius, yRadius, colorRes)
             }
         }
         view.storeItemIcon.setImageResource(icon)
         view.storeItemIcon.drawable.setTint(colorRes)
         view.storeItemTitle.text = stringRes(title)
 
-        view.setOnClickListener {
+        view.setOnClickListener(Debounce.clickListener {
             open()
-        }
+        })
     }
 
     private fun createLeftRoundedDrawable(xRadius: Float, yRadius: Float, color: Int): Drawable {

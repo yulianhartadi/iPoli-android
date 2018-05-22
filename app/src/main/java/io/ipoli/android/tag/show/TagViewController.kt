@@ -328,7 +328,7 @@ class TagViewController(args: Bundle? = null) :
                     view.questChallengeIndicator.visibility =
                             if (vm.isFromChallenge) View.VISIBLE else View.GONE
 
-                    view.setOnClickListener {
+                    view.onDebounceClick {
                         rootRouter.pushController(
                             QuestViewController.routerTransaction(vm.id)
                         )
@@ -358,7 +358,7 @@ class TagViewController(args: Bundle? = null) :
                     view.questChallengeIndicator.visibility =
                             if (vm.isFromChallenge) View.VISIBLE else View.GONE
 
-                    view.setOnClickListener {
+                    view.onDebounceClick {
                         val handler = FadeChangeHandler()
                         rootRouter.pushController(
                             RouterTransaction

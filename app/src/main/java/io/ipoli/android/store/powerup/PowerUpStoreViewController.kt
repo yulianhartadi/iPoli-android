@@ -163,7 +163,7 @@ class PowerUpStoreViewController(args: Bundle? = null) :
         view.powerUpPager.clipToPadding = false
         view.powerUpPager.pageMargin = ViewUtils.dpToPx(8f, view.context).toInt()
 
-        view.hide.setOnClickListener {
+        view.hide.onDebounceClick {
             TransitionManager.beginDelayedTransition(view.rootCoordinator as ViewGroup  )
             view.membershipHint.gone()
         }
@@ -316,7 +316,7 @@ class PowerUpStoreViewController(args: Bundle? = null) :
             view.pDescription.text = item.description
             view.pBuy.text = item.coinPrice
 
-            view.pBuy.setOnClickListener {
+            view.pBuy.onDebounceClick {
                 dispatch(PowerUpStoreAction.Enable(item.type))
             }
         }

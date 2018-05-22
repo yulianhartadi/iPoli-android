@@ -188,7 +188,7 @@ class SettingsViewController(args: Bundle? = null) :
 
     private fun renderAboutSection(state: SettingsViewState, view: View) {
 
-        view.contactContainer.setOnClickListener {
+        view.contactContainer.onDebounceClick {
             EmailUtils.send(
                 activity!!,
                 "Hi",
@@ -197,7 +197,7 @@ class SettingsViewController(args: Bundle? = null) :
             )
         }
 
-        view.rateContainer.setOnClickListener {
+        view.rateContainer.onDebounceClick {
             val uri = Uri.parse("market://details?id=" + activity!!.packageName)
             val linkToMarket = Intent(Intent.ACTION_VIEW, uri)
             startActivity(linkToMarket)

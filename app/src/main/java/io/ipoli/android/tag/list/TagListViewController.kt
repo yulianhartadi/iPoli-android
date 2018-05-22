@@ -104,7 +104,7 @@ class TagListViewController(args: Bundle? = null) :
         view: View
     ) {
 
-        view.tagBackground.setOnClickListener {
+        view.tagBackground.onDebounceClick {
             pushWithRootRouter(
                 TagViewController.routerTransaction(tag.id)
             )

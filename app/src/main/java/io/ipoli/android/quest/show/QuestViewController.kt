@@ -124,7 +124,7 @@ class QuestViewController : ReduxViewController<QuestAction, QuestViewState, Que
             }
         })
 
-        view.editQuest.setOnClickListener {
+        view.editQuest.onDebounceClick {
             val fadeChangeHandler = FadeChangeHandler()
             pushWithRootRouter(
                 RouterTransaction.with(
@@ -330,7 +330,7 @@ class QuestViewController : ReduxViewController<QuestAction, QuestViewState, Que
     private fun renderSubQuests(state: QuestViewState, view: View) {
         val adapter = view.subQuestList.adapter as SubQuestAdapter
         adapter.updateAll(state.subQuestViewModels)
-        view.addSubQuest.setOnClickListener {
+        view.addSubQuest.onDebounceClick {
             addSubQuest(view)
         }
 

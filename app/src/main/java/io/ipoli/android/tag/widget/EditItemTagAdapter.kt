@@ -13,6 +13,7 @@ import com.mikepenz.material_design_iconic_typeface_library.MaterialDesignIconic
 import io.ipoli.android.R
 import io.ipoli.android.common.view.AndroidColor
 import io.ipoli.android.common.view.AndroidIcon
+import io.ipoli.android.common.view.Debounce
 import io.ipoli.android.common.view.normalIcon
 import io.ipoli.android.common.view.recyclerview.BaseRecyclerViewAdapter
 import io.ipoli.android.common.view.recyclerview.RecyclerViewViewModel
@@ -47,7 +48,7 @@ class EditItemAutocompleteTagAdapter(tags: List<Tag>, context: Context) :
         view.text = item.name
 
         val icon = item.icon?.let { AndroidIcon.valueOf(it.name).icon }
-                ?: MaterialDesignIconic.Icon.gmi_label
+            ?: MaterialDesignIconic.Icon.gmi_label
         val color = AndroidColor.valueOf(item.color.name).color500
 
         view.setCompoundDrawablesWithIntrinsicBounds(
@@ -97,8 +98,8 @@ class EditItemTagAdapter(
 
         view.tagRemove.setImageResource(if (useWhiteTheme) R.drawable.ic_clear_white_24dp else R.drawable.ic_clear_black_24dp)
 
-        view.tagRemove.setOnClickListener {
+        view.tagRemove.setOnClickListener(Debounce.clickListener {
             removeTagCallback(vm.tag)
-        }
+        })
     }
 }
