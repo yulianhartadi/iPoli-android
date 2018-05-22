@@ -182,6 +182,7 @@ abstract class ReduxDialogController<A : Action, VS : ViewState, out R : ViewSta
 
         onDialogCreated(dialog, contentView)
 
+        dialog.setCanceledOnTouchOutside(false)
         dialog.ownerActivity = activity!!
         dialog.setOnDismissListener { dismiss() }
         if (savedViewState != null) {
