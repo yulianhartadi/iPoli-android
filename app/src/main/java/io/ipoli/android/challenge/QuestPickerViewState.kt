@@ -14,7 +14,7 @@ import io.ipoli.android.R
 import io.ipoli.android.challenge.QuestPickerViewState.StateType.*
 import io.ipoli.android.common.AppState
 import io.ipoli.android.common.BaseViewStateReducer
-import io.ipoli.android.common.mvi.ViewState
+import io.ipoli.android.common.mvi.BaseViewState
 import io.ipoli.android.common.redux.Action
 import io.ipoli.android.common.view.AndroidColor
 import io.ipoli.android.common.view.AndroidIcon
@@ -187,7 +187,7 @@ data class QuestPickerViewState(
     val allQuests: List<PickerQuest>,
     val filteredQuests: List<PickerQuest>,
     val selectedQuests: Set<String>
-) : ViewState {
+) : BaseViewState() {
     enum class StateType {
         LOADING,
         EMPTY,

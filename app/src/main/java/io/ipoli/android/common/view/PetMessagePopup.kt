@@ -4,8 +4,8 @@ import android.view.LayoutInflater
 import android.view.View
 import io.ipoli.android.R
 import io.ipoli.android.common.mvi.BaseMviPresenter
+import io.ipoli.android.common.mvi.BaseViewState
 import io.ipoli.android.common.mvi.Intent
-import io.ipoli.android.common.mvi.ViewState
 import io.ipoli.android.common.mvi.ViewStateRenderer
 import io.ipoli.android.pet.AndroidPetAvatar
 import io.ipoli.android.pet.PetAvatar
@@ -21,7 +21,7 @@ import kotlin.coroutines.experimental.CoroutineContext
 data class PetMessageViewState(
     val message: String? = null,
     val avatar: PetAvatar? = null
-) : ViewState
+) : BaseViewState()
 
 sealed class PetMessageIntent : Intent {
     data class LoadData(val message: String) : PetMessageIntent()

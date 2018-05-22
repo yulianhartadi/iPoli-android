@@ -7,7 +7,7 @@ import io.ipoli.android.common.datetime.Duration
 import io.ipoli.android.common.datetime.Minute
 import io.ipoli.android.common.datetime.Time
 import io.ipoli.android.common.datetime.minutes
-import io.ipoli.android.common.mvi.ViewState
+import io.ipoli.android.common.mvi.BaseViewState
 import io.ipoli.android.common.redux.Action
 import io.ipoli.android.quest.Color
 import io.ipoli.android.quest.RepeatingQuest
@@ -30,7 +30,7 @@ sealed class RepeatingQuestAction : Action {
     data class Remove(val repeatingQuestId: String) : RepeatingQuestAction()
 }
 
-sealed class RepeatingQuestViewState(open val id: String) : ViewState {
+sealed class RepeatingQuestViewState(open val id: String) : BaseViewState() {
 
     data class Loading(override val id: String) :
         RepeatingQuestViewState(id)

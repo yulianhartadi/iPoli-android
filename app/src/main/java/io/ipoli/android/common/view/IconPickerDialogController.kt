@@ -20,7 +20,7 @@ import io.ipoli.android.R
 import io.ipoli.android.common.AppState
 import io.ipoli.android.common.BaseViewStateReducer
 import io.ipoli.android.common.DataLoadedAction
-import io.ipoli.android.common.mvi.ViewState
+import io.ipoli.android.common.mvi.BaseViewState
 import io.ipoli.android.common.redux.Action
 import io.ipoli.android.common.view.IconPickerViewState.Type.*
 import io.ipoli.android.pet.AndroidPetAvatar
@@ -32,7 +32,6 @@ import io.ipoli.android.quest.IconPack
 import kotlinx.android.synthetic.main.dialog_icon_picker.view.*
 import kotlinx.android.synthetic.main.item_icon_picker.view.*
 import kotlinx.android.synthetic.main.view_dialog_header.view.*
-import timber.log.Timber
 
 /**
  * Created by Venelin Valkov <venelin@mypoli.fun>
@@ -96,7 +95,7 @@ data class IconPickerViewState(
     val selectedIcon: Icon? = null,
     val icons: Set<Icon> = emptySet(),
     val iconPacks: Set<IconPack> = emptySet()
-) : ViewState {
+) : BaseViewState() {
     enum class Type {
         LOADING,
         DATA_CHANGED,

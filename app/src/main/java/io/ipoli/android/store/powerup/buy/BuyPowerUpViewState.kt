@@ -3,7 +3,7 @@ package io.ipoli.android.store.powerup.buy
 import io.ipoli.android.common.AppState
 import io.ipoli.android.common.BaseViewStateReducer
 import io.ipoli.android.common.DataLoadedAction
-import io.ipoli.android.common.mvi.ViewState
+import io.ipoli.android.common.mvi.BaseViewState
 import io.ipoli.android.common.redux.Action
 import io.ipoli.android.store.powerup.PowerUp
 import io.ipoli.android.store.powerup.sideeffect.BuyPowerUpCompletedAction
@@ -24,8 +24,8 @@ object BuyPowerUpReducer : BaseViewStateReducer<BuyPowerUpViewState>() {
         state: AppState,
         subState: BuyPowerUpViewState,
         action: Action
-    ): BuyPowerUpViewState {
-        return when (action) {
+    ) =
+        when (action) {
             is BuyPowerUpAction.Load ->
                 state.dataState.player?.let {
                     BuyPowerUpViewState.CoinsChanged(it.coins)
@@ -45,14 +45,13 @@ object BuyPowerUpReducer : BaseViewStateReducer<BuyPowerUpViewState>() {
 
             else -> subState
         }
-    }
 
     override fun defaultState() = BuyPowerUpViewState.Loading
 
     override val stateKey get() = key<BuyPowerUpViewState>()
 }
 
-sealed class BuyPowerUpViewState : ViewState {
+sealed class BuyPowerUpViewState : BaseViewState() {
 
     object Loading : BuyPowerUpViewState()
 

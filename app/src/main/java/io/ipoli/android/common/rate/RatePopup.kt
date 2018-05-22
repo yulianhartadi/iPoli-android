@@ -1,23 +1,19 @@
 package io.ipoli.android.common.rate
 
 import android.content.Context
-import android.net.Uri
 import android.os.Bundle
 import android.preference.PreferenceManager
 import android.support.annotation.StringRes
 import android.view.LayoutInflater
 import android.view.View
 import android.widget.Toast
-import kotlinx.android.synthetic.main.popup_rate.view.*
-import kotlinx.coroutines.experimental.channels.consumeEach
-import kotlinx.coroutines.experimental.launch
 import io.ipoli.android.Constants
 import io.ipoli.android.R
 import io.ipoli.android.common.IntentUtil
 import io.ipoli.android.common.ViewUtils
 import io.ipoli.android.common.mvi.BaseMviPresenter
+import io.ipoli.android.common.mvi.BaseViewState
 import io.ipoli.android.common.mvi.Intent
-import io.ipoli.android.common.mvi.ViewState
 import io.ipoli.android.common.mvi.ViewStateRenderer
 import io.ipoli.android.common.rate.RateViewState.Type.*
 import io.ipoli.android.common.view.MviPopup
@@ -25,6 +21,9 @@ import io.ipoli.android.pet.AndroidPetAvatar
 import io.ipoli.android.pet.PetAvatar
 import io.ipoli.android.player.Player
 import io.ipoli.android.player.usecase.ListenForPlayerChangesUseCase
+import kotlinx.android.synthetic.main.popup_rate.view.*
+import kotlinx.coroutines.experimental.channels.consumeEach
+import kotlinx.coroutines.experimental.launch
 import space.traversal.kapsule.required
 import kotlin.coroutines.experimental.CoroutineContext
 
@@ -39,7 +38,7 @@ sealed class RateIntent : Intent {
 data class RateViewState(
     val type: Type,
     val petAvatar: PetAvatar? = null
-) : ViewState {
+) : BaseViewState() {
     enum class Type {
         LOADING,
         DATA_CHANGED,

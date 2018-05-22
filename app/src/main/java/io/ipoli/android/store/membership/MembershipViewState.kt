@@ -2,7 +2,7 @@ package io.ipoli.android.store.membership
 
 import io.ipoli.android.common.AppState
 import io.ipoli.android.common.BaseViewStateReducer
-import io.ipoli.android.common.mvi.ViewState
+import io.ipoli.android.common.mvi.BaseViewState
 import io.ipoli.android.common.redux.Action
 import io.ipoli.android.player.Membership
 import io.ipoli.android.store.membership.MembershipViewState.StateType.*
@@ -119,7 +119,7 @@ data class MembershipViewState(
     val quarterlyPlanPrice: String,
     val yearlyPlanPrice: String,
     val activeSkus: Set<String>
-) : ViewState {
+) : BaseViewState() {
 
     enum class StateType {
         LOADING,

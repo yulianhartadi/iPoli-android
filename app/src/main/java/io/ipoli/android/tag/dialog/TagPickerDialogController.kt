@@ -12,7 +12,7 @@ import io.ipoli.android.R
 import io.ipoli.android.common.AppState
 import io.ipoli.android.common.BaseViewStateReducer
 import io.ipoli.android.common.DataLoadedAction
-import io.ipoli.android.common.mvi.ViewState
+import io.ipoli.android.common.mvi.BaseViewState
 import io.ipoli.android.common.redux.Action
 import io.ipoli.android.common.view.*
 import io.ipoli.android.common.view.recyclerview.BaseRecyclerViewAdapter
@@ -152,7 +152,7 @@ data class TagPickerViewState(
     val selectedTags: Set<Tag>,
     val showAll: Boolean,
     val maxTagsReached: Boolean
-) : ViewState {
+) : BaseViewState() {
 
     enum class StateType {
         LOADING,

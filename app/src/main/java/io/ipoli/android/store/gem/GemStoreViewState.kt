@@ -3,7 +3,7 @@ package io.ipoli.android.store.gem
 import io.ipoli.android.common.AppState
 import io.ipoli.android.common.BaseViewStateReducer
 import io.ipoli.android.common.DataLoadedAction
-import io.ipoli.android.common.mvi.ViewState
+import io.ipoli.android.common.mvi.BaseViewState
 import io.ipoli.android.common.redux.Action
 import io.ipoli.android.pet.PetAvatar
 import io.ipoli.android.store.purchase.GemPack
@@ -85,8 +85,7 @@ data class GemStoreViewState(
     val playerGems: Int = 0,
     val isGiftPurchased: Boolean = false,
     val gemPacks: List<GemPack> = listOf()
-//    val gems: Int
-) : ViewState {
+) : BaseViewState() {
     enum class StateType {
         LOADING,
         DATA_LOADED,

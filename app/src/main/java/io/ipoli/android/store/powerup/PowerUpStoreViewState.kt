@@ -4,7 +4,7 @@ import io.ipoli.android.common.AppState
 import io.ipoli.android.common.BaseViewStateReducer
 import io.ipoli.android.common.DataLoadedAction
 import io.ipoli.android.common.datetime.daysUntil
-import io.ipoli.android.common.mvi.ViewState
+import io.ipoli.android.common.mvi.BaseViewState
 import io.ipoli.android.common.redux.Action
 import io.ipoli.android.player.Membership
 import io.ipoli.android.player.Player
@@ -93,7 +93,7 @@ sealed class PowerUpItem {
     data class Disabled(val type: PowerUp.Type, val coinPrice: Int) : PowerUpItem()
 }
 
-sealed class PowerUpStoreViewState : ViewState {
+sealed class PowerUpStoreViewState : BaseViewState() {
     object Loading : PowerUpStoreViewState()
     data class PowerUpBought(val type: PowerUp.Type) : PowerUpStoreViewState()
     object PowerUpTooExpensive : PowerUpStoreViewState()

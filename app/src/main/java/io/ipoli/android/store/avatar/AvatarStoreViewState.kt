@@ -3,7 +3,7 @@ package io.ipoli.android.store.avatar
 import io.ipoli.android.common.AppState
 import io.ipoli.android.common.BaseViewStateReducer
 import io.ipoli.android.common.DataLoadedAction
-import io.ipoli.android.common.mvi.ViewState
+import io.ipoli.android.common.mvi.BaseViewState
 import io.ipoli.android.common.redux.Action
 import io.ipoli.android.player.Player
 import io.ipoli.android.player.data.Avatar
@@ -74,7 +74,7 @@ sealed class AvatarItem(open val avatar: Avatar) {
     data class ForSale(override val avatar: Avatar) : AvatarItem(avatar)
 }
 
-sealed class AvatarStoreViewState : ViewState {
+sealed class AvatarStoreViewState : BaseViewState() {
     object Loading : AvatarStoreViewState()
     object AvatarBought : AvatarStoreViewState()
     object AvatarTooExpensive : AvatarStoreViewState()

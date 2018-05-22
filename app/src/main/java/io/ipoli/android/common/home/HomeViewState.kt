@@ -4,7 +4,7 @@ import io.ipoli.android.common.AppState
 import io.ipoli.android.common.BaseViewStateReducer
 import io.ipoli.android.common.DataLoadedAction
 import io.ipoli.android.common.home.HomeViewState.StateType.*
-import io.ipoli.android.common.mvi.ViewState
+import io.ipoli.android.common.mvi.BaseViewState
 import io.ipoli.android.common.redux.Action
 import io.ipoli.android.pet.PetAvatar
 import io.ipoli.android.pet.PetState
@@ -128,7 +128,7 @@ data class HomeViewState(
     val showTags: Boolean,
     val selectedTagIndex: Int?,
     val bucketListQuestCount: Int
-) : ViewState {
+) : BaseViewState() {
 
     enum class StateType {
         LOADING,

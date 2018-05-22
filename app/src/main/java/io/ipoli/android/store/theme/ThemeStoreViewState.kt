@@ -3,7 +3,7 @@ package io.ipoli.android.store.theme
 import io.ipoli.android.common.AppState
 import io.ipoli.android.common.BaseViewStateReducer
 import io.ipoli.android.common.DataLoadedAction
-import io.ipoli.android.common.mvi.ViewState
+import io.ipoli.android.common.mvi.BaseViewState
 import io.ipoli.android.common.redux.Action
 import io.ipoli.android.player.Player
 import io.ipoli.android.player.Theme
@@ -75,7 +75,7 @@ sealed class ThemeItem(open val theme: Theme) {
     data class ForSale(override val theme: Theme) : ThemeItem(theme)
 }
 
-sealed class ThemeStoreViewState : ViewState {
+sealed class ThemeStoreViewState : BaseViewState() {
     object Loading : ThemeStoreViewState()
     object ThemeBought : ThemeStoreViewState()
     object ThemeTooExpensive : ThemeStoreViewState()

@@ -6,7 +6,7 @@ import io.ipoli.android.challenge.predefined.entity.PredefinedChallengeData
 import io.ipoli.android.common.AppState
 import io.ipoli.android.common.BaseViewStateReducer
 import io.ipoli.android.common.DataLoadedAction
-import io.ipoli.android.common.mvi.ViewState
+import io.ipoli.android.common.mvi.BaseViewState
 import io.ipoli.android.common.redux.Action
 
 /**
@@ -106,7 +106,7 @@ data class ChallengeListForCategoryViewState(
     val challengeCategory: PredefinedChallengeData.Category? = null,
     val playerGems: Int = 0,
     val challenges: List<ChallengeModel> = listOf()
-) : ViewState {
+) : BaseViewState() {
 
     enum class StateType {
         LOADING,

@@ -5,7 +5,7 @@ import io.ipoli.android.common.AppState
 import io.ipoli.android.common.BaseViewStateReducer
 import io.ipoli.android.common.DataLoadedAction
 import io.ipoli.android.common.datetime.datesBetween
-import io.ipoli.android.common.mvi.ViewState
+import io.ipoli.android.common.mvi.BaseViewState
 import io.ipoli.android.common.redux.Action
 import io.ipoli.android.quest.BaseQuest
 import io.ipoli.android.quest.Color
@@ -89,7 +89,7 @@ object ChallengeReducer : BaseViewStateReducer<ChallengeViewState>() {
     override val stateKey = key<ChallengeViewState>()
 }
 
-sealed class ChallengeViewState(open val id: String = "") : ViewState {
+sealed class ChallengeViewState(open val id: String = "") : BaseViewState() {
 
     data class Loading(override val id: String) : ChallengeViewState(id)
 

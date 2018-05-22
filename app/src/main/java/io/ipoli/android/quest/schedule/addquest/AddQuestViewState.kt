@@ -3,11 +3,10 @@ package io.ipoli.android.quest.schedule.addquest
 import io.ipoli.android.common.AppState
 import io.ipoli.android.common.BaseViewStateReducer
 import io.ipoli.android.common.datetime.Time
-import io.ipoli.android.common.mvi.ViewState
+import io.ipoli.android.common.mvi.BaseViewState
 import io.ipoli.android.common.redux.Action
 import io.ipoli.android.quest.Color
 import io.ipoli.android.quest.Icon
-import io.ipoli.android.quest.edit.sideeffect.EditQuestSideEffectHandler
 import io.ipoli.android.quest.schedule.agenda.AgendaReducer
 import io.ipoli.android.tag.Tag
 import org.threeten.bp.LocalDate
@@ -116,7 +115,7 @@ data class AddQuestViewState(
     val color: Color?,
     val icon: Icon?,
     val tags: List<Tag>
-) : ViewState
+) : BaseViewState()
 
 enum class StateType {
     DATA_LOADED,

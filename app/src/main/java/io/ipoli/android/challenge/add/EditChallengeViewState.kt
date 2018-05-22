@@ -9,14 +9,13 @@ import io.ipoli.android.common.AppState
 import io.ipoli.android.common.BaseViewStateReducer
 import io.ipoli.android.common.DataLoadedAction
 import io.ipoli.android.common.Validator
-import io.ipoli.android.common.mvi.ViewState
+import io.ipoli.android.common.mvi.BaseViewState
 import io.ipoli.android.common.redux.Action
 import io.ipoli.android.quest.BaseQuest
 import io.ipoli.android.quest.Color
 import io.ipoli.android.quest.Icon
 import io.ipoli.android.tag.Tag
 import org.threeten.bp.LocalDate
-import timber.log.Timber
 
 /**
  * Created by Polina Zhelyazkova <polina@mypoli.fun>
@@ -311,7 +310,7 @@ data class EditChallengeViewState(
     val selectedQuestIds: Set<String>,
     val note: String,
     val maxTagsReached: Boolean
-) : ViewState {
+) : BaseViewState() {
     enum class StateType {
         INITIAL,
         LOADING,

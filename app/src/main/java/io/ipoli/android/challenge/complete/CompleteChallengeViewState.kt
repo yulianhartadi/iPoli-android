@@ -2,7 +2,7 @@ package io.ipoli.android.challenge.complete
 
 import io.ipoli.android.common.AppState
 import io.ipoli.android.common.BaseViewStateReducer
-import io.ipoli.android.common.mvi.ViewState
+import io.ipoli.android.common.mvi.BaseViewState
 import io.ipoli.android.common.redux.Action
 
 /**
@@ -30,7 +30,7 @@ object CompleteChallengeReducer : BaseViewStateReducer<CompleteChallengeViewStat
 
 }
 
-sealed class CompleteChallengeViewState : ViewState {
+sealed class CompleteChallengeViewState : BaseViewState() {
 
     object Loading : CompleteChallengeViewState()
 }

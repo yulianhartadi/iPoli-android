@@ -4,7 +4,7 @@ import io.ipoli.android.Constants
 import io.ipoli.android.common.AppState
 import io.ipoli.android.common.BaseViewStateReducer
 import io.ipoli.android.common.DataLoadedAction
-import io.ipoli.android.common.mvi.ViewState
+import io.ipoli.android.common.mvi.BaseViewState
 import io.ipoli.android.common.redux.Action
 import io.ipoli.android.pet.PetViewState.StateType.*
 import io.ipoli.android.pet.usecase.ComparePetItemsUseCase
@@ -292,7 +292,7 @@ data class PetViewState(
     val selectedItemType: PetItemType? = null,
     val boughtItems: Set<PetItem> = setOf(),
     val playerGems: Int = 0
-) : ViewState {
+) : BaseViewState() {
     enum class StateType {
         LOADING, DATA_LOADED, PET_FED,
         FOOD_TOO_EXPENSIVE, PET_CHANGED, RENAME_PET, PET_RENAMED,

@@ -3,7 +3,7 @@ package io.ipoli.android.event.calendar.picker
 import io.ipoli.android.common.AppState
 import io.ipoli.android.common.BaseViewStateReducer
 import io.ipoli.android.common.DataLoadedAction
-import io.ipoli.android.common.mvi.ViewState
+import io.ipoli.android.common.mvi.BaseViewState
 import io.ipoli.android.common.redux.Action
 import io.ipoli.android.event.Calendar
 import io.ipoli.android.pet.PetAvatar
@@ -52,7 +52,7 @@ object CalendarPickerReducer : BaseViewStateReducer<CalendarPickerViewState>() {
     override fun defaultState() = CalendarPickerViewState.Loading
 }
 
-sealed class CalendarPickerViewState : ViewState {
+sealed class CalendarPickerViewState : BaseViewState() {
 
     object Loading : CalendarPickerViewState()
     data class CalendarsLoaded(

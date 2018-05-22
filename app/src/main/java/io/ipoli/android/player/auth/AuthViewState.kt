@@ -6,7 +6,7 @@ import io.ipoli.android.Constants
 import io.ipoli.android.R
 import io.ipoli.android.common.AppState
 import io.ipoli.android.common.BaseViewStateReducer
-import io.ipoli.android.common.mvi.ViewState
+import io.ipoli.android.common.mvi.BaseViewState
 import io.ipoli.android.common.redux.Action
 import io.ipoli.android.onboarding.OnboardData
 import io.ipoli.android.onboarding.OnboardViewController
@@ -179,7 +179,7 @@ data class AuthViewState(
     val repeatingQuests: List<Pair<RepeatingQuest, OnboardViewController.OnboardTag?>>,
     val shouldMigrate : Boolean,
     val schemaVersion: Int
-) : ViewState {
+) : BaseViewState() {
     enum class StateType {
         IDLE,
         LOADING,

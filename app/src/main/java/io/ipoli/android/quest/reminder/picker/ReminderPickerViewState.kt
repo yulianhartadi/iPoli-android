@@ -3,7 +3,7 @@ package io.ipoli.android.quest.reminder.picker
 import io.ipoli.android.Constants
 import io.ipoli.android.common.AppState
 import io.ipoli.android.common.BaseViewStateReducer
-import io.ipoli.android.common.mvi.ViewState
+import io.ipoli.android.common.mvi.BaseViewState
 import io.ipoli.android.common.parser.ReminderMinutesParser
 import io.ipoli.android.common.redux.Action
 import io.ipoli.android.pet.PetAvatar
@@ -135,7 +135,7 @@ data class ReminderPickerViewState(
     val timeUnitIndex: Int? = null,
     val petAvatar: PetAvatar? = null,
     val viewModel: ReminderViewModel? = null
-) : ViewState {
+) : BaseViewState() {
 
     enum class StateType {
         LOADING,

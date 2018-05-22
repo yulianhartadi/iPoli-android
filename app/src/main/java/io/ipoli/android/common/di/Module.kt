@@ -38,7 +38,6 @@ import io.ipoli.android.note.usecase.SaveQuestNoteUseCase
 import io.ipoli.android.onboarding.sideeffecthandler.OnboardingSideEffectHandler
 import io.ipoli.android.pet.AndroidJobLowerPetStatsScheduler
 import io.ipoli.android.pet.LowerPetStatsScheduler
-import io.ipoli.android.pet.PetDialogPresenter
 import io.ipoli.android.pet.sideeffect.PetSideEffectHandler
 import io.ipoli.android.pet.usecase.*
 import io.ipoli.android.planday.data.AndroidWeatherRepository
@@ -735,7 +734,6 @@ interface UseCaseModule {
 }
 
 interface PresenterModule {
-    val petDialogPresenter: PetDialogPresenter
     val petMessagePresenter: PetMessagePresenter
     val levelUpPresenter: LevelUpPresenter
     val questCompletePresenter: QuestCompletePresenter
@@ -745,10 +743,7 @@ interface PresenterModule {
 class AndroidPresenterModule : PresenterModule, Injects<Module> {
 
     private val listenForPlayerChangesUseCase by required { listenForPlayerChangesUseCase }
-    private val findPetUseCase by required { findPetUseCase }
     private val job by required { job }
-
-    override val petDialogPresenter get() = PetDialogPresenter(findPetUseCase, job)
 
     override val petMessagePresenter get() = PetMessagePresenter(listenForPlayerChangesUseCase, job)
     override val levelUpPresenter get() = LevelUpPresenter(listenForPlayerChangesUseCase, job)

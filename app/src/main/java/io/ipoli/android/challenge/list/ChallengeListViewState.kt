@@ -5,7 +5,7 @@ import io.ipoli.android.challenge.list.ChallengeListViewState.ChallengeItem.*
 import io.ipoli.android.common.AppState
 import io.ipoli.android.common.BaseViewStateReducer
 import io.ipoli.android.common.DataLoadedAction
-import io.ipoli.android.common.mvi.ViewState
+import io.ipoli.android.common.mvi.BaseViewState
 import io.ipoli.android.common.redux.Action
 
 /**
@@ -61,7 +61,7 @@ object ChallengeListReducer : BaseViewStateReducer<ChallengeListViewState>() {
     override val stateKey = key<ChallengeListViewState>()
 }
 
-sealed class ChallengeListViewState : ViewState {
+sealed class ChallengeListViewState : BaseViewState() {
 
     object Loading : ChallengeListViewState()
     object Empty : ChallengeListViewState()

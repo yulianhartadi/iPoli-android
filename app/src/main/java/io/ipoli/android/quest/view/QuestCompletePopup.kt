@@ -4,13 +4,10 @@ import android.animation.*
 import android.view.LayoutInflater
 import android.view.View
 import android.view.animation.OvershootInterpolator
-import kotlinx.android.synthetic.main.popup_quest_complete.view.*
-import kotlinx.coroutines.experimental.channels.consumeEach
-import kotlinx.coroutines.experimental.launch
 import io.ipoli.android.R
 import io.ipoli.android.common.mvi.BaseMviPresenter
+import io.ipoli.android.common.mvi.BaseViewState
 import io.ipoli.android.common.mvi.Intent
-import io.ipoli.android.common.mvi.ViewState
 import io.ipoli.android.common.mvi.ViewStateRenderer
 import io.ipoli.android.common.view.MviPopup
 import io.ipoli.android.common.view.anim.TypewriterTextAnimator
@@ -20,6 +17,9 @@ import io.ipoli.android.pet.Food
 import io.ipoli.android.pet.PetAvatar
 import io.ipoli.android.player.Player
 import io.ipoli.android.player.usecase.ListenForPlayerChangesUseCase
+import kotlinx.android.synthetic.main.popup_quest_complete.view.*
+import kotlinx.coroutines.experimental.channels.consumeEach
+import kotlinx.coroutines.experimental.launch
 import space.traversal.kapsule.required
 import java.util.*
 import kotlin.coroutines.experimental.CoroutineContext
@@ -29,7 +29,7 @@ data class QuestCompleteViewState(
     val coins: Int? = null,
     val bounty: Food? = null,
     val avatar: PetAvatar? = null
-) : ViewState
+) : BaseViewState()
 
 sealed class QuestCompleteIntent : Intent {
     data class LoadData(val xp: Int, val coins: Int, val bounty: Food?) : QuestCompleteIntent()

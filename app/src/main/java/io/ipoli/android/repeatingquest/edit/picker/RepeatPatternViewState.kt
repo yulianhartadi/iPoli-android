@@ -3,7 +3,7 @@ package io.ipoli.android.repeatingquest.edit.picker
 import android.support.annotation.DrawableRes
 import io.ipoli.android.common.AppState
 import io.ipoli.android.common.BaseViewStateReducer
-import io.ipoli.android.common.mvi.ViewState
+import io.ipoli.android.common.mvi.BaseViewState
 import io.ipoli.android.common.redux.Action
 import io.ipoli.android.pet.AndroidPetAvatar
 import io.ipoli.android.repeatingquest.edit.picker.RepeatPatternViewState.StateType.*
@@ -313,7 +313,7 @@ data class RepeatPatternViewState(
     val pickerEndDate: LocalDate,
     val resultPattern: RepeatPattern?,
     @DrawableRes val petAvatar: Int?
-) : ViewState {
+) : BaseViewState() {
     enum class StateType {
         LOADING,
         DATA_LOADED,

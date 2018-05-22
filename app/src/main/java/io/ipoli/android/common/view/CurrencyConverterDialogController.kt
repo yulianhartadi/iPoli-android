@@ -20,7 +20,7 @@ import io.ipoli.android.R
 import io.ipoli.android.common.AppState
 import io.ipoli.android.common.BaseViewStateReducer
 import io.ipoli.android.common.DataLoadedAction
-import io.ipoli.android.common.mvi.ViewState
+import io.ipoli.android.common.mvi.BaseViewState
 import io.ipoli.android.common.redux.Action
 import io.ipoli.android.common.view.CurrencyConverterViewState.Type.*
 import io.ipoli.android.pet.AndroidPetAvatar
@@ -62,7 +62,7 @@ data class CurrencyConverterViewState(
     val enableConvert: Boolean = false,
     val exchangeRateCoins: Int = 0,
     val gemPacks: List<GemPack> = listOf()
-) : ViewState {
+) : BaseViewState() {
     enum class Type {
         LOADING,
         DATA_CHANGED,

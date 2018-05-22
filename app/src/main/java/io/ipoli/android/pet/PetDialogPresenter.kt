@@ -4,8 +4,8 @@ import io.ipoli.android.common.AppState
 import io.ipoli.android.common.BaseViewStateReducer
 import io.ipoli.android.common.DataLoadedAction
 import io.ipoli.android.common.mvi.BaseMviPresenter
+import io.ipoli.android.common.mvi.BaseViewState
 import io.ipoli.android.common.mvi.Intent
-import io.ipoli.android.common.mvi.ViewState
 import io.ipoli.android.common.mvi.ViewStateRenderer
 import io.ipoli.android.common.redux.Action
 import io.ipoli.android.pet.usecase.FindPetUseCase
@@ -52,23 +52,9 @@ object LoadPetIntent : Intent
 data class PetDialogViewState(
     val type: Type,
     val petAvatar: PetAvatar? = null
-) : ViewState {
+) : BaseViewState() {
     enum class Type {
         LOADING,
         PET_LOADED
     }
-}
-
-class PetDialogPresenter(
-    private val findPetUseCase: FindPetUseCase,
-    coroutineContext: CoroutineContext
-) : BaseMviPresenter<ViewStateRenderer<PetDialogViewState>, PetDialogViewState, LoadPetIntent>(
-    PetDialogViewState(PetDialogViewState.Type.LOADING),
-    coroutineContext
-) {
-    override fun reduceState(intent: LoadPetIntent, state: PetDialogViewState) =
-        state.copy(
-            type = PetDialogViewState.Type.PET_LOADED,
-            petAvatar = findPetUseCase.execute(Unit).avatar
-        )
 }

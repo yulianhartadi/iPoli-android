@@ -35,10 +35,7 @@ import java.util.*
  * on 4/2/18.
  */
 class SettingsViewController(args: Bundle? = null) :
-    ReduxViewController<SettingsAction, SettingsViewState, SettingsReducer>(
-        args,
-        renderDuplicateStates = false
-    ) {
+    ReduxViewController<SettingsAction, SettingsViewState, SettingsReducer>(args) {
 
     override val reducer = SettingsReducer
 

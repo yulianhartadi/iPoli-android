@@ -11,7 +11,7 @@ import io.ipoli.android.R
 import io.ipoli.android.common.AppState
 import io.ipoli.android.common.BaseViewStateReducer
 import io.ipoli.android.common.EmailUtils
-import io.ipoli.android.common.mvi.ViewState
+import io.ipoli.android.common.mvi.BaseViewState
 import io.ipoli.android.common.redux.Action
 import io.ipoli.android.common.redux.android.ReduxViewController
 import io.ipoli.android.common.view.*
@@ -26,12 +26,11 @@ sealed class MigrationAction : Action {
     object ShowMigrationError : MigrationAction()
 }
 
-sealed class MigrationViewState : ViewState {
-    object Loading : MigrationViewState()
-    object NoInternet : MigrationViewState()
-    object Migrating : MigrationViewState()
-    object MigrationComplete : MigrationViewState()
-    object MigrationError : MigrationViewState()
+data class MigrationViewState(val type: StateType) : BaseViewState() {
+
+    enum class StateType {
+        LOADING, NO_INTERNET, MIGRATING, DONE, ERROR
+    }
 }
 
 object MigrationReducer : BaseViewStateReducer<MigrationViewState>() {
@@ -41,15 +40,15 @@ object MigrationReducer : BaseViewStateReducer<MigrationViewState>() {
         action: Action
     ) =
         when (action) {
-            is MigrationAction.Load -> MigrationViewState.Loading
-            is MigrationAction.StartMigration -> MigrationViewState.Migrating
-            is MigrationAction.ShowNoInternetConnection -> MigrationViewState.NoInternet
-            is MigrationAction.CompleteMigration -> MigrationViewState.MigrationComplete
-            is MigrationAction.ShowMigrationError -> MigrationViewState.MigrationError
+            is MigrationAction.Load -> subState.copy(type = MigrationViewState.StateType.LOADING)
+            is MigrationAction.StartMigration -> subState.copy(type = MigrationViewState.StateType.MIGRATING)
+            is MigrationAction.ShowNoInternetConnection -> subState.copy(type = MigrationViewState.StateType.NO_INTERNET)
+            is MigrationAction.CompleteMigration -> subState.copy(type = MigrationViewState.StateType.DONE)
+            is MigrationAction.ShowMigrationError -> subState.copy(type = MigrationViewState.StateType.ERROR)
             else -> subState
         }
 
-    override fun defaultState() = MigrationViewState.Loading
+    override fun defaultState() = MigrationViewState(type = MigrationViewState.StateType.LOADING)
 
     override val stateKey = key<MigrationViewState>()
 
@@ -57,8 +56,7 @@ object MigrationReducer : BaseViewStateReducer<MigrationViewState>() {
 
 class MigrationViewController(args: Bundle? = null) :
     ReduxViewController<MigrationAction, MigrationViewState, MigrationReducer>(
-        args = args,
-        renderDuplicateStates = true
+        args = args
     ) {
 
     override val reducer = MigrationReducer
@@ -97,9 +95,9 @@ class MigrationViewController(args: Bundle? = null) :
     override fun onCreateLoadAction() = MigrationAction.Load(playerSchemaVersion)
 
     override fun render(state: MigrationViewState, view: View) {
-        when (state) {
+        when (state.type) {
 
-            is MigrationViewState.Migrating -> {
+            MigrationViewState.StateType.MIGRATING -> {
                 if (!view.migrationAnimation.isAnimating) {
                     view.migrationAnimation.playAnimation()
                 }
@@ -107,7 +105,7 @@ class MigrationViewController(args: Bundle? = null) :
                 view.migrationMessage.text = stringRes(R.string.migration_message)
             }
 
-            is MigrationViewState.NoInternet -> {
+            MigrationViewState.StateType.NO_INTERNET -> {
                 view.migrationAction.visible()
                 view.migrationTitle.text = stringRes(R.string.migration_no_internet_title)
                 view.migrationMessage.text = stringRes(R.string.migration_no_internet_message)
@@ -134,7 +132,7 @@ class MigrationViewController(args: Bundle? = null) :
                 }
             }
 
-            is MigrationViewState.MigrationError -> {
+            MigrationViewState.StateType.ERROR -> {
                 view.migrationAction.visible()
                 view.postDelayed({ view.migrationAnimation.cancelAnimation() }, 100)
                 view.migrationAction.setText(R.string.contact_us)
@@ -164,9 +162,12 @@ class MigrationViewController(args: Bundle? = null) :
                 }
             }
 
-            is MigrationViewState.MigrationComplete -> {
+            MigrationViewState.StateType.DONE -> {
                 rootRouter.popCurrentController()
                 activity?.recreate()
+            }
+
+            else -> {
             }
         }
     }
