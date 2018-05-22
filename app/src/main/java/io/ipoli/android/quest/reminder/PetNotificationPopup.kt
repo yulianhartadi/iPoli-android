@@ -14,6 +14,7 @@ import android.view.animation.AnticipateInterpolator
 import io.ipoli.android.R
 import io.ipoli.android.common.view.MviPopup
 import io.ipoli.android.common.view.gone
+import io.ipoli.android.common.view.invisible
 import io.ipoli.android.common.view.views
 import io.ipoli.android.pet.AndroidPetAvatar
 import io.ipoli.android.pet.PetAvatar
@@ -64,7 +65,7 @@ class PetNotificationPopup(
             if (viewModel.body != null) {
                 body.text = viewModel.body
             } else {
-                body.gone()
+                body.invisible()
             }
             val petAvatar = AndroidPetAvatar.valueOf(viewModel.petAvatar.name)
             pet.setImageResource(petAvatar.image)
@@ -170,7 +171,11 @@ class PetNotificationPopup(
 
         val animators =
             contentViews(view).map {
-                ObjectAnimator.ofFloat(it, "alpha", 0f, 1f).setDuration(duration * 4 / 5)
+                it.alpha = 0f
+                ObjectAnimator.ofFloat(it, "alpha", 0f, 1f).apply {
+                    this.duration = (duration * 4 / 5)
+                    startDelay = duration * 4 / 5
+                }
             }
                 .toMutableList() as MutableList<Animator>
         animators.add(backgroundAnim)
@@ -217,7 +222,12 @@ class PetNotificationPopup(
         set.start()
     }
 
-    private fun contentViews(view: ViewGroup) = view.group.views() + view.title + view.body
+    private fun contentViews(view: ViewGroup): List<View> {
+        val vs = view.group.views().toMutableList()
+        vs.add(view.title)
+        vs.add(view.body)
+        return vs
+    }
 
     private fun playHidePetAnimation(view: ViewGroup) {
         val petSet = AnimatorSet()
