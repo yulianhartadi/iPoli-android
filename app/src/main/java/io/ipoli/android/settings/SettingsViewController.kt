@@ -16,6 +16,7 @@ import io.ipoli.android.Constants
 import io.ipoli.android.R
 import io.ipoli.android.common.EmailUtils
 import io.ipoli.android.common.datetime.Time
+import io.ipoli.android.common.privacy.PrivacyPolicyViewController
 import io.ipoli.android.common.redux.android.ReduxViewController
 import io.ipoli.android.common.view.*
 import io.ipoli.android.event.calendar.picker.CalendarPickerDialogController
@@ -201,6 +202,15 @@ class SettingsViewController(args: Bundle? = null) :
         }
 
         view.appVersion.text = BuildConfig.VERSION_NAME
+
+        view.privacyPolicyContainer.onDebounceClick {
+            val changeHandler = VerticalChangeHandler()
+            pushWithRootRouter(
+                RouterTransaction.with(PrivacyPolicyViewController())
+                    .pushChangeHandler(changeHandler)
+                    .popChangeHandler(changeHandler)
+            )
+        }
     }
 
     private val SettingsViewState.selectedCalendarsText: String
@@ -211,12 +221,16 @@ class SettingsViewController(args: Bundle? = null) :
         }
 
     private val SettingsViewState.timeFormatText: String
-        get() = if (timeFormat == Player.Preferences.TimeFormat.TWELVE_HOURS) {
-            stringRes(R.string.twelve_hour_format, Time.now().toString(false))
-        } else if (timeFormat == Player.Preferences.TimeFormat.TWENTY_FOUR_HOURS) {
-            stringRes(R.string.twenty_four_hour_format, Time.now().toString(true))
-        } else {
-            stringRes(
+        get() = when (timeFormat) {
+            Player.Preferences.TimeFormat.TWELVE_HOURS -> stringRes(
+                R.string.twelve_hour_format,
+                Time.now().toString(false)
+            )
+            Player.Preferences.TimeFormat.TWENTY_FOUR_HOURS -> stringRes(
+                R.string.twenty_four_hour_format,
+                Time.now().toString(true)
+            )
+            else -> stringRes(
                 R.string.device_default_time_format, Time.now().toString(
                     DateFormat.is24HourFormat(view!!.context)
                 )

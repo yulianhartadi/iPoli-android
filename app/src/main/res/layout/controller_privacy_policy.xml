@@ -1,0 +1,154 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/md_white">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:paddingEnd="16dp"
+        android:paddingStart="16dp">
+
+        <ImageView
+            android:id="@+id/privacyLogo"
+            android:layout_width="128dp"
+            android:layout_height="128dp"
+            android:layout_gravity="center"
+            android:layout_marginTop="32dp"
+            android:src="@drawable/logo" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginEnd="32dp"
+            android:layout_marginStart="32dp"
+            android:layout_marginTop="32dp"
+            android:text="Privacy Policy"
+            android:textAlignment="center"
+            android:textAppearance="@style/TextAppearance.AppCompat.Headline" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:text="You can find out how myPoli manages your privacy in the following paragraphs. Please note that we will never share your data with anyone except Google Firebase &amp; Amplitude analytics services. We will never sell your data to third-party organizations."
+            android:textAppearance="@style/TextAppearance.AppCompat.Body1" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:text="The two main third-party services that myPoli uses are Google Firebase and Amplitude analytics. More information about their privacy policies you can find here:"
+            android:textAppearance="@style/TextAppearance.AppCompat.Body1" />
+
+        <TextView
+            android:id="@+id/firebasePrivacyPolicy"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:background="?attr/selectableItemBackground"
+            android:clickable="true"
+            android:focusable="true"
+            android:text="Firebase Privacy policy"
+            android:textAppearance="@style/TextAppearance.AppCompat.Body1"
+            android:textColor="@color/md_blue_500" />
+
+        <TextView
+            android:id="@+id/amplitudePrivacyPolicy"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:background="?attr/selectableItemBackground"
+            android:clickable="true"
+            android:focusable="true"
+            android:text="Amplitude Privacy policy"
+            android:textAppearance="@style/TextAppearance.AppCompat.Body1"
+            android:textColor="@color/md_blue_500" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="32dp"
+            android:text="Data collection"
+            android:textAppearance="@style/TextAppearance.AppCompat.Title" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:text="The data you create in the app (Quests, Challenges, etc) is stored locally on your device and synced remotely in a cloud database called Firestore. It is a part of a Google Services product called Firebase.\n\nWhen you log in the app (Google, Facebook or other)  we use Firebase Authentication service to manage the process and store your email, profile picture and your name (if not logged in as a guest).\n\nAll of this we do to make your experience more personalized. You create your account and we keep your data remotely only so you can use myPoli on all your devices."
+            android:textAppearance="@style/TextAppearance.AppCompat.Body1" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="32dp"
+            android:text="Analytics"
+            android:textAppearance="@style/TextAppearance.AppCompat.Title" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:text="We use Firebase &amp; Amplitude analytics services to collect usage statistics (including user-identifiable information - device id and user id) in order to better understand how myPoli users interact with the app. Additionally, this helps us make the app better by focusing on more important features and feedback."
+            android:textAppearance="@style/TextAppearance.AppCompat.Body1" />
+
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="32dp"
+            android:text="Crash reporting"
+            android:textAppearance="@style/TextAppearance.AppCompat.Title" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:text="We use Firebase Crashlytics for collecting data related to issues and crashes of the app. This helps us deliver a better experience for you quickly by fixing bugs and other issues."
+            android:textAppearance="@style/TextAppearance.AppCompat.Body1" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="32dp"
+            android:text="Delete all your data"
+            android:textAppearance="@style/TextAppearance.AppCompat.Title" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:autoLink="email"
+            android:text="You can write us at hi@mypoli.fun if you want to delete all your personal, crash and analytics data."
+            android:textAppearance="@style/TextAppearance.AppCompat.Body1"
+            android:textColorLink="@color/md_blue_500" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="24dp"
+            android:layout_marginTop="8dp"
+            android:autoLink="web"
+            android:text="You can find us at https://discord.gg/7AMKs28 if you have any further questions."
+            android:textAppearance="@style/TextAppearance.AppCompat.Body1"
+            android:textColorLink="@color/md_blue_500" />
+
+        <Button
+            android:id="@+id/acceptPrivacy"
+            style="@style/Widget.AppCompat.Button.Colored"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginBottom="24dp"
+            android:paddingEnd="32dp"
+            android:paddingStart="32dp"
+            android:text="Accept"
+            android:visibility="gone" />
+
+    </LinearLayout>
+</ScrollView>

@@ -22,6 +22,7 @@ import io.ipoli.android.common.di.Module
 import io.ipoli.android.common.home.HomeAction
 import io.ipoli.android.common.home.HomeViewController
 import io.ipoli.android.common.migration.MigrationViewController
+import io.ipoli.android.common.privacy.PrivacyPolicyViewController
 import io.ipoli.android.common.redux.Action
 import io.ipoli.android.common.redux.Dispatcher
 import io.ipoli.android.common.redux.SideEffectHandler
@@ -106,6 +107,15 @@ class MainActivity : AppCompatActivity(), Injects<Module>, SideEffectHandler<App
                 savedInstanceState
             )
         router.setPopsLastView(true)
+
+        if (sharedPreferences.getInt(
+                Constants.KEY_PRIVACY_ACCEPTED_VERSION,
+                -1
+            ) != Constants.PRIVACY_POLICY_VERSION
+        ) {
+            router.setRoot(RouterTransaction.with(PrivacyPolicyViewController()))
+            return
+        }
 
         launch(CommonPool) {
             val hasPlayer = playerRepository.hasPlayer()
