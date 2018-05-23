@@ -124,7 +124,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
             android:autoLink="email"
-            android:text="You can write us at hi@mypoli.fun if you want to delete all your personal, crash and analytics data."
+            android:text="You can write us at hi@mypoli.fun if you want to delete all your personal, crash and analytics data, otherwise it will be stored indefinitely."
             android:textAppearance="@style/TextAppearance.AppCompat.Body1"
             android:textColorLink="@color/md_blue_500" />
 

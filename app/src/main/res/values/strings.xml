@@ -1355,5 +1355,5 @@
     <string name="migration_error_title">Something terrible happened</string>
     <string name="migration_error_message">Please, contact us now to get this fixed!</string>
     <string name="new_challenge">New Challenge</string>
-    <string name="learn_how_mypoli_manages_your_privacy">settings_privacy_desc</string>
+    <string name="settings_privacy_desc">Learn how myPoli manages your privacy</string>
 </resources>

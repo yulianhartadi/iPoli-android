@@ -350,7 +350,7 @@
                         android:layout_height="0dp"
                         android:layout_weight="1"
                         android:gravity="top"
-                        android:text="@string/learn_how_mypoli_manages_your_privacy"
+                        android:text="@string/settings_privacy_desc"
                         android:textColor="@color/md_dark_text_54"
                         android:textSize="14sp" />
                 </LinearLayout>
