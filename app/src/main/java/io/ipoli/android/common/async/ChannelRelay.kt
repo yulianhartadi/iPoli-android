@@ -10,7 +10,7 @@ class ChannelRelay<E, in P>(
     private val consumer: suspend (E, P) -> Unit
 ) {
 
-    private val channel = Channel<E>()
+    private val channel = Channel<E>(Channel.CONFLATED)
     private var params: P? = null
 
     init {

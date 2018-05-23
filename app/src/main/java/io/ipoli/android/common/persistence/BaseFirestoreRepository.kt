@@ -6,10 +6,8 @@ import com.google.android.gms.tasks.Tasks
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.*
 import io.ipoli.android.quest.Entity
-import kotlinx.coroutines.experimental.CoroutineStart
 import kotlinx.coroutines.experimental.channels.Channel
 import kotlinx.coroutines.experimental.channels.SendChannel
-import kotlinx.coroutines.experimental.launch
 import org.threeten.bp.Instant
 import timber.log.Timber
 import java.util.concurrent.Executors
@@ -126,18 +124,17 @@ abstract class BaseFirestoreRepository<E, out T>(
         channel: SendChannel<*>
     ): Boolean {
 
-        val r = channelToRegistration[channel]
-        requireNotNull(r)
+        val r = channelToRegistration[channel] ?: return false
 
         if (error != null) {
             logError(error)
-            r!!.remove()
+            r.remove()
             channelToRegistration.remove(channel)
             return true
         }
 
         if (channel.isClosedForSend) {
-            r!!.remove()
+            r.remove()
             channelToRegistration.remove(channel)
             return true
         }
@@ -157,19 +154,15 @@ abstract class BaseFirestoreRepository<E, out T>(
         return toEntityObject(result.data!!)
     }
 
-    protected fun mapChannelToRegistration(
-        channel: SendChannel<*>,
-        registration: ListenerRegistration
+    protected fun addRegistrationToChannel(
+        registration: ListenerRegistration,
+        channel: SendChannel<*>
     ) {
         channelToRegistration[channel] = registration
     }
 
-    protected fun removeChannelRegistration(channel: Channel<*>) {
-        if (channelToRegistration.containsKey(channel)) {
-            val r = channelToRegistration[channel]
-            r!!.remove()
-        }
-    }
+    protected fun removeOldRegistrationForChannel(channel: Channel<*>) =
+        channelToRegistration[channel]?.remove()
 
     protected val Query.notRemovedEntities
         get() =
@@ -196,20 +189,17 @@ abstract class BaseEntityFirestoreRepository<E, out T>(
 
     override suspend fun listen(channel: Channel<E?>): Channel<E?> {
 
-        removeChannelRegistration(channel)
-
-        val registration: ListenerRegistration?
-        registration = entityReference
-            .addSnapshotListener(
-                Executors.newSingleThreadExecutor(),
-                EventListener<DocumentSnapshot> { snapshot, error ->
-                    if (shouldNotSendData(error, channel)) return@EventListener
-
-                    launch(coroutineContext, CoroutineStart.UNDISPATCHED) {
-                        channel.send(toEntityObject(snapshot!!.data!!))
-                    }
-                })
-        mapChannelToRegistration(channel, registration)
+        removeOldRegistrationForChannel(channel)
+        addRegistrationToChannel(
+            registration = entityReference
+                .addSnapshotListener(
+                    Executors.newSingleThreadExecutor(),
+                    EventListener { snapshot, error ->
+                        if (shouldNotSendData(error, channel)) return@EventListener
+                        channel.offer(toEntityObject(snapshot!!.data!!))
+                    }),
+            channel = channel
+        )
         return channel
     }
 
@@ -233,40 +223,38 @@ abstract class BaseCollectionFirestoreRepository<E, out T>(
 
     override suspend fun listenById(id: String, channel: Channel<E?>): Channel<E?> {
 
-        removeChannelRegistration(channel)
+        removeOldRegistrationForChannel(channel)
+        addRegistrationToChannel(
+            registration = documentReference(id)
+                .addSnapshotListener(
+                    Executors.newSingleThreadExecutor(),
+                    EventListener { snapshot, error ->
 
-        val registration: ListenerRegistration?
-        registration = documentReference(id)
-            .addSnapshotListener(
-                Executors.newSingleThreadExecutor(),
-                EventListener<DocumentSnapshot> { snapshot, error ->
+                        if (shouldNotSendData(error, channel)) return@EventListener
 
-                    if (shouldNotSendData(error, channel)) return@EventListener
-
-                    launch(coroutineContext, CoroutineStart.UNDISPATCHED) {
-                        channel.send(toEntityObject(snapshot!!.data!!))
-                    }
-                })
-        mapChannelToRegistration(channel, registration)
+                        channel.offer(toEntityObject(snapshot!!.data!!))
+                    }),
+            channel = channel
+        )
         return channel
     }
 
     private suspend fun listen(query: Query, channel: Channel<List<E>>): Channel<List<E>> {
-        removeChannelRegistration(channel)
-        val registration: ListenerRegistration?
-        registration = query
-            .whereEqualTo("removedAt", null)
-            .addSnapshotListener(
-                Executors.newSingleThreadExecutor(),
-                EventListener<QuerySnapshot> { snapshot, error ->
 
-                    if (shouldNotSendData(error, channel)) return@EventListener
+        removeOldRegistrationForChannel(channel)
+        addRegistrationToChannel(
+            registration = query
+                .whereEqualTo("removedAt", null)
+                .addSnapshotListener(
+                    Executors.newSingleThreadExecutor(),
+                    EventListener { snapshot, error ->
 
-                    launch(coroutineContext, CoroutineStart.UNDISPATCHED) {
-                        channel.send(toEntityObjects(snapshot!!.documents))
-                    }
-                })
-        mapChannelToRegistration(channel, registration)
+                        if (shouldNotSendData(error, channel)) return@EventListener
+
+                        channel.offer(toEntityObjects(snapshot!!.documents))
+                    }),
+            channel = channel
+        )
         return channel
     }
 
