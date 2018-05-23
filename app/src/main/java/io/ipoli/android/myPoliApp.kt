@@ -50,7 +50,6 @@ class myPoliApp : Application() {
         }
 
         AndroidThreeTen.init(this)
-        Timber.plant(Timber.DebugTree())
 
         if (!BuildConfig.DEBUG) {
 
@@ -63,6 +62,7 @@ class myPoliApp : Application() {
 
 
         } else {
+            Timber.plant(Timber.DebugTree())
             //            BlockCanary.install(this, object : BlockCanaryContext() {
 //                override fun provideBlockThreshold(): Int {
 //                    return 500
