@@ -17,27 +17,19 @@ import io.ipoli.android.common.mvi.Intent
 import io.ipoli.android.common.mvi.ViewStateRenderer
 import io.ipoli.android.common.rate.RateViewState.Type.*
 import io.ipoli.android.common.view.MviPopup
-import io.ipoli.android.pet.AndroidPetAvatar
-import io.ipoli.android.pet.PetAvatar
-import io.ipoli.android.player.Player
-import io.ipoli.android.player.usecase.ListenForPlayerChangesUseCase
 import kotlinx.android.synthetic.main.popup_rate.view.*
-import kotlinx.coroutines.experimental.channels.consumeEach
-import kotlinx.coroutines.experimental.launch
 import space.traversal.kapsule.required
 import kotlin.coroutines.experimental.CoroutineContext
 
 sealed class RateIntent : Intent {
     object LoadData : RateIntent()
-    data class ChangePlayer(val player: Player) : RateIntent()
     object ShowFeedback : RateIntent()
     object ShowRate : RateIntent()
 }
 
 
 data class RateViewState(
-    val type: Type,
-    val petAvatar: PetAvatar? = null
+    val type: Type
 ) : BaseViewState() {
     enum class Type {
         LOADING,
@@ -48,7 +40,6 @@ data class RateViewState(
 }
 
 class RatePresenter(
-    private val listenForPlayerChangesUseCase: ListenForPlayerChangesUseCase,
     coroutineContext: CoroutineContext
 ) :
     BaseMviPresenter<ViewStateRenderer<RateViewState>, RateViewState, RateIntent>(
@@ -58,18 +49,8 @@ class RatePresenter(
     override fun reduceState(intent: RateIntent, state: RateViewState) =
         when (intent) {
             is RateIntent.LoadData -> {
-                launch {
-                    listenForPlayerChangesUseCase.listen(Unit).consumeEach {
-                        sendChannel.send(RateIntent.ChangePlayer(it))
-                    }
-                }
-                state
-            }
-
-            is RateIntent.ChangePlayer -> {
                 state.copy(
-                    type = DATA_CHANGED,
-                    petAvatar = intent.player.pet.avatar
+                    type = DATA_CHANGED
                 )
             }
 
@@ -117,7 +98,7 @@ class RatePopup :
 
         when (state.type) {
             DATA_CHANGED -> {
-                view.rateDialogHeaderIcon.setImageResource(AndroidPetAvatar.valueOf(state.petAvatar!!.name).headImage)
+                view.rateDialogHeaderIcon.setImageResource(R.drawable.logo)
                 neutral.visibility = View.VISIBLE
 
                 positive.setOnClickListener {

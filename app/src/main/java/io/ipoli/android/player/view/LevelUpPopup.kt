@@ -22,9 +22,8 @@ import io.ipoli.android.common.view.visible
 import io.ipoli.android.pet.AndroidPetAvatar
 import io.ipoli.android.pet.PetAvatar
 import io.ipoli.android.player.Player
-import io.ipoli.android.player.usecase.ListenForPlayerChangesUseCase
+import io.ipoli.android.player.persistence.PlayerRepository
 import kotlinx.android.synthetic.main.popup_level_up.view.*
-import kotlinx.coroutines.experimental.channels.consumeEach
 import kotlinx.coroutines.experimental.launch
 import space.traversal.kapsule.required
 import kotlin.coroutines.experimental.CoroutineContext
@@ -41,7 +40,7 @@ sealed class LevelUpIntent : Intent {
 }
 
 class LevelUpPresenter(
-    private val listenForPlayerChangesUseCase: ListenForPlayerChangesUseCase,
+    private val playerRepository: PlayerRepository,
     coroutineContext: CoroutineContext
 ) : BaseMviPresenter<ViewStateRenderer<LevelUpViewState>, LevelUpViewState, LevelUpIntent>(
     LevelUpViewState(),
@@ -51,9 +50,7 @@ class LevelUpPresenter(
         when (intent) {
             is LevelUpIntent.LoadData -> {
                 launch {
-                    listenForPlayerChangesUseCase.listen(Unit).consumeEach {
-                        sendChannel.send(LevelUpIntent.ChangePlayer(it))
-                    }
+                    sendChannel.send(LevelUpIntent.ChangePlayer(playerRepository.find()!!))
                 }
                 state.copy(
                     level = intent.newLevel

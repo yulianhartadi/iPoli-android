@@ -16,9 +16,8 @@ import io.ipoli.android.pet.AndroidPetAvatar
 import io.ipoli.android.pet.Food
 import io.ipoli.android.pet.PetAvatar
 import io.ipoli.android.player.Player
-import io.ipoli.android.player.usecase.ListenForPlayerChangesUseCase
+import io.ipoli.android.player.persistence.PlayerRepository
 import kotlinx.android.synthetic.main.popup_quest_complete.view.*
-import kotlinx.coroutines.experimental.channels.consumeEach
 import kotlinx.coroutines.experimental.launch
 import space.traversal.kapsule.required
 import java.util.*
@@ -37,7 +36,7 @@ sealed class QuestCompleteIntent : Intent {
 }
 
 class QuestCompletePresenter(
-    private val listenForPlayerChangesUseCase: ListenForPlayerChangesUseCase,
+    private val playerRepository: PlayerRepository,
     coroutineContext: CoroutineContext
 ) : BaseMviPresenter<ViewStateRenderer<QuestCompleteViewState>, QuestCompleteViewState, QuestCompleteIntent>(
     QuestCompleteViewState(),
@@ -47,9 +46,7 @@ class QuestCompletePresenter(
         when (intent) {
             is QuestCompleteIntent.LoadData -> {
                 launch {
-                    listenForPlayerChangesUseCase.listen(Unit).consumeEach {
-                        sendChannel.send(QuestCompleteIntent.ChangePlayer(it))
-                    }
+                    sendChannel.send(QuestCompleteIntent.ChangePlayer(playerRepository.find()!!))
                 }
                 state.copy(
                     xp = intent.xp,

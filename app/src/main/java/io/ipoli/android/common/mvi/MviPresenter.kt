@@ -6,7 +6,6 @@ import kotlinx.coroutines.experimental.CommonPool
 import kotlinx.coroutines.experimental.android.UI
 import kotlinx.coroutines.experimental.channels.*
 import kotlinx.coroutines.experimental.launch
-import io.ipoli.android.common.StreamingUseCase
 import timber.log.Timber
 import kotlin.coroutines.experimental.CoroutineContext
 
@@ -114,10 +113,6 @@ abstract class BaseMviPresenter<in V : ViewStateRenderer<VS>, VS : ViewState, I 
     private fun <D> ReceiveChannel<D>.autoStop(): ReceiveChannel<D> {
         autoStopChannels += this
         return this
-    }
-
-    fun <I, O> StreamingUseCase<I, O>.listen(params: I): ReceiveChannel<O> {
-        return execute(params).autoStop()
     }
 
     private fun stopAutoChannels() {

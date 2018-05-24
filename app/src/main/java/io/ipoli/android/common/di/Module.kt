@@ -393,10 +393,6 @@ class MainUseCaseModule : UseCaseModule, Injects<Module> {
             reminderScheduler,
             removeRewardFromPlayerUseCase
         )
-    override val listenForPlayerChangesUseCase
-        get() = ListenForPlayerChangesUseCase(
-            playerRepository
-        )
     override val rewardPlayerUseCase get() = RewardPlayerUseCase(playerRepository, levelUpScheduler)
     override val removeRewardFromPlayerUseCase
         get() = RemoveRewardFromPlayerUseCase(
@@ -664,7 +660,6 @@ interface UseCaseModule {
     val snoozeQuestUseCase: SnoozeQuestUseCase
     val completeQuestUseCase: CompleteQuestUseCase
     val undoCompletedQuestUseCase: UndoCompletedQuestUseCase
-    val listenForPlayerChangesUseCase: ListenForPlayerChangesUseCase
     val rewardPlayerUseCase: RewardPlayerUseCase
     val removeRewardFromPlayerUseCase: RemoveRewardFromPlayerUseCase
     val feedPetUseCase: FeedPetUseCase
@@ -753,17 +748,17 @@ interface PresenterModule {
 
 class AndroidPresenterModule : PresenterModule, Injects<Module> {
 
-    private val listenForPlayerChangesUseCase by required { listenForPlayerChangesUseCase }
+    private val playerRepository by required { playerRepository }
     private val job by required { job }
 
-    override val petMessagePresenter get() = PetMessagePresenter(listenForPlayerChangesUseCase, job)
-    override val levelUpPresenter get() = LevelUpPresenter(listenForPlayerChangesUseCase, job)
+    override val petMessagePresenter get() = PetMessagePresenter(playerRepository, job)
+    override val levelUpPresenter get() = LevelUpPresenter(playerRepository, job)
     override val questCompletePresenter
         get() = QuestCompletePresenter(
-            listenForPlayerChangesUseCase,
+            playerRepository,
             job
         )
-    override val ratePresenter get() = RatePresenter(listenForPlayerChangesUseCase, job)
+    override val ratePresenter get() = RatePresenter(job)
 }
 
 interface StateStoreModule {

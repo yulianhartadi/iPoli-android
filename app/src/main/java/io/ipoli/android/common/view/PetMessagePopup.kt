@@ -10,9 +10,8 @@ import io.ipoli.android.common.mvi.ViewStateRenderer
 import io.ipoli.android.pet.AndroidPetAvatar
 import io.ipoli.android.pet.PetAvatar
 import io.ipoli.android.player.Player
-import io.ipoli.android.player.usecase.ListenForPlayerChangesUseCase
+import io.ipoli.android.player.persistence.PlayerRepository
 import kotlinx.android.synthetic.main.popup_pet_message.view.*
-import kotlinx.coroutines.experimental.channels.consumeEach
 import kotlinx.coroutines.experimental.launch
 import space.traversal.kapsule.required
 import java.util.concurrent.TimeUnit
@@ -29,7 +28,7 @@ sealed class PetMessageIntent : Intent {
 }
 
 class PetMessagePresenter(
-    private val listenForPlayerChangesUseCase: ListenForPlayerChangesUseCase,
+    private val playerRepository: PlayerRepository,
     coroutineContext: CoroutineContext
 ) : BaseMviPresenter<ViewStateRenderer<PetMessageViewState>, PetMessageViewState, PetMessageIntent>(
     PetMessageViewState(),
@@ -39,9 +38,7 @@ class PetMessagePresenter(
         when (intent) {
             is PetMessageIntent.LoadData -> {
                 launch {
-                    listenForPlayerChangesUseCase.listen(Unit).consumeEach {
-                        sendChannel.send(PetMessageIntent.ChangePlayer(it))
-                    }
+                    sendChannel.send(PetMessageIntent.ChangePlayer(playerRepository.find()!!))
                 }
                 state.copy(
                     message = intent.message
@@ -86,7 +83,7 @@ class PetMessagePopup(
     override fun createView(inflater: LayoutInflater): View {
         val v = inflater.inflate(R.layout.popup_pet_message, null)
 
-        if(actionText.isNotBlank()) {
+        if (actionText.isNotBlank()) {
             v.petAction.text = actionText
         }
 
