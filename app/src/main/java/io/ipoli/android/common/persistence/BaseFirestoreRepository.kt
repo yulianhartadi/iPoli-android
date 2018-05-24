@@ -10,6 +10,7 @@ import kotlinx.coroutines.experimental.channels.Channel
 import kotlinx.coroutines.experimental.channels.SendChannel
 import org.threeten.bp.Instant
 import timber.log.Timber
+import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
 import kotlin.coroutines.experimental.CoroutineContext
 
@@ -179,7 +180,8 @@ abstract class BaseFirestoreRepository<E, out T>(
 abstract class BaseEntityFirestoreRepository<E, out T>(
     database: FirebaseFirestore,
     private val coroutineContext: CoroutineContext,
-    sharedPreferences: SharedPreferences
+    sharedPreferences: SharedPreferences,
+    private val executor: ExecutorService
 ) : BaseFirestoreRepository<E, T>(
     database,
     sharedPreferences
@@ -188,12 +190,12 @@ abstract class BaseEntityFirestoreRepository<E, out T>(
     abstract val entityReference: DocumentReference
 
     override suspend fun listen(channel: Channel<E?>): Channel<E?> {
-
+        Timber.d("AAA $executor")
         removeOldRegistrationForChannel(channel)
         addRegistrationToChannel(
             registration = entityReference
                 .addSnapshotListener(
-                    Executors.newSingleThreadExecutor(),
+                    executor,
                     EventListener { snapshot, error ->
                         if (shouldNotSendData(error, channel)) return@EventListener
                         channel.offer(toEntityObject(snapshot!!.data!!))
@@ -210,7 +212,8 @@ abstract class BaseEntityFirestoreRepository<E, out T>(
 abstract class BaseCollectionFirestoreRepository<E, out T>(
     database: FirebaseFirestore,
     private val coroutineContext: CoroutineContext,
-    sharedPreferences: SharedPreferences
+    sharedPreferences: SharedPreferences,
+    private val executor: ExecutorService
 ) : BaseFirestoreRepository<E, T>(
     database,
     sharedPreferences
@@ -222,12 +225,11 @@ abstract class BaseCollectionFirestoreRepository<E, out T>(
     override fun findAll() = collectionReference.notRemovedEntities
 
     override suspend fun listenById(id: String, channel: Channel<E?>): Channel<E?> {
-
         removeOldRegistrationForChannel(channel)
         addRegistrationToChannel(
             registration = documentReference(id)
                 .addSnapshotListener(
-                    Executors.newSingleThreadExecutor(),
+                    executor,
                     EventListener { snapshot, error ->
 
                         if (shouldNotSendData(error, channel)) return@EventListener
@@ -240,13 +242,12 @@ abstract class BaseCollectionFirestoreRepository<E, out T>(
     }
 
     private suspend fun listen(query: Query, channel: Channel<List<E>>): Channel<List<E>> {
-
         removeOldRegistrationForChannel(channel)
         addRegistrationToChannel(
             registration = query
                 .whereEqualTo("removedAt", null)
                 .addSnapshotListener(
-                    Executors.newSingleThreadExecutor(),
+                    executor,
                     EventListener { snapshot, error ->
 
                         if (shouldNotSendData(error, channel)) return@EventListener

@@ -123,6 +123,8 @@ import kotlinx.coroutines.experimental.Job
 import space.traversal.kapsule.HasModules
 import space.traversal.kapsule.Injects
 import space.traversal.kapsule.required
+import java.util.concurrent.ExecutorService
+import java.util.concurrent.Executors
 
 /**
  * Created by Venelin Valkov <venelin@mypoli.fun>
@@ -147,7 +149,8 @@ class AndroidRepositoryModule(private val appContext: Context) : RepositoryModul
         FirestoreQuestRepository(
             database,
             job + CommonPool,
-            sharedPreferences
+            sharedPreferences,
+            executor
         )
     }
 
@@ -156,7 +159,8 @@ class AndroidRepositoryModule(private val appContext: Context) : RepositoryModul
             FirestorePlayerRepository(
                 database,
                 job + CommonPool,
-                sharedPreferences
+                sharedPreferences,
+                executor
             )
         }
 
@@ -165,7 +169,8 @@ class AndroidRepositoryModule(private val appContext: Context) : RepositoryModul
             FirestoreRepeatingQuestRepository(
                 database,
                 job + CommonPool,
-                sharedPreferences
+                sharedPreferences,
+                executor
             )
         }
 
@@ -173,7 +178,8 @@ class AndroidRepositoryModule(private val appContext: Context) : RepositoryModul
         FirestoreChallengeRepository(
             database,
             job + CommonPool,
-            sharedPreferences
+            sharedPreferences,
+            executor
         )
     }
 
@@ -190,7 +196,8 @@ class AndroidRepositoryModule(private val appContext: Context) : RepositoryModul
             FirestoreTagRepository(
                 database,
                 job + CommonPool,
-                sharedPreferences
+                sharedPreferences,
+                executor
             )
         }
 
@@ -265,6 +272,8 @@ interface AndroidModule {
     val migrationExecutor: MigrationExecutor
 
     val internetConnectionChecker: InternetConnectionChecker
+
+    val executor: ExecutorService
 }
 
 class MainAndroidModule(
@@ -329,6 +338,8 @@ class MainAndroidModule(
         )
 
     override val internetConnectionChecker = InternetConnectionChecker(context)
+
+    override val executor: ExecutorService = Executors.newCachedThreadPool()
 }
 
 class MainUseCaseModule : UseCaseModule, Injects<Module> {

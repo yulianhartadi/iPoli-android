@@ -21,6 +21,7 @@ import io.ipoli.android.tag.Tag
 import org.threeten.bp.DayOfWeek
 import org.threeten.bp.LocalDate
 import org.threeten.bp.Month
+import java.util.concurrent.ExecutorService
 import kotlin.coroutines.experimental.CoroutineContext
 
 /**
@@ -84,11 +85,13 @@ data class DbRepeatPattern(val map: MutableMap<String, Any?> = mutableMapOf()) {
 class FirestoreRepeatingQuestRepository(
     database: FirebaseFirestore,
     coroutineContext: CoroutineContext,
-    sharedPreferences: SharedPreferences
+    sharedPreferences: SharedPreferences,
+    executor: ExecutorService
 ) : BaseCollectionFirestoreRepository<RepeatingQuest, DbRepeatingQuest>(
     database,
     coroutineContext,
-    sharedPreferences
+    sharedPreferences,
+    executor
 ), RepeatingQuestRepository {
 
     override fun findActiveNotForChallenge(

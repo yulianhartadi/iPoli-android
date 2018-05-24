@@ -16,6 +16,7 @@ import io.ipoli.android.quest.Icon
 import io.ipoli.android.quest.data.persistence.DbEmbedTag
 import io.ipoli.android.tag.Tag
 import kotlinx.coroutines.experimental.channels.Channel
+import java.util.concurrent.ExecutorService
 import kotlin.coroutines.experimental.CoroutineContext
 
 /**
@@ -30,11 +31,13 @@ interface ChallengeRepository : CollectionRepository<Challenge> {
 class FirestoreChallengeRepository(
     database: FirebaseFirestore,
     coroutineContext: CoroutineContext,
-    sharedPreferences: SharedPreferences
+    sharedPreferences: SharedPreferences,
+    executor: ExecutorService
 ) : BaseCollectionFirestoreRepository<Challenge, DbChallenge>(
     database,
     coroutineContext,
-    sharedPreferences
+    sharedPreferences,
+    executor
 ), ChallengeRepository {
 
 

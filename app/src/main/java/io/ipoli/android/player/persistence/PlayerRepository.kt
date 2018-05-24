@@ -28,6 +28,7 @@ import io.ipoli.android.store.powerup.PowerUp
 import kotlinx.coroutines.experimental.runBlocking
 import org.threeten.bp.DayOfWeek
 import org.threeten.bp.Instant
+import java.util.concurrent.ExecutorService
 import kotlin.coroutines.experimental.CoroutineContext
 import kotlin.coroutines.experimental.suspendCoroutine
 
@@ -52,11 +53,13 @@ interface PlayerRepository : EntityRepository<Player> {
 class FirestorePlayerRepository(
     database: FirebaseFirestore,
     coroutineContext: CoroutineContext,
-    sharedPreferences: SharedPreferences
+    sharedPreferences: SharedPreferences,
+    executor: ExecutorService
 ) : BaseEntityFirestoreRepository<Player, DbPlayer>(
     database,
     coroutineContext,
-    sharedPreferences
+    sharedPreferences,
+    executor
 ), PlayerRepository {
 
     override val collectionReference

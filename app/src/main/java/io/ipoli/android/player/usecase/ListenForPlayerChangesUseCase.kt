@@ -3,6 +3,7 @@ package io.ipoli.android.player.usecase
 import io.ipoli.android.common.StreamingUseCase
 import io.ipoli.android.player.Player
 import io.ipoli.android.player.persistence.PlayerRepository
+import kotlinx.coroutines.experimental.CommonPool
 import kotlinx.coroutines.experimental.android.UI
 import kotlinx.coroutines.experimental.channels.Channel
 import kotlinx.coroutines.experimental.channels.ReceiveChannel
@@ -19,8 +20,8 @@ class ListenForPlayerChangesUseCase(
 
     override fun execute(parameters: Unit): ReceiveChannel<Player> {
         val c = Channel<Player>()
-        launch(UI) {
-            val listenChannel = Channel<Player?>()
+        launch(CommonPool) {
+            val listenChannel = Channel<Player?>(Channel.CONFLATED)
             playerRepository.listen(listenChannel).map {
                 c.send(it!!)
             }

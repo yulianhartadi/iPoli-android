@@ -15,6 +15,7 @@ import io.ipoli.android.quest.subquest.SubQuest
 import io.ipoli.android.tag.Tag
 import kotlinx.coroutines.experimental.channels.Channel
 import org.threeten.bp.*
+import java.util.concurrent.ExecutorService
 import kotlin.coroutines.experimental.CoroutineContext
 
 interface QuestRepository : CollectionRepository<Quest> {
@@ -173,11 +174,13 @@ data class DbTimeRange(val map: MutableMap<String, Any?> = mutableMapOf()) {
 class FirestoreQuestRepository(
     database: FirebaseFirestore,
     coroutineContext: CoroutineContext,
-    sharedPreferences: SharedPreferences
+    sharedPreferences: SharedPreferences,
+    executor: ExecutorService
 ) : BaseCollectionFirestoreRepository<Quest, DbQuest>(
     database,
     coroutineContext,
-    sharedPreferences
+    sharedPreferences,
+    executor
 ), QuestRepository {
 
     override fun findAllForRepeatingQuestAfterDate(

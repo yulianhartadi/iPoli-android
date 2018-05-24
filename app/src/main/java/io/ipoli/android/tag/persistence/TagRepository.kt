@@ -12,6 +12,7 @@ import io.ipoli.android.quest.Color
 import io.ipoli.android.quest.Icon
 import io.ipoli.android.tag.Tag
 import kotlinx.coroutines.experimental.channels.Channel
+import java.util.concurrent.ExecutorService
 import kotlin.coroutines.experimental.CoroutineContext
 
 /**
@@ -25,11 +26,13 @@ interface TagRepository : CollectionRepository<Tag> {
 class FirestoreTagRepository(
     database: FirebaseFirestore,
     coroutineContext: CoroutineContext,
-    sharedPreferences: SharedPreferences
+    sharedPreferences: SharedPreferences,
+    executor: ExecutorService
 ) : BaseCollectionFirestoreRepository<Tag, DbTag>(
     database,
     coroutineContext,
-    sharedPreferences
+    sharedPreferences,
+    executor
 ), TagRepository {
 
     override val collectionReference: CollectionReference
