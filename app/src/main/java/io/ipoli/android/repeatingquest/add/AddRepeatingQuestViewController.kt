@@ -724,7 +724,7 @@ class AddRepeatingQuestViewController(args: Bundle? = null) :
             view.summaryDuration.onDebounceClick {
                 DurationPickerDialogController(
                     state.duration.intValue,
-                    { dispatch(EditRepeatingQuestAction.DurationPicked(it)) }
+                    { dispatch(EditRepeatingQuestAction.ChangeDuration(it)) }
                 ).show(router, "pick_duration_tag")
             }
         }

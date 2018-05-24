@@ -63,11 +63,19 @@ class DurationPickerDialogController :
         contentView: View,
         savedViewState: Bundle?
     ): AlertDialog =
-        dialogBuilder.setPositiveButton(R.string.dialog_ok, { _, _ ->
-            listener(Constants.DURATIONS[contentView.durationPicker.selectedItemIndex])
-        })
+        dialogBuilder
+            .setPositiveButton(R.string.dialog_ok, null)
             .setNegativeButton(R.string.cancel, null)
             .create()
+
+    override fun onDialogCreated(dialog: AlertDialog, contentView: View) {
+        dialog.setOnShowListener {
+            setPositiveButtonListener {
+                listener(Constants.DURATIONS[contentView.durationPicker.selectedItemIndex])
+                dismiss()
+            }
+        }
+    }
 
     override fun onCreateLoadAction() = LoadPetDialogAction
 

@@ -133,6 +133,13 @@ object EditRepeatingQuestReducer : BaseViewStateReducer<EditRepeatingQuestViewSt
                     adapterPosition = subState.adapterPosition + 1
                 )
 
+            is EditRepeatingQuestAction.DurationPicked ->
+                subState.copy(
+                    type = NEXT_PAGE,
+                    duration = action.minutes.minutes,
+                    adapterPosition = subState.adapterPosition + 1
+                )
+
             is EditRepeatingQuestAction.PickRepeatPattern ->
                 subState.copy(
                     type = NEXT_PAGE,
