@@ -44,14 +44,20 @@ data class Time constructor(private val minutesAfterMidnight: Int) {
         c.set(Calendar.MINUTE, getMinutes())
         c.set(Calendar.HOUR_OF_DAY, hours)
 
-        var format = "HH:mm"
-        if (!shouldUse24HourFormat) {
-            format = if (getMinutes() > 0) "h:mm a" else "h a"
+        val formatter = when {
+            !shouldUse24HourFormat && getMinutes() > 0 -> TWELVE_HOUR_FORMATTER_FULL
+            !shouldUse24HourFormat -> TWELVE_HOUR_FORMATTER_SHORT
+            else -> TWENTY_FOUR_HOUR_FORMATTER
         }
-        return SimpleDateFormat(format, Locale.getDefault()).format(c.time)
+
+        return formatter.format(c.time)
     }
 
     companion object {
+
+        val TWELVE_HOUR_FORMATTER_FULL = SimpleDateFormat("h:mm a", Locale.getDefault())
+        val TWELVE_HOUR_FORMATTER_SHORT = SimpleDateFormat("h a", Locale.getDefault())
+        val TWENTY_FOUR_HOUR_FORMATTER = SimpleDateFormat("HH:mm", Locale.getDefault())
 
         val MINUTES_IN_AN_HOUR = 60
         val MINUTES_IN_A_DAY = 24 * MINUTES_IN_AN_HOUR
