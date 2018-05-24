@@ -21,6 +21,7 @@ import io.ipoli.android.common.LoaderDialogController
 import io.ipoli.android.common.redux.android.ReduxViewController
 import io.ipoli.android.common.view.*
 import io.ipoli.android.store.membership.MembershipViewState.StateType.*
+import io.ipoli.android.store.purchase.AndroidInAppPurchaseManager
 import io.ipoli.android.store.purchase.AndroidSubscriptionManager
 import io.ipoli.android.store.purchase.SubscriptionManager
 import kotlinx.android.synthetic.main.controller_membership.view.*
@@ -29,6 +30,7 @@ import org.solovyev.android.checkout.Billing
 import org.solovyev.android.checkout.Checkout
 import org.solovyev.android.checkout.IntentStarter
 import org.solovyev.android.checkout.UiCheckout
+import timber.log.Timber
 
 /**
  * Created by Polina Zhelyazkova <polina@mypoli.fun>
@@ -58,34 +60,13 @@ class MembershipViewController(args: Bundle? = null) :
                 BillingConstants.APP_PUBLIC_KEY
         })
 
-        checkout = Checkout.forUi(
-            MyIntentStarter(
-                this
-            ), this, billing
-        )
+        checkout = Checkout.forActivity(activity!!, billing)
         checkout.start()
         subscriptionManager = AndroidSubscriptionManager(checkout)
 
+        registerForActivityResult(AndroidSubscriptionManager.PURCHASE_REQUEST_CODE)
+
         return view
-    }
-
-    inner class MyIntentStarter(
-        private val controller: RestoreViewOnCreateController
-    ) : IntentStarter {
-
-        @Throws(IntentSender.SendIntentException::class)
-        override fun startForResult(intentSender: IntentSender, requestCode: Int, intent: Intent) {
-            controller.registerForActivityResult(requestCode)
-            controller.startIntentSenderForResult(
-                intentSender,
-                requestCode,
-                intent,
-                0,
-                0,
-                0,
-                null
-            )
-        }
     }
 
     override fun onAttach(view: View) {

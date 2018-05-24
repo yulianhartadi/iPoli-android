@@ -36,6 +36,7 @@ class AndroidSubscriptionManager(private val checkout: UiCheckout) : Subscriptio
 
     companion object {
         val SKUS = MembershipPlan.values().map { it.sku }
+        const val PURCHASE_REQUEST_CODE = 322
     }
 
     override fun loadInventory(productsListener: (Inventory.Product, Set<String>) -> Unit) {
@@ -60,15 +61,29 @@ class AndroidSubscriptionManager(private val checkout: UiCheckout) : Subscriptio
     ) {
         val payload = UUID.randomUUID().toString()
         launch(UI) {
-            checkout.destroyPurchaseFlow()
-            checkout.startPurchaseFlow(ProductTypes.SUBSCRIPTION, sku, payload, object :
+            checkout.destroyPurchaseFlow(PURCHASE_REQUEST_CODE)
+            checkout.createOneShotPurchaseFlow(PURCHASE_REQUEST_CODE, object :
                 EmptyRequestListener<Purchase>() {
+
                 override fun onSuccess(purchase: Purchase) {
                     launch { successListener(DateUtils.fromMillis(purchase.time)) }
                 }
 
                 override fun onError(responseCode: Int, e: Exception) {
                     launch { errorListener(responseCode, e) }
+                }
+            })
+            checkout.whenReady(object : Checkout.EmptyListener() {
+                override fun onReady(requests: BillingRequests) {
+                    requests.purchase(
+                        ProductTypes.SUBSCRIPTION,
+                        sku,
+                        payload,
+                        null,
+                        checkout.getPurchaseFlow(
+                            PURCHASE_REQUEST_CODE
+                        )
+                    );
                 }
             })
         }
@@ -101,7 +116,10 @@ class AndroidSubscriptionManager(private val checkout: UiCheckout) : Subscriptio
             checkout.whenReady(object : Checkout.EmptyListener() {
                 override fun onReady(requests: BillingRequests) {
                     val flow =
-                        checkout.createOneShotPurchaseFlow(changeSubscriptionListener)
+                        checkout.createOneShotPurchaseFlow(
+                            PURCHASE_REQUEST_CODE,
+                            changeSubscriptionListener
+                        )
                     requests.changeSubscription(activeSkus.toList(), sku, null, flow)
                 }
             })
