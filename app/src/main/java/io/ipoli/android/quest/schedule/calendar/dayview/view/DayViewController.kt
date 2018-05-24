@@ -110,8 +110,7 @@ class DayViewController :
                 }
             }
         })
-
-        calendarDayView.scrollToNow()
+        calendarDayView.invisible()
 
         return view
     }
@@ -352,6 +351,11 @@ class DayViewController :
             1,
             TypedValue.COMPLEX_UNIT_SP
         )
+    }
+
+    override fun onCalendarReady() {
+        calendarDayView.scrollToNow()
+        calendarDayView.visible()
     }
 
     override fun onStartEditNewScheduledEvent(startTime: Time, duration: Int) {
