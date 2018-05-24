@@ -190,7 +190,6 @@ abstract class BaseEntityFirestoreRepository<E, out T>(
     abstract val entityReference: DocumentReference
 
     override suspend fun listen(channel: Channel<E?>): Channel<E?> {
-        Timber.d("AAA $executor")
         removeOldRegistrationForChannel(channel)
         addRegistrationToChannel(
             registration = entityReference
