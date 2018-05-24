@@ -1086,8 +1086,7 @@ class CalendarDayView : FrameLayout, StateChangeListener {
 
     fun scrollTo(time: Time) {
         scrollView.post {
-            val scrollPositionFrom = scrollPositionFrom(time)
-            scrollView.scrollY = scrollPositionFrom
+            scrollView.scrollY = scrollPositionFrom(time)
         }
     }
 
