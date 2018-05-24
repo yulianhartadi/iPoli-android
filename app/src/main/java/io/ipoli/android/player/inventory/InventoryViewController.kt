@@ -104,6 +104,7 @@ class InventoryViewController :
                 )
             }
         } else {
+            view.inventoryGems.background = null
             view.setOnClickListener(null)
         }
         return view
