@@ -42,6 +42,7 @@ class LoadScheduleForDateUseCase :
             it to mutableListOf<Event>()
         }.toMap().toMutableMap()
 
+
         for (e in parameters.events) {
             eventData[e.startDate]!!.add(e)
         }

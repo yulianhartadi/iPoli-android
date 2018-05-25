@@ -89,19 +89,21 @@ class AndroidCalendarEventRepository : EventRepository {
         ContentUris.appendId(builder, endTime.timeInMillis)
 
         val selection = (CalendarContract.Events.CALENDAR_ID + " = ?")
-        val selectionArgs = calendarIds.map { it.toString() }.toTypedArray()
 
         val events = mutableListOf<Event>()
 
-        myPoliApp.instance.contentResolver.query(
-            builder.build(),
-            INSTANCE_PROJECTION,
-            selection,
-            selectionArgs,
-            null
-        ).use {
-            while (it.moveToNext()) {
-                events.add(createEvent(it))
+        calendarIds.forEach {
+            val selectionArgs = listOf(it.toString()).toTypedArray()
+            myPoliApp.instance.contentResolver.query(
+                builder.build(),
+                INSTANCE_PROJECTION,
+                selection,
+                selectionArgs,
+                null
+            ).use {
+                while (it.moveToNext()) {
+                    events.add(createEvent(it))
+                }
             }
         }
 
