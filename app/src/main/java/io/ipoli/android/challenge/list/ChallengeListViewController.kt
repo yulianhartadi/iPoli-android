@@ -86,7 +86,7 @@ class ChallengeListViewController(args: Bundle? = null) :
         when (state) {
 
             is ChallengeListViewState.Loading -> {
-                view.loader.invisible()
+                view.loader.visible()
                 view.emptyContainer.invisible()
                 view.challengeList.invisible()
             }

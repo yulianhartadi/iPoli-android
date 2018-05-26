@@ -82,7 +82,7 @@ data class AppDataState(
     val unscheduledQuests: List<Quest>,
     val calendarSchedule: Map<LocalDate, Schedule>,
     val repeatingQuests: List<RepeatingQuest>?,
-    val challenges: List<Challenge>,
+    val challenges: List<Challenge>?,
     val events: List<Event>,
     val tags: List<Tag>
 ) : State
@@ -146,7 +146,7 @@ object AppDataReducer : Reducer<AppState, AppDataState> {
             unscheduledQuests = emptyList(),
             calendarSchedule = mapOf(),
             repeatingQuests = null,
-            challenges = listOf(),
+            challenges = null,
             events = listOf(),
             tags = listOf()
         )

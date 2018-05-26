@@ -68,7 +68,7 @@ object EditChallengeReducer : BaseViewStateReducer<EditChallengeViewState>() {
 
             is EditChallengeAction.Load -> {
                 val dataState = state.dataState
-                val c = dataState.challenges.first { it.id == action.challengeId }
+                val c = dataState.challenges!!.first { it.id == action.challengeId }
                 subState.copy(
                     type = DATA_CHANGED,
                     id = action.challengeId,

@@ -35,7 +35,7 @@ object ChallengeReducer : BaseViewStateReducer<ChallengeViewState>() {
             is ChallengeAction.Load -> {
                 val dataState = state.dataState
                 val c =
-                    dataState.challenges.firstOrNull { it.id == action.challengeId }
+                    dataState.challenges!!.firstOrNull { it.id == action.challengeId }
 
                 c?.let {
                     createChangedState(it)

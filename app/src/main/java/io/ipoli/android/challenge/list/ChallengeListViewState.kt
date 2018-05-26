@@ -38,8 +38,9 @@ object ChallengeListReducer : BaseViewStateReducer<ChallengeListViewState>() {
             else -> subState
         }
 
-    private fun createState(challenges: List<Challenge>) =
+    private fun createState(challenges: List<Challenge>?) =
         when {
+            challenges == null -> ChallengeListViewState.Loading
             challenges.isEmpty() -> ChallengeListViewState.Empty
             else -> ChallengeListViewState.Changed(createChallengeItems(challenges))
         }

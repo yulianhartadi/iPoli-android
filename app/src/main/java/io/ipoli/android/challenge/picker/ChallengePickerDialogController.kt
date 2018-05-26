@@ -8,7 +8,7 @@ import android.widget.RadioButton
 import io.ipoli.android.R
 import io.ipoli.android.challenge.entity.Challenge
 import io.ipoli.android.challenge.picker.ChallengePickerViewState.StateType.CHALLENGE_SELECTED
-import io.ipoli.android.challenge.picker.ChallengePickerViewState.StateType.DATA_LOADED
+import io.ipoli.android.challenge.picker.ChallengePickerViewState.StateType.DATA_CHANGED
 import io.ipoli.android.common.view.ReduxDialogController
 import io.ipoli.android.common.view.invisible
 import io.ipoli.android.common.view.visible
@@ -58,7 +58,7 @@ class ChallengePickerDialogController(args: Bundle? = null) :
 
     override fun render(state: ChallengePickerViewState, view: View) {
         when (state.type) {
-            DATA_LOADED -> {
+            DATA_CHANGED -> {
                 changeIcon(state.petHeadImage)
 
                 if (state.showEmpty) {
@@ -124,7 +124,7 @@ class ChallengePickerDialogController(args: Bundle? = null) :
     )
 
     private val ChallengePickerViewState.viewModels: List<ChallengeViewModel>
-        get() = challenges.map {
+        get() = challenges!!.map {
             ChallengeViewModel(it.name, it.id == selectedChallenge?.id, it)
         }
 

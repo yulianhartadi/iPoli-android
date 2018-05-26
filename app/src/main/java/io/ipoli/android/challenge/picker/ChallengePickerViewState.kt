@@ -4,6 +4,7 @@ import io.ipoli.android.challenge.entity.Challenge
 import io.ipoli.android.challenge.picker.ChallengePickerViewState.StateType.*
 import io.ipoli.android.common.AppState
 import io.ipoli.android.common.BaseViewStateReducer
+import io.ipoli.android.common.DataLoadedAction
 import io.ipoli.android.common.mvi.BaseViewState
 import io.ipoli.android.common.redux.Action
 import io.ipoli.android.pet.PetAvatar
@@ -29,13 +30,22 @@ object ChallengePickerReducer : BaseViewStateReducer<ChallengePickerViewState>()
         is ChallengePickerAction.Load -> {
             val challenges = state.dataState.challenges
             subState.copy(
-                type = DATA_LOADED,
-                petAvatar = state.dataState.player!!.pet.avatar,
-                challenges = challenges,
+                type = if (challenges == null) LOADING else DATA_CHANGED,
                 selectedChallenge = action.challenge,
-                showEmpty = challenges.isEmpty()
+                challenges = challenges,
+                petAvatar = state.dataState.player!!.pet.avatar,
+                showEmpty = challenges != null && challenges.isEmpty()
             )
         }
+
+        is DataLoadedAction.ChallengesChanged -> {
+            subState.copy(
+                type = DATA_CHANGED,
+                challenges = action.challenges,
+                showEmpty = action.challenges.isEmpty()
+            )
+        }
+
 
         is ChallengePickerAction.ChangeSelected -> {
             subState.copy(
@@ -66,13 +76,13 @@ object ChallengePickerReducer : BaseViewStateReducer<ChallengePickerViewState>()
 data class ChallengePickerViewState(
     val type: StateType,
     val petAvatar: PetAvatar,
-    val challenges: List<Challenge>,
+    val challenges: List<Challenge>?,
     val selectedChallenge: Challenge?,
     val showEmpty: Boolean
 ) : BaseViewState() {
     enum class StateType {
         LOADING,
-        DATA_LOADED,
+        DATA_CHANGED,
         CHALLENGE_CHANGED,
         CHALLENGE_SELECTED
     }

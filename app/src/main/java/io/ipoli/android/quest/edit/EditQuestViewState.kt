@@ -86,7 +86,7 @@ object EditQuestReducer : BaseViewStateReducer<EditQuestViewState>() {
                     null
             }
             val challenge = if (quest.isFromChallenge) {
-                state.dataState.challenges.first { it.id == quest.challengeId }
+                state.dataState.challenges?.first { it.id == quest.challengeId }
             } else null
 
             val subQuests = quest.subQuests.map {
