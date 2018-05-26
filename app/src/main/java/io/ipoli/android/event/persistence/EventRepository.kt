@@ -78,10 +78,10 @@ class AndroidCalendarEventRepository : EventRepository {
         end: LocalDate
     ): List<Event> {
 
-        val beginTime = Calendar.getInstance()
+        val beginTime = Calendar.getInstance(TimeZone.getTimeZone("UTC"))
         beginTime.set(start.year, start.monthValue - 1, start.dayOfMonth, 0, 0, 0)
 
-        val endTime = Calendar.getInstance()
+        val endTime = Calendar.getInstance(TimeZone.getTimeZone("UTC"))
         endTime.set(end.year, end.monthValue - 1, end.dayOfMonth, 23, 59, 59)
 
         val builder = Instances.CONTENT_URI.buildUpon()
