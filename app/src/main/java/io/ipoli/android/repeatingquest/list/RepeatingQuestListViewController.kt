@@ -80,7 +80,7 @@ class RepeatingQuestListViewController(args: Bundle? = null) :
                     view.emptyTitle.setText(R.string.empty_repeating_quests_title)
                     view.emptyText.setText(R.string.empty_repeating_quests_text)
                 } else {
-                    view.emptyContainer.invisible()д
+                    view.emptyContainer.invisible()
                     view.emptyAnimation.pauseAnimation()
                 }
 
