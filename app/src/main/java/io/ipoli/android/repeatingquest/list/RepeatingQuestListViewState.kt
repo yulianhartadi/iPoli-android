@@ -41,18 +41,22 @@ object RepeatingQuestListReducer : BaseViewStateReducer<RepeatingQuestListViewSt
 
     private fun createState(
         subState: RepeatingQuestListViewState,
-        repeatingQuests: List<RepeatingQuest>
+        repeatingQuests: List<RepeatingQuest>?
     ) =
-        subState.copy(
-            type = CHANGED,
-            repeatingQuests = repeatingQuests,
-            showEmptyView = repeatingQuests.isEmpty()
-        )
+        if (repeatingQuests == null) {
+            subState.copy(type = LOADING)
+        } else {
+            subState.copy(
+                type = CHANGED,
+                repeatingQuests = repeatingQuests,
+                showEmptyView = repeatingQuests.isEmpty()
+            )
+        }
 
     override fun defaultState() =
         RepeatingQuestListViewState(
             type = LOADING,
-            repeatingQuests = listOf(),
+            repeatingQuests = null,
             showEmptyView = false
         )
 
@@ -60,7 +64,7 @@ object RepeatingQuestListReducer : BaseViewStateReducer<RepeatingQuestListViewSt
 
 data class RepeatingQuestListViewState(
     val type: RepeatingQuestListViewState.StateType,
-    val repeatingQuests: List<RepeatingQuest>,
+    val repeatingQuests: List<RepeatingQuest>?,
     val showEmptyView: Boolean
 ) : BaseViewState() {
     enum class StateType {

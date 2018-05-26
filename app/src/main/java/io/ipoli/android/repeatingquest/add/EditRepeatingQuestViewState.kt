@@ -175,7 +175,7 @@ object EditRepeatingQuestReducer : BaseViewStateReducer<EditRepeatingQuestViewSt
 
             is EditRepeatingQuestAction.Load -> {
                 val dataState = state.dataState
-                val rq = dataState.repeatingQuests.first { it.id == action.repeatingQuestId }
+                val rq = dataState.repeatingQuests!!.first { it.id == action.repeatingQuestId }
 
                 subState.copy(
                     type = SUMMARY_DATA_LOADED,

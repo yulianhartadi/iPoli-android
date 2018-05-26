@@ -83,7 +83,7 @@ object RepeatingQuestReducer : BaseViewStateReducer<RepeatingQuestViewState>() {
 
                 val dataState = state.dataState
                 val rq =
-                    dataState.repeatingQuests.firstOrNull { it.id == action.repeatingQuestId }
+                    dataState.repeatingQuests!!.firstOrNull { it.id == action.repeatingQuestId }
 
                 rq?.let {
                     createChangedState(it)

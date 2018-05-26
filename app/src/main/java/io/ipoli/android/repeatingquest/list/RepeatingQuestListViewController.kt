@@ -173,7 +173,7 @@ class RepeatingQuestListViewController(args: Bundle? = null) :
 
     private fun RepeatingQuestListViewState.toViewModels(context: Context): List<RepeatingQuestViewModel> {
         val frequencies = stringsRes(R.array.repeating_quest_frequencies)
-        return repeatingQuests.map {
+        return repeatingQuests!!.map {
             val next = when {
                 it.isCompleted -> stringRes(R.string.completed)
                 it.nextDate != null -> {
