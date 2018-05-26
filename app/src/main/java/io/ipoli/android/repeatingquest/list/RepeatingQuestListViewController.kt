@@ -72,17 +72,15 @@ class RepeatingQuestListViewController(args: Bundle? = null) :
     override fun render(state: RepeatingQuestListViewState, view: View) {
         when (state.type) {
             CHANGED -> {
-                view.loader.visible = false
+                view.loader.gone()
 
                 if (state.showEmptyView) {
-                    view.repeatingQuestList.visible = false
-                    view.emptyContainer.visible = true
+                    view.emptyContainer.visible()
                     view.emptyAnimation.playAnimation()
                     view.emptyTitle.setText(R.string.empty_repeating_quests_title)
                     view.emptyText.setText(R.string.empty_repeating_quests_text)
                 } else {
-                    view.repeatingQuestList.visible = true
-                    view.emptyContainer.visible = false
+                    view.emptyContainer.invisible()д
                     view.emptyAnimation.pauseAnimation()
                 }
 
