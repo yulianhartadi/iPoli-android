@@ -5,7 +5,6 @@ import io.ipoli.android.common.datetime.datesBetween
 import io.ipoli.android.event.Event
 import io.ipoli.android.quest.Quest
 import org.threeten.bp.LocalDate
-import timber.log.Timber
 
 /**
  * Created by Venelin Valkov <venelin@mypoli.fun>
@@ -23,7 +22,7 @@ class LoadScheduleForDateUseCase :
 
     override fun execute(parameters: Params): Map<LocalDate, Schedule> {
         val scheduleDates = parameters.startDate.datesBetween(parameters.endDate)
-        
+
         val questData = scheduleDates.map {
             it to Pair<MutableList<Quest>, MutableList<Quest>>(mutableListOf(), mutableListOf())
         }.toMap().toMutableMap()
