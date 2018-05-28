@@ -73,7 +73,7 @@ class SchedulePredefinedChallengeUseCase :
                         chooseRandomScheduledDate(randomSeed)
                     }
 
-                    listOf<BaseQuest>(createFromOneTime(q, challenge, scheduledDate))
+                    listOf<BaseQuest>(createFromOneTime(q, scheduledDate))
                 }
             }
         }.flatten()
@@ -91,7 +91,6 @@ class SchedulePredefinedChallengeUseCase :
 
     private fun createFromOneTime(
         it: PredefinedChallengeData.Quest.OneTime,
-        challenge: PredefinedChallengeData,
         scheduledDate: LocalDate
     ) =
         Quest(

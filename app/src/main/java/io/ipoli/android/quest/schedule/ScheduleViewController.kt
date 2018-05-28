@@ -256,7 +256,7 @@ class ScheduleViewController(args: Bundle? = null) :
         CellConfig.Month2WeekPos = CellConfig.middlePosition
         CellConfig.ifMonth = false
         CellConfig.weekAnchorPointDate =
-                DateData(currentDate.year, currentDate.monthValue, currentDate.dayOfMonth)
+            DateData(currentDate.year, currentDate.monthValue, currentDate.dayOfMonth)
         view.datePicker.shrink()
         view.datePickerContainer.visibility = View.VISIBLE
         view.expander.setImageResource(R.drawable.ic_arrow_drop_down_white_24dp)
@@ -275,13 +275,13 @@ class ScheduleViewController(args: Bundle? = null) :
         CellConfig.Month2WeekPos = CellConfig.middlePosition
         CellConfig.ifMonth = false
         CellConfig.weekAnchorPointDate =
-                DateData(currentDate.year, currentDate.monthValue, currentDate.dayOfMonth)
+            DateData(currentDate.year, currentDate.monthValue, currentDate.dayOfMonth)
         view.datePicker.shrink()
     }
 
     private fun markSelectedDate(view: View, currentDate: LocalDate) {
         CellConfig.weekAnchorPointDate =
-                DateData(currentDate.year, currentDate.monthValue, currentDate.dayOfMonth)
+            DateData(currentDate.year, currentDate.monthValue, currentDate.dayOfMonth)
         view.datePicker.markedDates.removeAdd()
 
         val dateData = DateData(
@@ -292,11 +292,6 @@ class ScheduleViewController(args: Bundle? = null) :
         view.datePicker.markDate(
             dateData
         )
-    }
-
-    override fun onDetach(view: View) {
-
-        super.onDetach(view)
     }
 
     fun onStartEdit() {
