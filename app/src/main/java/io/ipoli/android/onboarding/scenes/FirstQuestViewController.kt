@@ -14,6 +14,7 @@ import android.text.TextWatcher
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import com.github.florent37.tutoshowcase.TutoShowcase
 import com.mikepenz.community_material_typeface_library.CommunityMaterial
 import com.mikepenz.google_material_typeface_library.GoogleMaterial
 import com.mikepenz.iconics.IconicsDrawable
@@ -45,6 +46,8 @@ class FirstQuestViewController(args: Bundle? = null) :
     override val stateKey = OnboardReducer.stateKey
 
     private lateinit var petAvatar: AndroidPetAvatar
+
+    private var showcase: TutoShowcase? = null
 
     private val nameWatcher = object : TextWatcher {
         override fun afterTextChanged(s: Editable) {
@@ -277,7 +280,6 @@ class FirstQuestViewController(args: Bundle? = null) :
         }
 
     }
-
 
     inner class FirstQuestCompletePopup(
         @DrawableRes private val petImage: Int,
