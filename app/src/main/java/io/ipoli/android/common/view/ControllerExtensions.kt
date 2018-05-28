@@ -8,9 +8,11 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import com.bluelinelabs.conductor.Controller
+import com.bluelinelabs.conductor.Router
 import com.bluelinelabs.conductor.RouterTransaction
 import io.ipoli.android.MainActivity
 import io.ipoli.android.R
+import io.ipoli.android.common.navigation.Navigator
 
 /**
  * Created by Venelin Valkov <venelin@mypoli.fun>
@@ -124,3 +126,5 @@ fun Controller.setChildController(view: ViewGroup, controller: Controller) {
         childRouter.setRoot(RouterTransaction.with(controller))
     }
 }
+
+fun Controller.navigate(): Navigator = Navigator(router)

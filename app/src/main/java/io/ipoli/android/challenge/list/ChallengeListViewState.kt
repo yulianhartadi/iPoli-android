@@ -27,22 +27,27 @@ object ChallengeListReducer : BaseViewStateReducer<ChallengeListViewState>() {
     ) =
         when (action) {
             is ChallengeListAction.Load ->
-                createState(state.dataState.challenges)
+                createState(state.dataState.challenges, subState)
 
             is ChallengeListAction.AddChallenge ->
-                ChallengeListViewState.ShowAdd
+                subState.copy(
+                    type = ChallengeListViewState.StateType.SHOW_ADD
+                )
 
             is DataLoadedAction.ChallengesChanged ->
-                createState(action.challenges)
+                createState(action.challenges, subState)
 
             else -> subState
         }
 
-    private fun createState(challenges: List<Challenge>?) =
+    private fun createState(challenges: List<Challenge>?, state: ChallengeListViewState) =
         when {
-            challenges == null -> ChallengeListViewState.Loading
-            challenges.isEmpty() -> ChallengeListViewState.Empty
-            else -> ChallengeListViewState.Changed(createChallengeItems(challenges))
+            challenges == null -> state.copy(type = ChallengeListViewState.StateType.LOADING)
+            challenges.isEmpty() -> state.copy(type = ChallengeListViewState.StateType.EMPTY)
+            else -> state.copy(
+                type = ChallengeListViewState.StateType.DATA_CHANGED,
+                challenges = createChallengeItems(challenges)
+            )
         }
 
     private fun createChallengeItems(challenges: List<Challenge>): List<ChallengeListViewState.ChallengeItem> {
@@ -57,18 +62,20 @@ object ChallengeListReducer : BaseViewStateReducer<ChallengeListViewState>() {
         }
     }
 
-    override fun defaultState() = ChallengeListViewState.Loading
+    override fun defaultState() = ChallengeListViewState(
+        type = ChallengeListViewState.StateType.LOADING,
+        challenges = emptyList()
+    )
 
     override val stateKey = key<ChallengeListViewState>()
 }
 
-sealed class ChallengeListViewState : BaseViewState() {
+data class ChallengeListViewState(val type: StateType, val challenges: List<ChallengeItem>) :
+    BaseViewState() {
 
-    object Loading : ChallengeListViewState()
-    object Empty : ChallengeListViewState()
-    object ShowAdd : ChallengeListViewState()
-
-    data class Changed(val challenges: List<ChallengeItem>) : ChallengeListViewState()
+    enum class StateType {
+        LOADING, EMPTY, SHOW_ADD, DATA_CHANGED
+    }
 
     sealed class ChallengeItem {
 

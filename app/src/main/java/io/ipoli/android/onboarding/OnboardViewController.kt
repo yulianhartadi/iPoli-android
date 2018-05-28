@@ -8,8 +8,8 @@ import android.view.View
 import android.view.ViewGroup
 import com.bluelinelabs.conductor.Controller
 import com.bluelinelabs.conductor.RouterTransaction
+import com.bluelinelabs.conductor.changehandler.FadeChangeHandler
 import com.bluelinelabs.conductor.changehandler.HorizontalChangeHandler
-import com.bluelinelabs.conductor.changehandler.VerticalChangeHandler
 import io.ipoli.android.Constants
 import io.ipoli.android.R
 import io.ipoli.android.common.AppState
@@ -21,7 +21,6 @@ import io.ipoli.android.common.view.*
 import io.ipoli.android.onboarding.OnboardViewState.StateType.*
 import io.ipoli.android.onboarding.scenes.*
 import io.ipoli.android.pet.PetAvatar
-import io.ipoli.android.player.auth.AuthViewController
 import io.ipoli.android.player.auth.UsernameValidator
 import io.ipoli.android.player.auth.UsernameValidator.ValidationError
 import io.ipoli.android.player.auth.UsernameValidator.ValidationError.*
@@ -69,10 +68,13 @@ object OnboardReducer : BaseViewStateReducer<OnboardViewState>() {
     ) =
         when (action) {
             OnboardAction.ShowNext ->
-                subState.copy(
-                    type = NEXT_PAGE,
-                    adapterPosition = subState.adapterPosition + 1
-                )
+                if (subState.adapterPosition + 1 > OnboardViewController.PICK_REPEATING_QUESTS_INDEX)
+                    subState
+                else
+                    subState.copy(
+                        type = NEXT_PAGE,
+                        adapterPosition = subState.adapterPosition + 1
+                    )
 
             is OnboardAction.LoadAvatars ->
                 subState.copy(
@@ -264,6 +266,7 @@ class OnboardViewController(args: Bundle? = null) :
 
     override fun render(state: OnboardViewState, view: View) {
         when (state.type) {
+
             NEXT_PAGE,
             INITIAL -> {
                 changeChildController(
@@ -285,14 +288,10 @@ class OnboardViewController(args: Bundle? = null) :
                 )
 
 
-                val changeHandler = VerticalChangeHandler()
-                router.setRoot(
-                    RouterTransaction.with(
-                        AuthViewController(onboardData)
-                    )
-                        .pushChangeHandler(changeHandler)
-                        .popChangeHandler(changeHandler)
-                )
+                navigate().setAuth(onboardData = onboardData, changeHandler = FadeChangeHandler())
+            }
+
+            else -> {
             }
         }
     }

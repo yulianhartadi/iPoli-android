@@ -77,7 +77,7 @@ class AuthViewController(args: Bundle? = null) :
 
     private var onboardData: OnboardData? = null
 
-    constructor(onboardData: OnboardData) : this() {
+    constructor(onboardData: OnboardData?) : this() {
         this.onboardData = onboardData
     }
 
@@ -286,7 +286,7 @@ class AuthViewController(args: Bundle? = null) :
 
     private fun showLoader() {
         loader = createLoader()
-        loader!!.show(router, "loader")
+        loader?.show(router, "loader")
     }
 
     private fun renderLoginViews(view: View, state: AuthViewState) {
@@ -349,7 +349,7 @@ class AuthViewController(args: Bundle? = null) :
 
     private fun startHomeViewController() {
         rootRouter.popCurrentController()
-        rootRouter.pushController(RouterTransaction.with(HomeViewController()))
+        navigateFromRoot().toHome()
     }
 
     private fun startSignUpForProvider(provider: AuthUI.IdpConfig): Intent {
@@ -380,15 +380,16 @@ class AuthViewController(args: Bundle? = null) :
                     return
                 }
 
-                if (response!!.errorCode == ErrorCodes.NO_NETWORK) {
+                val errorCode = response!!.error!!.errorCode
+                if (errorCode == ErrorCodes.NO_NETWORK) {
                     showShortToast(R.string.sign_in_internet)
                     Crashlytics.logException(SignInError("Attempt to login without internet"))
                     return
                 }
 
-                if (response.errorCode == ErrorCodes.UNKNOWN_ERROR) {
+                if (errorCode == ErrorCodes.UNKNOWN_ERROR) {
                     showShortToast(R.string.something_went_wrong)
-                    Crashlytics.logException(SignInError("Unknown login error with code ${response.errorCode}"))
+                    Crashlytics.logException(SignInError("Unknown login error with code $errorCode"))
                     return
                 }
             }

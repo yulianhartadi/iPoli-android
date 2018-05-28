@@ -80,6 +80,7 @@ class FirstQuestViewController(args: Bundle? = null) :
                 .respectFontBounds(true)
         )
         view.saveQuest.onDebounceClick {
+            view.calendar.scrollToNow()
             view.addQuestContainer.gone()
             view.addContainerBackground.gone()
             ViewUtils.hideKeyboard(view)
@@ -125,8 +126,6 @@ class FirstQuestViewController(args: Bundle? = null) :
             }
         })
         view.calendar.hideTimeline()
-        view.calendar.scrollToNow()
-
 
         return view
     }

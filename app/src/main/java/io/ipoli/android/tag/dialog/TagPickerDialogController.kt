@@ -168,6 +168,15 @@ class TagPickerDialogController(args: Bundle? = null) :
     ReduxDialogController<TagPickerAction, TagPickerViewState, TagPickerReducer>(args) {
     override val reducer = TagPickerReducer
 
+    private lateinit var listener: (Set<Tag>) -> Unit
+
+    private lateinit var selectedTags: Set<Tag>
+
+    constructor(selectedTags: Set<Tag> = emptySet(), listener: (Set<Tag>) -> Unit) : this() {
+        this.selectedTags = selectedTags
+        this.listener = listener
+    }
+
     override fun onCreateContentView(inflater: LayoutInflater, savedViewState: Bundle?): View {
         val view = inflater.inflate(R.layout.dialog_tag_picker, null)
         view.favouriteTagList.layoutManager = LinearLayoutManager(activity!!)
@@ -179,15 +188,6 @@ class TagPickerDialogController(args: Bundle? = null) :
         }, useWhiteTheme = false)
 
         return view
-    }
-
-    private lateinit var listener: (Set<Tag>) -> Unit
-
-    private lateinit var selectedTags: Set<Tag>
-
-    constructor(selectedTags: Set<Tag> = emptySet(), listener: (Set<Tag>) -> Unit) : this() {
-        this.selectedTags = selectedTags
-        this.listener = listener
     }
 
 

@@ -159,6 +159,8 @@ class RatePopup :
                 }
                 view.viewSwitcher.showNext()
             }
+
+            else -> {}
         }
     }
 

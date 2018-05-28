@@ -11,7 +11,6 @@ import space.traversal.kapsule.required
 class BootCompleteReceiver : AsyncBroadcastReceiver() {
 
     private val playerRepository by required { playerRepository }
-    private val questRepository by required { questRepository }
     private val reminderScheduler by required { reminderScheduler }
 
     override suspend fun onReceiveAsync(context: Context, intent: Intent) {

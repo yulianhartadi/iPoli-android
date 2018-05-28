@@ -164,7 +164,7 @@ class IconPickerDialogController :
             }
 
             ICON_PACK_TOO_EXPENSIVE -> {
-                CurrencyConverterDialogController().show(router, "currency-converter")
+                navigate().toCurrencyConverted()
                 Toast.makeText(
                     view.context,
                     stringRes(R.string.icon_pack_not_enough_coins),

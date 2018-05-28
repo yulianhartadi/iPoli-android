@@ -46,7 +46,7 @@ class FirestoreChallengeRepository(
             return database.collection("players").document(playerId).collection("challenges")
         }
 
-    override suspend fun listenForAll(channel: Channel<List<Challenge>>) =
+    override fun listenForAll(channel: Channel<List<Challenge>>) =
         collectionReference
             .orderBy("endDate", Query.Direction.ASCENDING)
             .listenForChanges(channel)

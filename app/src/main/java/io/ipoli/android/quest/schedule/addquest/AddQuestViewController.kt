@@ -11,7 +11,6 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.EditorInfo
 import android.widget.ImageView
-import com.bluelinelabs.conductor.RouterTransaction
 import com.bluelinelabs.conductor.changehandler.FadeChangeHandler
 import com.mikepenz.google_material_typeface_library.GoogleMaterial
 import com.mikepenz.iconics.IconicsDrawable
@@ -25,7 +24,6 @@ import io.ipoli.android.common.view.*
 import io.ipoli.android.quest.Color
 import io.ipoli.android.quest.edit.EditQuestViewController
 import io.ipoli.android.quest.schedule.addquest.StateType.*
-import io.ipoli.android.tag.dialog.TagPickerDialogController
 import kotlinx.android.synthetic.main.controller_add_quest.view.*
 import org.threeten.bp.LocalDate
 
@@ -200,9 +198,10 @@ class AddQuestViewController(args: Bundle? = null) :
     private fun renderTags(view: View, state: AddQuestViewState) {
         setIcon(MaterialDesignIconic.Icon.gmi_label, view.tags, state.tags.isNotEmpty())
         view.tags.onDebounceClick {
-            TagPickerDialogController(state.tags.toSet(), { tags ->
-                dispatch(AddQuestAction.TagsPicked(tags))
-            }).show(router)
+            navigate()
+                .toTagPicker(state.tags.toSet(), { tags ->
+                    dispatch(AddQuestAction.TagsPicked(tags))
+                })
         }
     }
 
@@ -213,24 +212,20 @@ class AddQuestViewController(args: Bundle? = null) :
         view.fullAdd.onDebounceClick {
             closeListener()
             ViewUtils.hideKeyboard(view)
-            val fadeChangeHandler = FadeChangeHandler()
-            pushWithRootRouter(
-                RouterTransaction.with(
-                    EditQuestViewController(
-                        params = EditQuestViewController.Params(
-                            name = view.questName.text.toString(),
-                            scheduleDate = state.date,
-                            startTime = state.time,
-                            duration = state.duration,
-                            color = state.color,
-                            icon = state.icon,
-                            reminderViewModel = null
-                        )
+            navigateFromRoot()
+                .toEditQuest(
+                    questId = null,
+                    params = EditQuestViewController.Params(
+                        name = view.questName.text.toString(),
+                        scheduleDate = state.date,
+                        startTime = state.time,
+                        duration = state.duration,
+                        color = state.color,
+                        icon = state.icon,
+                        reminderViewModel = null
                     )
+                    , changeHandler = FadeChangeHandler()
                 )
-                    .pushChangeHandler(fadeChangeHandler)
-                    .popChangeHandler(fadeChangeHandler)
-            )
         }
     }
 
@@ -263,10 +258,11 @@ class AddQuestViewController(args: Bundle? = null) :
     private fun renderDuration(state: AddQuestViewState, view: View) {
         setIcon(GoogleMaterial.Icon.gmd_timer, view.duration, state.duration != null)
         view.duration.onDebounceClick {
-            DurationPickerDialogController(
-                state.duration,
-                { dispatch(AddQuestAction.DurationPicked(it)) }
-            ).show(router, "pick_duration_tag")
+            navigate()
+                .toDurationPicker(
+                    state.duration,
+                    { dispatch(AddQuestAction.DurationPicked(it)) }
+                )
         }
     }
 
@@ -292,12 +288,9 @@ class AddQuestViewController(args: Bundle? = null) :
             )
         }
         view.icon.onDebounceClick {
-            IconPickerDialogController({ icon ->
+            navigate().toIconPicker({ icon ->
                 dispatch(AddQuestAction.IconPicked(icon))
-            }, state.icon).show(
-                router,
-                "pick_icon_tag"
-            )
+            }, state.icon)
         }
     }
 
@@ -309,12 +302,12 @@ class AddQuestViewController(args: Bundle? = null) :
             setColor(state.color, view)
         }
         view.color.onDebounceClick {
-            ColorPickerDialogController({
-                dispatch(AddQuestAction.ColorPicked(it))
-            }, state.color).show(
-                router,
-                "pick_color_tag"
-            )
+            navigate()
+                .toColorPicker(
+                    {
+                        dispatch(AddQuestAction.ColorPicked(it))
+                    }, state.color
+                )
         }
     }
 

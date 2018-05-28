@@ -32,7 +32,6 @@ import io.ipoli.android.quest.CompletedQuestViewController
 import io.ipoli.android.quest.Quest
 import io.ipoli.android.quest.bucketlist.usecase.CreateBucketListItemsUseCase
 import io.ipoli.android.quest.schedule.addquest.AddQuestAnimationHelper
-import io.ipoli.android.quest.show.QuestViewController
 import kotlinx.android.synthetic.main.animation_empty_list.view.*
 import kotlinx.android.synthetic.main.controller_bucket_list.view.*
 import kotlinx.android.synthetic.main.item_agenda_quest.view.*
@@ -139,13 +138,16 @@ class BucketListViewController(args: Bundle? = null) :
     override fun onCreateLoadAction() = BucketListAction.Load
 
     override fun render(state: BucketListViewState, view: View) {
-        when (state) {
+        when (state.type) {
 
-            BucketListViewState.Empty ->
+            BucketListViewState.StateType.EMPTY ->
                 renderEmpty(view)
 
-            is BucketListViewState.Changed ->
+            BucketListViewState.StateType.DATA_CHANGED ->
                 renderQuests(state, view)
+
+            else -> {
+            }
         }
     }
 
@@ -157,7 +159,7 @@ class BucketListViewController(args: Bundle? = null) :
     }
 
     private fun renderQuests(
-        state: BucketListViewState.Changed,
+        state: BucketListViewState,
         view: View
     ) {
         view.loader.gone()
@@ -221,16 +223,16 @@ class BucketListViewController(args: Bundle? = null) :
                     view.questName.text = vm.name
 
                     view.questIcon.backgroundTintList =
-                            ColorStateList.valueOf(colorRes(vm.color))
+                        ColorStateList.valueOf(colorRes(vm.color))
 
                     view.questIcon.setImageDrawable(listItemIcon(vm.icon))
 
                     view.questStartTime.text = vm.dueDate
 
                     view.questRepeatIndicator.visibility =
-                            if (vm.isRepeating) View.VISIBLE else View.GONE
+                        if (vm.isRepeating) View.VISIBLE else View.GONE
                     view.questChallengeIndicator.visibility =
-                            if (vm.isFromChallenge) View.VISIBLE else View.GONE
+                        if (vm.isFromChallenge) View.VISIBLE else View.GONE
 
                     if (vm.tags.isNotEmpty()) {
                         view.questTagName.visible()
@@ -239,10 +241,8 @@ class BucketListViewController(args: Bundle? = null) :
                         view.questTagName.gone()
                     }
 
-                    view.setOnClickListener {
-                        rootRouter.pushController(
-                            QuestViewController.routerTransaction(vm.id)
-                        )
+                    view.onDebounceClick {
+                        navigateFromRoot().toQuest(vm.id)
                     }
                 }
             )
@@ -257,15 +257,15 @@ class BucketListViewController(args: Bundle? = null) :
                     view.questName.text = span
 
                     view.questIcon.backgroundTintList =
-                            ColorStateList.valueOf(colorRes(vm.color))
+                        ColorStateList.valueOf(colorRes(vm.color))
                     view.questIcon.setImageDrawable(listItemIcon(vm.icon))
 
                     view.questStartTime.text = vm.startTime
 
                     view.questRepeatIndicator.visibility =
-                            if (vm.isRepeating) View.VISIBLE else View.GONE
+                        if (vm.isRepeating) View.VISIBLE else View.GONE
                     view.questChallengeIndicator.visibility =
-                            if (vm.isFromChallenge) View.VISIBLE else View.GONE
+                        if (vm.isFromChallenge) View.VISIBLE else View.GONE
 
                     if (vm.tags.isNotEmpty()) {
                         view.questTagName.visible()
@@ -308,7 +308,7 @@ class BucketListViewController(args: Bundle? = null) :
         )
     }
 
-    private val BucketListViewState.Changed.itemViewModels: List<ItemViewModel>
+    private val BucketListViewState.itemViewModels: List<ItemViewModel>
         get() = items.map {
             when (it) {
                 is CreateBucketListItemsUseCase.BucketListItem.QuestItem -> {
@@ -324,10 +324,14 @@ class BucketListViewController(args: Bundle? = null) :
                         ItemViewModel.CompletedQuestItem(
                             id = q.id,
                             name = q.name,
-                            startTime = QuestStartTimeFormatter.formatWithDuration(q, activity!!, shouldUse24HourFormat),
+                            startTime = QuestStartTimeFormatter.formatWithDuration(
+                                q,
+                                activity!!,
+                                shouldUse24HourFormat
+                            ),
                             color = color,
                             icon = q.icon?.androidIcon?.icon
-                                    ?: Ionicons.Icon.ion_android_clipboard,
+                                ?: Ionicons.Icon.ion_android_clipboard,
                             tags = q.tags.map {
                                 ItemViewModel.TagViewModel(
                                     it.name,
@@ -345,7 +349,7 @@ class BucketListViewController(args: Bundle? = null) :
                             dueDate = formatDueDate(q),
                             color = color,
                             icon = q.icon?.androidIcon?.icon
-                                    ?: Ionicons.Icon.ion_android_clipboard,
+                                ?: Ionicons.Icon.ion_android_clipboard,
                             tags = q.tags.map {
                                 ItemViewModel.TagViewModel(
                                     it.name,
@@ -381,7 +385,11 @@ class BucketListViewController(args: Bundle? = null) :
 
     private fun formatDueDate(quest: Quest): String {
         if (quest.dueDate == null) {
-            return QuestStartTimeFormatter.formatWithDuration(quest, activity!!, shouldUse24HourFormat)
+            return QuestStartTimeFormatter.formatWithDuration(
+                quest,
+                activity!!,
+                shouldUse24HourFormat
+            )
         }
         val dueDate = quest.dueDate
         val today = LocalDate.now()

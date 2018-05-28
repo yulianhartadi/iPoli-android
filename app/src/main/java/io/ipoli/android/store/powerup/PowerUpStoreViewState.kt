@@ -37,21 +37,32 @@ object PowerUpStoreReducer : BaseViewStateReducer<PowerUpStoreViewState>() {
 
             PowerUpStoreAction.Load ->
                 state.dataState.player?.let {
-                    PowerUpStoreViewState.Changed(createPowerUps(it))
-                } ?: PowerUpStoreViewState.Loading
+                    subState.copy(
+                        type = PowerUpStoreViewState.StateType.DATA_CHANGED,
+                        powerUps = createPowerUps(it)
+                    )
+                } ?: subState.copy(type = PowerUpStoreViewState.StateType.LOADING)
 
             is DataLoadedAction.PlayerChanged ->
-                PowerUpStoreViewState.Changed(createPowerUps(action.player))
+                subState.copy(
+                    type = PowerUpStoreViewState.StateType.DATA_CHANGED,
+                    powerUps = createPowerUps(action.player)
+                )
 
             is PowerUpStoreAction.Enable ->
-                PowerUpStoreViewState.Loading
+                subState.copy(type = PowerUpStoreViewState.StateType.LOADING)
 
             is BuyPowerUpCompletedAction ->
                 when (action.result) {
                     is BuyPowerUpUseCase.Result.Bought ->
-                        PowerUpStoreViewState.PowerUpBought(action.result.powerUp)
+                        subState.copy(
+                            type = PowerUpStoreViewState.StateType.POWER_UP_BOUGHT,
+                            powerUp = action.result.powerUp
+                        )
                     is BuyPowerUpUseCase.Result.TooExpensive ->
-                        PowerUpStoreViewState.PowerUpTooExpensive
+                        subState.copy(
+                            type = PowerUpStoreViewState.StateType.POWER_UP_TOO_EXPENSIVE
+                        )
                 }
 
             else -> subState
@@ -61,25 +72,29 @@ object PowerUpStoreReducer : BaseViewStateReducer<PowerUpStoreViewState>() {
         val inventory = player.inventory
         return PowerUp.Type.values()
             .filter { it != PowerUp.Type.CUSTOM_DURATION && it != PowerUp.Type.GROWTH }.map {
-            when {
-                inventory.isPowerUpEnabled(it) -> {
-                    val p = inventory.getPowerUp(it)!!
-                    PowerUpItem.Enabled(
-                        type = p.type,
-                        daysUntilExpiration = LocalDate.now().daysUntil(p.expirationDate).toInt(),
-                        expirationDate = p.expirationDate,
-                        showExpirationDate = player.membership == Membership.NONE
+                when {
+                    inventory.isPowerUpEnabled(it) -> {
+                        val p = inventory.getPowerUp(it)!!
+                        PowerUpItem.Enabled(
+                            type = p.type,
+                            daysUntilExpiration = LocalDate.now().daysUntil(p.expirationDate).toInt(),
+                            expirationDate = p.expirationDate,
+                            showExpirationDate = player.membership == Membership.NONE
+                        )
+                    }
+                    else -> PowerUpItem.Disabled(
+                        type = it,
+                        coinPrice = it.coinPrice
                     )
                 }
-                else -> PowerUpItem.Disabled(
-                    type = it,
-                    coinPrice = it.coinPrice
-                )
             }
-        }
     }
 
-    override fun defaultState() = PowerUpStoreViewState.Loading
+    override fun defaultState() = PowerUpStoreViewState(
+        type = PowerUpStoreViewState.StateType.LOADING,
+        powerUp = PowerUp.Type.CALENDAR_SYNC,
+        powerUps = emptyList()
+    )
 }
 
 sealed class PowerUpItem {
@@ -93,9 +108,13 @@ sealed class PowerUpItem {
     data class Disabled(val type: PowerUp.Type, val coinPrice: Int) : PowerUpItem()
 }
 
-sealed class PowerUpStoreViewState : BaseViewState() {
-    object Loading : PowerUpStoreViewState()
-    data class PowerUpBought(val type: PowerUp.Type) : PowerUpStoreViewState()
-    object PowerUpTooExpensive : PowerUpStoreViewState()
-    data class Changed(val powerUps: List<PowerUpItem>) : PowerUpStoreViewState()
+data class PowerUpStoreViewState(
+    val type: StateType,
+    val powerUp: PowerUp.Type,
+    val powerUps: List<PowerUpItem>
+) : BaseViewState() {
+
+    enum class StateType {
+        LOADING, POWER_UP_BOUGHT, POWER_UP_TOO_EXPENSIVE, DATA_CHANGED
+    }
 }

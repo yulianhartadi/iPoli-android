@@ -88,12 +88,14 @@ object EditChallengeReducer : BaseViewStateReducer<EditChallengeViewState>() {
                 )
             }
 
-            is EditChallengeAction.ShowNext -> {
-                subState.copy(
-                    type = NEXT_PAGE,
-                    adapterPosition = subState.adapterPosition + 1
-                )
-            }
+            is EditChallengeAction.ShowNext ->
+                if (subState.adapterPosition + 1 > AddChallengeViewController.SUMMARY_INDEX)
+                    subState
+                else
+                    subState.copy(
+                        type = NEXT_PAGE,
+                        adapterPosition = subState.adapterPosition + 1
+                    )
 
             is EditChallengeAction.LoadTags -> {
                 subState.copy(

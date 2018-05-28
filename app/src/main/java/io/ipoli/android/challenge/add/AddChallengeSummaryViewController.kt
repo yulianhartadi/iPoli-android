@@ -15,14 +15,12 @@ import com.mikepenz.iconics.typeface.IIcon
 import com.mikepenz.material_design_iconic_typeface_library.MaterialDesignIconic
 import io.ipoli.android.R
 import io.ipoli.android.challenge.add.EditChallengeViewState.StateType.*
-import io.ipoli.android.challenge.edit.ChallengeMotivationsDialogController
 import io.ipoli.android.common.redux.android.BaseViewController
 import io.ipoli.android.common.text.DateFormatter
 import io.ipoli.android.common.view.*
 import io.ipoli.android.common.view.recyclerview.BaseRecyclerViewAdapter
 import io.ipoli.android.common.view.recyclerview.RecyclerViewViewModel
 import io.ipoli.android.common.view.recyclerview.SimpleViewHolder
-import io.ipoli.android.note.NoteDialogViewController
 import io.ipoli.android.quest.Quest
 import io.ipoli.android.quest.RepeatingQuest
 import io.ipoli.android.tag.widget.EditItemAutocompleteTagAdapter
@@ -145,6 +143,8 @@ class AddChallengeSummaryViewController(args: Bundle? = null) :
                 dispatch(EditChallengeAction.Save)
                 router.popCurrentController()
             }
+            else -> {
+            }
         }
     }
 
@@ -179,9 +179,10 @@ class AddChallengeSummaryViewController(args: Bundle? = null) :
     private fun renderNote(view: View, state: EditChallengeViewState) {
         view.challengeNote.text = state.noteText
         view.challengeNote.onDebounceClick {
-            NoteDialogViewController(state.note, { note ->
-                dispatch(EditChallengeAction.ChangeNote(note))
-            }).show(router)
+            navigate()
+                .toNotePicker(state.note, { note ->
+                    dispatch(EditChallengeAction.ChangeNote(note))
+                })
         }
     }
 
@@ -190,12 +191,12 @@ class AddChallengeSummaryViewController(args: Bundle? = null) :
         state: EditChallengeViewState
     ) {
         view.challengeColor.onDebounceClick {
-            ColorPickerDialogController({
-                dispatch(EditChallengeAction.ChangeColor(it))
-            }, state.color).show(
-                router,
-                "pick_color_tag"
-            )
+            navigate()
+                .toColorPicker(
+                    {
+                        dispatch(EditChallengeAction.ChangeColor(it))
+                    }, state.color
+                )
         }
     }
 
@@ -205,12 +206,9 @@ class AddChallengeSummaryViewController(args: Bundle? = null) :
     ) {
         view.challengeSelectedIcon.setImageDrawable(state.iconDrawable)
         view.challengeIcon.onDebounceClick {
-            IconPickerDialogController({ icon ->
+            navigate().toIconPicker({ icon ->
                 dispatch(EditChallengeAction.ChangeIcon(icon))
-            }, state.icon).show(
-                router,
-                "pick_icon_tag"
-            )
+            }, state.icon)
         }
     }
 
@@ -288,14 +286,14 @@ class AddChallengeSummaryViewController(args: Bundle? = null) :
         }
 
         view.challengeMotivations.onDebounceClick {
-            ChallengeMotivationsDialogController(
-                state.motivation1,
-                state.motivation2,
-                state.motivation3,
-                { m1, m2, m3 ->
+            navigate().toChallengeMotivations(
+                motivation1 = state.motivation1,
+                motivation2 = state.motivation2,
+                motivation3 = state.motivation3,
+                listener = { m1, m2, m3 ->
                     dispatch(EditChallengeAction.ChangeMotivations(m1, m2, m3))
                 }
-            ).show(router, "motivations")
+            )
         }
     }
 

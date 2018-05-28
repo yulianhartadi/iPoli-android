@@ -72,17 +72,19 @@ class AvatarStoreViewController(args: Bundle? = null) :
     }
 
     override fun render(state: AvatarStoreViewState, view: View) {
-        when (state) {
-            is AvatarStoreViewState.Changed ->
+        when (state.type) {
+            AvatarStoreViewState.StateType.DATA_CHANGED ->
                 (view.avatarPager.adapter as AvatarAdapter).updateAll(state.avatarViewModels)
 
-            AvatarStoreViewState.AvatarBought ->
+            AvatarStoreViewState.StateType.AVATAR_BOUGHT ->
                 showLongToast(R.string.avatar_bought)
 
-            AvatarStoreViewState.AvatarTooExpensive -> {
-                CurrencyConverterDialogController().show(router, "currency-converter")
+            AvatarStoreViewState.StateType.AVATAR_TOO_EXPENSIVE -> {
+                navigate().toCurrencyConverted()
                 showShortToast(R.string.avatar_too_expensive)
             }
+
+            else -> {}
         }
     }
 
@@ -128,10 +130,10 @@ class AvatarStoreViewController(args: Bundle? = null) :
             view.imageContainer.setCardBackgroundColor(colorRes(item.backgroundColor))
             view.image.setImageResource(item.image)
             view.price.text =
-                    if (item.gemPrice == 0)
-                        stringRes(R.string.free)
-                    else
-                        item.gemPrice.toString()
+                if (item.gemPrice == 0)
+                    stringRes(R.string.free)
+                else
+                    item.gemPrice.toString()
 
             when (item) {
 
@@ -153,7 +155,7 @@ class AvatarStoreViewController(args: Bundle? = null) :
         }
     }
 
-    private val AvatarStoreViewState.Changed.avatarViewModels
+    private val AvatarStoreViewState.avatarViewModels
         get() = avatars.map {
             val avatar = it.avatar
             val androidAvatar = AndroidAvatar.valueOf(avatar.name)

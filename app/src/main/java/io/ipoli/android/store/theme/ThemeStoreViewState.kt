@@ -30,29 +30,42 @@ object ThemeStoreReducer : BaseViewStateReducer<ThemeStoreViewState>() {
     ) = when (action) {
         ThemeStoreAction.Load ->
             state.dataState.player?.let {
-                ThemeStoreViewState.Changed(createThemes(it))
-            } ?: ThemeStoreViewState.Loading
+                subState.copy(
+                    type = ThemeStoreViewState.StateType.DATA_CHANGED,
+                    themes = createThemes(it)
+                )
+            } ?: subState.copy(type = ThemeStoreViewState.StateType.LOADING)
 
         is DataLoadedAction.PlayerChanged ->
-            ThemeStoreViewState.Changed(createThemes(action.player))
+            subState.copy(
+                type = ThemeStoreViewState.StateType.DATA_CHANGED,
+                themes = createThemes(action.player)
+            )
 
         is BuyThemeCompletedAction ->
             when (action.result) {
                 is BuyThemeUseCase.Result.ThemeBought ->
-                    ThemeStoreViewState.ThemeBought
+                    subState.copy(type = ThemeStoreViewState.StateType.THEME_BOUGHT)
 
                 is BuyThemeUseCase.Result.TooExpensive ->
-                    ThemeStoreViewState.ThemeTooExpensive
+                    subState.copy(type = ThemeStoreViewState.StateType.THEME_TOO_EXPENSIVE)
             }
 
         is ThemeStoreAction.Change -> {
-            ThemeStoreViewState.ThemeChanged(action.theme)
+            subState.copy(
+                type = ThemeStoreViewState.StateType.THEME_CHANGED,
+                theme = action.theme
+            )
         }
 
         else -> subState
     }
 
-    override fun defaultState() = ThemeStoreViewState.Loading
+    override fun defaultState() = ThemeStoreViewState(
+        type = ThemeStoreViewState.StateType.LOADING,
+        theme = Theme.BLUE,
+        themes = emptyList()
+    )
 
     private fun createThemes(player: Player) =
         Theme.values().map {
@@ -75,10 +88,8 @@ sealed class ThemeItem(open val theme: Theme) {
     data class ForSale(override val theme: Theme) : ThemeItem(theme)
 }
 
-sealed class ThemeStoreViewState : BaseViewState() {
-    object Loading : ThemeStoreViewState()
-    object ThemeBought : ThemeStoreViewState()
-    object ThemeTooExpensive : ThemeStoreViewState()
-    data class ThemeChanged(val theme: Theme) : ThemeStoreViewState()
-    data class Changed(val themes: List<ThemeItem>) : ThemeStoreViewState()
+data class ThemeStoreViewState(val type: StateType, val theme: Theme, val themes: List<ThemeItem>) :
+    BaseViewState() {
+
+    enum class StateType { LOADING, THEME_BOUGHT, THEME_TOO_EXPENSIVE, THEME_CHANGED, DATA_CHANGED }
 }

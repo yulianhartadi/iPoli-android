@@ -17,7 +17,6 @@ import com.mikepenz.iconics.IconicsDrawable
 import com.mikepenz.iconics.typeface.IIcon
 import com.mikepenz.material_design_iconic_typeface_library.MaterialDesignIconic
 import io.ipoli.android.R
-import io.ipoli.android.challenge.picker.ChallengePickerDialogController
 import io.ipoli.android.common.datetime.Time
 import io.ipoli.android.common.redux.android.BaseViewController
 import io.ipoli.android.common.redux.android.ReduxViewController
@@ -27,7 +26,6 @@ import io.ipoli.android.common.view.*
 import io.ipoli.android.common.view.recyclerview.BaseRecyclerViewAdapter
 import io.ipoli.android.common.view.recyclerview.SimpleRecyclerViewViewModel
 import io.ipoli.android.common.view.recyclerview.SimpleViewHolder
-import io.ipoli.android.note.NoteDialogViewController
 import io.ipoli.android.quest.Color
 import io.ipoli.android.quest.reminder.formatter.ReminderTimeFormatter
 import io.ipoli.android.quest.reminder.picker.ReminderPickerDialogController
@@ -36,7 +34,6 @@ import io.ipoli.android.quest.subquest.view.ReadOnlySubQuestAdapter
 import io.ipoli.android.repeatingquest.add.EditRepeatingQuestViewState.DurationOption.*
 import io.ipoli.android.repeatingquest.add.EditRepeatingQuestViewState.RepeatPatternOption.*
 import io.ipoli.android.repeatingquest.add.EditRepeatingQuestViewState.RepeatPatternOption.MORE_OPTIONS
-import io.ipoli.android.repeatingquest.edit.picker.RepeatPatternPickerDialogController
 import io.ipoli.android.tag.widget.EditItemAutocompleteTagAdapter
 import io.ipoli.android.tag.widget.EditItemTagAdapter
 import kotlinx.android.synthetic.main.controller_add_repeating_quest.view.*
@@ -126,6 +123,9 @@ class AddRepeatingQuestViewController(args: Bundle? = null) :
 
             EditRepeatingQuestViewState.StateType.CLOSE ->
                 router.popCurrentController()
+
+            else -> {
+            }
         }
     }
 
@@ -258,12 +258,13 @@ class AddRepeatingQuestViewController(args: Bundle? = null) :
             view: View
         ) {
             view.rqColor.onDebounceClick {
-                ColorPickerDialogController({
-                    dispatch(EditRepeatingQuestAction.ChangeColor(it))
-                }, state.color).show(
-                    router,
-                    "pick_color_tag"
-                )
+
+                navigate()
+                    .toColorPicker(
+                        {
+                            dispatch(EditRepeatingQuestAction.ChangeColor(it))
+                        }, state.color
+                    )
             }
         }
 
@@ -276,12 +277,10 @@ class AddRepeatingQuestViewController(args: Bundle? = null) :
             )
 
             view.rqIcon.onDebounceClick {
-                IconPickerDialogController({ icon ->
-                    dispatch(EditRepeatingQuestAction.ChangeIcon(icon))
-                }, state.icon).show(
-                    router,
-                    "pick_icon_tag"
-                )
+                navigate()
+                    .toIconPicker({ icon ->
+                        dispatch(EditRepeatingQuestAction.ChangeIcon(icon))
+                    }, state.icon)
             }
         }
 
@@ -305,7 +304,7 @@ class AddRepeatingQuestViewController(args: Bundle? = null) :
                     add.setText("")
                 }
                 add.threshold = 0
-                add.setOnTouchListener { v, event ->
+                add.setOnTouchListener { _, _ ->
                     add.showDropDown()
                     false
                 }
@@ -320,9 +319,6 @@ class AddRepeatingQuestViewController(args: Bundle? = null) :
                     tag = it
                 )
             }
-
-        private val EditRepeatingQuestViewState.tagNames: List<String>
-            get() = tags.map { it.name }
 
         private val EditRepeatingQuestViewState.iicon: IIcon
             get() = icon?.androidIcon?.icon ?: GoogleMaterial.Icon.gmd_local_florist
@@ -382,14 +378,13 @@ class AddRepeatingQuestViewController(args: Bundle? = null) :
                 (view as TextView).text = vm.value.text
                 view.onDebounceClick {
                     if (vm.value == MORE_OPTIONS) {
-                        RepeatPatternPickerDialogController(
+                        navigate().toRepeatPatternPicker(
                             null,
                             {
                                 dispatch(EditRepeatingQuestAction.RepeatPatternPicked(it))
                             },
                             { }
                         )
-                            .show(router, "pick_repeating_pattern_tag")
                     } else {
                         dispatch(EditRepeatingQuestAction.PickRepeatPattern(vm.value))
                     }
@@ -462,10 +457,11 @@ class AddRepeatingQuestViewController(args: Bundle? = null) :
                 (view as TextView).text = vm.value.text
                 view.onDebounceClick {
                     if (vm.value == EditRepeatingQuestViewState.DurationOption.MORE_OPTIONS) {
-                        DurationPickerDialogController(
-                            null,
-                            { dispatch(EditRepeatingQuestAction.DurationPicked(it)) }
-                        ).show(router, "pick_duration_tag")
+                        navigate()
+                            .toDurationPicker(
+                                null,
+                                { dispatch(EditRepeatingQuestAction.DurationPicked(it)) }
+                            )
                     } else {
                         dispatch(EditRepeatingQuestAction.PickDuration(vm.value))
                     }
@@ -679,7 +675,7 @@ class AddRepeatingQuestViewController(args: Bundle? = null) :
                     add.setText("")
                 }
                 add.threshold = 0
-                add.setOnTouchListener { v, event ->
+                add.setOnTouchListener { _, _ ->
                     add.showDropDown()
                     false
                 }
@@ -691,12 +687,13 @@ class AddRepeatingQuestViewController(args: Bundle? = null) :
             state: EditRepeatingQuestViewState
         ) {
             view.summaryColor.onDebounceClick {
-                ColorPickerDialogController({
-                    dispatch(EditRepeatingQuestAction.ChangeColor(it))
-                }, state.color).show(
-                    router,
-                    "pick_color_tag"
-                )
+
+                navigate()
+                    .toColorPicker(
+                        {
+                            dispatch(EditRepeatingQuestAction.ChangeColor(it))
+                        }, state.color
+                    )
             }
         }
 
@@ -709,12 +706,10 @@ class AddRepeatingQuestViewController(args: Bundle? = null) :
             )
 
             view.summaryIcon.onDebounceClick {
-                IconPickerDialogController({ icon ->
-                    dispatch(EditRepeatingQuestAction.ChangeIcon(icon))
-                }, state.icon).show(
-                    router,
-                    "pick_icon_tag"
-                )
+                navigate()
+                    .toIconPicker({ icon ->
+                        dispatch(EditRepeatingQuestAction.ChangeIcon(icon))
+                    }, state.icon)
             }
         }
 
@@ -722,19 +717,20 @@ class AddRepeatingQuestViewController(args: Bundle? = null) :
 
             view.summaryDuration.text = state.durationText
             view.summaryDuration.onDebounceClick {
-                DurationPickerDialogController(
-                    state.duration.intValue,
-                    { dispatch(EditRepeatingQuestAction.ChangeDuration(it)) }
-                ).show(router, "pick_duration_tag")
+                navigate()
+                    .toDurationPicker(
+                        state.duration.intValue,
+                        { dispatch(EditRepeatingQuestAction.ChangeDuration(it)) }
+                    )
             }
         }
 
         private fun renderRepeatPattern(view: View, state: EditRepeatingQuestViewState) {
             view.summaryRepeatPattern.text = state.repeatPatternText
             view.summaryRepeatPattern.onDebounceClick {
-                RepeatPatternPickerDialogController(state.repeatPattern, { p ->
+                navigate().toRepeatPatternPicker(state.repeatPattern, { p ->
                     dispatch(EditRepeatingQuestAction.ChangeRepeatPattern(p))
-                }).show(router)
+                })
             }
         }
 
@@ -767,13 +763,14 @@ class AddRepeatingQuestViewController(args: Bundle? = null) :
         private fun renderReminder(view: View, state: EditRepeatingQuestViewState) {
             view.summaryReminder.text = state.reminderText
             view.summaryReminder.onDebounceClick {
-                ReminderPickerDialogController(
-                    object : ReminderPickerDialogController.ReminderPickedListener {
-                        override fun onReminderPicked(reminder: ReminderViewModel?) {
-                            dispatch(EditRepeatingQuestAction.ChangeReminder(reminder))
-                        }
-                    }, state.reminder
-                ).show(router, "pick_reminder_tag")
+                navigate()
+                    .toReminderPicker(
+                        object : ReminderPickerDialogController.ReminderPickedListener {
+                            override fun onReminderPicked(reminder: ReminderViewModel?) {
+                                dispatch(EditRepeatingQuestAction.ChangeReminder(reminder))
+                            }
+                        }, state.reminder
+                    )
             }
         }
 
@@ -784,18 +781,20 @@ class AddRepeatingQuestViewController(args: Bundle? = null) :
         ) {
             view.summaryChallenge.text = state.challengeText
             view.summaryChallenge.onDebounceClick {
-                ChallengePickerDialogController(state.challenge, { challenge ->
+                navigate().toChallengePicker(state.challenge, { challenge ->
                     dispatch(EditRepeatingQuestAction.ChangeChallenge(challenge))
-                }).show(router)
+                })
             }
         }
 
         private fun renderNote(view: View, state: EditRepeatingQuestViewState) {
             view.summaryNote.text = state.noteText
             view.summaryNote.onDebounceClick {
-                NoteDialogViewController(state.note, { text ->
-                    dispatch(EditRepeatingQuestAction.ChangeNote(text))
-                }).show(router)
+                navigate()
+                    .toNotePicker(
+                        state.note, { text ->
+                            dispatch(EditRepeatingQuestAction.ChangeNote(text))
+                        })
             }
         }
 

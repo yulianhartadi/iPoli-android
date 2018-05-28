@@ -228,6 +228,9 @@ class ScheduleViewController(args: Bundle? = null) :
                 viewModeTitle = state.viewModeTitle
                 activity?.invalidateOptionsMenu()
             }
+
+            else -> {
+            }
         }
     }
 

@@ -11,7 +11,6 @@ import android.view.LayoutInflater
 import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
-import com.bluelinelabs.conductor.RouterTransaction
 import com.mikepenz.google_material_typeface_library.GoogleMaterial
 import com.mikepenz.iconics.IconicsDrawable
 import com.mikepenz.iconics.typeface.IIcon
@@ -24,9 +23,7 @@ import io.ipoli.android.common.redux.android.ReduxViewController
 import io.ipoli.android.common.text.DateFormatter
 import io.ipoli.android.common.view.*
 import io.ipoli.android.common.view.pager.BasePagerAdapter
-import io.ipoli.android.event.calendar.picker.CalendarPickerDialogController
 import io.ipoli.android.player.inventory.InventoryViewController
-import io.ipoli.android.store.membership.MembershipViewController
 import kotlinx.android.synthetic.main.controller_power_up_store.view.*
 import kotlinx.android.synthetic.main.item_disabled_power_up.view.*
 import kotlinx.android.synthetic.main.item_enabled_power_up.view.*
@@ -164,12 +161,12 @@ class PowerUpStoreViewController(args: Bundle? = null) :
         view.powerUpPager.pageMargin = ViewUtils.dpToPx(8f, view.context).toInt()
 
         view.hide.onDebounceClick {
-            TransitionManager.beginDelayedTransition(view.rootCoordinator as ViewGroup  )
+            TransitionManager.beginDelayedTransition(view.rootCoordinator as ViewGroup)
             view.membershipHint.gone()
         }
 
         view.join.onDebounceClick {
-            router.pushController(RouterTransaction.with(MembershipViewController()))
+            navigate().toMembership()
         }
 
         setChildController(
@@ -212,15 +209,15 @@ class PowerUpStoreViewController(args: Bundle? = null) :
     }
 
     override fun render(state: PowerUpStoreViewState, view: View) {
-        when (state) {
-            is PowerUpStoreViewState.Changed -> {
+        when (state.type) {
+            PowerUpStoreViewState.StateType.DATA_CHANGED -> {
                 val adapter = view.powerUpPager.adapter as PowerUpAdapter
                 adapter.updateAll(state.powerUpViewModels)
                 val vm = adapter.itemAt(view.powerUpPager.currentItem)
                 colorLayout(vm)
             }
 
-            is PowerUpStoreViewState.PowerUpBought -> {
+            PowerUpStoreViewState.StateType.POWER_UP_BOUGHT -> {
                 showLongToast(state.message)
                 if (state.type == PowerUp.Type.CALENDAR_SYNC) {
                     requestPermissions(
@@ -230,16 +227,16 @@ class PowerUpStoreViewController(args: Bundle? = null) :
                 }
             }
 
-            PowerUpStoreViewState.PowerUpTooExpensive ->
+            PowerUpStoreViewState.StateType.POWER_UP_TOO_EXPENSIVE ->
                 showShortToast(R.string.power_up_too_expensive)
         }
     }
 
 
     private fun showCalendarPicker() {
-        CalendarPickerDialogController({ calendarIds ->
+        navigate().toCalendarPicker({ calendarIds ->
             dispatch(PowerUpStoreAction.SyncCalendarsSelected(calendarIds))
-        }).show(router)
+        })
     }
 
     override fun onPermissionsGranted(requestCode: Int, permissions: List<String>) {
@@ -340,13 +337,13 @@ class PowerUpStoreViewController(args: Bundle? = null) :
         }
     }
 
-    private val PowerUpStoreViewState.PowerUpBought.message: String
+    private val PowerUpStoreViewState.message: String
         get() = stringRes(
             R.string.power_up_bought,
             stringRes(AndroidPowerUp.valueOf(type.name).title)
         )
 
-    private val PowerUpStoreViewState.Changed.powerUpViewModels
+    private val PowerUpStoreViewState.powerUpViewModels
         get() = powerUps.map {
             when (it) {
                 is PowerUpItem.Enabled -> {

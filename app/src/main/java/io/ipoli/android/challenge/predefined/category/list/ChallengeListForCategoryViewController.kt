@@ -59,7 +59,7 @@ class ChallengeListForCategoryViewController :
 
         view.toolbarTitle.setText(androidChallengeCategory.title)
         view.challengeList.layoutManager =
-                LinearLayoutManager(container.context, LinearLayoutManager.VERTICAL, false)
+            LinearLayoutManager(container.context, LinearLayoutManager.VERTICAL, false)
         view.challengeList.adapter = ChallengeAdapter()
 
         setChildController(view.playerGems, InventoryViewController())
@@ -69,10 +69,6 @@ class ChallengeListForCategoryViewController :
 
     override fun onCreateLoadAction() =
         ChallengeListForCategoryAction.LoadData(challengeCategory)
-
-    private fun showCurrencyConverter() {
-        CurrencyConverterDialogController().show(router, "currency-converter")
-    }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         if (item.itemId == android.R.id.home) {
@@ -94,7 +90,7 @@ class ChallengeListForCategoryViewController :
             }
 
             CHALLENGE_TOO_EXPENSIVE -> {
-                showCurrencyConverter()
+                navigate().toCurrencyConverted()
                 Toast.makeText(
                     view.context,
                     stringRes(R.string.challenge_too_expensive),

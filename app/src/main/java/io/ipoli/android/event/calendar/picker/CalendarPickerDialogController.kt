@@ -80,15 +80,18 @@ class CalendarPickerDialogController :
     }
 
     override fun render(state: CalendarPickerViewState, view: View) {
-        when (state) {
-            is CalendarPickerViewState.CalendarsLoaded -> {
+        when (state.type) {
+            CalendarPickerViewState.StateType.CALENDARS_LOADED -> {
                 changeIcon(state.petHeadImage)
                 (view.calendarList.adapter as CalendarAdapter).updateAll(state.calendars)
             }
 
-            is CalendarPickerViewState.CalendarsSelected -> {
+            CalendarPickerViewState.StateType.CALENDARS_SELECTED -> {
                 dismiss()
-                pickedCalendarsListener(state.calendars)
+                pickedCalendarsListener(state.syncCalendars)
+            }
+
+            else -> {
             }
         }
     }
@@ -126,6 +129,6 @@ class CalendarPickerDialogController :
         override fun getItemCount() = viewModels.size
     }
 
-    private val CalendarPickerViewState.CalendarsLoaded.petHeadImage
+    private val CalendarPickerViewState.petHeadImage
         get() = AndroidPetAvatar.valueOf(petAvatar.name).headImage
 }

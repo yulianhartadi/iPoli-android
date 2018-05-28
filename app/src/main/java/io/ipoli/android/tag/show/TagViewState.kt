@@ -34,16 +34,16 @@ object TagReducer : BaseViewStateReducer<TagViewState>() {
             is TagAction.Load -> {
                 val tag = state.dataState.tags.firstOrNull { it.id == action.tagId }
                 tag?.let {
-                    createChangedState(it)
-                } ?: TagViewState.Loading(action.tagId)
+                    createChangedState(it, subState)
+                } ?: subState.copy(type = TagViewState.StateType.LOADING)
             }
 
             is DataLoadedAction.TagsChanged -> {
                 val tag = action.tags.firstOrNull { it.id == subState.id }
                 when {
-                    tag != null -> createChangedState(tag)
-                    subState is TagViewState.Loading -> subState
-                    else -> TagViewState.Removed(subState.id)
+                    tag != null -> createChangedState(tag, subState)
+                    subState.type == TagViewState.StateType.LOADING -> subState
+                    else -> subState.copy(type = TagViewState.StateType.REMOVED)
                 }
             }
 
@@ -55,8 +55,8 @@ object TagReducer : BaseViewStateReducer<TagViewState>() {
 
                 val completedCount = quests.count { it.completedAtDate != null }
 
-                TagViewState.TagItemsChanged(
-                    id = action.tagId,
+                subState.copy(
+                    type = TagViewState.StateType.TAG_ITEMS_CHANGED,
                     items = action.items,
                     questCount = quests.size,
                     progressPercent = ((completedCount.toFloat() / quests.size) * 100).toInt()
@@ -66,8 +66,9 @@ object TagReducer : BaseViewStateReducer<TagViewState>() {
             else -> subState
         }
 
-    private fun createChangedState(tag: Tag) =
-        TagViewState.TagChanged(
+    private fun createChangedState(tag: Tag, state: TagViewState) =
+        state.copy(
+            type = TagViewState.StateType.TAG_CHANGED,
             id = tag.id,
             name = tag.name,
             color = tag.color,
@@ -75,29 +76,34 @@ object TagReducer : BaseViewStateReducer<TagViewState>() {
             isFavorite = tag.isFavorite
         )
 
-    override fun defaultState() = TagViewState.Loading("")
+    override fun defaultState() = TagViewState(
+        type = TagViewState.StateType.LOADING,
+        id = "",
+        name = "",
+        color = Color.PINK,
+        icon = null,
+        isFavorite = false,
+        items = emptyList(),
+        questCount = -1,
+        progressPercent = -1
+    )
 
     override val stateKey = key<TagViewState>()
 }
 
-sealed class TagViewState(open val id: String) : BaseViewState() {
+data class TagViewState(
+    val type: StateType,
+    val id: String,
+    val name: String,
+    val color: Color,
+    val icon: Icon?,
+    val isFavorite: Boolean,
+    val items: List<CreateTagItemsUseCase.TagItem>,
+    val questCount: Int,
+    val progressPercent: Int
+) : BaseViewState() {
 
-    data class Loading(override val id: String) : TagViewState(id)
-
-    data class TagChanged(
-        override val id: String,
-        val name: String,
-        val color: Color,
-        val icon: Icon?,
-        val isFavorite: Boolean
-    ) : TagViewState(id)
-
-    data class TagItemsChanged(
-        override val id: String,
-        val items: List<CreateTagItemsUseCase.TagItem>,
-        val questCount: Int,
-        val progressPercent: Int
-    ) : TagViewState(id)
-
-    data class Removed(override val id: String) : TagViewState(id)
+    enum class StateType {
+        LOADING, TAG_CHANGED, TAG_ITEMS_CHANGED, REMOVED
+    }
 }

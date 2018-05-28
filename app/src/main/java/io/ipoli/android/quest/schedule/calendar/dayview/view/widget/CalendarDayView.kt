@@ -114,7 +114,7 @@ class CalendarDayView : FrameLayout, StateChangeListener {
 
     companion object {
         const val DEFAULT_VISIBLE_HOURS = 7
-        const val MIN_VISIBLE_HOURS = 5
+        const val MIN_VISIBLE_HOURS = 3
         const val MAX_VISIBLE_HOURS = 8
         const val MIN_EVENT_DURATION = 15
         val MAX_EVENT_DURATION = Time.h2Min(4)

@@ -11,7 +11,6 @@ import kotlinx.coroutines.experimental.channels.SendChannel
 import org.threeten.bp.Instant
 import timber.log.Timber
 import java.util.concurrent.ExecutorService
-import java.util.concurrent.Executors
 import kotlin.coroutines.experimental.CoroutineContext
 
 /**
@@ -189,7 +188,7 @@ abstract class BaseEntityFirestoreRepository<E, out T>(
 
     abstract val entityReference: DocumentReference
 
-    override suspend fun listen(channel: Channel<E?>): Channel<E?> {
+    override fun listen(channel: Channel<E?>): Channel<E?> {
         removeOldRegistrationForChannel(channel)
         addRegistrationToChannel(
             registration = entityReference
@@ -223,7 +222,7 @@ abstract class BaseCollectionFirestoreRepository<E, out T>(
 
     override fun findAll() = collectionReference.notRemovedEntities
 
-    override suspend fun listenById(id: String, channel: Channel<E?>): Channel<E?> {
+    override fun listenById(id: String, channel: Channel<E?>): Channel<E?> {
         removeOldRegistrationForChannel(channel)
         addRegistrationToChannel(
             registration = documentReference(id)
@@ -240,7 +239,7 @@ abstract class BaseCollectionFirestoreRepository<E, out T>(
         return channel
     }
 
-    private suspend fun listen(query: Query, channel: Channel<List<E>>): Channel<List<E>> {
+    private fun listen(query: Query, channel: Channel<List<E>>): Channel<List<E>> {
         removeOldRegistrationForChannel(channel)
         addRegistrationToChannel(
             registration = query
@@ -258,7 +257,7 @@ abstract class BaseCollectionFirestoreRepository<E, out T>(
         return channel
     }
 
-    override suspend fun listenForAll(channel: Channel<List<E>>) =
+    override fun listenForAll(channel: Channel<List<E>>) =
         collectionReference.listenForChanges(channel)
 
     override fun remove(entity: E) =
@@ -280,6 +279,6 @@ abstract class BaseCollectionFirestoreRepository<E, out T>(
 
     protected fun documentReference(id: String) = collectionReference.document(id)
 
-    protected suspend fun Query.listenForChanges(channel: Channel<List<E>>) =
+    protected fun Query.listenForChanges(channel: Channel<List<E>>) =
         listen(this, channel)
 }

@@ -9,7 +9,6 @@ import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
-import com.bluelinelabs.conductor.RouterTransaction
 import com.bluelinelabs.conductor.changehandler.FadeChangeHandler
 import io.ipoli.android.R
 import io.ipoli.android.common.ViewUtils
@@ -19,7 +18,6 @@ import io.ipoli.android.pet.PetAvatar
 import io.ipoli.android.pet.store.PetStoreAction.*
 import io.ipoli.android.pet.store.PetStoreViewState.StateType.*
 import io.ipoli.android.player.inventory.InventoryViewController
-import io.ipoli.android.store.gem.GemStoreViewController
 import kotlinx.android.synthetic.main.controller_pet_store.view.*
 import kotlinx.android.synthetic.main.item_pet_store.view.*
 import kotlinx.android.synthetic.main.view_inventory_toolbar.view.*
@@ -82,30 +80,17 @@ class PetStoreViewController(args: Bundle? = null) :
             }
 
             PET_TOO_EXPENSIVE -> {
-                showCurrencyConverter()
+                navigate().toCurrencyConverted()
                 Toast.makeText(view.context, "Pet too expensive", Toast.LENGTH_SHORT).show()
             }
 
             SHOW_GEM_STORE -> {
-                showGemStore()
+                navigate().toGemStore(FadeChangeHandler())
             }
 
             else -> {
             }
         }
-    }
-
-    private fun showCurrencyConverter() {
-        CurrencyConverterDialogController().show(router, "currency-converter")
-    }
-
-    private fun showGemStore() {
-        val handler = FadeChangeHandler()
-        router.pushController(
-            RouterTransaction.with(GemStoreViewController())
-                .pushChangeHandler(handler)
-                .popChangeHandler(handler)
-        )
     }
 
     inner class PetPagerAdapter(private var viewModels: List<PetViewModel> = listOf()) :

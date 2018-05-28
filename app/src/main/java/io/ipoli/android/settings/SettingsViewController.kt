@@ -19,13 +19,9 @@ import io.ipoli.android.common.datetime.Time
 import io.ipoli.android.common.privacy.PrivacyPolicyViewController
 import io.ipoli.android.common.redux.android.ReduxViewController
 import io.ipoli.android.common.view.*
-import io.ipoli.android.event.calendar.picker.CalendarPickerDialogController
 import io.ipoli.android.player.Player
 import io.ipoli.android.settings.SettingsViewState.StateType.DATA_CHANGED
 import io.ipoli.android.settings.SettingsViewState.StateType.ENABLE_SYNC_CALENDARS
-import io.ipoli.android.settings.view.DaysPickerDialogController
-import io.ipoli.android.settings.view.TemperatureUnitPickerDialogController
-import io.ipoli.android.settings.view.TimeFormatPickerDialogController
 import kotlinx.android.synthetic.main.controller_settings.view.*
 import kotlinx.android.synthetic.main.view_default_toolbar.view.*
 import org.threeten.bp.format.TextStyle
@@ -80,15 +76,20 @@ class SettingsViewController(args: Bundle? = null) :
                 renderSyncCalendarsSection(state, view)
                 showSyncCalendars()
             }
+
+            else -> {
+            }
         }
     }
 
     private fun renderTemperatureUnit(state: SettingsViewState, view: View) {
         view.temperatureUnit.text = state.temperatureUnitText
         view.temperatureUnitContainer.onDebounceClick {
-            TemperatureUnitPickerDialogController(state.temperatureUnit, { unit ->
-                dispatch(SettingsAction.TemperatureUnitChanged(unit))
-            }).show(router)
+            navigate()
+                .toTemperatureUnitPicker(
+                    state.temperatureUnit, { unit ->
+                        dispatch(SettingsAction.TemperatureUnitChanged(unit))
+                    })
         }
 
     }
@@ -96,9 +97,13 @@ class SettingsViewController(args: Bundle? = null) :
     private fun renderTimeFormat(state: SettingsViewState, view: View) {
         view.timeFormat.text = state.timeFormatText
         view.timeFormatContainer.onDebounceClick {
-            TimeFormatPickerDialogController(state.timeFormat, { format ->
-                dispatch(SettingsAction.TimeFormatChanged(format))
-            }).show(router)
+            navigate()
+                .toTimeFormatPicker(
+                    state.timeFormat,
+                    { format ->
+                        dispatch(SettingsAction.TimeFormatChanged(format))
+                    }
+                )
         }
     }
 
@@ -132,9 +137,13 @@ class SettingsViewController(args: Bundle? = null) :
             if (daysText.isNotEmpty()) daysText else stringRes(R.string.no_challenge_days)
 
         view.planDaysContainer.onDebounceClick {
-            DaysPickerDialogController(state.planDays, { days ->
-                dispatch(SettingsAction.PlanDaysChanged(days))
-            }).show(router)
+            navigate()
+                .toDaysPicker(
+                    state.planDays,
+                    { days ->
+                        dispatch(SettingsAction.PlanDaysChanged(days))
+                    }
+                )
         }
     }
 
@@ -172,9 +181,9 @@ class SettingsViewController(args: Bundle? = null) :
     }
 
     private fun showCalendarPicker() {
-        CalendarPickerDialogController({ calendars ->
-            dispatch(SettingsAction.SyncCalendarsSelected(calendars))
-        }).show(router)
+        navigate().toCalendarPicker({ calendarIds ->
+            dispatch(SettingsAction.SyncCalendarsSelected(calendarIds))
+        })
     }
 
     private fun showSyncCalendars() {

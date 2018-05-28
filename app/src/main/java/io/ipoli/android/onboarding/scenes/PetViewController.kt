@@ -151,6 +151,9 @@ class PetViewController(args: Bundle? = null) :
                     null, null, validIcon, null
                 )
             }
+
+            else -> {
+            }
         }
 
     }

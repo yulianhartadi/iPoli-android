@@ -39,7 +39,6 @@ import io.ipoli.android.common.view.recyclerview.ReorderItemHelper
 import io.ipoli.android.common.view.recyclerview.SimpleViewHolder
 import io.ipoli.android.note.NoteViewController
 import io.ipoli.android.quest.CompletedQuestViewController
-import io.ipoli.android.quest.edit.EditQuestViewController
 import io.ipoli.android.tag.Tag
 import kotlinx.android.synthetic.main.controller_quest.view.*
 import kotlinx.android.synthetic.main.item_quest_sub_quest.view.*
@@ -68,7 +67,7 @@ class QuestViewController : ReduxViewController<QuestAction, QuestViewState, Que
 
     constructor(args: Bundle? = null) : super(args)
 
-    private constructor(questId: String) : super() {
+    constructor(questId: String) : super() {
         this.questId = questId
     }
 
@@ -125,13 +124,10 @@ class QuestViewController : ReduxViewController<QuestAction, QuestViewState, Que
         })
 
         view.editQuest.onDebounceClick {
-            val fadeChangeHandler = FadeChangeHandler()
-            pushWithRootRouter(
-                RouterTransaction.with(
-                    EditQuestViewController(questId)
-                )
-                    .pushChangeHandler(fadeChangeHandler)
-                    .popChangeHandler(fadeChangeHandler)
+            navigateFromRoot().toEditQuest(
+                questId = questId,
+                params = null,
+                changeHandler = FadeChangeHandler()
             )
         }
 
@@ -303,6 +299,8 @@ class QuestViewController : ReduxViewController<QuestAction, QuestViewState, Que
 
             QuestViewState.StateType.QUEST_COMPLETED ->
                 showCompletedQuest(state.quest!!.id)
+            else -> {
+            }
         }
     }
 
@@ -355,7 +353,7 @@ class QuestViewController : ReduxViewController<QuestAction, QuestViewState, Que
                 val backgroundDrawable = drawable.getDrawable(0)
                 val backgroundColor =
                     if
-                            (state.allSubQuestsDone) colorRes(R.color.md_green_700)
+                        (state.allSubQuestsDone) colorRes(R.color.md_green_700)
                     else
                         attrData(R.attr.colorPrimaryDark)
 
@@ -367,7 +365,7 @@ class QuestViewController : ReduxViewController<QuestAction, QuestViewState, Que
                 val progressDrawable = drawable.getDrawable(1)
                 val progressColor =
                     if
-                            (state.allSubQuestsDone) colorRes(R.color.md_green_500)
+                        (state.allSubQuestsDone) colorRes(R.color.md_green_500)
                     else
                         attrData(R.attr.colorPrimary)
                 progressDrawable.setColorFilter(
@@ -660,10 +658,10 @@ class QuestViewController : ReduxViewController<QuestAction, QuestViewState, Que
 
             if (vm.isCompleted) {
                 view.editSubQuestName.paintFlags = view.editSubQuestName.paintFlags or
-                        Paint.STRIKE_THRU_TEXT_FLAG
+                    Paint.STRIKE_THRU_TEXT_FLAG
             } else {
                 view.editSubQuestName.paintFlags = view.editSubQuestName.paintFlags and
-                        Paint.STRIKE_THRU_TEXT_FLAG.inv()
+                    Paint.STRIKE_THRU_TEXT_FLAG.inv()
 
             }
 
@@ -721,17 +719,6 @@ class QuestViewController : ReduxViewController<QuestAction, QuestViewState, Que
             it.removeButton.gone()
             it.reorderButton.visible()
         }
-    }
-
-    companion object {
-        const val TAG = "QuestViewController"
-
-        fun routerTransaction(questId: String) =
-            RouterTransaction.with(QuestViewController(questId)).tag(
-                QuestViewController.TAG
-            )
-                .pushChangeHandler(VerticalChangeHandler())
-                .popChangeHandler(VerticalChangeHandler())
     }
 }
 

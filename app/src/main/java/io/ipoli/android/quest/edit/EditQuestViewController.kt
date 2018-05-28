@@ -13,13 +13,11 @@ import android.view.inputmethod.EditorInfo
 import com.mikepenz.iconics.IconicsDrawable
 import com.mikepenz.material_design_iconic_typeface_library.MaterialDesignIconic
 import io.ipoli.android.R
-import io.ipoli.android.challenge.picker.ChallengePickerDialogController
 import io.ipoli.android.common.datetime.Time
 import io.ipoli.android.common.redux.android.ReduxViewController
 import io.ipoli.android.common.text.DateFormatter
 import io.ipoli.android.common.text.DurationFormatter
 import io.ipoli.android.common.view.*
-import io.ipoli.android.note.NoteDialogViewController
 import io.ipoli.android.quest.Color
 import io.ipoli.android.quest.Icon
 import io.ipoli.android.quest.edit.EditQuestViewState.StateType.*
@@ -67,12 +65,6 @@ class EditQuestViewController(args: Bundle? = null) :
         params: Params? = null
     ) : this() {
         this.questId = questId
-        this.params = params
-    }
-
-    constructor(
-        params: Params?
-    ) : this() {
         this.params = params
     }
 
@@ -258,6 +250,8 @@ class EditQuestViewController(args: Bundle? = null) :
                 dispatch(EditQuestAction.Save(newSubQuestNames))
                 router.handleBack()
             }
+            else -> {
+            }
         }
     }
 
@@ -304,9 +298,9 @@ class EditQuestViewController(args: Bundle? = null) :
     ) {
         view.questChallenge.text = state.challengeText
         view.questChallenge.onDebounceClick {
-            ChallengePickerDialogController(state.challenge, { challenge ->
+            navigate().toChallengePicker(state.challenge, { challenge ->
                 dispatch(EditQuestAction.ChangeChallenge(challenge))
-            }).show(router)
+            })
         }
     }
 
@@ -337,10 +331,11 @@ class EditQuestViewController(args: Bundle? = null) :
     ) {
         view.questDuration.text = state.durationText
         view.questDuration.onDebounceClick {
-            DurationPickerDialogController(
-                state.duration,
-                { dispatch(EditQuestAction.ChangeDuration(it)) }
-            ).show(router, "pick_duration_tag")
+            navigate()
+                .toDurationPicker(
+                    state.duration,
+                    { dispatch(EditQuestAction.ChangeDuration(it)) }
+                )
         }
     }
 
@@ -376,11 +371,11 @@ class EditQuestViewController(args: Bundle? = null) :
     ) {
         colorLayout(view, state)
         view.questColor.onDebounceClick {
-            ColorPickerDialogController({
-                dispatch(EditQuestAction.ChangeColor(it))
-            }, state.color).show(
-                router,
-                "pick_color_tag"
+            navigate().toColorPicker(
+                {
+                    dispatch(EditQuestAction.ChangeColor(it))
+                },
+                state.color
             )
         }
     }
@@ -391,12 +386,10 @@ class EditQuestViewController(args: Bundle? = null) :
     ) {
         view.questSelectedIcon.setImageDrawable(state.iconDrawable)
         view.questIcon.onDebounceClick {
-            IconPickerDialogController({ icon ->
-                dispatch(EditQuestAction.ChangeIcon(icon))
-            }, state.icon).show(
-                router,
-                "pick_icon_tag"
-            )
+            navigate()
+                .toIconPicker({ icon ->
+                    dispatch(EditQuestAction.ChangeIcon(icon))
+                }, state.icon)
         }
     }
 
@@ -419,12 +412,15 @@ class EditQuestViewController(args: Bundle? = null) :
     ) {
         view.questReminder.text = state.reminderText
         view.questReminder.onDebounceClick {
-            ReminderPickerDialogController(object :
-                ReminderPickerDialogController.ReminderPickedListener {
-                override fun onReminderPicked(reminder: ReminderViewModel?) {
-                    dispatch(EditQuestAction.ChangeReminder(reminder))
-                }
-            }, state.reminder).show(router, "pick_reminder_tag")
+            navigate()
+                .toReminderPicker(
+                    object :
+                        ReminderPickerDialogController.ReminderPickedListener {
+                        override fun onReminderPicked(reminder: ReminderViewModel?) {
+                            dispatch(EditQuestAction.ChangeReminder(reminder))
+                        }
+                    }, state.reminder
+                )
         }
 
     }
@@ -433,11 +429,13 @@ class EditQuestViewController(args: Bundle? = null) :
     private fun renderNote(view: View, state: EditQuestViewState) {
         view.questNote.text = state.noteText
         view.questNote.onDebounceClick {
-            NoteDialogViewController(
-                note = state.note,
-                resultListener = { note ->
-                    dispatch(EditQuestAction.ChangeNote(note))
-                }).show(router)
+            navigate()
+                .toNotePicker(
+                    note = state.note,
+                    resultListener = { note ->
+                        dispatch(EditQuestAction.ChangeNote(note))
+                    }
+                )
         }
     }
 

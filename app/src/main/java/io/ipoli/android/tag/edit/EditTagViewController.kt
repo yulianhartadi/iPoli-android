@@ -23,7 +23,7 @@ class EditTagViewController(args: Bundle? = null) :
 
     private var tagId: String? = null
 
-    constructor(tagId: String) : this() {
+    constructor(tagId: String?) : this() {
         this.tagId = tagId
     }
 
@@ -101,6 +101,8 @@ class EditTagViewController(args: Bundle? = null) :
                 dispatch(EditTagAction.Save)
                 router.handleBack()
             }
+            else -> {
+            }
         }
     }
 
@@ -119,12 +121,12 @@ class EditTagViewController(args: Bundle? = null) :
         )
 
         view.tagIcon.onDebounceClick {
-            IconPickerDialogController({ icon ->
-                dispatch(EditTagAction.ChangeIcon(icon))
-            }, state.icon).show(
-                router,
-                "pick_icon_tag"
-            )
+            navigate()
+                .toIconPicker(
+                    { icon ->
+                        dispatch(EditTagAction.ChangeIcon(icon))
+                    }, state.icon
+                )
 
         }
     }
@@ -135,11 +137,11 @@ class EditTagViewController(args: Bundle? = null) :
     ) {
         colorLayout(view, state)
         view.tagColor.onDebounceClick {
-            ColorPickerDialogController({
-                dispatch(EditTagAction.ChangeColor(it))
-            }, state.color).show(
-                router,
-                "pick_color_tag"
+            navigate().toColorPicker(
+                {
+                    dispatch(EditTagAction.ChangeColor(it))
+                },
+                state.color
             )
         }
     }

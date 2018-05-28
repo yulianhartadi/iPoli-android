@@ -15,15 +15,14 @@ import io.ipoli.android.common.BaseViewStateReducer
 import io.ipoli.android.common.DataLoadedAction
 import io.ipoli.android.common.datetime.Time
 import io.ipoli.android.common.datetime.TimeOfDay
-import io.ipoli.android.common.home.HomeViewController
 import io.ipoli.android.common.mvi.BaseViewState
 import io.ipoli.android.common.redux.Action
 import io.ipoli.android.common.redux.android.ReduxViewController
 import io.ipoli.android.common.text.DateFormatter
 import io.ipoli.android.common.view.exitFullScreen
 import io.ipoli.android.common.view.inflate
-import io.ipoli.android.common.view.rootRouter
 import io.ipoli.android.pet.PetAvatar
+import io.ipoli.android.planday.PlanDayViewController.Companion.PLAN_TODAY_INDEX
 import io.ipoli.android.planday.data.Weather
 import io.ipoli.android.planday.persistence.Quote
 import io.ipoli.android.planday.scenes.PlanDayMotivationViewController
@@ -94,10 +93,13 @@ object PlanDayReducer : BaseViewStateReducer<PlanDayViewState>() {
             }
 
             is PlanDayAction.ShowNext ->
-                subState.copy(
-                    type = PlanDayViewState.StateType.NEXT_PAGE,
-                    adapterPosition = subState.adapterPosition + 1
-                )
+                if (subState.adapterPosition + 1 > PLAN_TODAY_INDEX)
+                    subState
+                else
+                    subState.copy(
+                        type = PlanDayViewState.StateType.NEXT_PAGE,
+                        adapterPosition = subState.adapterPosition + 1
+                    )
 
             is DataLoadedAction.PlayerChanged -> {
                 val player = action.player
@@ -398,7 +400,10 @@ class PlanDayViewController(args: Bundle? = null) :
 
             PlanDayViewState.StateType.CLOSE -> {
                 exitFullScreen()
-                rootRouter.setRoot(RouterTransaction.with(HomeViewController()))
+                navigateFromRoot().setHome()
+            }
+
+            else -> {
             }
         }
     }
@@ -423,15 +428,15 @@ class PlanDayViewController(args: Bundle? = null) :
     private fun createControllerForPosition(position: Int): Controller =
         when (position) {
             MOTIVATION_INDEX -> PlanDayMotivationViewController()
-            REVIEW_YESTERDAY -> PlanDayReviewViewController()
-            PLAN_TODAY -> PlanDayTodayViewController()
+            REVIEW_YESTERDAY_INDEX -> PlanDayReviewViewController()
+            PLAN_TODAY_INDEX -> PlanDayTodayViewController()
             else -> throw IllegalArgumentException("Unknown controller position $position")
         }
 
     companion object {
         const val MOTIVATION_INDEX = 0
-        const val REVIEW_YESTERDAY = 1
-        const val PLAN_TODAY = 2
+        const val REVIEW_YESTERDAY_INDEX = 1
+        const val PLAN_TODAY_INDEX = 2
     }
 
 }

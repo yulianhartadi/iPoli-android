@@ -31,7 +31,6 @@ import io.ipoli.android.common.view.recyclerview.SimpleViewHolder
 import io.ipoli.android.event.Event
 import io.ipoli.android.quest.CompletedQuestViewController
 import io.ipoli.android.quest.schedule.agenda.usecase.CreateAgendaItemsUseCase
-import io.ipoli.android.quest.show.QuestViewController
 import kotlinx.android.synthetic.main.controller_agenda.view.*
 import kotlinx.android.synthetic.main.item_agenda_event.view.*
 import kotlinx.android.synthetic.main.item_agenda_month_divider.view.*
@@ -125,6 +124,7 @@ class AgendaViewController(args: Bundle? = null) :
     override fun render(state: AgendaViewState, view: View) {
 
         when (state.type) {
+
             AgendaViewState.StateType.DATA_CHANGED -> {
                 ViewUtils.goneViews(view.topLoader, view.bottomLoader)
                 val agendaList = view.agendaList
@@ -139,6 +139,9 @@ class AgendaViewController(args: Bundle? = null) :
 
             AgendaViewState.StateType.SHOW_BOTTOM_LOADER -> {
                 ViewUtils.showViews(view.bottomLoader)
+            }
+
+            else -> {
             }
         }
     }
@@ -194,9 +197,7 @@ class AgendaViewController(args: Bundle? = null) :
     }
 
     private fun showQuest(questId: String) {
-        pushWithRootRouter(
-            QuestViewController.routerTransaction(questId)
-        )
+        navigateFromRoot().toQuest(questId)
     }
 
     data class TagViewModel(val name: String, @ColorRes val color: Int)
@@ -285,7 +286,7 @@ class AgendaViewController(args: Bundle? = null) :
             view.eventStartTime.text = viewModel.startTime
 
             view.eventIcon.backgroundTintList =
-                    ColorStateList.valueOf(viewModel.color)
+                ColorStateList.valueOf(viewModel.color)
             view.eventIcon.setImageDrawable(listItemIcon(viewModel.icon))
         }
 
@@ -346,7 +347,7 @@ class AgendaViewController(args: Bundle? = null) :
             vm: QuestViewModel
         ) {
             view.questIcon.backgroundTintList =
-                    ColorStateList.valueOf(colorRes(vm.color))
+                ColorStateList.valueOf(colorRes(vm.color))
             view.questIcon.setImageDrawable(listItemIcon(vm.icon))
 
             if (vm.tags.isNotEmpty()) {
@@ -361,7 +362,7 @@ class AgendaViewController(args: Bundle? = null) :
 
             view.questRepeatIndicator.visibility = if (vm.isRepeating) View.VISIBLE else View.GONE
             view.questChallengeIndicator.visibility =
-                    if (vm.isFromChallenge) View.VISIBLE else View.GONE
+                if (vm.isFromChallenge) View.VISIBLE else View.GONE
         }
 
         private fun renderTag(view: View, tag: TagViewModel) {
@@ -527,10 +528,14 @@ class AgendaViewController(args: Bundle? = null) :
                             AndroidColor.valueOf(it.color.name).color500
                         )
                     },
-                    startTime = QuestStartTimeFormatter.formatWithDuration(quest, activity!!, shouldUse24HourFormat),
+                    startTime = QuestStartTimeFormatter.formatWithDuration(
+                        quest,
+                        activity!!,
+                        shouldUse24HourFormat
+                    ),
                     color = color,
                     icon = quest.icon?.let { AndroidIcon.valueOf(it.name).icon }
-                            ?: Ionicons.Icon.ion_android_clipboard,
+                        ?: Ionicons.Icon.ion_android_clipboard,
                     isCompleted = quest.isCompleted,
                     showDivider = shouldShowDivider(nextAgendaItem),
                     isRepeating = quest.isFromRepeatingQuest,

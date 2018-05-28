@@ -48,20 +48,20 @@ class AddChallengeNameViewController(args: Bundle? = null) :
         )
 
         view.challengeDifficulty.onItemSelectedListener =
-                object : AdapterView.OnItemSelectedListener {
-                    override fun onNothingSelected(parent: AdapterView<*>?) {
-                    }
-
-                    override fun onItemSelected(
-                        parent: AdapterView<*>?,
-                        view: View?,
-                        position: Int,
-                        id: Long
-                    ) {
-                        dispatch(EditChallengeAction.ChangeDifficulty(position))
-                    }
-
+            object : AdapterView.OnItemSelectedListener {
+                override fun onNothingSelected(parent: AdapterView<*>?) {
                 }
+
+                override fun onItemSelected(
+                    parent: AdapterView<*>?,
+                    view: View?,
+                    position: Int,
+                    id: Long
+                ) {
+                    dispatch(EditChallengeAction.ChangeDifficulty(position))
+                }
+
+            }
 
         view.challengeTagList.layoutManager = LinearLayoutManager(activity!!)
         view.challengeTagList.adapter = EditItemTagAdapter(removeTagCallback = {
@@ -102,6 +102,8 @@ class AddChallengeNameViewController(args: Bundle? = null) :
 
             VALIDATION_NAME_SUCCESSFUL -> {
                 dispatch(EditChallengeAction.ShowNext)
+            }
+            else -> {
             }
         }
     }
@@ -145,11 +147,10 @@ class AddChallengeNameViewController(args: Bundle? = null) :
         )
 
         view.challengeIcon.onDebounceClick {
-            IconPickerDialogController({ icon ->
-                dispatch(EditChallengeAction.ChangeIcon(icon))
-            }, state.icon).show(
-                router,
-                "pick_icon_tag"
+            navigate().toIconPicker(
+                { icon ->
+                    dispatch(EditChallengeAction.ChangeIcon(icon))
+                }, state.icon
             )
 
         }
@@ -161,12 +162,12 @@ class AddChallengeNameViewController(args: Bundle? = null) :
     ) {
         colorLayout(view, state)
         view.challengeColor.onDebounceClick {
-            ColorPickerDialogController({
-                dispatch(EditChallengeAction.ChangeColor(it))
-            }, state.color).show(
-                router,
-                "pick_color_tag"
-            )
+            navigate()
+                .toColorPicker(
+                    {
+                        dispatch(EditChallengeAction.ChangeColor(it))
+                    }, state.color
+                )
         }
     }
 

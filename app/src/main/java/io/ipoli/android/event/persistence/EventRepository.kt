@@ -139,11 +139,11 @@ class AndroidCalendarEventRepository : EventRepository {
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 
-    override suspend fun listenById(id: String, channel: Channel<Event?>): Channel<Event?> {
+    override fun listenById(id: String, channel: Channel<Event?>): Channel<Event?> {
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 
-    override suspend fun listenForAll(channel: Channel<List<Event>>): Channel<List<Event>> {
+    override fun listenForAll(channel: Channel<List<Event>>): Channel<List<Event>> {
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 

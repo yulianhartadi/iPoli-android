@@ -123,6 +123,9 @@ class RescheduleDialogController(args: Bundle? = null) :
                 changeIcon(AndroidPetAvatar.valueOf(state.petAvatar.name).headImage)
                 (view.dateList.adapter as DateAdapter).updateAll(state.viewModels)
             }
+
+            else -> {
+            }
         }
     }
 

@@ -20,6 +20,17 @@
         <item name="android:windowBackground">@android:color/transparent</item>
         <item name="android:windowIsTranslucent">true</item>
         <item name="android:statusBarColor">@android:color/transparent</item>
+        <item name="actionModeStyle">@style/Theme.myPoli.Widget.ActionMode</item>
+        <item name="actionBarTheme">@style/ThemeOverlay.AppCompat.Light</item>
+    </style>
+
+    <style name="Theme.myPoli.Widget.ActionMode" parent="@style/Widget.AppCompat.ActionMode">
+        <item name="background">@color/md_white</item>
+        <item name="titleTextStyle">@style/ActionModeTitleTextStyle</item>
+    </style>
+
+    <style name="ActionModeTitleTextStyle" parent="@style/TextAppearance.AppCompat.Widget.ActionMode.Title">
+        <item name="android:textColor">@color/md_black</item>
     </style>
 
     <style name="Theme.myPoli.Red" parent="Theme.myPoli.Base">

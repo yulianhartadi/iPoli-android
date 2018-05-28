@@ -13,7 +13,6 @@ import android.widget.TextView
 import com.mikepenz.iconics.typeface.IIcon
 import com.mikepenz.ionicons_typeface_library.Ionicons
 import io.ipoli.android.R
-import io.ipoli.android.challenge.add.AddChallengeViewController
 import io.ipoli.android.challenge.list.ChallengeListViewController.ChallengeItemViewModel.*
 import io.ipoli.android.challenge.predefined.category.ChallengeCategoryListViewController
 import io.ipoli.android.challenge.show.ChallengeViewController
@@ -52,7 +51,7 @@ class ChallengeListViewController(args: Bundle? = null) :
             R.layout.controller_challenge_list, container, false
         )
         view.challengeList.layoutManager =
-                LinearLayoutManager(container.context, LinearLayoutManager.VERTICAL, false)
+            LinearLayoutManager(container.context, LinearLayoutManager.VERTICAL, false)
         view.challengeList.adapter = ChallengeAdapter()
 
         view.addChallenge.dispatchOnClick { ChallengeListAction.AddChallenge }
@@ -83,15 +82,15 @@ class ChallengeListViewController(args: Bundle? = null) :
     }
 
     override fun render(state: ChallengeListViewState, view: View) {
-        when (state) {
+        when (state.type) {
 
-            is ChallengeListViewState.Loading -> {
+            ChallengeListViewState.StateType.LOADING -> {
                 view.loader.visible()
                 view.emptyContainer.invisible()
                 view.challengeList.invisible()
             }
 
-            is ChallengeListViewState.Changed -> {
+            ChallengeListViewState.StateType.DATA_CHANGED -> {
                 view.challengeList.visible()
                 view.loader.invisible()
                 view.emptyContainer.invisible()
@@ -104,7 +103,7 @@ class ChallengeListViewController(args: Bundle? = null) :
                 )
             }
 
-            ChallengeListViewState.Empty -> {
+            ChallengeListViewState.StateType.EMPTY -> {
                 view.emptyContainer.visible()
                 view.loader.invisible()
                 view.challengeList.invisible()
@@ -113,8 +112,8 @@ class ChallengeListViewController(args: Bundle? = null) :
                 view.emptyText.setText(R.string.empty_challenges_text)
             }
 
-            ChallengeListViewState.ShowAdd -> {
-                rootRouter.pushController(AddChallengeViewController.routerTransaction)
+            ChallengeListViewState.StateType.SHOW_ADD -> {
+                navigateFromRoot().toAddChallenge()
             }
         }
     }
@@ -171,7 +170,7 @@ class ChallengeListViewController(args: Bundle? = null) :
             view.ccName.text = vm.name
 
             view.ccIcon.backgroundTintList =
-                    ColorStateList.valueOf(colorRes(vm.color))
+                ColorStateList.valueOf(colorRes(vm.color))
             view.ccIcon.setImageDrawable(listItemIcon(vm.icon))
 
             view.ccStart.text = vm.start
@@ -198,7 +197,7 @@ class ChallengeListViewController(args: Bundle? = null) :
             view.cName.text = vm.name
 
             view.cIcon.backgroundTintList =
-                    ColorStateList.valueOf(colorRes(vm.color))
+                ColorStateList.valueOf(colorRes(vm.color))
             view.cIcon.setImageDrawable(listItemIcon(vm.icon))
 
             if (vm.tags.isNotEmpty()) {
@@ -284,7 +283,7 @@ class ChallengeListViewController(args: Bundle? = null) :
         ) : ChallengeItemViewModel()
     }
 
-    private fun ChallengeListViewState.Changed.toViewModels(context: Context): List<ChallengeListViewController.ChallengeItemViewModel> {
+    private fun ChallengeListViewState.toViewModels(context: Context): List<ChallengeListViewController.ChallengeItemViewModel> {
         return challenges.map {
             when (it) {
                 is ChallengeListViewState.ChallengeItem.Incomplete -> {
@@ -336,7 +335,7 @@ class ChallengeListViewController(args: Bundle? = null) :
                         tags = c.tags.map { TagViewModel(it.name, it.color.androidColor.color500) },
                         color = AndroidColor.valueOf(c.color.name).color500,
                         icon = c.icon?.let { AndroidIcon.valueOf(it.name).icon }
-                                ?: Ionicons.Icon.ion_android_clipboard,
+                            ?: Ionicons.Icon.ion_android_clipboard,
                         next = next,
                         end = end,
                         progress = c.progress.completedCount,
@@ -360,7 +359,7 @@ class ChallengeListViewController(args: Bundle? = null) :
                             },
                             color = AndroidColor.valueOf(color.name).color500,
                             icon = icon?.let { AndroidIcon.valueOf(it.name).icon }
-                                    ?: Ionicons.Icon.ion_android_clipboard,
+                                ?: Ionicons.Icon.ion_android_clipboard,
                             start = stringRes(
                                 R.string.started_at_date,
                                 DateFormatter.format(activity!!, startDate)

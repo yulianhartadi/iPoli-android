@@ -12,7 +12,6 @@ import android.view.animation.AccelerateDecelerateInterpolator
 import android.widget.SeekBar
 import android.widget.TextView
 import android.widget.Toast
-import com.bluelinelabs.conductor.RouterTransaction
 import com.bluelinelabs.conductor.changehandler.FadeChangeHandler
 import io.ipoli.android.BillingConstants
 import io.ipoli.android.Constants
@@ -27,7 +26,6 @@ import io.ipoli.android.pet.AndroidPetAvatar
 import io.ipoli.android.pet.PetAvatar
 import io.ipoli.android.player.Player
 import io.ipoli.android.player.usecase.ConvertCoinsToGemsUseCase
-import io.ipoli.android.store.gem.GemStoreViewController
 import io.ipoli.android.store.purchase.AndroidInAppPurchaseManager
 import io.ipoli.android.store.purchase.GemPack
 import io.ipoli.android.store.purchase.GemPackType
@@ -191,10 +189,11 @@ class CurrencyConverterDialogController :
 
     override fun render(state: CurrencyConverterViewState, view: View) {
         when (state.type) {
+
             DATA_CHANGED -> {
                 changeIcon(AndroidPetAvatar.valueOf(state.petAvatar!!.name).headImage)
                 dialog.findViewById<TextView>(R.id.headerCoins)!!.text =
-                        state.playerCoins.toString()
+                    state.playerCoins.toString()
                 dialog.findViewById<TextView>(R.id.headerGems)!!.text = state.playerGems.toString()
                 view.coins.text = state.convertCoins.toString()
                 view.gems.text = state.convertGems.toString()
@@ -267,6 +266,9 @@ class CurrencyConverterDialogController :
                     stringRes(R.string.iconvert_gems_not_enough_coins),
                     Toast.LENGTH_SHORT
                 ).show()
+            }
+
+            else -> {
             }
         }
     }
@@ -364,13 +366,7 @@ class CurrencyConverterDialogController :
 
     private fun showGemStore() {
         dismiss()
-        val handler = FadeChangeHandler()
-        router.pushController(
-            RouterTransaction.with(GemStoreViewController())
-                .pushChangeHandler(handler)
-                .popChangeHandler(handler)
-        )
-
+        navigate().toGemStore(FadeChangeHandler())
     }
 
     override fun onDestroy() {

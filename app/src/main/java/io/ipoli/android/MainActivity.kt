@@ -20,8 +20,8 @@ import io.ipoli.android.common.DataLoadedAction
 import io.ipoli.android.common.LoadDataAction
 import io.ipoli.android.common.di.Module
 import io.ipoli.android.common.home.HomeAction
-import io.ipoli.android.common.home.HomeViewController
 import io.ipoli.android.common.migration.MigrationViewController
+import io.ipoli.android.common.navigation.Navigator
 import io.ipoli.android.common.privacy.PrivacyPolicyViewController
 import io.ipoli.android.common.redux.Action
 import io.ipoli.android.common.redux.Dispatcher
@@ -34,10 +34,7 @@ import io.ipoli.android.planday.PlanDayViewController
 import io.ipoli.android.player.Membership
 import io.ipoli.android.player.Player
 import io.ipoli.android.player.auth.AuthAction
-import io.ipoli.android.player.auth.AuthViewController
 import io.ipoli.android.quest.schedule.addquest.AddQuestViewController
-import io.ipoli.android.quest.show.QuestViewController
-import io.ipoli.android.store.membership.MembershipViewController
 import io.ipoli.android.store.powerup.AndroidPowerUp
 import io.ipoli.android.store.powerup.buy.BuyPowerUpDialogController
 import io.ipoli.android.store.powerup.middleware.ShowBuyPowerUpAction
@@ -133,7 +130,7 @@ class MainActivity : AppCompatActivity(), Injects<Module>, SideEffectHandler<App
                     val p = playerRepository.find()!!
                     withContext(UI) {
                         if (p.isLoggedIn() && p.username.isNullOrEmpty()) {
-                            router.setRoot(RouterTransaction.with(AuthViewController()))
+                            Navigator(router).setAuth()
                         } else {
                             stateStore.dispatch(LoadDataAction.All)
                             startApp(p)
@@ -154,7 +151,7 @@ class MainActivity : AppCompatActivity(), Injects<Module>, SideEffectHandler<App
         } else if (intent.action == ACTION_PLAN_DAY) {
             router.setRoot(RouterTransaction.with(PlanDayViewController()))
         } else if (!router.hasRootController()) {
-            router.setRoot(RouterTransaction.with(HomeViewController()))
+            Navigator(router).setHome()
             if (Random().nextInt(10) == 1 && player.membership == Membership.NONE) {
                 showPremiumSnackbar()
             }
@@ -204,9 +201,7 @@ class MainActivity : AppCompatActivity(), Injects<Module>, SideEffectHandler<App
 
     private fun showTimer(intent: Intent) {
         val questId = intent.getStringExtra(Constants.QUEST_ID_EXTRA_KEY)
-        router.setRoot(
-            QuestViewController.routerTransaction(questId)
-        )
+        Navigator(router).setQuest(questId)
     }
 
     private fun showPet() {
@@ -236,7 +231,7 @@ class MainActivity : AppCompatActivity(), Injects<Module>, SideEffectHandler<App
             ),
             Snackbar.LENGTH_INDEFINITE
         ).setAction(R.string.go_premium, Debounce.clickListener { _ ->
-            router.pushController(RouterTransaction.with(MembershipViewController()))
+            Navigator(router).toMembership()
         }).show()
     }
 
@@ -254,7 +249,7 @@ class MainActivity : AppCompatActivity(), Injects<Module>, SideEffectHandler<App
                     ).show()
 
                 is HomeAction.ShowPlayerSetup ->
-                    router.setRoot(RouterTransaction.with(AuthViewController()))
+                    Navigator(router).setAuth()
 
                 AuthAction.GuestCreated,
                 AuthAction.PlayerSetupCompleted -> {
@@ -274,7 +269,7 @@ class MainActivity : AppCompatActivity(), Injects<Module>, SideEffectHandler<App
     }
 
     private fun showPowerUpDialog(action: ShowBuyPowerUpAction) {
-        BuyPowerUpDialogController(action.powerUp, { result ->
+        Navigator(router).toBuyPowerUp(action.powerUp, { result ->
             when (result) {
                 BuyPowerUpDialogController.Result.TooExpensive ->
                     Toast.makeText(
@@ -294,15 +289,9 @@ class MainActivity : AppCompatActivity(), Injects<Module>, SideEffectHandler<App
                     ).show()
 
                 is BuyPowerUpDialogController.Result.UnlockAll ->
-                    router.pushController(
-                        RouterTransaction.with(
-                            MembershipViewController()
-                        )
-                            .pushChangeHandler(FadeChangeHandler())
-                            .popChangeHandler(FadeChangeHandler())
-                    )
+                    Navigator(router).toMembership(FadeChangeHandler())
             }
-        }).show(router)
+        })
     }
 
     override fun canHandle(action: Action) =

@@ -34,25 +34,41 @@ object AvatarStoreReducer : BaseViewStateReducer<AvatarStoreViewState>() {
 
             AvatarStoreAction.Load ->
                 state.dataState.player?.let {
-                    AvatarStoreViewState.Changed(createAvatars(it))
-                } ?: AvatarStoreViewState.Loading
+                    subState.copy(
+                        type = AvatarStoreViewState.StateType.DATA_CHANGED,
+                        avatars = createAvatars(it)
+                    )
+                } ?: subState.copy(
+                    type = AvatarStoreViewState.StateType.LOADING
+                )
 
             is DataLoadedAction.PlayerChanged ->
-                AvatarStoreViewState.Changed(createAvatars(action.player))
+                subState.copy(
+                    type = AvatarStoreViewState.StateType.DATA_CHANGED,
+                    avatars = createAvatars(action.player)
+                )
 
             is BuyAvatarCompletedAction ->
                 when (action.result) {
                     is BuyAvatarUseCase.Result.Bought ->
-                        AvatarStoreViewState.AvatarBought
+                        subState.copy(
+                            type = AvatarStoreViewState.StateType.AVATAR_BOUGHT
+                        )
 
                     is BuyAvatarUseCase.Result.TooExpensive ->
-                        AvatarStoreViewState.AvatarTooExpensive
+                        subState.copy(
+                            type = AvatarStoreViewState.StateType.AVATAR_TOO_EXPENSIVE
+                        )
                 }
 
             else -> subState
         }
 
-    override fun defaultState() = AvatarStoreViewState.Loading
+    override fun defaultState() =
+        AvatarStoreViewState(
+            type = AvatarStoreViewState.StateType.LOADING,
+            avatars = listOf()
+        )
 
     private fun createAvatars(player: Player) =
         Avatar.values().map {
@@ -74,9 +90,10 @@ sealed class AvatarItem(open val avatar: Avatar) {
     data class ForSale(override val avatar: Avatar) : AvatarItem(avatar)
 }
 
-sealed class AvatarStoreViewState : BaseViewState() {
-    object Loading : AvatarStoreViewState()
-    object AvatarBought : AvatarStoreViewState()
-    object AvatarTooExpensive : AvatarStoreViewState()
-    data class Changed(val avatars: List<AvatarItem>) : AvatarStoreViewState()
+data class AvatarStoreViewState(val type: StateType, val avatars: List<AvatarItem>) :
+    BaseViewState() {
+
+    enum class StateType {
+        LOADING, AVATAR_BOUGHT, AVATAR_TOO_EXPENSIVE, DATA_CHANGED
+    }
 }

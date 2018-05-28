@@ -30,7 +30,6 @@ import io.ipoli.android.common.view.recyclerview.SimpleViewHolder
 import io.ipoli.android.planday.PlanDayAction
 import io.ipoli.android.planday.PlanDayReducer
 import io.ipoli.android.planday.PlanDayViewState
-import io.ipoli.android.planday.RescheduleDialogController
 import io.ipoli.android.quest.schedule.addquest.AddQuestAnimationHelper
 import kotlinx.android.synthetic.main.animation_empty_list.view.*
 import kotlinx.android.synthetic.main.controller_plan_day_today.view.*
@@ -89,15 +88,16 @@ class PlanDayTodayViewController(args: Bundle? = null) :
             override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
                 val questId = questId(viewHolder)
                 if (direction == ItemTouchHelper.END) {
-                    RescheduleDialogController(
-                        includeToday = false,
-                        listener = { date ->
-                            dispatch(PlanDayAction.RescheduleQuest(questId, date))
-                        },
-                        cancelListener = {
-                            view.todayQuests.adapter.notifyItemChanged(viewHolder.adapterPosition)
-                        }
-                    ).show(router)
+                    navigate()
+                        .toReschedule(
+                            includeToday = false,
+                            listener = { date ->
+                                dispatch(PlanDayAction.RescheduleQuest(questId, date))
+                            },
+                            cancelListener = {
+                                view.todayQuests.adapter.notifyItemChanged(viewHolder.adapterPosition)
+                            }
+                        )
                 } else {
                     dispatch(PlanDayAction.RemoveQuest(questId))
                     PetMessagePopup(
@@ -175,9 +175,7 @@ class PlanDayTodayViewController(args: Bundle? = null) :
                     .show(it)
             }
             dispatch(PlanDayAction.Done)
-            rootRouter.setRoot(
-                RouterTransaction.with(HomeViewController())
-            )
+            navigateFromRoot().setHome()
             return true
         }
         return super.onOptionsItemSelected(item)
@@ -348,7 +346,11 @@ class PlanDayTodayViewController(args: Bundle? = null) :
                             AndroidColor.valueOf(it.color.name).color500
                         )
                     },
-                    startTime = QuestStartTimeFormatter.formatWithDuration(it, activity!!, shouldUse24HourFormat),
+                    startTime = QuestStartTimeFormatter.formatWithDuration(
+                        it,
+                        activity!!,
+                        shouldUse24HourFormat
+                    ),
                     startTimeIcon =
                     if (it.isScheduled)
                         GoogleMaterial.Icon.gmd_access_time

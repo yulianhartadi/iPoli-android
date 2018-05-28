@@ -19,7 +19,7 @@ class ChallengeMotivationsDialogController(args: Bundle? = null) : BaseDialogCon
     private lateinit var motivation2: String
     private lateinit var motivation3: String
 
-    private lateinit var listener: (String, String, String) -> Unit
+    private var listener: (String, String, String) -> Unit = {_, _, _ -> }
 
     constructor(
         motivation1: String,

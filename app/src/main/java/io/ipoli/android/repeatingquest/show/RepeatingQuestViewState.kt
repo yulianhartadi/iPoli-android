@@ -13,9 +13,6 @@ import io.ipoli.android.quest.Color
 import io.ipoli.android.quest.RepeatingQuest
 import io.ipoli.android.repeatingquest.entity.PeriodProgress
 import io.ipoli.android.repeatingquest.entity.RepeatPattern
-import io.ipoli.android.repeatingquest.show.RepeatingQuestViewState.Changed.ProgressModel.COMPLETE
-import io.ipoli.android.repeatingquest.show.RepeatingQuestViewState.Changed.ProgressModel.INCOMPLETE
-import io.ipoli.android.repeatingquest.show.RepeatingQuestViewState.Changed.RepeatType.*
 import io.ipoli.android.repeatingquest.usecase.CreateRepeatingQuestHistoryUseCase
 import io.ipoli.android.tag.Tag
 import org.threeten.bp.LocalDate
@@ -30,46 +27,38 @@ sealed class RepeatingQuestAction : Action {
     data class Remove(val repeatingQuestId: String) : RepeatingQuestAction()
 }
 
-sealed class RepeatingQuestViewState(open val id: String) : BaseViewState() {
+data class RepeatingQuestViewState(
+    val type: StateType, val id: String,
+    val name: String,
+    val tags: List<Tag>,
+    val subQuestNames: List<String>,
+    val color: Color,
+    val nextScheduledDate: LocalDate?,
+    val totalDuration: Duration<Minute>,
+    val currentStreak: Int,
+    val repeat: RepeatType,
+    val progress: List<ProgressModel>,
+    val startTime: Time?,
+    val endTime: Time?,
+    val duration: Int,
+    val isCompleted: Boolean,
+    val note: String?,
+    val history: CreateRepeatingQuestHistoryUseCase.History?
+) : BaseViewState() {
 
-    data class Loading(override val id: String) :
-        RepeatingQuestViewState(id)
+    enum class StateType {
+        LOADING, REMOVED, HISTORY_CHAGED, REPEATING_QUEST_CHANGED
+    }
 
-    object Removed : RepeatingQuestViewState("")
+    enum class ProgressModel {
+        COMPLETE, INCOMPLETE
+    }
 
-    data class HistoryChanged(
-        override val id: String,
-        val history: CreateRepeatingQuestHistoryUseCase.History
-    ) : RepeatingQuestViewState(id)
-
-    data class Changed(
-        override val id: String,
-        val name: String,
-        val tags: List<Tag>,
-        val subQuestNames: List<String>,
-        val color: Color,
-        val nextScheduledDate: LocalDate?,
-        val totalDuration: Duration<Minute>,
-        val currentStreak: Int,
-        val repeat: RepeatType,
-        val progress: List<ProgressModel>,
-        val startTime: Time?,
-        val endTime: Time?,
-        val duration: Int,
-        val isCompleted: Boolean,
-        val note: String?
-    ) : RepeatingQuestViewState(id) {
-
-        enum class ProgressModel {
-            COMPLETE, INCOMPLETE
-        }
-
-        sealed class RepeatType {
-            object Daily : RepeatType()
-            data class Weekly(val frequency: Int) : RepeatType()
-            data class Monthly(val frequency: Int) : RepeatType()
-            object Yearly : RepeatType()
-        }
+    sealed class RepeatType {
+        object Daily : RepeatType()
+        data class Weekly(val frequency: Int) : RepeatType()
+        data class Monthly(val frequency: Int) : RepeatType()
+        object Yearly : RepeatType()
     }
 }
 
@@ -86,34 +75,39 @@ object RepeatingQuestReducer : BaseViewStateReducer<RepeatingQuestViewState>() {
                     dataState.repeatingQuests!!.firstOrNull { it.id == action.repeatingQuestId }
 
                 rq?.let {
-                    createChangedState(it)
-                } ?: RepeatingQuestViewState.Loading(action.repeatingQuestId)
+                    createChangedState(it, subState)
+                } ?: subState.copy(type = RepeatingQuestViewState.StateType.LOADING)
             }
 
             is DataLoadedAction.RepeatingQuestsChanged -> {
 
                 val rq = action.repeatingQuests.firstOrNull { it.id == subState.id }
                 rq?.let {
-                    createChangedState(it)
-                } ?: RepeatingQuestViewState.Removed
+                    createChangedState(it, subState)
+                } ?: subState.copy(type = RepeatingQuestViewState.StateType.REMOVED)
             }
 
             is DataLoadedAction.RepeatingQuestHistoryChanged -> {
-                RepeatingQuestViewState.HistoryChanged(
-                    id = subState.id,
+                subState.copy(
+                    type = RepeatingQuestViewState.StateType.HISTORY_CHAGED,
                     history = action.history
                 )
             }
 
             is RepeatingQuestAction.Remove -> {
-                RepeatingQuestViewState.Removed
+                subState.copy(
+                    type = RepeatingQuestViewState.StateType.REMOVED
+                )
             }
 
             else -> subState
         }
 
-    private fun createChangedState(rq: RepeatingQuest): RepeatingQuestViewState.Changed {
-        return RepeatingQuestViewState.Changed(
+    private fun createChangedState(
+        rq: RepeatingQuest,
+        state: RepeatingQuestViewState
+    ): RepeatingQuestViewState {
+        return state.copy(
             id = rq.id,
             name = rq.name,
             tags = rq.tags,
@@ -132,30 +126,49 @@ object RepeatingQuestReducer : BaseViewStateReducer<RepeatingQuestViewState>() {
         )
     }
 
-    private fun progressFor(progress: PeriodProgress): List<RepeatingQuestViewState.Changed.ProgressModel> {
+    private fun progressFor(progress: PeriodProgress): List<RepeatingQuestViewState.ProgressModel> {
         val complete = (0 until progress.completedCount).map {
-            COMPLETE
+            RepeatingQuestViewState.ProgressModel.COMPLETE
         }
         val incomplete = (progress.completedCount until progress.allCount).map {
-            INCOMPLETE
+            RepeatingQuestViewState.ProgressModel.INCOMPLETE
         }
         return complete + incomplete
     }
 
     private fun repeatTypeFor(repeatPattern: RepeatPattern) =
         when (repeatPattern) {
-            is RepeatPattern.Daily -> Daily
-            is RepeatPattern.Weekly, is RepeatPattern.Flexible.Weekly -> Weekly(
+            is RepeatPattern.Daily -> RepeatingQuestViewState.RepeatType.Daily
+            is RepeatPattern.Weekly, is RepeatPattern.Flexible.Weekly -> RepeatingQuestViewState.RepeatType.Weekly(
                 repeatPattern.periodCount
             )
 
-            is RepeatPattern.Monthly, is RepeatPattern.Flexible.Monthly -> Monthly(
+            is RepeatPattern.Monthly, is RepeatPattern.Flexible.Monthly -> RepeatingQuestViewState.RepeatType.Monthly(
                 repeatPattern.periodCount
             )
 
             is RepeatPattern.Yearly ->
-                Yearly
+                RepeatingQuestViewState.RepeatType.Yearly
         }
 
-    override fun defaultState() = RepeatingQuestViewState.Loading("")
+    override fun defaultState() =
+        RepeatingQuestViewState(
+            type = RepeatingQuestViewState.StateType.LOADING,
+            id = "",
+            name = "",
+            tags = emptyList(),
+            subQuestNames = emptyList(),
+            color = Color.PINK,
+            nextScheduledDate = null,
+            totalDuration = 0.minutes,
+            currentStreak = -1,
+            repeat = RepeatingQuestViewState.RepeatType.Daily,
+            progress = emptyList(),
+            startTime = null,
+            endTime = null,
+            duration = -1,
+            isCompleted = false,
+            note = null,
+            history = null
+        )
 }

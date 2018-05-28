@@ -7,16 +7,13 @@ import android.util.TypedValue
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import com.bluelinelabs.conductor.RouterTransaction
 import com.bluelinelabs.conductor.changehandler.VerticalChangeHandler
-import com.mikepenz.iconics.IconicsDrawable
 import com.mikepenz.material_design_iconic_typeface_library.MaterialDesignIconic
 import io.ipoli.android.R
 import io.ipoli.android.common.ViewUtils
 import io.ipoli.android.common.redux.android.ReduxViewController
 import io.ipoli.android.common.view.*
 import io.ipoli.android.tag.Tag
-import io.ipoli.android.tag.edit.EditTagViewController
 import io.ipoli.android.tag.show.TagViewController
 import kotlinx.android.synthetic.main.animation_empty_list.view.*
 import kotlinx.android.synthetic.main.controller_tag_list.view.*
@@ -60,13 +57,13 @@ class TagListViewController(args: Bundle? = null) :
     override fun onCreateLoadAction() = TagListAction.Load
 
     override fun render(state: TagListViewState, view: View) {
-        when (state) {
-            is TagListViewState.Loading -> {
+        when (state.type) {
+            TagListViewState.StateType.LOADING -> {
                 view.loader.visible()
                 view.emptyContainer.invisible()
             }
 
-            is TagListViewState.Changed -> {
+            TagListViewState.StateType.DATA_CHANGED -> {
                 view.loader.invisible()
                 view.emptyContainer.invisible()
                 view.emptyAnimation.pauseAnimation()
@@ -80,22 +77,15 @@ class TagListViewController(args: Bundle? = null) :
                 }
             }
 
-            is TagListViewState.Empty -> {
+            TagListViewState.StateType.EMPTY -> {
                 view.loader.invisible()
                 view.tagList.removeAllViews()
                 view.emptyContainer.visible()
                 view.emptyAnimation.playAnimation()
             }
 
-            TagListViewState.ShowAdd -> {
-                pushWithRootRouter(
-                    RouterTransaction.with(
-                        EditTagViewController()
-                    )
-                        .pushChangeHandler(VerticalChangeHandler())
-                        .popChangeHandler(VerticalChangeHandler())
-                )
-            }
+            TagListViewState.StateType.SHOW_ADD ->
+                navigateFromRoot().toEditTag(changeHandler = VerticalChangeHandler())
         }
     }
 
@@ -122,7 +112,7 @@ class TagListViewController(args: Bundle? = null) :
         countBackground.setColor(colorRes(color.color500))
 
         val i = tag.icon?.let { AndroidIcon.valueOf(it.name).icon }
-                ?: MaterialDesignIconic.Icon.gmi_label
+            ?: MaterialDesignIconic.Icon.gmi_label
 
         view.tagIcon.setImageDrawable(listItemIcon(i))
         view.tagName.text = tag.name

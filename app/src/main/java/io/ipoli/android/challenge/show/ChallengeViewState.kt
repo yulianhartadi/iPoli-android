@@ -38,22 +38,25 @@ object ChallengeReducer : BaseViewStateReducer<ChallengeViewState>() {
                     dataState.challenges!!.firstOrNull { it.id == action.challengeId }
 
                 c?.let {
-                    createChangedState(it)
-                } ?: ChallengeViewState.Loading(action.challengeId)
+                    createChangedState(it, subState)
+                } ?: subState.copy(type = ChallengeViewState.StateType.LOADING)
             }
 
             is DataLoadedAction.ChallengesChanged -> {
                 val c = action.challenges.firstOrNull { it.id == subState.id }
 
                 c?.let {
-                    createChangedState(it)
-                } ?: ChallengeViewState.Removed
+                    createChangedState(it, subState)
+                } ?: subState.copy(type = ChallengeViewState.StateType.REMOVED)
             }
             else -> subState
         }
     }
 
-    private fun createChangedState(challenge: Challenge): ChallengeViewState {
+    private fun createChangedState(
+        challenge: Challenge,
+        state: ChallengeViewState
+    ): ChallengeViewState {
         val progress = challenge.progress
         val today = LocalDate.now()
         val history = progress.history.withDefault { 0f }
@@ -62,8 +65,9 @@ object ChallengeReducer : BaseViewStateReducer<ChallengeViewState>() {
             progressSum += history.getValue(it)
             it to Math.min(progressSum, 100f)
         }.toMap().toSortedMap()
-        return ChallengeViewState.Changed(
+        return state.copy(
             id = challenge.id,
+            type = ChallengeViewState.StateType.DATA_CHANGED,
             name = challenge.name,
             tags = challenge.tags,
             color = challenge.color,
@@ -84,35 +88,52 @@ object ChallengeReducer : BaseViewStateReducer<ChallengeViewState>() {
         )
     }
 
-    override fun defaultState() = ChallengeViewState.Loading("")
+    override fun defaultState() = ChallengeViewState(
+        type = ChallengeViewState.StateType.LOADING,
+        id = "",
+        name = "",
+        tags = listOf(),
+        color = Color.PINK,
+        difficulty = "",
+        endDate = LocalDate.now(),
+        nextDate = null,
+        completedCount = -1,
+        totalCount = -1,
+        progressPercent = -1,
+        xAxisLabelCount = -1,
+        yAxisMax = -1,
+        chartData = sortedMapOf(),
+        quests = emptyList(),
+        canEdit = false,
+        canComplete = false,
+        motivations = emptyList(),
+        note = null
+    )
 
     override val stateKey = key<ChallengeViewState>()
 }
 
-sealed class ChallengeViewState(open val id: String = "") : BaseViewState() {
+data class ChallengeViewState(
+    val type: StateType,
+    val id: String,
+    val name: String,
+    val tags: List<Tag>,
+    val color: Color,
+    val difficulty: String,
+    val endDate: LocalDate,
+    val nextDate: LocalDate?,
+    val completedCount: Int,
+    val totalCount: Int,
+    val progressPercent: Int,
+    val xAxisLabelCount: Int,
+    val yAxisMax: Int,
+    val chartData: SortedMap<LocalDate, Float>,
+    val quests: List<BaseQuest>,
+    val canEdit: Boolean,
+    val canComplete: Boolean,
+    val motivations: List<String>,
+    val note: String?
+) : BaseViewState() {
 
-    data class Loading(override val id: String) : ChallengeViewState(id)
-
-    data class Changed(
-        override val id: String,
-        val name: String,
-        val tags: List<Tag>,
-        val color: Color,
-        val difficulty: String,
-        val endDate: LocalDate,
-        val nextDate: LocalDate?,
-        val completedCount: Int,
-        val totalCount: Int,
-        val progressPercent: Int,
-        val xAxisLabelCount: Int,
-        val yAxisMax: Int,
-        val chartData: SortedMap<LocalDate, Float>,
-        val quests: List<BaseQuest>,
-        val canEdit: Boolean,
-        val canComplete: Boolean,
-        val motivations: List<String>,
-        val note: String?
-    ) : ChallengeViewState(id)
-
-    object Removed : ChallengeViewState()
+    enum class StateType { LOADING, DATA_CHANGED, REMOVED }
 }

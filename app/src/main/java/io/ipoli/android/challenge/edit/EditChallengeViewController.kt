@@ -19,7 +19,6 @@ import io.ipoli.android.challenge.add.EditChallengeViewState.StateType.*
 import io.ipoli.android.common.redux.android.ReduxViewController
 import io.ipoli.android.common.text.DateFormatter
 import io.ipoli.android.common.view.*
-import io.ipoli.android.note.NoteDialogViewController
 import io.ipoli.android.tag.widget.EditItemAutocompleteTagAdapter
 import io.ipoli.android.tag.widget.EditItemTagAdapter
 import kotlinx.android.synthetic.main.controller_add_challenge_summary.view.*
@@ -71,20 +70,20 @@ open class EditChallengeViewController(args: Bundle? = null) :
 
 
         view.challengeDifficulty.onItemSelectedListener =
-                object : AdapterView.OnItemSelectedListener {
-                    override fun onNothingSelected(parent: AdapterView<*>?) {
-                    }
-
-                    override fun onItemSelected(
-                        parent: AdapterView<*>?,
-                        view: View?,
-                        position: Int,
-                        id: Long
-                    ) {
-                        dispatch(EditChallengeAction.ChangeDifficulty(position))
-                    }
-
+            object : AdapterView.OnItemSelectedListener {
+                override fun onNothingSelected(parent: AdapterView<*>?) {
                 }
+
+                override fun onItemSelected(
+                    parent: AdapterView<*>?,
+                    view: View?,
+                    position: Int,
+                    id: Long
+                ) {
+                    dispatch(EditChallengeAction.ChangeDifficulty(position))
+                }
+
+            }
 
 
         return view
@@ -166,6 +165,8 @@ open class EditChallengeViewController(args: Bundle? = null) :
                 dispatch(EditChallengeAction.Save)
                 router.popCurrentController()
             }
+            else -> {
+            }
         }
     }
 
@@ -199,9 +200,13 @@ open class EditChallengeViewController(args: Bundle? = null) :
     private fun renderNote(view: View, state: EditChallengeViewState) {
         view.challengeNote.text = state.noteText
         view.challengeNote.onDebounceClick {
-            NoteDialogViewController(state.note, { note ->
-                dispatch(EditChallengeAction.ChangeNote(note))
-            }).show(router)
+            navigate()
+                .toNotePicker(
+                    state.note,
+                    { note ->
+                        dispatch(EditChallengeAction.ChangeNote(note))
+                    }
+                )
         }
     }
 
@@ -211,12 +216,12 @@ open class EditChallengeViewController(args: Bundle? = null) :
     ) {
         colorLayout(view, state)
         view.challengeColor.onDebounceClick {
-            ColorPickerDialogController({
-                dispatch(EditChallengeAction.ChangeColor(it))
-            }, state.color).show(
-                router,
-                "pick_color_tag"
-            )
+            navigate()
+                .toColorPicker(
+                    {
+                        dispatch(EditChallengeAction.ChangeColor(it))
+                    }, state.color
+                )
         }
     }
 
@@ -226,12 +231,10 @@ open class EditChallengeViewController(args: Bundle? = null) :
     ) {
         view.challengeSelectedIcon.setImageDrawable(state.iconDrawable)
         view.challengeIcon.onDebounceClick {
-            IconPickerDialogController({ icon ->
-                dispatch(EditChallengeAction.ChangeIcon(icon))
-            }, state.icon).show(
-                router,
-                "pick_icon_tag"
-            )
+            navigate()
+                .toIconPicker({ icon ->
+                    dispatch(EditChallengeAction.ChangeIcon(icon))
+                }, state.icon)
         }
     }
 
@@ -243,19 +246,19 @@ open class EditChallengeViewController(args: Bundle? = null) :
         styleSelectedDifficulty(view)
 
         view.challengeDifficulty.onItemSelectedListener =
-                object : AdapterView.OnItemSelectedListener {
-                    override fun onNothingSelected(parent: AdapterView<*>?) {
-                    }
-
-                    override fun onItemSelected(
-                        parent: AdapterView<*>?,
-                        v: View?,
-                        position: Int,
-                        id: Long
-                    ) {
-                        styleSelectedDifficulty(view)
-                    }
+            object : AdapterView.OnItemSelectedListener {
+                override fun onNothingSelected(parent: AdapterView<*>?) {
                 }
+
+                override fun onItemSelected(
+                    parent: AdapterView<*>?,
+                    v: View?,
+                    position: Int,
+                    id: Long
+                ) {
+                    styleSelectedDifficulty(view)
+                }
+            }
     }
 
     private fun styleSelectedDifficulty(view: View) {
@@ -309,14 +312,14 @@ open class EditChallengeViewController(args: Bundle? = null) :
         }
 
         view.challengeMotivations.onDebounceClick {
-            ChallengeMotivationsDialogController(
-                state.motivation1,
-                state.motivation2,
-                state.motivation3,
-                { m1, m2, m3 ->
+            navigate().toChallengeMotivations(
+                motivation1 = state.motivation1,
+                motivation2 = state.motivation2,
+                motivation3 = state.motivation3,
+                listener = { m1, m2, m3 ->
                     dispatch(EditChallengeAction.ChangeMotivations(m1, m2, m3))
                 }
-            ).show(router, "motivations")
+            )
         }
     }
 

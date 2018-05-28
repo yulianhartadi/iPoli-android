@@ -31,36 +31,50 @@ object TagListReducer : BaseViewStateReducer<TagListViewState>() {
             val dataState = state.dataState
 
             if (dataState.tags.isEmpty()) {
-                TagListViewState.Empty
+                subState.copy(
+                    type = TagListViewState.StateType.EMPTY
+                )
             } else {
-                TagListViewState.Changed(dataState.tags)
+                subState.copy(
+                    type = TagListViewState.StateType.DATA_CHANGED,
+                    tags = dataState.tags
+                )
             }
         }
 
         is DataLoadedAction.TagsChanged -> {
             if (action.tags.isEmpty()) {
-                TagListViewState.Empty
+                subState.copy(
+                    type = TagListViewState.StateType.EMPTY
+                )
             } else {
-                TagListViewState.Changed(action.tags)
+                subState.copy(
+                    type = TagListViewState.StateType.DATA_CHANGED,
+                    tags = action.tags
+                )
             }
         }
 
         TagListAction.AddTag ->
-            TagListViewState.ShowAdd
+            subState.copy(
+                type = TagListViewState.StateType.SHOW_ADD
+            )
 
         else ->
             subState
     }
 
-    override fun defaultState() = TagListViewState.Loading
+    override fun defaultState() =
+        TagListViewState(
+            type = TagListViewState.StateType.LOADING,
+            tags = emptyList()
+        )
 
     override val stateKey = key<TagListViewState>()
 
 }
 
-sealed class TagListViewState : BaseViewState() {
-    object Loading : TagListViewState()
-    data class Changed(val tags: List<Tag>) : TagListViewState()
-    object Empty : TagListViewState()
-    object ShowAdd : TagListViewState()
+data class TagListViewState(val type: StateType, val tags: List<Tag>) : BaseViewState() {
+
+    enum class StateType { LOADING, DATA_CHANGED, EMPTY, SHOW_ADD }
 }

@@ -102,24 +102,24 @@ class ThemeStoreViewController(args: Bundle? = null) :
     }
 
     override fun render(state: ThemeStoreViewState, view: View) {
-        when (state) {
+        when (state.type) {
 
-            is ThemeStoreViewState.Changed -> {
+            ThemeStoreViewState.StateType.DATA_CHANGED -> {
                 val adapter = view.themePager.adapter as ThemePagerAdapter
                 adapter.updateAll(state.viewModels)
                 val vm = adapter.itemAt(view.themePager.currentItem)
                 colorLayout(vm)
             }
 
-            ThemeStoreViewState.ThemeBought ->
+            ThemeStoreViewState.StateType.THEME_BOUGHT ->
                 showLongToast(R.string.theme_bought)
 
-            ThemeStoreViewState.ThemeTooExpensive -> {
-                CurrencyConverterDialogController().show(router, "currency-converter")
+            ThemeStoreViewState.StateType.THEME_TOO_EXPENSIVE -> {
+                navigate().toCurrencyConverted()
                 showShortToast(R.string.theme_too_expensive)
             }
 
-            is ThemeStoreViewState.ThemeChanged -> {
+            ThemeStoreViewState.StateType.THEME_CHANGED -> {
                 val pm = PreferenceManager.getDefaultSharedPreferences(activity!!)
                 pm.registerOnSharedPreferenceChangeListener { _, key ->
                     if (key == Constants.KEY_THEME) {
@@ -127,6 +127,9 @@ class ThemeStoreViewController(args: Bundle? = null) :
                     }
                 }
                 pm.edit().putString(Constants.KEY_THEME, state.theme.name).apply()
+            }
+
+            else -> {
             }
         }
     }
@@ -183,13 +186,13 @@ class ThemeStoreViewController(args: Bundle? = null) :
 
             view.themeCalendar.timeLine.setBackgroundColor(item.accentColor)
             view.themeCalendar.timeLineIndicator.backgroundTintList =
-                    ColorStateList.valueOf(item.accentColor)
+                ColorStateList.valueOf(item.accentColor)
 
             view.themeCalendar.scrollToNow()
         }
     }
 
-    private val ThemeStoreViewState.Changed.viewModels
+    private val ThemeStoreViewState.viewModels
         get() = themes.map {
 
             val at = AndroidTheme.valueOf(it.theme.name)

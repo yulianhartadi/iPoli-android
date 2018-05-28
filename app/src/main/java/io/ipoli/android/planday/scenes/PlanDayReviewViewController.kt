@@ -32,7 +32,6 @@ import io.ipoli.android.planday.PlanDayAction
 import io.ipoli.android.planday.PlanDayReducer
 import io.ipoli.android.planday.PlanDayViewState
 import io.ipoli.android.planday.PlanDayViewState.StateType.REVIEW_DATA_LOADED
-import io.ipoli.android.planday.RescheduleDialogController
 import io.ipoli.android.planday.usecase.CalculateAwesomenessScoreUseCase.AwesomenessScore.*
 import io.ipoli.android.quest.CompletedQuestViewController
 import io.ipoli.android.quest.schedule.addquest.AddQuestAnimationHelper
@@ -68,7 +67,7 @@ class PlanDayReviewViewController(args: Bundle? = null) :
 
 
         view.reviewQuests.layoutManager =
-                LinearLayoutManager(container.context, LinearLayoutManager.VERTICAL, false)
+            LinearLayoutManager(container.context, LinearLayoutManager.VERTICAL, false)
         view.reviewQuests.adapter = QuestAdapter()
 
         initSwipe(view)
@@ -124,15 +123,16 @@ class PlanDayReviewViewController(args: Bundle? = null) :
 
                     viewHolder.itemViewType == ViewType.QUEST.value && direction == ItemTouchHelper.START -> {
                         val questId = questId(viewHolder)
-                        RescheduleDialogController(
-                            includeToday = true,
-                            listener = { date ->
-                                dispatch(PlanDayAction.RescheduleQuest(questId, date))
-                            },
-                            cancelListener = {
-                                view.reviewQuests.adapter.notifyItemChanged(viewHolder.adapterPosition)
-                            }
-                        ).show(router)
+                        navigate()
+                            .toReschedule(
+                                includeToday = true,
+                                listener = { date ->
+                                    dispatch(PlanDayAction.RescheduleQuest(questId, date))
+                                },
+                                cancelListener = {
+                                    view.reviewQuests.adapter.notifyItemChanged(viewHolder.adapterPosition)
+                                }
+                            )
                     }
 
                 }
@@ -288,15 +288,15 @@ class PlanDayReviewViewController(args: Bundle? = null) :
                     }
 
                     view.questIcon.backgroundTintList =
-                            ColorStateList.valueOf(colorRes(vm.color))
+                        ColorStateList.valueOf(colorRes(vm.color))
                     view.questIcon.setImageDrawable(listItemIcon(vm.icon))
 
                     view.questStartTime.text = vm.startTime
 
                     view.questRepeatIndicator.visibility =
-                            if (vm.isRepeating) View.VISIBLE else View.GONE
+                        if (vm.isRepeating) View.VISIBLE else View.GONE
                     view.questChallengeIndicator.visibility =
-                            if (vm.isFromChallenge) View.VISIBLE else View.GONE
+                        if (vm.isFromChallenge) View.VISIBLE else View.GONE
                 }
             )
 
@@ -325,15 +325,15 @@ class PlanDayReviewViewController(args: Bundle? = null) :
                     }
 
                     view.questIcon.backgroundTintList =
-                            ColorStateList.valueOf(colorRes(vm.color))
+                        ColorStateList.valueOf(colorRes(vm.color))
                     view.questIcon.setImageDrawable(listItemIcon(vm.icon))
 
                     view.questStartTime.text = vm.startTime
 
                     view.questRepeatIndicator.visibility =
-                            if (vm.isRepeating) View.VISIBLE else View.GONE
+                        if (vm.isRepeating) View.VISIBLE else View.GONE
                     view.questChallengeIndicator.visibility =
-                            if (vm.isFromChallenge) View.VISIBLE else View.GONE
+                        if (vm.isFromChallenge) View.VISIBLE else View.GONE
 
                     view.setOnClickListener {
                         val handler = FadeChangeHandler()
@@ -386,10 +386,14 @@ class PlanDayReviewViewController(args: Bundle? = null) :
                             AndroidColor.valueOf(it.color.name).color500
                         )
                     },
-                    startTime = QuestStartTimeFormatter.formatWithDuration(it, activity!!, shouldUse24HourFormat),
+                    startTime = QuestStartTimeFormatter.formatWithDuration(
+                        it,
+                        activity!!,
+                        shouldUse24HourFormat
+                    ),
                     color = it.color.androidColor.color500,
                     icon = it.icon?.androidIcon?.icon
-                            ?: Ionicons.Icon.ion_android_clipboard,
+                        ?: Ionicons.Icon.ion_android_clipboard,
                     isRepeating = it.isFromRepeatingQuest,
                     isFromChallenge = it.isFromChallenge
                 )
@@ -406,10 +410,14 @@ class PlanDayReviewViewController(args: Bundle? = null) :
                             AndroidColor.valueOf(it.color.name).color500
                         )
                     },
-                    startTime = QuestStartTimeFormatter.formatWithDuration(it, activity!!, shouldUse24HourFormat),
+                    startTime = QuestStartTimeFormatter.formatWithDuration(
+                        it,
+                        activity!!,
+                        shouldUse24HourFormat
+                    ),
                     color = R.color.md_grey_500,
                     icon = it.icon?.androidIcon?.icon
-                            ?: Ionicons.Icon.ion_android_clipboard,
+                        ?: Ionicons.Icon.ion_android_clipboard,
                     isRepeating = it.isFromRepeatingQuest,
                     isFromChallenge = it.isFromChallenge
                 )

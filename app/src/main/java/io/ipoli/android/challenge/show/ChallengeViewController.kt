@@ -28,7 +28,6 @@ import com.mikepenz.material_design_iconic_typeface_library.MaterialDesignIconic
 import io.ipoli.android.MainActivity
 import io.ipoli.android.R
 import io.ipoli.android.challenge.QuestPickerViewController
-import io.ipoli.android.challenge.edit.EditChallengeViewController
 import io.ipoli.android.common.ViewUtils
 import io.ipoli.android.common.redux.android.ReduxViewController
 import io.ipoli.android.common.text.DateFormatter
@@ -200,12 +199,7 @@ class ChallengeViewController(args: Bundle? = null) :
         }
 
     private fun showEdit() {
-        val changeHandler = FadeChangeHandler()
-        rootRouter.pushController(
-            RouterTransaction.with(EditChallengeViewController(challengeId))
-                .pushChangeHandler(changeHandler)
-                .popChangeHandler(changeHandler)
-        )
+        navigateFromRoot().toEditChallenge(challengeId)
     }
 
     override fun onAttach(view: View) {
@@ -229,8 +223,8 @@ class ChallengeViewController(args: Bundle? = null) :
     }
 
     override fun render(state: ChallengeViewState, view: View) {
-        when (state) {
-            is ChallengeViewState.Changed -> {
+        when (state.type) {
+            ChallengeViewState.StateType.DATA_CHANGED -> {
                 showComplete = state.canComplete
                 showEdit = state.canEdit
                 activity!!.invalidateOptionsMenu()
@@ -275,7 +269,7 @@ class ChallengeViewController(args: Bundle? = null) :
                 renderNote(state, view)
             }
 
-            ChallengeViewState.Removed ->
+            ChallengeViewState.StateType.REMOVED ->
                 router.handleBack()
 
             else -> {
@@ -304,7 +298,7 @@ class ChallengeViewController(args: Bundle? = null) :
     }
 
     private fun renderNote(
-        state: ChallengeViewState.Changed,
+        state: ChallengeViewState,
         view: View
     ) {
         if (state.note != null) {
@@ -313,10 +307,10 @@ class ChallengeViewController(args: Bundle? = null) :
             view.note.setText(R.string.tap_to_add_note)
             view.note.setTextColor(colorRes(R.color.md_dark_text_54))
         }
-        view.note.setOnClickListener { showEdit() }
+        view.note.onDebounceClick { showEdit() }
     }
 
-    private fun renderChart(state: ChallengeViewState.Changed, view: View) {
+    private fun renderChart(state: ChallengeViewState, view: View) {
         view.progressChart.xAxis.setLabelCount(state.xAxisLabelCount, true)
 
         view.progressChart.xAxis.valueFormatter = XAxisValueFormatter(state.xAxisLabels)
@@ -328,7 +322,7 @@ class ChallengeViewController(args: Bundle? = null) :
         view.progressChart.animateX(1400, Easing.EasingOption.EaseInOutQuart)
     }
 
-    private fun renderMotivations(state: ChallengeViewState.Changed, view: View) {
+    private fun renderMotivations(state: ChallengeViewState, view: View) {
         val motivationsViews = listOf(view.motivation1, view.motivation2, view.motivation3)
         motivationsViews.forEach { it.gone() }
         state.motivations.forEachIndexed { index, text ->
@@ -338,7 +332,7 @@ class ChallengeViewController(args: Bundle? = null) :
         }
     }
 
-    private fun renderQuests(state: ChallengeViewState.Changed, view: View) {
+    private fun renderQuests(state: ChallengeViewState, view: View) {
         (view.questList.adapter as QuestAdapter).updateAll(state.questViewModels)
     }
 
@@ -363,7 +357,7 @@ class ChallengeViewController(args: Bundle? = null) :
     }
 
     private fun colorLayout(
-        state: ChallengeViewState.Changed,
+        state: ChallengeViewState,
         view: View
     ) {
         view.appbar.setBackgroundColor(colorRes(state.color500))
@@ -425,36 +419,35 @@ class ChallengeViewController(args: Bundle? = null) :
                     false
                 )
             )
-
     }
 
-    private val ChallengeViewState.Changed.xAxisLabels
+    private val ChallengeViewState.xAxisLabels
         get() = chartData.keys.map {
             DateFormatter.formatWithoutYear(activity!!, it)
         }
 
-    private val ChallengeViewState.Changed.chartEntries
+    private val ChallengeViewState.chartEntries
         get() = chartData.values.mapIndexed { i, value ->
             Entry(i.toFloat(), value)
         }
 
-    private val ChallengeViewState.Changed.color500
+    private val ChallengeViewState.color500
         get() = color.androidColor.color500
 
-    private val ChallengeViewState.Changed.color700
+    private val ChallengeViewState.color700
         get() = color.androidColor.color700
 
-    private val ChallengeViewState.Changed.progressText
+    private val ChallengeViewState.progressText
         get() = "$completedCount of $totalCount ($progressPercent%) done"
 
-    private val ChallengeViewState.Changed.endText
+    private val ChallengeViewState.endText
         get() = DateFormatter.formatWithoutYear(activity!!, endDate)
 
-    private val ChallengeViewState.Changed.nextText
+    private val ChallengeViewState.nextText
         get() = nextDate?.let { DateFormatter.formatWithoutYear(activity!!, it) }
             ?: stringRes(R.string.unscheduled)
 
-    private val ChallengeViewState.Changed.questViewModels
+    private val ChallengeViewState.questViewModels
         get() = quests.map {
             when (it) {
                 is Quest -> QuestViewModel(

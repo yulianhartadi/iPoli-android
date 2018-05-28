@@ -38,7 +38,7 @@ class FirestoreTagRepository(
     override val collectionReference: CollectionReference
         get() = database.collection("players").document(playerId).collection("tags")
 
-    override suspend fun listenForAll(channel: Channel<List<Tag>>) =
+    override fun listenForAll(channel: Channel<List<Tag>>) =
         collectionReference
             .orderBy("createdAt", Query.Direction.ASCENDING)
             .listenForChanges(channel)

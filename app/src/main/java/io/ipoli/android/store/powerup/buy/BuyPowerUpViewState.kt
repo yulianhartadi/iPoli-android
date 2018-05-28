@@ -28,36 +28,46 @@ object BuyPowerUpReducer : BaseViewStateReducer<BuyPowerUpViewState>() {
         when (action) {
             is BuyPowerUpAction.Load ->
                 state.dataState.player?.let {
-                    BuyPowerUpViewState.CoinsChanged(it.coins)
-                } ?: BuyPowerUpViewState.Loading
+                    subState.copy(
+                        type = BuyPowerUpViewState.StateType.COINS_CHANGED,
+                        coins = it.coins
+                    )
+                } ?: subState.copy(type = BuyPowerUpViewState.StateType.LOADING)
 
             is DataLoadedAction.PlayerChanged ->
-                BuyPowerUpViewState.CoinsChanged(action.player.coins)
+                subState.copy(
+                    type = BuyPowerUpViewState.StateType.COINS_CHANGED,
+                    coins = action.player.coins
+                )
 
             is BuyPowerUpCompletedAction ->
                 when (action.result) {
                     is BuyPowerUpUseCase.Result.Bought ->
-                        BuyPowerUpViewState.Bought(action.result.powerUp)
+                        subState.copy(
+                            type = BuyPowerUpViewState.StateType.POWER_UP_BOUGHT,
+                            powerUp = action.result.powerUp
+                        )
 
                     is BuyPowerUpUseCase.Result.TooExpensive ->
-                        BuyPowerUpViewState.TooExpensive
+                        subState.copy(
+                            type = BuyPowerUpViewState.StateType.POWER_UP_TOO_EXPENSIVE
+                        )
                 }
 
             else -> subState
         }
 
-    override fun defaultState() = BuyPowerUpViewState.Loading
+    override fun defaultState() = BuyPowerUpViewState(
+        type = BuyPowerUpViewState.StateType.LOADING,
+        powerUp = PowerUp.Type.CALENDAR_SYNC,
+        coins = -1
+    )
 
     override val stateKey get() = key<BuyPowerUpViewState>()
 }
 
-sealed class BuyPowerUpViewState : BaseViewState() {
+data class BuyPowerUpViewState(val type: StateType, val powerUp: PowerUp.Type, val coins: Int) :
+    BaseViewState() {
 
-    object Loading : BuyPowerUpViewState()
-
-    data class Bought(val powerUp: PowerUp.Type) : BuyPowerUpViewState()
-
-    object TooExpensive : BuyPowerUpViewState()
-
-    data class CoinsChanged(val lifeCoins: Int) : BuyPowerUpViewState()
+    enum class StateType { LOADING, POWER_UP_BOUGHT, POWER_UP_TOO_EXPENSIVE, COINS_CHANGED }
 }

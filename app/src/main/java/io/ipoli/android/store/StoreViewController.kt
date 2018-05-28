@@ -11,19 +11,12 @@ import android.view.LayoutInflater
 import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
-import com.bluelinelabs.conductor.Controller
 import com.bluelinelabs.conductor.RestoreViewOnCreateController
 import com.bluelinelabs.conductor.RouterTransaction
 import com.bluelinelabs.conductor.changehandler.FadeChangeHandler
 import com.bluelinelabs.conductor.changehandler.VerticalChangeHandler
 import io.ipoli.android.R
 import io.ipoli.android.common.view.*
-import io.ipoli.android.pet.store.PetStoreViewController
-import io.ipoli.android.store.avatar.AvatarStoreViewController
-import io.ipoli.android.store.gem.GemStoreViewController
-import io.ipoli.android.store.membership.MembershipViewController
-import io.ipoli.android.store.powerup.PowerUpStoreViewController
-import io.ipoli.android.store.theme.ThemeStoreViewController
 import kotlinx.android.synthetic.main.item_store.view.*
 import kotlinx.android.synthetic.main.view_default_toolbar.view.*
 
@@ -68,25 +61,14 @@ class StoreViewController(args: Bundle? = null) : RestoreViewOnCreateController(
 
     private fun open(item: StoreItem): () -> Unit {
         when (item) {
-            StoreItem.MEMBERSHIP -> return { showController(MembershipViewController()) }
-            StoreItem.POWER_UPS -> return { showController(PowerUpStoreViewController()) }
-            StoreItem.AVATARS -> return { showController(AvatarStoreViewController()) }
-            StoreItem.GEMS -> return { showController(GemStoreViewController()) }
-            StoreItem.PETS -> return { showController(PetStoreViewController()) }
-            StoreItem.THEMES -> return { showController(ThemeStoreViewController()) }
-            StoreItem.COLORS -> return {
-                ColorPickerDialogController({
-                }).show(
-                    router,
-                    "pick_color_tag"
-                )
-            }
-            StoreItem.ICONS -> return {
-                IconPickerDialogController().show(
-                    router,
-                    "pick_icon_tag"
-                )
-            }
+            StoreItem.MEMBERSHIP -> return { navigate().toMembership(fadeChangeHandler) }
+            StoreItem.POWER_UPS -> return { navigate().toPowerUpStore(fadeChangeHandler) }
+            StoreItem.AVATARS -> return { navigate().toAvatarStore(fadeChangeHandler) }
+            StoreItem.GEMS -> return { navigate().toGemStore(fadeChangeHandler) }
+            StoreItem.PETS -> return { navigate().toPetStore(fadeChangeHandler) }
+            StoreItem.THEMES -> return { navigate().toThemeStore(fadeChangeHandler) }
+            StoreItem.COLORS -> return { navigate().toColorPicker() }
+            StoreItem.ICONS -> return { navigate().toIconPicker() }
         }
     }
 
@@ -143,14 +125,6 @@ class StoreViewController(args: Bundle? = null) : RestoreViewOnCreateController(
         d.cornerRadii = floatArrayOf(0f, 0f, 0f, 0f, xRadius, yRadius, xRadius, yRadius)
         d.color = ColorStateList.valueOf(color)
         return d
-    }
-
-    private fun showController(controller: Controller) {
-        rootRouter.pushController(
-            RouterTransaction.with(controller)
-                .pushChangeHandler(fadeChangeHandler)
-                .popChangeHandler(fadeChangeHandler)
-        )
     }
 
     enum class StoreItem(

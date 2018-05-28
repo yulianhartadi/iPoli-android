@@ -13,6 +13,7 @@ import android.view.View
 import android.widget.TextView
 import com.bluelinelabs.conductor.Controller
 import com.bluelinelabs.conductor.RestoreViewOnCreateController
+import com.bluelinelabs.conductor.Router
 import com.github.florent37.tutoshowcase.TutoShowcase
 import com.mikepenz.iconics.IconicsDrawable
 import com.mikepenz.iconics.typeface.IIcon
@@ -22,6 +23,7 @@ import io.ipoli.android.common.*
 import io.ipoli.android.common.datetime.Time
 import io.ipoli.android.common.di.Module
 import io.ipoli.android.common.mvi.ViewState
+import io.ipoli.android.common.navigation.Navigator
 import io.ipoli.android.common.redux.Action
 import io.ipoli.android.common.redux.StateStore
 import io.ipoli.android.common.redux.ViewStateReducer
@@ -174,6 +176,8 @@ abstract class BaseViewController<A : Action, VS : ViewState> protected construc
             dispatch(block())
         }
     }
+
+    protected fun navigateFromRoot() = Navigator(rootRouter)
 
     protected fun requestPermissions(
         permissionsToRationale: Map<String, String>,

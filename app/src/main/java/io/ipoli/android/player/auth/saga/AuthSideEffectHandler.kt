@@ -233,13 +233,16 @@ object AuthSideEffectHandler : AppSideEffectHandler() {
             else -> throw IllegalStateException("Unknown Auth provider")
         }
 
+        val petAvatar = state.petAvatar ?: Constants.DEFAULT_PET_AVATAR
+        val petName =
+            if (state.petName.isNullOrBlank()) Constants.DEFAULT_PET_NAME else state.petName!!
+
         val player = Player(
             authProvider = auth,
             username = null,
             displayName = if (user.displayName != null) user.displayName!! else "",
             schemaVersion = Constants.SCHEMA_VERSION,
-            pet = state.petAvatar?.let { Pet(state.petName!!, state.petAvatar) }
-                    ?: Pet(Constants.DEFAULT_PET_NAME, Constants.DEFAULT_PET_AVATAR),
+            pet = Pet(petName, petAvatar),
             avatar = state.playerAvatar
         )
 

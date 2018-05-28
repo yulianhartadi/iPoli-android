@@ -15,6 +15,7 @@ import com.mikepenz.iconics.IconicsDrawable
 import io.ipoli.android.R
 import io.ipoli.android.common.datetime.Duration
 import io.ipoli.android.common.datetime.Minute
+import io.ipoli.android.common.navigation.Navigator
 import io.ipoli.android.common.redux.android.ReduxViewController
 import io.ipoli.android.common.text.DateFormatter
 import io.ipoli.android.common.text.DurationFormatter
@@ -50,7 +51,7 @@ class CompletedQuestViewController :
         savedViewState: Bundle?
     ): View {
 
-        rootRouter.getControllerWithTag(QuestViewController.TAG)?.let {
+        rootRouter.getControllerWithTag(Navigator.tag<QuestViewController>())?.let {
             rootRouter.popController(it)
         }
 
@@ -103,38 +104,41 @@ class CompletedQuestViewController :
                 view.questDate.text = DateFormatter.format(view.context, state.completeAt)
                 view.questTime.text = "${state.startedAt} - ${state.finishedAt}"
                 view.questProgressDuration.text =
-                        DurationFormatter.formatShort(view.context, state.totalDuration!!.intValue)
+                    DurationFormatter.formatShort(view.context, state.totalDuration!!.intValue)
 
                 renderTimer(state.timer!!, view, state)
                 renderBounty(view, state)
 
                 view.questDurationProgress.secondaryProgressTintList =
-                        ColorStateList.valueOf(colorRes(color.color100))
+                    ColorStateList.valueOf(colorRes(color.color100))
 
                 view.questDurationProgress.progressTintList =
-                        ColorStateList.valueOf(colorRes(color.color300))
+                    ColorStateList.valueOf(colorRes(color.color300))
 
                 view.questDurationProgress.backgroundTintList =
-                        ColorStateList.valueOf(colorRes(color.color500))
+                    ColorStateList.valueOf(colorRes(color.color500))
 
                 view.level.text = "Lvl ${state.playerLevel!!}"
 
                 view.levelProgress.backgroundTintList =
-                        ColorStateList.valueOf(attrData(R.attr.colorAccent))
+                    ColorStateList.valueOf(attrData(R.attr.colorAccent))
 
                 view.levelProgress.progressTintList =
-                        ColorStateList.valueOf(
-                            lighten(attrData(R.attr.colorAccent), 0.6f)
-                        )
+                    ColorStateList.valueOf(
+                        lighten(attrData(R.attr.colorAccent), 0.6f)
+                    )
 
                 view.levelProgress.secondaryProgressTintList =
-                        ColorStateList.valueOf(
-                            lighten(attrData(R.attr.colorAccent), 0.3f)
-                        )
+                    ColorStateList.valueOf(
+                        lighten(attrData(R.attr.colorAccent), 0.3f)
+                    )
 
                 view.levelProgress.max = state.playerLevelMaxProgress!!
                 view.levelProgress.secondaryProgress = state.playerLevelMaxProgress
                 playProgressAnimation(view.levelProgress, 0, state.playerLevelProgress!!)
+            }
+
+            else -> {
             }
         }
     }
@@ -188,7 +192,7 @@ class CompletedQuestViewController :
                 view.pomodoroGroup.showViews()
                 view.timerGroup.showViews()
                 view.pomodoro.text =
-                        "${timer.completedPomodoros}/${timer.totalPomodoros} pomodoros"
+                    "${timer.completedPomodoros}/${timer.totalPomodoros} pomodoros"
 
                 view.questWorkTime.text = createDurationLabel(
                     view,
@@ -233,10 +237,10 @@ class CompletedQuestViewController :
 
                 if (isOverdue) {
                     view.questDurationProgress.secondaryProgressTintList =
-                            ColorStateList.valueOf(colorRes(state.color!!.color300))
+                        ColorStateList.valueOf(colorRes(state.color!!.color300))
 
                     view.questDurationProgress.progressTintList =
-                            ColorStateList.valueOf(colorRes(state.color.color700))
+                        ColorStateList.valueOf(colorRes(state.color.color700))
 
                     playProgressAnimation(
                         view.questDurationProgress,

@@ -28,7 +28,7 @@ class ChallengePickerDialogController(args: Bundle? = null) :
 
     private var challenge: Challenge? = null
 
-    private lateinit var listener: (Challenge?) -> Unit
+    private var listener: (Challenge?) -> Unit = {}
 
     constructor(challenge: Challenge? = null, listener: (Challenge?) -> Unit) : this() {
         this.challenge = challenge

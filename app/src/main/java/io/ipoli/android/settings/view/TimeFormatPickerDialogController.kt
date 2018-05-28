@@ -28,7 +28,7 @@ class TimeFormatPickerDialogController(args: Bundle? = null) :
 
     private lateinit var selectedTimeFormat: Preferences.TimeFormat
 
-    private lateinit var listener: (Preferences.TimeFormat) -> Unit
+    private var listener: (Preferences.TimeFormat) -> Unit = {}
 
     constructor(
         selectedTimeFormat: Preferences.TimeFormat,

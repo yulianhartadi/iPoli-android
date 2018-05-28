@@ -30,37 +30,46 @@ object CalendarPickerReducer : BaseViewStateReducer<CalendarPickerViewState>() {
     ) =
         when (action) {
             is DataLoadedAction.CalendarsChanged ->
-                CalendarPickerViewState.CalendarsLoaded(
+                subState.copy(
+                    type = CalendarPickerViewState.StateType.CALENDARS_LOADED,
                     petAvatar = state.dataState.player!!.pet.avatar,
                     calendars = action.calendars.filter { it.isVisible }
                 )
+
             is CalendarPickerAction.SelectCalendars -> {
-                val calendars = (subState as CalendarPickerViewState.CalendarsLoaded).calendars
+                val calendars = subState.calendars
                 val syncCalendars = action.selectedCalendarPositions.map {
                     Player.Preferences.SyncCalendar(
                         id = calendars[it].id,
                         name = calendars[it].name
                     )
                 }.toSet()
-                CalendarPickerViewState.CalendarsSelected(syncCalendars)
+                subState.copy(
+                    type = CalendarPickerViewState.StateType.CALENDARS_SELECTED,
+                    syncCalendars = syncCalendars
+                )
             }
 
             else ->
                 subState
         }
 
-    override fun defaultState() = CalendarPickerViewState.Loading
+    override fun defaultState() =
+        CalendarPickerViewState(
+            type = CalendarPickerViewState.StateType.LOADING,
+            petAvatar = PetAvatar.BEAR,
+            calendars = emptyList(),
+            syncCalendars = emptySet()
+        )
 }
 
-sealed class CalendarPickerViewState : BaseViewState() {
+data class CalendarPickerViewState(
+    val type: StateType,
+    val petAvatar: PetAvatar,
+    val calendars: List<Calendar>,
+    val syncCalendars: Set<Player.Preferences.SyncCalendar>
+) : BaseViewState() {
 
-    object Loading : CalendarPickerViewState()
-    data class CalendarsLoaded(
-        val petAvatar: PetAvatar,
-        val calendars: List<Calendar>
-    ) : CalendarPickerViewState()
-
-    data class CalendarsSelected(val calendars: Set<Player.Preferences.SyncCalendar>) :
-        CalendarPickerViewState()
+    enum class StateType { LOADING, CALENDARS_LOADED, CALENDARS_SELECTED }
 }
 

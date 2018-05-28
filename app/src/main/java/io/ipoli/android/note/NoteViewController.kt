@@ -123,6 +123,8 @@ class NoteViewController(args: Bundle? = null) :
                 view.noteText.setMarkdown(state.text)
                 view.editNoteText.setText(state.text)
             }
+            else -> {
+            }
         }
     }
 
@@ -195,10 +197,10 @@ class NoteViewController(args: Bundle? = null) :
     }
 }
 
-class NoteDialogViewController(args: Bundle? = null) : BaseFullscreenDialogController(args) {
+class NotePickerDialogController(args: Bundle? = null) : BaseFullscreenDialogController(args) {
 
     private lateinit var note: String
-    private lateinit var resultListener: (String) -> Unit
+    private var resultListener: (String) -> Unit = {}
 
     constructor(
         note: String,

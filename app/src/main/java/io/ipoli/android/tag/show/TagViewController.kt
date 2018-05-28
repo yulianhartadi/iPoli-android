@@ -29,9 +29,6 @@ import io.ipoli.android.common.view.recyclerview.MultiViewRecyclerViewAdapter
 import io.ipoli.android.common.view.recyclerview.RecyclerViewViewModel
 import io.ipoli.android.common.view.recyclerview.SimpleSwipeCallback
 import io.ipoli.android.quest.CompletedQuestViewController
-import io.ipoli.android.quest.show.QuestViewController
-import io.ipoli.android.tag.edit.EditTagViewController
-import io.ipoli.android.tag.show.TagViewState.TagChanged
 import io.ipoli.android.tag.usecase.CreateTagItemsUseCase
 import kotlinx.android.synthetic.main.animation_empty_list.view.*
 import kotlinx.android.synthetic.main.controller_tag.view.*
@@ -47,7 +44,7 @@ class TagViewController(args: Bundle? = null) :
     override val reducer = TagReducer
 
     private lateinit var tagId: String
-    private var isFavourited: Boolean = false
+    private var isFavorite: Boolean = false
 
     private constructor(tagId: String) : this() {
         this.tagId = tagId
@@ -135,7 +132,7 @@ class TagViewController(args: Bundle? = null) :
         val favoriteItem = menu.findItem(R.id.actionFavorite)
         favoriteItem.icon = ContextCompat.getDrawable(
             view!!.context,
-            if (isFavourited) R.drawable.ic_favorite_white_24dp
+            if (isFavorite) R.drawable.ic_favorite_white_24dp
             else R.drawable.ic_favorite_outline_white_24dp
         )
         super.onPrepareOptionsMenu(menu)
@@ -147,18 +144,14 @@ class TagViewController(args: Bundle? = null) :
                 return router.handleBack()
 
             R.id.actionEdit -> {
-                val fadeChangeHandler = FadeChangeHandler()
-                pushWithRootRouter(
-                    RouterTransaction.with(
-                        EditTagViewController(tagId)
-                    )
-                        .pushChangeHandler(fadeChangeHandler)
-                        .popChangeHandler(fadeChangeHandler)
+                navigateFromRoot().toEditTag(
+                    tagId = tagId,
+                    changeHandler = FadeChangeHandler()
                 )
             }
 
             R.id.actionFavorite -> {
-                if (isFavourited) {
+                if (isFavorite) {
                     dispatch(TagAction.Unfavorite(tagId))
                 } else {
                     dispatch(TagAction.Favorite(tagId))
@@ -193,16 +186,16 @@ class TagViewController(args: Bundle? = null) :
     }
 
     override fun render(state: TagViewState, view: View) {
-        when (state) {
-            is TagChanged -> {
+        when (state.type) {
+            TagViewState.StateType.TAG_CHANGED -> {
                 colorLayout(state.color.androidColor, view)
                 renderName(state.name, view)
                 renderIcon(state.iicon, view)
-                isFavourited = state.isFavorite
+                isFavorite = state.isFavorite
                 activity!!.invalidateOptionsMenu()
             }
 
-            is TagViewState.TagItemsChanged -> {
+            TagViewState.StateType.TAG_ITEMS_CHANGED -> {
                 (view.tagQuests.adapter as ItemAdapter).updateAll(state.itemViewModels)
 
 
@@ -234,6 +227,9 @@ class TagViewController(args: Bundle? = null) :
                     animator.start()
 
                 }
+            }
+
+            else -> {
             }
         }
     }
@@ -318,20 +314,18 @@ class TagViewController(args: Bundle? = null) :
                     view.questTagName.gone()
 
                     view.questIcon.backgroundTintList =
-                            ColorStateList.valueOf(colorRes(vm.color))
+                        ColorStateList.valueOf(colorRes(vm.color))
                     view.questIcon.setImageDrawable(listItemIcon(vm.icon))
 
                     view.questStartTime.text = vm.startTime
 
                     view.questRepeatIndicator.visibility =
-                            if (vm.isRepeating) View.VISIBLE else View.GONE
+                        if (vm.isRepeating) View.VISIBLE else View.GONE
                     view.questChallengeIndicator.visibility =
-                            if (vm.isFromChallenge) View.VISIBLE else View.GONE
+                        if (vm.isFromChallenge) View.VISIBLE else View.GONE
 
                     view.onDebounceClick {
-                        rootRouter.pushController(
-                            QuestViewController.routerTransaction(vm.id)
-                        )
+                        navigateFromRoot().toQuest(vm.id)
                     }
                 }
             )
@@ -348,15 +342,15 @@ class TagViewController(args: Bundle? = null) :
                     view.questTagName.gone()
 
                     view.questIcon.backgroundTintList =
-                            ColorStateList.valueOf(colorRes(vm.color))
+                        ColorStateList.valueOf(colorRes(vm.color))
                     view.questIcon.setImageDrawable(listItemIcon(vm.icon))
 
                     view.questStartTime.text = vm.startTime
 
                     view.questRepeatIndicator.visibility =
-                            if (vm.isRepeating) View.VISIBLE else View.GONE
+                        if (vm.isRepeating) View.VISIBLE else View.GONE
                     view.questChallengeIndicator.visibility =
-                            if (vm.isFromChallenge) View.VISIBLE else View.GONE
+                        if (vm.isFromChallenge) View.VISIBLE else View.GONE
 
                     view.onDebounceClick {
                         val handler = FadeChangeHandler()
@@ -372,20 +366,20 @@ class TagViewController(args: Bundle? = null) :
 
     }
 
-    private val TagChanged.iicon: IIcon
+    private val TagViewState.iicon: IIcon
         get() = icon?.androidIcon?.icon ?: MaterialDesignIconic.Icon.gmi_label
 
-    private val TagViewState.TagItemsChanged.questCountText: String
+    private val TagViewState.questCountText: String
         get() = if (questCount == 1) {
             "1 Quest"
         } else {
             "$questCount Quests"
         }
 
-    private val TagViewState.TagItemsChanged.progressText: String
+    private val TagViewState.progressText: String
         get() = stringRes(R.string.percentage_done, progressPercent)
 
-    private val TagViewState.TagItemsChanged.itemViewModels: List<ItemViewModel>
+    private val TagViewState.itemViewModels: List<ItemViewModel>
         get() = items.map {
             when (it) {
                 is CreateTagItemsUseCase.TagItem.QuestItem -> {
@@ -401,10 +395,14 @@ class TagViewController(args: Bundle? = null) :
                         ItemViewModel.CompletedQuestItem(
                             id = q.id,
                             name = q.name,
-                            startTime = QuestStartTimeFormatter.formatWithDuration(q, activity!!, shouldUse24HourFormat),
+                            startTime = QuestStartTimeFormatter.formatWithDuration(
+                                q,
+                                activity!!,
+                                shouldUse24HourFormat
+                            ),
                             color = color,
                             icon = q.icon?.androidIcon?.icon
-                                    ?: Ionicons.Icon.ion_android_clipboard,
+                                ?: Ionicons.Icon.ion_android_clipboard,
                             isRepeating = q.isFromRepeatingQuest,
                             isFromChallenge = q.isFromChallenge
                         )
@@ -413,10 +411,14 @@ class TagViewController(args: Bundle? = null) :
                         ItemViewModel.QuestItem(
                             id = q.id,
                             name = q.name,
-                            startTime = QuestStartTimeFormatter.formatWithDuration(q, activity!!, shouldUse24HourFormat),
+                            startTime = QuestStartTimeFormatter.formatWithDuration(
+                                q,
+                                activity!!,
+                                shouldUse24HourFormat
+                            ),
                             color = color,
                             icon = q.icon?.androidIcon?.icon
-                                    ?: Ionicons.Icon.ion_android_clipboard,
+                                ?: Ionicons.Icon.ion_android_clipboard,
                             isRepeating = q.isFromRepeatingQuest,
                             isFromChallenge = q.isFromChallenge
                         )

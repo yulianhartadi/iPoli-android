@@ -56,13 +56,18 @@ class AddChallengeMotivationViewController(args: Bundle? = null) :
         view.motivation1.setText(state.motivation1)
         view.motivation2.setText(state.motivation2)
         view.motivation3.setText(state.motivation3)
+
         when (state.type) {
+
             VALIDATION_ERROR_EMPTY_MOTIVATION -> {
                 view.motivation1.error = stringRes(R.string.no_motivation_error)
             }
 
             VALIDATION_MOTIVATION_SUCCESSFUL -> {
                 dispatch(EditChallengeAction.ShowNext)
+            }
+
+            else -> {
             }
         }
 

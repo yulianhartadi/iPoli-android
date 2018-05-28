@@ -30,7 +30,6 @@ import io.ipoli.android.common.ViewUtils
 import io.ipoli.android.common.redux.android.ReduxViewController
 import io.ipoli.android.common.view.*
 import io.ipoli.android.pet.PetViewState.StateType.*
-import io.ipoli.android.pet.store.PetStoreViewController
 import io.ipoli.android.player.inventory.InventoryViewController
 import kotlinx.android.synthetic.main.controller_pet.view.*
 import kotlinx.android.synthetic.main.item_pet_food.view.*
@@ -124,12 +123,7 @@ class PetViewController(args: Bundle? = null) :
         }
 
         if (item.itemId == R.id.actionStore) {
-            val handler = FadeChangeHandler()
-            router.pushController(
-                RouterTransaction.with(PetStoreViewController())
-                    .pushChangeHandler(handler)
-                    .popChangeHandler(handler)
-            )
+            navigate().toPetStore(FadeChangeHandler())
             return true
         }
 
@@ -189,7 +183,7 @@ class PetViewController(args: Bundle? = null) :
             }
 
             FOOD_TOO_EXPENSIVE -> {
-                CurrencyConverterDialogController().show(router, "currency-converter")
+                navigate().toCurrencyConverted()
                 Toast.makeText(
                     view.context,
                     stringRes(R.string.food_too_expensive),
@@ -198,14 +192,14 @@ class PetViewController(args: Bundle? = null) :
             }
 
             RENAME_PET ->
-                TextPickerDialogController(
+                navigate().toTextPicker(
                     { text ->
                         dispatch(PetAction.RenamePet(text))
                     },
                     stringRes(R.string.dialog_rename_pet_title),
                     state.petName,
                     hint = stringRes(R.string.dialog_rename_pet_hint)
-                ).show(router, "text-picker-tag")
+                )
 
             PET_RENAMED ->
                 renderPetName(view, state.petName)
@@ -256,12 +250,14 @@ class PetViewController(args: Bundle? = null) :
             }
 
             ITEM_TOO_EXPENSIVE -> {
-                CurrencyConverterDialogController().show(router, "currency-converter")
+                navigate().toCurrencyConverted()
                 Toast.makeText(
                     view.context,
                     stringRes(R.string.pet_item_too_expensive),
                     Toast.LENGTH_SHORT
                 ).show()
+            }
+            else -> {
             }
         }
     }

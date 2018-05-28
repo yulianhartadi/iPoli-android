@@ -108,14 +108,13 @@ object ChallengeSideEffectHandler : AppSideEffectHandler() {
                 )
 
             is ChallengeAction.RemoveQuestFromChallenge -> {
-                val s = state.stateFor(ChallengeViewState::class.java) as ChallengeViewState.Changed
+                val s = state.stateFor(ChallengeViewState::class.java)
                 val q = s.quests[action.questIndex]
-                val params = if (q is Quest) {
-                    RemoveQuestFromChallengeUseCase.Params.WithQuestId(q.id)
-                } else if (q is RepeatingQuest) {
-                    RemoveQuestFromChallengeUseCase.Params.WithRepeatingQuestId(q.id)
-                } else {
-                    throw IllegalArgumentException("Unknown quest type ${q}")
+                val params = when (q) {
+                    is Quest -> RemoveQuestFromChallengeUseCase.Params.WithQuestId(q.id)
+                    is RepeatingQuest -> RemoveQuestFromChallengeUseCase.Params.WithRepeatingQuestId(
+                        q.id
+                    )
                 }
 
                 removeQuestFromChallengeUseCase.execute(params)

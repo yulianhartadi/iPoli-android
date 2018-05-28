@@ -27,25 +27,29 @@ object BucketListReducer : BaseViewStateReducer<BucketListViewState>() {
     ) = when (action) {
 
         is BucketListAction.Load ->
-            BucketListViewState.Loading
+            subState.copy(type = BucketListViewState.StateType.LOADING)
 
         is BucketListAction.ItemsChanged ->
             if (action.items.isEmpty()) {
-                BucketListViewState.Empty
+                subState.copy(type = BucketListViewState.StateType.EMPTY)
             } else {
-                BucketListViewState.Changed(action.items)
+                subState.copy(
+                    type = BucketListViewState.StateType.DATA_CHANGED,
+                    items = action.items
+                )
             }
 
         else -> subState
     }
 
-    override fun defaultState() = BucketListViewState.Loading
+    override fun defaultState() =
+        BucketListViewState(type = BucketListViewState.StateType.LOADING, items = emptyList())
 }
 
-sealed class BucketListViewState : BaseViewState() {
-    object Loading : BucketListViewState()
-    data class Changed(val items: List<CreateBucketListItemsUseCase.BucketListItem>) :
-        BucketListViewState()
+data class BucketListViewState(
+    val type: StateType,
+    val items: List<CreateBucketListItemsUseCase.BucketListItem>
+) : BaseViewState() {
 
-    object Empty : BucketListViewState()
+    enum class StateType { LOADING, DATA_CHANGED, EMPTY }
 }

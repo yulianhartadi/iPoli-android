@@ -79,20 +79,21 @@ dependencies {
     implementation "com.android.support:customtabs:$support_version"
     implementation "com.android.support:gridlayout-v7:$support_version"
     implementation 'com.android.support.constraint:constraint-layout:1.1.0'
-    implementation 'com.google.android.gms:play-services-auth:15.0.0'
+    implementation 'com.google.android.gms:play-services-auth:15.0.1'
     implementation 'com.google.android.gms:play-services-awareness:15.0.1'
-    implementation 'com.google.firebase:firebase-analytics:15.0.2'
-    implementation 'com.google.firebase:firebase-auth:15.0.0'
-    implementation 'com.google.firebase:firebase-firestore:16.0.0'
-    implementation 'com.google.firebase:firebase-invites:15.0.1'
-    implementation "com.github.SUPERCILEX.FirebaseUI-Android:firebase-ui-auth:38e2ece9bb"
+    implementation 'com.google.firebase:firebase-core:16.0.0'
+    implementation 'com.google.firebase:firebase-analytics:16.0.0'
+    implementation 'com.google.firebase:firebase-auth:16.0.1'
+    implementation 'com.google.firebase:firebase-firestore:17.0.1'
+    implementation 'com.google.firebase:firebase-invites:16.0.0'
+    implementation "com.github.SUPERCILEX.FirebaseUI-Android:firebase-ui-auth:c280098444"
     implementation 'com.facebook.android:facebook-login:4.33.0'
     implementation 'com.facebook.android:facebook-share:4.33.0'
     implementation 'com.bluelinelabs:conductor:2.1.4'
     implementation 'com.bluelinelabs:conductor-support:2.1.4'
     implementation 'com.jakewharton.timber:timber:4.7.0'
     implementation 'com.jakewharton.threetenabp:threetenabp:1.1.0'
-    implementation('com.crashlytics.sdk.android:crashlytics:2.9.2@aar') {
+    implementation('com.crashlytics.sdk.android:crashlytics:2.9.3@aar') {
         transitive = true
     }
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"

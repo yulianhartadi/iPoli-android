@@ -5,20 +5,17 @@ import android.animation.AnimatorListenerAdapter
 import android.support.transition.TransitionManager
 import android.view.LayoutInflater
 import android.view.View
-import kotlinx.android.synthetic.main.popup_challenge_complete.view.*
 import io.ipoli.android.R
 import io.ipoli.android.challenge.entity.Challenge
-import io.ipoli.android.common.view.ReduxPopup
+import io.ipoli.android.common.view.Popup
 import io.ipoli.android.common.view.visible
+import kotlinx.android.synthetic.main.popup_challenge_complete.view.*
 
 /**
  * Created by Venelin Valkov <venelin@mypoli.fun>
  * on 03/15/2018.
  */
-class CompleteChallengePopup(private val challenge: Challenge) :
-    ReduxPopup<CompleteChallengeAction, CompleteChallengeViewState, CompleteChallengeReducer>() {
-
-    override val reducer get() = CompleteChallengeReducer
+class CompleteChallengePopup(private val challenge: Challenge) : Popup() {
 
     override fun createView(inflater: LayoutInflater): View =
         inflater.inflate(R.layout.popup_challenge_complete, null)
@@ -37,9 +34,5 @@ class CompleteChallengePopup(private val challenge: Challenge) :
         })
         contentView.trophyAnimation.playAnimation()
         contentView.sweet.setOnClickListener { hide() }
-    }
-
-    override fun render(state: CompleteChallengeViewState, view: View) {
-
     }
 }

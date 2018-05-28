@@ -31,21 +31,18 @@ import io.ipoli.android.Constants
 import io.ipoli.android.MainActivity
 import io.ipoli.android.R
 import io.ipoli.android.challenge.list.ChallengeListViewController
-import io.ipoli.android.common.InviteFriendsDialogController
 import io.ipoli.android.common.home.HomeViewState.StateType.*
 import io.ipoli.android.common.redux.android.ReduxViewController
 import io.ipoli.android.common.view.*
 import io.ipoli.android.pet.AndroidPetAvatar
 import io.ipoli.android.pet.AndroidPetMood
 import io.ipoli.android.pet.PetViewController
-import io.ipoli.android.player.auth.AuthViewController
 import io.ipoli.android.player.data.AndroidAvatar
 import io.ipoli.android.quest.bucketlist.BucketListViewController
 import io.ipoli.android.quest.schedule.ScheduleViewController
 import io.ipoli.android.repeatingquest.list.RepeatingQuestListViewController
 import io.ipoli.android.settings.SettingsViewController
 import io.ipoli.android.store.StoreViewController
-import io.ipoli.android.store.avatar.AvatarStoreViewController
 import io.ipoli.android.tag.Tag
 import io.ipoli.android.tag.list.TagListViewController
 import io.ipoli.android.tag.show.TagViewController
@@ -155,26 +152,28 @@ class HomeViewController(args: Bundle? = null) :
     }
 
     private fun showInviteFriends() {
-        InviteFriendsDialogController().show(router)
+        navigate().toInviteFriends()
     }
 
     private fun showFeedback() {
-        FeedbackDialogController(object : FeedbackDialogController.FeedbackListener {
-            override fun onSendFeedback(feedback: String) {
-                if (feedback.isNotEmpty()) {
-                    eventLogger.logEvent(
-                        "feedback",
-                        Bundle().apply { putString("feedback", feedback) }
-                    )
-                    showShortToast(R.string.feedback_response)
-                }
-            }
+        navigate()
+            .toFeedback(
+                object : FeedbackDialogController.FeedbackListener {
+                    override fun onSendFeedback(feedback: String) {
+                        if (feedback.isNotEmpty()) {
+                            eventLogger.logEvent(
+                                "feedback",
+                                Bundle().apply { putString("feedback", feedback) }
+                            )
+                            showShortToast(R.string.feedback_response)
+                        }
+                    }
 
-            override fun onChatWithUs() {
-                eventLogger.logEvent("feedback_chat")
-                openCommunity()
-            }
-        }).show(router, "feedback-dialog")
+                    override fun onChatWithUs() {
+                        eventLogger.logEvent("feedback_chat")
+                        openCommunity()
+                    }
+                })
     }
 
     private fun openCommunity() {
@@ -231,11 +230,11 @@ class HomeViewController(args: Bundle? = null) :
         }
 
     private fun showAuth() {
-        router.pushController(
-            RouterTransaction.with(AuthViewController())
-                .pushChangeHandler(VerticalChangeHandler())
-                .popChangeHandler(VerticalChangeHandler())
-        )
+        navigate()
+            .toAuth(
+                onboardData = null,
+                changeHandler = VerticalChangeHandler()
+            )
     }
 
     private fun showPet() {
@@ -266,6 +265,8 @@ class HomeViewController(args: Bundle? = null) :
 
             UNSCHEDULED_QUESTS_CHANGED ->
                 renderBucketList(state.bucketListQuestCount, view)
+            else -> {
+            }
         }
     }
 
@@ -330,11 +331,7 @@ class HomeViewController(args: Bundle? = null) :
             .into(drawerHeaderView.playerAvatar)
 
         drawerHeaderView.playerAvatar.setOnClickListener {
-            router.pushController(
-                RouterTransaction.with(AvatarStoreViewController())
-                    .pushChangeHandler(VerticalChangeHandler())
-                    .popChangeHandler(VerticalChangeHandler())
-            )
+            navigate().toAvatarStore(VerticalChangeHandler())
         }
 
         Glide.with(drawerHeaderView.context).load(state.petHeadImage)
@@ -437,7 +434,6 @@ class HomeViewController(args: Bundle? = null) :
 
     private fun HomeViewState.tagIcon(tag: Tag): IIcon =
         tag.icon?.androidIcon?.icon ?: MaterialDesignIconic.Icon.gmi_label
-
 
     private fun formatValue(value: Long): String {
         val valString = value.toString()

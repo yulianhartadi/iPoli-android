@@ -128,8 +128,8 @@ class RepeatingQuestViewController(args: Bundle? = null) :
     }
 
     override fun render(state: RepeatingQuestViewState, view: View) {
-        when (state) {
-            is RepeatingQuestViewState.Changed -> {
+        when (state.type) {
+            RepeatingQuestViewState.StateType.REPEATING_QUEST_CHANGED -> {
                 colorLayout(state, view)
                 renderName(state, view)
                 renderTags(state.tags, view)
@@ -139,11 +139,14 @@ class RepeatingQuestViewController(args: Bundle? = null) :
                 renderNote(state, view)
             }
 
-            RepeatingQuestViewState.Removed ->
+            RepeatingQuestViewState.StateType.REMOVED ->
                 router.handleBack()
 
-            is RepeatingQuestViewState.HistoryChanged ->
-                view.historyChart.updateData(state.history)
+            RepeatingQuestViewState.StateType.HISTORY_CHAGED ->
+                view.historyChart.updateData(state.history!!)
+            
+            else -> {
+            }
         }
     }
 
@@ -168,7 +171,7 @@ class RepeatingQuestViewController(args: Bundle? = null) :
     }
 
     private fun renderNote(
-        state: RepeatingQuestViewState.Changed,
+        state: RepeatingQuestViewState,
         view: View
     ) {
         if (state.note != null) {
@@ -180,19 +183,23 @@ class RepeatingQuestViewController(args: Bundle? = null) :
         view.note.setOnClickListener { showEdit() }
     }
 
-    private fun renderSubQuests(state: RepeatingQuestViewState.Changed, view: View) {
-        (view.subQuestList.adapter as SubQuestsAdapter).updateAll(state.subQuestNames.map { SimpleRecyclerViewViewModel(it) })
+    private fun renderSubQuests(state: RepeatingQuestViewState, view: View) {
+        (view.subQuestList.adapter as SubQuestsAdapter).updateAll(state.subQuestNames.map {
+            SimpleRecyclerViewViewModel(
+                it
+            )
+        })
     }
 
     private fun renderSummaryStats(
-        state: RepeatingQuestViewState.Changed,
+        state: RepeatingQuestViewState,
         view: View
     ) {
         view.nextText.text = state.nextScheduledDateText
     }
 
     private fun renderName(
-        state: RepeatingQuestViewState.Changed,
+        state: RepeatingQuestViewState,
         view: View
     ) {
         toolbarTitle = state.name
@@ -200,7 +207,7 @@ class RepeatingQuestViewController(args: Bundle? = null) :
     }
 
     private fun renderProgress(
-        state: RepeatingQuestViewState.Changed,
+        state: RepeatingQuestViewState,
         view: View
     ) {
         val inflater = LayoutInflater.from(view.context)
@@ -228,7 +235,7 @@ class RepeatingQuestViewController(args: Bundle? = null) :
     }
 
     private fun colorLayout(
-        state: RepeatingQuestViewState.Changed,
+        state: RepeatingQuestViewState,
         view: View
     ) {
         view.appbar.setBackgroundColor(colorRes(state.color500))
@@ -253,23 +260,23 @@ class RepeatingQuestViewController(args: Bundle? = null) :
         }
     }
 
-    private val RepeatingQuestViewState.Changed.color500
+    private val RepeatingQuestViewState.color500
         get() = color.androidColor.color500
 
-    private val RepeatingQuestViewState.Changed.color700
+    private val RepeatingQuestViewState.color700
         get() = color.androidColor.color700
 
-    private val RepeatingQuestViewState.Changed.progressViewModels
+    private val RepeatingQuestViewState.progressViewModels
         get() = progress.map {
             when (it) {
-                RepeatingQuestViewState.Changed.ProgressModel.COMPLETE -> {
+                RepeatingQuestViewState.ProgressModel.COMPLETE -> {
                     ProgressViewModel(
                         R.layout.repeating_quest_progress_indicator_empty,
                         attrData(R.attr.colorAccent)
                     )
                 }
 
-                RepeatingQuestViewState.Changed.ProgressModel.INCOMPLETE -> {
+                RepeatingQuestViewState.ProgressModel.INCOMPLETE -> {
                     ProgressViewModel(
                         R.layout.repeating_quest_progress_indicator_empty,
                         colorRes(R.color.md_white)
@@ -278,10 +285,10 @@ class RepeatingQuestViewController(args: Bundle? = null) :
             }
         }
 
-    private val RepeatingQuestViewState.Changed.timeSpentText
+    private val RepeatingQuestViewState.timeSpentText
         get() = Time.of(totalDuration.intValue).toString(shouldUse24HourFormat)
 
-    private val RepeatingQuestViewState.Changed.nextScheduledDateText
+    private val RepeatingQuestViewState.nextScheduledDateText
         get() = when {
             isCompleted -> stringRes(R.string.completed)
             nextScheduledDate != null -> {
@@ -305,13 +312,13 @@ class RepeatingQuestViewController(args: Bundle? = null) :
             )
         }
 
-    private val RepeatingQuestViewState.Changed.frequencyText
+    private val RepeatingQuestViewState.frequencyText
         get() = when (repeat) {
-            RepeatingQuestViewState.Changed.RepeatType.Daily -> {
+            RepeatingQuestViewState.RepeatType.Daily -> {
                 "Every day"
             }
 
-            is RepeatingQuestViewState.Changed.RepeatType.Weekly -> {
+            is RepeatingQuestViewState.RepeatType.Weekly -> {
                 repeat.frequency.let {
                     if (it == 1) {
                         "Once per week"
@@ -321,7 +328,7 @@ class RepeatingQuestViewController(args: Bundle? = null) :
                 }
             }
 
-            is RepeatingQuestViewState.Changed.RepeatType.Monthly -> {
+            is RepeatingQuestViewState.RepeatType.Monthly -> {
                 repeat.frequency.let {
                     if (it == 1) {
                         "Once per month"
@@ -331,7 +338,7 @@ class RepeatingQuestViewController(args: Bundle? = null) :
                 }
             }
 
-            RepeatingQuestViewState.Changed.RepeatType.Yearly -> {
+            RepeatingQuestViewState.RepeatType.Yearly -> {
                 "Once per year"
             }
         }

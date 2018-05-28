@@ -11,7 +11,6 @@ import io.ipoli.android.common.DataLoadedAction
 import io.ipoli.android.common.mvi.BaseViewState
 import io.ipoli.android.common.redux.Action
 import io.ipoli.android.common.redux.android.ReduxViewController
-import io.ipoli.android.common.view.CurrencyConverterDialogController
 import io.ipoli.android.common.view.gone
 import kotlinx.android.synthetic.main.controller_inventory.view.*
 import java.util.*
@@ -21,12 +20,13 @@ import java.util.*
  * on 01/28/2018.
  */
 
-sealed class InventoryViewState : BaseViewState() {
-    object Loading : InventoryViewState()
-    data class Changed(val gems: Int, val coins: Int) : InventoryViewState()
+data class InventoryViewState(val type: StateType, val gems: Int, val coins: Int) :
+    BaseViewState() {
+
+    enum class StateType { LOADING, DATA_CHANGED }
 }
 
-class InventoryReducer(private val someKey: String) : BaseViewStateReducer<InventoryViewState>() {
+class InventoryReducer(someKey: String) : BaseViewStateReducer<InventoryViewState>() {
 
     override val stateKey = key<InventoryViewState>() + someKey
 
@@ -39,19 +39,34 @@ class InventoryReducer(private val someKey: String) : BaseViewStateReducer<Inven
             LoadInventory -> {
                 val p = state.dataState.player
                 p?.let {
-                    InventoryViewState.Changed(it.gems, it.coins)
-                } ?: InventoryViewState.Loading
+                    subState.copy(
+                        type = InventoryViewState.StateType.DATA_CHANGED,
+                        gems = it.gems,
+                        coins = it.coins
+                    )
+                } ?: subState.copy(
+                    type = InventoryViewState.StateType.LOADING
+                )
             }
 
             is DataLoadedAction.PlayerChanged -> {
                 val p = action.player
-                InventoryViewState.Changed(p.gems, p.coins)
+                subState.copy(
+                    type = InventoryViewState.StateType.DATA_CHANGED,
+                    gems = p.gems,
+                    coins = p.coins
+                )
             }
 
             else -> subState
         }
 
-    override fun defaultState() = InventoryViewState.Loading
+    override fun defaultState() =
+        InventoryViewState(
+            type = InventoryViewState.StateType.LOADING,
+            gems = -1,
+            coins = -1
+        )
 }
 
 object LoadInventory : Action
@@ -98,10 +113,7 @@ class InventoryViewController :
 
         if (showCurrencyConverter) {
             view.onDebounceClick {
-                CurrencyConverterDialogController().show(
-                    parentController!!.router,
-                    "currency-converter"
-                )
+                navigateFromRoot().toCurrencyConverted()
             }
         } else {
             view.inventoryGems.background = null
@@ -113,10 +125,13 @@ class InventoryViewController :
     override fun onCreateLoadAction() = LoadInventory
 
     override fun render(state: InventoryViewState, view: View) {
-        when (state) {
-            is InventoryViewState.Changed -> {
+        when (state.type) {
+            InventoryViewState.StateType.DATA_CHANGED -> {
                 view.inventoryGems.text = state.gems.toString()
                 view.inventoryCoins.text = state.coins.toString()
+            }
+
+            else -> {
             }
         }
     }

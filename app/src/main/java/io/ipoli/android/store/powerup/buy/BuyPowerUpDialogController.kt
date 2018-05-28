@@ -31,7 +31,7 @@ class BuyPowerUpDialogController :
 
     private lateinit var powerUp: PowerUp.Type
 
-    private lateinit var listener: (Result) -> Unit
+    private var listener: (Result) -> Unit = {}
 
     override val reducer = BuyPowerUpReducer
 
@@ -107,18 +107,21 @@ class BuyPowerUpDialogController :
 
     override fun render(state: BuyPowerUpViewState, view: View) {
 
-        when (state) {
-            is BuyPowerUpViewState.CoinsChanged ->
-                changeLifeCoins(state.lifeCoins)
+        when (state.type) {
+            BuyPowerUpViewState.StateType.COINS_CHANGED ->
+                changeLifeCoins(state.coins)
 
-            is BuyPowerUpViewState.Bought -> {
+            BuyPowerUpViewState.StateType.POWER_UP_BOUGHT -> {
                 listener(Result.Bought(powerUp))
                 dismiss()
             }
 
-            BuyPowerUpViewState.TooExpensive -> {
+            BuyPowerUpViewState.StateType.POWER_UP_TOO_EXPENSIVE -> {
                 listener(Result.TooExpensive)
                 dismiss()
+            }
+
+            else -> {
             }
         }
     }
