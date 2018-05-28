@@ -104,12 +104,13 @@ class FirstQuestViewController(args: Bundle? = null) :
             view.calendar.setScheduledEventsAdapter(eventsAdapter)
 
             view.calendar.postDelayed({
-                showcaseRect(
+                showcase = showcaseRect(
                     layout = R.layout.view_onboard_complete_quest,
                     view = R.id.calendarQuestContainer,
                     containerView = R.id.completeQuestContainer,
                     onClick = {
                         it.dismiss()
+                        showcase = null
                         onQuestComplete(view)
                     })
             }, 300)
@@ -151,13 +152,14 @@ class FirstQuestViewController(args: Bundle? = null) :
     override fun onCreateLoadAction() = OnboardAction.LoadFirstQuest
 
     private fun onQuestCompleteAnimationEnd(popup: Popup, contentView: View) {
-        val showcase = showcaseRect(
+        showcase = showcaseRect(
             layout = R.layout.view_onboard_bounty,
             view = contentView,
             containerView = R.id.bountyContainer
         )
         contentView.setOnClickListener {
-            showcase.dismiss()
+            showcase?.dismiss()
+            showcase = null
             popup.hide()
             view!!.postDelayed({
                 dispatch(OnboardAction.ShowNext)
@@ -178,15 +180,21 @@ class FirstQuestViewController(args: Bundle? = null) :
     override fun render(state: OnboardViewState, view: View) {
         if (state.type == OnboardViewState.StateType.FIRST_QUEST_DATA_LOADED) {
             petAvatar = AndroidPetAvatar.valueOf(state.pet.name)
-            showcaseCircle(
+            showcase = showcaseCircle(
                 layout = R.layout.view_onboard_calendar,
                 view = R.id.addQuest,
                 containerView = R.id.onboardCalendarContainer,
                 onClick = {
                     it.dismiss()
+                    showcase = null
                     onAddQuest(view)
                 })
         }
+    }
+    override fun onDetach(view: View) {
+        showcase?.dismiss()
+        showcase = null
+        super.onDetach(view)
     }
 
     data class OnboardQuestViewModel(
