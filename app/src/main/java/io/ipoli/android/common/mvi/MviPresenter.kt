@@ -90,7 +90,7 @@ abstract class BaseMviPresenter<in V : ViewStateRenderer<VS>, VS : ViewState, I 
 //        val eventType = "intent_${intent::class.java.name}"
 //        Amplitude.getInstance().logEvent(eventType, data)
 
-        Timber.d("Intent $intent new state $state")
+        Timber.d("Intent $intent odl state $oldState new state $state")
     }
 
     private fun renderInitialState(view: V) {

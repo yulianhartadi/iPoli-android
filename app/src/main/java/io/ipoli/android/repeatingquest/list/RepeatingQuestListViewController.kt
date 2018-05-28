@@ -71,6 +71,7 @@ class RepeatingQuestListViewController(args: Bundle? = null) :
 
     override fun render(state: RepeatingQuestListViewState, view: View) {
         when (state.type) {
+
             CHANGED -> {
                 view.loader.gone()
 
@@ -89,6 +90,9 @@ class RepeatingQuestListViewController(args: Bundle? = null) :
                         view.context
                     )
                 )
+            }
+
+            else -> {
             }
         }
     }

@@ -130,7 +130,7 @@ class AddChallengeNameViewController(args: Bundle? = null) :
                 add.setText("")
             }
             add.threshold = 0
-            add.setOnTouchListener { v, event ->
+            add.setOnTouchListener { _, _ ->
                 add.showDropDown()
                 false
             }

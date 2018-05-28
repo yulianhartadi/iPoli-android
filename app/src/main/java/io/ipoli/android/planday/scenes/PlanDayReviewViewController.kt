@@ -208,6 +208,7 @@ class PlanDayReviewViewController(args: Bundle? = null) :
 
     override fun render(state: PlanDayViewState, view: View) {
         when (state.type) {
+
             REVIEW_DATA_LOADED -> {
                 view.reviewAwesomenessScore.text = state.awesomenessScore!!.name
                 view.loader.gone()
@@ -220,6 +221,9 @@ class PlanDayReviewViewController(args: Bundle? = null) :
                     view.emptyAnimation.pauseAnimation()
                 }
                 renderPet(view, state)
+            }
+
+            else -> {
             }
         }
     }

@@ -210,6 +210,7 @@ class PowerUpStoreViewController(args: Bundle? = null) :
 
     override fun render(state: PowerUpStoreViewState, view: View) {
         when (state.type) {
+
             PowerUpStoreViewState.StateType.DATA_CHANGED -> {
                 val adapter = view.powerUpPager.adapter as PowerUpAdapter
                 adapter.updateAll(state.powerUpViewModels)
@@ -229,6 +230,9 @@ class PowerUpStoreViewController(args: Bundle? = null) :
 
             PowerUpStoreViewState.StateType.POWER_UP_TOO_EXPENSIVE ->
                 showShortToast(R.string.power_up_too_expensive)
+
+            else -> {
+            }
         }
     }
 

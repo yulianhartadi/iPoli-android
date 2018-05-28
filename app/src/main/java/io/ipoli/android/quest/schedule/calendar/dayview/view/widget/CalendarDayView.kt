@@ -19,6 +19,7 @@ import android.view.*
 import android.widget.FrameLayout
 import android.widget.ImageView
 import io.ipoli.android.R
+import io.ipoli.android.R.id.eventContainer
 import io.ipoli.android.common.ViewUtils
 import io.ipoli.android.common.datetime.Time
 import io.ipoli.android.common.view.AndroidColor
@@ -329,7 +330,7 @@ class CalendarDayView : FrameLayout, StateChangeListener {
 
         listenForZoom()
 
-        fsm.transition(State.Type.VIEW, Event.HourViewAdded::class, { s, e ->
+        fsm.transition(State.Type.VIEW, Event.HourViewAdded::class, { s, _ ->
             val addedHourViews = s.hourViewsAdded + 1
             if (addedHourViews == HOURS_IN_A_DAY) {
                 listener?.onCalendarReady()
@@ -987,6 +988,7 @@ class CalendarDayView : FrameLayout, StateChangeListener {
         scrollView.isLocked = state.isScrollLocked
 
         when (state.type) {
+
             State.Type.EDIT -> {
                 showViews(dragView!!, editModeBackground, topDragView, bottomDragView)
 
@@ -1000,6 +1002,9 @@ class CalendarDayView : FrameLayout, StateChangeListener {
                 dragView?.setPositionAndHeight(state.topDragViewPosition!!, state.height!!)
                 topDragView.setTopPosition(state.topDragIndicatorPosition!!)
                 bottomDragView.setTopPosition(state.bottomDragIndicatorPosition!!)
+            }
+
+            else -> {
             }
         }
     }

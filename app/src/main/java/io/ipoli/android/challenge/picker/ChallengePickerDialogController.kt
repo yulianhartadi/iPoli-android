@@ -58,6 +58,7 @@ class ChallengePickerDialogController(args: Bundle? = null) :
 
     override fun render(state: ChallengePickerViewState, view: View) {
         when (state.type) {
+
             DATA_CHANGED -> {
                 changeIcon(state.petHeadImage)
 
@@ -78,6 +79,8 @@ class ChallengePickerDialogController(args: Bundle? = null) :
                 dismiss()
             }
 
+            else -> {
+            }
         }
     }
 
@@ -94,7 +97,7 @@ class ChallengePickerDialogController(args: Bundle? = null) :
             item.text = it.name
             item.isChecked = it.isSelected
 
-            item.setOnCheckedChangeListener { buttonView, isChecked ->
+            item.setOnCheckedChangeListener { _, isChecked ->
                 if (isChecked) {
                     dispatch(ChallengePickerAction.ChangeSelected(it.challenge))
                 }

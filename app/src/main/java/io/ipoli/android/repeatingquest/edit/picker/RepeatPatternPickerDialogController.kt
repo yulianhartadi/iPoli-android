@@ -77,6 +77,7 @@ class RepeatPatternPickerDialogController :
 
     override fun render(state: RepeatPatternViewState, view: View) {
         when (state.type) {
+
             DATA_LOADED -> {
                 renderStartDate(view, state)
                 initStartDateListener(view, state)
@@ -131,6 +132,9 @@ class RepeatPatternPickerDialogController :
             PATTERN_CREATED -> {
                 resultListener(state.resultPattern!!)
                 dismiss()
+            }
+
+            else -> {
             }
         }
     }

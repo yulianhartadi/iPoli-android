@@ -68,6 +68,7 @@ class AddChallengeQuestsViewController(args: Bundle? = null) :
 
     override fun render(state: QuestPickerViewState, view: View) {
         when (state.type) {
+
             QuestPickerViewState.StateType.LOADING -> {
                 view.loader.invisible()
                 view.emptyContainer.invisible()
@@ -91,6 +92,9 @@ class AddChallengeQuestsViewController(args: Bundle? = null) :
                 view.emptyAnimation.playAnimation()
                 view.emptyTitle.setText(R.string.empty_state_quest_picker_title)
                 view.emptyText.setText(R.string.empty_state_quest_picker_text)
+            }
+
+            else -> {
             }
         }
     }

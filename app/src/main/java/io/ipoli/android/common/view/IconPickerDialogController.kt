@@ -150,6 +150,7 @@ class IconPickerDialogController :
     override fun render(state: IconPickerViewState, view: View) {
 
         when (state.type) {
+
             DATA_CHANGED -> {
                 changeIcon(AndroidPetAvatar.valueOf(state.petAvatar!!.name).headImage)
                 (view.iconGrid.adapter as IconAdapter).updateAll(state.iconViewModels)
@@ -170,6 +171,9 @@ class IconPickerDialogController :
                     stringRes(R.string.icon_pack_not_enough_coins),
                     Toast.LENGTH_SHORT
                 ).show()
+            }
+
+            else -> {
             }
         }
     }

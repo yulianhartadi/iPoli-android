@@ -158,6 +158,7 @@ class ReminderPickerDialogController :
     override fun render(state: ReminderPickerViewState, view: View) {
 
         when (state.type) {
+
             ReminderPickerViewState.StateType.NEW_REMINDER -> {
                 changeIcon(AndroidPetAvatar.valueOf(state.petAvatar!!.name).headImage)
                 ViewUtils.showViews(view.predefinedTimes)
@@ -230,6 +231,9 @@ class ReminderPickerDialogController :
 
             ReminderPickerViewState.StateType.TIME_VALUE_VALIDATION_ERROR -> {
                 view.customTime.error = stringRes(R.string.invalid_reminder_time)
+            }
+
+            else -> {
             }
         }
     }

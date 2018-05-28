@@ -224,6 +224,7 @@ class TagPickerDialogController(args: Bundle? = null) :
 
     override fun render(state: TagPickerViewState, view: View) {
         when (state.type) {
+
             DATA_LOADED -> {
                 changeIcon(state.petHeadImage)
                 renderFavouriteTags(view, state)
@@ -253,6 +254,9 @@ class TagPickerDialogController(args: Bundle? = null) :
             CLOSE -> {
                 listener(state.selectedTags)
                 dismiss()
+            }
+
+            else -> {
             }
         }
     }

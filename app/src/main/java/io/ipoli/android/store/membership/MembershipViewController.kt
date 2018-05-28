@@ -107,6 +107,7 @@ class MembershipViewController(args: Bundle? = null) :
     override fun render(state: MembershipViewState, view: View) {
         hideLoader()
         when (state.type) {
+
             DATA_CHANGED -> {
 
                 view.membershipCurrentPlan.visible = state.showCurrentPlan
@@ -146,6 +147,9 @@ class MembershipViewController(args: Bundle? = null) :
             }
 
             SUBSCRIPTION_ERROR -> showShortToast(R.string.something_went_wrong)
+
+            else -> {
+            }
         }
 
     }

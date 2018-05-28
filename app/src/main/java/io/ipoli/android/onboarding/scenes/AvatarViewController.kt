@@ -118,6 +118,7 @@ class AvatarViewController(args: Bundle? = null) :
     override fun render(state: OnboardViewState, view: View) {
 
         when (state.type) {
+
             OnboardViewState.StateType.AVATARS_LOADED -> {
                 view.avatarUsername.setOnEditTextImeBackListener(object :
                     EditTextImeBackListener {
@@ -147,6 +148,9 @@ class AvatarViewController(args: Bundle? = null) :
                 view.avatarUsername.setCompoundDrawablesRelativeWithIntrinsicBounds(
                     null, null, validIcon, null
                 )
+            }
+
+            else -> {
             }
         }
 
