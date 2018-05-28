@@ -51,6 +51,7 @@ class MigrationFrom100To101 : FirestoreMigration() {
     }
 }
 
+
 class MigrationFrom101To102 : FirestoreMigration() {
 
     override val fromVersion = 101
@@ -89,6 +90,7 @@ class MigrationFrom101To102 : FirestoreMigration() {
             val qRef = playerCollectionRef("quests", database, playerId)
                 .document(qDoc.id)
 
+            @Suppress("UNCHECKED_CAST")
             val tagIdsData = qDoc.get("tagIds") as Map<String, Any?>
 
             batch.update(qRef, createUpdateTagsData(tagIdsData, tagDocs))
@@ -110,6 +112,7 @@ class MigrationFrom101To102 : FirestoreMigration() {
             val rqRef = playerCollectionRef("repeatingQuests", database, playerId)
                 .document(rqDoc.id)
 
+            @Suppress("UNCHECKED_CAST")
             val tagIdsData = rqDoc.get("tagIds") as Map<String, Any?>
 
             batch.update(rqRef, createUpdateTagsData(tagIdsData, tagDocs))
@@ -131,6 +134,7 @@ class MigrationFrom101To102 : FirestoreMigration() {
             val cRef = playerCollectionRef("challenges", database, playerId)
                 .document(cDoc.id)
 
+            @Suppress("UNCHECKED_CAST")
             val tagIdsData = cDoc.get("tagIds") as Map<String, Any?>
 
             batch.update(cRef, createUpdateTagsData(tagIdsData, tagDocs))

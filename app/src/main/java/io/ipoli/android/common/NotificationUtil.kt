@@ -14,6 +14,7 @@ import io.ipoli.android.R
  */
 object NotificationUtil {
 
+    @Suppress("DEPRECATION")
     fun createDefaultNotification(
         context: Context,
         title: String,

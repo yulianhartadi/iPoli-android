@@ -103,6 +103,7 @@ class GemStoreViewController(args: Bundle? = null) :
     override fun render(state: GemStoreViewState, view: View) {
 
         when (state.type) {
+
             PLAYER_CHANGED ->
                 if (state.isGiftPurchased)
                     showMostPopular(view)
@@ -154,6 +155,9 @@ class GemStoreViewController(args: Bundle? = null) :
             PURCHASE_FAILED -> {
                 enableButtons()
                 Toast.makeText(view.context, R.string.purchase_failed, Toast.LENGTH_LONG).show()
+            }
+
+            else -> {
             }
         }
     }

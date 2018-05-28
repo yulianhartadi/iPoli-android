@@ -150,6 +150,7 @@ abstract class MviPopup<in VS : ViewState, in V : ViewStateRenderer<VS>, out P :
 
         addViewToWindowManager(overlayView)
         overlayView.post {
+            @Suppress("UNCHECKED_CAST")
             presenter.onAttachView(this as V)
             playEnterAnimation(contentView)
         }
@@ -274,6 +275,7 @@ abstract class MviPopup<in VS : ViewState, in V : ViewStateRenderer<VS>, out P :
         private const val ANDROID_OREO = 26
         private const val TYPE_APPLICATION_OVERLAY = 2038
 
+        @Suppress("DEPRECATION")
         val TYPE_SYSTEM_ERROR =
             if (Build.VERSION.SDK_INT < ANDROID_OREO) WindowManager.LayoutParams.TYPE_SYSTEM_ERROR else TYPE_APPLICATION_OVERLAY
     }
@@ -526,6 +528,7 @@ abstract class ReduxPopup<A : Action, VS : ViewState, out VSR : ViewStateReducer
         private const val ANDROID_OREO = 26
         private const val TYPE_APPLICATION_OVERLAY = 2038
 
+        @Suppress("DEPRECATION")
         val TYPE_SYSTEM_ERROR =
             if (Build.VERSION.SDK_INT < ANDROID_OREO) WindowManager.LayoutParams.TYPE_SYSTEM_ERROR else TYPE_APPLICATION_OVERLAY
     }
@@ -728,6 +731,7 @@ abstract class Popup
         private const val ANDROID_OREO = 26
         private const val TYPE_APPLICATION_OVERLAY = 2038
 
+        @Suppress("DEPRECATION")
         val TYPE_SYSTEM_ERROR =
             if (Build.VERSION.SDK_INT < ANDROID_OREO) WindowManager.LayoutParams.TYPE_SYSTEM_ERROR else TYPE_APPLICATION_OVERLAY
     }

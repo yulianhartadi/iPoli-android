@@ -168,7 +168,9 @@ class PetNotificationPopup(
         val duration = view.resources.getInteger(android.R.integer.config_mediumAnimTime).toLong()
         backgroundAnim.duration = duration
 
-        val animators =
+        val animators = mutableListOf(backgroundAnim)
+
+        val alphaAnimators =
             contentViews(view).map {
                 it.alpha = 0f
                 ObjectAnimator.ofFloat(it, "alpha", 0f, 1f).apply {
@@ -176,8 +178,7 @@ class PetNotificationPopup(
                     startDelay = duration * 4 / 5
                 }
             }
-                .toMutableList() as MutableList<Animator>
-        animators.add(backgroundAnim)
+        animators.addAll(alphaAnimators)
 
         val set = AnimatorSet()
         set.playTogether(animators)
@@ -208,11 +209,12 @@ class PetNotificationPopup(
             }
         })
 
-        val animators = contentViews(view).map {
+        val animators = mutableListOf(backgroundAnim)
+
+        val alphaAnimators = contentViews(view).map {
             ObjectAnimator.ofFloat(it, "alpha", 1f, 0f).setDuration((duration / 1.5).toLong())
         }
-            .toMutableList() as MutableList<Animator>
-        animators.add(backgroundAnim)
+        animators.addAll(alphaAnimators)
 
         val set = AnimatorSet()
         set.playTogether(animators)
