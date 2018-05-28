@@ -368,7 +368,7 @@ class FirestoreQuestRepository(
         collectionReference
             .whereEqualTo("repeatingQuestId", repeatingQuestId)
             .whereGreaterThan("scheduledDate", start.startOfDayUTC() - 1)
-            .whereLessThanOrEqualTo("scheduledDate", end.startOfDayUTC()).notRemovedEntities
+            .whereLessThanOrEqualTo("scheduledDate", end.startOfDayUTC()).entities
 
     override suspend fun listenForScheduledAt(
         date: LocalDate,
