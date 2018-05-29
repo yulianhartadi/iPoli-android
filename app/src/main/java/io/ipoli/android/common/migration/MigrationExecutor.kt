@@ -267,6 +267,49 @@ class MigrationFrom102To103 : FirestoreMigration() {
 
 }
 
+class MigrationFrom103To104 : FirestoreMigration() {
+
+    override val fromVersion = 103
+
+    override val toVersion = 104
+
+    override suspend fun execute(database: FirebaseFirestore, playerId: String) {
+
+        val qDocs = Tasks.await(
+            playerCollectionRef("quests", database, playerId)
+                .get(Source.SERVER)
+        ).documents
+
+        var batch = database.batch()
+        var batchCount = 0
+
+        for (qDoc in qDocs) {
+            if (!qDoc.contains("createdAt")) {
+
+                val qRef = playerCollectionRef("quests", database, playerId)
+                    .document(qDoc.id)
+
+                batch.update(qRef, mapOf("createdAt" to qDoc["updatedAt"]))
+
+                batchCount++
+
+                if (batchCount == 500) {
+                    Tasks.await(batch.commit())
+                    batchCount = 0
+                    batch = database.batch()
+                }
+            }
+        }
+
+        batch.update(
+            playerRef(database, playerId),
+            mapOf("schemaVersion" to Constants.SCHEMA_VERSION)
+        )
+        Tasks.await(batch.commit())
+    }
+
+}
+
 class MigrationException(message: String, cause: Throwable? = null) :
     Exception(message, cause)
 
@@ -301,7 +344,5 @@ class MigrationExecutor(
                 currentSchemaVersion = m.toVersion
             }
         }
-
-
     }
 }

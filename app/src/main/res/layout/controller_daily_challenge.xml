@@ -1,0 +1,336 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/rootCoordinator"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="?android:colorBackground">
+
+    <android.support.design.widget.AppBarLayout
+        android:id="@+id/appbar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/md_white"
+        android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar">
+
+        <android.support.design.widget.CollapsingToolbarLayout
+            android:id="@+id/collapsingToolbarContainer"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="?attr/colorPrimary"
+            android:minHeight="?attr/actionBarSize"
+            app:contentScrim="?attr/colorPrimary"
+            app:layout_scrollFlags="scroll|exitUntilCollapsed|snap"
+            app:statusBarScrim="?attr/colorPrimary">
+
+            <android.support.constraint.ConstraintLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="?attr/actionBarSize">
+
+                <ImageView
+                    android:id="@+id/dailyChallengePet"
+                    android:layout_width="wrap_content"
+                    android:layout_height="80dp"
+                    android:layout_marginBottom="16dp"
+                    android:layout_marginStart="8dp"
+                    android:adjustViewBounds="true"
+                    android:src="@drawable/pet_13"
+                    android:visibility="invisible"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toStartOf="@+id/constraintLayout"
+                    app:layout_constraintHorizontal_chainStyle="packed"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/petTopGuideline"
+                    app:layout_constraintVertical_bias="0.0" />
+
+                <ImageView
+                    android:id="@+id/dailyChallengePetState"
+                    android:layout_width="0dp"
+                    android:layout_height="0dp"
+                    android:src="@drawable/pet_13_awesome"
+                    android:visibility="invisible"
+                    app:layout_constraintBottom_toBottomOf="@id/dailyChallengePet"
+                    app:layout_constraintEnd_toEndOf="@id/dailyChallengePet"
+                    app:layout_constraintStart_toStartOf="@id/dailyChallengePet"
+                    app:layout_constraintTop_toTopOf="@id/dailyChallengePet" />
+
+
+                <android.support.constraint.Guideline
+                    android:id="@+id/petTopGuideline"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    app:layout_constraintGuide_percent="0.35" />
+
+                <android.support.constraint.ConstraintLayout
+                    android:id="@+id/constraintLayout"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="8dp"
+                    android:layout_marginEnd="16dp"
+                    android:layout_marginTop="16dp"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toEndOf="@id/dailyChallengePet"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintVertical_bias="0.0">
+
+
+                    <ImageView
+                        android:id="@+id/petBubble"
+                        android:layout_width="0dp"
+                        android:layout_height="0dp"
+                        android:adjustViewBounds="true"
+                        android:scaleType="fitXY"
+                        android:src="@drawable/pet_bubble"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent" />
+
+                    <TextView
+                        android:id="@+id/dailyChallengePetMessage"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginEnd="16dp"
+                        android:layout_marginStart="28dp"
+                        android:layout_marginTop="8dp"
+                        android:gravity="center_horizontal"
+                        android:paddingTop="8dp"
+                        android:text="Daily Challenge Progress"
+                        android:textAppearance="@style/TextAppearance.AppCompat.Subhead"
+                        android:textColor="@color/md_dark_text_87"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent" />
+
+                    <View
+                        android:id="@+id/firstQuest"
+                        android:layout_width="20dp"
+                        android:layout_height="20dp"
+                        android:layout_marginStart="8dp"
+                        android:layout_marginTop="16dp"
+                        android:background="@drawable/circle_daily_challenge_progress_empty"
+                        app:layout_constraintEnd_toStartOf="@+id/firstAndSecondQuestConnection"
+                        app:layout_constraintHorizontal_chainStyle="packed"
+                        app:layout_constraintStart_toStartOf="@id/dailyChallengePetMessage"
+                        app:layout_constraintTop_toBottomOf="@+id/dailyChallengePetMessage" />
+
+                    <View
+                        android:id="@+id/firstAndSecondQuestConnection"
+                        android:layout_width="24dp"
+                        android:layout_height="3dp"
+                        android:background="?attr/colorPrimary"
+                        app:layout_constraintBottom_toBottomOf="@+id/firstQuest"
+                        app:layout_constraintEnd_toStartOf="@+id/secondQuest"
+                        app:layout_constraintHorizontal_bias="0.5"
+                        app:layout_constraintStart_toEndOf="@+id/firstQuest"
+                        app:layout_constraintTop_toTopOf="@+id/firstQuest" />
+
+                    <View
+                        android:id="@+id/secondQuest"
+                        android:layout_width="20dp"
+                        android:layout_height="20dp"
+                        android:background="@drawable/circle_daily_challenge_progress_empty"
+                        app:layout_constraintBottom_toBottomOf="@+id/firstQuest"
+                        app:layout_constraintEnd_toStartOf="@+id/secondAndThirdQuestConnection"
+                        app:layout_constraintStart_toEndOf="@+id/firstAndSecondQuestConnection"
+                        app:layout_constraintTop_toTopOf="@+id/firstQuest" />
+
+                    <View
+                        android:id="@+id/secondAndThirdQuestConnection"
+                        android:layout_width="24dp"
+                        android:layout_height="3dp"
+                        android:background="?attr/colorPrimary"
+                        app:layout_constraintBottom_toBottomOf="@+id/firstQuest"
+                        app:layout_constraintEnd_toStartOf="@+id/thirdQuest"
+                        app:layout_constraintStart_toEndOf="@+id/secondQuest"
+                        app:layout_constraintTop_toTopOf="@+id/firstQuest" />
+
+                    <View
+                        android:id="@+id/thirdQuest"
+                        android:layout_width="20dp"
+                        android:layout_height="20dp"
+                        android:layout_marginEnd="8dp"
+                        android:background="@drawable/circle_daily_challenge_progress_empty"
+                        app:layout_constraintBottom_toBottomOf="@+id/firstQuest"
+                        app:layout_constraintEnd_toEndOf="@id/dailyChallengePetMessage"
+                        app:layout_constraintHorizontal_bias="0.5"
+                        app:layout_constraintStart_toEndOf="@+id/secondAndThirdQuestConnection"
+                        app:layout_constraintTop_toTopOf="@+id/firstQuest" />
+
+                    <TextView
+                        android:id="@+id/selectedQuestsCount"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="8dp"
+                        android:layout_marginEnd="8dp"
+                        android:layout_marginStart="8dp"
+                        android:layout_marginTop="8dp"
+                        android:textAppearance="@style/TextAppearance.AppCompat.Caption"
+                        android:textColor="@color/md_dark_text_54"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="@+id/dailyChallengePetMessage"
+                        app:layout_constraintStart_toStartOf="@+id/dailyChallengePetMessage"
+                        app:layout_constraintTop_toBottomOf="@+id/firstQuest" />
+
+                </android.support.constraint.ConstraintLayout>
+
+            </android.support.constraint.ConstraintLayout>
+
+
+            <android.support.v7.widget.Toolbar
+                android:id="@+id/toolbar"
+                android:layout_width="match_parent"
+                android:layout_height="?attr/actionBarSize"
+                app:layout_collapseMode="pin"
+                app:popupTheme="@style/ThemeOverlay.AppCompat.Light" />
+        </android.support.design.widget.CollapsingToolbarLayout>
+
+    </android.support.design.widget.AppBarLayout>
+
+    <include
+        layout="@layout/view_loader"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center" />
+
+    <android.support.v4.widget.NestedScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:clipChildren="false"
+        android:clipToPadding="false"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical">
+
+            <android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                android:id="@+id/selectedQuestsContainer"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_marginEnd="8dp"
+                android:layout_marginStart="8dp"
+                android:layout_marginTop="16dp"
+                android:background="@drawable/rounded_rectangle_white_background"
+                android:elevation="2dp"
+                android:visibility="invisible">
+
+                <TextView
+                    android:id="@+id/selectedQuestsTitle"
+                    style="@style/SectionTitle"
+                    android:text="Challenge quests"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <android.support.v7.widget.RecyclerView
+                    android:id="@+id/selectedQuests"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_marginBottom="16dp"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/selectedQuestsTitle" />
+
+                <TextView
+                    android:id="@+id/emptySelectedQuests"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="16dp"
+                    android:text="No Quests selected"
+                    android:textAlignment="center"
+                    android:textAppearance="@style/TextAppearance.AppCompat.Body1"
+                    android:textColor="@color/md_dark_text_54"
+                    android:visibility="gone"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/selectedQuestsTitle" />
+            </android.support.constraint.ConstraintLayout>
+
+            <android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                android:id="@+id/todayQuestsContainer"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_marginBottom="16dp"
+                android:layout_marginEnd="8dp"
+                android:layout_marginStart="8dp"
+                android:layout_marginTop="16dp"
+                android:background="@drawable/rounded_rectangle_white_background"
+                android:elevation="2dp"
+                android:visibility="invisible">
+
+                <TextView
+                    android:id="@+id/dailyQuestsTitle"
+                    style="@style/SectionTitle"
+                    android:text="@string/my_day"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+
+                <android.support.v7.widget.RecyclerView
+                    android:id="@+id/todayQuests"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_marginBottom="16dp"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/dailyQuestsTitle" />
+
+                <TextView
+                    android:id="@+id/emptyDailyQuests"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="16dp"
+                    android:text="@string/daily_challenge_empty_today_quests"
+                    android:textAlignment="center"
+                    android:textAppearance="@style/TextAppearance.AppCompat.Body1"
+                    android:textColor="@color/md_dark_text_54"
+                    android:visibility="gone"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/dailyQuestsTitle" />
+
+            </android.support.constraint.ConstraintLayout>
+        </LinearLayout>
+    </android.support.v4.widget.NestedScrollView>
+
+
+    <View
+        android:id="@+id/addContainerBackground"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/md_dark_text_38"
+        android:clickable="true"
+        android:elevation="3dp"
+        android:focusable="true"
+        android:visibility="gone" />
+
+    <com.bluelinelabs.conductor.ChangeHandlerFrameLayout
+        android:id="@+id/addContainer"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom"
+        android:elevation="3dp"
+        app:layout_constraintBottom_toBottomOf="parent" />
+
+    <android.support.design.widget.FloatingActionButton
+        android:id="@+id/addQuest"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|end"
+        android:layout_marginBottom="16dp"
+        android:layout_marginEnd="16dp"
+        android:src="@drawable/ic_add_white_24dp"
+        android:visibility="invisible"
+        app:elevation="6dp" />
+</android.support.design.widget.CoordinatorLayout>

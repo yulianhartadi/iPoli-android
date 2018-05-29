@@ -15,10 +15,13 @@ import io.ipoli.android.challenge.picker.ChallengePickerDialogController
 import io.ipoli.android.common.InviteFriendsDialogController
 import io.ipoli.android.common.home.HomeViewController
 import io.ipoli.android.common.view.*
+import io.ipoli.android.dailychallenge.DailyChallengeViewController
 import io.ipoli.android.event.calendar.picker.CalendarPickerDialogController
 import io.ipoli.android.note.NotePickerDialogController
 import io.ipoli.android.onboarding.OnboardData
+import io.ipoli.android.pet.PetViewController
 import io.ipoli.android.pet.store.PetStoreViewController
+import io.ipoli.android.planday.PlanDayViewController
 import io.ipoli.android.planday.RescheduleDialogController
 import io.ipoli.android.player.Player
 import io.ipoli.android.player.auth.AuthViewController
@@ -27,6 +30,7 @@ import io.ipoli.android.quest.Icon
 import io.ipoli.android.quest.edit.EditQuestViewController
 import io.ipoli.android.quest.reminder.picker.ReminderPickerDialogController
 import io.ipoli.android.quest.reminder.picker.ReminderViewModel
+import io.ipoli.android.quest.schedule.addquest.AddQuestViewController
 import io.ipoli.android.quest.show.QuestViewController
 import io.ipoli.android.repeatingquest.edit.picker.RepeatPatternPickerDialogController
 import io.ipoli.android.repeatingquest.entity.RepeatPattern
@@ -61,8 +65,32 @@ class Navigator(private val router: Router) {
         pushController({ HomeViewController() }, null)
     }
 
+    fun setPlanDay() {
+        setController({ PlanDayViewController() })
+    }
+
+    fun setAddQuest(
+        closeListener: () -> Unit,
+        currentDate: LocalDate?,
+        isFullscreen: Boolean = false,
+        changeHandler: ControllerChangeHandler? = null
+    ) {
+        setController(
+            { AddQuestViewController(closeListener, currentDate, isFullscreen) },
+            changeHandler
+        )
+    }
+
+    fun setPet(showBackButton: Boolean) {
+        setController({ PetViewController(showBackButton = showBackButton) })
+    }
+
     fun toAuth(onboardData: OnboardData?, changeHandler: ControllerChangeHandler? = null) {
         pushController({ AuthViewController(onboardData) }, changeHandler)
+    }
+
+    fun toDailyChallenge() {
+        pushController({ DailyChallengeViewController() }, VerticalChangeHandler())
     }
 
     fun setAuth(onboardData: OnboardData? = null, changeHandler: ControllerChangeHandler? = null) {

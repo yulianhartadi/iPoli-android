@@ -21,8 +21,10 @@ import io.ipoli.android.common.redux.android.ReduxViewController
 import io.ipoli.android.common.text.DateFormatter
 import io.ipoli.android.common.view.exitFullScreen
 import io.ipoli.android.common.view.inflate
+import io.ipoli.android.dailychallenge.data.DailyChallenge
 import io.ipoli.android.pet.PetAvatar
 import io.ipoli.android.planday.PlanDayViewController.Companion.PLAN_TODAY_INDEX
+import io.ipoli.android.planday.PlanDayViewState.StateType.*
 import io.ipoli.android.planday.data.Weather
 import io.ipoli.android.planday.persistence.Quote
 import io.ipoli.android.planday.scenes.PlanDayMotivationViewController
@@ -45,6 +47,9 @@ sealed class PlanDayAction : Action {
     data class UndoRemoveQuest(val questId: String) : PlanDayAction()
     data class RescheduleQuest(val questId: String, val date: LocalDate?) : PlanDayAction()
     data class AcceptSuggestion(val questId: String) : PlanDayAction()
+    data class AddDailyChallengeQuest(val questId: String) : PlanDayAction()
+    data class RemoveDailyChallengeQuest(val questId: String) : PlanDayAction()
+    data class DailyChallengeLoaded(val dailyChallenge: DailyChallenge) : PlanDayAction()
 
     object Load : PlanDayAction()
     object ShowNext : PlanDayAction()
@@ -56,6 +61,8 @@ sealed class PlanDayAction : Action {
     object Back : PlanDayAction()
     object LoadToday : PlanDayAction()
     object LoadMotivation : PlanDayAction()
+    object StartDay : PlanDayAction()
+
 }
 
 object PlanDayReducer : BaseViewStateReducer<PlanDayViewState>() {
@@ -79,8 +86,8 @@ object PlanDayReducer : BaseViewStateReducer<PlanDayViewState>() {
                 }
 
                 subState.copy(
-                    type = if (subState.type == PlanDayViewState.StateType.INITIAL)
-                        PlanDayViewState.StateType.FIRST_PAGE
+                    type = if (subState.type == INITIAL)
+                        FIRST_PAGE
                     else
                         subState.type,
                     playerName = playerName,
@@ -104,7 +111,7 @@ object PlanDayReducer : BaseViewStateReducer<PlanDayViewState>() {
             is DataLoadedAction.PlayerChanged -> {
                 val player = action.player
                 subState.copy(
-                    type = PlanDayViewState.StateType.DATA_CHANGED,
+                    type = DATA_CHANGED,
                     playerName = player.displayName?.let { firstNameOf(it) },
                     petAvatar = player.pet.avatar,
                     timeFormat = player.preferences.timeFormat,
@@ -120,7 +127,7 @@ object PlanDayReducer : BaseViewStateReducer<PlanDayViewState>() {
 
             is DataLoadedAction.ReviewDayQuestsChanged -> {
                 val newState = subState.copy(
-                    type = PlanDayViewState.StateType.DATA_CHANGED,
+                    type = DATA_CHANGED,
                     reviewDayQuests = action.quests,
                     awesomenessScore = action.awesomenessScore
                 )
@@ -129,7 +136,7 @@ object PlanDayReducer : BaseViewStateReducer<PlanDayViewState>() {
 
             is DataLoadedAction.TodayQuestsChanged -> {
                 val newState = subState.copy(
-                    type = PlanDayViewState.StateType.DATA_CHANGED,
+                    type = DATA_CHANGED,
                     todayQuests = action.quests
                 )
                 createNewStateIfTodayDataIsLoaded(newState)
@@ -137,19 +144,22 @@ object PlanDayReducer : BaseViewStateReducer<PlanDayViewState>() {
 
             is DataLoadedAction.SuggestionsChanged -> {
                 val newState = subState.copy(
-                    type = PlanDayViewState.StateType.DATA_CHANGED,
+                    type = DATA_CHANGED,
                     suggestedQuests = action.quests
                 )
                 createNewStateIfTodayDataIsLoaded(newState)
             }
 
-            is PlanDayAction.LoadToday ->
-                createNewStateIfTodayDataIsLoaded(subState)
+            is PlanDayAction.DailyChallengeLoaded ->
+                createNewStateIfTodayDataIsLoaded(subState.copy(
+                    dailyChallengeQuestIds = action.dailyChallenge.questIds,
+                    isDailyChallengeCompleted = action.dailyChallenge.isCompleted
+                ))
 
             is PlanDayAction.AcceptSuggestion -> {
                 val suggestion = subState.suggestedQuests!!.first { it.id == action.questId }
                 val newState = subState.copy(
-                    type = PlanDayViewState.StateType.DATA_CHANGED,
+                    type = DATA_CHANGED,
                     suggestedQuests = subState.suggestedQuests - suggestion
                 )
                 createNewStateIfTodayDataIsLoaded(newState)
@@ -157,7 +167,7 @@ object PlanDayReducer : BaseViewStateReducer<PlanDayViewState>() {
 
             is DataLoadedAction.QuoteChanged -> {
                 val newState = subState.copy(
-                    type = PlanDayViewState.StateType.DATA_CHANGED,
+                    type = DATA_CHANGED,
                     quote = action.quote,
                     quoteLoaded = true
                 )
@@ -171,17 +181,17 @@ object PlanDayReducer : BaseViewStateReducer<PlanDayViewState>() {
 
                     if (conditions.contains(Weather.Condition.UNKNOWN))
                         subState.copy(
-                            type = PlanDayViewState.StateType.DATA_CHANGED,
+                            type = DATA_CHANGED,
                             weatherLoaded = true
                         )
                     else
                         subState.copy(
-                            type = PlanDayViewState.StateType.DATA_CHANGED,
+                            type = DATA_CHANGED,
                             weather = action.weather,
                             weatherLoaded = true
                         )
                 } ?: subState.copy(
-                    type = PlanDayViewState.StateType.DATA_CHANGED,
+                    type = DATA_CHANGED,
                     weatherLoaded = true
                 )
                 createNewStateIfMotivationalDataIsLoaded(newState)
@@ -190,14 +200,14 @@ object PlanDayReducer : BaseViewStateReducer<PlanDayViewState>() {
             is DataLoadedAction.MotivationalImageChanged -> {
                 val newState = action.motivationalImage?.let {
                     subState.copy(
-                        type = PlanDayViewState.StateType.IMAGE_LOADED,
+                        type = IMAGE_LOADED,
                         imageUrl = it.url + "&fm=jpg&w=1080&crop=entropy&fit=max",
                         imageAuthor = it.author,
                         imageAuthorUrl = it.authorUrl,
                         imageLoaded = true
                     )
                 } ?: subState.copy(
-                    type = PlanDayViewState.StateType.IMAGE_LOADED,
+                    type = IMAGE_LOADED,
                     imageAuthor = "Daniel Roe",
                     imageAuthorUrl = "https://unsplash.com/@danielroe",
                     imageLoaded = true
@@ -208,7 +218,7 @@ object PlanDayReducer : BaseViewStateReducer<PlanDayViewState>() {
 
             is PlanDayAction.ImageLoaded -> {
                 val newState = subState.copy(
-                    type = PlanDayViewState.StateType.DATA_CHANGED,
+                    type = DATA_CHANGED,
                     imageViewLoaded = true
                 )
 
@@ -217,7 +227,7 @@ object PlanDayReducer : BaseViewStateReducer<PlanDayViewState>() {
 
             is PlanDayAction.RisingSunAnimationDone -> {
                 val newState = subState.copy(
-                    type = PlanDayViewState.StateType.DATA_CHANGED,
+                    type = DATA_CHANGED,
                     risingSunAnimationDone = true
                 )
 
@@ -227,15 +237,46 @@ object PlanDayReducer : BaseViewStateReducer<PlanDayViewState>() {
             is PlanDayAction.Back ->
                 if (subState.adapterPosition == 2)
                     subState.copy(
-                        type = PlanDayViewState.StateType.BACK_TO_REVIEW,
+                        type = BACK_TO_REVIEW,
                         adapterPosition = 1
                     )
                 else
                     subState.copy(
-                        type = PlanDayViewState.StateType.CLOSE
+                        type = CLOSE
                     )
 
+            is PlanDayAction.AddDailyChallengeQuest -> {
+                if (subState.dailyChallengeQuestIds!!.size == Constants.DAILY_CHALLENGE_QUEST_COUNT) {
+                    subState.copy(
+                        type = MAX_DAILY_CHALLENGE_QUESTS_REACHED
+                    )
+                } else {
+                    subState.copy(
+                        type = DAILY_CHALLENGE_QUESTS_CHANGED,
+                        dailyChallengeQuestIds = subState.dailyChallengeQuestIds + action.questId
+                    )
+                }
+            }
+
+            is PlanDayAction.RemoveDailyChallengeQuest ->
+                subState.copy(
+                    type = DAILY_CHALLENGE_QUESTS_CHANGED,
+                    dailyChallengeQuestIds = subState.dailyChallengeQuestIds!! - action.questId
+                )
+
+            PlanDayAction.StartDay -> {
+                val count = subState.dailyChallengeQuestIds!!.size
+                subState.copy(
+                    type = if (count == 0 || count == Constants.DAILY_CHALLENGE_QUEST_COUNT) {
+                        DAY_STARTED
+                    } else {
+                        NOT_ENOUGH_DAILY_CHALLENGE_QUESTS
+                    }
+                )
+            }
+
             else -> subState
+
         }
 
     private fun firstNameOf(displayName: String) =
@@ -247,7 +288,7 @@ object PlanDayReducer : BaseViewStateReducer<PlanDayViewState>() {
     private fun createNewStateIfMotivationalDataIsLoaded(newState: PlanDayViewState) =
         if (hasMotivationalDataLoaded(newState))
             newState.copy(
-                type = PlanDayViewState.StateType.MOTIVATION_DATA_LOADED,
+                type = MOTIVATION_DATA_LOADED,
                 timeOfDay = Time.now().timeOfDay
             )
         else
@@ -263,7 +304,7 @@ object PlanDayReducer : BaseViewStateReducer<PlanDayViewState>() {
     private fun createNewStateIfTodayDataIsLoaded(newState: PlanDayViewState) =
         if (hasTodayDataLoaded(newState))
             newState.copy(
-                type = PlanDayViewState.StateType.TODAY_DATA_LOADED
+                type = TODAY_DATA_LOADED
             )
         else
             newState
@@ -274,7 +315,7 @@ object PlanDayReducer : BaseViewStateReducer<PlanDayViewState>() {
     private fun createNewStateIfReviewDataIsLoaded(newState: PlanDayViewState) =
         if (hasReviewDataLoaded(newState))
             newState.copy(
-                type = PlanDayViewState.StateType.REVIEW_DATA_LOADED
+                type = REVIEW_DATA_LOADED
             )
         else
             newState
@@ -284,7 +325,7 @@ object PlanDayReducer : BaseViewStateReducer<PlanDayViewState>() {
 
     override fun defaultState() =
         PlanDayViewState(
-            type = PlanDayViewState.StateType.INITIAL,
+            type = INITIAL,
             dateText = null,
             imageUrl = null,
             imageAuthor = "",
@@ -292,6 +333,8 @@ object PlanDayReducer : BaseViewStateReducer<PlanDayViewState>() {
             quote = null,
             reviewDayQuests = null,
             todayQuests = null,
+            dailyChallengeQuestIds = emptyList(),
+            isDailyChallengeCompleted = false,
             suggestedQuests = null,
             adapterPosition = 0,
             playerName = null,
@@ -323,6 +366,8 @@ data class PlanDayViewState(
     val reviewDayQuests: List<Quest>?,
     val todayQuests: List<Quest>?,
     val suggestedQuests: List<Quest>?,
+    val dailyChallengeQuestIds: List<String>?,
+    val isDailyChallengeCompleted : Boolean,
     val adapterPosition: Int,
     val timeOfDay: TimeOfDay?,
     val playerName: String?,
@@ -346,7 +391,11 @@ data class PlanDayViewState(
         IMAGE_LOADED,
         MOTIVATION_DATA_LOADED,
         REVIEW_DATA_LOADED,
-        TODAY_DATA_LOADED
+        TODAY_DATA_LOADED,
+        MAX_DAILY_CHALLENGE_QUESTS_REACHED,
+        DAILY_CHALLENGE_QUESTS_CHANGED,
+        DAY_STARTED,
+        NOT_ENOUGH_DAILY_CHALLENGE_QUESTS
     }
 }
 
@@ -380,7 +429,7 @@ class PlanDayViewController(args: Bundle? = null) :
 
     override fun render(state: PlanDayViewState, view: View) {
         when (state.type) {
-            PlanDayViewState.StateType.FIRST_PAGE -> {
+            FIRST_PAGE -> {
                 changeChildController(
                     view = view,
                     adapterPosition = state.adapterPosition,
@@ -388,17 +437,17 @@ class PlanDayViewController(args: Bundle? = null) :
                 )
             }
 
-            PlanDayViewState.StateType.NEXT_PAGE ->
+            NEXT_PAGE ->
                 changeChildController(
                     view = view,
                     adapterPosition = state.adapterPosition,
                     animate = true
                 )
 
-            PlanDayViewState.StateType.BACK_TO_REVIEW ->
+            BACK_TO_REVIEW ->
                 getChildRouter(view.planDayPager).popCurrentController()
 
-            PlanDayViewState.StateType.CLOSE -> {
+            CLOSE -> {
                 exitFullScreen()
                 navigateFromRoot().setHome()
             }

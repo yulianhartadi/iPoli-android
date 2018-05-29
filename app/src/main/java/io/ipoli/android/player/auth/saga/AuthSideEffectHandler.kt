@@ -327,6 +327,6 @@ object AuthSideEffectHandler : AppSideEffectHandler() {
         saveQuestsForRepeatingQuestScheduler.schedule()
         removeExpiredPowerUpsScheduler.schedule()
         checkMembershipStatusScheduler.schedule()
-        planDayScheduler.scheduleForNextTime()
+        planDayScheduler.schedule()
     }
 }

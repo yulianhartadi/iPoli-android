@@ -3,11 +3,11 @@ package io.ipoli.android.player
 import com.evernote.android.job.Job
 import com.evernote.android.job.JobRequest
 import com.evernote.android.job.util.support.PersistableBundleCompat
-import kotlinx.coroutines.experimental.android.UI
-import kotlinx.coroutines.experimental.launch
 import io.ipoli.android.common.di.Module
 import io.ipoli.android.common.view.asThemedWrapper
 import io.ipoli.android.player.view.LevelUpPopup
+import kotlinx.coroutines.experimental.android.UI
+import kotlinx.coroutines.experimental.launch
 import space.traversal.kapsule.Injects
 
 /**
@@ -29,9 +29,9 @@ class LevelUpJob : Job(), Injects<Module> {
     }
 
     companion object {
-        val TAG = "job_level_up_tag"
+        const val TAG = "job_level_up_tag"
 
-        val KEY_NEW_LEVEL = "NEW_LEVEL"
+        const val KEY_NEW_LEVEL = "NEW_LEVEL"
     }
 }
 
@@ -48,6 +48,7 @@ class AndroidLevelUpScheduler : LevelUpScheduler {
 
         JobRequest.Builder(LevelUpJob.TAG)
             .setExtras(params)
+            .setUpdateCurrent(true)
             .startNow()
             .build()
             .schedule()

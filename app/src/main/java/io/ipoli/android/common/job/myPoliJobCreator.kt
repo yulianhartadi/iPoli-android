@@ -3,8 +3,10 @@ package io.ipoli.android.common.job
 import com.evernote.android.job.Job
 import com.evernote.android.job.JobCreator
 import io.ipoli.android.common.rate.RatePopupJob
+import io.ipoli.android.dailychallenge.job.DailyChallengeCompleteJob
 import io.ipoli.android.pet.LowerPetStatsJob
 import io.ipoli.android.planday.job.PlanDayJob
+import io.ipoli.android.planday.job.SnoozedPlanDayJob
 import io.ipoli.android.player.LevelUpJob
 import io.ipoli.android.quest.job.QuestCompleteJob
 import io.ipoli.android.quest.show.job.TimerCompleteNotificationJob
@@ -28,6 +30,8 @@ class myPoliJobCreator : JobCreator {
             RemoveExpiredPowerUpsJob.TAG -> RemoveExpiredPowerUpsJob()
             CheckMembershipStatusJob.TAG -> CheckMembershipStatusJob()
             PlanDayJob.TAG -> PlanDayJob()
+            SnoozedPlanDayJob.TAG -> SnoozedPlanDayJob()
+            DailyChallengeCompleteJob.TAG -> DailyChallengeCompleteJob()
             else -> null
         }
 }

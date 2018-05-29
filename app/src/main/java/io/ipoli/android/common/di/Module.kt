@@ -27,6 +27,14 @@ import io.ipoli.android.common.redux.CoroutineSideEffectHandlerExecutor
 import io.ipoli.android.common.redux.StateStore
 import io.ipoli.android.common.text.CalendarFormatter
 import io.ipoli.android.common.view.PetMessagePresenter
+import io.ipoli.android.dailychallenge.data.persistence.DailyChallengeRepository
+import io.ipoli.android.dailychallenge.data.persistence.FirestoreDailyChallengeRepository
+import io.ipoli.android.dailychallenge.job.AndroidDailyChallengeCompleteScheduler
+import io.ipoli.android.dailychallenge.job.DailyChallengeCompleteScheduler
+import io.ipoli.android.dailychallenge.sideeffect.DailyChallengeSideEffectHandler
+import io.ipoli.android.dailychallenge.usecase.CheckForDailyChallengeCompletionUseCase
+import io.ipoli.android.dailychallenge.usecase.LoadDailyChallengeUseCase
+import io.ipoli.android.dailychallenge.usecase.SaveDailyChallengeQuestIdsUseCase
 import io.ipoli.android.event.persistence.AndroidCalendarEventRepository
 import io.ipoli.android.event.persistence.AndroidCalendarRepository
 import io.ipoli.android.event.persistence.CalendarRepository
@@ -50,7 +58,6 @@ import io.ipoli.android.planday.persistence.MotivationalImageRepository
 import io.ipoli.android.planday.persistence.QuoteRepository
 import io.ipoli.android.planday.sideeffect.PlanDaySideEffectHandler
 import io.ipoli.android.planday.usecase.CalculateAwesomenessScoreUseCase
-import io.ipoli.android.planday.usecase.FindNextPlanDayTimeUseCase
 import io.ipoli.android.player.AndroidLevelDownScheduler
 import io.ipoli.android.player.AndroidLevelUpScheduler
 import io.ipoli.android.player.LevelDownScheduler
@@ -141,6 +148,7 @@ interface RepositoryModule {
     val weatherRepository: WeatherRepository
     val motivationalImageRepository: MotivationalImageRepository
     val quoteRepository: QuoteRepository
+    val dailyChallengeRepository: DailyChallengeRepository
 }
 
 class AndroidRepositoryModule(private val appContext: Context) : RepositoryModule, Injects<Module> {
@@ -212,6 +220,15 @@ class AndroidRepositoryModule(private val appContext: Context) : RepositoryModul
     override val quoteRepository by required {
         FirestoreQuoteRepository(database)
     }
+
+    override val dailyChallengeRepository by required {
+        FirestoreDailyChallengeRepository(
+            database,
+            job + CommonPool,
+            sharedPreferences,
+            executor
+        )
+    }
 }
 
 class Firestore {
@@ -263,6 +280,8 @@ interface AndroidModule {
 
     val planDayScheduler: PlanDayScheduler
 
+    val dailyChallengeCompleteScheduler: DailyChallengeCompleteScheduler
+
     val permissionChecker: PermissionChecker
 
     val job: Job
@@ -313,6 +332,9 @@ class MainAndroidModule(
 
     override val ratePopupScheduler get() = AndroidRatePopupScheduler()
 
+    override val dailyChallengeCompleteScheduler
+        get() = AndroidDailyChallengeCompleteScheduler()
+
     override val database get() = Firestore.instance
 
     override val eventLogger = FirebaseEventLogger(firebaseAnalytics)
@@ -333,7 +355,8 @@ class MainAndroidModule(
             migrations = listOf(
                 MigrationFrom100To101(),
                 MigrationFrom101To102(),
-                MigrationFrom102To103()
+                MigrationFrom102To103(),
+                MigrationFrom103To104()
             )
         )
 
@@ -357,6 +380,8 @@ class MainUseCaseModule : UseCaseModule, Injects<Module> {
     private val rateDialogScheduler by required { ratePopupScheduler }
     private val timerCompleteScheduler by required { timerCompleteScheduler }
     private val planDayScheduler by required { planDayScheduler }
+    private val dailyChallengeRepository by required { dailyChallengeRepository }
+    private val dailyChallengeCompleteScheduler by required { dailyChallengeCompleteScheduler }
 
     override val loadScheduleForDateUseCase
         get() = LoadScheduleForDateUseCase()
@@ -385,7 +410,9 @@ class MainUseCaseModule : UseCaseModule, Injects<Module> {
             reminderScheduler,
             questCompleteScheduler,
             rateDialogScheduler,
-            rewardPlayerUseCase
+            rewardPlayerUseCase,
+            checkForDailyChallengeCompletionUseCase,
+            dailyChallengeCompleteScheduler
         )
     override val undoCompletedQuestUseCase
         get() = UndoCompletedQuestUseCase(
@@ -639,7 +666,7 @@ class MainUseCaseModule : UseCaseModule, Injects<Module> {
         get() = SavePlanDayTimeUseCase(playerRepository, planDayScheduler)
 
     override val savePlanDaysUseCase
-        get() = SavePlanDaysUseCase(playerRepository, planDayScheduler)
+        get() = SavePlanDaysUseCase(playerRepository)
 
     override val saveTimeFormatUseCase
         get() = SaveTimeFormatUseCase(playerRepository)
@@ -647,8 +674,14 @@ class MainUseCaseModule : UseCaseModule, Injects<Module> {
     override val saveTemperatureUnitUseCase
         get() = SaveTemperatureUnitUseCase(playerRepository)
 
-    override val findNextPlanDayTimeUseCase
-        get() = FindNextPlanDayTimeUseCase(playerRepository)
+    override val checkForDailyChallengeCompletionUseCase
+        get() = CheckForDailyChallengeCompletionUseCase(dailyChallengeRepository, questRepository)
+
+    override val loadDailyChallengeUseCase
+        get() = LoadDailyChallengeUseCase(dailyChallengeRepository)
+
+    override val saveDailyChallengeQuestIdsUseCase
+        get() = SaveDailyChallengeQuestIdsUseCase(dailyChallengeRepository)
 }
 
 interface UseCaseModule {
@@ -736,7 +769,9 @@ interface UseCaseModule {
     val savePlanDaysUseCase: SavePlanDaysUseCase
     val saveTimeFormatUseCase: SaveTimeFormatUseCase
     val saveTemperatureUnitUseCase: SaveTemperatureUnitUseCase
-    val findNextPlanDayTimeUseCase: FindNextPlanDayTimeUseCase
+    val checkForDailyChallengeCompletionUseCase: CheckForDailyChallengeCompletionUseCase
+    val loadDailyChallengeUseCase: LoadDailyChallengeUseCase
+    val saveDailyChallengeQuestIdsUseCase: SaveDailyChallengeQuestIdsUseCase
 }
 
 interface PresenterModule {
@@ -802,7 +837,8 @@ class AndroidStateStoreModule : StateStoreModule, Injects<Module> {
                 OnboardingSideEffectHandler,
                 PlanDaySideEffectHandler,
                 SettingsSideEffectHandler,
-                MigrationSideEffectHandler
+                MigrationSideEffectHandler,
+                DailyChallengeSideEffectHandler
             ),
             sideEffectHandlerExecutor = CoroutineSideEffectHandlerExecutor(job + CommonPool),
             middleware = setOf(

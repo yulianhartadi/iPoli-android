@@ -9,6 +9,7 @@ import android.os.Bundle
 import android.support.annotation.DrawableRes
 import android.support.annotation.StringRes
 import android.support.constraint.ConstraintLayout
+import android.support.design.widget.AppBarLayout
 import android.support.design.widget.FloatingActionButton
 import android.support.v4.content.ContextCompat
 import android.support.v7.widget.LinearLayoutManager
@@ -699,6 +700,11 @@ class PetViewController(args: Bundle? = null) :
     }
 
     private fun renderPetName(view: View, name: String) {
+        if (!showBackButton) {
+            val p = view.toolbar.layoutParams as AppBarLayout.LayoutParams
+            p.marginStart = ViewUtils.dpToPx(16f, view.context).toInt()
+            view.toolbar.layoutParams = p
+        }
         view.toolbarTitle.text = name
     }
 

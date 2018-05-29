@@ -13,6 +13,7 @@ import com.bluelinelabs.conductor.RestoreViewOnCreateController
 import com.bluelinelabs.conductor.RouterTransaction
 import io.ipoli.android.R
 import io.ipoli.android.common.ViewUtils
+import io.ipoli.android.common.navigation.Navigator
 import io.ipoli.android.common.view.*
 import io.ipoli.android.common.view.changehandler.CircularRevealChangeHandler
 import org.threeten.bp.LocalDate
@@ -48,16 +49,15 @@ class AddQuestAnimationHelper(
                     duration = controller.shortAnimTime
                 )
                 val childRouter = controller.getChildRouter(addContainer, "add-quest")
-                val addQuestViewController = AddQuestViewController({
-                    childRouter.popCurrentController()
-                    closeAddContainer()
-                }, currentDate)
-
-                childRouter.setRoot(
-                    RouterTransaction.with(addQuestViewController)
-                        .pushChangeHandler(handler)
-                        .popChangeHandler(handler)
-                )
+                Navigator(childRouter)
+                    .setAddQuest(
+                        closeListener = {
+                            childRouter.popCurrentController()
+                            closeAddContainer()
+                        },
+                        currentDate = currentDate,
+                        changeHandler = handler
+                    )
             }
         })
     }

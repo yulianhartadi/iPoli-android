@@ -1,8 +1,10 @@
 package io.ipoli.android.quest.schedule
 
 import android.content.Context
+import io.ipoli.android.common.AppDataState
 import io.ipoli.android.common.AppState
 import io.ipoli.android.common.BaseViewStateReducer
+import io.ipoli.android.common.DataLoadedAction
 import io.ipoli.android.common.mvi.BaseViewState
 import io.ipoli.android.common.redux.Action
 import io.ipoli.android.common.text.CalendarFormatter
@@ -36,6 +38,7 @@ object ScheduleReducer : BaseViewStateReducer<ScheduleViewState>() {
     override fun defaultState() =
         ScheduleViewState(
             type = ScheduleViewState.StateType.LOADING,
+            showDailyChallenge = false,
             currentMonth = YearMonth.now(),
             currentDate = LocalDate.now(),
             viewMode = ScheduleViewState.ViewMode.CALENDAR,
@@ -46,9 +49,20 @@ object ScheduleReducer : BaseViewStateReducer<ScheduleViewState>() {
         when (action) {
 
             is ScheduleAction -> reduceCalendarAction(
+                state.dataState,
                 subState,
                 action
             )
+
+            is DataLoadedAction.PlayerChanged -> {
+                subState.copy(
+                    type = ScheduleViewState.StateType.SHOW_DAILY_CHALLENGE_CHANGED,
+                    showDailyChallenge = action.player.preferences.planDays.contains(
+                        LocalDate.now().dayOfWeek
+                    )
+                )
+            }
+
             is CalendarAction.ChangeVisibleDate -> {
                 subState.copy(
                     type = ScheduleViewState.StateType.SWIPE_DATE_CHANGED,
@@ -77,14 +91,21 @@ object ScheduleReducer : BaseViewStateReducer<ScheduleViewState>() {
             else -> subState
         }
 
-    private fun reduceCalendarAction(state: ScheduleViewState, action: ScheduleAction) =
+    private fun reduceCalendarAction(
+        dataState: AppDataState,
+        state: ScheduleViewState,
+        action: ScheduleAction
+    ) =
         when (action) {
             ScheduleAction.Load -> {
                 if (state.type != ScheduleViewState.StateType.LOADING) {
                     state
                 } else {
                     state.copy(
-                        type = ScheduleViewState.StateType.INITIAL
+                        type = ScheduleViewState.StateType.INITIAL,
+                        showDailyChallenge = dataState.player?.preferences?.planDays?.contains(
+                            LocalDate.now().dayOfWeek
+                        ) ?: false
                     )
                 }
             }
@@ -141,6 +162,7 @@ object ScheduleReducer : BaseViewStateReducer<ScheduleViewState>() {
 
 data class ScheduleViewState(
     val type: StateType,
+    val showDailyChallenge: Boolean,
     val currentMonth: YearMonth,
     val currentDate: LocalDate,
     val datePickerState: DatePickerState,
@@ -148,8 +170,14 @@ data class ScheduleViewState(
 ) : BaseViewState() {
 
     enum class StateType {
-        LOADING, INITIAL, IDLE, CALENDAR_DATE_CHANGED, SWIPE_DATE_CHANGED, DATE_PICKER_CHANGED, MONTH_CHANGED,
-        VIEW_MODE_CHANGED, DATE_AUTO_CHANGED
+        LOADING, INITIAL, IDLE,
+        SHOW_DAILY_CHALLENGE_CHANGED,
+        CALENDAR_DATE_CHANGED,
+        SWIPE_DATE_CHANGED,
+        DATE_PICKER_CHANGED,
+        MONTH_CHANGED,
+        VIEW_MODE_CHANGED,
+        DATE_AUTO_CHANGED
     }
 
     enum class ViewMode {

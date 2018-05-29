@@ -9,6 +9,7 @@ import io.ipoli.android.common.datetime.*
 import io.ipoli.android.common.persistence.BaseCollectionFirestoreRepository
 import io.ipoli.android.common.persistence.CollectionRepository
 import io.ipoli.android.common.persistence.FirestoreModel
+import io.ipoli.android.dailychallenge.data.DailyChallenge
 import io.ipoli.android.pet.Food
 import io.ipoli.android.quest.*
 import io.ipoli.android.quest.subquest.SubQuest
@@ -103,6 +104,7 @@ interface QuestRepository : CollectionRepository<Quest> {
     fun findByTagWithRemoved(tagId: String): List<Quest>
 
     fun purge(questIds: List<String>)
+    fun findQuestsForDailyChallenge(dailyChallenge: DailyChallenge): List<Quest>
 }
 
 data class DbQuest(override val map: MutableMap<String, Any?> = mutableMapOf()) :
@@ -229,6 +231,15 @@ class FirestoreQuestRepository(
             toEntityObjects(query.documents)
         else
             query.notRemovedEntities
+    }
+
+    override fun findQuestsForDailyChallenge(dailyChallenge: DailyChallenge): List<Quest> {
+        if (dailyChallenge.questIds.isEmpty()) {
+            return emptyList()
+        }
+        return dailyChallenge.questIds.map {
+            findById(it)!!
+        }.filter { !it.isRemoved }
     }
 
 
@@ -702,7 +713,9 @@ class FirestoreQuestRepository(
             },
             repeatingQuestId = cq.repeatingQuestId,
             challengeId = cq.challengeId,
-            note = cq.note
+            note = cq.note,
+            createdAt = Instant.ofEpochMilli(cq.createdAt),
+            updatedAt = Instant.ofEpochMilli(cq.updatedAt)
         )
     }
 
@@ -755,6 +768,8 @@ class FirestoreQuestRepository(
         q.repeatingQuestId = entity.repeatingQuestId
         q.challengeId = entity.challengeId
         q.note = entity.note
+        q.createdAt = entity.createdAt.toEpochMilli()
+        q.updatedAt = entity.updatedAt.toEpochMilli()
         return q
     }
 

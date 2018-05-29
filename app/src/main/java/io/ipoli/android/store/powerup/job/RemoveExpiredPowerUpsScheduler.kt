@@ -42,11 +42,12 @@ class RemoveExpiredPowerUpsJob : DailyJob(), Injects<Module> {
 
 class AndroidRemoveExpiredPowerUpsScheduler : RemoveExpiredPowerUpsScheduler {
     override fun schedule() {
-        DailyJob.schedule(
-            JobRequest.Builder(RemoveExpiredPowerUpsJob.TAG).setUpdateCurrent(true),
-            0,
-            TimeUnit.HOURS.toMillis(1)
-        )
+        DailyJob
+            .schedule(
+                JobRequest.Builder(RemoveExpiredPowerUpsJob.TAG).setUpdateCurrent(true),
+                0,
+                TimeUnit.HOURS.toMillis(1)
+            )
     }
 }
 

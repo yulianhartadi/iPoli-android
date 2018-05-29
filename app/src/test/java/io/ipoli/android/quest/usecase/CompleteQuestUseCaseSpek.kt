@@ -31,7 +31,7 @@ class CompleteQuestUseCaseSpek : Spek({
 
         fun createQuestRepository(quest: Quest): QuestRepository = mock {
             on { findById(any()) } doReturn
-                    quest
+                quest
 
             on { findNextReminderTime(any()) } doReturn LocalDateTime.now()
         }
@@ -58,6 +58,8 @@ class CompleteQuestUseCaseSpek : Spek({
             questCompleteScheduler,
             ratePopupScheduler,
             rewardPlayerUseCase,
+            mock(),
+            mock(),
             42
         )
 
@@ -116,6 +118,8 @@ class CompleteQuestUseCaseSpek : Spek({
                 questCompleteScheduler,
                 ratePopupScheduler,
                 rewardPlayerUseCase,
+                mock(),
+                mock(),
                 4096
             )
 
@@ -135,6 +139,8 @@ class CompleteQuestUseCaseSpek : Spek({
                 questCompleteScheduler,
                 ratePopupScheduler,
                 rewardPlayerUseCase,
+                mock(),
+                mock(),
                 4096
             )
 
@@ -160,7 +166,9 @@ class CompleteQuestUseCaseSpek : Spek({
                 reminderScheduler,
                 questCompleteScheduler,
                 ratePopupScheduler,
-                rewardPlayerUseCaseMock
+                rewardPlayerUseCaseMock,
+                mock(),
+                mock()
             )
 
             val newQuest = noNewBountyUseCase.execute(WithQuestId(questId))

@@ -165,11 +165,11 @@ abstract class MviPopup<in VS : ViewState, in V : ViewStateRenderer<VS>, out P :
         )
         val fadeAnim = ObjectAnimator.ofFloat(contentView, "alpha", 0f, 1f)
         transAnim.duration =
-                contentView.context.resources.getInteger(android.R.integer.config_mediumAnimTime)
-                    .toLong()
+            contentView.context.resources.getInteger(android.R.integer.config_shortAnimTime)
+                .toLong()
         fadeAnim.duration =
-                contentView.context.resources.getInteger(android.R.integer.config_longAnimTime)
-                    .toLong()
+            contentView.context.resources.getInteger(android.R.integer.config_mediumAnimTime)
+                .toLong()
         val animSet = AnimatorSet()
         animSet.addListener(object : AnimatorListenerAdapter() {
             override fun onAnimationStart(animation: Animator) {
@@ -197,11 +197,11 @@ abstract class MviPopup<in VS : ViewState, in V : ViewStateRenderer<VS>, out P :
         )
         val fadeAnim = ObjectAnimator.ofFloat(contentView, "alpha", 1f, 0f)
         transAnim.duration =
-                contentView.context.resources.getInteger(android.R.integer.config_shortAnimTime)
-                    .toLong()
+            contentView.context.resources.getInteger(android.R.integer.config_shortAnimTime)
+                .toLong()
         fadeAnim.duration =
-                contentView.context.resources.getInteger(android.R.integer.config_mediumAnimTime)
-                    .toLong()
+            contentView.context.resources.getInteger(android.R.integer.config_mediumAnimTime)
+                .toLong()
         val animSet = AnimatorSet()
         animSet.addListener(object : AnimatorListenerAdapter() {
             override fun onAnimationEnd(animation: Animator) {
@@ -406,11 +406,11 @@ abstract class ReduxPopup<A : Action, VS : ViewState, out VSR : ViewStateReducer
         )
         val fadeAnim = ObjectAnimator.ofFloat(contentView, "alpha", 0f, 1f)
         transAnim.duration =
-                contentView.context.resources.getInteger(android.R.integer.config_mediumAnimTime)
-                    .toLong()
+            contentView.context.resources.getInteger(android.R.integer.config_mediumAnimTime)
+                .toLong()
         fadeAnim.duration =
-                contentView.context.resources.getInteger(android.R.integer.config_longAnimTime)
-                    .toLong()
+            contentView.context.resources.getInteger(android.R.integer.config_longAnimTime)
+                .toLong()
         val animSet = AnimatorSet()
         animSet.addListener(object : AnimatorListenerAdapter() {
             override fun onAnimationStart(animation: Animator) {
@@ -438,11 +438,11 @@ abstract class ReduxPopup<A : Action, VS : ViewState, out VSR : ViewStateReducer
         )
         val fadeAnim = ObjectAnimator.ofFloat(contentView, "alpha", 1f, 0f)
         transAnim.duration =
-                contentView.context.resources.getInteger(android.R.integer.config_shortAnimTime)
-                    .toLong()
+            contentView.context.resources.getInteger(android.R.integer.config_shortAnimTime)
+                .toLong()
         fadeAnim.duration =
-                contentView.context.resources.getInteger(android.R.integer.config_mediumAnimTime)
-                    .toLong()
+            contentView.context.resources.getInteger(android.R.integer.config_mediumAnimTime)
+                .toLong()
         val animSet = AnimatorSet()
         animSet.addListener(object : AnimatorListenerAdapter() {
             override fun onAnimationEnd(animation: Animator) {
@@ -550,6 +550,7 @@ abstract class Popup
     private lateinit var contentView: ViewGroup
     private lateinit var windowManager: WindowManager
     private val autoHideHandler = Handler(Looper.getMainLooper())
+    var hideListener = {}
 
     private val autoHideRunnable = {
         hide()
@@ -572,41 +573,30 @@ abstract class Popup
             overlayView.setBackgroundResource(it)
         }
 
-        val contentLp = when (position) {
+        val contentLp = RelativeLayout.LayoutParams(
+            RelativeLayout.LayoutParams.MATCH_PARENT,
+            RelativeLayout.LayoutParams.WRAP_CONTENT
+        )
+        when (position) {
             Position.CENTER -> {
-                val lp = RelativeLayout.LayoutParams(
-                    RelativeLayout.LayoutParams.MATCH_PARENT,
-                    RelativeLayout.LayoutParams.MATCH_PARENT
-                )
-                lp.marginStart = ViewUtils.dpToPx(32f, context).toInt()
-                lp.marginEnd = ViewUtils.dpToPx(32f, context).toInt()
-                lp.addRule(
+                contentLp.marginStart = ViewUtils.dpToPx(32f, context).toInt()
+                contentLp.marginEnd = ViewUtils.dpToPx(32f, context).toInt()
+                contentLp.addRule(
                     RelativeLayout.CENTER_IN_PARENT,
                     RelativeLayout.TRUE
                 )
-                lp
             }
             Position.TOP -> {
-                val lp = RelativeLayout.LayoutParams(
-                    RelativeLayout.LayoutParams.MATCH_PARENT,
-                    RelativeLayout.LayoutParams.WRAP_CONTENT
-                )
-                lp.marginStart = ViewUtils.dpToPx(16f, context).toInt()
-                lp.marginEnd = ViewUtils.dpToPx(16f, context).toInt()
-                lp.addRule(RelativeLayout.ALIGN_PARENT_TOP, RelativeLayout.TRUE)
-                lp.topMargin = ViewUtils.dpToPx(24f, context).toInt()
-                lp
+                contentLp.marginStart = ViewUtils.dpToPx(16f, context).toInt()
+                contentLp.marginEnd = ViewUtils.dpToPx(16f, context).toInt()
+                contentLp.addRule(RelativeLayout.ALIGN_PARENT_TOP, RelativeLayout.TRUE)
+                contentLp.topMargin = ViewUtils.dpToPx(24f, context).toInt()
             }
             else -> {
-                val lp = RelativeLayout.LayoutParams(
-                    RelativeLayout.LayoutParams.MATCH_PARENT,
-                    RelativeLayout.LayoutParams.WRAP_CONTENT
-                )
-                lp.marginStart = ViewUtils.dpToPx(16f, context).toInt()
-                lp.marginEnd = ViewUtils.dpToPx(16f, context).toInt()
-                lp.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM, RelativeLayout.TRUE)
-                lp.bottomMargin = ViewUtils.dpToPx(24f, context).toInt()
-                lp
+                contentLp.marginStart = ViewUtils.dpToPx(16f, context).toInt()
+                contentLp.marginEnd = ViewUtils.dpToPx(16f, context).toInt()
+                contentLp.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM, RelativeLayout.TRUE)
+                contentLp.bottomMargin = ViewUtils.dpToPx(24f, context).toInt()
             }
         }
 
@@ -638,11 +628,11 @@ abstract class Popup
         )
         val fadeAnim = ObjectAnimator.ofFloat(contentView, "alpha", 0f, 1f)
         transAnim.duration =
-                contentView.context.resources.getInteger(android.R.integer.config_mediumAnimTime)
-                    .toLong()
+            contentView.context.resources.getInteger(android.R.integer.config_mediumAnimTime)
+                .toLong()
         fadeAnim.duration =
-                contentView.context.resources.getInteger(android.R.integer.config_longAnimTime)
-                    .toLong()
+            contentView.context.resources.getInteger(android.R.integer.config_longAnimTime)
+                .toLong()
         val animSet = AnimatorSet()
         animSet.addListener(object : AnimatorListenerAdapter() {
             override fun onAnimationStart(animation: Animator) {
@@ -650,7 +640,9 @@ abstract class Popup
             }
 
             override fun onAnimationEnd(animation: Animator) {
-                onViewShown(contentView)
+                contentView.post{
+                    onViewShown(contentView)
+                }
             }
         })
         animSet.playTogether(transAnim, fadeAnim)
@@ -670,11 +662,11 @@ abstract class Popup
         )
         val fadeAnim = ObjectAnimator.ofFloat(contentView, "alpha", 1f, 0f)
         transAnim.duration =
-                contentView.context.resources.getInteger(android.R.integer.config_shortAnimTime)
-                    .toLong()
+            contentView.context.resources.getInteger(android.R.integer.config_shortAnimTime)
+                .toLong()
         fadeAnim.duration =
-                contentView.context.resources.getInteger(android.R.integer.config_mediumAnimTime)
-                    .toLong()
+            contentView.context.resources.getInteger(android.R.integer.config_mediumAnimTime)
+                .toLong()
         val animSet = AnimatorSet()
         animSet.addListener(object : AnimatorListenerAdapter() {
             override fun onAnimationEnd(animation: Animator) {
@@ -721,6 +713,7 @@ abstract class Popup
     }
 
     fun hide() {
+        hideListener()
         autoHideHandler.removeCallbacksAndMessages(null)
         overlayView.setOnClickListener(null)
         overlayView.isClickable = false

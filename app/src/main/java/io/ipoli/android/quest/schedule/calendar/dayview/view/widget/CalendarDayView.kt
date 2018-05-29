@@ -19,7 +19,7 @@ import android.view.*
 import android.widget.FrameLayout
 import android.widget.ImageView
 import io.ipoli.android.R
-import io.ipoli.android.R.id.eventContainer
+import io.ipoli.android.R.id.*
 import io.ipoli.android.common.ViewUtils
 import io.ipoli.android.common.datetime.Time
 import io.ipoli.android.common.view.AndroidColor
@@ -28,7 +28,6 @@ import io.ipoli.android.quest.schedule.calendar.dayview.view.widget.util.Positio
 import kotlinx.android.synthetic.main.view_calendar_day.view.*
 import org.threeten.bp.Duration
 import org.threeten.bp.LocalDateTime
-import timber.log.Timber
 import java.lang.Math.*
 import java.util.concurrent.TimeUnit
 import kotlin.reflect.KClass
@@ -64,7 +63,7 @@ class CalendarDayView : FrameLayout, StateChangeListener {
             val a = object : Action<E> {
                 override fun execute(state: State, event: E): State {
                     val newState = execute(state, event)
-                    Timber.d("Transition given ${state.type} when $event to ${newState.type}")
+//                    Timber.d("Transition given ${state.type} when $event to ${newState.type}")
                     return newState
                 }
             }

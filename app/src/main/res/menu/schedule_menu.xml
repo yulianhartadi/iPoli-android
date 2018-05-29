@@ -4,6 +4,12 @@
     <item
         android:id="@+id/actionViewMode"
         android:icon="@drawable/ic_format_list_bulleted_white_24dp"
-        android:title="Agenda"
+        android:title="@string/agenda"
+        app:showAsAction="always" />
+
+    <item
+        android:id="@+id/actionDailyChallenge"
+        android:icon="@drawable/ic_sword_cross_white_24dp"
+        android:title="@string/daily_challenge_title"
         app:showAsAction="always" />
 </menu>

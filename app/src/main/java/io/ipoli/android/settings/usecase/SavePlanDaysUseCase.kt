@@ -1,7 +1,6 @@
 package io.ipoli.android.settings.usecase
 
 import io.ipoli.android.common.UseCase
-import io.ipoli.android.planday.job.PlanDayScheduler
 import io.ipoli.android.player.persistence.PlayerRepository
 import org.threeten.bp.DayOfWeek
 
@@ -10,8 +9,7 @@ import org.threeten.bp.DayOfWeek
  * on 5/17/18.
  */
 class SavePlanDaysUseCase(
-    private val playerRepository: PlayerRepository,
-    private val planDayScheduler: PlanDayScheduler
+    private val playerRepository: PlayerRepository
 ) : UseCase<SavePlanDaysUseCase.Params, Unit> {
 
     override fun execute(parameters: Params) {
@@ -25,8 +23,6 @@ class SavePlanDaysUseCase(
                 )
             )
         )
-
-        planDayScheduler.scheduleForNextTime()
     }
 
     data class Params(val days: Set<DayOfWeek>)

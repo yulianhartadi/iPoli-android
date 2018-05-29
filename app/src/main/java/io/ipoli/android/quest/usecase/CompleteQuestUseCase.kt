@@ -4,6 +4,9 @@ import io.ipoli.android.Constants
 import io.ipoli.android.common.SimpleReward
 import io.ipoli.android.common.UseCase
 import io.ipoli.android.common.datetime.Time
+import io.ipoli.android.common.rate.RatePopupScheduler
+import io.ipoli.android.dailychallenge.job.DailyChallengeCompleteScheduler
+import io.ipoli.android.dailychallenge.usecase.CheckForDailyChallengeCompletionUseCase
 import io.ipoli.android.pet.Food
 import io.ipoli.android.player.persistence.PlayerRepository
 import io.ipoli.android.player.usecase.RewardPlayerUseCase
@@ -11,9 +14,7 @@ import io.ipoli.android.quest.Quest
 import io.ipoli.android.quest.data.persistence.QuestRepository
 import io.ipoli.android.quest.job.QuestCompleteScheduler
 import io.ipoli.android.quest.job.ReminderScheduler
-import io.ipoli.android.common.rate.RatePopupScheduler
 import org.threeten.bp.LocalDate
-import timber.log.Timber
 import java.util.*
 
 /**
@@ -27,6 +28,8 @@ open class CompleteQuestUseCase(
     private val questCompleteScheduler: QuestCompleteScheduler,
     private val ratePopupScheduler: RatePopupScheduler,
     private val rewardPlayerUseCase: RewardPlayerUseCase,
+    private val checkForDailyChallengeCompletionUseCase: CheckForDailyChallengeCompletionUseCase,
+    private val dailyChallengeCompleteScheduler: DailyChallengeCompleteScheduler,
     private val randomSeed: Long? = null
 ) : UseCase<CompleteQuestUseCase.Params, Quest> {
     override fun execute(parameters: Params): Quest {
@@ -67,6 +70,15 @@ open class CompleteQuestUseCase(
 
         questCompleteScheduler.schedule(reward)
         ratePopupScheduler.schedule()
+
+        val r = checkForDailyChallengeCompletionUseCase.execute(Unit)
+        if (r == CheckForDailyChallengeCompletionUseCase.Result.Complete) {
+            dailyChallengeCompleteScheduler.schedule(
+                experience(100f),
+                coins(100f)
+            )
+        }
+
         return newQuest
     }
 

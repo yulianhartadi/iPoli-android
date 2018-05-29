@@ -39,6 +39,8 @@ class ScheduleViewController(args: Bundle? = null) :
 
     private var viewModeTitle = "Agenda"
 
+    private var showDailyChallenge = false
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup,
@@ -88,6 +90,7 @@ class ScheduleViewController(args: Bundle? = null) :
                 .colorRes(R.color.md_white)
                 .sizeDp(24)
         ).title = viewModeTitle
+        menu.findItem(R.id.actionDailyChallenge).isVisible = showDailyChallenge
         super.onPrepareOptionsMenu(menu)
     }
 
@@ -96,6 +99,11 @@ class ScheduleViewController(args: Bundle? = null) :
 
             R.id.actionViewMode -> {
                 dispatch(ScheduleAction.ToggleViewMode)
+                true
+            }
+
+            R.id.actionDailyChallenge -> {
+                navigateFromRoot().toDailyChallenge()
                 true
             }
             else -> super.onOptionsItemSelected(item)
@@ -171,6 +179,13 @@ class ScheduleViewController(args: Bundle? = null) :
 
             INITIAL -> {
                 renderCalendarToolbar(state)
+                showDailyChallenge = state.showDailyChallenge
+                activity?.invalidateOptionsMenu()
+            }
+
+            SHOW_DAILY_CHALLENGE_CHANGED -> {
+                showDailyChallenge = state.showDailyChallenge
+                activity?.invalidateOptionsMenu()
             }
 
             DATE_PICKER_CHANGED -> renderDatePicker(

@@ -3,11 +3,11 @@ package io.ipoli.android.common.rate
 import android.preference.PreferenceManager
 import com.evernote.android.job.Job
 import com.evernote.android.job.JobRequest
-import kotlinx.coroutines.experimental.android.UI
-import kotlinx.coroutines.experimental.launch
 import io.ipoli.android.Constants
 import io.ipoli.android.common.di.Module
 import io.ipoli.android.common.view.asThemedWrapper
+import kotlinx.coroutines.experimental.android.UI
+import kotlinx.coroutines.experimental.launch
 import space.traversal.kapsule.Injects
 import java.util.*
 
@@ -36,7 +36,7 @@ class RatePopupJob : Job(), Injects<Module> {
     }
 
     companion object {
-        val TAG = "job_rate_tag"
+        const val TAG = "job_rate_tag"
     }
 }
 

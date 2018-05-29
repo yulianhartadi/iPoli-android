@@ -100,7 +100,11 @@ class QuestCompletePopup(
         val title = contentView.message
         val messages = contentView.resources.getStringArray(R.array.quest_complete_message)
         val message = messages[Random().nextInt(messages.size)]
-        val typewriterAnim = TypewriterTextAnimator.of(title, message)
+        val typewriterAnim = TypewriterTextAnimator.of(
+            title,
+            message,
+            typeSpeed = TypewriterTextAnimator.DEFAULT_TYPE_SPEED - 5
+        )
         typewriterAnim.addListener(object : AnimatorListenerAdapter() {
             override fun onAnimationEnd(animation: Animator) {
                 startEarnedRewardAnimation(contentView, state)

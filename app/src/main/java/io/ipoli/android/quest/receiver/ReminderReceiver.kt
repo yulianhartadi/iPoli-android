@@ -105,7 +105,9 @@ class ReminderReceiver : AsyncBroadcastReceiver() {
                         launch(CommonPool) {
                             snoozeQuestUseCase.execute(it.id)
                         }
-                        Toast.makeText(c, "Quest snoozed", Toast.LENGTH_SHORT).show()
+                        Toast
+                            .makeText(c, c.getString(R.string.remind_in_15), Toast.LENGTH_SHORT)
+                            .show()
                     },
                     onStart = {
                         notificationManager.cancel(notificationId)

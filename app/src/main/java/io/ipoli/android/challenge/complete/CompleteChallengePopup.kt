@@ -15,7 +15,7 @@ import kotlinx.android.synthetic.main.popup_challenge_complete.view.*
  * Created by Venelin Valkov <venelin@mypoli.fun>
  * on 03/15/2018.
  */
-class CompleteChallengePopup(private val challenge: Challenge) : Popup() {
+class CompleteChallengePopup(private val challenge: Challenge) : Popup(position = Position.TOP) {
 
     override fun createView(inflater: LayoutInflater): View =
         inflater.inflate(R.layout.popup_challenge_complete, null)

@@ -73,9 +73,6 @@ abstract class BaseFirestoreRepository<E, out T>(
             val doc = collectionReference.document()
             entityData["id"] = doc.id
             entityData["removedAt"] = null
-            val now = Instant.now().toEpochMilli()
-            entityData["updatedAt"] = now
-            entityData["createdAt"] = now
             doc.set(entityData)
         } else {
             entityData["updatedAt"] = Instant.now().toEpochMilli()
@@ -99,9 +96,6 @@ abstract class BaseFirestoreRepository<E, out T>(
                 val ref = collectionReference.document()
                 entityData["id"] = ref.id
                 entityData["removedAt"] = null
-                val now = Instant.now().toEpochMilli()
-                entityData["updatedAt"] = now
-                entityData["createdAt"] = now
                 ref
             } else {
                 entityData["updatedAt"] = Instant.now().toEpochMilli()

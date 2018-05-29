@@ -29,12 +29,9 @@ import io.ipoli.android.common.redux.SideEffectHandler
 import io.ipoli.android.common.view.Debounce
 import io.ipoli.android.common.view.playerTheme
 import io.ipoli.android.onboarding.OnboardViewController
-import io.ipoli.android.pet.PetViewController
-import io.ipoli.android.planday.PlanDayViewController
 import io.ipoli.android.player.Membership
 import io.ipoli.android.player.Player
 import io.ipoli.android.player.auth.AuthAction
-import io.ipoli.android.quest.schedule.addquest.AddQuestViewController
 import io.ipoli.android.store.powerup.AndroidPowerUp
 import io.ipoli.android.store.powerup.buy.BuyPowerUpDialogController
 import io.ipoli.android.store.powerup.middleware.ShowBuyPowerUpAction
@@ -60,6 +57,7 @@ class MainActivity : AppCompatActivity(), Injects<Module>, SideEffectHandler<App
 
     private val playerRepository by required { playerRepository }
     private val sharedPreferences by required { sharedPreferences }
+    private val planDayScheduler by required { planDayScheduler }
 
     private val stateStore by required { stateStore }
 
@@ -142,16 +140,25 @@ class MainActivity : AppCompatActivity(), Injects<Module>, SideEffectHandler<App
     }
 
     private fun startApp(player: Player) {
+        val navigator = Navigator(router)
         if (intent.action == ACTION_SHOW_TIMER) {
-            showTimer(intent)
+            val questId = intent.getStringExtra(Constants.QUEST_ID_EXTRA_KEY)
+            navigator.setQuest(questId)
         } else if (shouldShowQuickAdd(intent)) {
-            showQuickAdd()
+            navigator.setAddQuest(
+                closeListener = {
+                    finish()
+                },
+                currentDate = LocalDate.now(),
+                isFullscreen = true
+            )
         } else if (intent.action == ACTION_SHOW_PET) {
-            showPet()
+            navigator.setPet(showBackButton = false)
         } else if (intent.action == ACTION_PLAN_DAY) {
-            router.setRoot(RouterTransaction.with(PlanDayViewController()))
+            navigator.setPlanDay()
         } else if (!router.hasRootController()) {
-            Navigator(router).setHome()
+            navigator.setHome()
+            planDayScheduler.schedule()
             if (Random().nextInt(10) == 1 && player.membership == Membership.NONE) {
                 showPremiumSnackbar()
             }
@@ -183,29 +190,6 @@ class MainActivity : AppCompatActivity(), Injects<Module>, SideEffectHandler<App
         if (!router.hasRootController()) {
             finish()
         }
-    }
-
-    private fun showQuickAdd() {
-        router.setRoot(
-            RouterTransaction.with(
-                AddQuestViewController(
-                    closeListener = {
-                        finish()
-                    },
-                    currentDate = LocalDate.now(),
-                    isFullscreen = true
-                )
-            )
-        )
-    }
-
-    private fun showTimer(intent: Intent) {
-        val questId = intent.getStringExtra(Constants.QUEST_ID_EXTRA_KEY)
-        Navigator(router).setQuest(questId)
-    }
-
-    private fun showPet() {
-        router.pushController(RouterTransaction.with(PetViewController(showBackButton = false)))
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {

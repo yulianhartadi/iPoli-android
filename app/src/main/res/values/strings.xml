@@ -156,7 +156,7 @@
     <string name="title_pick_daily_challenge_quests">Choose 3 quests</string>
     <string name="daily_challenge_notification_title">Your daily challenge</string>
     <string name="daily_challenge_notification_text">When the day is over, what 3 quests will you want to have conquered?</string>
-    <string name="empty_daily_challenge_quests_text">No quests to challenge you!</string>
+    <string name="empty_daily_challenge_quests_text">No Quests to challenge you!</string>
     <string name="pick_max_3_miq">Pick max 3 most important quest</string>
     <string name="miq_saved">Most important quests for today saved</string>
     <string name="menu_miq">Choose important quests</string>
@@ -1346,7 +1346,7 @@
     <string name="temperature_unit_fahrenheit">°F</string>
     <string name="select_temperature_unit">Select temeperature unit</string>
     <string name="dismiss">Dismiss</string>
-    <string name="plan_day_snooze">Will remind you in 15 minutes</string>
+    <string name="remind_in_15">I\'ll remind you in 15 minutes</string>
     <string name="retry">Retry</string>
     <string name="migration_title">Making myPoli awesome for you</string>
     <string name="migration_message">Looking for my biscuits… Have you seen em?</string>
@@ -1356,4 +1356,12 @@
     <string name="migration_error_message">Please, contact us now to get this fixed!</string>
     <string name="new_challenge">New Challenge</string>
     <string name="settings_privacy_desc">Learn how myPoli manages your privacy</string>
+    <string name="daily_challenge_title">Daily Challenge</string>
+    <string name="selected_daily_challenge_quests">Daily Challenge Quests</string>
+    <string name="max_daily_challenge_selected_message">%d quests already selected</string>
+    <string name="not_enough_daily_challenge_quests_message">"Select %d more quests for your daily challenge"</string>
+    <string name="daily_challenge_empty_today_quests">No more Quests for today</string>
+    <string name="daily_challenge_active">Daily Challenge active</string>
+    <string name="selected_daily_challenge_count">%d/%d quests chosen</string>
+    <string name="daily_challenge_complete">All done for today!</string>
 </resources>

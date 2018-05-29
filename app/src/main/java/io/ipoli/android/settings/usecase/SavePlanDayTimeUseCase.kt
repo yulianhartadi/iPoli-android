@@ -25,7 +25,7 @@ class SavePlanDayTimeUseCase(
                 )
             )
         )
-        planDayScheduler.scheduleForNextTime()
+        planDayScheduler.schedule()
     }
 
     data class Params(val time: Time)
