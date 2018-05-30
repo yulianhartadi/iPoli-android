@@ -332,6 +332,7 @@ class AddQuestViewController(args: Bundle? = null) :
                 { _, _ ->
                     dispatch(AddQuestAction.TimePicked(null))
                 })
+
             dialog.show()
         }
     }

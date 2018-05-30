@@ -14,20 +14,20 @@ import io.ipoli.android.common.BaseViewStateReducer
 import io.ipoli.android.common.DataLoadedAction
 import io.ipoli.android.common.mvi.BaseViewState
 import io.ipoli.android.common.redux.Action
-import io.ipoli.android.common.view.*
+import io.ipoli.android.common.view.ReduxDialogController
+import io.ipoli.android.common.view.normalIcon
 import io.ipoli.android.common.view.recyclerview.BaseRecyclerViewAdapter
 import io.ipoli.android.common.view.recyclerview.RecyclerViewViewModel
 import io.ipoli.android.common.view.recyclerview.SimpleViewHolder
+import io.ipoli.android.common.view.showShortToast
 import io.ipoli.android.pet.AndroidPetAvatar
 import io.ipoli.android.pet.PetAvatar
 import io.ipoli.android.quest.Color
 import io.ipoli.android.quest.Icon
 import io.ipoli.android.tag.Tag
 import io.ipoli.android.tag.dialog.TagPickerViewState.StateType.*
-import io.ipoli.android.tag.widget.EditItemAutocompleteTagAdapter
-import io.ipoli.android.tag.widget.EditItemTagAdapter
 import kotlinx.android.synthetic.main.dialog_tag_picker.view.*
-import kotlinx.android.synthetic.main.item_tag_picker_favourite.view.*
+import kotlinx.android.synthetic.main.item_tag_picker.view.*
 import kotlinx.android.synthetic.main.view_dialog_header.view.*
 
 /**
@@ -35,10 +35,8 @@ import kotlinx.android.synthetic.main.view_dialog_header.view.*
  * on 5/1/18.
  */
 sealed class TagPickerAction : Action {
-    data class AddFavouriteTag(val tag: Tag) : TagPickerAction()
-    data class RemoveFavouriteTag(val tag: Tag) : TagPickerAction()
+    data class AddTag(val tag: Tag) : TagPickerAction()
     data class RemoveTag(val tag: Tag) : TagPickerAction()
-    data class AddTag(val tagName: String) : TagPickerAction()
 
     data class Load(val selectedTags: Set<Tag>) : TagPickerAction()
     object Switch : TagPickerAction()
@@ -57,8 +55,7 @@ object TagPickerReducer : BaseViewStateReducer<TagPickerViewState>() {
             subState.copy(
                 type = DATA_LOADED,
                 petAvatar = state.dataState.player!!.pet.avatar,
-                tags = state.dataState.tags,
-                favouriteTags = state.dataState.tags.filter { it.isFavorite },
+                tags = state.dataState.tags.sortedByDescending { it.isFavorite },
                 selectedTags = action.selectedTags
             )
         }
@@ -68,19 +65,11 @@ object TagPickerReducer : BaseViewStateReducer<TagPickerViewState>() {
             subState.copy(
                 type = TAGS_CHANGED,
                 tags = tags,
-                favouriteTags = tags.filter { it.isFavorite },
                 selectedTags = subState.selectedTags.filter { tags.contains(it) }.toSet()
             )
         }
 
-        is TagPickerAction.Switch -> {
-            subState.copy(
-                type = SWITCH,
-                showAll = !subState.showAll
-            )
-        }
-
-        is TagPickerAction.AddFavouriteTag -> {
+        is TagPickerAction.AddTag -> {
             if (subState.maxTagsReached) {
                 subState.copy(
                     type = SHOW_MAX_TAGS
@@ -96,27 +85,8 @@ object TagPickerReducer : BaseViewStateReducer<TagPickerViewState>() {
 
         }
 
-        is TagPickerAction.RemoveFavouriteTag -> {
-            val selectedTags = subState.selectedTags - action.tag
-            subState.copy(
-                type = TAGS_CHANGED,
-                selectedTags = selectedTags,
-                maxTagsReached = selectedTags.size >= Constants.MAX_TAGS_PER_ITEM
-            )
-        }
-
         is TagPickerAction.RemoveTag -> {
             val selectedTags = subState.selectedTags - action.tag
-            subState.copy(
-                type = TAGS_CHANGED,
-                selectedTags = selectedTags,
-                maxTagsReached = selectedTags.size >= Constants.MAX_TAGS_PER_ITEM
-            )
-        }
-
-        is TagPickerAction.AddTag -> {
-            val tag = subState.tags.first { it.name == action.tagName }
-            val selectedTags = subState.selectedTags + tag
             subState.copy(
                 type = TAGS_CHANGED,
                 selectedTags = selectedTags,
@@ -137,9 +107,7 @@ object TagPickerReducer : BaseViewStateReducer<TagPickerViewState>() {
         type = LOADING,
         petAvatar = PetAvatar.ELEPHANT,
         tags = emptyList(),
-        favouriteTags = emptyList(),
         selectedTags = emptySet(),
-        showAll = false,
         maxTagsReached = false
     )
 }
@@ -148,9 +116,7 @@ data class TagPickerViewState(
     val type: StateType,
     val petAvatar: PetAvatar,
     val tags: List<Tag>,
-    val favouriteTags: List<Tag>,
     val selectedTags: Set<Tag>,
-    val showAll: Boolean,
     val maxTagsReached: Boolean
 ) : BaseViewState() {
 
@@ -179,13 +145,8 @@ class TagPickerDialogController(args: Bundle? = null) :
 
     override fun onCreateContentView(inflater: LayoutInflater, savedViewState: Bundle?): View {
         val view = inflater.inflate(R.layout.dialog_tag_picker, null)
-        view.favouriteTagList.layoutManager = LinearLayoutManager(activity!!)
-        view.favouriteTagList.adapter = FavouriteTagAdapter()
-
-        view.allTagList.layoutManager = LinearLayoutManager(activity!!)
-        view.allTagList.adapter = EditItemTagAdapter(removeTagCallback = {
-            dispatch(TagPickerAction.RemoveTag(it))
-        }, useWhiteTheme = false)
+        view.tagList.layoutManager = LinearLayoutManager(activity!!)
+        view.tagList.adapter = FavouriteTagAdapter()
 
         return view
     }
@@ -205,7 +166,6 @@ class TagPickerDialogController(args: Bundle? = null) :
         return dialogBuilder
             .setPositiveButton(R.string.dialog_ok, null)
             .setNegativeButton(R.string.cancel, null)
-            .setNeutralButton(R.string.all_tags, null)
             .create()
     }
 
@@ -214,10 +174,6 @@ class TagPickerDialogController(args: Bundle? = null) :
         dialog.setOnShowListener {
             setPositiveButtonListener {
                 dispatch(TagPickerAction.Close)
-            }
-
-            setNeutralButtonListener {
-                dispatch(TagPickerAction.Switch)
             }
         }
     }
@@ -228,25 +184,14 @@ class TagPickerDialogController(args: Bundle? = null) :
             DATA_LOADED -> {
                 changeIcon(state.petHeadImage)
                 renderFavouriteTags(view, state)
-                renderAllTags(view, state)
-            }
-
-            SWITCH -> {
-                view.container.showNext()
-                if (state.showAll) {
-                    changeNeutralButtonText(R.string.favorite)
-                } else {
-                    changeNeutralButtonText(R.string.all_tags)
-                }
             }
 
             TAGS_CHANGED -> {
-                renderAllTags(view, state)
                 renderFavouriteTags(view, state)
             }
 
             SHOW_MAX_TAGS -> {
-                view.favouriteTagList.adapter = FavouriteTagAdapter()
+                view.tagList.adapter = FavouriteTagAdapter()
                 renderFavouriteTags(view, state)
                 showShortToast(R.string.max_tags_message)
             }
@@ -265,36 +210,10 @@ class TagPickerDialogController(args: Bundle? = null) :
         view: View,
         state: TagPickerViewState
     ) {
-        (view.favouriteTagList.adapter as FavouriteTagAdapter).updateAll(state.favouriteViewModels)
+        (view.tagList.adapter as FavouriteTagAdapter).updateAll(state.viewModels)
     }
 
-    private fun renderAllTags(
-        view: View,
-        state: TagPickerViewState
-    ) {
-        (view.allTagList.adapter as EditItemTagAdapter).updateAll(state.tagViewModels)
-        val add = view.addTag
-        if (state.maxTagsReached) {
-            add.gone()
-        } else {
-            add.visible()
-
-            val adapter =
-                EditItemAutocompleteTagAdapter(state.tags - state.selectedTags, activity!!)
-            add.setAdapter(adapter)
-            add.setOnItemClickListener { _, _, position, _ ->
-                dispatch(TagPickerAction.AddTag(adapter.getItem(position).name))
-                add.setText("")
-            }
-            add.threshold = 0
-            add.setOnTouchListener { _, _ ->
-                add.showDropDown()
-                false
-            }
-        }
-    }
-
-    data class FavouriteTagViewModel(
+    data class TagViewModel(
         val name: String,
         val icon: Icon?,
         val color: Color,
@@ -306,11 +225,11 @@ class TagPickerDialogController(args: Bundle? = null) :
     }
 
     inner class FavouriteTagAdapter :
-        BaseRecyclerViewAdapter<FavouriteTagViewModel>(
-            R.layout.item_tag_picker_favourite
+        BaseRecyclerViewAdapter<TagViewModel>(
+            R.layout.item_tag_picker
         ) {
         override fun onBindViewModel(
-            vm: FavouriteTagViewModel,
+            vm: TagViewModel,
             view: View,
             holder: SimpleViewHolder
         ) {
@@ -330,9 +249,9 @@ class TagPickerDialogController(args: Bundle? = null) :
             }
             view.tagCheckBox.setOnCheckedChangeListener { _, isChecked ->
                 if (isChecked) {
-                    dispatch(TagPickerAction.AddFavouriteTag(vm.tag))
+                    dispatch(TagPickerAction.AddTag(vm.tag))
                 } else {
-                    dispatch(TagPickerAction.RemoveFavouriteTag(vm.tag))
+                    dispatch(TagPickerAction.RemoveTag(vm.tag))
                 }
             }
 
@@ -340,9 +259,9 @@ class TagPickerDialogController(args: Bundle? = null) :
 
     }
 
-    private val TagPickerViewState.favouriteViewModels: List<FavouriteTagViewModel>
-        get() = favouriteTags.map {
-            FavouriteTagViewModel(
+    private val TagPickerViewState.viewModels: List<TagViewModel>
+        get() = tags.map {
+            TagViewModel(
                 name = it.name,
                 icon = it.icon,
                 color = it.color,
@@ -350,16 +269,6 @@ class TagPickerDialogController(args: Bundle? = null) :
                 tag = it
             )
         }
-
-    private val TagPickerViewState.tagViewModels: List<EditItemTagAdapter.TagViewModel>
-        get() = selectedTags.map {
-            EditItemTagAdapter.TagViewModel(
-                name = it.name,
-                icon = it.icon?.androidIcon?.icon ?: MaterialDesignIconic.Icon.gmi_label,
-                tag = it
-            )
-        }
-
 
     private val TagPickerViewState.petHeadImage
         get() = AndroidPetAvatar.valueOf(petAvatar.name).headImage

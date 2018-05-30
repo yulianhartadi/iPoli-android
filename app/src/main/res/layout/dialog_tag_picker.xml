@@ -1,36 +1,39 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ViewSwitcher xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/container"
-    style="@style/DialogContainer"
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:elevation="24dp"
-    android:inAnimation="@anim/slide_in_right"
-    android:outAnimation="@anim/slide_out_left">
+<!--<ViewSwitcher xmlns:android="http://schemas.android.com/apk/res/android"-->
+    <!--android:id="@+id/container"-->
+    <!--style="@style/DialogContainer"-->
+    <!--android:layout_width="match_parent"-->
+    <!--android:layout_height="wrap_content"-->
+    <!--android:elevation="24dp"-->
+    <!--android:descendantFocusability="blocksDescendants"-->
+    <!--android:inAnimation="@anim/slide_in_right"-->
+    <!--android:outAnimation="@anim/slide_out_left">-->
 
     <android.support.v7.widget.RecyclerView
-        android:id="@+id/favouriteTagList"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+        android:id="@+id/tagList"
         android:layout_width="match_parent"
+        style="@style/DialogContainer"
         android:layout_height="wrap_content"/>
 
 
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical">
+    <!--<LinearLayout-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:orientation="vertical">-->
 
-        <android.support.v7.widget.RecyclerView
-            android:id="@+id/allTagList"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
+        <!--<android.support.v7.widget.RecyclerView-->
+            <!--android:id="@+id/allTagList"-->
+            <!--android:layout_width="match_parent"-->
+            <!--android:layout_height="wrap_content" />-->
 
-        <AutoCompleteTextView
-            style="@style/TagAutocompleteThemeDark"
-            android:id="@+id/addTag"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:maxLines="1"
-            android:hint="@string/add_tag" />
-    </LinearLayout>
+        <!--<AutoCompleteTextView-->
+            <!--style="@style/TagAutocompleteThemeDark"-->
+            <!--android:id="@+id/addTag"-->
+            <!--android:layout_width="match_parent"-->
+            <!--android:layout_height="wrap_content"-->
+            <!--android:maxLines="1"-->
+            <!--android:hint="@string/add_tag" />-->
+    <!--</LinearLayout>-->
 
-</ViewSwitcher>
+<!--</ViewSwitcher>-->
