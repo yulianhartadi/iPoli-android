@@ -317,6 +317,7 @@ class AddQuestViewController(args: Bundle? = null) :
     ) {
         setIcon(GoogleMaterial.Icon.gmd_access_time, view.startTime, state.time != null)
         view.startTime.onDebounceClick {
+            ViewUtils.hideKeyboard(view)
             val startTime = state.time ?: Time.now()
 
             val dialog = createTimePickerDialog(
@@ -332,6 +333,13 @@ class AddQuestViewController(args: Bundle? = null) :
                 { _, _ ->
                     dispatch(AddQuestAction.TimePicked(null))
                 })
+
+            dialog.setOnDismissListener {
+                view.postDelayed({
+                    view.questName.requestFocus()
+                    ViewUtils.showKeyboard(view.questName.context, view.questName)
+                }, 10)
+            }
 
             dialog.show()
         }
