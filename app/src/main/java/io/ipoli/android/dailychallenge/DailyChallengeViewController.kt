@@ -10,6 +10,8 @@ import android.text.SpannableString
 import android.text.style.StrikethroughSpan
 import android.view.*
 import android.widget.TextView
+import com.mikepenz.google_material_typeface_library.GoogleMaterial
+import com.mikepenz.iconics.IconicsDrawable
 import com.mikepenz.iconics.typeface.IIcon
 import com.mikepenz.ionicons_typeface_library.Ionicons
 import io.ipoli.android.Constants
@@ -69,6 +71,13 @@ class DailyChallengeViewController(args: Bundle? = null) :
         view.todayQuests.adapter = QuestAdapter()
 
         initAddQuest(view)
+
+        view.descriptionIcon.setImageDrawable(
+            IconicsDrawable(activity!!)
+                .icon(GoogleMaterial.Icon.gmd_info_outline)
+                .color(attrData(R.attr.colorAccent))
+                .sizeDp(24)
+        )
 
         return view
     }

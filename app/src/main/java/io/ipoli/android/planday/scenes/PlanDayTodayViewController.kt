@@ -80,6 +80,13 @@ class PlanDayTodayViewController(args: Bundle? = null) :
         initSwipe(view)
         initAddQuest(view)
         initEmptyView(view)
+
+        view.descriptionIcon.setImageDrawable(
+            IconicsDrawable(activity!!)
+                .icon(GoogleMaterial.Icon.gmd_info_outline)
+                .color(attrData(R.attr.colorAccent))
+                .sizeDp(24)
+        )
         return view
     }
 

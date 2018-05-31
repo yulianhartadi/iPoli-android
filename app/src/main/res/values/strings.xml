@@ -1364,4 +1364,5 @@
     <string name="daily_challenge_active">Daily Challenge active</string>
     <string name="selected_daily_challenge_count">%d/%d quests chosen</string>
     <string name="daily_challenge_complete">All done for today!</string>
+    <string name="daily_challenge_description">The Daily Challenge should include your 3 most important Quests for the day</string>
 </resources>
