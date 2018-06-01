@@ -46,7 +46,7 @@ class AndroidRemoveExpiredPowerUpsScheduler : RemoveExpiredPowerUpsScheduler {
             .schedule(
                 JobRequest.Builder(RemoveExpiredPowerUpsJob.TAG).setUpdateCurrent(true),
                 0,
-                TimeUnit.HOURS.toMillis(1)
+                TimeUnit.HOURS.toMillis(8)
             )
     }
 }

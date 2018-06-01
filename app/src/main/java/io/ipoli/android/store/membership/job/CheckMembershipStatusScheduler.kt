@@ -8,7 +8,6 @@ import io.ipoli.android.common.api.Api
 import io.ipoli.android.common.datetime.isBetween
 import io.ipoli.android.common.di.Module
 import io.ipoli.android.myPoliApp
-import io.ipoli.android.player.Membership
 import io.ipoli.android.store.membership.usecase.RemoveMembershipUseCase
 import io.ipoli.android.store.powerup.usecase.EnableAllPowerUpsUseCase
 import io.ipoli.android.store.purchase.AndroidSubscriptionManager
@@ -35,10 +34,6 @@ class CheckMembershipStatusJob : DailyJob(), Injects<Module> {
 
         val p = playerRepository.find()
         requireNotNull(p)
-
-        if (p!!.membership == Membership.NONE) {
-            return DailyJobResult.SUCCESS
-        }
 
         val billing = Billing(context, object : Billing.DefaultConfiguration() {
             override fun getPublicKey() = BillingConstants.APP_PUBLIC_KEY
@@ -122,7 +117,7 @@ class AndroidCheckMembershipStatusScheduler : CheckMembershipStatusScheduler {
                 .setRequiredNetworkType(JobRequest.NetworkType.CONNECTED)
                 .setRequirementsEnforced(true),
             0,
-            TimeUnit.HOURS.toMillis(1)
+            TimeUnit.HOURS.toMillis(8)
         )
     }
 }

@@ -2,6 +2,7 @@ package io.ipoli.android.store.powerup.usecase
 
 import io.ipoli.android.common.UseCase
 import io.ipoli.android.common.datetime.isAfterOrEqual
+import io.ipoli.android.player.Membership
 import io.ipoli.android.player.Player
 import io.ipoli.android.player.persistence.PlayerRepository
 import io.ipoli.android.store.powerup.usecase.RemoveExpiredPowerUpsUseCase.Params
@@ -18,12 +19,13 @@ class RemoveExpiredPowerUpsUseCase(private val playerRepository: PlayerRepositor
 
     override fun execute(parameters: Params): Player {
         val p = playerRepository.find()
-        require(p != null)
+        requireNotNull(p)
+        require(p!!.membership == Membership.NONE)
 
         val today = parameters.currentDate
 
         val nonExpiredPowerUps =
-            p!!.inventory.powerUps
+            p.inventory.powerUps
                 .filter { it.expirationDate.isAfterOrEqual(today) }
 
         return playerRepository.save(

@@ -16,8 +16,12 @@ class RemoveMembershipUseCase(private val playerRepository: PlayerRepository) :
         val p = playerRepository.find()
         requireNotNull(p)
 
+        if (p!!.membership == Membership.NONE) {
+            return p
+        }
+
         return playerRepository.save(
-            p!!.copy(
+            p.copy(
                 membership = Membership.NONE,
                 inventory = p.inventory.setPowerUps(listOf())
             )
