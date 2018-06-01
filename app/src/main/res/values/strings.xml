@@ -1365,4 +1365,8 @@
     <string name="selected_daily_challenge_count">%d/%d quests chosen</string>
     <string name="daily_challenge_complete">All done for today!</string>
     <string name="daily_challenge_description">The Daily Challenge should include your 3 most important Quests for the day</string>
+    <string name="pet_item_glasses_clown">a</string>
+    <string name="pet_item_eye_patch">w</string>
+    <string name="pet_item_clown_hair">dsd</string>
+    <string name="pet_item_pirate_hat">as</string>
 </resources>

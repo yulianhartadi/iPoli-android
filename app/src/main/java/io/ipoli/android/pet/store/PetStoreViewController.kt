@@ -15,8 +15,10 @@ import io.ipoli.android.common.ViewUtils
 import io.ipoli.android.common.redux.android.ReduxViewController
 import io.ipoli.android.common.view.*
 import io.ipoli.android.pet.PetAvatar
-import io.ipoli.android.pet.store.PetStoreAction.*
-import io.ipoli.android.pet.store.PetStoreViewState.StateType.*
+import io.ipoli.android.pet.store.PetStoreAction.BuyPet
+import io.ipoli.android.pet.store.PetStoreAction.ChangePet
+import io.ipoli.android.pet.store.PetStoreViewState.StateType.DATA_CHANGED
+import io.ipoli.android.pet.store.PetStoreViewState.StateType.PET_TOO_EXPENSIVE
 import io.ipoli.android.player.inventory.InventoryViewController
 import kotlinx.android.synthetic.main.controller_pet_store.view.*
 import kotlinx.android.synthetic.main.item_pet_store.view.*
@@ -84,10 +86,6 @@ class PetStoreViewController(args: Bundle? = null) :
                 Toast.makeText(view.context, "Pet too expensive", Toast.LENGTH_SHORT).show()
             }
 
-            SHOW_GEM_STORE -> {
-                navigate().toGemStore(FadeChangeHandler())
-            }
-
             else -> {
             }
         }
@@ -124,7 +122,8 @@ class PetStoreViewController(args: Bundle? = null) :
                 }
 
                 PetViewModel.Action.UNLOCK -> {
-                    action.dispatchOnClick { UnlockPet(vm.avatar) }
+                    action.onDebounceClick {
+                        navigate().toGemStore(FadeChangeHandler()) }
                 }
 
                 PetViewModel.Action.BUY -> {

@@ -232,14 +232,18 @@ enum class PetItem(
     val type: PetItemType,
     val gemPrice: Int
 ) {
-    BEARD(-3, 2, 1, PetItemType.MASK, 1),
     GLASSES(4, 5, -9, PetItemType.MASK, 4),
+    EYE_PATCH(5, -1, 3, PetItemType.MASK, 6),
     MASK(8, -3, 4, PetItemType.MASK, 7),
+    GLASSES_CLOWN(2, 6, -1, PetItemType.MASK, 6),
+    BEARD(-3, 2, 1, PetItemType.MASK, 1),
 
 
-    RED_HAT(4, -3, 2, PetItemType.HAT, 3),
+    PIRATE_HAT(3, 6, 1, PetItemType.HAT, 8),
+    CLOWN_HAIR(2, 1, 7, PetItemType.HAT, 8),
     RED_WHITE_HAT(1, 1, 5, PetItemType.HAT, 4),
     HORNS(2, 10, 1, PetItemType.HAT, 9),
+    RED_HAT(4, -3, 2, PetItemType.HAT, 3),
 
 
     RED_DEER_SWEATER(11, -5, 0, PetItemType.BODY_ARMOR, 5),
@@ -255,6 +259,10 @@ enum class AndroidPetItem(
     GLASSES(R.string.pet_item_glasses, R.drawable.pet_item_face_glasses),
     BEARD(R.string.pet_item_beard, R.drawable.pet_item_face_beard),
     MASK(R.string.pet_item_mask, R.drawable.pet_item_face_mask),
+    GLASSES_CLOWN(R.string.pet_item_glasses_clown, R.drawable.pet_item_face_clown_glasses),
+    EYE_PATCH(R.string.pet_item_eye_patch, R.drawable.pet_item_face_pirate_dressing),
+    CLOWN_HAIR(R.string.pet_item_clown_hair, R.drawable.pet_item_head_clown_hair),
+    PIRATE_HAT(R.string.pet_item_pirate_hat, R.drawable.pet_item_head_pirate_cloth),
     RED_HAT(R.string.pet_item_red_hat, R.drawable.pet_item_head_had_red),
     HORNS(R.string.pet_item_horns, R.drawable.pet_item_head_christmas_horns),
     RED_WHITE_HAT(R.string.pet_item_red_white_hat, R.drawable.pet_item_head_had_red_white),
@@ -317,7 +325,11 @@ enum class AndroidPetAvatar(
             PetItem.RED_WHITE_HAT to R.drawable.pet_1_item_head_had_red_white,
             PetItem.RED_WHITE_SWEATER to R.drawable.pet_1_item_sweater_red_white,
             PetItem.RED_SNOWFLAKES_SWEATER to R.drawable.pet_1_item_sweater_red_snowflakes,
-            PetItem.RED_DEER_SWEATER to R.drawable.pet_1_item_sweater_red_deer
+            PetItem.RED_DEER_SWEATER to R.drawable.pet_1_item_sweater_red_deer,
+            PetItem.EYE_PATCH to R.drawable.pet_1_item_face_pirate_dressing,
+            PetItem.GLASSES_CLOWN to R.drawable.pet_1_item_face_clown_glasses,
+            PetItem.CLOWN_HAIR to R.drawable.pet_1_item_head_clown_hair,
+            PetItem.PIRATE_HAT to R.drawable.pet_1_item_head_pirate_cloth
         )
     ),
     PIG(
@@ -341,7 +353,11 @@ enum class AndroidPetAvatar(
             PetItem.RED_WHITE_HAT to R.drawable.pet_11_item_head_had_red_white,
             PetItem.RED_WHITE_SWEATER to R.drawable.pet_11_item_sweater_red_white,
             PetItem.RED_SNOWFLAKES_SWEATER to R.drawable.pet_11_item_sweater_red_snowflakes,
-            PetItem.RED_DEER_SWEATER to R.drawable.pet_11_item_sweater_red_deer
+            PetItem.RED_DEER_SWEATER to R.drawable.pet_11_item_sweater_red_deer,
+            PetItem.EYE_PATCH to R.drawable.pet_11_item_face_pirate_dressing,
+            PetItem.GLASSES_CLOWN to R.drawable.pet_11_item_face_clown_glasses,
+            PetItem.CLOWN_HAIR to R.drawable.pet_11_item_head_clown_hair,
+            PetItem.PIRATE_HAT to R.drawable.pet_11_item_head_pirate_cloth
         )
     ),
     DOG(
@@ -365,7 +381,11 @@ enum class AndroidPetAvatar(
             PetItem.RED_WHITE_HAT to R.drawable.pet_13_item_head_had_red_white,
             PetItem.RED_WHITE_SWEATER to R.drawable.pet_13_item_sweater_red_white,
             PetItem.RED_SNOWFLAKES_SWEATER to R.drawable.pet_13_item_sweater_red_snowflakes,
-            PetItem.RED_DEER_SWEATER to R.drawable.pet_13_item_sweater_red_deer
+            PetItem.RED_DEER_SWEATER to R.drawable.pet_13_item_sweater_red_deer,
+            PetItem.EYE_PATCH to R.drawable.pet_13_item_face_pirate_dressing,
+            PetItem.GLASSES_CLOWN to R.drawable.pet_13_item_face_clown_glasses,
+            PetItem.CLOWN_HAIR to R.drawable.pet_13_item_head_clown_hair,
+            PetItem.PIRATE_HAT to R.drawable.pet_13_item_head_pirate_cloth
         )
     ),
     DONKEY(
@@ -389,7 +409,11 @@ enum class AndroidPetAvatar(
             PetItem.RED_WHITE_HAT to R.drawable.pet_2_item_head_had_red_white,
             PetItem.RED_WHITE_SWEATER to R.drawable.pet_2_item_sweater_red_white,
             PetItem.RED_SNOWFLAKES_SWEATER to R.drawable.pet_2_item_sweater_red_snowflakes,
-            PetItem.RED_DEER_SWEATER to R.drawable.pet_2_item_sweater_red_deer
+            PetItem.RED_DEER_SWEATER to R.drawable.pet_2_item_sweater_red_deer,
+            PetItem.EYE_PATCH to R.drawable.pet_2_item_face_pirate_dressing,
+            PetItem.GLASSES_CLOWN to R.drawable.pet_2_item_face_clown_glasses,
+            PetItem.CLOWN_HAIR to R.drawable.pet_2_item_head_clown_hair,
+            PetItem.PIRATE_HAT to R.drawable.pet_2_item_head_pirate_cloth
         )
     ),
     ELEPHANT(
@@ -413,7 +437,11 @@ enum class AndroidPetAvatar(
             PetItem.RED_WHITE_HAT to R.drawable.pet_3_item_head_had_red_white,
             PetItem.RED_WHITE_SWEATER to R.drawable.pet_3_item_sweater_red_white,
             PetItem.RED_SNOWFLAKES_SWEATER to R.drawable.pet_3_item_sweater_red_snowflakes,
-            PetItem.RED_DEER_SWEATER to R.drawable.pet_3_item_sweater_red_deer
+            PetItem.RED_DEER_SWEATER to R.drawable.pet_3_item_sweater_red_deer,
+            PetItem.EYE_PATCH to R.drawable.pet_3_item_face_pirate_dressing,
+            PetItem.GLASSES_CLOWN to R.drawable.pet_3_item_face_clown_glasses,
+            PetItem.CLOWN_HAIR to R.drawable.pet_3_item_head_clown_hair,
+            PetItem.PIRATE_HAT to R.drawable.pet_3_item_head_pirate_cloth
         )
     ),
     BEAVER(
@@ -437,7 +465,11 @@ enum class AndroidPetAvatar(
             PetItem.RED_WHITE_HAT to R.drawable.pet_4_item_head_had_red_white,
             PetItem.RED_WHITE_SWEATER to R.drawable.pet_4_item_sweater_red_white,
             PetItem.RED_SNOWFLAKES_SWEATER to R.drawable.pet_4_item_sweater_red_snowflakes,
-            PetItem.RED_DEER_SWEATER to R.drawable.pet_4_item_sweater_red_deer
+            PetItem.RED_DEER_SWEATER to R.drawable.pet_4_item_sweater_red_deer,
+            PetItem.EYE_PATCH to R.drawable.pet_4_item_face_pirate_dressing,
+            PetItem.GLASSES_CLOWN to R.drawable.pet_4_item_face_clown_glasses,
+            PetItem.CLOWN_HAIR to R.drawable.pet_4_item_head_clown_hair,
+            PetItem.PIRATE_HAT to R.drawable.pet_4_item_head_pirate_cloth
         )
     ),
     CHICKEN(
@@ -461,7 +493,11 @@ enum class AndroidPetAvatar(
             PetItem.RED_WHITE_HAT to R.drawable.pet_5_item_head_had_red_white,
             PetItem.RED_WHITE_SWEATER to R.drawable.pet_5_item_sweater_red_white,
             PetItem.RED_SNOWFLAKES_SWEATER to R.drawable.pet_5_item_sweater_red_snowflakes,
-            PetItem.RED_DEER_SWEATER to R.drawable.pet_5_item_sweater_red_deer
+            PetItem.RED_DEER_SWEATER to R.drawable.pet_5_item_sweater_red_deer,
+            PetItem.EYE_PATCH to R.drawable.pet_5_item_face_pirate_dressing,
+            PetItem.GLASSES_CLOWN to R.drawable.pet_5_item_face_clown_glasses,
+            PetItem.CLOWN_HAIR to R.drawable.pet_5_item_head_clown_hair,
+            PetItem.PIRATE_HAT to R.drawable.pet_5_item_head_pirate_cloth
         )
     ),
     BEAR(
@@ -485,7 +521,11 @@ enum class AndroidPetAvatar(
             PetItem.RED_WHITE_HAT to R.drawable.pet_6_item_head_had_red_white,
             PetItem.RED_WHITE_SWEATER to R.drawable.pet_6_item_sweater_red_white,
             PetItem.RED_SNOWFLAKES_SWEATER to R.drawable.pet_6_item_sweater_red_snowflakes,
-            PetItem.RED_DEER_SWEATER to R.drawable.pet_6_item_sweater_red_deer
+            PetItem.RED_DEER_SWEATER to R.drawable.pet_6_item_sweater_red_deer,
+            PetItem.EYE_PATCH to R.drawable.pet_6_item_face_pirate_dressing,
+            PetItem.GLASSES_CLOWN to R.drawable.pet_6_item_face_clown_glasses,
+            PetItem.CLOWN_HAIR to R.drawable.pet_6_item_head_clown_hair,
+            PetItem.PIRATE_HAT to R.drawable.pet_6_item_head_pirate_cloth
         )
     ),
     LION(
@@ -509,7 +549,11 @@ enum class AndroidPetAvatar(
             PetItem.RED_WHITE_HAT to R.drawable.pet_7_item_head_had_red_white,
             PetItem.RED_WHITE_SWEATER to R.drawable.pet_7_item_sweater_red_white,
             PetItem.RED_SNOWFLAKES_SWEATER to R.drawable.pet_7_item_sweater_red_snowflakes,
-            PetItem.RED_DEER_SWEATER to R.drawable.pet_7_item_sweater_red_deer
+            PetItem.RED_DEER_SWEATER to R.drawable.pet_7_item_sweater_red_deer,
+            PetItem.EYE_PATCH to R.drawable.pet_7_item_face_pirate_dressing,
+            PetItem.GLASSES_CLOWN to R.drawable.pet_7_item_face_clown_glasses,
+            PetItem.CLOWN_HAIR to R.drawable.pet_7_item_head_clown_hair,
+            PetItem.PIRATE_HAT to R.drawable.pet_7_item_head_pirate_cloth
         )
     ),
     CAT(
@@ -533,7 +577,11 @@ enum class AndroidPetAvatar(
             PetItem.RED_WHITE_HAT to R.drawable.pet_8_item_head_had_red_white,
             PetItem.RED_WHITE_SWEATER to R.drawable.pet_8_item_sweater_red_white,
             PetItem.RED_SNOWFLAKES_SWEATER to R.drawable.pet_8_item_sweater_red_snowflakes,
-            PetItem.RED_DEER_SWEATER to R.drawable.pet_8_item_sweater_red_deer
+            PetItem.RED_DEER_SWEATER to R.drawable.pet_8_item_sweater_red_deer,
+            PetItem.EYE_PATCH to R.drawable.pet_8_item_face_pirate_dressing,
+            PetItem.GLASSES_CLOWN to R.drawable.pet_8_item_face_clown_glasses,
+            PetItem.CLOWN_HAIR to R.drawable.pet_8_item_head_clown_hair,
+            PetItem.PIRATE_HAT to R.drawable.pet_8_item_head_pirate_cloth
         )
     ),
     MONKEY(
@@ -557,7 +605,11 @@ enum class AndroidPetAvatar(
             PetItem.RED_WHITE_HAT to R.drawable.pet_9_item_head_had_red_white,
             PetItem.RED_WHITE_SWEATER to R.drawable.pet_9_item_sweater_red_white,
             PetItem.RED_SNOWFLAKES_SWEATER to R.drawable.pet_9_item_sweater_red_snowflakes,
-            PetItem.RED_DEER_SWEATER to R.drawable.pet_9_item_sweater_red_deer
+            PetItem.RED_DEER_SWEATER to R.drawable.pet_9_item_sweater_red_deer,
+            PetItem.EYE_PATCH to R.drawable.pet_9_item_face_pirate_dressing,
+            PetItem.GLASSES_CLOWN to R.drawable.pet_9_item_face_clown_glasses,
+            PetItem.CLOWN_HAIR to R.drawable.pet_9_item_head_clown_hair,
+            PetItem.PIRATE_HAT to R.drawable.pet_9_item_head_pirate_cloth
         )
     ),
     DUCK(
@@ -581,7 +633,11 @@ enum class AndroidPetAvatar(
             PetItem.RED_WHITE_HAT to R.drawable.pet_10_item_head_had_red_white,
             PetItem.RED_WHITE_SWEATER to R.drawable.pet_10_item_sweater_red_white,
             PetItem.RED_SNOWFLAKES_SWEATER to R.drawable.pet_10_item_sweater_red_snowflakes,
-            PetItem.RED_DEER_SWEATER to R.drawable.pet_10_item_sweater_red_deer
+            PetItem.RED_DEER_SWEATER to R.drawable.pet_10_item_sweater_red_deer,
+            PetItem.EYE_PATCH to R.drawable.pet_10_item_face_pirate_dressing,
+            PetItem.GLASSES_CLOWN to R.drawable.pet_10_item_face_clown_glasses,
+            PetItem.CLOWN_HAIR to R.drawable.pet_10_item_head_clown_hair,
+            PetItem.PIRATE_HAT to R.drawable.pet_10_item_head_pirate_cloth
         )
     ),
     ZEBRA(
@@ -605,7 +661,11 @@ enum class AndroidPetAvatar(
             PetItem.RED_WHITE_HAT to R.drawable.pet_12_item_head_had_red_white,
             PetItem.RED_WHITE_SWEATER to R.drawable.pet_12_item_sweater_red_white,
             PetItem.RED_SNOWFLAKES_SWEATER to R.drawable.pet_12_item_sweater_red_snowflakes,
-            PetItem.RED_DEER_SWEATER to R.drawable.pet_12_item_sweater_red_deer
+            PetItem.RED_DEER_SWEATER to R.drawable.pet_12_item_sweater_red_deer,
+            PetItem.EYE_PATCH to R.drawable.pet_12_item_face_pirate_dressing,
+            PetItem.GLASSES_CLOWN to R.drawable.pet_12_item_face_clown_glasses,
+            PetItem.CLOWN_HAIR to R.drawable.pet_12_item_head_clown_hair,
+            PetItem.PIRATE_HAT to R.drawable.pet_12_item_head_pirate_cloth
         )
     )
 }

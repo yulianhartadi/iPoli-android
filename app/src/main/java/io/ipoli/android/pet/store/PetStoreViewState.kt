@@ -18,7 +18,6 @@ import io.ipoli.android.player.Player
 sealed class PetStoreAction : Action {
     object Load : PetStoreAction()
     data class BuyPet(val pet: PetAvatar) : PetStoreAction()
-    data class UnlockPet(val pet: PetAvatar) : PetStoreAction()
     data class ChangePet(val pet: PetAvatar) : PetStoreAction()
     object PetBought : PetStoreAction()
     object PetTooExpensive : PetStoreAction()
@@ -65,11 +64,6 @@ object PetStoreReducer : BaseViewStateReducer<PetStoreViewState>() {
                 )
             }
 
-            is PetStoreAction.UnlockPet -> {
-                petStoreState.copy(
-                    type = PetStoreViewState.StateType.SHOW_GEM_STORE
-                )
-            }
             is PetStoreAction.ChangePet -> {
                 petStoreState.copy(
                     type = PetStoreViewState.StateType.LOADING
@@ -124,8 +118,7 @@ data class PetStoreViewState(
         DATA_CHANGED,
         PET_TOO_EXPENSIVE,
         PET_BOUGHT,
-        PET_CHANGED,
-        SHOW_GEM_STORE
+        PET_CHANGED
     }
 }
 
