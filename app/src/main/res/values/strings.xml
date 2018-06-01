@@ -1066,6 +1066,10 @@
     <string name="pet_item_red_white_sweater">Grandma Style</string>
     <string name="pet_item_snowflakes_sweater">Sleeping Beauty</string>
     <string name="pet_item_red_deer_sweater">Comfy Stuff</string>
+    <string name="pet_item_glasses_clown">Cute Power</string>
+    <string name="pet_item_eye_patch">Fury Attack</string>
+    <string name="pet_item_clown_hair">Jazzy Hair</string>
+    <string name="pet_item_pirate_cloth">Captain Sparrow</string>
     <string name="unlock">Unlock</string>
     <string name="gem_store">Buy some Gems</string>
     <string name="gem_pack_basic_title">Basic Pack</string>
@@ -1365,8 +1369,4 @@
     <string name="selected_daily_challenge_count">%d/%d quests chosen</string>
     <string name="daily_challenge_complete">All done for today!</string>
     <string name="daily_challenge_description">The Daily Challenge should include your 3 most important Quests for the day</string>
-    <string name="pet_item_glasses_clown">a</string>
-    <string name="pet_item_eye_patch">w</string>
-    <string name="pet_item_clown_hair">dsd</string>
-    <string name="pet_item_pirate_hat">as</string>
 </resources>
