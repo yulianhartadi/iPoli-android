@@ -24,8 +24,7 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintVertical_bias="0.73"
-            app:srcCompat="@drawable/pet_3" />
+            app:layout_constraintVertical_bias="0.73" />
 
         <ImageView
             android:id="@+id/petState"
@@ -106,8 +105,7 @@
                     app:layout_constraintEnd_toStartOf="@+id/curItemCoinBonus"
                     app:layout_constraintHorizontal_bias="0.5"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/curItemName"
-                    app:srcCompat="@drawable/pet_item_head_christmas_horns" />
+                    app:layout_constraintTop_toBottomOf="@+id/curItemName" />
 
                 <ImageView
                     android:id="@+id/newItemImage"
@@ -121,8 +119,7 @@
                     app:layout_constraintHorizontal_bias="0.5"
                     app:layout_constraintStart_toEndOf="@+id/separator"
                     app:layout_constraintStart_toStartOf="@+id/separator"
-                    app:layout_constraintTop_toBottomOf="@+id/newItemName"
-                    app:srcCompat="@drawable/pet_item_head_had_red" />
+                    app:layout_constraintTop_toBottomOf="@+id/newItemName" />
 
                 <TextView
                     android:id="@+id/curItemCoinBonus"
@@ -605,8 +602,7 @@
             android:layout_marginBottom="16dp"
             android:layout_marginEnd="16dp"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:srcCompat="@drawable/ic_restaurant_white_24dp" />
+            app:layout_constraintEnd_toEndOf="parent" />
 
         <android.support.design.widget.FloatingActionButton
             android:id="@+id/fabItems"
@@ -725,8 +721,7 @@
             android:scaleType="fitCenter"
             app:layout_constraintBottom_toBottomOf="@+id/pet"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="@+id/pet"
-            app:srcCompat="@drawable/food_fruit_1" />
+            app:layout_constraintTop_toTopOf="@+id/pet" />
 
     </android.support.constraint.ConstraintLayout>
 </android.support.design.widget.CoordinatorLayout>
