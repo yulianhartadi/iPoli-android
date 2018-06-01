@@ -30,7 +30,6 @@ import io.ipoli.android.planday.persistence.Quote
 import io.ipoli.android.planday.scenes.PlanDayMotivationViewController
 import io.ipoli.android.planday.scenes.PlanDayReviewViewController
 import io.ipoli.android.planday.scenes.PlanDayTodayViewController
-import io.ipoli.android.planday.usecase.CalculateAwesomenessScoreUseCase
 import io.ipoli.android.player.Player
 import io.ipoli.android.quest.Quest
 import kotlinx.android.synthetic.main.controller_plan_day.view.*
@@ -129,7 +128,13 @@ object PlanDayReducer : BaseViewStateReducer<PlanDayViewState>() {
                 val newState = subState.copy(
                     type = DATA_CHANGED,
                     reviewDayQuests = action.quests,
-                    awesomenessScore = action.awesomenessScore
+                    awesomenessScore = when {
+                        action.awesomenessScore > 4.99 -> PlanDayViewState.AwesomenessGrade.A
+                        action.awesomenessScore > 3.99 -> PlanDayViewState.AwesomenessGrade.B
+                        action.awesomenessScore > 2.99 -> PlanDayViewState.AwesomenessGrade.C
+                        action.awesomenessScore > 1.99 -> PlanDayViewState.AwesomenessGrade.D
+                        else -> PlanDayViewState.AwesomenessGrade.F
+                    }
                 )
                 createNewStateIfReviewDataIsLoaded(newState)
             }
@@ -151,10 +156,12 @@ object PlanDayReducer : BaseViewStateReducer<PlanDayViewState>() {
             }
 
             is PlanDayAction.DailyChallengeLoaded ->
-                createNewStateIfTodayDataIsLoaded(subState.copy(
-                    dailyChallengeQuestIds = action.dailyChallenge.questIds,
-                    isDailyChallengeCompleted = action.dailyChallenge.isCompleted
-                ))
+                createNewStateIfTodayDataIsLoaded(
+                    subState.copy(
+                        dailyChallengeQuestIds = action.dailyChallenge.questIds,
+                        isDailyChallengeCompleted = action.dailyChallenge.isCompleted
+                    )
+                )
 
             is PlanDayAction.AcceptSuggestion -> {
                 val suggestion = subState.suggestedQuests!!.first { it.id == action.questId }
@@ -367,7 +374,7 @@ data class PlanDayViewState(
     val todayQuests: List<Quest>?,
     val suggestedQuests: List<Quest>?,
     val dailyChallengeQuestIds: List<String>?,
-    val isDailyChallengeCompleted : Boolean,
+    val isDailyChallengeCompleted: Boolean,
     val adapterPosition: Int,
     val timeOfDay: TimeOfDay?,
     val playerName: String?,
@@ -377,7 +384,7 @@ data class PlanDayViewState(
     val imageViewLoaded: Boolean,
     val risingSunAnimationDone: Boolean,
     val petAvatar: PetAvatar?,
-    val awesomenessScore: CalculateAwesomenessScoreUseCase.AwesomenessScore?,
+    val awesomenessScore: AwesomenessGrade?,
     val temperatureUnit: Player.Preferences.TemperatureUnit,
     val timeFormat: Player.Preferences.TimeFormat
 ) : BaseViewState() {
@@ -396,6 +403,10 @@ data class PlanDayViewState(
         DAILY_CHALLENGE_QUESTS_CHANGED,
         DAY_STARTED,
         NOT_ENOUGH_DAILY_CHALLENGE_QUESTS
+    }
+
+    enum class AwesomenessGrade {
+        A, B, C, D, F
     }
 }
 

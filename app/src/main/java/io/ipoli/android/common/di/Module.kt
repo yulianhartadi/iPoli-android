@@ -42,6 +42,8 @@ import io.ipoli.android.event.persistence.EventRepository
 import io.ipoli.android.event.sideeffect.CalendarSideEffectHandler
 import io.ipoli.android.event.usecase.FindEventsBetweenDatesUseCase
 import io.ipoli.android.event.usecase.SaveSyncCalendarsUseCase
+import io.ipoli.android.growth.sideeffect.GrowthSideEffectHandler
+import io.ipoli.android.growth.usecase.CalculateGrowthStatsUseCase
 import io.ipoli.android.note.usecase.SaveQuestNoteUseCase
 import io.ipoli.android.onboarding.sideeffecthandler.OnboardingSideEffectHandler
 import io.ipoli.android.pet.AndroidJobLowerPetStatsScheduler
@@ -682,6 +684,9 @@ class MainUseCaseModule : UseCaseModule, Injects<Module> {
 
     override val saveDailyChallengeQuestIdsUseCase
         get() = SaveDailyChallengeQuestIdsUseCase(dailyChallengeRepository)
+
+    override val calculateGrowthStatsUseCase: CalculateGrowthStatsUseCase
+        get() = CalculateGrowthStatsUseCase(calculateAwesomenessScoreUseCase, questRepository)
 }
 
 interface UseCaseModule {
@@ -772,6 +777,7 @@ interface UseCaseModule {
     val checkForDailyChallengeCompletionUseCase: CheckForDailyChallengeCompletionUseCase
     val loadDailyChallengeUseCase: LoadDailyChallengeUseCase
     val saveDailyChallengeQuestIdsUseCase: SaveDailyChallengeQuestIdsUseCase
+    val calculateGrowthStatsUseCase: CalculateGrowthStatsUseCase
 }
 
 interface PresenterModule {
@@ -838,7 +844,8 @@ class AndroidStateStoreModule : StateStoreModule, Injects<Module> {
                 PlanDaySideEffectHandler,
                 SettingsSideEffectHandler,
                 MigrationSideEffectHandler,
-                DailyChallengeSideEffectHandler
+                DailyChallengeSideEffectHandler,
+                GrowthSideEffectHandler
             ),
             sideEffectHandlerExecutor = CoroutineSideEffectHandlerExecutor(job + CommonPool),
             middleware = setOf(

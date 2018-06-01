@@ -8,9 +8,9 @@ import io.ipoli.android.quest.Quest
  * on 05/16/2018.
  */
 class CalculateAwesomenessScoreUseCase :
-    UseCase<CalculateAwesomenessScoreUseCase.Params, CalculateAwesomenessScoreUseCase.AwesomenessScore> {
+    UseCase<CalculateAwesomenessScoreUseCase.Params, Double> {
 
-    override fun execute(parameters: Params): AwesomenessScore {
+    override fun execute(parameters: Params): Double {
         val qs = parameters.quests
         val completeCount = qs.count { it.isCompleted }
         if (qs.size <= 5) {
@@ -19,28 +19,23 @@ class CalculateAwesomenessScoreUseCase :
 
         val percentComplete = completeCount / qs.size.toFloat()
         return when {
-            percentComplete >= .85 -> AwesomenessScore.A
-            percentComplete >= .7 -> AwesomenessScore.B
-            percentComplete >= .5 -> AwesomenessScore.C
-            percentComplete >= .35 -> AwesomenessScore.D
-            else -> AwesomenessScore.F
+            percentComplete >= .85 -> 5.0
+            percentComplete >= .7 -> 4.0
+            percentComplete >= .5 -> 3.0
+            percentComplete >= .35 -> 2.0
+            else -> 0.0
         }
     }
 
-    private fun calculateSimpleAwesomenessScore(completeCount: Int): AwesomenessScore {
-        return when (completeCount) {
-            2 -> AwesomenessScore.D
-            3 -> AwesomenessScore.C
-            4 -> AwesomenessScore.B
-            5 -> AwesomenessScore.A
-            else -> AwesomenessScore.F
+    private fun calculateSimpleAwesomenessScore(completeCount: Int) =
+        when (completeCount) {
+            5 -> 5.0
+            4 -> 4.0
+            3 -> 3.0
+            2 -> 2.0
+            else -> 0.0
         }
-    }
 
     data class Params(val quests: List<Quest>)
-
-    enum class AwesomenessScore {
-        A, B, C, D, F
-    }
 
 }

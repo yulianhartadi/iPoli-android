@@ -13,7 +13,6 @@ import android.view.*
 import com.bluelinelabs.conductor.RouterTransaction
 import com.bluelinelabs.conductor.changehandler.FadeChangeHandler
 import com.bluelinelabs.conductor.changehandler.VerticalChangeHandler
-import com.github.mikephil.charting.animation.Easing
 import com.github.mikephil.charting.charts.LineChart
 import com.github.mikephil.charting.components.AxisBase
 import com.github.mikephil.charting.components.YAxis
@@ -32,6 +31,7 @@ import io.ipoli.android.common.ViewUtils
 import io.ipoli.android.common.redux.android.ReduxViewController
 import io.ipoli.android.common.text.DateFormatter
 import io.ipoli.android.common.view.*
+import io.ipoli.android.common.view.anim.AccelerateDecelerateEasingFunction
 import io.ipoli.android.common.view.recyclerview.SimpleSwipeCallback
 import io.ipoli.android.common.view.recyclerview.SimpleViewHolder
 import io.ipoli.android.quest.Quest
@@ -319,7 +319,7 @@ class ChallengeViewController(args: Bundle? = null) :
 
         view.progressChart.data = createLineData(state.chartEntries)
         view.progressChart.invalidate()
-        view.progressChart.animateX(1400, Easing.EasingOption.EaseInOutQuart)
+        view.progressChart.animateX(1400, AccelerateDecelerateEasingFunction)
     }
 
     private fun renderMotivations(state: ChallengeViewState, view: View) {

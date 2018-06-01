@@ -303,23 +303,24 @@ abstract class BaseViewController<A : Action, VS : ViewState> protected construc
             showNeutral = showNeutral
         )
 
+    private var use24HourFormat: Boolean? = null
+
     protected val shouldUse24HourFormat: Boolean
         get() {
-            val timeFormat = Player.Preferences.TimeFormat.valueOf(
-                sharedPreferences.getString(
-                    Constants.KEY_TIME_FORMAT,
-                    Player.Preferences.TimeFormat.DEVICE_DEFAULT.name
+            if (use24HourFormat == null) {
+                val timeFormat = Player.Preferences.TimeFormat.valueOf(
+                    sharedPreferences.getString(
+                        Constants.KEY_TIME_FORMAT,
+                        Player.Preferences.TimeFormat.DEVICE_DEFAULT.name
+                    )
                 )
-            )
-            if (timeFormat == Player.Preferences.TimeFormat.DEVICE_DEFAULT) {
-                return DateFormat.is24HourFormat(activity)
+                use24HourFormat =
+                    if (timeFormat == Player.Preferences.TimeFormat.DEVICE_DEFAULT)
+                        DateFormat.is24HourFormat(activity)
+                    else
+                        timeFormat != Player.Preferences.TimeFormat.TWELVE_HOURS
             }
-
-            if (timeFormat == Player.Preferences.TimeFormat.TWELVE_HOURS) {
-                return false
-            }
-
-            return true
+            return use24HourFormat!!
         }
 
     protected val Color.androidColor: AndroidColor

@@ -98,8 +98,13 @@ class myPoliApp : Application() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             val notificationManager =
                 getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
-            notificationManager.createNotificationChannel(createReminderChannel())
-            notificationManager.createNotificationChannel(createPlanDayChannel())
+            val channels = notificationManager.notificationChannels
+            if (channels.firstOrNull { it.id == Constants.REMINDERS_NOTIFICATION_CHANNEL_ID } == null) {
+                notificationManager.createNotificationChannel(createReminderChannel())
+            }
+            if (channels.firstOrNull { it.id == Constants.PLAN_DAY_NOTIFICATION_CHANNEL_ID } == null) {
+                notificationManager.createNotificationChannel(createPlanDayChannel())
+            }
         }
 
 //        TinyDancer.create().show(this)

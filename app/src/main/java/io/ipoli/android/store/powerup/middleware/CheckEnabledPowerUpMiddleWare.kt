@@ -6,6 +6,7 @@ import io.ipoli.android.common.AppState
 import io.ipoli.android.common.redux.Action
 import io.ipoli.android.common.redux.Dispatcher
 import io.ipoli.android.common.redux.MiddleWare
+import io.ipoli.android.growth.GrowthAction
 import io.ipoli.android.note.NoteAction
 import io.ipoli.android.player.Inventory
 import io.ipoli.android.quest.show.QuestAction
@@ -32,13 +33,18 @@ object CheckEnabledPowerUpMiddleWare : MiddleWare<AppState> {
         val inventory = p.inventory
 
         return when (action) {
-            ChallengeListAction.AddChallenge ->
+
+            is GrowthAction.ShowWeek,
+            is GrowthAction.ShowMonth ->
+                checkForAvailablePowerUp(PowerUp.Type.GROWTH, inventory, dispatcher)
+
+            is ChallengeListAction.AddChallenge ->
                 checkForAvailablePowerUp(PowerUp.Type.CHALLENGES, inventory, dispatcher)
 
-            QuestAction.Start ->
+            is QuestAction.Start ->
                 checkForAvailablePowerUp(PowerUp.Type.TIMER, inventory, dispatcher)
 
-            TagListAction.AddTag ->
+            is TagListAction.AddTag ->
                 if (state.dataState.tags.size < Constants.MAX_FREE_TAGS)
                     MiddleWare.Result.Continue
                 else

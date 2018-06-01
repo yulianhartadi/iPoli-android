@@ -32,6 +32,12 @@
             android:orderInCategory="0"
             android:title="@string/drawer_challenges" />
 
+        <item
+            android:id="@+id/growth"
+            android:checked="false"
+            android:icon="@drawable/ic_growth_white_24dp"
+            android:orderInCategory="0"
+            android:title="@string/growth" />
 
         <item
             android:id="@+id/tags"
@@ -44,12 +50,6 @@
 
     <!--<group>-->
 
-    <!--<item-->
-    <!--android:id="@+id/growth"-->
-    <!--android:checked="false"-->
-    <!--android:icon="@drawable/ic_growth_white_24dp"-->
-    <!--android:title="@string/growth"-->
-    <!--android:visible="false" />-->
 
     <!--<item-->
     <!--android:id="@+id/feed"-->

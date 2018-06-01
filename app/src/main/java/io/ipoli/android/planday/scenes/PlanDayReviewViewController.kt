@@ -31,8 +31,8 @@ import io.ipoli.android.pet.PetState
 import io.ipoli.android.planday.PlanDayAction
 import io.ipoli.android.planday.PlanDayReducer
 import io.ipoli.android.planday.PlanDayViewState
+import io.ipoli.android.planday.PlanDayViewState.AwesomenessGrade.*
 import io.ipoli.android.planday.PlanDayViewState.StateType.REVIEW_DATA_LOADED
-import io.ipoli.android.planday.usecase.CalculateAwesomenessScoreUseCase.AwesomenessScore.*
 import io.ipoli.android.quest.CompletedQuestViewController
 import io.ipoli.android.quest.schedule.addquest.AddQuestAnimationHelper
 import kotlinx.android.synthetic.main.animation_empty_list.view.*

@@ -26,6 +26,13 @@ object ViewUtils {
             context.resources.displayMetrics
         ).toInt()
 
+    fun spToPx(sp: Float, context: Context): Int =
+        TypedValue.applyDimension(
+            TypedValue.COMPLEX_UNIT_SP,
+            sp,
+            context.resources.displayMetrics
+        ).toInt()
+
     fun pxToDp(px: Int, context: Context): Float =
         px / context.resources.displayMetrics.density
 

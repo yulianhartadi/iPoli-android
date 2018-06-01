@@ -121,6 +121,27 @@ object DurationFormatter {
         return if (hours > 0 && mins == 0) {
             context.resources.getQuantityString(R.plurals.duration_hours, hours, hours)
         } else context.resources.getQuantityString(R.plurals.duration_minutes, mins, mins)
+    }
+
+    fun formatNarrow(duration: Int): String {
+        if (duration < 0) {
+            return ""
+        }
+        if(duration == 0) {
+            return "0m"
+        }
+        val hours = TimeUnit.MINUTES.toHours(duration.toLong()).toInt()
+        val mins = duration - hours * 60
+        if (hours <= 0 && mins <= 0) {
+            return ""
+        }
+        if (hours > 0 && mins > 0) {
+            return hours.toString() + "h " + mins + "m"
+        }
+
+        return if (hours > 0 && mins == 0) {
+            "1h"
+        } else mins.toString() + " m"
 
     }
 

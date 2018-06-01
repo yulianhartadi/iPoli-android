@@ -262,7 +262,7 @@ class MainActivity : AppCompatActivity(), Injects<Module>, SideEffectHandler<App
                         Toast.LENGTH_SHORT
                     ).show()
 
-                is BuyPowerUpDialogController.Result.Bought ->
+                is BuyPowerUpDialogController.Result.Bought -> {
                     Toast.makeText(
                         this,
                         getString(
@@ -271,6 +271,7 @@ class MainActivity : AppCompatActivity(), Injects<Module>, SideEffectHandler<App
                         ),
                         Toast.LENGTH_LONG
                     ).show()
+                }
 
                 is BuyPowerUpDialogController.Result.UnlockAll ->
                     Navigator(router).toMembership(FadeChangeHandler())

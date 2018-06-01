@@ -1,0 +1,310 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <LinearLayout
+        android:id="@+id/growthContentContainer"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:visibility="gone">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/md_white"
+            android:elevation="3dp">
+
+            <android.support.design.widget.TabLayout
+                android:id="@+id/tabs"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="16dp"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="8dp">
+
+                <android.support.design.widget.TabItem
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/today" />
+
+                <android.support.design.widget.TabItem
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/week" />
+
+                <android.support.design.widget.TabItem
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/month" />
+            </android.support.design.widget.TabLayout>
+        </LinearLayout>
+
+        <ScrollView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:clipChildren="false"
+            android:clipToPadding="false"
+            android:paddingBottom="16dp"
+            android:scrollbars="none">
+
+            <android.support.constraint.ConstraintLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:clipChildren="false"
+                android:clipToPadding="false">
+
+                <View
+                    android:id="@+id/hoursTile"
+                    android:layout_width="100dp"
+                    android:layout_height="92dp"
+                    android:layout_marginStart="32dp"
+                    android:layout_marginTop="16dp"
+                    android:background="@drawable/growth_tile_background"
+                    android:elevation="2dp"
+                    app:layout_constraintEnd_toStartOf="@+id/xpTile"
+                    app:layout_constraintHorizontal_chainStyle="spread_inside"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <View
+                    android:id="@+id/hoursIndicator"
+                    android:layout_width="12dp"
+                    android:layout_height="0dp"
+                    android:background="@drawable/growth_hours_tile_indicator"
+                    android:elevation="2dp"
+                    app:layout_constraintBottom_toBottomOf="@+id/hoursTile"
+                    app:layout_constraintStart_toStartOf="@+id/hoursTile"
+                    app:layout_constraintTop_toTopOf="@+id/hoursTile" />
+
+                <View
+                    android:id="@+id/xpTile"
+                    android:layout_width="100dp"
+                    android:layout_height="92dp"
+                    android:background="@drawable/growth_tile_background"
+                    android:elevation="2dp"
+                    app:layout_constraintBottom_toBottomOf="@+id/hoursTile"
+                    app:layout_constraintEnd_toStartOf="@+id/coinsTile"
+                    app:layout_constraintStart_toEndOf="@id/hoursTile"
+                    app:layout_constraintTop_toTopOf="@+id/hoursTile" />
+
+
+                <View
+                    android:id="@+id/xpIndicator"
+                    android:layout_width="12dp"
+                    android:layout_height="0dp"
+                    android:background="@drawable/growth_experience_tile_indicator"
+                    android:elevation="2dp"
+                    app:layout_constraintBottom_toBottomOf="@+id/xpTile"
+                    app:layout_constraintStart_toStartOf="@+id/xpTile"
+                    app:layout_constraintTop_toTopOf="@+id/xpTile" />
+
+                <View
+                    android:id="@+id/coinsTile"
+                    android:layout_width="100dp"
+                    android:layout_height="92dp"
+                    android:layout_marginEnd="32dp"
+                    android:background="@drawable/growth_tile_background"
+                    android:elevation="2dp"
+                    app:layout_constraintBottom_toBottomOf="@+id/hoursTile"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toEndOf="@id/xpTile"
+                    app:layout_constraintTop_toTopOf="@+id/hoursTile" />
+
+                <View
+                    android:id="@+id/coinsIndicator"
+                    android:layout_width="12dp"
+                    android:layout_height="0dp"
+                    android:background="@drawable/growth_coins_tile_indicator"
+                    android:elevation="2dp"
+                    app:layout_constraintBottom_toBottomOf="@+id/coinsTile"
+                    app:layout_constraintStart_toStartOf="@+id/coinsTile"
+                    app:layout_constraintTop_toTopOf="@+id/coinsTile" />
+
+                <TextView
+                    android:id="@+id/hoursValue"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="16dp"
+                    android:elevation="2dp"
+                    android:text="0"
+                    android:textAlignment="center"
+                    android:textAppearance="@style/TextAppearance.AppCompat.Title"
+                    app:layout_constraintBottom_toTopOf="@+id/hoursLabel"
+                    app:layout_constraintEnd_toEndOf="@+id/hoursTile"
+                    app:layout_constraintStart_toStartOf="@+id/hoursTile"
+                    app:layout_constraintTop_toTopOf="@+id/hoursTile"
+                    app:layout_constraintVertical_chainStyle="packed" />
+
+                <TextView
+                    android:id="@+id/hoursLabel"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="4dp"
+                    android:elevation="2dp"
+                    android:text="@string/hours_spent"
+                    android:textAlignment="center"
+                    android:textAppearance="@style/TextAppearance.AppCompat.Caption"
+                    app:layout_constraintBottom_toBottomOf="@+id/hoursTile"
+                    app:layout_constraintEnd_toEndOf="@+id/hoursValue"
+                    app:layout_constraintStart_toStartOf="@+id/hoursValue"
+                    app:layout_constraintTop_toBottomOf="@+id/hoursValue" />
+
+                <TextView
+                    android:id="@+id/xpValue"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="16dp"
+                    android:elevation="2dp"
+                    android:text="0"
+                    android:textAlignment="center"
+                    android:textAppearance="@style/TextAppearance.AppCompat.Title"
+                    app:layout_constraintBottom_toTopOf="@+id/xpLabel"
+                    app:layout_constraintEnd_toEndOf="@+id/xpTile"
+                    app:layout_constraintStart_toStartOf="@+id/xpTile"
+                    app:layout_constraintTop_toTopOf="@+id/xpTile"
+                    app:layout_constraintVertical_chainStyle="packed" />
+
+                <TextView
+                    android:id="@+id/xpLabel"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="4dp"
+                    android:elevation="2dp"
+                    android:text="@string/growth_experience"
+                    android:textAlignment="center"
+                    android:textAppearance="@style/TextAppearance.AppCompat.Caption"
+                    app:layout_constraintBottom_toBottomOf="@+id/xpTile"
+                    app:layout_constraintEnd_toEndOf="@+id/xpValue"
+                    app:layout_constraintStart_toStartOf="@+id/xpValue"
+                    app:layout_constraintTop_toBottomOf="@+id/xpValue" />
+
+                <TextView
+                    android:id="@+id/coinsValue"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="16dp"
+                    android:elevation="2dp"
+                    android:text="0"
+                    android:textAlignment="center"
+                    android:textAppearance="@style/TextAppearance.AppCompat.Title"
+                    app:layout_constraintBottom_toTopOf="@+id/coinsLabel"
+                    app:layout_constraintEnd_toEndOf="@+id/coinsTile"
+                    app:layout_constraintStart_toStartOf="@+id/coinsTile"
+                    app:layout_constraintTop_toTopOf="@+id/coinsTile"
+                    app:layout_constraintVertical_chainStyle="packed" />
+
+                <TextView
+                    android:id="@+id/coinsLabel"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="4dp"
+                    android:elevation="2dp"
+                    android:text="@string/life_coins_title"
+                    android:textAlignment="center"
+                    android:textAppearance="@style/TextAppearance.AppCompat.Caption"
+                    app:layout_constraintBottom_toBottomOf="@+id/coinsTile"
+                    app:layout_constraintEnd_toEndOf="@+id/coinsValue"
+                    app:layout_constraintStart_toStartOf="@+id/coinsValue"
+                    app:layout_constraintTop_toBottomOf="@+id/coinsValue" />
+
+
+                <LinearLayout
+                    android:id="@+id/challengeProgressContainer"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="16dp"
+                    android:layout_marginStart="16dp"
+                    android:layout_marginTop="16dp"
+                    android:background="@drawable/rounded_rectangle_white_background"
+                    android:elevation="1dp"
+                    android:orientation="vertical"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/hoursTile">
+
+                    <TextView
+                        style="@style/SectionTitle"
+                        android:text="@string/challenge_progress" />
+
+                    <TextView
+                        android:id="@+id/challengeProgressEmpty"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginEnd="16dp"
+                        android:layout_marginStart="16dp"
+                        android:maxLines="2"
+                        android:paddingBottom="16dp"
+                        android:paddingTop="16dp"
+                        android:textAlignment="center"
+                        android:textAppearance="@style/TextAppearance.AppCompat.Body1"
+                        android:visibility="gone" />
+
+                    <android.support.v7.widget.RecyclerView
+                        android:id="@+id/challengesProgress"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/focusTimeContainer"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="16dp"
+                    android:layout_marginStart="16dp"
+                    android:layout_marginTop="16dp"
+                    android:background="@drawable/rounded_rectangle_white_background"
+                    android:elevation="1dp"
+                    android:orientation="vertical"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/challengeProgressContainer">
+
+                    <TextView
+                        android:id="@+id/focusTimeTitle"
+                        style="@style/SectionTitle"
+                        android:text="@string/growth_focus_time_month_title" />
+
+                    <com.github.mikephil.charting.charts.LineChart
+                        android:id="@+id/focusTimeChart"
+                        android:layout_width="match_parent"
+                        android:layout_height="250dp"
+                        android:layout_marginEnd="8dp"
+                        android:layout_marginStart="2dp" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/awesomenessContainer"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="16dp"
+                    android:layout_marginStart="16dp"
+                    android:layout_marginTop="16dp"
+                    android:background="@drawable/rounded_rectangle_white_background"
+                    android:elevation="1dp"
+                    android:orientation="vertical"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/focusTimeContainer">
+
+                    <TextView
+                        style="@style/SectionTitle"
+                        android:text="@string/growth_awesomeness_score_title" />
+
+                    <com.github.mikephil.charting.charts.LineChart
+                        android:id="@+id/awesomenessChart"
+                        android:layout_width="match_parent"
+                        android:layout_height="250dp"
+                        android:layout_marginEnd="8dp"
+                        android:layout_marginStart="2dp" />
+                </LinearLayout>
+
+            </android.support.constraint.ConstraintLayout>
+        </ScrollView>
+
+    </LinearLayout>
+
+    <include layout="@layout/view_loader" />
+</FrameLayout>

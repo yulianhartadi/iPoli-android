@@ -699,6 +699,7 @@
     <string name="go_to_store">Go to Store</string>
     <string name="membership_store_title">Premium membership</string>
     <string name="life_coins">Life coins</string>
+    <string name="life_coins_title">Life Coins</string>
     <string name="power_ups">Power-Ups</string>
     <string name="avatars">Avatars</string>
     <string name="pets">Pets</string>
@@ -755,11 +756,10 @@
         Then you can track your progress and stay motivated.
       </string>
 
-    <string name="power_up_growth_sub_title">Track your progress and score</string>
+    <string name="power_up_growth_sub_title">Boost your productivity</string>
     <string name="power_up_growth_short_desc">Track and compare your progress and productivity during different time spans.</string>
     <string name="power_up_growth_long_desc">
-        Monitor home much time do you spend for quests in each category,
-        how many do you complete, what is your Awesomeness score and more facts to help your productivity.
+        Find the perfect work-fun balance by measuring your monthly and weekly productivity. Complete your Challenges faster and spend more time in the flow.
     </string>
 
     <string name="power_up_matrix_sub_title">Separate important from urgent</string>
@@ -987,7 +987,7 @@
     <string name="growth_completed_quests">Completed quests</string>
     <string name="growth_time_spent">Time spent</string>
     <string name="growth_coins_earned">Coins earned</string>
-    <string name="growth_experience_earned">Experience earned</string>
+    <string name="growth_experience">Experience</string>
     <string name="invalid_reminder_time">Can you think of a number?</string>
     <string name="pet_tasty_food_response">yummy</string>
     <string name="pet_not_tasty_food_response">yucky</string>
@@ -1360,6 +1360,7 @@
     <string name="migration_error_message">Please, contact us now to get this fixed!</string>
     <string name="new_challenge">New Challenge</string>
     <string name="settings_privacy_desc">Learn how myPoli manages your privacy</string>
+    <string name="drawer_growth">Growth</string>
     <string name="daily_challenge_title">Daily Challenge</string>
     <string name="selected_daily_challenge_quests">Daily Challenge Quests</string>
     <string name="max_daily_challenge_selected_message">%d quests already selected</string>
@@ -1368,5 +1369,17 @@
     <string name="daily_challenge_active">Daily Challenge active</string>
     <string name="selected_daily_challenge_count">%d/%d quests chosen</string>
     <string name="daily_challenge_complete">All done for today!</string>
+    <string name="growth_challenge_no_progress_today">You haven\'t progressed on any Challenge today</string>
+    <string name="growth_challenge_no_progress_week">You haven\'t progressed on any Challenge this week</string>
+    <string name="growth_challenge_no_progress_month">You haven\'t progressed on any Challenge this month</string>
+    <string name="growth_focus_time_title">Focus time (using Timer)</string>
+    <string name="growth_focus_time_month_title">Average focus time per week (using Timer)</string>
+    <string name="growth_awesomeness_score_title">Awesomeness score</string>
+    <string name="challenge_progress">Challenge progress</string>
+    <string name="month">month</string>
+    <string name="hours_spent">Hours Spent</string>
+    <string name="score">Score</string>
+    <string name="daily_goal">Daily goal</string>
+    <string name="productive_hours">Productive hours</string>
     <string name="daily_challenge_description">The Daily Challenge should include your 3 most important Quests for the day</string>
 </resources>

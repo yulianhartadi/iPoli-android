@@ -6,10 +6,10 @@ import io.ipoli.android.common.redux.Reducer
 import io.ipoli.android.common.redux.State
 import io.ipoli.android.event.Calendar
 import io.ipoli.android.event.Event
+import io.ipoli.android.growth.usecase.CalculateGrowthStatsUseCase
 import io.ipoli.android.planday.data.Weather
 import io.ipoli.android.planday.persistence.MotivationalImage
 import io.ipoli.android.planday.persistence.Quote
-import io.ipoli.android.planday.usecase.CalculateAwesomenessScoreUseCase
 import io.ipoli.android.player.Player
 import io.ipoli.android.quest.Quest
 import io.ipoli.android.quest.RepeatingQuest
@@ -63,7 +63,7 @@ sealed class DataLoadedAction : Action {
     data class GemPacksLoaded(val gemPacks: List<GemPack>) : DataLoadedAction()
     data class ReviewDayQuestsChanged(
         val quests: List<Quest>,
-        val awesomenessScore: CalculateAwesomenessScoreUseCase.AwesomenessScore
+        val awesomenessScore: Double
     ) : DataLoadedAction()
 
     data class WeatherChanged(val weather: Weather?) : DataLoadedAction()
@@ -73,6 +73,12 @@ sealed class DataLoadedAction : Action {
         DataLoadedAction()
 
     data class QuoteChanged(val quote: Quote?) : DataLoadedAction()
+
+    data class GrowthChanged(
+        val dailyGrowth: CalculateGrowthStatsUseCase.Growth.Today,
+        val weeklyGrowth: CalculateGrowthStatsUseCase.Growth.Week,
+        val monthlyGrowth: CalculateGrowthStatsUseCase.Growth.Month
+    ) : DataLoadedAction()
 }
 
 data class AppDataState(

@@ -11,6 +11,7 @@ import android.view.LayoutInflater
 import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
+import com.mikepenz.community_material_typeface_library.CommunityMaterial
 import com.mikepenz.google_material_typeface_library.GoogleMaterial
 import com.mikepenz.iconics.IconicsDrawable
 import com.mikepenz.iconics.typeface.IIcon
@@ -107,12 +108,12 @@ enum class AndroidPowerUp(
         R.color.md_deep_orange_700
     ),
     GROWTH(
-        R.string.custom_duration,
-        R.string.power_up_custom_duration_sub_title,
-        R.string.power_up_custom_duration_long_desc,
-        GoogleMaterial.Icon.gmd_timelapse,
-        R.color.md_deep_orange_500,
-        R.color.md_deep_orange_700
+        R.string.growth,
+        R.string.power_up_growth_sub_title,
+        R.string.power_up_growth_long_desc,
+        CommunityMaterial.Icon.cmd_chart_areaspline,
+        R.color.md_light_green_700,
+        R.color.md_light_green_800
     )
 }
 
@@ -220,7 +221,7 @@ class PowerUpStoreViewController(args: Bundle? = null) :
 
             PowerUpStoreViewState.StateType.POWER_UP_BOUGHT -> {
                 showLongToast(state.message)
-                if (state.type == PowerUp.Type.CALENDAR_SYNC) {
+                if (state.powerUp == PowerUp.Type.CALENDAR_SYNC) {
                     requestPermissions(
                         mapOf(Manifest.permission.READ_CALENDAR to stringRes(R.string.allow_read_calendars_perm_reason)),
                         Constants.RC_CALENDAR_PERM

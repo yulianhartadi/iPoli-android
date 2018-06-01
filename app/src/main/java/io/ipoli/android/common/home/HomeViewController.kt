@@ -34,6 +34,7 @@ import io.ipoli.android.challenge.list.ChallengeListViewController
 import io.ipoli.android.common.home.HomeViewState.StateType.*
 import io.ipoli.android.common.redux.android.ReduxViewController
 import io.ipoli.android.common.view.*
+import io.ipoli.android.growth.GrowthViewController
 import io.ipoli.android.pet.AndroidPetAvatar
 import io.ipoli.android.pet.AndroidPetMood
 import io.ipoli.android.pet.PetViewController
@@ -120,6 +121,9 @@ class HomeViewController(args: Bundle? = null) :
                 changeChildController(TagListViewController())
             }
 
+            R.id.growth ->
+                changeChildController(GrowthViewController())
+
             R.id.store ->
                 pushWithRootRouter(
                     StoreViewController.routerTransaction()
@@ -196,11 +200,7 @@ class HomeViewController(args: Bundle? = null) :
         view.navigationView.bringToFront()
         val childRouter = getChildRouter(view.childControllerContainer, null)
         if (!childRouter.hasRootController()) {
-            childRouter.setRoot(
-                RouterTransaction.with(ScheduleViewController())
-                    .pushChangeHandler(SimpleSwapChangeHandler())
-                    .popChangeHandler(SimpleSwapChangeHandler())
-            )
+            childRouter.setRoot(RouterTransaction.with(ScheduleViewController()))
         }
     }
 

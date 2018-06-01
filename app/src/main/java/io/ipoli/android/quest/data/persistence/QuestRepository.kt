@@ -105,6 +105,10 @@ interface QuestRepository : CollectionRepository<Quest> {
 
     fun purge(questIds: List<String>)
     fun findQuestsForDailyChallenge(dailyChallenge: DailyChallenge): List<Quest>
+    fun findOriginallyScheduledOrCompletedInRange(
+        startDate: LocalDate,
+        endDate: LocalDate
+    ): List<Quest>
 }
 
 data class DbQuest(override val map: MutableMap<String, Any?> = mutableMapOf()) :
@@ -197,6 +201,23 @@ class FirestoreQuestRepository(
             toEntityObjects(query.documents)
         else
             query.notRemovedEntities
+    }
+
+    override fun findOriginallyScheduledOrCompletedInRange(
+        startDate: LocalDate,
+        endDate: LocalDate
+    ): List<Quest> {
+        val scheduled = collectionReference
+            .whereGreaterThanOrEqualTo("originalScheduledDate", startDate.startOfDayUTC())
+            .whereLessThanOrEqualTo("originalScheduledDate", endDate.startOfDayUTC())
+            .notRemovedEntities
+
+        val completed = collectionReference
+            .whereGreaterThanOrEqualTo("completedAtDate", startDate.startOfDayUTC())
+            .whereLessThanOrEqualTo("completedAtDate", endDate.startOfDayUTC())
+            .notRemovedEntities
+
+        return (scheduled + completed).toSet().toList()
     }
 
     /**

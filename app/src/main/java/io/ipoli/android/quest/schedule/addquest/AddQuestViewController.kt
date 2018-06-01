@@ -26,7 +26,6 @@ import io.ipoli.android.quest.edit.EditQuestViewController
 import io.ipoli.android.quest.schedule.addquest.StateType.*
 import kotlinx.android.synthetic.main.controller_add_quest.view.*
 import org.threeten.bp.LocalDate
-import timber.log.Timber
 
 /**
  * Created by Polina Zhelyazkova <polina@mypoli.fun>
@@ -328,7 +327,6 @@ class AddQuestViewController(args: Bundle? = null) :
                 }
             )
             dialog.setOnDismissListener {
-                Timber.d("AAAAA ")
                 view.postDelayed({
                     view.questName.requestFocus()
                     ViewUtils.showKeyboard(view.questName.context, view.questName)

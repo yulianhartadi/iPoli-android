@@ -46,6 +46,13 @@ fun LocalDate.datesBetween(date: LocalDate): List<LocalDate> {
     return (0..days).map { this.plusDays(it) }
 }
 
+fun LocalDate.datesAhead(count: Int): List<LocalDate> {
+    return 0.until(count).map { this.plusDays(it.toLong()) }
+}
+
+fun LocalDate.daysBetween(date: LocalDate) =
+    daysUntil(date.plusDays(1))
+
 fun LocalDate.daysUntil(date: LocalDate) =
     this.until(date, ChronoUnit.DAYS)
 

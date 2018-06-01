@@ -6,5 +6,7 @@ package io.ipoli.android.common
  */
 fun <T> Iterable<T>.sumByLong(selector: (T) -> Long) = map { selector(it) }.sum()
 
+fun <T> Iterable<T>.sumByFloat(selector: (T) -> Float) = map { selector(it) }.sum()
+
 fun <T> Iterable<T>.replace(filter: (T) -> Boolean, transform: (T) -> T) =
     map { if (filter(it)) transform(it) else it }
