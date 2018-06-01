@@ -51,7 +51,6 @@ object GrowthReducer : BaseViewStateReducer<GrowthViewState>() {
                 if (state.dataState.challenges == null) {
                     newState.copy(type = GrowthViewState.StateType.LOADING)
                 } else {
-
                     newState.copy(
                         type = GrowthViewState.StateType.TODAY_DATA_LOADED,
                         challengeProgress = createChallengeProgress(
@@ -64,6 +63,21 @@ object GrowthReducer : BaseViewStateReducer<GrowthViewState>() {
 
             is DataLoadedAction.ChallengesChanged -> {
                 when (subState.type) {
+
+                    GrowthViewState.StateType.LOADING -> {
+                        if (subState.todayGrowth != null) {
+                            subState.copy(
+                                type = GrowthViewState.StateType.TODAY_DATA_LOADED,
+                                challengeProgress = createChallengeProgress(
+                                    subState.todayGrowth.challengeProgress,
+                                    action.challenges
+                                )
+                            )
+                        } else {
+                            subState
+                        }
+                    }
+
                     GrowthViewState.StateType.TODAY_DATA_LOADED ->
                         subState.copy(
                             challengeProgress = createChallengeProgress(
