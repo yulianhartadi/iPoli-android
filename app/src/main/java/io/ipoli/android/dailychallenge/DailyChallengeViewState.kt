@@ -49,19 +49,28 @@ object DailyChallengeReducer : BaseViewStateReducer<DailyChallengeViewState> () 
             }
 
             is DataLoadedAction.TodayQuestsChanged -> {
-                subState.copy(
-                    type = DATA_CHANGED,
-                    todayQuests = action.quests - subState.selectedQuests!!
-                )
+                if (subState.selectedQuests == null) {
+                    subState
+                } else {
+                    subState.copy(
+                        type = DATA_CHANGED,
+                        todayQuests = action.quests - subState.selectedQuests
+                    )
+                }
             }
 
 
             is DataLoadedAction.PlayerChanged -> {
-                val player = action.player
-                subState.copy(
-                    type = DATA_CHANGED,
-                    petAvatar = player.pet.avatar
-                )
+                if (subState.selectedQuests == null) {
+                    subState
+                } else {
+                    val player = action.player
+                    subState.copy(
+                        type = DATA_CHANGED,
+                        petAvatar = player.pet.avatar
+                    )
+                }
+
             }
 
             is DailyChallengeAction.AddQuest -> {
