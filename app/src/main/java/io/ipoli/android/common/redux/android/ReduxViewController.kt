@@ -1,6 +1,5 @@
 package io.ipoli.android.common.redux.android
 
-import android.app.TimePickerDialog
 import android.content.Context
 import android.content.pm.PackageManager
 import android.os.Bundle
@@ -13,12 +12,10 @@ import android.view.View
 import android.widget.TextView
 import com.bluelinelabs.conductor.Controller
 import com.bluelinelabs.conductor.RestoreViewOnCreateController
-import com.bluelinelabs.conductor.Router
 import com.github.florent37.tutoshowcase.TutoShowcase
 import com.mikepenz.iconics.IconicsDrawable
 import com.mikepenz.iconics.typeface.IIcon
 import io.ipoli.android.Constants
-import io.ipoli.android.R
 import io.ipoli.android.common.*
 import io.ipoli.android.common.datetime.Time
 import io.ipoli.android.common.di.Module
@@ -293,18 +290,17 @@ abstract class BaseViewController<A : Action, VS : ViewState> protected construc
     }
 
     protected fun createTimePickerDialog(
-        context: Context,
         startTime: Time,
-        onTimePicked: (Time) -> Unit
+        onTimePicked: (Time?) -> Unit,
+        showNeutral : Boolean = true
     ) =
-        TimePickerDialog(
-            context,
-            R.style.Theme_myPoli_AlertDialog,
-            TimePickerDialog.OnTimeSetListener { _, hour, minute ->
-                onTimePicked(Time.at(hour, minute))
+        TimePickerDialogViewController(
+            time = startTime,
+            shouldUse24HourFormat = shouldUse24HourFormat,
+            listener = { time ->
+                onTimePicked(time)
             },
-            startTime.hours, startTime.getMinutes(),
-            shouldUse24HourFormat
+            showNeutral = showNeutral
         )
 
     protected val shouldUse24HourFormat: Boolean

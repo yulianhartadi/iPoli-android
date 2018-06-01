@@ -1,6 +1,5 @@
 package io.ipoli.android.repeatingquest.edit
 
-import android.app.Dialog
 import android.os.Bundle
 import android.support.v7.widget.LinearLayoutManager
 import android.text.Editable
@@ -315,19 +314,11 @@ class EditRepeatingQuestViewController(args: Bundle? = null) :
         view.summaryStartTime.text = state.startTimeText
         view.summaryStartTime.onDebounceClick {
             val startTime = state.startTime ?: Time.now()
-            val dialog = createTimePickerDialog(
-                context = view.context,
+            createTimePickerDialog(
                 startTime = startTime,
                 onTimePicked = {
                     dispatch(EditRepeatingQuestAction.ChangeStartTime(it))
-                })
-            dialog.setButton(
-                Dialog.BUTTON_NEUTRAL,
-                view.context.getString(R.string.do_not_know),
-                { _, _ ->
-                    dispatch(EditRepeatingQuestAction.ChangeStartTime(null))
-                })
-            dialog.show()
+                }).show(router)
         }
     }
 

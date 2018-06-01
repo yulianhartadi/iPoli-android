@@ -346,22 +346,12 @@ class EditQuestViewController(args: Bundle? = null) :
         view.questStartTime.text = state.startTimeText
         view.questStartTime.onDebounceClick {
             val startTime = state.startTime ?: Time.now()
-
-            val dialog = createTimePickerDialog(
-                context = view.context,
+            createTimePickerDialog(
                 startTime = startTime,
                 onTimePicked = {
                     dispatch(EditQuestAction.ChangeStartTime(it))
                 }
-            )
-
-            dialog.setButton(
-                Dialog.BUTTON_NEUTRAL,
-                view.context.getString(R.string.do_not_know),
-                { _, _ ->
-                    dispatch(EditQuestAction.ChangeStartTime(null))
-                })
-            dialog.show()
+            ).show(router)
         }
     }
 

@@ -66,7 +66,10 @@ abstract class BaseDialogController : RestoreViewOnCreateController {
         dialog.window.addFlags(WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE)
 
         dialog.ownerActivity = activity!!
-        dialog.setOnDismissListener { dismiss() }
+        dialog.setOnDismissListener {
+            dismiss()
+            onDismiss()
+        }
         if (savedViewState != null) {
             val dialogState = savedViewState.getBundle(SAVED_DIALOG_STATE_TAG)
             if (dialogState != null) {
@@ -147,6 +150,10 @@ abstract class BaseDialogController : RestoreViewOnCreateController {
         }
         router.popController(this)
         dismissed = true
+    }
+
+    protected open fun onDismiss() {
+
     }
 
     companion object {

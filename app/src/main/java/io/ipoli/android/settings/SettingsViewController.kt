@@ -117,14 +117,13 @@ class SettingsViewController(args: Bundle? = null) :
         view.planDayTime.text = state.planTime.toString(use24HourFormat)
         view.planMyDayTimeContainer.onDebounceClick {
 
-            val dialog = createTimePickerDialog(
-                context = view.context,
+            createTimePickerDialog(
                 startTime = state.planTime,
                 onTimePicked = {
-                    dispatch(SettingsAction.PlanDayTimeChanged(it))
-                }
-            )
-            dialog.show()
+                    dispatch(SettingsAction.PlanDayTimeChanged(it!!))
+                },
+                showNeutral = false
+            ).show(router)
         }
 
         val daysText = state.planDays.joinToString(", ") {

@@ -26,6 +26,7 @@ import io.ipoli.android.quest.edit.EditQuestViewController
 import io.ipoli.android.quest.schedule.addquest.StateType.*
 import kotlinx.android.synthetic.main.controller_add_quest.view.*
 import org.threeten.bp.LocalDate
+import timber.log.Timber
 
 /**
  * Created by Polina Zhelyazkova <polina@mypoli.fun>
@@ -321,27 +322,28 @@ class AddQuestViewController(args: Bundle? = null) :
             val startTime = state.time ?: Time.now()
 
             val dialog = createTimePickerDialog(
-                context = view.context,
                 startTime = startTime,
                 onTimePicked = {
                     dispatch(AddQuestAction.TimePicked(it))
                 }
             )
-            dialog.setButton(
-                Dialog.BUTTON_NEUTRAL,
-                view.context.getString(R.string.do_not_know),
-                { _, _ ->
-                    dispatch(AddQuestAction.TimePicked(null))
-                })
-
             dialog.setOnDismissListener {
+                Timber.d("AAAAA ")
                 view.postDelayed({
                     view.questName.requestFocus()
                     ViewUtils.showKeyboard(view.questName.context, view.questName)
                 }, 10)
             }
-
-            dialog.show()
+            dialog.show(router)
+//            dialog.setButton(
+//                Dialog.BUTTON_NEUTRAL,
+//                view.context.getString(R.string.do_not_know),
+//                { _, _ ->
+//                    dispatch(AddQuestAction.TimePicked(null))
+//                })
+//
+//
+//            dialog.show()
         }
     }
 
