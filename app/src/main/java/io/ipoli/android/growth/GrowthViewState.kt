@@ -42,6 +42,7 @@ object GrowthReducer : BaseViewStateReducer<GrowthViewState>() {
                     experience = growth.stats.experienceEarned,
                     coins = growth.stats.coinsEarned,
                     showProgressCount = progressCountForToday(),
+                    tagTimeSpent = growth.tagProgress,
                     progressEntries = growth.progressEntries,
                     todayGrowth = growth,
                     weekGrowth = action.weeklyGrowth,
@@ -101,8 +102,6 @@ object GrowthReducer : BaseViewStateReducer<GrowthViewState>() {
                                 action.challenges
                             )
                         )
-
-                    else -> subState
                 }
 
             }
@@ -115,6 +114,7 @@ object GrowthReducer : BaseViewStateReducer<GrowthViewState>() {
                     experience = growth.stats.experienceEarned,
                     coins = growth.stats.coinsEarned,
                     showProgressCount = progressCountForToday(),
+                    tagTimeSpent = growth.tagProgress,
                     challengeProgress = createChallengeProgress(
                         growth.challengeProgress,
                         state.dataState.challenges!!
@@ -131,6 +131,7 @@ object GrowthReducer : BaseViewStateReducer<GrowthViewState>() {
                     experience = growth.stats.experienceEarned,
                     coins = growth.stats.coinsEarned,
                     showProgressCount = progressCountForThisWeek(),
+                    tagTimeSpent = growth.tagProgress,
                     challengeProgress = createChallengeProgress(
                         growth.challengeProgress,
                         state.dataState.challenges!!
@@ -147,6 +148,7 @@ object GrowthReducer : BaseViewStateReducer<GrowthViewState>() {
                     experience = growth.stats.experienceEarned,
                     coins = growth.stats.coinsEarned,
                     showProgressCount = progressCountForThisMonth(growth.progressEntries),
+                    tagTimeSpent = growth.tagProgress,
                     challengeProgress = createChallengeProgress(
                         growth.challengeProgress,
                         state.dataState.challenges!!
@@ -175,10 +177,10 @@ object GrowthReducer : BaseViewStateReducer<GrowthViewState>() {
         if (Time.now() <= Time.atHours(6)) 1 else ((Time.now().hours) / 3)
 
     private fun createChallengeProgress(
-        growthChallenges: List<CalculateGrowthStatsUseCase.Challenge>,
+        challengeProgress: List<CalculateGrowthStatsUseCase.ChallengeProgress>,
         challenges: List<Challenge>
     ) =
-        growthChallenges.map {
+        challengeProgress.map {
             val c = challenges.first { dc -> dc.id == it.id }
             GrowthViewState.ChallengeProgress(
                 challengeId = it.id,
@@ -197,6 +199,7 @@ object GrowthReducer : BaseViewStateReducer<GrowthViewState>() {
         experience = 0,
         coins = 0,
         showProgressCount = 0,
+        tagTimeSpent = emptyList(),
         challengeProgress = emptyList(),
         progressEntries = emptyList(),
         todayGrowth = null,
@@ -214,6 +217,7 @@ data class GrowthViewState(
     val experience: Int,
     val coins: Int,
     val productiveHoursGoal: Int = Constants.DAILY_PRODUCTIVE_HOURS_GOAL,
+    val tagTimeSpent: List<CalculateGrowthStatsUseCase.TagTimeSpent>,
     val challengeProgress: List<ChallengeProgress>,
     val showProgressCount: Int,
     val progressEntries: List<CalculateGrowthStatsUseCase.ProgressEntry>,

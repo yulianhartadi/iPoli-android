@@ -11,7 +11,6 @@ import android.os.Build
 import android.preference.PreferenceManager
 import com.crashlytics.android.Crashlytics
 import com.evernote.android.job.JobManager
-import com.google.firebase.analytics.FirebaseAnalytics
 import com.jakewharton.threetenabp.AndroidThreeTen
 import com.squareup.leakcanary.LeakCanary
 import io.fabric.sdk.android.Fabric
@@ -83,10 +82,8 @@ class myPoliApp : Application() {
 
         JobManager.create(this).addJobCreator(myPoliJobCreator())
 
-        val analytics = FirebaseAnalytics.getInstance(this)
-
         module = Module(
-            androidModule = MainAndroidModule(this, analytics),
+            androidModule = MainAndroidModule(this),
             repositoryModule = AndroidRepositoryModule(this),
             useCaseModule = MainUseCaseModule(),
             presenterModule = AndroidPresenterModule(),

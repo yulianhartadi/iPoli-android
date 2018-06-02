@@ -338,6 +338,9 @@ abstract class BaseViewController<A : Action, VS : ViewState> protected construc
     fun listItemIcon(icon: IIcon): IconicsDrawable =
         IconicsDrawable(activity!!).listItemIcon(icon)
 
+    fun smallListItemIcon(icon: IIcon): IconicsDrawable =
+        IconicsDrawable(activity!!).smallListItemIcon(icon)
+
     fun TextView.setMarkdown(markdown: String) {
         val parser = Markwon.createParser()
 

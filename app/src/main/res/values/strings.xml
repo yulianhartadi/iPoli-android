@@ -1382,4 +1382,8 @@
     <string name="daily_goal">Daily goal</string>
     <string name="productive_hours">Productive hours</string>
     <string name="daily_challenge_description">The Daily Challenge should include your 3 most important Quests for the day</string>
+    <string name="growth_tag_time_spent_no_progress_today">You haven\'t spent time on any Tag today</string>
+    <string name="growth_tag_time_spent_no_progress_week">You haven\'t spent time on any Tag this week</string>
+    <string name="growth_tag_time_spent_no_progress_month">You haven\'t spent time on any Tag this month</string>
+    <string name="time_spent_per_main_tag">Time spent per main Tag</string>
 </resources>

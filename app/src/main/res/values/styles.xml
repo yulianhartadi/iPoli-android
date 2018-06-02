@@ -334,14 +334,14 @@
         <item name="android:background">@color/md_light_text_50</item>
     </style>
 
-    <style name="SectionTitle" parent="@style/TextAppearance.AppCompat.Body1">
-        <item name="android:textSize">14sp</item>
+    <style name="SectionTitle" parent="@style/TextAppearance.AppCompat.Caption">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">48dp</item>
         <item name="android:layout_marginStart">16dp</item>
         <item name="android:layout_marginEnd">16dp</item>
         <item name="android:gravity">center_vertical</item>
-        <item name="android:textColor">?attr/colorAccent</item>
+        <item name="android:textColor">@color/md_dark_text_87</item>
+        <item name="android:textSize">12sp</item>
     </style>
 
     <style name="OnboardText">

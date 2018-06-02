@@ -298,8 +298,7 @@ interface AndroidModule {
 }
 
 class MainAndroidModule(
-    private val context: Context,
-    firebaseAnalytics: FirebaseAnalytics
+    private val context: Context
 ) : AndroidModule {
     override val layoutInflater: LayoutInflater get() = LayoutInflater.from(context)
 
@@ -339,7 +338,7 @@ class MainAndroidModule(
 
     override val database get() = Firestore.instance
 
-    override val eventLogger = FirebaseEventLogger(firebaseAnalytics)
+    override val eventLogger get() = FirebaseEventLogger(FirebaseAnalytics.getInstance(context))
 
     override val planDayScheduler
         get() = AndroidPlanDayScheduler()

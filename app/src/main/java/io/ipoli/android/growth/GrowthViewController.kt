@@ -3,24 +3,31 @@ package io.ipoli.android.growth
 import android.animation.AnimatorSet
 import android.animation.ObjectAnimator
 import android.animation.ValueAnimator
+import android.content.res.ColorStateList
 import android.graphics.PorterDuff
+import android.graphics.Typeface
 import android.graphics.drawable.LayerDrawable
 import android.os.Bundle
 import android.support.annotation.ColorRes
 import android.support.design.widget.TabLayout
 import android.support.v7.widget.LinearLayoutManager
+import android.text.Spannable
+import android.text.SpannableString
+import android.text.style.StyleSpan
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.animation.AccelerateDecelerateInterpolator
 import com.github.mikephil.charting.charts.LineChart
+import com.github.mikephil.charting.charts.PieChart
 import com.github.mikephil.charting.components.Legend
 import com.github.mikephil.charting.components.XAxis
 import com.github.mikephil.charting.components.YAxis
-import com.github.mikephil.charting.data.Entry
-import com.github.mikephil.charting.data.LineData
-import com.github.mikephil.charting.data.LineDataSet
+import com.github.mikephil.charting.data.*
+import com.github.mikephil.charting.formatter.IValueFormatter
 import com.github.mikephil.charting.formatter.IndexAxisValueFormatter
+import com.mikepenz.iconics.typeface.IIcon
+import com.mikepenz.material_design_iconic_typeface_library.MaterialDesignIconic
 import io.ipoli.android.R
 import io.ipoli.android.common.ViewUtils
 import io.ipoli.android.common.chart.AwesomenessScoreMarker
@@ -35,9 +42,11 @@ import io.ipoli.android.common.view.recyclerview.SimpleViewHolder
 import io.ipoli.android.growth.usecase.CalculateGrowthStatsUseCase
 import kotlinx.android.synthetic.main.controller_growth.view.*
 import kotlinx.android.synthetic.main.item_growth_challenge.view.*
+import kotlinx.android.synthetic.main.item_growth_tag.view.*
 import kotlinx.android.synthetic.main.view_loader.view.*
 import org.threeten.bp.format.TextStyle
 import java.util.*
+import kotlin.math.roundToInt
 
 /**
  * Created by Venelin Valkov <venelin@mypoli.fun>
@@ -47,6 +56,9 @@ class GrowthViewController(args: Bundle? = null) :
     ReduxViewController<GrowthAction, GrowthViewState, GrowthReducer>(args = args) {
 
     override val reducer = GrowthReducer
+
+    private val pieFormatter =
+        IValueFormatter { value, _, _, _ -> "${value.roundToInt()}%" }
 
     private val tabListener = object : TabLayout.OnTabSelectedListener {
         override fun onTabReselected(tab: TabLayout.Tab?) {
@@ -68,6 +80,9 @@ class GrowthViewController(args: Bundle? = null) :
         savedViewState: Bundle?
     ): View {
         val view = container.inflate(R.layout.controller_growth)
+
+        setupTagTimeChart(view.tagTimeChart)
+
         view.focusTimeChart.marker = FocusHoursMarker(view.context)
         setupLineChart(view.focusTimeChart)
         view.awesomenessChart.marker = AwesomenessScoreMarker(view.context)
@@ -76,7 +91,24 @@ class GrowthViewController(args: Bundle? = null) :
 
         view.challengesProgress.layoutManager = LinearLayoutManager(view.context)
         view.challengesProgress.adapter = ChallengeAdapter()
+
+        view.tagList.layoutManager = LinearLayoutManager(view.context)
+        view.tagList.adapter = TagTimeSpentAdapter()
+
         return view
+    }
+
+    private fun setupTagTimeChart(chart: PieChart) {
+
+        chart.legend.isEnabled = false
+        chart.description.isEnabled = false
+        chart.setTouchEnabled(false)
+        chart.transparentCircleRadius = chart.holeRadius
+        chart.setUsePercentValues(true)
+        chart.setEntryLabelColor(colorRes(R.color.md_dark_text_54))
+        chart.setEntryLabelTextSize(14f)
+        chart.setExtraOffsets(0.0f, 5.0f, 0.0f, 5.0f)
+        chart.rotationAngle = 270f
     }
 
     override fun onCreateLoadAction() = GrowthAction.Load
@@ -97,10 +129,12 @@ class GrowthViewController(args: Bundle? = null) :
         when (state.type) {
 
             GrowthViewState.StateType.TODAY_DATA_LOADED -> {
+
                 view.loader.gone()
                 view.growthContentContainer.visible()
                 view.focusTimeTitle.setText(R.string.growth_focus_time_title)
                 renderSummaryStats(state, view)
+                renderTagTimeSpent(state, view)
                 renderChallengeProgress(state, view)
                 renderCharts(state, view)
             }
@@ -108,6 +142,7 @@ class GrowthViewController(args: Bundle? = null) :
             GrowthViewState.StateType.WEEK_DATA_LOADED -> {
                 view.focusTimeTitle.setText(R.string.growth_focus_time_title)
                 renderSummaryStats(state, view)
+                renderTagTimeSpent(state, view)
                 renderChallengeProgress(state, view)
                 renderCharts(state, view)
             }
@@ -115,11 +150,43 @@ class GrowthViewController(args: Bundle? = null) :
             GrowthViewState.StateType.MONTH_DATA_LOADED -> {
                 view.focusTimeTitle.setText(R.string.growth_focus_time_month_title)
                 renderSummaryStats(state, view)
+                renderTagTimeSpent(state, view)
                 renderChallengeProgress(state, view)
                 renderCharts(state, view)
             }
 
             else -> {
+            }
+        }
+    }
+
+    private fun renderTagTimeSpent(state: GrowthViewState, view: View) {
+
+        if (state.tagTimeSpent.isEmpty()) {
+            val textRes = when (state.type) {
+                GrowthViewState.StateType.TODAY_DATA_LOADED ->
+                    R.string.growth_tag_time_spent_no_progress_today
+
+                GrowthViewState.StateType.WEEK_DATA_LOADED ->
+                    R.string.growth_tag_time_spent_no_progress_week
+
+                GrowthViewState.StateType.MONTH_DATA_LOADED ->
+                    R.string.growth_tag_time_spent_no_progress_month
+
+                else -> throw IllegalArgumentException("Unknown text for state type ${state.type}")
+            }
+
+            view.tagList.gone()
+            view.tagTimeChart.gone()
+            view.tagTimeSpentEmpty.setText(textRes)
+            view.tagTimeSpentEmpty.visible()
+        } else {
+            view.tagTimeSpentEmpty.gone()
+            view.tagList.visible()
+            view.tagTimeChart.visible()
+            (view.tagList.adapter as TagTimeSpentAdapter).updateAll(state.tagTimeSpentViewModels)
+            view.tagTimeChart.post {
+                renderTagTimeSpentChart(state, view)
             }
         }
     }
@@ -219,6 +286,7 @@ class GrowthViewController(args: Bundle? = null) :
         view.focusTimeChart.highlightValue(null)
         view.awesomenessChart.highlightValue(null)
 
+
         view.focusTimeChart.post {
             renderFocusTime(state, view)
         }
@@ -226,6 +294,41 @@ class GrowthViewController(args: Bundle? = null) :
         view.awesomenessChart.post {
             renderAwesomenessScore(state, view)
         }
+    }
+
+    private fun renderTagTimeSpentChart(state: GrowthViewState, view: View) {
+
+        val ts = state.tagTimeSpentForChart
+
+        if (ts.isEmpty()) {
+            view.tagTimeChart.gone()
+            return
+        }
+
+        view.tagTimeChart.visible()
+
+        val pieData = ts.map {
+            PieEntry(it.timeSpent.intValue.toFloat(), it.name)
+        }
+
+        val dataSet = PieDataSet(pieData, "")
+        dataSet.xValuePosition = PieDataSet.ValuePosition.OUTSIDE_SLICE
+        dataSet.yValuePosition = PieDataSet.ValuePosition.INSIDE_SLICE
+        dataSet.valueTextColor = colorRes(R.color.md_light_text_70)
+        dataSet.valueTextSize = 12f
+        dataSet.setDrawIcons(false)
+        dataSet.colors = ts.map { colorRes(it.color.androidColor.color500) }
+
+        dataSet.valueLinePart1Length = 0.5f
+        dataSet.valueLinePart2Length = 1f
+        dataSet.isUsingSliceColorAsValueLineColor = true
+
+        val data = PieData(dataSet)
+        data.setValueFormatter(pieFormatter)
+        view.tagTimeChart.data = data
+        view.tagTimeChart.highlightValues(null)
+        view.tagTimeChart.invalidate()
+        view.tagTimeChart.animateY(longAnimTime.toInt(), AccelerateDecelerateEasingFunction)
     }
 
     private fun renderFocusTime(
@@ -400,6 +503,40 @@ class GrowthViewController(args: Bundle? = null) :
         }
     }
 
+    data class TagTimeSpentViewModel(
+        override val id: String,
+        val name: String,
+        val icon: IIcon,
+        @ColorRes val color: Int,
+        val totalTime: String,
+        val focusTime: String
+    ) : RecyclerViewViewModel
+
+    inner class TagTimeSpentAdapter :
+        BaseRecyclerViewAdapter<TagTimeSpentViewModel>(R.layout.item_growth_tag) {
+
+        override fun onBindViewModel(
+            vm: TagTimeSpentViewModel,
+            view: View,
+            holder: SimpleViewHolder
+        ) {
+            view.tagName.text = vm.name
+            view.tagIcon.backgroundTintList = ColorStateList.valueOf(colorRes(vm.color))
+            view.tagIcon.setImageDrawable(smallListItemIcon(vm.icon))
+
+            view.tagTimeSpent.text = "${vm.totalTime} ("
+
+            val focusTimeSpannable = SpannableString("${vm.focusTime} )")
+            focusTimeSpannable.setSpan(
+                StyleSpan(Typeface.BOLD),
+                0,
+                vm.focusTime.length,
+                Spannable.SPAN_INCLUSIVE_EXCLUSIVE
+            )
+            view.tagFocusTimeSpent.text = focusTimeSpannable
+        }
+    }
+
     private val GrowthViewState.challengeViewModels
         get() = challengeProgress.map {
             val durationText = DurationFormatter.formatShort(activity!!, it.timeSpent.intValue)
@@ -411,6 +548,22 @@ class GrowthViewController(args: Bundle? = null) :
                 progressText = "${it.completeQuestCount}/${it.totalQuestCount} done\n$durationText"
             )
         }
+
+    private val GrowthViewState.tagTimeSpentViewModels
+        get() = tagTimeSpent.map {
+            TagTimeSpentViewModel(
+                id = it.tagId,
+                name = it.name,
+                icon = it.icon?.androidIcon?.icon ?: MaterialDesignIconic.Icon.gmi_label,
+                color = it.color.androidColor.color500,
+                totalTime = DurationFormatter.formatNarrow(it.timeSpent.intValue),
+                focusTime = DurationFormatter.formatNarrow(it.focusTime.intValue)
+            )
+        }
+
+    private val GrowthViewState.tagTimeSpentForChart
+        get() = tagTimeSpent.filter { it.timeSpentPercent >= 10 }
+
 
     companion object {
         private val TAB_INDEX_TO_ACTION = mapOf(

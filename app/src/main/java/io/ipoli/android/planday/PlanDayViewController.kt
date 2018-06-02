@@ -208,7 +208,7 @@ object PlanDayReducer : BaseViewStateReducer<PlanDayViewState>() {
                 val newState = action.motivationalImage?.let {
                     subState.copy(
                         type = IMAGE_LOADED,
-                        imageUrl = it.url + "&fm=jpg&w=1080&crop=entropy&fit=max",
+                        imageUrl = it.url + "&fm=jpg&w=1080&crop=entropy&fit=max&q=50",
                         imageAuthor = it.author,
                         imageAuthorUrl = it.authorUrl,
                         imageLoaded = true

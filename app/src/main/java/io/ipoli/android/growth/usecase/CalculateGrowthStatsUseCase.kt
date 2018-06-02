@@ -3,11 +3,14 @@ package io.ipoli.android.growth.usecase
 import io.ipoli.android.common.UseCase
 import io.ipoli.android.common.datetime.*
 import io.ipoli.android.planday.usecase.CalculateAwesomenessScoreUseCase
+import io.ipoli.android.quest.Color
+import io.ipoli.android.quest.Icon
 import io.ipoli.android.quest.Quest
 import io.ipoli.android.quest.data.persistence.QuestRepository
 import org.threeten.bp.DayOfWeek
 import org.threeten.bp.LocalDate
 import org.threeten.bp.temporal.TemporalAdjusters
+import kotlin.math.roundToInt
 
 class CalculateGrowthStatsUseCase(
     private val calculateAwesomenessScoreUseCase: CalculateAwesomenessScoreUseCase,
@@ -75,6 +78,7 @@ class CalculateGrowthStatsUseCase(
             todayGrowth = Growth.Today(
                 date = parameters.currentDate,
                 stats = createSummaryStats(todayQuests),
+                tagProgress = createTagProgress(todayQuests),
                 challengeProgress = createTodayChallengeProgress(quests, parameters.currentDate),
                 progressEntries = createTodayProgressEntries(todayQuests)
             ),
@@ -82,6 +86,7 @@ class CalculateGrowthStatsUseCase(
                 startDate = weekStartDate,
                 endDate = weekEndDate,
                 stats = createSummaryStats(weeklyQuests),
+                tagProgress = createTagProgress(weeklyQuests),
                 challengeProgress = createWeeklyChallengeProgress(
                     quests = quests,
                     weekStartDate = weekStartDate,
@@ -95,6 +100,7 @@ class CalculateGrowthStatsUseCase(
             ),
             monthlyGrowth = Growth.Month(
                 stats = createSummaryStats(monthlyQuests),
+                tagProgress = createTagProgress(monthlyQuests),
                 challengeProgress = createMonthlyChallengeProgress(
                     quests = quests,
                     periodStart = periodStart,
@@ -110,22 +116,53 @@ class CalculateGrowthStatsUseCase(
         )
     }
 
-    private fun createSummaryStats(quests: List<Quest>): SummaryStats {
-        val timeSpent = quests.map { it.actualDuration.asMinutes.intValue }.sum().minutes
-        val xpEarned = quests.map { it.experience!! }.sum()
-        val coinsEarned = quests.map { it.coins!! }.sum()
+    private fun createTagProgress(todayQuests: List<Quest>): List<TagTimeSpent> {
+        val questsByMainTag = todayQuests
+            .filter { it.tags.isNotEmpty() }
+            .groupBy { it.tags.first() }
 
-        return SummaryStats(
-            timeSpent = timeSpent,
-            experienceEarned = xpEarned,
-            coinsEarned = coinsEarned
-        )
+        var totalTimeSpent = 0
+
+        val tts = questsByMainTag
+            .map { (tag, quests) ->
+                val ts = timeSpentFor(quests)
+                totalTimeSpent += ts.intValue
+                TagTimeSpent(
+                    tagId = tag.id,
+                    name = tag.name,
+                    color = tag.color,
+                    icon = tag.icon,
+                    timeSpent = ts,
+                    focusTime = focusTimeFor(quests)
+                )
+            }.sortedByDescending {
+                it.timeSpent.intValue
+            }
+
+        return tts.map {
+            it.copy(
+                timeSpentPercent = ((it.timeSpent.intValue / totalTimeSpent.toFloat()) * 100f)
+                    .roundToInt()
+            )
+        }
     }
+
+    private fun focusTimeFor(quests: List<Quest>) =
+        timeSpentFor(
+            quests
+                .filter { it.hasTimer })
+
+    private fun createSummaryStats(quests: List<Quest>) =
+        SummaryStats(
+            timeSpent = timeSpentFor(quests),
+            experienceEarned = quests.map { it.experience!! }.sum(),
+            coinsEarned = quests.map { it.coins!! }.sum()
+        )
 
     private fun createTodayChallengeProgress(
         quests: List<Quest>,
         currentDate: LocalDate
-    ): List<Challenge> {
+    ): List<ChallengeProgress> {
         val todayQuests =
             quests
                 .filter { (it.completedAtDate == currentDate || it.scheduledDate == currentDate) && it.challengeId != null }
@@ -137,7 +174,7 @@ class CalculateGrowthStatsUseCase(
         quests: List<Quest>,
         weekStartDate: LocalDate,
         weekEndDate: LocalDate
-    ): List<Challenge> {
+    ): List<ChallengeProgress> {
         val weeklyQuests =
             quests.filter {
 
@@ -161,7 +198,7 @@ class CalculateGrowthStatsUseCase(
         quests: List<Quest>,
         periodStart: LocalDate,
         periodEnd: LocalDate
-    ): List<Challenge> {
+    ): List<ChallengeProgress> {
         val weeklyQuests =
             quests.filter {
 
@@ -181,12 +218,12 @@ class CalculateGrowthStatsUseCase(
         return createChallenges(weeklyQuests)
     }
 
-    private fun createChallenges(questsForPeriod: List<Quest>): List<Challenge> {
+    private fun createChallenges(questsForPeriod: List<Quest>): List<ChallengeProgress> {
         val questsByChallenge = questsForPeriod.groupBy { it.challengeId!! }
         return questsByChallenge.map {
             val qs = it.value
             val completedCount = qs.count { it.isCompleted }
-            Challenge(
+            ChallengeProgress(
                 id = it.key,
                 progressPercent = ((completedCount / qs.size.toFloat()) * 100f).toInt(),
                 completeQuestCount = completedCount,
@@ -197,11 +234,15 @@ class CalculateGrowthStatsUseCase(
     }
 
     private fun minutesSpentForQuests(qs: List<Quest>) =
-        qs
-            .filter { it.isCompleted }
+        timeSpentFor(qs
+            .filter { it.isCompleted })
+
+    private fun timeSpentFor(quests: List<Quest>): Duration<Minute> {
+        return quests
             .map { it.actualDuration.asMinutes.intValue }
             .sum()
             .minutes
+    }
 
     private fun createTodayProgressEntries(
         todayQuests: List<Quest>
@@ -283,7 +324,17 @@ class CalculateGrowthStatsUseCase(
         return monthProgressEntries
     }
 
-    data class Challenge(
+    data class TagTimeSpent(
+        val tagId: String,
+        val name: String,
+        val color: Color,
+        val icon: Icon?,
+        val timeSpentPercent: Int = -1,
+        val timeSpent: Duration<Minute>,
+        val focusTime: Duration<Minute>
+    )
+
+    data class ChallengeProgress(
         val id: String,
         val progressPercent: Int,
         val completeQuestCount: Int,
@@ -326,7 +377,8 @@ class CalculateGrowthStatsUseCase(
         data class Today(
             val date: LocalDate,
             val stats: SummaryStats,
-            val challengeProgress: List<Challenge>,
+            val tagProgress: List<TagTimeSpent>,
+            val challengeProgress: List<ChallengeProgress>,
             val progressEntries: List<ProgressEntry.Today>
         ) : Growth()
 
@@ -334,13 +386,15 @@ class CalculateGrowthStatsUseCase(
             val startDate: LocalDate,
             val endDate: LocalDate,
             val stats: SummaryStats,
-            val challengeProgress: List<Challenge>,
+            val tagProgress: List<TagTimeSpent>,
+            val challengeProgress: List<ChallengeProgress>,
             val progressEntries: List<ProgressEntry.Week>
         ) : Growth()
 
         data class Month(
             val stats: SummaryStats,
-            val challengeProgress: List<Challenge>,
+            val tagProgress: List<TagTimeSpent>,
+            val challengeProgress: List<ChallengeProgress>,
             val progressEntries: List<ProgressEntry.Month>
         ) : Growth()
     }

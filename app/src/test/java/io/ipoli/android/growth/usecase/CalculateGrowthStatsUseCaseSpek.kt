@@ -5,8 +5,12 @@ import com.nhaarman.mockito_kotlin.mock
 import io.ipoli.android.TestUtil
 import io.ipoli.android.common.datetime.*
 import io.ipoli.android.planday.usecase.CalculateAwesomenessScoreUseCase
+import io.ipoli.android.quest.Color
+import io.ipoli.android.quest.Icon
 import io.ipoli.android.quest.Quest
 import io.ipoli.android.quest.TimeRange
+import io.ipoli.android.tag.Tag
+import org.amshove.kluent.`should be empty`
 import org.amshove.kluent.`should equal`
 import org.amshove.kluent.any
 import org.jetbrains.spek.api.Spek
@@ -18,6 +22,13 @@ import org.threeten.bp.Month
 import org.threeten.bp.temporal.TemporalAdjusters
 
 class CalculateGrowthStatsUseCaseSpek : Spek({
+
+    val completedQuest = TestUtil.quest.copy(
+        experience = 50,
+        coins = 50,
+        completedAtDate = LocalDate.now(),
+        completedAtTime = Time.now()
+    )
 
     describe("CalculateGrowthStatsUseCase") {
 
@@ -72,17 +83,13 @@ class CalculateGrowthStatsUseCaseSpek : Spek({
             it("should return 1 productive hour for today") {
                 val res = executeUseCase(
                     listOf(
-                        TestUtil.quest.copy(
+                        completedQuest.copy(
                             timeRanges = listOf(
                                 TimeRange(
                                     TimeRange.Type.COUNTDOWN,
                                     60
                                 )
-                            ),
-                            experience = 50,
-                            coins = 50,
-                            completedAtDate = LocalDate.now(),
-                            completedAtTime = Time.now()
+                            )
                         )
                     )
                 )
@@ -96,17 +103,13 @@ class CalculateGrowthStatsUseCaseSpek : Spek({
             }
 
             it("should return sum of productive for today quests") {
-                val quest = TestUtil.quest.copy(
+                val quest = completedQuest.copy(
                     timeRanges = listOf(
                         TimeRange(
                             TimeRange.Type.COUNTDOWN,
                             60
                         )
-                    ),
-                    experience = 50,
-                    coins = 50,
-                    completedAtDate = LocalDate.now(),
-                    completedAtTime = Time.now()
+                    )
                 )
                 val res = executeUseCase(
                     listOf(
@@ -123,24 +126,15 @@ class CalculateGrowthStatsUseCaseSpek : Spek({
         it("should return productive hour from quest with timer for today") {
             val res = executeUseCase(
                 listOf(
-                    TestUtil.quest.copy(
+                    completedQuest.copy(
                         timeRanges = listOf(
                             TimeRange(
                                 TimeRange.Type.COUNTDOWN,
                                 60
                             )
-                        ),
-                        experience = 50,
-                        coins = 50,
-                        completedAtDate = LocalDate.now(),
-                        completedAtTime = Time.now()
+                        )
                     ),
-                    TestUtil.quest.copy(
-                        experience = 50,
-                        coins = 50,
-                        completedAtDate = LocalDate.now(),
-                        completedAtTime = Time.now()
-                    )
+                    completedQuest
                 )
             )
             val progressEntries = res.weeklyGrowth.progressEntries
@@ -153,29 +147,23 @@ class CalculateGrowthStatsUseCaseSpek : Spek({
                 LocalDate.now().with(TemporalAdjusters.previousOrSame(DateUtils.firstDayOfWeek))
             val res = executeUseCase(
                 listOf(
-                    TestUtil.quest.copy(
+                    completedQuest.copy(
                         timeRanges = listOf(
                             TimeRange(
                                 TimeRange.Type.COUNTDOWN,
                                 60
                             )
                         ),
-                        experience = 50,
-                        coins = 50,
-                        completedAtDate = date,
-                        completedAtTime = Time.now()
+                        completedAtDate = date
                     ),
-                    TestUtil.quest.copy(
+                    completedQuest.copy(
                         timeRanges = listOf(
                             TimeRange(
                                 TimeRange.Type.COUNTDOWN,
                                 30
                             )
                         ),
-                        experience = 50,
-                        coins = 50,
-                        completedAtDate = date.plusDays(1),
-                        completedAtTime = Time.now()
+                        completedAtDate = date.plusDays(1)
                     )
                 )
             )
@@ -237,17 +225,14 @@ class CalculateGrowthStatsUseCaseSpek : Spek({
             it("should return 1 hour for first week") {
                 val res = executeUseCase(
                     completedQuests = listOf(
-                        TestUtil.quest.copy(
+                        completedQuest.copy(
                             timeRanges = listOf(
                                 TimeRange(
                                     TimeRange.Type.COUNTDOWN,
                                     70
                                 )
                             ),
-                            experience = 50,
-                            coins = 50,
-                            completedAtDate = LocalDate.of(2015, Month.DECEMBER, 1),
-                            completedAtTime = Time.now()
+                            completedAtDate = LocalDate.of(2015, Month.DECEMBER, 1)
                         )
                     ),
                     currentDate = LocalDate.of(2015, Month.DECEMBER, 10)
@@ -260,29 +245,23 @@ class CalculateGrowthStatsUseCaseSpek : Spek({
             it("should return 1 hour for first week & second week") {
                 val res = executeUseCase(
                     completedQuests = listOf(
-                        TestUtil.quest.copy(
+                        completedQuest.copy(
                             timeRanges = listOf(
                                 TimeRange(
                                     TimeRange.Type.COUNTDOWN,
                                     70
                                 )
                             ),
-                            experience = 50,
-                            coins = 50,
-                            completedAtDate = LocalDate.of(2015, Month.DECEMBER, 1),
-                            completedAtTime = Time.now()
+                            completedAtDate = LocalDate.of(2015, Month.DECEMBER, 1)
                         ),
-                        TestUtil.quest.copy(
+                        completedQuest.copy(
                             timeRanges = listOf(
                                 TimeRange(
                                     TimeRange.Type.COUNTDOWN,
                                     140
                                 )
                             ),
-                            experience = 50,
-                            coins = 50,
-                            completedAtDate = LocalDate.of(2015, Month.DECEMBER, 8),
-                            completedAtTime = Time.now()
+                            completedAtDate = LocalDate.of(2015, Month.DECEMBER, 8)
                         )
                     ),
                     currentDate = LocalDate.of(2015, Month.DECEMBER, 10)
@@ -303,7 +282,7 @@ class CalculateGrowthStatsUseCaseSpek : Spek({
                 it("should return for 1 completed Quest") {
                     val res = executeUseCase(
                         completedQuests = listOf(
-                            TestUtil.quest.copy(
+                            completedQuest.copy(
                                 timeRanges = listOf(
                                     TimeRange(
                                         TimeRange.Type.COUNTDOWN,
@@ -311,9 +290,6 @@ class CalculateGrowthStatsUseCaseSpek : Spek({
                                     )
                                 ),
                                 challengeId = "123",
-                                experience = 50,
-                                coins = 50,
-                                completedAtDate = LocalDate.now(),
                                 completedAtTime = Time.atHours(5)
                             )
                         )
@@ -330,12 +306,9 @@ class CalculateGrowthStatsUseCaseSpek : Spek({
                 it("should return for 2 Quests from different Challenges") {
                     val res = executeUseCase(
                         completedQuests = listOf(
-                            TestUtil.quest.copy(
+                            completedQuest.copy(
                                 duration = 70,
                                 challengeId = "123",
-                                experience = 50,
-                                coins = 50,
-                                completedAtDate = LocalDate.now(),
                                 completedAtTime = Time.atHours(5)
                             ),
                             TestUtil.quest.copy(
@@ -369,16 +342,13 @@ class CalculateGrowthStatsUseCaseSpek : Spek({
                 it("should return 1 hour for first entry") {
                     val res = executeUseCase(
                         completedQuests = listOf(
-                            TestUtil.quest.copy(
+                            completedQuest.copy(
                                 timeRanges = listOf(
                                     TimeRange(
                                         TimeRange.Type.COUNTDOWN,
                                         70
                                     )
                                 ),
-                                experience = 50,
-                                coins = 50,
-                                completedAtDate = LocalDate.now(),
                                 completedAtTime = Time.atHours(5)
                             )
                         )
@@ -390,16 +360,13 @@ class CalculateGrowthStatsUseCaseSpek : Spek({
                 it("should return 1 hour for second entry") {
                     val res = executeUseCase(
                         completedQuests = listOf(
-                            TestUtil.quest.copy(
+                            completedQuest.copy(
                                 timeRanges = listOf(
                                     TimeRange(
                                         TimeRange.Type.COUNTDOWN,
                                         70
                                     )
                                 ),
-                                experience = 50,
-                                coins = 50,
-                                completedAtDate = LocalDate.now(),
                                 completedAtTime = Time.atHours(6)
                             )
                         )
@@ -410,34 +377,190 @@ class CalculateGrowthStatsUseCaseSpek : Spek({
                 it("should return cumulative productive minutes") {
                     val res = executeUseCase(
                         completedQuests = listOf(
-                            TestUtil.quest.copy(
+                            completedQuest.copy(
                                 timeRanges = listOf(
                                     TimeRange(
                                         TimeRange.Type.COUNTDOWN,
                                         70
                                     )
                                 ),
-                                experience = 50,
-                                coins = 50,
-                                completedAtDate = LocalDate.now(),
                                 completedAtTime = Time.atHours(5)
                             ),
-                            TestUtil.quest.copy(
+                            completedQuest.copy(
                                 timeRanges = listOf(
                                     TimeRange(
                                         TimeRange.Type.COUNTDOWN,
                                         70
                                     )
                                 ),
-                                experience = 50,
-                                coins = 50,
-                                completedAtDate = LocalDate.now(),
                                 completedAtTime = Time.atHours(6)
                             )
                         )
                     )
                     res.todayGrowth.progressEntries[1].productiveMinutes.`should equal`(140.minutes)
                 }
+            }
+        }
+
+        describe("tag time spent") {
+
+            it("should be empty for not complete Quest") {
+                val res = executeUseCase(
+                    listOf(
+                        TestUtil.quest.copy(
+                            tags = listOf(
+                                Tag(
+                                    id = "123",
+                                    name = "Wellness",
+                                    color = Color.RED,
+                                    icon = Icon.FLOWER,
+                                    isFavorite = true
+                                )
+                            )
+                        )
+                    )
+                )
+                res.todayGrowth.tagProgress.`should be empty`()
+            }
+
+            it("should be empty for complete Quest without Tag") {
+                executeUseCase(listOf(completedQuest)).todayGrowth.tagProgress.`should be empty`()
+            }
+
+            it("should be empty for completed Quest without tags") {
+                executeUseCase(listOf(TestUtil.quest)).todayGrowth.tagProgress.`should be empty`()
+            }
+
+            it("should be 100% for completed Quest with Tag") {
+                val res = executeUseCase(
+                    listOf(
+                        completedQuest.copy(
+                            duration = 30,
+                            tags = listOf(
+                                Tag(
+                                    id = "123",
+                                    name = "Wellness",
+                                    color = Color.RED,
+                                    icon = Icon.FLOWER,
+                                    isFavorite = true
+                                )
+                            )
+                        )
+                    )
+                )
+
+                val p = res.todayGrowth.tagProgress
+                p.size.`should equal`(1)
+                val tp = p.first()
+                tp.timeSpent.`should equal`(30.minutes)
+            }
+
+            it("should be sorted based on time spent") {
+                val res = executeUseCase(
+                    listOf(
+                        completedQuest.copy(
+                            duration = 30,
+                            tags = listOf(
+                                Tag(
+                                    id = "123",
+                                    name = "Wellness",
+                                    color = Color.RED,
+                                    icon = Icon.FLOWER,
+                                    isFavorite = true
+                                )
+                            )
+                        ),
+                        completedQuest.copy(
+                            duration = 60,
+                            tags = listOf(
+                                Tag(
+                                    id = "1234",
+                                    name = "Work",
+                                    color = Color.RED,
+                                    icon = Icon.FLOWER,
+                                    isFavorite = true
+                                )
+                            )
+                        ),
+                        completedQuest.copy(
+                            duration = 15,
+                            tags = listOf(
+                                Tag(
+                                    id = "12345",
+                                    name = "Personal",
+                                    color = Color.RED,
+                                    icon = Icon.FLOWER,
+                                    isFavorite = true
+                                )
+                            )
+                        )
+                    )
+                )
+
+                val p = res.todayGrowth.tagProgress
+                p.size.`should equal`(3)
+                val tp = p.first()
+                tp.timeSpent.`should equal`(60.minutes)
+
+                val tp1 = p[1]
+                tp1.timeSpent.`should equal`(30.minutes)
+
+                val tp2 = p[2]
+                tp2.timeSpent.`should equal`(15.minutes)
+            }
+
+            it("should be contain percentage of total time") {
+                val res = executeUseCase(
+                    listOf(
+                        completedQuest.copy(
+                            duration = 30,
+                            tags = listOf(
+                                Tag(
+                                    id = "123",
+                                    name = "Wellness",
+                                    color = Color.RED,
+                                    icon = Icon.FLOWER,
+                                    isFavorite = true
+                                )
+                            )
+                        ),
+                        completedQuest.copy(
+                            duration = 60,
+                            tags = listOf(
+                                Tag(
+                                    id = "1234",
+                                    name = "Work",
+                                    color = Color.RED,
+                                    icon = Icon.FLOWER,
+                                    isFavorite = true
+                                )
+                            )
+                        ),
+                        completedQuest.copy(
+                            duration = 10,
+                            tags = listOf(
+                                Tag(
+                                    id = "12345",
+                                    name = "Personal",
+                                    color = Color.RED,
+                                    icon = Icon.FLOWER,
+                                    isFavorite = true
+                                )
+                            )
+                        )
+                    )
+                )
+
+                val p = res.todayGrowth.tagProgress
+                p.size.`should equal`(3)
+                val tp = p.first()
+                tp.timeSpentPercent.`should equal`(60)
+
+                val tp1 = p[1]
+                tp1.timeSpentPercent.`should equal`(30)
+
+                val tp2 = p[2]
+                tp2.timeSpentPercent.`should equal`(10)
             }
         }
     }

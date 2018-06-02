@@ -84,7 +84,7 @@ object DurationFormatter {
         if (duration < 0) {
             return ""
         }
-        if(duration == 0) {
+        if (duration == 0) {
             return "0 min"
         }
         val hours = TimeUnit.MINUTES.toHours(duration.toLong()).toInt()
@@ -106,7 +106,7 @@ object DurationFormatter {
         if (duration < 0) {
             return ""
         }
-        if(duration == 0) {
+        if (duration == 0) {
             return context.resources.getQuantityString(R.plurals.duration_minutes, 0, 0)
         }
         val hours = TimeUnit.MINUTES.toHours(duration.toLong()).toInt()
@@ -127,8 +127,8 @@ object DurationFormatter {
         if (duration < 0) {
             return ""
         }
-        if(duration == 0) {
-            return "0m"
+        if (duration == 0) {
+            return "0min"
         }
         val hours = TimeUnit.MINUTES.toHours(duration.toLong()).toInt()
         val mins = duration - hours * 60
@@ -140,8 +140,8 @@ object DurationFormatter {
         }
 
         return if (hours > 0 && mins == 0) {
-            "1h"
-        } else mins.toString() + " m"
+            "$hours hours"
+        } else mins.toString() + " min"
 
     }
 
