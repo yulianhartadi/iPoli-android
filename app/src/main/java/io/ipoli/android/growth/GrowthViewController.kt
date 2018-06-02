@@ -314,7 +314,7 @@ class GrowthViewController(args: Bundle? = null) :
         val dataSet = PieDataSet(pieData, "")
         dataSet.xValuePosition = PieDataSet.ValuePosition.OUTSIDE_SLICE
         dataSet.yValuePosition = PieDataSet.ValuePosition.INSIDE_SLICE
-        dataSet.valueTextColor = colorRes(R.color.md_light_text_70)
+        dataSet.valueTextColor = colorRes(R.color.md_white)
         dataSet.valueTextSize = 12f
         dataSet.setDrawIcons(false)
         dataSet.colors = ts.map { colorRes(it.color.androidColor.color500) }
