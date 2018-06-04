@@ -50,9 +50,9 @@ class AgendaViewController(args: Bundle? = null) :
 
     override val reducer = AgendaReducer
 
-    private lateinit var scrollToPositionListener: RecyclerView.OnScrollListener
+    private var scrollToPositionListener: RecyclerView.OnScrollListener? = null
 
-    private lateinit var startDate: LocalDate
+    private var startDate = LocalDate.now()
 
     private val monthToImage = mapOf(
         Month.JANUARY to R.drawable.agenda_january,

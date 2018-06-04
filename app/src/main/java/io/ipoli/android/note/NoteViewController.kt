@@ -26,7 +26,7 @@ class NoteViewController(args: Bundle? = null) :
     ReduxViewController<NoteAction, NoteViewState, NoteReducer>(args) {
     override val reducer = NoteReducer
 
-    private lateinit var note: String
+    private var note: String = ""
     private var resultListener: (String) -> Unit = {}
     private var closeListener: (() -> Unit)? = null
     private var startInEditMode: Boolean = false
