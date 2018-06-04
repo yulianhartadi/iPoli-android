@@ -1366,9 +1366,9 @@
     <string name="max_daily_challenge_selected_message">%d quests already selected</string>
     <string name="not_enough_daily_challenge_quests_message">"Select %d more quests for your daily challenge"</string>
     <string name="daily_challenge_empty_today_quests">No more Quests for today</string>
-    <string name="daily_challenge_active">Daily Challenge active</string>
+    <string name="daily_challenge_active">Daily Challenge is active</string>
     <string name="selected_daily_challenge_count">%d/%d quests chosen</string>
-    <string name="daily_challenge_complete">All done for today!</string>
+    <string name="daily_challenge_complete">Complete for today!</string>
     <string name="growth_challenge_no_progress_today">You haven\'t progressed on any Challenge today</string>
     <string name="growth_challenge_no_progress_week">You haven\'t progressed on any Challenge this week</string>
     <string name="growth_challenge_no_progress_month">You haven\'t progressed on any Challenge this month</string>

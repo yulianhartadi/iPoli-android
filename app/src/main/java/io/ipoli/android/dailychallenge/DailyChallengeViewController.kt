@@ -136,7 +136,7 @@ class DailyChallengeViewController(args: Bundle? = null) :
 
             DATA_CHANGED -> {
                 isComplete = state.isCompleted
-                if(isComplete) {
+                if (isComplete) {
                     view.addQuest.invisible()
                 } else {
                     view.addQuest.visible()
@@ -183,6 +183,7 @@ class DailyChallengeViewController(args: Bundle? = null) :
         view.secondQuest.setBackgroundResource(state.dailyChallengeQuest2Indicator)
         view.thirdQuest.setBackgroundResource(state.dailyChallengeQuest3Indicator)
         view.selectedQuestsCount.text = state.selectedCountText
+        view.selectedQuestsCount.setTextColor(state.selectedCountTextColor)
     }
 
     data class TagViewModel(val name: String, @ColorRes val color: Int)
@@ -372,6 +373,16 @@ class DailyChallengeViewController(args: Bundle? = null) :
                 completedQuests > 2 -> R.drawable.circle_daily_challenge_progress_filled
                 else -> R.drawable.circle_daily_challenge_progress_empty
             }
+
+    private val DailyChallengeViewState.selectedCountTextColor: Int
+        get() {
+            val count = selectedQuests!!.size
+            return when {
+                isCompleted -> attrData(R.attr.colorAccent)
+                count == Constants.DAILY_CHALLENGE_QUEST_COUNT -> attrData(R.attr.colorPrimary)
+                else -> colorRes(R.color.md_dark_text_54)
+            }
+        }
 
     private val DailyChallengeViewState.selectedCountText: String
         get() {
