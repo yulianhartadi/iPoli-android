@@ -464,12 +464,12 @@ class DayViewController :
             }
 
             override fun onPrepareActionMode(p0: ActionMode?, menu: Menu?): Boolean {
-                menu!!.findItem(R.id.fullEdit).setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS)
-                menu.findItem(R.id.chooseDate).setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS)
+                menu!!.findItem(R.id.chooseDate).setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS)
                 menu.findItem(R.id.chooseReminder).setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS)
                 menu.findItem(R.id.chooseIcon).setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS)
                 menu.findItem(R.id.chooseColor).setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS)
-                menu.findItem(R.id.removeEvent).setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS)
+                menu.findItem(R.id.fullEdit).setShowAsAction(MenuItem.SHOW_AS_ACTION_NEVER)
+                menu.findItem(R.id.removeEvent).setShowAsAction(MenuItem.SHOW_AS_ACTION_NEVER)
                 return true
             }
 
