@@ -45,6 +45,8 @@ class FirstQuestViewController(args: Bundle? = null) :
 
     override val stateKey = OnboardReducer.stateKey
 
+    private val animations = mutableListOf<Animator>()
+
     private lateinit var petAvatar: AndroidPetAvatar
 
     private var showcase: TutoShowcase? = null
@@ -194,6 +196,10 @@ class FirstQuestViewController(args: Bundle? = null) :
     override fun onDetach(view: View) {
         showcase?.dismiss()
         showcase = null
+        for(a in animations) {
+            a.cancel()
+        }
+        animations.clear()
         super.onDetach(view)
     }
 
@@ -359,7 +365,7 @@ class FirstQuestViewController(args: Bundle? = null) :
                     onQuestCompleteAnimationEnd(this@FirstQuestCompletePopup, contentView)
                 }
             })
-
+            animations.add(anim)
             anim.start()
         }
 

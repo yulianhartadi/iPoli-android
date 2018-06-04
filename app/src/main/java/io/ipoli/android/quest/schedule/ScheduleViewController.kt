@@ -112,7 +112,10 @@ class ScheduleViewController(args: Bundle? = null) :
 
     private fun initAddQuest(view: View) {
         view.addContainerBackground.setOnClickListener {
-            addContainerRouter(view).popCurrentController()
+            val containerRouter = addContainerRouter(view)
+            if (containerRouter.hasRootController()) {
+                containerRouter.popCurrentController()
+            }
             ViewUtils.hideKeyboard(view)
             addQuestAnimationHelper.closeAddContainer()
         }
