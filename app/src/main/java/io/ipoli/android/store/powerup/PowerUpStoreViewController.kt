@@ -345,7 +345,7 @@ class PowerUpStoreViewController(args: Bundle? = null) :
     private val PowerUpStoreViewState.message: String
         get() = stringRes(
             R.string.power_up_bought,
-            stringRes(AndroidPowerUp.valueOf(type.name).title)
+            stringRes(AndroidPowerUp.valueOf(powerUp.name).title)
         )
 
     private val PowerUpStoreViewState.powerUpViewModels
