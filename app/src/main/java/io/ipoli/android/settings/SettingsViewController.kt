@@ -144,6 +144,10 @@ class SettingsViewController(args: Bundle? = null) :
                     }
                 )
         }
+
+        view.planNowContainer.onDebounceClick {
+            navigate().setPlanDay()
+        }
     }
 
     private fun renderSyncCalendarsSection(

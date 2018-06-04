@@ -1386,4 +1386,6 @@
     <string name="growth_tag_time_spent_no_progress_week">You haven\'t spent time on any Tag this week</string>
     <string name="growth_tag_time_spent_no_progress_month">You haven\'t spent time on any Tag this month</string>
     <string name="time_spent_per_main_tag">Time spent per main Tag</string>
+    <string name="plan_now_description">Start planning my day now</string>
+    <string name="plan_now">Plan now</string>
 </resources>

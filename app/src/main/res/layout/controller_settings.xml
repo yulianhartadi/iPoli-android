@@ -165,7 +165,36 @@
                         android:layout_height="0dp"
                         android:layout_weight="1"
                         android:gravity="top"
-                        android:text="Mon, Tue, Wed, Thu, Fri"
+                        android:textColor="@color/md_dark_text_54"
+                        android:textSize="14sp" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/planNowContainer"
+                    android:layout_width="match_parent"
+                    android:layout_height="72dp"
+                    android:background="?android:attr/selectableItemBackground"
+                    android:clickable="true"
+                    android:orientation="vertical"
+                    android:paddingEnd="16dp"
+                    android:paddingStart="16dp"
+                    android:weightSum="2">
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="0dp"
+                        android:layout_weight="1"
+                        android:gravity="bottom"
+                        android:text="@string/plan_now"
+                        android:textColor="@color/md_dark_text_87"
+                        android:textSize="16sp" />
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="0dp"
+                        android:layout_weight="1"
+                        android:gravity="top"
+                        android:text="@string/plan_now_description"
                         android:textColor="@color/md_dark_text_54"
                         android:textSize="14sp" />
                 </LinearLayout>

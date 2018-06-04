@@ -380,6 +380,7 @@ class FirestoreQuestRepository(
     override fun findRandomUnscheduled(count: Int) =
         collectionReference
             .whereEqualTo("scheduledDate", null)
+            .whereEqualTo("completedAtDate", null)
             .notRemovedEntities
             .shuffled()
             .take(count)
