@@ -139,6 +139,34 @@ class MainActivity : AppCompatActivity(), Injects<Module>, SideEffectHandler<App
         }
     }
 
+    override fun onNewIntent(intent: Intent) {
+        val navigator = Navigator(router)
+        when(intent.action) {
+
+            ACTION_SHOW_QUICK_ADD ->
+                navigator.setAddQuest(
+                    closeListener = {
+                        finish()
+                    },
+                    currentDate = LocalDate.now(),
+                    isFullscreen = true
+                )
+
+            ACTION_SHOW_TIMER -> {
+                val questId = intent.getStringExtra(Constants.QUEST_ID_EXTRA_KEY)
+                navigator.setQuest(questId)
+            }
+
+            ACTION_SHOW_PET ->
+                navigator.setPet(showBackButton = false)
+
+            ACTION_PLAN_DAY ->
+                navigator.setPlanDay()
+
+            else -> navigator.setHome()
+        }
+    }
+
     private fun startApp(player: Player) {
         val navigator = Navigator(router)
         if (intent.action == ACTION_SHOW_TIMER) {

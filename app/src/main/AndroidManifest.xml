@@ -27,6 +27,7 @@
 
         <activity
             android:name="io.ipoli.android.MainActivity"
+            android:launchMode="singleTop"
             android:windowSoftInputMode="adjustResize">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

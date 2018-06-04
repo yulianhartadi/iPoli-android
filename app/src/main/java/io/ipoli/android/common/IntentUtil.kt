@@ -3,6 +3,7 @@ package io.ipoli.android.common
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
+import android.os.Build
 import io.ipoli.android.Constants
 import io.ipoli.android.MainActivity
 
@@ -15,31 +16,41 @@ object IntentUtil {
     fun showQuickAdd(context: Context) =
         Intent(context, MainActivity::class.java).apply {
             action = MainActivity.ACTION_SHOW_QUICK_ADD
-            flags = startActivityFlags
+            if(Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
+                flags =  Intent.FLAG_ACTIVITY_NEW_TASK
+            }
         }
 
     fun showPet(context: Context) =
         Intent(context, MainActivity::class.java).apply {
             action = MainActivity.ACTION_SHOW_PET
-            flags = startActivityFlags
+            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
+                flags = Intent.FLAG_ACTIVITY_NEW_TASK
+            }
         }
 
     fun showTimer(questId: String, context: Context) =
         Intent(context, MainActivity::class.java).apply {
             action = MainActivity.ACTION_SHOW_TIMER
             putExtra(Constants.QUEST_ID_EXTRA_KEY, questId)
-            flags = startActivityFlags
+            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
+                flags = Intent.FLAG_ACTIVITY_NEW_TASK
+            }
         }
 
     fun startPlanDay(context: Context) =
         Intent(context, MainActivity::class.java).apply {
             action = MainActivity.ACTION_PLAN_DAY
-            flags = startActivityFlags
+            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
+                flags = Intent.FLAG_ACTIVITY_NEW_TASK
+            }
         }
 
     fun startApp(context: Context) =
         Intent(context, MainActivity::class.java).apply {
-            flags = startActivityFlags
+            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
+                flags = Intent.FLAG_ACTIVITY_NEW_TASK
+            }
         }
 
     fun startRatePage(context: Context): Intent {
@@ -48,7 +59,4 @@ object IntentUtil {
             flags = Intent.FLAG_ACTIVITY_NEW_TASK
         }
     }
-
-    private const val startActivityFlags =
-        Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK
 }
