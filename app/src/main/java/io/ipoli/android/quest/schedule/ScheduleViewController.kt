@@ -31,7 +31,7 @@ class ScheduleViewController(args: Bundle? = null) :
 
     override val reducer = ScheduleReducer
 
-    private lateinit var calendarToolbar: ViewGroup
+    private var calendarToolbar: ViewGroup? = null
 
     private lateinit var addQuestAnimationHelper: AddQuestAnimationHelper
 
@@ -60,7 +60,7 @@ class ScheduleViewController(args: Bundle? = null) :
 
         parentController!!.view!!.post {
             calendarToolbar = addToolbarView(R.layout.view_calendar_toolbar) as ViewGroup
-            initDayPicker(view, calendarToolbar)
+            initDayPicker(view)
         }
 
         setChildController(
@@ -74,7 +74,7 @@ class ScheduleViewController(args: Bundle? = null) :
     override fun onCreateLoadAction() = ScheduleAction.Load
 
     override fun onDestroyView(view: View) {
-        removeToolbarView(calendarToolbar)
+        calendarToolbar?.let { removeToolbarView(it) }
         super.onDestroyView(view)
     }
 
@@ -121,7 +121,7 @@ class ScheduleViewController(args: Bundle? = null) :
     private fun addContainerRouter(view: View) =
         getChildRouter(view.addContainer, "add-quest")
 
-    private fun initDayPicker(view: View, calendarToolbar: ViewGroup) {
+    private fun initDayPicker(view: View) {
         view.datePickerContainer.visibility = View.GONE
 
         view.datePicker.setMarkedStyle(MarkStyle.BACKGROUND, attrData(R.attr.colorAccent))
@@ -139,7 +139,7 @@ class ScheduleViewController(args: Bundle? = null) :
 
         view.datePicker.markDate(dateData)
 
-        calendarToolbar.dispatchOnClick { ScheduleAction.ExpandToolbar }
+        calendarToolbar?.dispatchOnClick { ScheduleAction.ExpandToolbar }
         view.expander.dispatchOnClick { ScheduleAction.ExpandWeekToolbar }
 
         view.datePicker.setOnDateClickListener(object : OnDateClickListener() {
@@ -250,8 +250,8 @@ class ScheduleViewController(args: Bundle? = null) :
     }
 
     private fun renderCalendarToolbar(state: ScheduleViewState) {
-        calendarToolbar.day.text = state.dayText(activity!!)
-        calendarToolbar.date.text = state.dateText(activity!!)
+        calendarToolbar?.day?.text = state.dayText(activity!!)
+        calendarToolbar?.date?.text = state.dateText(activity!!)
     }
 
     private fun renderDatePicker(
@@ -267,7 +267,9 @@ class ScheduleViewController(args: Bundle? = null) :
     }
 
     private fun showWeekDatePicker(view: View, currentDate: LocalDate) {
-        calendarToolbar.calendarIndicator.animate().rotation(180f).duration = shortAnimTime
+        calendarToolbar?.let {
+            it.calendarIndicator.animate().rotation(180f).duration = shortAnimTime
+        }
         CellConfig.Month2WeekPos = CellConfig.middlePosition
         CellConfig.ifMonth = false
         CellConfig.weekAnchorPointDate =
@@ -285,7 +287,9 @@ class ScheduleViewController(args: Bundle? = null) :
     }
 
     private fun hideDatePicker(view: View, currentDate: LocalDate) {
-        calendarToolbar.calendarIndicator.animate().rotation(0f).duration = shortAnimTime
+        calendarToolbar?.let {
+            it.calendarIndicator.animate().rotation(0f).duration = shortAnimTime
+        }
         view.datePickerContainer.visibility = View.GONE
         CellConfig.Month2WeekPos = CellConfig.middlePosition
         CellConfig.ifMonth = false

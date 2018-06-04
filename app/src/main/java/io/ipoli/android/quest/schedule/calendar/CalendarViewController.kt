@@ -40,7 +40,7 @@ class CalendarViewController(args: Bundle? = null) :
         override fun getCount() = 0
     }
 
-    private lateinit var startDate: LocalDate
+    private var startDate = LocalDate.now()
 
     constructor(startDate: LocalDate) : this() {
         this.startDate = startDate
