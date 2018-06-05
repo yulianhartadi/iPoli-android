@@ -109,10 +109,15 @@ class PetNotificationPopup(
     }
 
     private fun addViewToWindowManager(view: ViewGroup) {
+        @Suppress("DEPRECATION")
         val focusable =
-            WindowManager.LayoutParams.FLAG_HARDWARE_ACCELERATED.or(WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN)
+            WindowManager.LayoutParams.FLAG_HARDWARE_ACCELERATED
+                .or(WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN)
                 .or(WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL)
                 .or(WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE)
+                .or(WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED)
+                .or(WindowManager.LayoutParams.FLAG_DISMISS_KEYGUARD)
+                .or(WindowManager.LayoutParams.FLAG_TURN_SCREEN_ON)
 
         val metrics = DisplayMetrics()
         windowManager.defaultDisplay.getRealMetrics(metrics)
