@@ -45,13 +45,12 @@ open class CompleteQuestUseCase(
 
         val pet = playerRepository.find()!!.pet
 
-
         val experience = quest.experience ?: experience(pet.experienceBonus)
         val coins = quest.coins ?: coins(pet.coinBonus)
         val bounty = quest.bounty ?: bounty(pet.itemDropBonus)
         val newQuest = quest.copy(
-            completedAtDate = LocalDate.now(),
-            completedAtTime = Time.now(),
+            completedAtDate = parameters.completedDate,
+            completedAtTime = parameters.completedTime,
             experience = experience,
             coins = coins,
             bounty = bounty
@@ -120,8 +119,17 @@ open class CompleteQuestUseCase(
         return random
     }
 
-    sealed class Params {
-        data class WithQuest(val quest: Quest) : Params()
-        data class WithQuestId(val questId: String) : Params()
+    sealed class Params(open val completedDate: LocalDate, open val completedTime: Time) {
+        data class WithQuest(
+            val quest: Quest,
+            override val completedDate: LocalDate = LocalDate.now(),
+            override val completedTime: Time = Time.now()
+        ) : Params(completedDate, completedTime)
+
+        data class WithQuestId(
+            val questId: String,
+            override val completedDate: LocalDate = LocalDate.now(),
+            override val completedTime: Time = Time.now()
+        ) : Params(completedDate, completedTime)
     }
 }

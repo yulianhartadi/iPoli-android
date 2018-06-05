@@ -38,7 +38,7 @@ import org.threeten.bp.format.TextStyle
 import java.util.*
 
 sealed class PlanDayAction : Action {
-    data class CompleteQuest(val questId: String) : PlanDayAction()
+    data class CompleteYesterdayQuest(val questId: String) : PlanDayAction()
     data class UndoCompleteQuest(val questId: String) : PlanDayAction()
     data class ScheduleQuestForToday(val questId: String) : PlanDayAction()
     data class MoveQuestToBucketList(val questId: String) : PlanDayAction()

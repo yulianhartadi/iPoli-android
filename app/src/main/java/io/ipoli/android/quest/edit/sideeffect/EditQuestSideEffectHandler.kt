@@ -151,8 +151,8 @@ object EditQuestSideEffectHandler : AppSideEffectHandler() {
             is PlanDayAction.UndoRemoveQuest ->
                 undoRemoveQuestUseCase.execute(action.questId)
 
-            is PlanDayAction.CompleteQuest ->
-                completeQuest(action.questId)
+            is PlanDayAction.CompleteYesterdayQuest ->
+                completeQuest(action.questId, LocalDate.now().minusDays(1))
 
             is PlanDayAction.UndoCompleteQuest ->
                 undoCompletedQuestUseCase.execute(action.questId)
@@ -177,16 +177,21 @@ object EditQuestSideEffectHandler : AppSideEffectHandler() {
         EMPTY_NAME
     }
 
-    private fun completeQuest(questId: String) {
-        completeQuestUseCase.execute(CompleteQuestUseCase.Params.WithQuestId(questId))
+    private fun completeQuest(questId: String, completedDate: LocalDate = LocalDate.now()) {
+        completeQuestUseCase.execute(
+            CompleteQuestUseCase.Params.WithQuestId(
+                questId = questId,
+                completedDate = completedDate
+            )
+        )
     }
 
     override fun canHandle(action: Action) =
         action is EditQuestAction
-                || action is AddQuestAction
-                || action is TagAction.CompleteQuest
-                || action is BucketListAction.CompleteQuest
-                || action is BucketListAction.ScheduleForToday
-                || action is PlanDayAction
+            || action is AddQuestAction
+            || action is TagAction.CompleteQuest
+            || action is BucketListAction.CompleteQuest
+            || action is BucketListAction.ScheduleForToday
+            || action is PlanDayAction
 
 }

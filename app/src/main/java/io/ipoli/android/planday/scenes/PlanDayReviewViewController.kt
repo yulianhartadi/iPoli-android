@@ -116,7 +116,7 @@ class PlanDayReviewViewController(args: Bundle? = null) :
             override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
                 when {
                     viewHolder.itemViewType == ViewType.QUEST.value && direction == ItemTouchHelper.END ->
-                        dispatch(PlanDayAction.CompleteQuest(questId(viewHolder)))
+                        dispatch(PlanDayAction.CompleteYesterdayQuest(questId(viewHolder)))
 
                     viewHolder.itemViewType == ViewType.COMPLETED_QUEST.value && direction == ItemTouchHelper.START ->
                         dispatch(PlanDayAction.UndoCompleteQuest(questId(viewHolder)))
