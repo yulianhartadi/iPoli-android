@@ -3,7 +3,6 @@ package io.ipoli.android.common.job
 import com.evernote.android.job.Job
 import com.evernote.android.job.JobRequest
 import com.evernote.android.job.util.support.PersistableBundleCompat
-import io.ipoli.android.common.datetime.DateUtils.ZONE_UTC
 import io.ipoli.android.common.datetime.Time
 import io.ipoli.android.common.datetime.toMillis
 import org.threeten.bp.LocalDate
@@ -21,7 +20,7 @@ abstract class FixedDailyJob(private val tag: String) : Job() {
             val nextSchedule = LocalDateTime.of(
                 LocalDate.now().plusDays(1),
                 LocalTime.of(scheduleAt.hours, scheduleAt.getMinutes())
-            ).toMillis(ZONE_UTC)
+            ).toMillis()
 
             JobRequest.Builder(tag)
                 .setUpdateCurrent(true)
@@ -39,25 +38,26 @@ object FixedDailyJobScheduler {
 
     fun schedule(tag: String, scheduleAt: Time) {
 
-        val nextSchedule = LocalDateTime.of(
-            LocalDate.now(),
-            LocalTime.of(scheduleAt.hours, scheduleAt.getMinutes())
-        ).toMillis(ZONE_UTC)
-
-        val builder = JobRequest.Builder(tag).apply {
-            setUpdateCurrent(true)
-            setExtras(PersistableBundleCompat().apply {
-                putInt("minuteOfDay", scheduleAt.toMinuteOfDay())
-            })
-            val scheduleMillis = nextSchedule - System.currentTimeMillis()
-            if (scheduleMillis < 0) {
-                startNow()
-            } else {
-                setExact(scheduleMillis)
-            }
+        val nextScheduled = if (scheduleAt < Time.now()) {
+            LocalDateTime.of(
+                LocalDate.now().plusDays(1),
+                LocalTime.of(scheduleAt.hours, scheduleAt.getMinutes())
+            ).toMillis()
+        } else {
+            LocalDateTime.of(
+                LocalDate.now(),
+                LocalTime.of(scheduleAt.hours, scheduleAt.getMinutes())
+            ).toMillis()
         }
 
-        builder
+        val scheduleMillis = nextScheduled - System.currentTimeMillis()
+
+        JobRequest.Builder(tag)
+            .setUpdateCurrent(true)
+            .setExtras(PersistableBundleCompat().apply {
+                putInt("minuteOfDay", scheduleAt.toMinuteOfDay())
+            })
+            .setExact(scheduleMillis)
             .build()
             .schedule()
     }
