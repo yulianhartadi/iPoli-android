@@ -38,7 +38,7 @@ object FixedDailyJobScheduler {
 
     fun schedule(tag: String, scheduleAt: Time) {
 
-        val nextScheduled = if (scheduleAt < Time.now()) {
+        val nextScheduled = if (scheduleAt <= Time.now()) {
             LocalDateTime.of(
                 LocalDate.now().plusDays(1),
                 LocalTime.of(scheduleAt.hours, scheduleAt.getMinutes())

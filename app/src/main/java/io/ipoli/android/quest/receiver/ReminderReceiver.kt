@@ -11,8 +11,9 @@ import io.ipoli.android.Constants
 import io.ipoli.android.R
 import io.ipoli.android.common.AsyncBroadcastReceiver
 import io.ipoli.android.common.IntentUtil
-import io.ipoli.android.common.NotificationUtil
 import io.ipoli.android.common.datetime.Time
+import io.ipoli.android.common.notification.NotificationUtil
+import io.ipoli.android.common.notification.ScreenUtil
 import io.ipoli.android.common.view.AndroidIcon
 import io.ipoli.android.common.view.asThemedWrapper
 import io.ipoli.android.common.view.largeIcon
@@ -140,6 +141,7 @@ class ReminderReceiver : AsyncBroadcastReceiver() {
         val notificationId = Random().nextInt()
 
         notificationManager.notify(notificationId, notification)
+        ScreenUtil.awakeScreen(context)
         return notificationId
     }
 

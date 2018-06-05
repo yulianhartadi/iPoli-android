@@ -10,7 +10,6 @@ import com.evernote.android.job.JobRequest
 import io.ipoli.android.Constants
 import io.ipoli.android.R
 import io.ipoli.android.common.IntentUtil
-import io.ipoli.android.common.NotificationUtil
 import io.ipoli.android.common.datetime.Duration
 import io.ipoli.android.common.datetime.Minute
 import io.ipoli.android.common.datetime.minutes
@@ -18,6 +17,8 @@ import io.ipoli.android.common.datetime.startOfDayUTC
 import io.ipoli.android.common.di.Module
 import io.ipoli.android.common.job.FixedDailyJob
 import io.ipoli.android.common.job.FixedDailyJobScheduler
+import io.ipoli.android.common.notification.NotificationUtil
+import io.ipoli.android.common.notification.ScreenUtil
 import io.ipoli.android.common.view.asThemedWrapper
 import io.ipoli.android.dailychallenge.data.DailyChallenge
 import io.ipoli.android.myPoliApp
@@ -75,6 +76,8 @@ object PlanDayNotification {
             c.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
 
         notificationManager.notify(notificationId, notification)
+
+        ScreenUtil.awakeScreen(c)
 
         PetNotificationPopup(vm,
             onDismiss = {

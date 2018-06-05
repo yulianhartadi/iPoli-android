@@ -1,4 +1,4 @@
-package io.ipoli.android.common
+package io.ipoli.android.common.notification
 
 import android.app.Notification
 import android.content.Context
