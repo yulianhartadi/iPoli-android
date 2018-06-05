@@ -30,6 +30,7 @@ import kotlin.coroutines.experimental.CoroutineContext
  */
 interface RepeatingQuestRepository : CollectionRepository<RepeatingQuest> {
     fun findAllActive(currentDate: LocalDate = LocalDate.now()): List<RepeatingQuest>
+    fun findServerAllActive(currentDate: LocalDate = LocalDate.now()): List<RepeatingQuest>
     fun findActiveNotForChallenge(
         challengeId: String,
         currentDate: LocalDate = LocalDate.now()
@@ -112,6 +113,24 @@ class FirestoreRepeatingQuestRepository(
         val rqsWithoutEndDate = collectionReference
             .whereEqualTo("repeatPattern.endDate", null)
             .notRemovedEntities
+
+        return rqsWithEndDate + rqsWithoutEndDate
+    }
+
+    override fun findServerAllActive(currentDate: LocalDate): List<RepeatingQuest> {
+        val rqsWithEndDate = toEntityObjects(
+            collectionReference
+                .whereGreaterThanOrEqualTo("repeatPattern.endDate", currentDate.startOfDayUTC())
+                .whereEqualTo("removedAt", null)
+                .serverDocuments
+        )
+
+        val rqsWithoutEndDate = toEntityObjects(
+            collectionReference
+                .whereEqualTo("repeatPattern.endDate", null)
+                .whereEqualTo("removedAt", null)
+                .serverDocuments
+        )
 
         return rqsWithEndDate + rqsWithoutEndDate
     }

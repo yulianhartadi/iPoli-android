@@ -39,7 +39,14 @@ interface QuestRepository : CollectionRepository<Quest> {
     fun findRandomUnscheduled(count: Int): List<Quest>
 
     fun findScheduledAt(date: LocalDate): List<Quest>
+
     fun findScheduledForRepeatingQuestBetween(
+        repeatingQuestId: String,
+        start: LocalDate,
+        end: LocalDate
+    ): List<Quest>
+
+    fun findServerScheduledForRepeatingQuestBetween(
         repeatingQuestId: String,
         start: LocalDate,
         end: LocalDate
@@ -401,7 +408,19 @@ class FirestoreQuestRepository(
         collectionReference
             .whereEqualTo("repeatingQuestId", repeatingQuestId)
             .whereGreaterThan("scheduledDate", start.startOfDayUTC() - 1)
-            .whereLessThanOrEqualTo("scheduledDate", end.startOfDayUTC()).entities
+            .whereLessThanOrEqualTo("scheduledDate", end.startOfDayUTC())
+            .entities
+
+    override fun findServerScheduledForRepeatingQuestBetween(
+        repeatingQuestId: String,
+        start: LocalDate,
+        end: LocalDate
+    ) =
+        toEntityObjects(collectionReference
+            .whereEqualTo("repeatingQuestId", repeatingQuestId)
+            .whereGreaterThan("scheduledDate", start.startOfDayUTC() - 1)
+            .whereLessThanOrEqualTo("scheduledDate", end.startOfDayUTC())
+            .serverDocuments)
 
     override suspend fun listenForScheduledAt(
         date: LocalDate,

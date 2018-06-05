@@ -24,7 +24,7 @@ class SaveQuestsForRepeatingQuestJob : DailyJob(), Injects<Module> {
         val saveQuestsForRepeatingQuestUseCase by kap.required { saveQuestsForRepeatingQuestUseCase }
         kap.inject(myPoliApp.module(context))
 
-        val rqs = repeatingQuestRepository.findAllActive()
+        val rqs = repeatingQuestRepository.findServerAllActive()
         rqs.forEach {
             val currentPeriod = it.repeatPattern.periodRangeFor(LocalDate.now())
             val nextPeriodFirstDate = currentPeriod.end.plusDays(1)
@@ -50,9 +50,12 @@ class AndroidSaveQuestsForRepeatingQuestScheduler : SaveQuestsForRepeatingQuestS
     override fun schedule() {
 
         DailyJob.schedule(
-            JobRequest.Builder(SaveQuestsForRepeatingQuestJob.TAG).setUpdateCurrent(true),
+            JobRequest.Builder(SaveQuestsForRepeatingQuestJob.TAG)
+                .setUpdateCurrent(true)
+                .setRequiredNetworkType(JobRequest.NetworkType.CONNECTED)
+                .setRequirementsEnforced(true),
             0,
-            TimeUnit.HOURS.toMillis(1)
+            TimeUnit.HOURS.toMillis(12)
         )
     }
 
