@@ -5,7 +5,6 @@ import android.content.Context
 import android.graphics.BitmapFactory
 import android.net.Uri
 import android.widget.Toast
-import com.evernote.android.job.DailyJob
 import com.evernote.android.job.Job
 import com.evernote.android.job.JobRequest
 import io.ipoli.android.Constants
@@ -17,6 +16,8 @@ import io.ipoli.android.common.datetime.Minute
 import io.ipoli.android.common.datetime.minutes
 import io.ipoli.android.common.datetime.startOfDayUTC
 import io.ipoli.android.common.di.Module
+import io.ipoli.android.common.job.FixedDailyJob
+import io.ipoli.android.common.job.FixedDailyJobScheduler
 import io.ipoli.android.common.view.asThemedWrapper
 import io.ipoli.android.dailychallenge.data.DailyChallenge
 import io.ipoli.android.myPoliApp
@@ -121,9 +122,9 @@ class SnoozedPlanDayJob : Job() {
     }
 }
 
-class PlanDayJob : DailyJob() {
+class PlanDayJob : FixedDailyJob(PlanDayJob.TAG) {
 
-    override fun onRunDailyJob(params: Params): DailyJobResult {
+    override fun doRunJob(params: Params): Result {
         val kap = Kapsule<Module>()
         val playerRepository by kap.required { playerRepository }
         val planDayScheduler by kap.required { planDayScheduler }
@@ -134,7 +135,7 @@ class PlanDayJob : DailyJob() {
         requireNotNull(p)
 
         if (!p!!.preferences.planDays.contains(LocalDate.now().dayOfWeek)) {
-            return DailyJobResult.SUCCESS
+            return Job.Result.SUCCESS
         }
 
         dailyChallengeRepository.findById(LocalDate.now().startOfDayUTC().toString())
@@ -145,7 +146,7 @@ class PlanDayJob : DailyJob() {
             PlanDayNotification.show(getContext(), pet, planDayScheduler)
         }
 
-        return DailyJobResult.SUCCESS
+        return Job.Result.SUCCESS
     }
 
     companion object {
@@ -182,12 +183,7 @@ class AndroidPlanDayScheduler : PlanDayScheduler {
 
             val pTime = p!!.preferences.planDayTime
 
-            DailyJob
-                .schedule(
-                    JobRequest.Builder(PlanDayJob.TAG).setUpdateCurrent(true),
-                    pTime.toMillisOfDay(),
-                    pTime.toMillisOfDay() + 10.minutes.millisValue
-                )
+            FixedDailyJobScheduler.schedule(PlanDayJob.TAG, pTime)
         }
     }
 }
