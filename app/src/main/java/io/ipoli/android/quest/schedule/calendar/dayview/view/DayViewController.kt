@@ -41,6 +41,7 @@ import io.ipoli.android.quest.reminder.picker.ReminderViewModel
 import io.ipoli.android.quest.schedule.calendar.CalendarViewController
 import io.ipoli.android.quest.schedule.calendar.dayview.view.DayViewState.StateType.*
 import io.ipoli.android.quest.schedule.calendar.dayview.view.widget.*
+import io.ipoli.android.tag.Tag
 import kotlinx.android.synthetic.main.calendar_hour_cell.view.*
 import kotlinx.android.synthetic.main.controller_day_view.view.*
 import kotlinx.android.synthetic.main.item_calendar_drag.view.*
@@ -67,6 +68,8 @@ class DayViewController :
     private var iconPickedListener: () -> Unit = {}
 
     private var reminderPickedListener: () -> Unit = {}
+
+    private var tagsPickedListener: () -> Unit = {}
 
     private var datePickedListener: () -> Unit = {}
 
@@ -161,6 +164,7 @@ class DayViewController :
                 iconPickedListener = { showIconPicker(icon) }
                 reminderPickedListener = { showReminderPicker(state.reminder) }
                 datePickedListener = { showDatePicker(state.scheduledDate ?: currentDate) }
+                tagsPickedListener = { showTagPicker(state.tags) }
 
                 startActionMode()
                 (parentController as CalendarViewController).onStartEdit()
@@ -176,6 +180,7 @@ class DayViewController :
                 iconPickedListener = { showIconPicker(icon) }
                 reminderPickedListener = { showReminderPicker(state.reminder) }
                 datePickedListener = { showDatePicker(state.scheduledDate ?: currentDate) }
+                tagsPickedListener = { showTagPicker(state.tags) }
 
                 startActionMode()
                 (parentController as CalendarViewController).onStartEdit()
@@ -191,6 +196,7 @@ class DayViewController :
                 iconPickedListener = { showIconPicker(icon) }
                 reminderPickedListener = { showReminderPicker(state.reminder) }
                 datePickedListener = { showDatePicker(state.scheduledDate ?: currentDate) }
+                tagsPickedListener = { showTagPicker(state.tags) }
 
                 startActionMode()
                 (parentController as CalendarViewController).onStartEdit()
@@ -224,6 +230,10 @@ class DayViewController :
 
             NEW_EVENT_REMOVED -> {
 
+            }
+
+            TAGS_PICKED -> {
+                tagsPickedListener = { showTagPicker(state.tags) }
             }
 
             COLOR_PICKED -> {
@@ -265,6 +275,7 @@ class DayViewController :
                 iconPickedListener = { showIconPicker(icon) }
                 reminderPickedListener = { showReminderPicker(state.reminder) }
                 datePickedListener = { showDatePicker(state.scheduledDate ?: currentDate) }
+                tagsPickedListener = { showTagPicker(state.tags) }
                 startActionMode()
             }
 
@@ -450,6 +461,7 @@ class DayViewController :
                     R.id.fullEdit -> fullEditListener()
                     R.id.chooseDate -> datePickedListener()
                     R.id.chooseReminder -> reminderPickedListener()
+                    R.id.chooseTags -> tagsPickedListener()
                     R.id.chooseIcon -> iconPickedListener()
                     R.id.chooseColor -> colorPickListener()
                     R.id.removeEvent -> calendarDayView.onRemoveEvent()
@@ -466,6 +478,7 @@ class DayViewController :
             override fun onPrepareActionMode(p0: ActionMode?, menu: Menu?): Boolean {
                 menu!!.findItem(R.id.chooseDate).setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS)
                 menu.findItem(R.id.chooseReminder).setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS)
+                menu.findItem(R.id.chooseTags).setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS)
                 menu.findItem(R.id.chooseIcon).setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS)
                 menu.findItem(R.id.chooseColor).setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS)
                 menu.findItem(R.id.fullEdit).setShowAsAction(MenuItem.SHOW_AS_ACTION_NEVER)
@@ -524,6 +537,12 @@ class DayViewController :
         }, selectedColor?.color)
     }
 
+    private fun showTagPicker(selectedTags: List<Tag>) {
+        navigate().toTagPicker(selectedTags.toSet(), {
+            dispatch(DayViewAction.TagsPicked(it))
+        })
+    }
+
     private fun onStopEditMode() {
         (parentController as CalendarViewController).onStopEdit()
         actionMode?.finish()
@@ -535,7 +554,7 @@ class DayViewController :
         data class Quest(
             override val id: String,
             val name: String,
-            val tags: List<String>,
+            val tags: List<TagViewModel>,
             override val duration: Int,
             override val startMinute: Int,
             val startTime: String,
@@ -637,7 +656,7 @@ class DayViewController :
                 view.questSchedule.setTextColor(colorRes(R.color.md_dark_text_54))
                 view.questTags.setTextColor(colorRes(R.color.md_dark_text_54))
                 view.questTags.setCompoundDrawablesRelativeWithIntrinsicBounds(
-                    R.drawable.ic_tag_black_16dp,
+                    R.drawable.ic_tag_black_24dp,
                     0,
                     0,
                     0
@@ -709,7 +728,7 @@ class DayViewController :
             if (vm.tags.isEmpty()) {
                 view.questTags.gone()
             } else {
-                view.questTags.text = vm.tags.joinToString()
+                view.questTags.text = vm.tags.map { it.name }.joinToString()
                 view.questTags.visible()
             }
 
@@ -848,7 +867,7 @@ class DayViewController :
         pushWithRootRouter(RouterTransaction.with(CompletedQuestViewController(questId)))
     }
 
-    data class TagViewModel(val name: String, @ColorRes val color: Int)
+    data class TagViewModel(val name: String, @ColorRes val color: Int, val tag: Tag)
 
     data class UnscheduledQuestViewModel(
         override val id: String,
@@ -1015,7 +1034,8 @@ class DayViewController :
                 tags = it.tags.map {
                     TagViewModel(
                         it.name,
-                        AndroidColor.valueOf(it.color.name).color500
+                        it.color.androidColor.color500,
+                        it
                     )
                 }
             )
@@ -1039,7 +1059,13 @@ class DayViewController :
                 DayViewController.ScheduledEventViewModel.Quest(
                     id = q.id,
                     name = q.name,
-                    tags = q.tags.map { it.name },
+                    tags = q.tags.map {
+                        TagViewModel(
+                            it.name,
+                            it.color.androidColor.color500,
+                            it
+                        )
+                    },
                     duration = q.duration,
                     startMinute = q.startTime!!.toMinuteOfDay(),
                     startTime = q.startTime.toString(shouldUse24HourFormat),

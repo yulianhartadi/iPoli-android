@@ -187,7 +187,7 @@ object DayViewSideEffectHandler : AppSideEffectHandler() {
             duration = dayViewState.duration!!,
             reminders = reminder?.let { listOf(it) },
             repeatingQuestId = dayViewState.repeatingQuestId,
-            tags = null
+            tags = dayViewState.tags
         )
         val result = saveQuestUseCase.execute(questParams)
         if (result is Result.Invalid) {

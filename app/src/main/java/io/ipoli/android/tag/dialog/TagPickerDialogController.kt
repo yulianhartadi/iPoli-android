@@ -39,7 +39,6 @@ sealed class TagPickerAction : Action {
     data class RemoveTag(val tag: Tag) : TagPickerAction()
 
     data class Load(val selectedTags: Set<Tag>) : TagPickerAction()
-    object Switch : TagPickerAction()
     object Close : TagPickerAction()
 }
 

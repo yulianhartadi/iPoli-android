@@ -12,6 +12,7 @@ import io.ipoli.android.quest.reminder.picker.ReminderViewModel
 import io.ipoli.android.quest.schedule.calendar.dayview.view.DayViewState.StateType.*
 import io.ipoli.android.quest.usecase.Result
 import io.ipoli.android.quest.usecase.Schedule
+import io.ipoli.android.tag.Tag
 import org.threeten.bp.LocalDate
 
 /**
@@ -44,6 +45,7 @@ sealed class DayViewAction : Action {
     data class ReminderPicked(val reminder: ReminderViewModel?) : DayViewAction()
     data class IconPicked(val icon: Icon?) : DayViewAction()
     data class ColorPicked(val color: Color) : DayViewAction()
+    data class TagsPicked(val tags: Set<Tag>) : DayViewAction()
     data class StartEditUnscheduledQuest(val questViewModel: DayViewController.UnscheduledQuestViewModel) :
         DayViewAction()
 
@@ -120,7 +122,8 @@ class DayViewReducer(namespace: String) : NamespaceViewStateReducer<DayViewState
                         Icon.valueOf(it.name)
                     },
                     reminder = vm.reminder,
-                    repeatingQuestId = vm.repeatingQuestId
+                    repeatingQuestId = vm.repeatingQuestId,
+                    tags = vm.tags.map { it.tag }
                 )
             }
 
@@ -137,7 +140,8 @@ class DayViewReducer(namespace: String) : NamespaceViewStateReducer<DayViewState
                     },
                     reminder = vm.reminder,
                     startTime = null,
-                    repeatingQuestId = vm.repeatingQuestId
+                    repeatingQuestId = vm.repeatingQuestId,
+                    tags = vm.tags.map { it.tag }
                 )
             }
 
@@ -162,7 +166,8 @@ class DayViewReducer(namespace: String) : NamespaceViewStateReducer<DayViewState
                     icon = null,
                     startTime = action.startTime,
                     duration = action.duration,
-                    endTime = Time.plusMinutes(action.startTime, action.duration)
+                    endTime = Time.plusMinutes(action.startTime, action.duration),
+                    tags = emptyList()
                 )
             }
 
@@ -234,6 +239,13 @@ class DayViewReducer(namespace: String) : NamespaceViewStateReducer<DayViewState
                 )
             }
 
+            is DayViewAction.TagsPicked -> {
+                subState.copy(
+                    type = TAGS_PICKED,
+                    tags = action.tags.toList()
+                )
+            }
+
             is DayViewAction.RemoveQuest -> {
                 val eventId = action.questId
                 if (eventId.isEmpty()) {
@@ -274,7 +286,8 @@ class DayViewReducer(namespace: String) : NamespaceViewStateReducer<DayViewState
             color = null,
             reminder = null,
             icon = null,
-            repeatingQuestId = null
+            repeatingQuestId = null,
+            tags = emptyList()
         )
 }
 
@@ -292,7 +305,8 @@ data class DayViewState(
     val color: Color?,
     val reminder: ReminderViewModel?,
     val icon: Icon?,
-    val repeatingQuestId: String?
+    val repeatingQuestId: String?,
+    val tags : List<Tag>
 ) : BaseViewState() {
 
     enum class StateType {
@@ -315,6 +329,7 @@ data class DayViewState(
         EDIT_VIEW_DRAGGED,
         EDIT_VIEW_NAME_CHANGED,
         REMINDER_PICKED,
+        TAGS_PICKED,
         DATE_PICKED
     }
 }

@@ -17,6 +17,13 @@
         app:showAsAction="always" />
 
     <item
+        android:id="@+id/chooseTags"
+        android:icon="@drawable/ic_tag_black_24dp"
+        android:orderInCategory="100"
+        android:title="@string/tags"
+        app:showAsAction="always" />
+
+    <item
         android:id="@+id/chooseIcon"
         android:icon="@drawable/ic_icon_black_24dp"
         android:orderInCategory="100"
