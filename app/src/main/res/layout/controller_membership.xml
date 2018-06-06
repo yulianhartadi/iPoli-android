@@ -4,12 +4,15 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="?android:colorBackground"
     android:orientation="vertical">
 
     <include layout="@layout/view_no_elevation_toolbar" />
 
     <android.support.constraint.ConstraintLayout
         android:layout_width="match_parent"
+        android:id="@+id/membershipDataContainer"
+        android:visibility="gone"
         android:layout_height="match_parent">
 
         <View

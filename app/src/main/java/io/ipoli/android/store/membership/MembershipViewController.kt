@@ -108,8 +108,13 @@ class MembershipViewController(args: Bundle? = null) :
         hideLoader()
         when (state.type) {
 
-            DATA_CHANGED -> {
+            LOADING -> {
+                view.membershipDataContainer.gone()
+                showLoader()
+            }
 
+            DATA_CHANGED -> {
+                view.membershipDataContainer.visible()
                 view.membershipCurrentPlan.visible = state.showCurrentPlan
                 view.goPremium.visible = !state.showCurrentPlan
 
@@ -147,9 +152,6 @@ class MembershipViewController(args: Bundle? = null) :
             }
 
             SUBSCRIPTION_ERROR -> showShortToast(R.string.something_went_wrong)
-
-            else -> {
-            }
         }
 
     }
