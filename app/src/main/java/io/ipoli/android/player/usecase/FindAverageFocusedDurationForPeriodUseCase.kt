@@ -7,8 +7,8 @@ import io.ipoli.android.common.datetime.minutes
 import io.ipoli.android.quest.data.persistence.QuestRepository
 import org.threeten.bp.LocalDate
 
-class FindAverageProductiveDurationForPeriodUseCase(private val questRepository: QuestRepository) :
-    UseCase<FindAverageProductiveDurationForPeriodUseCase.Params, Duration<Minute>> {
+class FindAverageFocusedDurationForPeriodUseCase(private val questRepository: QuestRepository) :
+    UseCase<FindAverageFocusedDurationForPeriodUseCase.Params, Duration<Minute>> {
 
     override fun execute(parameters: Params): Duration<Minute> {
 

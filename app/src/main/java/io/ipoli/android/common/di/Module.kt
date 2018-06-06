@@ -694,8 +694,8 @@ class MainUseCaseModule : UseCaseModule, Injects<Module> {
     override val findDailyChallengeStreakUseCase
         get() = FindDailyChallengeStreakUseCase(dailyChallengeRepository)
 
-    override val findAverageProductiveDurationForPeriodUseCase
-        get() = FindAverageProductiveDurationForPeriodUseCase(questRepository)
+    override val findAverageFocusedDurationForPeriodUseCase
+        get() = FindAverageFocusedDurationForPeriodUseCase(questRepository)
 
     override val saveQuickDoNotificationSettingUseCase
         get() = SaveQuickDoNotificationSettingUseCase(playerRepository)
@@ -794,7 +794,7 @@ interface UseCaseModule {
     val saveDailyChallengeQuestIdsUseCase: SaveDailyChallengeQuestIdsUseCase
     val calculateGrowthStatsUseCase: CalculateGrowthStatsUseCase
     val findDailyChallengeStreakUseCase: FindDailyChallengeStreakUseCase
-    val findAverageProductiveDurationForPeriodUseCase: FindAverageProductiveDurationForPeriodUseCase
+    val findAverageFocusedDurationForPeriodUseCase: FindAverageFocusedDurationForPeriodUseCase
     val saveQuickDoNotificationSettingUseCase: SaveQuickDoNotificationSettingUseCase
     val saveProfileUseCase : SaveProfileUseCase
 }
