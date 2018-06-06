@@ -14,10 +14,12 @@ import io.ipoli.android.MainActivity
  */
 object IntentUtil {
 
+    private const val MIN_NO_NEW_TASK_VERSION: Int = Build.VERSION_CODES.N
+
     fun showQuickAdd(context: Context) =
         Intent(context, MainActivity::class.java).apply {
             action = MainActivity.ACTION_SHOW_QUICK_ADD
-            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
+            if (Build.VERSION.SDK_INT < MIN_NO_NEW_TASK_VERSION) {
                 flags = Intent.FLAG_ACTIVITY_NEW_TASK
             }
         }
@@ -25,7 +27,7 @@ object IntentUtil {
     fun showPet(context: Context) =
         Intent(context, MainActivity::class.java).apply {
             action = MainActivity.ACTION_SHOW_PET
-            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
+            if (Build.VERSION.SDK_INT < MIN_NO_NEW_TASK_VERSION) {
                 flags = Intent.FLAG_ACTIVITY_NEW_TASK
             }
         }
@@ -34,7 +36,7 @@ object IntentUtil {
         Intent(context, MainActivity::class.java).apply {
             action = MainActivity.ACTION_SHOW_TIMER
             putExtra(Constants.QUEST_ID_EXTRA_KEY, questId)
-            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
+            if (Build.VERSION.SDK_INT < MIN_NO_NEW_TASK_VERSION) {
                 flags = Intent.FLAG_ACTIVITY_NEW_TASK
             }
         }
@@ -42,14 +44,14 @@ object IntentUtil {
     fun startPlanDay(context: Context) =
         Intent(context, MainActivity::class.java).apply {
             action = MainActivity.ACTION_PLAN_DAY
-            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
+            if (Build.VERSION.SDK_INT < MIN_NO_NEW_TASK_VERSION) {
                 flags = Intent.FLAG_ACTIVITY_NEW_TASK
             }
         }
 
     fun startApp(context: Context) =
         Intent(context, MainActivity::class.java).apply {
-            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
+            if (Build.VERSION.SDK_INT < MIN_NO_NEW_TASK_VERSION) {
                 flags = Intent.FLAG_ACTIVITY_NEW_TASK
             }
         }
