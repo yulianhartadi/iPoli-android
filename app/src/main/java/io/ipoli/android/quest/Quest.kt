@@ -173,19 +173,26 @@ data class Quest(
     val endTime get() = startTime?.plus(duration)
     val isScheduled get() = startTime != null && scheduledDate != null
 
+    val startMillisecond
+        get() = if (!isScheduled) null else LocalDateTime.of(
+            scheduledDate!!,
+            LocalTime.of(startTime!!.hours, startTime.getMinutes())
+        ).toMillis()
+
     val actualStart get() = if (hasTimer) timeRanges.first().start else null
 
-    val actualStartTime get() =
-        if (isCompleted) {
-            val localCompletedAt = LocalDateTime.of(
-                completedAtDate,
-                LocalTime.of(completedAtTime!!.hours, completedAtTime.getMinutes())
-            )
-            val result = localCompletedAt.minusSeconds(actualDuration.longValue)
-            Time.at(result.hour, result.minute)
-        } else {
-            startTime
-        }
+    val actualStartTime
+        get() =
+            if (isCompleted) {
+                val localCompletedAt = LocalDateTime.of(
+                    completedAtDate,
+                    LocalTime.of(completedAtTime!!.hours, completedAtTime.getMinutes())
+                )
+                val result = localCompletedAt.minusSeconds(actualDuration.longValue)
+                Time.at(result.hour, result.minute)
+            } else {
+                startTime
+            }
 
     val actualDuration
         get() =
@@ -209,10 +216,11 @@ data class Quest(
 
     val hasPomodoroTimer get() = timeRanges.firstOrNull()?.type == TimeRange.Type.POMODORO_WORK
 
-    val isStarted get() =
-        !isCompleted &&
+    val isStarted
+        get() =
+            !isCompleted &&
                 (hasCountDownTimer ||
-                        (hasPomodoroTimer && timeRanges.last().end == null))
+                    (hasPomodoroTimer && timeRanges.last().end == null))
 
     fun hasCompletedAllTimeRanges() = timeRanges.sumBy { it.duration } >= duration
 

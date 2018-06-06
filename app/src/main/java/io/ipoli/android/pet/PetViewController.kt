@@ -18,7 +18,6 @@ import android.view.*
 import android.view.animation.AccelerateDecelerateInterpolator
 import android.view.animation.OvershootInterpolator
 import android.widget.ImageView
-import android.widget.ProgressBar
 import android.widget.TextView
 import android.widget.Toast
 import com.bluelinelabs.conductor.RouterTransaction
@@ -139,12 +138,6 @@ class PetViewController(args: Bundle? = null) :
     companion object {
         const val PET_TOP_BORDER_PERCENT = 0.33f
         const val PET_BOTTOM_BORDER_PERCENT = 0.74f
-
-        val routerTransaction: RouterTransaction
-            get() =
-                RouterTransaction.with(PetViewController())
-                    .pushChangeHandler(VerticalChangeHandler())
-                    .popChangeHandler(VerticalChangeHandler())
     }
 
     override fun render(state: PetViewState, view: View) {
@@ -659,11 +652,11 @@ class PetViewController(args: Bundle? = null) :
             view.statsContainer.visibility = View.VISIBLE
             view.reviveContainer.visibility = View.GONE
             view.compareItemsContainer.visibility = View.GONE
-            playProgressAnimation(view.healthProgress, view.healthProgress.progress, state.hp)
+            view.healthProgress.animateProgressFromCurrentValue(state.hp)
             view.healthPoints.text = state.hp.toString() + "/" + state.maxHP
             view.healthProgress.max = state.maxHP
 
-            playProgressAnimation(view.moodProgress, view.moodProgress.progress, state.mp)
+            view.moodProgress.animateProgressFromCurrentValue(state.mp)
             view.moodPoints.text = state.mp.toString() + "/" + state.maxMP
             view.moodProgress.max = state.maxMP
 
@@ -743,12 +736,6 @@ class PetViewController(args: Bundle? = null) :
             }
         })
         anim.start()
-    }
-
-    private fun playProgressAnimation(view: ProgressBar, from: Int, to: Int) {
-        val animator = ObjectAnimator.ofInt(view, "progress", from, to)
-        animator.duration = intRes(android.R.integer.config_shortAnimTime).toLong()
-        animator.start()
     }
 
     private fun playFeedPetResponseAnimation(view: View, @DrawableRes currentStateImage: Int, @DrawableRes responseStateImage: Int) {

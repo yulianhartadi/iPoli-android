@@ -1,5 +1,6 @@
 package io.ipoli.android.common
 
+import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
@@ -16,8 +17,8 @@ object IntentUtil {
     fun showQuickAdd(context: Context) =
         Intent(context, MainActivity::class.java).apply {
             action = MainActivity.ACTION_SHOW_QUICK_ADD
-            if(Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
-                flags =  Intent.FLAG_ACTIVITY_NEW_TASK
+            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
+                flags = Intent.FLAG_ACTIVITY_NEW_TASK
             }
         }
 
@@ -59,4 +60,23 @@ object IntentUtil {
             flags = Intent.FLAG_ACTIVITY_NEW_TASK
         }
     }
+
+    fun getActivityPendingIntent(context: Context, intent: Intent): PendingIntent =
+        PendingIntent.getActivity(
+            context,
+            0,
+            intent,
+            0
+        )
+
+    fun getBroadcastPendingIntent(
+        context: Context,
+        intent: Intent
+    ): PendingIntent =
+        PendingIntent.getBroadcast(
+            context,
+            0,
+            intent,
+            0
+        )
 }

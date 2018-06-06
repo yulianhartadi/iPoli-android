@@ -26,17 +26,18 @@
 
                 <TextView
                     style="@style/SectionTitle"
+                    android:layout_marginStart="72dp"
                     android:text="@string/settings_general_title" />
 
                 <LinearLayout
                     android:id="@+id/timeFormatContainer"
                     android:layout_width="match_parent"
                     android:layout_height="72dp"
+                    android:layout_marginEnd="16dp"
+                    android:layout_marginStart="72dp"
                     android:background="?android:attr/selectableItemBackground"
                     android:clickable="true"
                     android:orientation="vertical"
-                    android:paddingEnd="16dp"
-                    android:paddingStart="16dp"
                     android:weightSum="2">
 
                     <TextView
@@ -62,11 +63,11 @@
                     android:id="@+id/temperatureUnitContainer"
                     android:layout_width="match_parent"
                     android:layout_height="72dp"
+                    android:layout_marginEnd="16dp"
+                    android:layout_marginStart="72dp"
                     android:background="?android:attr/selectableItemBackground"
                     android:clickable="true"
                     android:orientation="vertical"
-                    android:paddingEnd="16dp"
-                    android:paddingStart="16dp"
                     android:weightSum="2">
 
                     <TextView
@@ -88,6 +89,33 @@
                         android:textSize="14sp" />
                 </LinearLayout>
 
+                <RelativeLayout
+                    android:id="@+id/ongoingNotificationContainer"
+                    android:layout_width="match_parent"
+                    android:layout_height="48dp"
+                    android:layout_marginEnd="16dp"
+                    android:layout_marginStart="72dp"
+                    android:background="?android:attr/selectableItemBackground"
+                    android:clickable="true">
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentStart="true"
+                        android:layout_centerVertical="true"
+                        android:text="@string/settings_quick_do_notification"
+                        android:textColor="@color/md_dark_text_87"
+                        android:textSize="16sp" />
+
+                    <Switch
+                        android:id="@+id/enableOngoingNotification"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentEnd="true"
+                        android:layout_centerVertical="true" />
+
+                </RelativeLayout>
+
             </LinearLayout>
 
             <View
@@ -104,17 +132,18 @@
 
                 <TextView
                     style="@style/SectionTitle"
+                    android:layout_marginStart="72dp"
                     android:text="@string/settings_plan_day" />
 
                 <LinearLayout
                     android:id="@+id/planMyDayTimeContainer"
                     android:layout_width="match_parent"
                     android:layout_height="72dp"
+                    android:layout_marginEnd="16dp"
+                    android:layout_marginStart="72dp"
                     android:background="?android:attr/selectableItemBackground"
                     android:clickable="true"
                     android:orientation="vertical"
-                    android:paddingEnd="16dp"
-                    android:paddingStart="16dp"
                     android:weightSum="2">
 
                     <TextView
@@ -142,11 +171,11 @@
                     android:id="@+id/planDaysContainer"
                     android:layout_width="match_parent"
                     android:layout_height="72dp"
+                    android:layout_marginEnd="16dp"
+                    android:layout_marginStart="72dp"
                     android:background="?android:attr/selectableItemBackground"
                     android:clickable="true"
                     android:orientation="vertical"
-                    android:paddingEnd="16dp"
-                    android:paddingStart="16dp"
                     android:weightSum="2">
 
                     <TextView
@@ -173,11 +202,11 @@
                     android:id="@+id/planNowContainer"
                     android:layout_width="match_parent"
                     android:layout_height="72dp"
+                    android:layout_marginEnd="16dp"
+                    android:layout_marginStart="72dp"
                     android:background="?android:attr/selectableItemBackground"
                     android:clickable="true"
                     android:orientation="vertical"
-                    android:paddingEnd="16dp"
-                    android:paddingStart="16dp"
                     android:weightSum="2">
 
                     <TextView
@@ -214,16 +243,17 @@
 
                 <TextView
                     style="@style/SectionTitle"
+                    android:layout_marginStart="72dp"
                     android:text="@string/settings_sync_calendars" />
 
                 <RelativeLayout
                     android:id="@+id/syncCalendarsContainer"
                     android:layout_width="match_parent"
                     android:layout_height="48dp"
+                    android:layout_marginEnd="16dp"
+                    android:layout_marginStart="72dp"
                     android:background="?android:attr/selectableItemBackground"
-                    android:clickable="true"
-                    android:paddingEnd="16dp"
-                    android:paddingStart="16dp">
+                    android:clickable="true">
 
                     <TextView
                         android:layout_width="match_parent"
@@ -247,10 +277,10 @@
                     android:id="@+id/selectSyncCalendarsContainer"
                     android:layout_width="match_parent"
                     android:layout_height="72dp"
+                    android:layout_marginEnd="16dp"
+                    android:layout_marginStart="72dp"
                     android:background="?android:attr/selectableItemBackground"
                     android:orientation="vertical"
-                    android:paddingEnd="16dp"
-                    android:paddingStart="16dp"
                     android:weightSum="2">
 
                     <TextView
@@ -289,17 +319,18 @@
 
                 <TextView
                     style="@style/SectionTitle"
+                    android:layout_marginStart="72dp"
                     android:text="@string/settings_about_title" />
 
                 <LinearLayout
                     android:id="@+id/contactContainer"
                     android:layout_width="match_parent"
                     android:layout_height="72dp"
+                    android:layout_marginEnd="16dp"
+                    android:layout_marginStart="72dp"
                     android:background="?android:attr/selectableItemBackground"
                     android:clickable="true"
                     android:orientation="vertical"
-                    android:paddingEnd="16dp"
-                    android:paddingStart="16dp"
                     android:weightSum="2">
 
                     <TextView
@@ -325,12 +356,12 @@
                     android:id="@+id/rateContainer"
                     android:layout_width="match_parent"
                     android:layout_height="72dp"
+                    android:layout_marginEnd="16dp"
+                    android:layout_marginStart="72dp"
                     android:background="?android:attr/selectableItemBackground"
                     android:clickable="true"
                     android:focusable="true"
                     android:orientation="vertical"
-                    android:paddingEnd="16dp"
-                    android:paddingStart="16dp"
                     android:weightSum="2">
 
                     <TextView
@@ -356,12 +387,12 @@
                     android:id="@+id/privacyPolicyContainer"
                     android:layout_width="match_parent"
                     android:layout_height="72dp"
+                    android:layout_marginEnd="16dp"
+                    android:layout_marginStart="72dp"
                     android:background="?android:attr/selectableItemBackground"
                     android:clickable="true"
                     android:focusable="true"
                     android:orientation="vertical"
-                    android:paddingEnd="16dp"
-                    android:paddingStart="16dp"
                     android:weightSum="2">
 
                     <TextView
@@ -387,9 +418,9 @@
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="72dp"
+                    android:layout_marginEnd="16dp"
+                    android:layout_marginStart="72dp"
                     android:orientation="vertical"
-                    android:paddingEnd="16dp"
-                    android:paddingStart="16dp"
                     android:weightSum="2">
 
                     <TextView

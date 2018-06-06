@@ -24,6 +24,7 @@ data class Player(
     val schemaVersion: Int = Constants.SCHEMA_VERSION,
     val username: String?,
     val displayName: String?,
+    val bio: String?,
     val level: Int = 1,
     val coins: Int = Constants.DEFAULT_PLAYER_COINS,
     val gems: Int = Constants.DEFAULT_PLAYER_GEMS,
@@ -69,7 +70,8 @@ data class Player(
         val timeFormat: TimeFormat = Constants.DEFAULT_TIME_FORMAT,
         val temperatureUnit: TemperatureUnit = Constants.DEFAULT_TEMPERATURE_UNIT,
         val planDays: Set<DayOfWeek> = Constants.DEFAULT_PLAN_DAYS,
-        val planDayTime: Time = Time.of(Constants.DEFAULT_PLAN_DAY_REMINDER_START_MINUTE)
+        val planDayTime: Time = Time.of(Constants.DEFAULT_PLAN_DAY_REMINDER_START_MINUTE),
+        val isQuickDoNotificationEnabled: Boolean = Constants.DEFAULT_QUICK_DO_NOTIFICATION_ENABLED
     ) {
         val nonWorkDays: Set<DayOfWeek>
             get() = DayOfWeek.values().toSet() - workDays

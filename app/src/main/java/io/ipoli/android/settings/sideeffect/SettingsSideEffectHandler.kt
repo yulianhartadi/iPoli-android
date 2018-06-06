@@ -2,12 +2,11 @@ package io.ipoli.android.settings.sideeffect
 
 import io.ipoli.android.common.AppSideEffectHandler
 import io.ipoli.android.common.AppState
+import io.ipoli.android.common.notification.QuickDoNotificationUtil
 import io.ipoli.android.common.redux.Action
+import io.ipoli.android.myPoliApp
 import io.ipoli.android.settings.SettingsAction
-import io.ipoli.android.settings.usecase.SavePlanDayTimeUseCase
-import io.ipoli.android.settings.usecase.SavePlanDaysUseCase
-import io.ipoli.android.settings.usecase.SaveTemperatureUnitUseCase
-import io.ipoli.android.settings.usecase.SaveTimeFormatUseCase
+import io.ipoli.android.settings.usecase.*
 import space.traversal.kapsule.required
 
 /**
@@ -20,6 +19,7 @@ object SettingsSideEffectHandler : AppSideEffectHandler() {
     private val savePlanDaysUseCase by required { savePlanDaysUseCase }
     private val saveTimeFormatUseCase by required { saveTimeFormatUseCase }
     private val saveTemperatureUnitUseCase by required { saveTemperatureUnitUseCase }
+    private val saveQuickDoNotificationSettingUseCase by required { saveQuickDoNotificationSettingUseCase }
 
     override suspend fun doExecute(action: Action, state: AppState) {
         when (action) {
@@ -34,6 +34,25 @@ object SettingsSideEffectHandler : AppSideEffectHandler() {
 
             is SettingsAction.TemperatureUnitChanged ->
                 saveTemperatureUnitUseCase.execute(SaveTemperatureUnitUseCase.Params(action.unit))
+
+            is SettingsAction.ToggleQuickDoNotification -> {
+                val p = saveQuickDoNotificationSettingUseCase.execute(
+                    SaveQuickDoNotificationSettingUseCase.Params(
+                        action.isEnabled
+                    )
+                )
+
+                if (p.preferences.isQuickDoNotificationEnabled) {
+                    QuickDoNotificationUtil.update(
+                        myPoliApp.instance,
+                        state.dataState.todayQuests,
+                        p
+                    )
+                } else {
+                    QuickDoNotificationUtil.disable(myPoliApp.instance)
+                }
+
+            }
         }
     }
 

@@ -307,6 +307,26 @@ class MigrationFrom103To104 : FirestoreMigration() {
         )
         Tasks.await(batch.commit())
     }
+}
+
+class MigrationFrom104To105 : FirestoreMigration() {
+    override val fromVersion = 104
+
+    override val toVersion = 105
+
+    override suspend fun execute(database: FirebaseFirestore, playerId: String) {
+
+        val batch = database.batch()
+        batch.update(
+            playerRef(database, playerId),
+            mapOf(
+                "bio" to null,
+                "schemaVersion" to Constants.SCHEMA_VERSION,
+                "preferences.isQuickDoNotificationEnabled" to Constants.DEFAULT_QUICK_DO_NOTIFICATION_ENABLED
+            )
+        )
+        Tasks.await(batch.commit())
+    }
 
 }
 
@@ -329,7 +349,6 @@ class MigrationExecutor(
         var currentSchemaVersion = playerSchemaVersion
 
         val sortedMigrations = migrations.sortedBy { it.fromVersion }
-
 
         for (m in sortedMigrations) {
             if (m.fromVersion == currentSchemaVersion) {

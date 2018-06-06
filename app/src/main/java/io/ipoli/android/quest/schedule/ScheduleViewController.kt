@@ -59,7 +59,9 @@ class ScheduleViewController(args: Bundle? = null) :
         initAddQuest(view)
 
         parentController!!.view!!.post {
-            calendarToolbar = addToolbarView(R.layout.view_calendar_toolbar) as ViewGroup
+            addToolbarView(R.layout.view_calendar_toolbar)?.let {
+                calendarToolbar = it as ViewGroup
+            }
             initDayPicker(view)
         }
 

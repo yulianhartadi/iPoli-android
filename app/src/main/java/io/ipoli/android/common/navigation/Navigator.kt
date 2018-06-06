@@ -24,6 +24,7 @@ import io.ipoli.android.pet.store.PetStoreViewController
 import io.ipoli.android.planday.PlanDayViewController
 import io.ipoli.android.planday.RescheduleDialogController
 import io.ipoli.android.player.Player
+import io.ipoli.android.player.ProfileViewController
 import io.ipoli.android.player.auth.AuthViewController
 import io.ipoli.android.quest.Color
 import io.ipoli.android.quest.Icon
@@ -65,6 +66,10 @@ class Navigator(private val router: Router) {
         pushController({ HomeViewController() }, null)
     }
 
+    fun toProfile() {
+        pushController({ ProfileViewController() }, VerticalChangeHandler())
+    }
+
     fun setPlanDay() {
         setController({ PlanDayViewController() })
     }
@@ -83,6 +88,10 @@ class Navigator(private val router: Router) {
 
     fun setPet(showBackButton: Boolean) {
         setController({ PetViewController(showBackButton = showBackButton) })
+    }
+
+    fun toPet(changeHandler: ControllerChangeHandler? = null) {
+        pushController({ PetViewController() }, changeHandler)
     }
 
     fun toAuth(onboardData: OnboardData?, changeHandler: ControllerChangeHandler? = null) {

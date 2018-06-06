@@ -240,6 +240,7 @@ object AuthSideEffectHandler : AppSideEffectHandler() {
         val player = Player(
             authProvider = auth,
             username = null,
+            bio = null,
             displayName = if (user.displayName != null) user.displayName!! else "",
             schemaVersion = Constants.SCHEMA_VERSION,
             pet = Pet(petName, petAvatar),

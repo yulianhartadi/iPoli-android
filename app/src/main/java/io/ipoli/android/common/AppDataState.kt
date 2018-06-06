@@ -1,6 +1,8 @@
 package io.ipoli.android.common
 
 import io.ipoli.android.challenge.entity.Challenge
+import io.ipoli.android.common.datetime.Duration
+import io.ipoli.android.common.datetime.Minute
 import io.ipoli.android.common.redux.Action
 import io.ipoli.android.common.redux.Reducer
 import io.ipoli.android.common.redux.State
@@ -78,6 +80,11 @@ sealed class DataLoadedAction : Action {
         val dailyGrowth: CalculateGrowthStatsUseCase.Growth.Today,
         val weeklyGrowth: CalculateGrowthStatsUseCase.Growth.Week,
         val monthlyGrowth: CalculateGrowthStatsUseCase.Growth.Month
+    ) : DataLoadedAction()
+
+    data class ProfileStatsChanged(
+        val streak: Int,
+        val averageProductiveDuration: Duration<Minute>
     ) : DataLoadedAction()
 }
 

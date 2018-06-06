@@ -42,7 +42,7 @@ class CalculateGrowthStatsUseCaseSpek : Spek({
                 CalculateAwesomenessScoreUseCase(),
                 mock {
                     on {
-                        findOriginallyScheduledOrCompletedInRange(
+                        findOriginallyScheduledOrCompletedInPeriod(
                             any(),
                             any()
                         )

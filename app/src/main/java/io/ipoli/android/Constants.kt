@@ -138,7 +138,7 @@ interface Constants {
 
         val DEFAULT_DAILY_CHALLENGE_ENABLE_REMINDER = true
 
-        val DEFAULT_ONGOING_NOTIFICATION_ENABLED = true
+        const val DEFAULT_QUICK_DO_NOTIFICATION_ENABLED = true
         val REMINDER_PREDEFINED_MINUTES = intArrayOf(0, 10, 15, 30, 60)
         val MIN_FLEXIBLE_TIMES_A_WEEK_COUNT = 1
         val MAX_FLEXIBLE_TIMES_A_WEEK_COUNT = 6
@@ -177,7 +177,7 @@ interface Constants {
         val PREDEFINED_CHALLENGE_INDEX = "predefined_challenge_index"
         val RANDOM_SEED = 42 // duh!
         val MAX_TIMES_A_DAY_COUNT = 8
-        const val SCHEMA_VERSION = 104
+        const val SCHEMA_VERSION = 105
 
         val MAX_PENALTY_COEFFICIENT = 0.5
         val NO_QUESTS_PENALTY_COEFFICIENT = 0.3
@@ -259,5 +259,7 @@ interface Constants {
             "https://media0.giphy.com/media/LLtUrlCg6qT2o/giphy.gif",
             "https://i.imgur.com/v7clQ8l.jpg"
         )
+        const val DISPLAY_NAME_MAX_LENGTH = 50
+        const val BIO_MAX_LENGTH = 250
     }
 }

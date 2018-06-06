@@ -235,11 +235,11 @@
 
     <style name="WhiteEditTextTheme" parent="Base.TextAppearance.AppCompat.Title">
         <item name="android:singleLine">true</item>
-        <item name="android:textColor">@color/md_light_text_70</item>
-        <item name="colorControlNormal">@color/md_light_text_70</item>
+        <item name="android:textColor">@color/md_white</item>
+        <item name="colorControlNormal">@color/md_white</item>
         <item name="android:textColorHint">@color/md_light_text_50</item>
-        <item name="colorControlActivated">@color/md_light_text_70</item>
-        <item name="android:textColorPrimary">@color/md_light_text_70</item>
+        <item name="colorControlActivated">@color/md_white</item>
+        <item name="android:textColorPrimary">@color/md_white</item>
         <item name="android:textColorHighlight">@color/md_red_500</item>
         <item name="android:textColorLink">@color/md_red_500</item>
     </style>
@@ -247,6 +247,37 @@
     <style name="ChallengeWhiteEditText">
         <item name="android:theme">@style/WhiteEditTextTheme</item>
     </style>
+
+    <style name="WhiteEditTextThemeBody" parent="Base.TextAppearance.AppCompat.Body1">
+        <item name="android:singleLine">true</item>
+        <item name="android:textColor">@color/md_white</item>
+        <item name="colorControlNormal">@color/md_white</item>
+        <item name="android:textColorHint">@color/md_light_text_50</item>
+        <item name="colorControlActivated">@color/md_white</item>
+        <item name="android:textColorPrimary">@color/md_white</item>
+        <item name="android:textColorHighlight">@color/md_red_500</item>
+        <item name="android:textColorLink">@color/md_red_500</item>
+    </style>
+
+    <style name="ProfileWhiteEditTextBody">
+        <item name="android:theme">@style/WhiteEditTextThemeBody</item>
+    </style>
+
+    <style name="WhiteEditTextThemeSubhead" parent="Base.TextAppearance.AppCompat.Subhead">
+        <item name="android:singleLine">true</item>
+        <item name="android:textColor">@color/md_white</item>
+        <item name="colorControlNormal">@color/md_white</item>
+        <item name="android:textColorHint">@color/md_light_text_50</item>
+        <item name="colorControlActivated">@color/md_white</item>
+        <item name="android:textColorPrimary">@color/md_white</item>
+        <item name="android:textColorHighlight">@color/md_red_500</item>
+        <item name="android:textColorLink">@color/md_red_500</item>
+    </style>
+
+    <style name="ProfileWhiteEditTextSubhead">
+        <item name="android:theme">@style/WhiteEditTextThemeSubhead</item>
+    </style>
+
 
     <style name="ChallengeTextInputLayout" parent="Base.TextAppearance.AppCompat">
         <item name="android:layout_marginStart">16dp</item>
@@ -334,13 +365,13 @@
         <item name="android:background">@color/md_light_text_50</item>
     </style>
 
-    <style name="SectionTitle" parent="@style/TextAppearance.AppCompat.Caption">
+    <style name="SectionTitle" parent="@style/TextAppearance.AppCompat.Body2">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">48dp</item>
         <item name="android:layout_marginStart">16dp</item>
         <item name="android:layout_marginEnd">16dp</item>
         <item name="android:gravity">center_vertical</item>
-        <item name="android:textColor">@color/md_dark_text_87</item>
+        <item name="android:textColor">?attr/colorPrimary</item>
         <item name="android:textSize">12sp</item>
     </style>
 

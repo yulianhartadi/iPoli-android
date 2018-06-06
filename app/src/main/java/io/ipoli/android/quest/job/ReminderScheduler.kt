@@ -43,11 +43,9 @@ class AndroidJobReminderScheduler : ReminderScheduler {
                 return@launch
             }
 
-            val show = PendingIntent.getActivity(
+            val show = IntentUtil.getActivityPendingIntent(
                 context,
-                0,
-                IntentUtil.startApp(context),
-                PendingIntent.FLAG_UPDATE_CURRENT
+                IntentUtil.startApp(context)
             )
 
             val clockInfo = AlarmManager.AlarmClockInfo(remindAt.toMillis(), show)

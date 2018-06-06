@@ -48,7 +48,7 @@ class CalculateGrowthStatsUseCase(
         val periodEnd = monthEnd.with(TemporalAdjusters.nextOrSame(parameters.lastDayOfWeek))
 
         val quests =
-            questRepository.findOriginallyScheduledOrCompletedInRange(periodStart, periodEnd)
+            questRepository.findOriginallyScheduledOrCompletedInPeriod(periodStart, periodEnd)
 
         val focusTimeByDay = quests.filter { it.isCompleted }
             .groupBy { it.completedAtDate }

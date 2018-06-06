@@ -27,7 +27,10 @@ sealed class SettingsAction : Action {
     data class PlanDayTimeChanged(val time: Time) : SettingsAction()
     data class PlanDaysChanged(val days: Set<DayOfWeek>) : SettingsAction()
     data class TimeFormatChanged(val format: Player.Preferences.TimeFormat) : SettingsAction()
-    data class TemperatureUnitChanged(val unit: Player.Preferences.TemperatureUnit) : SettingsAction()
+    data class TemperatureUnitChanged(val unit: Player.Preferences.TemperatureUnit) :
+        SettingsAction()
+
+    data class ToggleQuickDoNotification(val isEnabled: Boolean) : SettingsAction()
 
     object Load : SettingsAction()
 }
@@ -92,7 +95,8 @@ object SettingsReducer : BaseViewStateReducer<SettingsViewState>() {
             planTime = player.preferences.planDayTime,
             planDays = player.preferences.planDays,
             selectedCalendars = selectedCalendars,
-            isCalendarSyncEnabled = player.isPowerUpEnabled(PowerUp.Type.CALENDAR_SYNC) && selectedCalendars > 0
+            isCalendarSyncEnabled = player.isPowerUpEnabled(PowerUp.Type.CALENDAR_SYNC) && selectedCalendars > 0,
+            isQuickDoNotificationEnabled = player.preferences.isQuickDoNotificationEnabled
         )
 
     override fun defaultState() = SettingsViewState(
@@ -103,6 +107,7 @@ object SettingsReducer : BaseViewStateReducer<SettingsViewState>() {
         planDays = Constants.DEFAULT_PLAN_DAYS,
         planTime = Time.of(Constants.DEFAULT_PLAN_DAY_REMINDER_START_MINUTE),
         isCalendarSyncEnabled = false,
+        isQuickDoNotificationEnabled = true,
         selectedCalendars = 0
     )
 
@@ -114,10 +119,11 @@ data class SettingsViewState(
     val type: StateType,
     val playerId: String,
     val timeFormat: Player.Preferences.TimeFormat,
-    val temperatureUnit : Player.Preferences.TemperatureUnit,
+    val temperatureUnit: Player.Preferences.TemperatureUnit,
     val planTime: Time,
     val planDays: Set<DayOfWeek>,
     val isCalendarSyncEnabled: Boolean,
+    val isQuickDoNotificationEnabled: Boolean,
     val selectedCalendars: Int
 ) : BaseViewState() {
 

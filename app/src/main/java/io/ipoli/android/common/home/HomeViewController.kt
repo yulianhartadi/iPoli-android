@@ -31,6 +31,7 @@ import io.ipoli.android.Constants
 import io.ipoli.android.MainActivity
 import io.ipoli.android.R
 import io.ipoli.android.challenge.list.ChallengeListViewController
+import io.ipoli.android.common.IntentUtil.showPet
 import io.ipoli.android.common.home.HomeViewState.StateType.*
 import io.ipoli.android.common.redux.android.ReduxViewController
 import io.ipoli.android.common.view.*
@@ -237,10 +238,6 @@ class HomeViewController(args: Bundle? = null) :
             )
     }
 
-    private fun showPet() {
-        router.pushController(PetViewController.routerTransaction)
-    }
-
     override fun render(state: HomeViewState, view: View) {
 
         when (state.type) {
@@ -330,17 +327,22 @@ class HomeViewController(args: Bundle? = null) :
             .apply(RequestOptions.circleCropTransform())
             .into(drawerHeaderView.playerAvatar)
 
+        (drawerHeaderView.playerAvatar.background as GradientDrawable)
+            .setColor(colorRes(AndroidAvatar.valueOf(state.avatar.name).backgroundColor))
+
         drawerHeaderView.playerAvatar.setOnClickListener {
-            navigate().toAvatarStore(VerticalChangeHandler())
+            navigate().toProfile()
         }
 
         Glide.with(drawerHeaderView.context).load(state.petHeadImage)
             .apply(RequestOptions.circleCropTransform())
             .into(drawerHeaderView.petHeadImage)
 
+        (drawerHeaderView.petHeadImage.background as GradientDrawable)
+            .setColor(colorRes(R.color.md_white))
 
         drawerHeaderView.petContainer.setOnClickListener {
-            showPet()
+            navigateFromRoot().toPet(VerticalChangeHandler())
         }
 
         drawerHeaderView.drawerPlayerGems.text = state.gemsText

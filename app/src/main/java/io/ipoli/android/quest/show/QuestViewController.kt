@@ -1,8 +1,5 @@
 package io.ipoli.android.quest.show
 
-import android.animation.Animator
-import android.animation.AnimatorListenerAdapter
-import android.animation.ObjectAnimator
 import android.app.Activity
 import android.graphics.Paint
 import android.graphics.PorterDuff
@@ -26,7 +23,6 @@ import com.bluelinelabs.conductor.ControllerChangeHandler
 import com.bluelinelabs.conductor.ControllerChangeType
 import com.bluelinelabs.conductor.RouterTransaction
 import com.bluelinelabs.conductor.changehandler.FadeChangeHandler
-import com.bluelinelabs.conductor.changehandler.VerticalChangeHandler
 import com.mikepenz.iconics.IconicsDrawable
 import com.mikepenz.ionicons_typeface_library.Ionicons
 import io.ipoli.android.R
@@ -339,16 +335,10 @@ class QuestViewController : ReduxViewController<QuestAction, QuestViewState, Que
             true
         }
 
-        val animator = ObjectAnimator.ofInt(
-            view.subQuestListProgress,
-            "progress",
+        view.subQuestListProgress.animateProgress(
             view.subQuestListProgress.progress,
-            state.subQuestListProgressPercent
-        )
-        animator.duration = intRes(android.R.integer.config_shortAnimTime).toLong()
-        animator.addListener(object : AnimatorListenerAdapter() {
-            override fun onAnimationEnd(animation: Animator?) {
-
+            state.subQuestListProgressPercent,
+            endListener = {
                 val drawable = view.subQuestListProgress.progressDrawable as LayerDrawable
                 val backgroundDrawable = drawable.getDrawable(0)
                 val backgroundColor =
@@ -373,10 +363,7 @@ class QuestViewController : ReduxViewController<QuestAction, QuestViewState, Que
                     PorterDuff.Mode.SRC_ATOP
                 )
             }
-        })
-        animator.start()
-
-
+        )
 
         if (state.hasSubQuests) {
             view.subQuestListProgressLabel.text = "${state.subQuestListProgressPercent}%"
@@ -397,6 +384,7 @@ class QuestViewController : ReduxViewController<QuestAction, QuestViewState, Que
     }
 
     private fun cancelAnimations(view: View) {
+        view.subQuestListProgress.clearAnimation()
         notImportantViews().forEach {
             it.animate().cancel()
             it.alpha = 1f

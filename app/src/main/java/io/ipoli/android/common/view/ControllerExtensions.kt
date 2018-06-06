@@ -8,7 +8,6 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import com.bluelinelabs.conductor.Controller
-import com.bluelinelabs.conductor.Router
 import com.bluelinelabs.conductor.RouterTransaction
 import io.ipoli.android.MainActivity
 import io.ipoli.android.R
@@ -76,10 +75,11 @@ fun Controller.setToolbar(toolbar: Toolbar) {
     (activity!! as MainActivity).setSupportActionBar(toolbar)
 }
 
-fun Controller.addToolbarView(@LayoutRes viewLayout: Int): View =
-    activity!!.layoutInflater.inflate(viewLayout, toolbar, false).also {
-        toolbar.addView(it)
-        return it
+fun Controller.addToolbarView(@LayoutRes viewLayout: Int): View? =
+    activity?.let {
+        it.layoutInflater.inflate(viewLayout, toolbar, false).also {
+            toolbar.addView(it)
+        }
     }
 
 fun Controller.removeToolbarView(view: View) {

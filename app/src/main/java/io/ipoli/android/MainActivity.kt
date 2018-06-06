@@ -141,7 +141,7 @@ class MainActivity : AppCompatActivity(), Injects<Module>, SideEffectHandler<App
 
     override fun onNewIntent(intent: Intent) {
         val navigator = Navigator(router)
-        when(intent.action) {
+        when (intent.action) {
 
             ACTION_SHOW_QUICK_ADD ->
                 navigator.setAddQuest(

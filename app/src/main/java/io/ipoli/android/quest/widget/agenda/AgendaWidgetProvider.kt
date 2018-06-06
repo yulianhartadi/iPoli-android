@@ -107,21 +107,10 @@ class AgendaWidgetProvider : AppWidgetProvider() {
     }
 
     private fun createQuickAddIntent(context: Context) =
-        PendingIntent.getActivity(
-            context,
-            0,
-            IntentUtil.showQuickAdd(context),
-            0
-        )
+        IntentUtil.getActivityPendingIntent(context, IntentUtil.showQuickAdd(context))
 
-    private fun createShowPetIntent(context: Context)=
-        PendingIntent.getActivity(
-            context,
-            0,
-            IntentUtil.showPet(context),
-            0
-        )
-
+    private fun createShowPetIntent(context: Context) =
+        IntentUtil.getActivityPendingIntent(context, IntentUtil.showPet(context))
 
     private fun createQuestListIntent(context: Context, widgetId: Int) =
         Intent(context, AgendaWidgetService::class.java).apply {
@@ -141,10 +130,8 @@ class AgendaWidgetProvider : AppWidgetProvider() {
     }
 
     private fun createStartAppIntent(context: Context) =
-        PendingIntent.getActivity(
+        IntentUtil.getActivityPendingIntent(
             context,
-            0,
-            IntentUtil.startApp(context),
-            0
+            IntentUtil.startApp(context)
         )
 }

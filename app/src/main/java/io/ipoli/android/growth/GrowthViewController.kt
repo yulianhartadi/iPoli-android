@@ -1,8 +1,5 @@
 package io.ipoli.android.growth
 
-import android.animation.AnimatorSet
-import android.animation.ObjectAnimator
-import android.animation.ValueAnimator
 import android.content.res.ColorStateList
 import android.graphics.PorterDuff
 import android.graphics.Typeface
@@ -17,7 +14,6 @@ import android.text.style.StyleSpan
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.view.animation.AccelerateDecelerateInterpolator
 import com.github.mikephil.charting.charts.LineChart
 import com.github.mikephil.charting.charts.PieChart
 import com.github.mikephil.charting.components.Legend
@@ -217,29 +213,9 @@ class GrowthViewController(args: Bundle? = null) :
         state: GrowthViewState,
         view: View
     ) {
-        val hoursAnim = ValueAnimator.ofInt(0, state.timeSpent.asHours.intValue)
-
-        hoursAnim.addUpdateListener {
-            view.hoursValue.text = "${it.animatedValue}"
-        }
-
-        val xpAnim = ValueAnimator.ofInt(0, state.experience)
-
-        xpAnim.addUpdateListener {
-            view.xpValue.text = "${it.animatedValue}"
-        }
-
-        val coinsAnim = ValueAnimator.ofInt(0, state.coins)
-
-        coinsAnim.addUpdateListener {
-            view.coinsValue.text = "${it.animatedValue}"
-        }
-
-        val anim = AnimatorSet()
-        anim.interpolator = AccelerateDecelerateInterpolator()
-        anim.duration = longAnimTime
-        anim.playTogether(hoursAnim, xpAnim, coinsAnim)
-        anim.start()
+        view.hoursValue.animateToValueFromZero(state.timeSpent.asHours.intValue)
+        view.xpValue.animateToValueFromZero(state.experience)
+        view.coinsValue.animateToValueFromZero(state.coins)
     }
 
     private fun renderCharts(state: GrowthViewState, view: View) {
@@ -461,12 +437,13 @@ class GrowthViewController(args: Bundle? = null) :
         set.color = color
         set.lineWidth = ViewUtils.dpToPx(1f, activity!!)
         set.setDrawCircles(true)
-        set.circleRadius = ViewUtils.dpToPx(3f, activity!!)
-        set.setCircleColor(colorRes(R.color.md_white))
-        set.circleHoleRadius = ViewUtils.dpToPx(2f, activity!!)
-        set.circleHoleColor = color
-        set.highLightColor = attrData(R.attr.colorAccent)
 
+        set.circleRadius = 6f
+        set.setCircleColor(color)
+        set.circleHoleRadius = 3f
+        set.circleHoleColor = colorRes(R.color.md_white)
+
+        set.highLightColor = attrData(R.attr.colorAccent)
         set.mode = LineDataSet.Mode.LINEAR
         set.setDrawValues(false)
         set.axisDependency = YAxis.AxisDependency.RIGHT
@@ -494,10 +471,7 @@ class GrowthViewController(args: Bundle? = null) :
                 PorterDuff.Mode.SRC_ATOP
             )
 
-            val animator = ObjectAnimator.ofInt(view.cProgress, "progress", 0, vm.progress)
-            animator.interpolator = AccelerateDecelerateInterpolator()
-            animator.duration = intRes(android.R.integer.config_mediumAnimTime).toLong()
-            animator.start()
+            view.cProgress.animateProgressFromZero(vm.progress)
 
             view.cProgressText.text = vm.progressText
         }

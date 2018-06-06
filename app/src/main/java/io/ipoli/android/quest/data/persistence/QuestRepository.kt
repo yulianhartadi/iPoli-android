@@ -110,12 +110,19 @@ interface QuestRepository : CollectionRepository<Quest> {
     fun findByTag(tagId: String): List<Quest>
     fun findByTagWithRemoved(tagId: String): List<Quest>
 
-    fun purge(questIds: List<String>)
     fun findQuestsForDailyChallenge(dailyChallenge: DailyChallenge): List<Quest>
-    fun findOriginallyScheduledOrCompletedInRange(
+
+    fun findOriginallyScheduledOrCompletedInPeriod(
         startDate: LocalDate,
         endDate: LocalDate
     ): List<Quest>
+
+    fun findCompletedInPeriod(
+        startDate: LocalDate,
+        endDate: LocalDate
+    ): List<Quest>
+
+    fun purge(questIds: List<String>)
 }
 
 data class DbQuest(override val map: MutableMap<String, Any?> = mutableMapOf()) :
@@ -210,7 +217,7 @@ class FirestoreQuestRepository(
             query.notRemovedEntities
     }
 
-    override fun findOriginallyScheduledOrCompletedInRange(
+    override fun findOriginallyScheduledOrCompletedInPeriod(
         startDate: LocalDate,
         endDate: LocalDate
     ): List<Quest> {
@@ -226,6 +233,12 @@ class FirestoreQuestRepository(
 
         return (scheduled + completed).toSet().toList()
     }
+
+    override fun findCompletedInPeriod(startDate: LocalDate, endDate: LocalDate): List<Quest> =
+        collectionReference
+            .whereGreaterThanOrEqualTo("completedAtDate", startDate.startOfDayUTC())
+            .whereLessThanOrEqualTo("completedAtDate", endDate.startOfDayUTC())
+            .notRemovedEntities
 
     /**
      * Includes removed Quests

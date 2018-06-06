@@ -32,6 +32,7 @@ object TestUtil {
         gems = 0,
         username = "",
         displayName = "",
+        bio = null,
         experience = 10,
         authProvider = AuthProvider.Guest(""),
         pet = Pet(

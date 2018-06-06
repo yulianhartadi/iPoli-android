@@ -1,6 +1,7 @@
 package io.ipoli.android.common.notification
 
 import android.app.Notification
+import android.app.PendingIntent
 import android.content.Context
 import android.graphics.Bitmap
 import android.net.Uri
@@ -21,12 +22,14 @@ object NotificationUtil {
         icon: Bitmap,
         message: String,
         sound: Uri,
-        channelId : String
+        channelId: String,
+        contentIntent: PendingIntent
     ): Notification =
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
             val builder = Notification.Builder(context)
                 .setContentTitle(title)
                 .setContentText(message)
+                .setContentIntent(contentIntent)
                 .setSmallIcon(android.graphics.drawable.Icon.createWithBitmap(icon))
                 .setLargeIcon(icon)
                 .setSound(sound)
@@ -46,6 +49,7 @@ object NotificationUtil {
                 .setSmallIcon(R.drawable.ic_notification_small)
                 .setContentTitle(title)
                 .setContentText(message)
+                .setContentIntent(contentIntent)
                 .setSound(sound)
                 .setLargeIcon(icon)
                 .setDefaults(NotificationCompat.DEFAULT_ALL)

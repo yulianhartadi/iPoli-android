@@ -1,6 +1,5 @@
 package io.ipoli.android.quest
 
-import android.animation.ObjectAnimator
 import android.content.res.ColorStateList
 import android.graphics.Color
 import android.graphics.drawable.GradientDrawable
@@ -10,7 +9,6 @@ import android.view.LayoutInflater
 import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ProgressBar
 import com.mikepenz.iconics.IconicsDrawable
 import io.ipoli.android.R
 import io.ipoli.android.common.datetime.Duration
@@ -135,7 +133,8 @@ class CompletedQuestViewController :
 
                 view.levelProgress.max = state.playerLevelMaxProgress!!
                 view.levelProgress.secondaryProgress = state.playerLevelMaxProgress
-                playProgressAnimation(view.levelProgress, 0, state.playerLevelProgress!!)
+
+                view.levelProgress.animateProgressFromZero(state.playerLevelProgress!!)
             }
 
             else -> {
@@ -212,11 +211,7 @@ class CompletedQuestViewController :
 
                 view.questDurationProgress.secondaryProgress = state.totalDuration.intValue
 
-                playProgressAnimation(
-                    view.questDurationProgress,
-                    0,
-                    (timer.workDuration + timer.overdueWorkDuration).intValue
-                )
+                view.questDurationProgress.animateProgressFromZero((timer.workDuration + timer.overdueWorkDuration).intValue)
             }
 
             is Timer.Countdown -> {
@@ -242,19 +237,11 @@ class CompletedQuestViewController :
                     view.questDurationProgress.progressTintList =
                         ColorStateList.valueOf(colorRes(state.color.color700))
 
-                    playProgressAnimation(
-                        view.questDurationProgress,
-                        0,
-                        timer.overdueDuration.intValue
-                    )
+                    view.questDurationProgress.animateProgressFromZero(timer.overdueDuration.intValue)
 
                 } else {
 
-                    playProgressAnimation(
-                        view.questDurationProgress,
-                        0,
-                        state.totalDuration.intValue
-                    )
+                    view.questDurationProgress.animateProgressFromZero(state.totalDuration.intValue)
                 }
             }
 
@@ -263,16 +250,9 @@ class CompletedQuestViewController :
                 view.timerGroup.goneViews()
 
                 view.questDurationProgress.max = state.totalDuration!!.intValue
-
-                playProgressAnimation(view.questDurationProgress, 0, state.totalDuration.intValue)
+                view.questDurationProgress.animateProgressFromZero(state.totalDuration.intValue)
             }
         }
-    }
-
-    private fun playProgressAnimation(view: ProgressBar, from: Int, to: Int) {
-        val animator = ObjectAnimator.ofInt(view, "progress", from, to)
-        animator.duration = intRes(android.R.integer.config_mediumAnimTime).toLong()
-        animator.start()
     }
 
     private fun createDurationLabel(

@@ -67,7 +67,8 @@ object PlanDayNotification {
             title = "Time to plan your day",
             message = "Amazing new day ahead!",
             sound = sound,
-            channelId = Constants.PLAN_DAY_NOTIFICATION_CHANNEL_ID
+            channelId = Constants.PLAN_DAY_NOTIFICATION_CHANNEL_ID,
+            contentIntent = IntentUtil.getActivityPendingIntent(c, IntentUtil.startPlanDay(c))
         )
 
         val notificationId = Random().nextInt()

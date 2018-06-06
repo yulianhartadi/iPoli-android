@@ -66,8 +66,7 @@ class SettingsViewController(args: Bundle? = null) :
         when (state.type) {
             DATA_CHANGED -> {
                 renderAboutSection(state, view)
-                renderTimeFormat(state, view)
-                renderTemperatureUnit(state, view)
+                renderGeneralSection(state, view)
                 renderPlanMyDay(state, view)
                 renderSyncCalendarsSection(state, view)
             }
@@ -79,6 +78,23 @@ class SettingsViewController(args: Bundle? = null) :
 
             else -> {
             }
+        }
+    }
+
+    private fun renderGeneralSection(
+        state: SettingsViewState,
+        view: View
+    ) {
+        renderTimeFormat(state, view)
+        renderTemperatureUnit(state, view)
+
+        view.enableOngoingNotification.setOnCheckedChangeListener(null)
+        view.enableOngoingNotification.isChecked = state.isQuickDoNotificationEnabled
+        view.ongoingNotificationContainer.setOnClickListener {
+            dispatch(SettingsAction.ToggleQuickDoNotification(!state.isQuickDoNotificationEnabled))
+        }
+        view.enableOngoingNotification.setOnCheckedChangeListener { _, isChecked ->
+            dispatch(SettingsAction.ToggleQuickDoNotification(isChecked))
         }
     }
 

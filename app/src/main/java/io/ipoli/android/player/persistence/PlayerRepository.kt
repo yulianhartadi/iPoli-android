@@ -232,7 +232,8 @@ class FirestorePlayerRepository(
             timeFormat = Player.Preferences.TimeFormat.valueOf(cPref.timeFormat),
             temperatureUnit = Player.Preferences.TemperatureUnit.valueOf(cPref.temperatureUnit),
             planDayTime = Time.of(cPref.planDayStartMinute.toInt()),
-            planDays = cPref.planDays.map { DayOfWeek.valueOf(it) }.toSet()
+            planDays = cPref.planDays.map { DayOfWeek.valueOf(it) }.toSet(),
+            isQuickDoNotificationEnabled = cPref.isQuickDoNotificationEnabled
         )
 
         val ca = cp.achievements.map { DbUnlockedAchievement(it) }
@@ -248,6 +249,7 @@ class FirestorePlayerRepository(
             id = cp.id,
             username = cp.username,
             displayName = cp.displayName,
+            bio = cp.bio,
             schemaVersion = cp.schemaVersion.toInt(),
             level = cp.level.toInt(),
             coins = cp.coins.toInt(),
@@ -276,6 +278,7 @@ class FirestorePlayerRepository(
             it.id = entity.id
             it.username = entity.username
             it.displayName = entity.displayName
+            it.bio = entity.bio
             it.schemaVersion = entity.schemaVersion.toLong()
             it.level = entity.level.toLong()
             it.coins = entity.coins.toLong()
@@ -386,6 +389,7 @@ class FirestorePlayerRepository(
             it.temperatureUnit = preferences.temperatureUnit.name
             it.planDayStartMinute = preferences.planDayTime.toMinuteOfDay().toLong()
             it.planDays = preferences.planDays.map { it.name }
+            it.isQuickDoNotificationEnabled = preferences.isQuickDoNotificationEnabled
         }
 
     private fun createDbAchievements(achievements: List<Player.UnlockedAchievement>) =

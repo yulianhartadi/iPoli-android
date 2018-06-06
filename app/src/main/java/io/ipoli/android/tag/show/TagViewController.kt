@@ -1,6 +1,5 @@
 package io.ipoli.android.tag.show
 
-import android.animation.ObjectAnimator
 import android.content.res.ColorStateList
 import android.os.Bundle
 import android.support.annotation.ColorRes
@@ -217,15 +216,7 @@ class TagViewController(args: Bundle? = null) :
                     view.questCountText.text = state.questCountText
                     view.progressText.text = state.progressText
 
-                    val animator = ObjectAnimator.ofInt(
-                        view.questsProgress,
-                        "progress",
-                        view.questsProgress.progress,
-                        state.progressPercent
-                    )
-                    animator.duration = intRes(android.R.integer.config_shortAnimTime).toLong()
-                    animator.start()
-
+                    view.questsProgress.animateProgressFromCurrentValue(state.progressPercent)
                 }
             }
 

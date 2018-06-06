@@ -82,11 +82,12 @@ class ReminderReceiver : AsyncBroadcastReceiver() {
 
                 val questName = it.name
                 val notificationId = showNotification(
-                    context,
-                    questName,
-                    message,
-                    icon,
-                    notificationManager
+                    context = context,
+                    questId = it.id,
+                    questName = questName,
+                    message = message,
+                    icon = icon,
+                    notificationManager = notificationManager
                 )
 
                 val viewModel = PetNotificationPopup.ViewModel(
@@ -122,6 +123,7 @@ class ReminderReceiver : AsyncBroadcastReceiver() {
 
     private fun showNotification(
         context: Context,
+        questId: String,
         questName: String,
         message: String,
         icon: IconicsDrawable,
@@ -135,7 +137,11 @@ class ReminderReceiver : AsyncBroadcastReceiver() {
             icon = icon.toBitmap(),
             message = message,
             sound = sound,
-            channelId = Constants.REMINDERS_NOTIFICATION_CHANNEL_ID
+            channelId = Constants.REMINDERS_NOTIFICATION_CHANNEL_ID,
+            contentIntent = IntentUtil.getActivityPendingIntent(
+                context,
+                IntentUtil.showTimer(questId, context)
+            )
         )
 
         val notificationId = Random().nextInt()

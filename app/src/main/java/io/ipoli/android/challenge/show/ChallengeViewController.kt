@@ -234,10 +234,7 @@ class ChallengeViewController(args: Bundle? = null) :
                 renderName(state.name, view)
                 renderTags(state.tags, view)
 
-                val animator =
-                    ObjectAnimator.ofInt(view.progress, "progress", 0, state.progressPercent)
-                animator.duration = intRes(android.R.integer.config_mediumAnimTime).toLong()
-                animator.start()
+                view.progress.animateProgressFromZero(state.progressPercent)
 
                 view.progressText.text = state.progressText
 

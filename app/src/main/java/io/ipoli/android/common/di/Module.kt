@@ -4,6 +4,7 @@ import android.content.Context
 import android.content.SharedPreferences
 import android.preference.PreferenceManager
 import android.view.LayoutInflater
+import com.amplitude.api.Amplitude
 import com.google.firebase.analytics.FirebaseAnalytics
 import com.google.firebase.firestore.FirebaseFirestore
 import io.ipoli.android.challenge.persistence.ChallengeRepository
@@ -13,7 +14,7 @@ import io.ipoli.android.challenge.sideeffect.ChallengeSideEffectHandler
 import io.ipoli.android.challenge.usecase.*
 import io.ipoli.android.common.*
 import io.ipoli.android.common.analytics.EventLogger
-import io.ipoli.android.common.analytics.FirebaseEventLogger
+import io.ipoli.android.common.analytics.SimpleEventLogger
 import io.ipoli.android.common.image.AndroidImageLoader
 import io.ipoli.android.common.image.ImageLoader
 import io.ipoli.android.common.middleware.LogEventsMiddleWare
@@ -67,6 +68,7 @@ import io.ipoli.android.player.LevelUpScheduler
 import io.ipoli.android.player.auth.saga.AuthSideEffectHandler
 import io.ipoli.android.player.persistence.FirestorePlayerRepository
 import io.ipoli.android.player.persistence.PlayerRepository
+import io.ipoli.android.player.sideeffect.ProfileSideEffectHandler
 import io.ipoli.android.player.usecase.*
 import io.ipoli.android.player.view.LevelUpPresenter
 import io.ipoli.android.quest.bucketlist.sideeffect.BucketListSideEffectHandler
@@ -97,10 +99,7 @@ import io.ipoli.android.repeatingquest.persistence.RepeatingQuestRepository
 import io.ipoli.android.repeatingquest.sideeffect.RepeatingQuestSideEffectHandler
 import io.ipoli.android.repeatingquest.usecase.*
 import io.ipoli.android.settings.sideeffect.SettingsSideEffectHandler
-import io.ipoli.android.settings.usecase.SavePlanDayTimeUseCase
-import io.ipoli.android.settings.usecase.SavePlanDaysUseCase
-import io.ipoli.android.settings.usecase.SaveTemperatureUnitUseCase
-import io.ipoli.android.settings.usecase.SaveTimeFormatUseCase
+import io.ipoli.android.settings.usecase.*
 import io.ipoli.android.store.avatar.sideeffect.AvatarSideEffectHandler
 import io.ipoli.android.store.avatar.usecase.BuyAvatarUseCase
 import io.ipoli.android.store.avatar.usecase.ChangeAvatarUseCase
@@ -338,7 +337,11 @@ class MainAndroidModule(
 
     override val database get() = Firestore.instance
 
-    override val eventLogger get() = FirebaseEventLogger(FirebaseAnalytics.getInstance(context))
+    override val eventLogger
+        get() = SimpleEventLogger(
+            firebaseAnalytics = FirebaseAnalytics.getInstance(context),
+            amplitude = Amplitude.getInstance()
+        )
 
     override val planDayScheduler
         get() = AndroidPlanDayScheduler()
@@ -357,7 +360,8 @@ class MainAndroidModule(
                 MigrationFrom100To101(),
                 MigrationFrom101To102(),
                 MigrationFrom102To103(),
-                MigrationFrom103To104()
+                MigrationFrom103To104(),
+                MigrationFrom104To105()
             )
         )
 
@@ -684,8 +688,20 @@ class MainUseCaseModule : UseCaseModule, Injects<Module> {
     override val saveDailyChallengeQuestIdsUseCase
         get() = SaveDailyChallengeQuestIdsUseCase(dailyChallengeRepository)
 
-    override val calculateGrowthStatsUseCase: CalculateGrowthStatsUseCase
+    override val calculateGrowthStatsUseCase
         get() = CalculateGrowthStatsUseCase(calculateAwesomenessScoreUseCase, questRepository)
+
+    override val findDailyChallengeStreakUseCase
+        get() = FindDailyChallengeStreakUseCase(dailyChallengeRepository)
+
+    override val findAverageProductiveDurationForPeriodUseCase
+        get() = FindAverageProductiveDurationForPeriodUseCase(questRepository)
+
+    override val saveQuickDoNotificationSettingUseCase
+        get() = SaveQuickDoNotificationSettingUseCase(playerRepository)
+
+    override val saveProfileUseCase
+        get() = SaveProfileUseCase(playerRepository)
 }
 
 interface UseCaseModule {
@@ -777,6 +793,10 @@ interface UseCaseModule {
     val loadDailyChallengeUseCase: LoadDailyChallengeUseCase
     val saveDailyChallengeQuestIdsUseCase: SaveDailyChallengeQuestIdsUseCase
     val calculateGrowthStatsUseCase: CalculateGrowthStatsUseCase
+    val findDailyChallengeStreakUseCase: FindDailyChallengeStreakUseCase
+    val findAverageProductiveDurationForPeriodUseCase: FindAverageProductiveDurationForPeriodUseCase
+    val saveQuickDoNotificationSettingUseCase: SaveQuickDoNotificationSettingUseCase
+    val saveProfileUseCase : SaveProfileUseCase
 }
 
 interface PresenterModule {
@@ -844,7 +864,8 @@ class AndroidStateStoreModule : StateStoreModule, Injects<Module> {
                 SettingsSideEffectHandler,
                 MigrationSideEffectHandler,
                 DailyChallengeSideEffectHandler,
-                GrowthSideEffectHandler
+                GrowthSideEffectHandler,
+                ProfileSideEffectHandler
             ),
             sideEffectHandlerExecutor = CoroutineSideEffectHandlerExecutor(job + CommonPool),
             middleware = setOf(

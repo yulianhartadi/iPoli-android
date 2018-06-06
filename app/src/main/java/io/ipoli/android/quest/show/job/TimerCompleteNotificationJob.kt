@@ -2,7 +2,6 @@ package io.ipoli.android.quest.show.job
 
 import android.annotation.SuppressLint
 import android.app.NotificationManager
-import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
 import android.graphics.BitmapFactory
@@ -23,7 +22,6 @@ import io.ipoli.android.quest.TimeRange
 import io.ipoli.android.quest.receiver.CompleteQuestReceiver
 import space.traversal.kapsule.Injects
 import space.traversal.kapsule.Kapsule
-import java.util.*
 
 
 /**
@@ -86,7 +84,15 @@ class TimerCompleteNotificationJob : Job(), Injects<Module> {
             }
         }
 
-        notificationBuilder.setContentIntent(createContentIntent(questId))
+        notificationBuilder.setContentIntent(
+            IntentUtil.getActivityPendingIntent(
+                context,
+                IntentUtil.showTimer(
+                    questId,
+                    context
+                )
+            )
+        )
 
         val notification = notificationBuilder
             .setContentTitle(name)
@@ -110,7 +116,7 @@ class TimerCompleteNotificationJob : Job(), Injects<Module> {
         notificationBuilder.addAction(
             R.drawable.ic_target_black_24dp,
             "Do it",
-            getBroadcastPendingIntent(intent)
+            IntentUtil.getBroadcastPendingIntent(context, intent)
         )
     }
 
@@ -124,17 +130,7 @@ class TimerCompleteNotificationJob : Job(), Injects<Module> {
         notificationBuilder.addAction(
             R.drawable.ic_flower_black_24dp,
             "Take Break",
-            getBroadcastPendingIntent(intent)
-        )
-    }
-
-    private fun createContentIntent(questId: String): PendingIntent {
-
-        return PendingIntent.getActivity(
-            context,
-            Random().nextInt(),
-            IntentUtil.showTimer(questId, context),
-            PendingIntent.FLAG_UPDATE_CURRENT
+            IntentUtil.getBroadcastPendingIntent(context, intent)
         )
     }
 
@@ -148,19 +144,9 @@ class TimerCompleteNotificationJob : Job(), Injects<Module> {
         notificationBuilder.addAction(
             R.drawable.ic_done_black_24dp,
             "Mark Done",
-            getBroadcastPendingIntent(intent)
+            IntentUtil.getBroadcastPendingIntent(context, intent)
         )
     }
-
-    private fun getBroadcastPendingIntent(
-        intent: Intent
-    ): PendingIntent =
-        PendingIntent.getBroadcast(
-            context,
-            Random().nextInt(),
-            intent,
-            PendingIntent.FLAG_UPDATE_CURRENT
-        )
 
     companion object {
         const val TAG = "job_timer_complete_notification_tag"

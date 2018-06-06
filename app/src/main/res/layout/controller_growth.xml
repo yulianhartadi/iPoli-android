@@ -210,50 +210,6 @@
                     app:layout_constraintTop_toBottomOf="@+id/coinsValue" />
 
                 <LinearLayout
-                    android:id="@+id/tagTimeContainer"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginEnd="16dp"
-                    android:layout_marginStart="16dp"
-                    android:layout_marginTop="16dp"
-                    android:background="@drawable/rounded_rectangle_white_background"
-                    android:elevation="1dp"
-                    android:orientation="vertical"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/hoursTile">
-
-                    <TextView
-                        style="@style/SectionTitle"
-                        android:text="@string/time_spent_per_main_tag" />
-
-                    <TextView
-                        android:id="@+id/tagTimeSpentEmpty"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginEnd="16dp"
-                        android:layout_marginStart="16dp"
-                        android:maxLines="2"
-                        android:paddingBottom="16dp"
-                        android:paddingTop="16dp"
-                        android:textAlignment="center"
-                        android:textAppearance="@style/TextAppearance.AppCompat.Body1"
-                        android:visibility="gone" />
-
-                    <com.github.mikephil.charting.charts.PieChart
-                        android:id="@+id/tagTimeChart"
-                        android:layout_width="match_parent"
-                        android:layout_height="190dp"
-                        android:layout_marginTop="16dp" />
-
-                    <android.support.v7.widget.RecyclerView
-                        android:id="@+id/tagList"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="8dp" />
-                </LinearLayout>
-
-                <LinearLayout
                     android:id="@+id/challengeProgressContainer"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -265,7 +221,7 @@
                     android:orientation="vertical"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/tagTimeContainer">
+                    app:layout_constraintTop_toBottomOf="@+id/hoursTile">
 
                     <TextView
                         style="@style/SectionTitle"
@@ -342,6 +298,52 @@
                         android:layout_marginEnd="8dp"
                         android:layout_marginStart="2dp" />
                 </LinearLayout>
+
+
+                <LinearLayout
+                    android:id="@+id/tagTimeContainer"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="16dp"
+                    android:layout_marginStart="16dp"
+                    android:layout_marginTop="16dp"
+                    android:background="@drawable/rounded_rectangle_white_background"
+                    android:elevation="1dp"
+                    android:orientation="vertical"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/awesomenessContainer">
+
+                    <TextView
+                        style="@style/SectionTitle"
+                        android:text="@string/time_spent_per_main_tag" />
+
+                    <TextView
+                        android:id="@+id/tagTimeSpentEmpty"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginEnd="16dp"
+                        android:layout_marginStart="16dp"
+                        android:maxLines="2"
+                        android:paddingBottom="16dp"
+                        android:paddingTop="16dp"
+                        android:textAlignment="center"
+                        android:textAppearance="@style/TextAppearance.AppCompat.Body1"
+                        android:visibility="gone" />
+
+                    <com.github.mikephil.charting.charts.PieChart
+                        android:id="@+id/tagTimeChart"
+                        android:layout_width="match_parent"
+                        android:layout_height="200dp"
+                        android:layout_marginTop="16dp" />
+
+                    <android.support.v7.widget.RecyclerView
+                        android:id="@+id/tagList"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="8dp" />
+                </LinearLayout>
+
 
             </android.support.constraint.ConstraintLayout>
         </ScrollView>

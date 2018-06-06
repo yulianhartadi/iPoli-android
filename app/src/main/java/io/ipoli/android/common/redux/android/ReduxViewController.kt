@@ -1,5 +1,9 @@
 package io.ipoli.android.common.redux.android
 
+import android.animation.Animator
+import android.animation.AnimatorListenerAdapter
+import android.animation.ObjectAnimator
+import android.animation.ValueAnimator
 import android.content.Context
 import android.content.pm.PackageManager
 import android.os.Bundle
@@ -9,6 +13,8 @@ import android.text.format.DateFormat
 import android.text.method.LinkMovementMethod
 import android.text.style.ForegroundColorSpan
 import android.view.View
+import android.view.animation.AccelerateDecelerateInterpolator
+import android.widget.ProgressBar
 import android.widget.TextView
 import com.bluelinelabs.conductor.Controller
 import com.bluelinelabs.conductor.RestoreViewOnCreateController
@@ -67,6 +73,8 @@ abstract class BaseViewController<A : Action, VS : ViewState> protected construc
     private var eventActor: SendChannel<ViewAction>? = null
 
     private var permissionsToRationale: Map<String, String> = mapOf()
+
+    private var use24HourFormat: Boolean? = null
 
     @Volatile
     private var currentState: VS? = null
@@ -292,7 +300,7 @@ abstract class BaseViewController<A : Action, VS : ViewState> protected construc
     protected fun createTimePickerDialog(
         startTime: Time,
         onTimePicked: (Time?) -> Unit,
-        showNeutral : Boolean = true
+        showNeutral: Boolean = true
     ) =
         TimePickerDialogViewController(
             time = startTime,
@@ -302,8 +310,6 @@ abstract class BaseViewController<A : Action, VS : ViewState> protected construc
             },
             showNeutral = showNeutral
         )
-
-    private var use24HourFormat: Boolean? = null
 
     protected val shouldUse24HourFormat: Boolean
         get() {
@@ -322,6 +328,44 @@ abstract class BaseViewController<A : Action, VS : ViewState> protected construc
             }
             return use24HourFormat!!
         }
+
+    protected fun ProgressBar.animateProgressFromCurrentValue(to: Int) {
+        animateProgress(progress, to)
+    }
+
+    protected fun ProgressBar.animateProgressFromZero(to: Int) {
+        animateProgress(0, to)
+    }
+
+    protected fun ProgressBar.animateProgress(
+        from: Int,
+        to: Int,
+        endListener: (() -> Unit)? = null
+    ) {
+        val animator = ObjectAnimator.ofInt(this, "progress", from, to)
+        animator.duration = intRes(android.R.integer.config_mediumAnimTime).toLong()
+        animator.interpolator = AccelerateDecelerateInterpolator()
+
+        endListener?.let {
+            animator.addListener(object : AnimatorListenerAdapter() {
+                override fun onAnimationEnd(animation: Animator?) {
+                    endListener()
+                }
+            })
+        }
+
+        animator.start()
+    }
+
+    protected fun TextView.animateToValueFromZero(value: Int) {
+        val anim = ValueAnimator.ofInt(0, value)
+        anim.addUpdateListener {
+            text = "${it.animatedValue}"
+        }
+        anim.interpolator = AccelerateDecelerateInterpolator()
+        anim.duration = longAnimTime
+        anim.start()
+    }
 
     protected val Color.androidColor: AndroidColor
         get() = AndroidColor.valueOf(this.name)

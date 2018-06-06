@@ -9,6 +9,7 @@ import android.content.Context
 import android.net.Uri
 import android.os.Build
 import android.preference.PreferenceManager
+import com.amplitude.api.Amplitude
 import com.crashlytics.android.Crashlytics
 import com.evernote.android.job.JobManager
 import com.jakewharton.threetenabp.AndroidThreeTen
@@ -50,6 +51,8 @@ class myPoliApp : Application() {
 
         AndroidThreeTen.init(this)
 
+        Amplitude.getInstance().initialize(applicationContext, AnalyticsConstants.AMPLITUDE_KEY)
+
         if (!BuildConfig.DEBUG) {
 
             Fabric.with(
@@ -59,8 +62,8 @@ class myPoliApp : Application() {
                     .build()
             )
 
-
         } else {
+            Amplitude.getInstance().setOptOut(true)
             Timber.plant(Timber.DebugTree())
             //            BlockCanary.install(this, object : BlockCanaryContext() {
 //                override fun provideBlockThreshold(): Int {

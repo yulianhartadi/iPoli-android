@@ -227,8 +227,8 @@
     <string name="quest_snoozed">Quest snoozed</string>
     <string name="quest_moved_to_inbox">Quest moved to Inbox</string>
     <string name="help_dialog_calendar_quick_add">Long tap on any free time slot to use quick add</string>
-    <string name="ongoing_notification_no_quests_text">Start your day with a smile</string>
-    <string name="ongoing_notification_no_quests_title">Ready for a quest?</string>
+    <string name="ongoing_notification_no_quests_text">Smile, greatness awaits you!</string>
+    <string name="ongoing_notification_no_quests_title">Time to add your first Quest</string>
     <string name="ongoing_notification_done_title">All done for today!</string>
     <string name="ongoing_notification_progress_text">Daily progress: %1$d/%2$d</string>
     <string name="quest_sub_quests_question">Do you have a checklist?</string>
@@ -362,6 +362,7 @@
     <string name="settings_sync_calendars">Calendar sync</string>
     <string name="settings_select_sync_calendars">Calendars to sync</string>
     <string name="settings_sync_google_calendars">Sync Google calendars</string>
+    <string name="settings_quick_do_notification">Show Quick Do notification</string>
     <string name="empty_eisenhower_matrix_text">No quests for this date. Why not add some?</string>
     <string name="allow_read_calendars_perm_reason">myPoli needs to read your calendars to import your events as quests</string>
     <string name="allow_read_calendars_perm_reason_disable_option">myPoli needs to read your calendars to import your events as quests. You can disable it from Settings.</string>
@@ -876,7 +877,7 @@
     <string name="sign_in_to_give_kudos_message">Please, sign in to give kudos</string>
     <string name="sign_in_to_add_post_as_quest_message">Please, sign in to schedule a posted quest</string>
     <string name="player_profile_current_xp">Current XP: %s</string>
-    <string name="activity_player_profile_title">Profile</string>
+    <string name="controller_profile_title">Profile</string>
     <string name="player_profile_level">Level %1$d: %2$s</string>
     <string name="following">Following</string>
     <string name="followers">Followers</string>
@@ -1388,4 +1389,6 @@
     <string name="time_spent_per_main_tag">Time spent per main Tag</string>
     <string name="plan_now_description">Start planning my day now</string>
     <string name="plan_now">Plan now</string>
+    <string name="unknown_hero">Unknown Hero</string>
+    <string name="blank_bio">This Player likes to keep things mysterious</string>
 </resources>

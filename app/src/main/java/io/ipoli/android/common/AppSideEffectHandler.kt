@@ -8,6 +8,7 @@ import io.ipoli.android.challenge.usecase.FindNextDateForChallengeUseCase
 import io.ipoli.android.challenge.usecase.FindQuestsForChallengeUseCase
 import io.ipoli.android.common.async.ChannelRelay
 import io.ipoli.android.common.di.Module
+import io.ipoli.android.common.notification.QuickDoNotificationUtil
 import io.ipoli.android.common.redux.Action
 import io.ipoli.android.common.redux.Dispatcher
 import io.ipoli.android.common.redux.SideEffectHandler
@@ -141,9 +142,6 @@ object LoadAllDataSideEffectHandler : AppSideEffectHandler() {
             questRepository.listenForScheduledAt(p.currentDate, c)
         },
         consumer = { qs, _ ->
-            withContext(UI) {
-                updateWidgets()
-            }
             dispatch(DataLoadedAction.TodayQuestsChanged(qs))
         }
     )
@@ -212,6 +210,16 @@ object LoadAllDataSideEffectHandler : AppSideEffectHandler() {
 
     override suspend fun doExecute(action: Action, state: AppState) {
 
+        if (action is DataLoadedAction.TodayQuestsChanged) {
+            val p = state.dataState.player
+            withContext(UI) {
+                updateWidgets()
+            }
+            if (p != null) {
+                QuickDoNotificationUtil.update(myPoliApp.instance, action.quests, p)
+            }
+        }
+
         if (action is LoadDataAction.ChangePlayer) {
             playerRepository.purge(action.oldPlayerId)
             listenForPlayerData(state)
@@ -238,5 +246,6 @@ object LoadAllDataSideEffectHandler : AppSideEffectHandler() {
 
     override fun canHandle(action: Action) =
         action == LoadDataAction.All
-                || action is LoadDataAction.ChangePlayer
+            || action is LoadDataAction.ChangePlayer
+            || action is DataLoadedAction.TodayQuestsChanged
 }

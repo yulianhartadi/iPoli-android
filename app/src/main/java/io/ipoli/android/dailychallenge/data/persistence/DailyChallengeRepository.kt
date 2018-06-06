@@ -2,6 +2,7 @@ package io.ipoli.android.dailychallenge.data.persistence
 
 import android.content.SharedPreferences
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.Query
 import io.ipoli.android.common.datetime.startOfDayUTC
 import io.ipoli.android.common.persistence.BaseCollectionFirestoreRepository
 import io.ipoli.android.common.persistence.CollectionRepository
@@ -17,6 +18,8 @@ import kotlin.coroutines.experimental.CoroutineContext
  * on 5/28/18.
  */
 interface DailyChallengeRepository : CollectionRepository<DailyChallenge> {
+
+    fun findDailyChallengeStreak(currentDate: LocalDate = LocalDate.now()): Int
 
 }
 
@@ -41,6 +44,32 @@ class FirestoreDailyChallengeRepository(
     sharedPreferences,
     executor
 ), DailyChallengeRepository {
+
+    override fun findDailyChallengeStreak(currentDate: LocalDate): Int {
+
+        val lastIncompleteDCDocs = collectionReference
+            .whereLessThan("id", currentDate.startOfDayUTC().toString())
+            .whereEqualTo("isCompleted", false)
+            .orderBy("id", Query.Direction.DESCENDING)
+            .limit(1)
+            .documents
+
+        if (lastIncompleteDCDocs.isEmpty()) {
+            return collectionReference
+                .whereEqualTo("isCompleted", true)
+                .whereLessThan("id", currentDate.startOfDayUTC().toString())
+                .documents
+                .size
+        }
+
+        val lastCompleteDateMillis = lastIncompleteDCDocs[0].getString("id")!!
+
+        return collectionReference
+            .whereLessThan("id", currentDate.startOfDayUTC().toString())
+            .whereGreaterThan("id", lastCompleteDateMillis)
+            .documents
+            .size
+    }
 
     override fun save(entity: DailyChallenge): DailyChallenge {
 
