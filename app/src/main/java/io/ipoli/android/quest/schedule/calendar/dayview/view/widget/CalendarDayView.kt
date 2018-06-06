@@ -19,7 +19,6 @@ import android.view.*
 import android.widget.FrameLayout
 import android.widget.ImageView
 import io.ipoli.android.R
-import io.ipoli.android.R.id.*
 import io.ipoli.android.common.ViewUtils
 import io.ipoli.android.common.datetime.Time
 import io.ipoli.android.common.view.AndroidColor
@@ -1115,6 +1114,9 @@ class CalendarDayView : FrameLayout, StateChangeListener {
         eventViews.clear()
         hourCellViews.clear()
         dragView = null
+        hourCellAdapter = object : HourCellAdapter {
+            override fun bind(view: View, hour: Int) {}
+        }
         minuteChangeHandler.removeCallbacksAndMessages(null)
         viewTreeObserver.removeOnGlobalLayoutListener(layoutListener)
         super.onDetachedFromWindow()
