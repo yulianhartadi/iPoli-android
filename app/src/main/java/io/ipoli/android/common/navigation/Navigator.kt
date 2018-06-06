@@ -280,8 +280,8 @@ class Navigator(private val router: Router) {
         pushDialog { NotePickerDialogController(note, resultListener) }
     }
 
-    private fun pushDialog(createDialogController: () -> Controller) {
-        val t = tag<GemStoreViewController>()
+    private inline fun <reified C : Controller> pushDialog(createDialogController: () -> C) {
+        val t = tag<C>()
         val c = router.getControllerWithTag(t)
         val changeHandler = SimpleSwapChangeHandler(false)
         if (c == null || c.isBeingDestroyed || c.isDestroyed) {
