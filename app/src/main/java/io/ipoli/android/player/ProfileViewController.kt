@@ -15,6 +15,7 @@ import io.ipoli.android.Constants
 import io.ipoli.android.R
 import io.ipoli.android.common.datetime.startOfDayUTC
 import io.ipoli.android.common.redux.android.ReduxViewController
+import io.ipoli.android.common.text.LongFormatter
 import io.ipoli.android.common.view.*
 import io.ipoli.android.pet.AndroidPetAvatar
 import io.ipoli.android.pet.Pet
@@ -169,9 +170,11 @@ class ProfileViewController(args: Bundle? = null) :
                 view.editGroup.gone()
                 view.displayName.visible()
                 view.bio.visible()
+
                 renderAvatar(state, view)
                 renderInfo(state, view)
                 renderLevelProgress(state, view)
+                renderCoinsAndGems(state, view)
                 renderPet(state, view)
                 renderPetStats(state, view)
                 renderPlayerStats(state, view)
@@ -191,6 +194,11 @@ class ProfileViewController(args: Bundle? = null) :
                 view.bio.visible()
             }
         }
+    }
+
+    private fun renderCoinsAndGems(state: ProfileViewState, view: View) {
+        view.coins.text = state.lifeCoinsText
+        view.gems.text = state.gemsText
     }
 
     private fun renderEdit(view: View, state: ProfileViewState) {
@@ -371,4 +379,10 @@ class ProfileViewController(args: Bundle? = null) :
                 petItems[it]!!
             }
         }
+
+    private val ProfileViewState.gemsText
+        get() = LongFormatter.format(activity!!, gems.toLong())
+
+    private val ProfileViewState.lifeCoinsText
+        get() = LongFormatter.format(activity!!, coins.toLong())
 }

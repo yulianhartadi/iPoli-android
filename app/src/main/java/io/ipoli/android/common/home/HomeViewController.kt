@@ -31,14 +31,13 @@ import io.ipoli.android.Constants
 import io.ipoli.android.MainActivity
 import io.ipoli.android.R
 import io.ipoli.android.challenge.list.ChallengeListViewController
-import io.ipoli.android.common.IntentUtil.showPet
 import io.ipoli.android.common.home.HomeViewState.StateType.*
 import io.ipoli.android.common.redux.android.ReduxViewController
+import io.ipoli.android.common.text.LongFormatter
 import io.ipoli.android.common.view.*
 import io.ipoli.android.growth.GrowthViewController
 import io.ipoli.android.pet.AndroidPetAvatar
 import io.ipoli.android.pet.AndroidPetMood
-import io.ipoli.android.pet.PetViewController
 import io.ipoli.android.player.data.AndroidAvatar
 import io.ipoli.android.quest.bucketlist.BucketListViewController
 import io.ipoli.android.quest.schedule.ScheduleViewController
@@ -426,30 +425,17 @@ class HomeViewController(args: Bundle? = null) :
     }
 
     private val HomeViewState.gemsText
-        get() = formatValue(gems.toLong())
+        get() = LongFormatter.format(activity!!, gems.toLong())
 
     private val HomeViewState.lifeCoinsText
-        get() = formatValue(lifeCoins.toLong())
+        get() = LongFormatter.format(activity!!, lifeCoins.toLong())
 
     private val HomeViewState.experienceText
-        get() = formatValue(experience)
+        get() = LongFormatter.format(activity!!, experience)
 
     private fun HomeViewState.tagIcon(tag: Tag): IIcon =
         tag.icon?.androidIcon?.icon ?: MaterialDesignIconic.Icon.gmi_label
 
-    private fun formatValue(value: Long): String {
-        val valString = value.toString()
-        if (value < 1000) {
-            return valString
-        }
-        val main = valString.substring(0, valString.length - 3)
-        var result = main
-        val tail = valString[valString.length - 3]
-        if (tail != '0') {
-            result += "." + tail
-        }
-        return stringRes(R.string.big_value_format, result)
-    }
 
     companion object {
         val TAG_IDS = listOf(

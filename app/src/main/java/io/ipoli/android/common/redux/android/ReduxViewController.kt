@@ -22,6 +22,7 @@ import com.github.florent37.tutoshowcase.TutoShowcase
 import com.mikepenz.iconics.IconicsDrawable
 import com.mikepenz.iconics.typeface.IIcon
 import io.ipoli.android.Constants
+import io.ipoli.android.R
 import io.ipoli.android.common.*
 import io.ipoli.android.common.datetime.Time
 import io.ipoli.android.common.di.Module

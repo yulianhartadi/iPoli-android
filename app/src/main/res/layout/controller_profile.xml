@@ -11,7 +11,7 @@
         android:id="@+id/profileContainer"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:visibility="gone">
+        android:visibility="visible">
 
         <android.support.design.widget.AppBarLayout
             android:id="@+id/appbar"
@@ -141,6 +141,8 @@
                     android:id="@+id/bio"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
+                    android:layout_marginEnd="24dp"
+                    android:layout_marginStart="24dp"
                     android:layout_marginTop="16dp"
                     android:textAlignment="center"
                     android:textAppearance="@style/TextAppearance.AppCompat.Body1"
@@ -444,6 +446,39 @@
                     tools:text="+3%" />
 
 
+                <TextView
+                    android:id="@+id/coins"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:layout_marginStart="8dp"
+                    android:drawablePadding="4dp"
+                    android:drawableStart="@drawable/ic_life_coin_24dp"
+                    android:gravity="center_vertical"
+                    android:textAppearance="@style/TextAppearance.AppCompat.Body1"
+                    android:textColor="@color/md_white"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintHorizontal_bias="0.5"
+                    app:layout_constraintStart_toEndOf="@+id/gems"
+                    app:layout_constraintTop_toTopOf="@+id/gems"
+                    tools:text="345" />
+
+                <TextView
+                    android:id="@+id/gems"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:layout_marginEnd="8dp"
+                    android:drawablePadding="4dp"
+                    android:drawableStart="@drawable/ic_gem_24dp"
+                    android:gravity="center_vertical"
+                    android:textAppearance="@style/TextAppearance.AppCompat.Body1"
+                    android:textColor="@color/md_white"
+                    app:layout_constraintEnd_toStartOf="@+id/coins"
+                    app:layout_constraintHorizontal_bias="0.5"
+                    app:layout_constraintHorizontal_chainStyle="packed"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/levelText"
+                    tools:text="17" />
+
                 <LinearLayout
                     android:id="@+id/stat1Background"
                     android:layout_width="0dp"
@@ -459,7 +494,7 @@
                     app:layout_constraintBottom_toBottomOf="@+id/stat2Background"
                     app:layout_constraintEnd_toStartOf="@id/middle"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/levelText">
+                    app:layout_constraintTop_toBottomOf="@+id/coins">
 
                     <TextView
                         android:id="@+id/playerStat1"

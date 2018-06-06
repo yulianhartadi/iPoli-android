@@ -84,6 +84,8 @@ object ProfileReducer : BaseViewStateReducer<ProfileViewState>() {
             level = player.level,
             levelXpProgress = player.experienceProgressForLevel,
             levelXpMaxProgress = player.experienceForNextLevel,
+            coins = player.coins,
+            gems = player.gems,
             pet = player.pet
         )
         return if (hasProfileDataLoaded(newState)) {
@@ -108,6 +110,8 @@ object ProfileReducer : BaseViewStateReducer<ProfileViewState>() {
             level = -1,
             levelXpProgress = -1,
             levelXpMaxProgress = -1,
+            coins = -1,
+            gems = -1,
             dailyChallengeStreak = -1,
             last7DaysAverageProductiveDuration = null
         )
@@ -127,6 +131,8 @@ data class ProfileViewState(
     val level: Int,
     val levelXpProgress: Int,
     val levelXpMaxProgress: Int,
+    val coins: Int,
+    val gems: Int,
     val dailyChallengeStreak: Int,
     val last7DaysAverageProductiveDuration: Duration<Minute>?
 ) : BaseViewState() {
