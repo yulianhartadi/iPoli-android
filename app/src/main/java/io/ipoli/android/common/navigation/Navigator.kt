@@ -74,6 +74,10 @@ class Navigator(private val router: Router) {
         setController({ PlanDayViewController() })
     }
 
+    fun toPlanDay() {
+        pushController({ PlanDayViewController() }, VerticalChangeHandler())
+    }
+
     fun setAddQuest(
         closeListener: () -> Unit,
         currentDate: LocalDate?,

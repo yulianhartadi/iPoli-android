@@ -162,7 +162,7 @@ class SettingsViewController(args: Bundle? = null) :
         }
 
         view.planNowContainer.onDebounceClick {
-            navigate().setPlanDay()
+            navigateFromRoot().toPlanDay()
         }
     }
 

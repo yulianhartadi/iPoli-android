@@ -94,11 +94,12 @@ object PlanDayReducer : BaseViewStateReducer<PlanDayViewState>() {
                     petAvatar = player?.pet?.avatar ?: subState.petAvatar,
                     timeFormat = player?.preferences?.timeFormat ?: subState.timeFormat,
                     temperatureUnit = player?.preferences?.temperatureUnit
-                        ?: subState.temperatureUnit
+                        ?: subState.temperatureUnit,
+                    todayQuests = state.dataState.todayQuests
                 )
             }
 
-            is PlanDayAction.ShowNext ->
+            is PlanDayAction.ShowNext -> {
                 if (subState.adapterPosition + 1 > PLAN_TODAY_INDEX)
                     subState
                 else
@@ -106,6 +107,7 @@ object PlanDayReducer : BaseViewStateReducer<PlanDayViewState>() {
                         type = PlanDayViewState.StateType.NEXT_PAGE,
                         adapterPosition = subState.adapterPosition + 1
                     )
+            }
 
             is DataLoadedAction.PlayerChanged -> {
                 val player = action.player
@@ -208,7 +210,7 @@ object PlanDayReducer : BaseViewStateReducer<PlanDayViewState>() {
                 val newState = action.motivationalImage?.let {
                     subState.copy(
                         type = IMAGE_LOADED,
-                        imageUrl = it.url + "&fm=jpg&w=1080&crop=entropy&fit=max&q=50",
+                        imageUrl = it.url + "&fm=jpg&w=1080&crop=entropy&fit=max&q=40",
                         imageAuthor = it.author,
                         imageAuthorUrl = it.authorUrl,
                         imageLoaded = true
@@ -239,6 +241,14 @@ object PlanDayReducer : BaseViewStateReducer<PlanDayViewState>() {
                 )
 
                 createNewStateIfMotivationalDataIsLoaded(newState)
+            }
+
+            is PlanDayAction.LoadToday -> {
+                createNewStateIfTodayDataIsLoaded(
+                    subState.copy(
+                        type = DATA_CHANGED
+                    )
+                )
             }
 
             is PlanDayAction.Back ->
@@ -440,13 +450,12 @@ class PlanDayViewController(args: Bundle? = null) :
 
     override fun render(state: PlanDayViewState, view: View) {
         when (state.type) {
-            FIRST_PAGE -> {
+            FIRST_PAGE ->
                 changeChildController(
                     view = view,
                     adapterPosition = state.adapterPosition,
                     animate = false
                 )
-            }
 
             NEXT_PAGE ->
                 changeChildController(
