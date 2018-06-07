@@ -77,6 +77,12 @@ class CalculateGrowthStatsUseCase(
 
         val monthlyQuests = quests.filter { it.completedAtDate != null }
 
+        val todayUsageStats =
+            if (parameters.includeAppUsageStats) appUsageStatRepository.findForDate() else emptyList()
+        val weeklyUsageStats =
+            if (parameters.includeAppUsageStats) appUsageStatRepository.findForWeek() else emptyList()
+        val monthlyUsageStats =
+            if (parameters.includeAppUsageStats) appUsageStatRepository.findForMonth() else emptyList()
         return Result(
             todayGrowth = Growth.Today(
                 date = parameters.currentDate,
@@ -84,7 +90,8 @@ class CalculateGrowthStatsUseCase(
                 tagProgress = createTagProgress(todayQuests),
                 challengeProgress = createTodayChallengeProgress(quests, parameters.currentDate),
                 progressEntries = createTodayProgressEntries(todayQuests),
-                appUsageStats = if (parameters.includeAppUsageStats) appUsageStatRepository.findForDate() else emptyList()
+                appUsageStats = todayUsageStats,
+                totalAppUsage = todayUsageStats.sumBy { it.usageDuration.intValue }.seconds
             ),
             weeklyGrowth = Growth.Week(
                 startDate = weekStartDate,
@@ -101,7 +108,8 @@ class CalculateGrowthStatsUseCase(
                     focusTimeByDay = focusTimeByDay,
                     awesomenessScoreByDay = awesomenessScoreByDay
                 ),
-                appUsageStats = if (parameters.includeAppUsageStats) appUsageStatRepository.findForWeek() else emptyList()
+                appUsageStats = weeklyUsageStats,
+                totalAppUsage = weeklyUsageStats.sumBy { it.usageDuration.intValue }.seconds
             ),
             monthlyGrowth = Growth.Month(
                 stats = createSummaryStats(monthlyQuests),
@@ -117,7 +125,8 @@ class CalculateGrowthStatsUseCase(
                     focusTimeByDay = focusTimeByDay,
                     awesomenessScoreByDay = awesomenessScoreByDay
                 ),
-                appUsageStats = if (parameters.includeAppUsageStats) appUsageStatRepository.findForMonth() else emptyList()
+                appUsageStats = monthlyUsageStats,
+                totalAppUsage = monthlyUsageStats.sumBy { it.usageDuration.intValue }.seconds
             )
         )
     }
@@ -386,7 +395,8 @@ class CalculateGrowthStatsUseCase(
             val tagProgress: List<TagTimeSpent>,
             val challengeProgress: List<ChallengeProgress>,
             val progressEntries: List<ProgressEntry.Today>,
-            val appUsageStats: List<AppUsageStat>
+            val appUsageStats: List<AppUsageStat>,
+            val totalAppUsage: Duration<Second>
         ) : Growth()
 
         data class Week(
@@ -396,7 +406,8 @@ class CalculateGrowthStatsUseCase(
             val tagProgress: List<TagTimeSpent>,
             val challengeProgress: List<ChallengeProgress>,
             val progressEntries: List<ProgressEntry.Week>,
-            val appUsageStats: List<AppUsageStat>
+            val appUsageStats: List<AppUsageStat>,
+            val totalAppUsage: Duration<Second>
         ) : Growth()
 
         data class Month(
@@ -404,7 +415,8 @@ class CalculateGrowthStatsUseCase(
             val tagProgress: List<TagTimeSpent>,
             val challengeProgress: List<ChallengeProgress>,
             val progressEntries: List<ProgressEntry.Month>,
-            val appUsageStats: List<AppUsageStat>
+            val appUsageStats: List<AppUsageStat>,
+            val totalAppUsage: Duration<Second>
         ) : Growth()
     }
 

@@ -230,6 +230,11 @@ class GrowthViewController(args: Bundle? = null) :
 
         val data = PieData(dataSet)
         data.setValueFormatter(pieFormatter)
+
+        view.appUsageChart.centerText = state.totalAppUsageText
+        view.appUsageChart.setCenterTextColor(colorRes(R.color.md_dark_text_87))
+        view.appUsageChart.setCenterTextSize(12f)
+
         view.appUsageChart.data = data
         view.appUsageChart.highlightValues(null)
         view.appUsageChart.invalidate()
@@ -240,7 +245,7 @@ class GrowthViewController(args: Bundle? = null) :
         val dataSet = PieDataSet(pieData, "")
         dataSet.xValuePosition = PieDataSet.ValuePosition.OUTSIDE_SLICE
         dataSet.yValuePosition = PieDataSet.ValuePosition.OUTSIDE_SLICE
-        dataSet.valueTextColor = colorRes(R.color.md_dark_text_87)
+        dataSet.valueTextColor = colorRes(R.color.md_dark_text_54)
         dataSet.valueTextSize = 12f
         dataSet.setDrawIcons(false)
 
@@ -524,10 +529,9 @@ class GrowthViewController(args: Bundle? = null) :
         set.lineWidth = ViewUtils.dpToPx(1f, activity!!)
         set.setDrawCircles(true)
 
-        set.circleRadius = 7f
+        set.circleRadius = 5f
         set.setCircleColor(color)
-        set.circleHoleRadius = 2.5f
-        set.circleHoleColor = colorRes(R.color.md_white)
+        set.setDrawCircleHole(false)
 
         set.highLightColor = attrData(R.attr.colorAccent)
         set.mode = LineDataSet.Mode.LINEAR
@@ -667,6 +671,11 @@ class GrowthViewController(args: Bundle? = null) :
                     )
                 )
             }
+
+    private val GrowthViewState.totalAppUsageText
+        get() = DurationFormatter.formatShort(
+            activity!!, totalAppUsage.asMinutes.intValue
+        )
 
     companion object {
         private val TAB_INDEX_TO_ACTION = mapOf(

@@ -46,6 +46,7 @@ object GrowthReducer : BaseViewStateReducer<GrowthViewState>() {
                     tagTimeSpent = growth.tagProgress,
                     progressEntries = growth.progressEntries,
                     appUsageStats = growth.appUsageStats,
+                    totalAppUsage = growth.totalAppUsage,
                     hasAppUsageStatsPermission = action.includesAppUsageData,
                     todayGrowth = growth,
                     weekGrowth = action.weeklyGrowth,
@@ -123,7 +124,8 @@ object GrowthReducer : BaseViewStateReducer<GrowthViewState>() {
                         state.dataState.challenges!!
                     ),
                     progressEntries = growth.progressEntries,
-                    appUsageStats = growth.appUsageStats
+                    appUsageStats = growth.appUsageStats,
+                    totalAppUsage = growth.totalAppUsage
                 )
             }
 
@@ -141,7 +143,8 @@ object GrowthReducer : BaseViewStateReducer<GrowthViewState>() {
                         state.dataState.challenges!!
                     ),
                     progressEntries = growth.progressEntries,
-                    appUsageStats = growth.appUsageStats
+                    appUsageStats = growth.appUsageStats,
+                    totalAppUsage = growth.totalAppUsage
                 )
             }
 
@@ -159,7 +162,8 @@ object GrowthReducer : BaseViewStateReducer<GrowthViewState>() {
                         state.dataState.challenges!!
                     ),
                     progressEntries = growth.progressEntries,
-                    appUsageStats = growth.appUsageStats
+                    appUsageStats = growth.appUsageStats,
+                    totalAppUsage = growth.totalAppUsage
                 )
             }
 
@@ -209,6 +213,7 @@ object GrowthReducer : BaseViewStateReducer<GrowthViewState>() {
         challengeProgress = emptyList(),
         progressEntries = emptyList(),
         appUsageStats = emptyList(),
+        totalAppUsage = 0.seconds,
         hasAppUsageStatsPermission = false,
         todayGrowth = null,
         weekGrowth = null,
@@ -230,6 +235,7 @@ data class GrowthViewState(
     val showProgressCount: Int,
     val progressEntries: List<CalculateGrowthStatsUseCase.ProgressEntry>,
     val appUsageStats: List<AppUsageStat>,
+    val totalAppUsage: Duration<Second>,
     val hasAppUsageStatsPermission: Boolean,
     val todayGrowth: CalculateGrowthStatsUseCase.Growth.Today?,
     val weekGrowth: CalculateGrowthStatsUseCase.Growth.Week?,
