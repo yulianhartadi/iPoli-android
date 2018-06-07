@@ -43,6 +43,8 @@ import io.ipoli.android.event.persistence.EventRepository
 import io.ipoli.android.event.sideeffect.CalendarSideEffectHandler
 import io.ipoli.android.event.usecase.FindEventsBetweenDatesUseCase
 import io.ipoli.android.event.usecase.SaveSyncCalendarsUseCase
+import io.ipoli.android.growth.persistence.AndroidAppUsageStatRepository
+import io.ipoli.android.growth.persistence.AppUsageStatRepository
 import io.ipoli.android.growth.sideeffect.GrowthSideEffectHandler
 import io.ipoli.android.growth.usecase.CalculateGrowthStatsUseCase
 import io.ipoli.android.note.usecase.SaveQuestNoteUseCase
@@ -150,6 +152,7 @@ interface RepositoryModule {
     val motivationalImageRepository: MotivationalImageRepository
     val quoteRepository: QuoteRepository
     val dailyChallengeRepository: DailyChallengeRepository
+    val appUsageStatRepository: AppUsageStatRepository
 }
 
 class AndroidRepositoryModule(private val appContext: Context) : RepositoryModule, Injects<Module> {
@@ -229,6 +232,10 @@ class AndroidRepositoryModule(private val appContext: Context) : RepositoryModul
             sharedPreferences,
             executor
         )
+    }
+
+    override val appUsageStatRepository by required {
+        AndroidAppUsageStatRepository(appContext)
     }
 }
 
@@ -347,7 +354,7 @@ class MainAndroidModule(
         get() = AndroidPlanDayScheduler()
 
     override val permissionChecker
-        get() = AndroidPermissionChecker()
+        get() = AndroidPermissionChecker(context)
 
     override val job get() = Job()
 
@@ -387,6 +394,7 @@ class MainUseCaseModule : UseCaseModule, Injects<Module> {
     private val planDayScheduler by required { planDayScheduler }
     private val dailyChallengeRepository by required { dailyChallengeRepository }
     private val dailyChallengeCompleteScheduler by required { dailyChallengeCompleteScheduler }
+    private val appUsageStatRepository by required { appUsageStatRepository }
 
     override val loadScheduleForDateUseCase
         get() = LoadScheduleForDateUseCase()
@@ -689,7 +697,11 @@ class MainUseCaseModule : UseCaseModule, Injects<Module> {
         get() = SaveDailyChallengeQuestIdsUseCase(dailyChallengeRepository)
 
     override val calculateGrowthStatsUseCase
-        get() = CalculateGrowthStatsUseCase(calculateAwesomenessScoreUseCase, questRepository)
+        get() = CalculateGrowthStatsUseCase(
+            calculateAwesomenessScoreUseCase,
+            questRepository,
+            appUsageStatRepository
+        )
 
     override val findDailyChallengeStreakUseCase
         get() = FindDailyChallengeStreakUseCase(dailyChallengeRepository)
@@ -796,7 +808,7 @@ interface UseCaseModule {
     val findDailyChallengeStreakUseCase: FindDailyChallengeStreakUseCase
     val findAverageFocusedDurationForPeriodUseCase: FindAverageFocusedDurationForPeriodUseCase
     val saveQuickDoNotificationSettingUseCase: SaveQuickDoNotificationSettingUseCase
-    val saveProfileUseCase : SaveProfileUseCase
+    val saveProfileUseCase: SaveProfileUseCase
 }
 
 interface PresenterModule {

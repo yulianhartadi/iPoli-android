@@ -24,6 +24,8 @@ val LocalDate.dayOfWeekText: String
 
 fun LocalDate.startOfDayUTC() = toStartOfDayUTC().time
 
+fun LocalDate.startOfDay() = toStartOfDay().time
+
 fun LocalDate.toStartOfDayUTC() = fromZonedDateTime(this.atStartOfDay(DateUtils.ZONE_UTC))
 
 fun LocalDate.toStartOfDay() = fromZonedDateTime(this.atStartOfDay(ZoneId.systemDefault()))

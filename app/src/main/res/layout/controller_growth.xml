@@ -344,6 +344,62 @@
                         android:layout_marginTop="8dp" />
                 </LinearLayout>
 
+                <LinearLayout
+                    android:id="@+id/appUsageContainer"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="16dp"
+                    android:layout_marginStart="16dp"
+                    android:layout_marginTop="16dp"
+                    android:background="@drawable/rounded_rectangle_white_background"
+                    android:elevation="1dp"
+                    android:orientation="vertical"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/tagTimeContainer">
+
+                    <TextView
+                        style="@style/SectionTitle"
+                        android:text="@string/time_spent_per_app" />
+
+                    <TextView
+                        android:id="@+id/appUsageEmpty"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginEnd="16dp"
+                        android:layout_marginStart="16dp"
+                        android:maxLines="2"
+                        android:paddingBottom="16dp"
+                        android:paddingTop="16dp"
+                        android:textAlignment="center"
+                        android:textAppearance="@style/TextAppearance.AppCompat.Body1"
+                        android:visibility="gone" />
+
+                    <Button
+                        android:id="@+id/appUsageEnable"
+                        style="@style/Widget.AppCompat.Button.Colored"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:layout_marginBottom="16dp"
+                        android:layout_marginEnd="16dp"
+                        android:layout_marginStart="16dp"
+                        android:text="@string/show_app_data_usage"
+                        android:visibility="gone" />
+
+                    <com.github.mikephil.charting.charts.PieChart
+                        android:id="@+id/appUsageChart"
+                        android:layout_width="match_parent"
+                        android:layout_height="200dp"
+                        android:layout_marginTop="16dp" />
+
+                    <android.support.v7.widget.RecyclerView
+                        android:id="@+id/appUsageList"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="8dp" />
+                </LinearLayout>
+
 
             </android.support.constraint.ConstraintLayout>
         </ScrollView>

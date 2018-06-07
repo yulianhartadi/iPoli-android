@@ -11,16 +11,23 @@ import space.traversal.kapsule.required
 object GrowthSideEffectHandler : AppSideEffectHandler() {
 
     private val calculateGrowthStatsUseCase by required { calculateGrowthStatsUseCase }
+    private val permissionChecker by required { permissionChecker }
 
     override suspend fun doExecute(action: Action, state: AppState) {
         when (action) {
             is GrowthAction.Load -> {
-                val result = calculateGrowthStatsUseCase.execute(CalculateGrowthStatsUseCase.Params())
+
+                val canReadAppUsageData = permissionChecker.canReadAppUsageStats()
+
+                val result = calculateGrowthStatsUseCase.execute(
+                    CalculateGrowthStatsUseCase.Params(includeAppUsageStats = canReadAppUsageData)
+                )
                 dispatch(
                     DataLoadedAction.GrowthChanged(
-                        result.todayGrowth,
-                        result.weeklyGrowth,
-                        result.monthlyGrowth
+                        dailyGrowth = result.todayGrowth,
+                        weeklyGrowth = result.weeklyGrowth,
+                        monthlyGrowth = result.monthlyGrowth,
+                        includesAppUsageData = canReadAppUsageData
                     )
                 )
             }

@@ -2,6 +2,8 @@ package io.ipoli.android.growth.usecase
 
 import io.ipoli.android.common.UseCase
 import io.ipoli.android.common.datetime.*
+import io.ipoli.android.growth.persistence.AppUsageStat
+import io.ipoli.android.growth.persistence.AppUsageStatRepository
 import io.ipoli.android.planday.usecase.CalculateAwesomenessScoreUseCase
 import io.ipoli.android.quest.Color
 import io.ipoli.android.quest.Icon
@@ -14,7 +16,8 @@ import kotlin.math.roundToInt
 
 class CalculateGrowthStatsUseCase(
     private val calculateAwesomenessScoreUseCase: CalculateAwesomenessScoreUseCase,
-    private val questRepository: QuestRepository
+    private val questRepository: QuestRepository,
+    private val appUsageStatRepository: AppUsageStatRepository
 ) : UseCase<CalculateGrowthStatsUseCase.Params, CalculateGrowthStatsUseCase.Result> {
 
     private fun calculateAwesomenessScore(quests: List<Quest>) =
@@ -80,7 +83,8 @@ class CalculateGrowthStatsUseCase(
                 stats = createSummaryStats(todayQuests),
                 tagProgress = createTagProgress(todayQuests),
                 challengeProgress = createTodayChallengeProgress(quests, parameters.currentDate),
-                progressEntries = createTodayProgressEntries(todayQuests)
+                progressEntries = createTodayProgressEntries(todayQuests),
+                appUsageStats = if (parameters.includeAppUsageStats) appUsageStatRepository.findForDate() else emptyList()
             ),
             weeklyGrowth = Growth.Week(
                 startDate = weekStartDate,
@@ -96,7 +100,8 @@ class CalculateGrowthStatsUseCase(
                     weekStartDate = weekStartDate,
                     focusTimeByDay = focusTimeByDay,
                     awesomenessScoreByDay = awesomenessScoreByDay
-                )
+                ),
+                appUsageStats = if (parameters.includeAppUsageStats) appUsageStatRepository.findForWeek() else emptyList()
             ),
             monthlyGrowth = Growth.Month(
                 stats = createSummaryStats(monthlyQuests),
@@ -111,7 +116,8 @@ class CalculateGrowthStatsUseCase(
                     periodEnd = periodEnd,
                     focusTimeByDay = focusTimeByDay,
                     awesomenessScoreByDay = awesomenessScoreByDay
-                )
+                ),
+                appUsageStats = if (parameters.includeAppUsageStats) appUsageStatRepository.findForMonth() else emptyList()
             )
         )
     }
@@ -379,7 +385,8 @@ class CalculateGrowthStatsUseCase(
             val stats: SummaryStats,
             val tagProgress: List<TagTimeSpent>,
             val challengeProgress: List<ChallengeProgress>,
-            val progressEntries: List<ProgressEntry.Today>
+            val progressEntries: List<ProgressEntry.Today>,
+            val appUsageStats: List<AppUsageStat>
         ) : Growth()
 
         data class Week(
@@ -388,18 +395,21 @@ class CalculateGrowthStatsUseCase(
             val stats: SummaryStats,
             val tagProgress: List<TagTimeSpent>,
             val challengeProgress: List<ChallengeProgress>,
-            val progressEntries: List<ProgressEntry.Week>
+            val progressEntries: List<ProgressEntry.Week>,
+            val appUsageStats: List<AppUsageStat>
         ) : Growth()
 
         data class Month(
             val stats: SummaryStats,
             val tagProgress: List<TagTimeSpent>,
             val challengeProgress: List<ChallengeProgress>,
-            val progressEntries: List<ProgressEntry.Month>
+            val progressEntries: List<ProgressEntry.Month>,
+            val appUsageStats: List<AppUsageStat>
         ) : Growth()
     }
 
     data class Params(
+        val includeAppUsageStats: Boolean = false,
         val currentDate: LocalDate = LocalDate.now(),
         val firstDayOfWeek: DayOfWeek = DateUtils.firstDayOfWeek,
         val lastDayOfWeek: DayOfWeek = DateUtils.lastDayOfWeek

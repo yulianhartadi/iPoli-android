@@ -8,6 +8,7 @@ import io.ipoli.android.common.DataLoadedAction
 import io.ipoli.android.common.datetime.*
 import io.ipoli.android.common.mvi.BaseViewState
 import io.ipoli.android.common.redux.Action
+import io.ipoli.android.growth.persistence.AppUsageStat
 import io.ipoli.android.growth.usecase.CalculateGrowthStatsUseCase
 import io.ipoli.android.quest.Color
 import org.threeten.bp.LocalDate
@@ -44,6 +45,8 @@ object GrowthReducer : BaseViewStateReducer<GrowthViewState>() {
                     showProgressCount = progressCountForToday(),
                     tagTimeSpent = growth.tagProgress,
                     progressEntries = growth.progressEntries,
+                    appUsageStats = growth.appUsageStats,
+                    hasAppUsageStatsPermission = action.includesAppUsageData,
                     todayGrowth = growth,
                     weekGrowth = action.weeklyGrowth,
                     monthGrowth = action.monthlyGrowth
@@ -119,7 +122,8 @@ object GrowthReducer : BaseViewStateReducer<GrowthViewState>() {
                         growth.challengeProgress,
                         state.dataState.challenges!!
                     ),
-                    progressEntries = growth.progressEntries
+                    progressEntries = growth.progressEntries,
+                    appUsageStats = growth.appUsageStats
                 )
             }
 
@@ -136,7 +140,8 @@ object GrowthReducer : BaseViewStateReducer<GrowthViewState>() {
                         growth.challengeProgress,
                         state.dataState.challenges!!
                     ),
-                    progressEntries = growth.progressEntries
+                    progressEntries = growth.progressEntries,
+                    appUsageStats = growth.appUsageStats
                 )
             }
 
@@ -153,7 +158,8 @@ object GrowthReducer : BaseViewStateReducer<GrowthViewState>() {
                         growth.challengeProgress,
                         state.dataState.challenges!!
                     ),
-                    progressEntries = growth.progressEntries
+                    progressEntries = growth.progressEntries,
+                    appUsageStats = growth.appUsageStats
                 )
             }
 
@@ -202,6 +208,8 @@ object GrowthReducer : BaseViewStateReducer<GrowthViewState>() {
         tagTimeSpent = emptyList(),
         challengeProgress = emptyList(),
         progressEntries = emptyList(),
+        appUsageStats = emptyList(),
+        hasAppUsageStatsPermission = false,
         todayGrowth = null,
         weekGrowth = null,
         monthGrowth = null
@@ -221,6 +229,8 @@ data class GrowthViewState(
     val challengeProgress: List<ChallengeProgress>,
     val showProgressCount: Int,
     val progressEntries: List<CalculateGrowthStatsUseCase.ProgressEntry>,
+    val appUsageStats: List<AppUsageStat>,
+    val hasAppUsageStatsPermission: Boolean,
     val todayGrowth: CalculateGrowthStatsUseCase.Growth.Today?,
     val weekGrowth: CalculateGrowthStatsUseCase.Growth.Week?,
     val monthGrowth: CalculateGrowthStatsUseCase.Growth.Month?

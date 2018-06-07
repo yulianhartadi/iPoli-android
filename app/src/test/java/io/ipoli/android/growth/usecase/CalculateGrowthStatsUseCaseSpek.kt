@@ -47,12 +47,14 @@ class CalculateGrowthStatsUseCaseSpek : Spek({
                             any()
                         )
                     } doReturn completedQuests
-                }
+                },
+                mock()
             ).execute(
                 CalculateGrowthStatsUseCase.Params(
-                    currentDate,
-                    firstDayOfWeek,
-                    lastDayOfWeek
+                    includeAppUsageStats = false,
+                    currentDate = currentDate,
+                    firstDayOfWeek = firstDayOfWeek,
+                    lastDayOfWeek = lastDayOfWeek
                 )
             )
 

@@ -1,10 +1,13 @@
 package io.ipoli.android.growth
 
+import android.content.Intent
 import android.content.res.ColorStateList
 import android.graphics.PorterDuff
 import android.graphics.Typeface
+import android.graphics.drawable.Drawable
 import android.graphics.drawable.LayerDrawable
 import android.os.Bundle
+import android.provider.Settings
 import android.support.annotation.ColorRes
 import android.support.design.widget.TabLayout
 import android.support.v7.widget.LinearLayoutManager
@@ -37,6 +40,7 @@ import io.ipoli.android.common.view.recyclerview.RecyclerViewViewModel
 import io.ipoli.android.common.view.recyclerview.SimpleViewHolder
 import io.ipoli.android.growth.usecase.CalculateGrowthStatsUseCase
 import kotlinx.android.synthetic.main.controller_growth.view.*
+import kotlinx.android.synthetic.main.item_growth_app_usage_stat.view.*
 import kotlinx.android.synthetic.main.item_growth_challenge.view.*
 import kotlinx.android.synthetic.main.item_growth_tag.view.*
 import kotlinx.android.synthetic.main.view_loader.view.*
@@ -77,8 +81,6 @@ class GrowthViewController(args: Bundle? = null) :
     ): View {
         val view = container.inflate(R.layout.controller_growth)
 
-        setupTagTimeChart(view.tagTimeChart)
-
         view.focusTimeChart.marker = FocusHoursMarker(view.context)
         setupLineChart(view.focusTimeChart)
         view.awesomenessChart.marker = AwesomenessScoreMarker(view.context)
@@ -88,13 +90,18 @@ class GrowthViewController(args: Bundle? = null) :
         view.challengesProgress.layoutManager = LinearLayoutManager(view.context)
         view.challengesProgress.adapter = ChallengeAdapter()
 
+        setupPieChart(view.tagTimeChart)
         view.tagList.layoutManager = LinearLayoutManager(view.context)
         view.tagList.adapter = TagTimeSpentAdapter()
+
+        setupPieChart(view.appUsageChart)
+        view.appUsageList.layoutManager = LinearLayoutManager(view.context)
+        view.appUsageList.adapter = AppUsageStatAdapter()
 
         return view
     }
 
-    private fun setupTagTimeChart(chart: PieChart) {
+    private fun setupPieChart(chart: PieChart) {
 
         chart.legend.isEnabled = false
         chart.description.isEnabled = false
@@ -103,7 +110,7 @@ class GrowthViewController(args: Bundle? = null) :
         chart.setUsePercentValues(true)
         chart.setEntryLabelColor(colorRes(R.color.md_dark_text_54))
         chart.setEntryLabelTextSize(14f)
-        chart.setExtraOffsets(0.0f, 5.0f, 0.0f, 5.0f)
+        chart.setExtraOffsets(0.0f, 10.0f, 0.0f, 10.0f)
         chart.rotationAngle = 270f
     }
 
@@ -130,30 +137,111 @@ class GrowthViewController(args: Bundle? = null) :
                 view.growthContentContainer.visible()
                 view.focusTimeTitle.setText(R.string.growth_focus_time_title)
                 renderSummaryStats(state, view)
-                renderTagTimeSpent(state, view)
                 renderChallengeProgress(state, view)
                 renderCharts(state, view)
+                renderTagTimeSpent(state, view)
+                renderAppUsageStats(state, view)
             }
 
             GrowthViewState.StateType.WEEK_DATA_LOADED -> {
                 view.focusTimeTitle.setText(R.string.growth_focus_time_title)
                 renderSummaryStats(state, view)
-                renderTagTimeSpent(state, view)
                 renderChallengeProgress(state, view)
                 renderCharts(state, view)
+                renderTagTimeSpent(state, view)
+                renderAppUsageStats(state, view)
             }
 
             GrowthViewState.StateType.MONTH_DATA_LOADED -> {
                 view.focusTimeTitle.setText(R.string.growth_focus_time_month_title)
                 renderSummaryStats(state, view)
-                renderTagTimeSpent(state, view)
                 renderChallengeProgress(state, view)
                 renderCharts(state, view)
+                renderTagTimeSpent(state, view)
+                renderAppUsageStats(state, view)
             }
 
             else -> {
             }
         }
+    }
+
+    private fun renderAppUsageStats(state: GrowthViewState, view: View) {
+        if (!state.hasAppUsageStatsPermission) {
+            view.appUsageEnable.visible()
+            view.appUsageEnable.onDebounceClick {
+                showShortToast(R.string.allow_read_app_usage)
+                startActivity(Intent(Settings.ACTION_USAGE_ACCESS_SETTINGS))
+            }
+            view.appUsageEmpty.gone()
+            view.appUsageChart.gone()
+            view.appUsageList.gone()
+        } else if (state.appUsageStats.isEmpty()) {
+
+            val textRes = when (state.type) {
+                GrowthViewState.StateType.TODAY_DATA_LOADED ->
+                    R.string.growth_no_app_usage_today
+
+                GrowthViewState.StateType.WEEK_DATA_LOADED ->
+                    R.string.growth_no_app_usage_week
+
+                GrowthViewState.StateType.MONTH_DATA_LOADED ->
+                    R.string.growth_no_app_usage_month
+
+                else -> throw IllegalArgumentException("Unknown text for state type ${state.type}")
+            }
+            view.appUsageEmpty.setText(textRes)
+
+            view.appUsageEmpty.visible()
+            view.appUsageEnable.gone()
+            view.appUsageChart.gone()
+            view.appUsageList.gone()
+        } else {
+            view.appUsageEmpty.gone()
+            view.appUsageEnable.gone()
+            view.appUsageChart.visible()
+            view.appUsageList.visible()
+            (view.appUsageList.adapter as AppUsageStatAdapter)
+                .updateAll(state.appUsageStatViewModels)
+
+            view.appUsageChart.post {
+                renderAppUsageChart(state, view)
+            }
+        }
+    }
+
+    private fun renderAppUsageChart(state: GrowthViewState, view: View) {
+        val aus = state.appUsageForChart
+
+        if (aus.isEmpty()) {
+            view.appUsageChart.gone()
+            return
+        }
+
+        view.appUsageChart.visible()
+
+        val pieData = aus.map {
+            PieEntry(it.usageMinutes.toFloat(), it.name)
+        }
+
+        val dataSet = PieDataSet(pieData, "")
+        dataSet.xValuePosition = PieDataSet.ValuePosition.OUTSIDE_SLICE
+        dataSet.yValuePosition = PieDataSet.ValuePosition.INSIDE_SLICE
+        dataSet.valueTextColor = colorRes(R.color.md_white)
+        dataSet.valueTextSize = 12f
+        dataSet.setDrawIcons(false)
+        dataSet.colors = aus.map { it.color }
+
+        dataSet.valueLinePart1Length = 0.5f
+        dataSet.valueLinePart2Length = 1f
+        dataSet.isUsingSliceColorAsValueLineColor = true
+
+        val data = PieData(dataSet)
+        data.setValueFormatter(pieFormatter)
+        view.appUsageChart.data = data
+        view.appUsageChart.highlightValues(null)
+        view.appUsageChart.invalidate()
+        view.appUsageChart.animateY(longAnimTime.toInt(), AccelerateDecelerateEasingFunction)
     }
 
     private fun renderTagTimeSpent(state: GrowthViewState, view: View) {
@@ -440,7 +528,7 @@ class GrowthViewController(args: Bundle? = null) :
 
         set.circleRadius = 6f
         set.setCircleColor(color)
-        set.circleHoleRadius = 3f
+        set.circleHoleRadius = 2.5f
         set.circleHoleColor = colorRes(R.color.md_white)
 
         set.highLightColor = attrData(R.attr.colorAccent)
@@ -477,6 +565,18 @@ class GrowthViewController(args: Bundle? = null) :
         }
     }
 
+    private val GrowthViewState.challengeViewModels
+        get() = challengeProgress.map {
+            val durationText = DurationFormatter.formatShort(activity!!, it.timeSpent.intValue)
+            ChallengeViewModel(
+                id = it.challengeId,
+                name = it.name,
+                color = it.color.androidColor.color500,
+                progress = it.progressPercent,
+                progressText = "${it.completeQuestCount}/${it.totalQuestCount} done\n$durationText"
+            )
+        }
+
     data class TagTimeSpentViewModel(
         override val id: String,
         val name: String,
@@ -511,18 +611,6 @@ class GrowthViewController(args: Bundle? = null) :
         }
     }
 
-    private val GrowthViewState.challengeViewModels
-        get() = challengeProgress.map {
-            val durationText = DurationFormatter.formatShort(activity!!, it.timeSpent.intValue)
-            ChallengeViewModel(
-                id = it.challengeId,
-                name = it.name,
-                color = it.color.androidColor.color500,
-                progress = it.progressPercent,
-                progressText = "${it.completeQuestCount}/${it.totalQuestCount} done\n$durationText"
-            )
-        }
-
     private val GrowthViewState.tagTimeSpentViewModels
         get() = tagTimeSpent.map {
             TagTimeSpentViewModel(
@@ -536,8 +624,51 @@ class GrowthViewController(args: Bundle? = null) :
         }
 
     private val GrowthViewState.tagTimeSpentForChart
-        get() = tagTimeSpent.filter { it.timeSpentPercent >= 10 }
+        get() = tagTimeSpent.filter { it.timeSpentPercent >= 5 }
 
+    private val GrowthViewState.appUsageForChart
+        get() = appUsageStatViewModels.filter { it.usagePercent >= 5 }
+
+    data class AppUsageStatViewModel(
+        override val id: String,
+        val name: String,
+        val icon: Drawable,
+        val color: Int,
+        val usagePercent: Int,
+        val usageMinutes: Int,
+        val usageText: String
+    ) : RecyclerViewViewModel
+
+    inner class AppUsageStatAdapter :
+        BaseRecyclerViewAdapter<AppUsageStatViewModel>(R.layout.item_growth_app_usage_stat) {
+        override fun onBindViewModel(
+            vm: AppUsageStatViewModel,
+            view: View,
+            holder: SimpleViewHolder
+        ) {
+            view.appIcon.setImageDrawable(vm.icon)
+            view.appName.text = vm.name
+            view.appTimeSpent.text = vm.usageText
+        }
+    }
+
+    private val GrowthViewState.appUsageStatViewModels
+        get() = appUsageStats
+            .map {
+                val icon = activity!!.packageManager.getApplicationIcon(it.id)
+                AppUsageStatViewModel(
+                    id = it.id,
+                    name = it.name,
+                    usagePercent = it.usagePercent,
+                    usageMinutes = it.usageDuration.asMinutes.intValue,
+                    icon = icon,
+                    color = it.color,
+                    usageText = DurationFormatter.formatShort(
+                        activity!!,
+                        it.usageDuration.asMinutes.intValue
+                    )
+                )
+            }
 
     companion object {
         private val TAB_INDEX_TO_ACTION = mapOf(

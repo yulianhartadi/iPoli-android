@@ -1391,4 +1391,10 @@
     <string name="plan_now">Plan now</string>
     <string name="unknown_hero">Unknown Hero</string>
     <string name="blank_bio">This Player likes to keep things mysterious</string>
+    <string name="allow_read_app_usage">Please, allow usage access to myPoli</string>
+    <string name="growth_no_app_usage_today">You haven\'t spent time on any of your apps today</string>
+    <string name="growth_no_app_usage_week">You haven\'t spent time on any of your apps this week</string>
+    <string name="growth_no_app_usage_month">You haven\'t spent time on any of your apps this month</string>
+    <string name="show_app_data_usage">Show app data usage</string>
+    <string name="time_spent_per_app">Time spent per app</string>
 </resources>

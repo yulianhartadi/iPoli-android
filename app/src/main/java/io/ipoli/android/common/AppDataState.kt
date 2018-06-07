@@ -79,7 +79,8 @@ sealed class DataLoadedAction : Action {
     data class GrowthChanged(
         val dailyGrowth: CalculateGrowthStatsUseCase.Growth.Today,
         val weeklyGrowth: CalculateGrowthStatsUseCase.Growth.Week,
-        val monthlyGrowth: CalculateGrowthStatsUseCase.Growth.Month
+        val monthlyGrowth: CalculateGrowthStatsUseCase.Growth.Month,
+        val includesAppUsageData: Boolean
     ) : DataLoadedAction()
 
     data class ProfileStatsChanged(
