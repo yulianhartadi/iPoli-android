@@ -108,8 +108,8 @@ class GrowthViewController(args: Bundle? = null) :
         chart.setTouchEnabled(false)
         chart.transparentCircleRadius = chart.holeRadius
         chart.setUsePercentValues(true)
-        chart.setEntryLabelColor(colorRes(R.color.md_dark_text_54))
-        chart.setEntryLabelTextSize(14f)
+        chart.setEntryLabelColor(colorRes(R.color.md_dark_text_87))
+        chart.setEntryLabelTextSize(12f)
         chart.setExtraOffsets(0.0f, 10.0f, 0.0f, 10.0f)
         chart.rotationAngle = 270f
     }
@@ -224,17 +224,9 @@ class GrowthViewController(args: Bundle? = null) :
             PieEntry(it.usageMinutes.toFloat(), it.name)
         }
 
-        val dataSet = PieDataSet(pieData, "")
-        dataSet.xValuePosition = PieDataSet.ValuePosition.OUTSIDE_SLICE
-        dataSet.yValuePosition = PieDataSet.ValuePosition.INSIDE_SLICE
-        dataSet.valueTextColor = colorRes(R.color.md_white)
-        dataSet.valueTextSize = 12f
-        dataSet.setDrawIcons(false)
-        dataSet.colors = aus.map { it.color }
+        val dataSet = createPieDataSet(pieData)
 
-        dataSet.valueLinePart1Length = 0.5f
-        dataSet.valueLinePart2Length = 1f
-        dataSet.isUsingSliceColorAsValueLineColor = true
+        dataSet.colors = aus.map { it.color }
 
         val data = PieData(dataSet)
         data.setValueFormatter(pieFormatter)
@@ -242,6 +234,21 @@ class GrowthViewController(args: Bundle? = null) :
         view.appUsageChart.highlightValues(null)
         view.appUsageChart.invalidate()
         view.appUsageChart.animateY(longAnimTime.toInt(), AccelerateDecelerateEasingFunction)
+    }
+
+    private fun createPieDataSet(pieData: List<PieEntry>): PieDataSet {
+        val dataSet = PieDataSet(pieData, "")
+        dataSet.xValuePosition = PieDataSet.ValuePosition.OUTSIDE_SLICE
+        dataSet.yValuePosition = PieDataSet.ValuePosition.OUTSIDE_SLICE
+        dataSet.valueTextColor = colorRes(R.color.md_dark_text_87)
+        dataSet.valueTextSize = 12f
+        dataSet.setDrawIcons(false)
+
+        dataSet.valueLinePart1Length = 0.5f
+        dataSet.valueLinePart2Length = 0.5f
+        dataSet.isUsingSliceColorAsValueLineColor = true
+        dataSet.setAutomaticallyDisableSliceSpacing(true)
+        return dataSet
     }
 
     private fun renderTagTimeSpent(state: GrowthViewState, view: View) {
@@ -375,17 +382,8 @@ class GrowthViewController(args: Bundle? = null) :
             PieEntry(it.timeSpent.intValue.toFloat(), it.name)
         }
 
-        val dataSet = PieDataSet(pieData, "")
-        dataSet.xValuePosition = PieDataSet.ValuePosition.OUTSIDE_SLICE
-        dataSet.yValuePosition = PieDataSet.ValuePosition.INSIDE_SLICE
-        dataSet.valueTextColor = colorRes(R.color.md_white)
-        dataSet.valueTextSize = 12f
-        dataSet.setDrawIcons(false)
+        val dataSet = createPieDataSet(pieData)
         dataSet.colors = ts.map { colorRes(it.color.androidColor.color500) }
-
-        dataSet.valueLinePart1Length = 0.5f
-        dataSet.valueLinePart2Length = 1f
-        dataSet.isUsingSliceColorAsValueLineColor = true
 
         val data = PieData(dataSet)
         data.setValueFormatter(pieFormatter)
@@ -526,7 +524,7 @@ class GrowthViewController(args: Bundle? = null) :
         set.lineWidth = ViewUtils.dpToPx(1f, activity!!)
         set.setDrawCircles(true)
 
-        set.circleRadius = 6f
+        set.circleRadius = 7f
         set.setCircleColor(color)
         set.circleHoleRadius = 2.5f
         set.circleHoleColor = colorRes(R.color.md_white)

@@ -125,7 +125,7 @@ class AndroidAppUsageStatRepository(private val context: Context) : AppUsageStat
             val bitmap = packageManager.getApplicationIcon(ai).toBitmap()
 
             val p = Palette.from(bitmap).generate()
-            val color = p.vibrantSwatch?.rgb ?: p.swatches.firstOrNull()?.rgb ?: Color.BLUE
+            val color = p.dominantSwatch?.rgb ?: p.swatches.firstOrNull()?.rgb ?: Color.BLUE
 
             packageManager.getApplicationIcon(ai)
             AppUsageStat(
