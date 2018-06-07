@@ -142,9 +142,6 @@ abstract class MviPopup<in VS : ViewState, in V : ViewStateRenderer<VS>, out P :
                 hide()
             }
         }
-        if (!isAutoHide) {
-            overlayView.setOnClickListener { hide() }
-        }
 
         windowManager = context.getSystemService(Context.WINDOW_SERVICE) as WindowManager
 
@@ -377,9 +374,6 @@ abstract class ReduxPopup<A : Action, VS : ViewState, out VSR : ViewStateReducer
                 hide()
             }
         }
-        if (!isAutoHide) {
-            overlayView.setOnClickListener { hide() }
-        }
 
         windowManager = context.getSystemService(Context.WINDOW_SERVICE) as WindowManager
 
@@ -606,9 +600,6 @@ abstract class Popup
             if (!isAutoHide) {
                 hide()
             }
-        }
-        if (!isAutoHide) {
-            overlayView.setOnClickListener { hide() }
         }
 
         windowManager = context.getSystemService(Context.WINDOW_SERVICE) as WindowManager
