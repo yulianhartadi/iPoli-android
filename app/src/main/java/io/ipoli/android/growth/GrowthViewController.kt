@@ -529,7 +529,7 @@ class GrowthViewController(args: Bundle? = null) :
         set.lineWidth = ViewUtils.dpToPx(1f, activity!!)
         set.setDrawCircles(true)
 
-        set.circleRadius = 5f
+        set.circleRadius = 6f
         set.setCircleColor(color)
         set.setDrawCircleHole(false)
 
@@ -626,10 +626,10 @@ class GrowthViewController(args: Bundle? = null) :
         }
 
     private val GrowthViewState.tagTimeSpentForChart
-        get() = tagTimeSpent.filter { it.timeSpentPercent >= 5 }
+        get() = tagTimeSpent.filter { it.timeSpentPercent >= 10 }
 
     private val GrowthViewState.appUsageForChart
-        get() = appUsageStatViewModels.filter { it.usagePercent >= 5 }
+        get() = appUsageStatViewModels.filter { it.usagePercent >= 10 }
 
     data class AppUsageStatViewModel(
         override val id: String,
