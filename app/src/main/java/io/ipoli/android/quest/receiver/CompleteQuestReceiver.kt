@@ -1,20 +1,16 @@
 package io.ipoli.android.quest.receiver
 
 import android.app.NotificationManager
-import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
-import kotlinx.coroutines.experimental.CommonPool
-import kotlinx.coroutines.experimental.launch
 import io.ipoli.android.Constants
 import io.ipoli.android.common.AsyncBroadcastReceiver
-import io.ipoli.android.common.di.Module
+import io.ipoli.android.common.notification.QuickDoNotificationUtil
 import io.ipoli.android.common.view.AppWidgetUtil
-import io.ipoli.android.myPoliApp
 import io.ipoli.android.quest.show.usecase.CompleteTimeRangeUseCase
 import kotlinx.coroutines.experimental.android.UI
-import space.traversal.kapsule.Injects
-import space.traversal.kapsule.inject
+import kotlinx.coroutines.experimental.launch
+import org.threeten.bp.LocalDate
 import space.traversal.kapsule.required
 
 /**
@@ -24,15 +20,31 @@ import space.traversal.kapsule.required
 class CompleteQuestReceiver : AsyncBroadcastReceiver() {
 
     private val completeTimeRangeUseCase by required { completeTimeRangeUseCase }
+    private val playerRepository by required { playerRepository }
+    private val questRepository by required { questRepository }
 
     override suspend fun onReceiveAsync(context: Context, intent: Intent) {
         val questId = intent.getStringExtra(Constants.QUEST_ID_EXTRA_KEY)
         completeTimeRangeUseCase.execute(CompleteTimeRangeUseCase.Params(questId))
 
-        launch(UI) {
-            removeTimerNotification(context)
-            AppWidgetUtil.updateAgendaWidget(context)
+        val player = playerRepository.find()!!
+        if (player.preferences.isQuickDoNotificationEnabled) {
+            val todayQuests = questRepository.findScheduledAt(LocalDate.now())
+
+            launch(UI) {
+                QuickDoNotificationUtil.update(context, todayQuests, player)
+                updateUIElements(context)
+            }
+        } else {
+            launch(UI) {
+                updateUIElements(context)
+            }
         }
+    }
+
+    private fun updateUIElements(context: Context) {
+        removeTimerNotification(context)
+        AppWidgetUtil.updateAgendaWidget(context)
     }
 
     private fun removeTimerNotification(context: Context) {
