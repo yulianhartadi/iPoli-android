@@ -142,7 +142,7 @@ class RepeatingQuestViewController(args: Bundle? = null) :
             RepeatingQuestViewState.StateType.REMOVED ->
                 router.handleBack()
 
-            RepeatingQuestViewState.StateType.HISTORY_CHAGED ->
+            RepeatingQuestViewState.StateType.HISTORY_CHANGED ->
                 view.historyChart.updateData(state.history!!)
             
             else -> {
