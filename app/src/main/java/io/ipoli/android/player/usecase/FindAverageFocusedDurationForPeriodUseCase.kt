@@ -19,7 +19,7 @@ class FindAverageFocusedDurationForPeriodUseCase(private val questRepository: Qu
 
         val productiveMinutes = qs
             .filter { it.hasTimer }
-            .sumBy { it.actualDuration.intValue }
+            .sumBy { it.actualDuration.asMinutes.intValue }
 
         return (productiveMinutes / parameters.dayPeriod).minutes
     }
