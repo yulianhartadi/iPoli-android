@@ -5,7 +5,8 @@
     android:layout_height="match_parent"
     android:background="?android:colorBackground"
     android:clickable="true"
-    android:focusable="true">
+    android:focusable="true"
+    android:keepScreenOn="true">
 
     <ViewFlipper
         android:id="@+id/switcher"
@@ -24,9 +25,9 @@
 
         <com.bluelinelabs.conductor.ChangeHandlerFrameLayout
             android:id="@+id/noteContainer"
-            android:visibility="gone"
             android:layout_width="match_parent"
-            android:layout_height="match_parent" />
+            android:layout_height="match_parent"
+            android:visibility="gone" />
 
     </ViewFlipper>
 
