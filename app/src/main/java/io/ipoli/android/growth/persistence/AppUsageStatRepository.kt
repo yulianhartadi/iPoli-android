@@ -91,7 +91,7 @@ class AndroidAppUsageStatRepository(private val context: Context) : AppUsageStat
 
     override fun findForMonth(monthStart: LocalDate): List<AppUsageStat> {
         val stats = usageStats.queryUsageStats(
-            UsageStatsManager.INTERVAL_MONTHLY,
+            UsageStatsManager.INTERVAL_WEEKLY,
             monthStart.startOfDay(),
             System.currentTimeMillis()
         ).groupBy { it.packageName }.map {
