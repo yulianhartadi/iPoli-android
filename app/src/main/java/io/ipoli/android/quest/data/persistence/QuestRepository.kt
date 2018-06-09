@@ -383,6 +383,7 @@ class FirestoreQuestRepository(
     override fun findCountForTag(tagId: String): Int =
         collectionReference
             .whereEqualTo("tags.$tagId.id", tagId)
+            .whereEqualTo("completedAtDate", null)
             .documents.size
 
     override suspend fun listenForScheduledBetween(
