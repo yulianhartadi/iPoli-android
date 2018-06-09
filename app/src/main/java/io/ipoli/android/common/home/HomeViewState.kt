@@ -41,7 +41,7 @@ object HomeReducer : BaseViewStateReducer<HomeViewState>() {
                 s.copy(
                     type = DATA_LOADED,
                     tags = tags.filter { it.isFavorite },
-                    bucketListQuestCount = bq.size
+                    bucketListQuestCount = bq.count { !it.isCompleted }
                 )
             }
 
@@ -59,7 +59,7 @@ object HomeReducer : BaseViewStateReducer<HomeViewState>() {
             is DataLoadedAction.UnscheduledQuestsChanged ->
                 subState.copy(
                     type = UNSCHEDULED_QUESTS_CHANGED,
-                    bucketListQuestCount = action.quests.size
+                    bucketListQuestCount = action.quests.count { !it.isCompleted }
                 )
 
             is HomeAction.HideTags ->
