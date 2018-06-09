@@ -7,8 +7,6 @@ import io.ipoli.android.dailychallenge.job.DailyChallengeCompleteJob
 import io.ipoli.android.pet.LowerPetStatsJob
 import io.ipoli.android.planday.job.PlanDayJob
 import io.ipoli.android.planday.job.SnoozedPlanDayJob
-import io.ipoli.android.player.LevelUpJob
-import io.ipoli.android.quest.job.QuestCompleteJob
 import io.ipoli.android.quest.show.job.TimerCompleteNotificationJob
 import io.ipoli.android.repeatingquest.SaveQuestsForRepeatingQuestJob
 import io.ipoli.android.store.membership.job.CheckMembershipStatusJob
@@ -21,8 +19,6 @@ import io.ipoli.android.store.powerup.job.RemoveExpiredPowerUpsJob
 class myPoliJobCreator : JobCreator {
     override fun create(tag: String): Job? =
         when (tag) {
-            QuestCompleteJob.TAG -> QuestCompleteJob()
-            LevelUpJob.TAG -> LevelUpJob()
             RatePopupJob.TAG -> RatePopupJob()
             LowerPetStatsJob.TAG -> LowerPetStatsJob()
             TimerCompleteNotificationJob.TAG -> TimerCompleteNotificationJob()
