@@ -21,15 +21,15 @@
         <item>I like that</item>
         <item>Keep it up!</item>
         <item>Not bad</item>
-        <item>That’s the way</item>
+        <item>That\'s the way</item>
         <item>Good for you!</item>
-        <item>I’m impressed</item>
-        <item>You're the best</item>
+        <item>I\'m impressed</item>
+        <item>You\'re the best</item>
         <item>What neat work</item>
         <item>Way to go</item>
-        <item>You’re doing fine</item>
-        <item>You’re doing it</item>
-        <item>That’s A work</item>
+        <item>You\'re doing fine</item>
+        <item>You\'re doing it</item>
+        <item>That\'s A work</item>
         <item>You got this</item>
     </string-array>
     <string-array name="plan_day_names">
@@ -49,10 +49,10 @@
     </string-array>
     <string-array name="plan_day_done">
         <item>Greatness is earned, never awarded</item>
-        <item>Don't tell people your dreams. Show them</item>
+        <item>Don\'t tell people your dreams. Show them</item>
         <item>Nothing is over until you stop trying</item>
         <item>Your only limit is you</item>
-        <item>Expect the best &amp; you’ll get it</item>
+        <item>Expect the best &amp; you\'ll get it</item>
         <item>Be a warrior not a worrier</item>
         <item>Work hard in silence, let success make the noise</item>
         <item>Difficult roads often lead to beautiful places</item>
@@ -63,10 +63,10 @@
         <item>Our thoughts determine our reality</item>
         <item>Stay focused &amp; Never give up!</item>
         <item>The time is NOW</item>
-        <item>Life’s an ocean, sail it</item>
-        <item>Don’t stop until you’re proud</item>
-        <item>Success doesn’t come to you, you go to it</item>
-        <item>Dream don’t work unless you do</item>
+        <item>Life\'s an ocean, sail it</item>
+        <item>Don\'t stop until you\'re proud</item>
+        <item>Success doesn\'t come to you, you go to it</item>
+        <item>Dream don\'t work unless you do</item>
         <item>Life is one time offer, use it well</item>
         <item>Be brave, take bounded risks</item>
         <item>Let life surprise you</item>
