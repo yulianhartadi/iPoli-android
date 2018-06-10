@@ -52,6 +52,8 @@ class AgendaWidgetViewsFactory(private val context: Context) :
     private val sharedPreferences by required { sharedPreferences }
     private val findEventsBetweenDatesUseCase by required { findEventsBetweenDatesUseCase }
 
+    private var use24HourFormat = false
+
     override fun onCreate() {
         inject(myPoliApp.module(context))
     }
@@ -61,6 +63,8 @@ class AgendaWidgetViewsFactory(private val context: Context) :
     override fun getItemId(position: Int): Long = position.toLong()
 
     override fun onDataSetChanged() {
+
+        use24HourFormat = shouldUse24HourFormat()
 
         val widgetItems = mutableListOf<Item>()
 
@@ -102,7 +106,10 @@ class AgendaWidgetViewsFactory(private val context: Context) :
                     RemoteViews(context.packageName, R.layout.item_widget_agenda).apply {
 
                         setTextViewText(R.id.widgetQuestName, q.name)
-                        setTextViewText(R.id.widgetQuestStartTime, QuestStartTimeFormatter.formatWithDuration(q, context, use24HourFormat))
+                        setTextViewText(
+                            R.id.widgetQuestStartTime,
+                            QuestStartTimeFormatter.formatWithDuration(q, context, use24HourFormat)
+                        )
 
                         if (q.tags.isEmpty()) {
                             setViewVisibility(R.id.widgetTagIndicator, View.GONE)
@@ -126,7 +133,7 @@ class AgendaWidgetViewsFactory(private val context: Context) :
                         }
 
                         val icon = q.icon?.let { AndroidIcon.valueOf(it.name).icon }
-                                ?: Ionicons.Icon.ion_android_clipboard
+                            ?: Ionicons.Icon.ion_android_clipboard
 
                         val iconDrawable =
                             IconicsDrawable(context).listItemIcon(icon)
@@ -227,24 +234,23 @@ class AgendaWidgetViewsFactory(private val context: Context) :
         return "${start.toString(use24HourFormat)} - ${end.toString(use24HourFormat)}"
     }
 
-    private val use24HourFormat: Boolean
-        get() {
-            val timeFormat = Player.Preferences.TimeFormat.valueOf(
-                sharedPreferences.getString(
-                    Constants.KEY_TIME_FORMAT,
-                    Player.Preferences.TimeFormat.DEVICE_DEFAULT.name
-                )
+    private fun shouldUse24HourFormat(): Boolean {
+        val timeFormat = Player.Preferences.TimeFormat.valueOf(
+            sharedPreferences.getString(
+                Constants.KEY_TIME_FORMAT,
+                Player.Preferences.TimeFormat.DEVICE_DEFAULT.name
             )
-            if (timeFormat == Player.Preferences.TimeFormat.DEVICE_DEFAULT) {
-                return DateFormat.is24HourFormat(context)
-            }
-
-            if (timeFormat == Player.Preferences.TimeFormat.TWELVE_HOURS) {
-                return false
-            }
-
-            return true
+        )
+        if (timeFormat == Player.Preferences.TimeFormat.DEVICE_DEFAULT) {
+            return DateFormat.is24HourFormat(context)
         }
+
+        if (timeFormat == Player.Preferences.TimeFormat.TWELVE_HOURS) {
+            return false
+        }
+
+        return true
+    }
 
     override fun getCount() = items.size
 
