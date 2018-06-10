@@ -5,6 +5,7 @@ import android.appwidget.AppWidgetManager
 import android.appwidget.AppWidgetProvider
 import android.content.Context
 import android.content.Intent
+import android.net.Uri
 import android.widget.RemoteViews
 import io.ipoli.android.Constants
 import io.ipoli.android.R
@@ -115,6 +116,7 @@ class AgendaWidgetProvider : AppWidgetProvider() {
     private fun createQuestListIntent(context: Context, widgetId: Int) =
         Intent(context, AgendaWidgetService::class.java).apply {
             putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, widgetId)
+            data = Uri.parse(toUri(Intent.URI_INTENT_SCHEME))
         }
 
     private fun createQuestClickIntent(context: Context, widgetId: Int): PendingIntent {
