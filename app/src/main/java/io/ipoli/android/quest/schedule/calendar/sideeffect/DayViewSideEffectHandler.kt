@@ -79,7 +79,7 @@ object DayViewSideEffectHandler : AppSideEffectHandler() {
         when (a) {
 
             is LoadDataAction.All ->
-                startListenForCalendarQuests(state.dataState.today)
+                startListenForCalendarQuests(LocalDate.now())
 
             DayViewAction.AddQuest ->
                 saveQuest(state, action)

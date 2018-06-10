@@ -222,17 +222,17 @@ object LoadAllDataSideEffectHandler : AppSideEffectHandler() {
 
         if (action is LoadDataAction.ChangePlayer) {
             playerRepository.purge(action.oldPlayerId)
-            listenForPlayerData(state)
+            listenForPlayerData()
         }
 
         if (action == LoadDataAction.All) {
-            listenForPlayerData(state)
+            listenForPlayerData()
         }
     }
 
-    private fun listenForPlayerData(state: AppState) {
+    private fun listenForPlayerData() {
         playerChannelRelay.listen(Unit)
-        todayQuestsChannelRelay.listen(TodayQuestsParams(state.dataState.today))
+        todayQuestsChannelRelay.listen(TodayQuestsParams(LocalDate.now()))
         repeatingQuestsChannelRelay.listen(Unit)
         challengesChannelRelay.listen(Unit)
         tagsChannelRelay.listen(Unit)

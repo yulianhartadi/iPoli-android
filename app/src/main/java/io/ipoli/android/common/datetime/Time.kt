@@ -35,9 +35,8 @@ data class Time constructor(private val minutesAfterMidnight: Int) {
             }
 
     override fun toString(): String {
-        return String.format(Locale.getDefault(), "%02d:%02d", hours, getMinutes())
+        return "$hours:${getMinutes()}"
     }
-
 
     fun toString(shouldUse24HourFormat: Boolean): String {
         val c = Calendar.getInstance()
@@ -55,9 +54,9 @@ data class Time constructor(private val minutesAfterMidnight: Int) {
 
     companion object {
 
-        val TWELVE_HOUR_FORMATTER_FULL = SimpleDateFormat("h:mm a", Locale.getDefault())
-        val TWELVE_HOUR_FORMATTER_SHORT = SimpleDateFormat("h a", Locale.getDefault())
-        val TWENTY_FOUR_HOUR_FORMATTER = SimpleDateFormat("HH:mm", Locale.getDefault())
+        val TWELVE_HOUR_FORMATTER_FULL by lazy { SimpleDateFormat("h:mm a", Locale.getDefault()) }
+        val TWELVE_HOUR_FORMATTER_SHORT by lazy { SimpleDateFormat("h a", Locale.getDefault()) }
+        val TWENTY_FOUR_HOUR_FORMATTER by lazy { SimpleDateFormat("HH:mm", Locale.getDefault()) }
 
         val MINUTES_IN_AN_HOUR = 60
         val MINUTES_IN_A_DAY = 24 * MINUTES_IN_AN_HOUR

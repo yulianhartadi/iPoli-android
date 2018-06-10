@@ -103,26 +103,28 @@ interface Constants {
         val GEM_COINS_PRICE = 100
         //        val DEFAULT_PLAYER_AVATAR = Avatar.IPOLI_CLASSIC
         val DEFAULT_PLAYER_PRODUCTIVE_TIMES = setOf(TimeOfDay.MORNING)
-        val DEFAULT_PLAYER_WORK_START_TIME = Time.atHours(9)
-        val DEFAULT_PLAYER_WORK_END_TIME = Time.atHours(18)
-        val DEFAULT_PLAYER_SLEEP_START_TIME = Time.atHours(23)
-        val DEFAULT_PLAYER_SLEEP_END_TIME = Time.atHours(8)
+        val DEFAULT_PLAYER_WORK_START_TIME by lazy { Time.atHours(9) }
+        val DEFAULT_PLAYER_WORK_END_TIME by lazy { Time.atHours(18) }
+        val DEFAULT_PLAYER_SLEEP_START_TIME by lazy { Time.atHours(23) }
+        val DEFAULT_PLAYER_SLEEP_END_TIME by lazy { Time.atHours(8) }
         val DEFAULT_PLAYER_COMPLETE_DAILY_QUESTS_MINUTE = 0
 
         val DEFAULT_TIME_FORMAT = Player.Preferences.TimeFormat.DEVICE_DEFAULT
         val DEFAULT_TEMPERATURE_UNIT = Player.Preferences.TemperatureUnit.FAHRENHEIT
 
-        val DEFAULT_PLAYER_WORK_DAYS = setOf(
-            DayOfWeek.MONDAY,
-            DayOfWeek.TUESDAY,
-            DayOfWeek.WEDNESDAY,
-            DayOfWeek.THURSDAY,
-            DayOfWeek.FRIDAY
-        )
+        val DEFAULT_PLAYER_WORK_DAYS by lazy {
+            setOf(
+                DayOfWeek.MONDAY,
+                DayOfWeek.TUESDAY,
+                DayOfWeek.WEDNESDAY,
+                DayOfWeek.THURSDAY,
+                DayOfWeek.FRIDAY
+            )
+        }
 
-        val CHANGE_PET_STATS_MORNING_TIME = Time.atHours(9)
-        val CHANGE_PET_STATS_AFTERNOON_TIME = Time.atHours(14)
-        val CHANGE_PET_STATS_EVENING_TIME = Time.atHours(19)
+        val CHANGE_PET_STATS_MORNING_TIME by lazy { Time.atHours(9) }
+        val CHANGE_PET_STATS_AFTERNOON_TIME by lazy { Time.atHours(14) }
+        val CHANGE_PET_STATS_EVENING_TIME by lazy { Time.atHours(19) }
 
         val DURATIONS = listOf(10, 15, 20, 25, 30, 45, 60, 90, 120, 180, 240)
 
@@ -146,14 +148,15 @@ interface Constants {
         val MIN_FLEXIBLE_TIMES_A_MONTH_COUNT = 1
         val MAX_FLEXIBLE_TIMES_A_MONTH_COUNT = 15
 
-        val DEFAULT_PLAN_DAYS: Set<DayOfWeek> =
+        val DEFAULT_PLAN_DAYS by lazy {
             setOf(
                 DayOfWeek.MONDAY,
                 DayOfWeek.TUESDAY,
                 DayOfWeek.WEDNESDAY,
                 DayOfWeek.THURSDAY,
                 DayOfWeek.FRIDAY
-        )
+            )
+        }
 
         val DAILY_CHALLENGE_QUEST_COUNT = 3
         val DEFAULT_CHALLENGE_DEADLINE_DAY_DURATION = 30

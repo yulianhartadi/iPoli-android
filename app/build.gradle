@@ -126,22 +126,6 @@ dependencies {
     implementation 'com.airbnb.android:lottie:2.5.5'
     implementation 'ru.noties:markwon:1.0.4'
 
-//    debugImplementation "com.github.brianPlummer:tinydancer:0.1.1"
-//    implementation "com.github.brianPlummer:tinydancer-noop:0.1.1"
-//    testImplementation "com.github.brianPlummer:tinydancer-noop:0.1.1"
-
-    debugImplementation "com.github.brianPlummer:tinydancer:0.1.1"
-    releaseImplementation "com.github.brianPlummer:tinydancer-noop:0.1.1"
-    testImplementation "com.github.brianPlummer:tinydancer-noop:0.1.1"
-
-    debugImplementation 'com.squareup.leakcanary:leakcanary-android:1.5.4'
-    releaseImplementation 'com.squareup.leakcanary:leakcanary-android-no-op:1.5.4'
-    testImplementation 'com.squareup.leakcanary:leakcanary-android-no-op:1.5.4'
-
-    debugImplementation 'com.github.markzhai:blockcanary-android:1.5.0'
-    releaseImplementation 'com.github.markzhai:blockcanary-no-op:1.5.0'
-    testImplementation 'com.github.markzhai:blockcanary-no-op:1.5.0'
-
     androidTestImplementation('com.android.support.test.espresso:espresso-core:3.0.0', {
         exclude group: 'com.android.support', module: 'support-annotations'
     })

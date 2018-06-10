@@ -13,7 +13,6 @@ import com.amplitude.api.Amplitude
 import com.crashlytics.android.Crashlytics
 import com.evernote.android.job.JobManager
 import com.jakewharton.threetenabp.AndroidThreeTen
-import com.squareup.leakcanary.LeakCanary
 import io.fabric.sdk.android.Fabric
 import io.ipoli.android.common.di.*
 import io.ipoli.android.common.job.myPoliJobCreator
@@ -43,12 +42,6 @@ class myPoliApp : Application() {
     override fun onCreate() {
         super.onCreate()
 
-        if (LeakCanary.isInAnalyzerProcess(this)) {
-            // This process is dedicated to LeakCanary for heap analysis.
-            // You should not init your app in this process.
-            return
-        }
-
         AndroidThreeTen.init(this)
 
         Amplitude.getInstance().initialize(applicationContext, AnalyticsConstants.AMPLITUDE_KEY)
@@ -65,13 +58,6 @@ class myPoliApp : Application() {
         } else {
             Amplitude.getInstance().setOptOut(true)
             Timber.plant(Timber.DebugTree())
-            //            BlockCanary.install(this, object : BlockCanaryContext() {
-//                override fun provideBlockThreshold(): Int {
-//                    return 500
-//                }
-//            }).startDate()
-
-            //            refWatcher = LeakCanary.install(this)
         }
 
         val preferences = PreferenceManager.getDefaultSharedPreferences(this)
@@ -106,8 +92,6 @@ class myPoliApp : Application() {
                 notificationManager.createNotificationChannel(createPlanDayChannel())
             }
         }
-
-//        TinyDancer.create().show(this)
     }
 
     @SuppressLint("NewApi")
