@@ -23,36 +23,33 @@ interface ReminderScheduler {
     fun schedule()
 }
 
-class AndroidJobReminderScheduler : ReminderScheduler {
+class AndroidJobReminderScheduler(private val context: Context) : ReminderScheduler {
     override fun schedule() {
 
         launch(CommonPool) {
 
-            val context = myPoliApp.instance
+            val c = this@AndroidJobReminderScheduler.context
 
             val kap = Kapsule<Module>()
             val questRepository by kap.required { questRepository }
-            kap.inject(myPoliApp.module(context))
+            kap.inject(myPoliApp.module(c))
 
             val remindAt = questRepository.findNextReminderTime()
 
-            val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
+            val alarmManager = c.getSystemService(Context.ALARM_SERVICE) as AlarmManager
 
             if (remindAt == null) {
-                alarmManager.cancel(createOperationIntent(context))
+                alarmManager.cancel(createOperationIntent(c))
                 return@launch
             }
 
-            val show = IntentUtil.getActivityPendingIntent(
-                context,
-                IntentUtil.startApp(context)
-            )
+            val show = IntentUtil.getActivityPendingIntent(c, IntentUtil.startApp(c))
 
             val clockInfo = AlarmManager.AlarmClockInfo(remindAt.toMillis(), show)
 
             alarmManager.setAlarmClock(
                 clockInfo,
-                createOperationIntent(context, remindAt)
+                createOperationIntent(c, remindAt)
             )
         }
 

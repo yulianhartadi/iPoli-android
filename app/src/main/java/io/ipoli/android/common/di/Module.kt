@@ -93,7 +93,6 @@ import io.ipoli.android.quest.show.sideeffect.QuestSideEffectHandler
 import io.ipoli.android.quest.show.usecase.*
 import io.ipoli.android.quest.subquest.usecase.*
 import io.ipoli.android.quest.usecase.*
-import io.ipoli.android.quest.view.QuestCompletePresenter
 import io.ipoli.android.repeatingquest.AndroidSaveQuestsForRepeatingQuestScheduler
 import io.ipoli.android.repeatingquest.SaveQuestsForRepeatingQuestScheduler
 import io.ipoli.android.repeatingquest.persistence.FirestoreRepeatingQuestRepository
@@ -318,11 +317,11 @@ class MainAndroidModule(
 
     override val calendarFormatter get() = CalendarFormatter(context)
 
-    override val reminderScheduler get() = AndroidJobReminderScheduler()
+    override val reminderScheduler get() = AndroidJobReminderScheduler(context)
 
     override val timerCompleteScheduler get() = AndroidJobTimerCompleteScheduler()
 
-    override val questCompleteScheduler get() = AndroidJobQuestCompleteScheduler()
+    override val questCompleteScheduler get() = AndroidJobQuestCompleteScheduler(context)
 
     override val levelUpScheduler get() = AndroidLevelUpScheduler()
 
@@ -814,7 +813,6 @@ interface UseCaseModule {
 interface PresenterModule {
     val petMessagePresenter: PetMessagePresenter
     val levelUpPresenter: LevelUpPresenter
-    val questCompletePresenter: QuestCompletePresenter
     val ratePresenter: RatePresenter
 }
 
@@ -825,11 +823,6 @@ class AndroidPresenterModule : PresenterModule, Injects<Module> {
 
     override val petMessagePresenter get() = PetMessagePresenter(playerRepository, job)
     override val levelUpPresenter get() = LevelUpPresenter(playerRepository, job)
-    override val questCompletePresenter
-        get() = QuestCompletePresenter(
-            playerRepository,
-            job
-        )
     override val ratePresenter get() = RatePresenter(job)
 }
 

@@ -1,102 +1,43 @@
 package io.ipoli.android.quest.view
 
 import android.animation.*
-import android.view.LayoutInflater
-import android.view.View
+import android.content.Context
+import android.graphics.PixelFormat
+import android.os.Build
+import android.os.Handler
+import android.os.Looper
+import android.support.annotation.DrawableRes
+import android.util.DisplayMetrics
+import android.view.*
 import android.view.animation.OvershootInterpolator
 import io.ipoli.android.R
-import io.ipoli.android.common.mvi.BaseMviPresenter
-import io.ipoli.android.common.mvi.BaseViewState
-import io.ipoli.android.common.mvi.Intent
-import io.ipoli.android.common.mvi.ViewStateRenderer
-import io.ipoli.android.common.view.MviPopup
+import io.ipoli.android.common.ViewUtils
 import io.ipoli.android.common.view.anim.TypewriterTextAnimator
 import io.ipoli.android.common.view.visible
-import io.ipoli.android.pet.AndroidPetAvatar
 import io.ipoli.android.pet.Food
-import io.ipoli.android.pet.PetAvatar
-import io.ipoli.android.player.Player
-import io.ipoli.android.player.persistence.PlayerRepository
 import kotlinx.android.synthetic.main.popup_quest_complete.view.*
-import kotlinx.coroutines.experimental.launch
-import space.traversal.kapsule.required
 import java.util.*
-import kotlin.coroutines.experimental.CoroutineContext
-
-data class QuestCompleteViewState(
-    val xp: Int? = null,
-    val coins: Int? = null,
-    val bounty: Food? = null,
-    val avatar: PetAvatar? = null
-) : BaseViewState()
-
-sealed class QuestCompleteIntent : Intent {
-    data class LoadData(val xp: Int, val coins: Int, val bounty: Food?) : QuestCompleteIntent()
-    data class ChangePlayer(val player: Player) : QuestCompleteIntent()
-}
-
-class QuestCompletePresenter(
-    private val playerRepository: PlayerRepository,
-    coroutineContext: CoroutineContext
-) : BaseMviPresenter<ViewStateRenderer<QuestCompleteViewState>, QuestCompleteViewState, QuestCompleteIntent>(
-    QuestCompleteViewState(),
-    coroutineContext
-) {
-    override fun reduceState(intent: QuestCompleteIntent, state: QuestCompleteViewState) =
-        when (intent) {
-            is QuestCompleteIntent.LoadData -> {
-                launch {
-                    sendChannel.send(QuestCompleteIntent.ChangePlayer(playerRepository.find()!!))
-                }
-                state.copy(
-                    xp = intent.xp,
-                    coins = intent.coins,
-                    bounty = intent.bounty
-                )
-            }
-
-            is QuestCompleteIntent.ChangePlayer -> {
-                val player = intent.player
-                state.copy(
-                    avatar = player.pet.avatar
-                )
-            }
-        }
-}
 
 class QuestCompletePopup(
+    @DrawableRes private val petHeadImage: Int,
     private val earnedXP: Int,
     private val earnedCoins: Int,
     private val bounty: Food? = null
-) : MviPopup<QuestCompleteViewState, ViewStateRenderer<QuestCompleteViewState>, QuestCompletePresenter, QuestCompleteIntent>(
-    position = MviPopup.Position.BOTTOM,
-    isAutoHide = true,
-    overlayBackground = null
-) {
+) : ToastOverlay() {
 
-    private val presenter by required { questCompletePresenter }
-
-    override fun createPresenter() = presenter
 
     override fun createView(inflater: LayoutInflater): View =
         inflater.inflate(R.layout.popup_quest_complete, null)
 
     override fun onViewShown(contentView: View) {
-        send(QuestCompleteIntent.LoadData(earnedXP, earnedCoins, bounty))
-    }
-
-    override fun render(state: QuestCompleteViewState, view: View) {
-        state.avatar?.let {
-            val androidAvatar = AndroidPetAvatar.valueOf(it.name)
-            view.pet.setImageResource(androidAvatar.headImage)
-            state.bounty?.let {
-                view.bounty.setImageResource(it.image)
-            }
-            startTypingAnimation(view, state)
+        contentView.pet.setImageResource(petHeadImage)
+        bounty?.let {
+            contentView.bounty.setImageResource(it.image)
         }
+        startTypingAnimation(contentView)
     }
 
-    private fun startTypingAnimation(contentView: View, state: QuestCompleteViewState) {
+    private fun startTypingAnimation(contentView: View) {
         val title = contentView.message
         val messages = contentView.resources.getStringArray(R.array.quest_complete_message)
         val message = messages[Random().nextInt(messages.size)]
@@ -107,17 +48,17 @@ class QuestCompletePopup(
         )
         typewriterAnim.addListener(object : AnimatorListenerAdapter() {
             override fun onAnimationEnd(animation: Animator) {
-                startEarnedRewardAnimation(contentView, state)
+                startEarnedRewardAnimation(contentView)
             }
         })
         typewriterAnim.start()
     }
 
-    private fun startEarnedRewardAnimation(contentView: View, state: QuestCompleteViewState) {
+    private fun startEarnedRewardAnimation(contentView: View) {
         val earnedXP = contentView.earnedXP
         val earnedCoins = contentView.earnedCoins
 
-        val xpAnim = ValueAnimator.ofInt(0, state.xp!!)
+        val xpAnim = ValueAnimator.ofInt(0, this.earnedXP)
         xpAnim.addListener(object : AnimatorListenerAdapter() {
             override fun onAnimationStart(animation: Animator?) {
                 earnedXP.visible = true
@@ -127,7 +68,7 @@ class QuestCompletePopup(
             earnedXP.text = "${it.animatedValue}"
         }
 
-        val coinsAnim = ValueAnimator.ofInt(0, state.coins!!)
+        val coinsAnim = ValueAnimator.ofInt(0, this.earnedCoins)
 
         coinsAnim.addListener(object : AnimatorListenerAdapter() {
             override fun onAnimationStart(animation: Animator?) {
@@ -146,7 +87,7 @@ class QuestCompletePopup(
         anim.addListener(object : AnimatorListenerAdapter() {
             override fun onAnimationEnd(animation: Animator) {
 
-                if (state.bounty != null) playRewardAnimation(contentView)
+                if (bounty != null) playRewardAnimation(contentView)
                 else autoHideAfter(700)
             }
         })
@@ -193,5 +134,136 @@ class QuestCompletePopup(
             }
         })
         bountyAnim.start()
+    }
+}
+
+
+abstract class ToastOverlay {
+
+    private lateinit var contentView: ViewGroup
+    private lateinit var windowManager: WindowManager
+    private val displayMetrics = DisplayMetrics()
+    private val autoHideHandler = Handler(Looper.getMainLooper())
+
+    private val autoHideRunnable = {
+        hide()
+    }
+
+    abstract fun createView(inflater: LayoutInflater): View
+
+    fun show(context: Context) {
+
+        contentView = createView(LayoutInflater.from(context)) as ViewGroup
+        contentView.visibility = View.INVISIBLE
+
+        windowManager = context.getSystemService(Context.WINDOW_SERVICE) as WindowManager
+
+        windowManager.defaultDisplay.getRealMetrics(displayMetrics)
+
+        addViewToWindowManager(contentView)
+        contentView.post {
+            playEnterAnimation(contentView)
+        }
+    }
+
+    protected open fun playEnterAnimation(contentView: View) {
+        val transAnim = ObjectAnimator.ofFloat(
+            contentView,
+            "y",
+            displayMetrics.heightPixels.toFloat(),
+            contentView.y
+        )
+        val fadeAnim = ObjectAnimator.ofFloat(contentView, "alpha", 0f, 1f)
+        transAnim.duration =
+            contentView.context.resources.getInteger(android.R.integer.config_shortAnimTime)
+                .toLong()
+        fadeAnim.duration =
+            contentView.context.resources.getInteger(android.R.integer.config_mediumAnimTime)
+                .toLong()
+        val animSet = AnimatorSet()
+        animSet.addListener(object : AnimatorListenerAdapter() {
+            override fun onAnimationStart(animation: Animator) {
+                contentView.visible = true
+            }
+
+            override fun onAnimationEnd(animation: Animator) {
+                onViewShown(contentView)
+            }
+        })
+        animSet.playTogether(transAnim, fadeAnim)
+        animSet.start()
+    }
+
+    protected open fun onViewShown(contentView: View) {
+
+    }
+
+    protected open fun playExitAnimation(contentView: View) {
+        val transAnim = ObjectAnimator.ofFloat(
+            contentView,
+            "y",
+            contentView.y,
+            displayMetrics.heightPixels.toFloat()
+        )
+        val fadeAnim = ObjectAnimator.ofFloat(contentView, "alpha", 1f, 0f)
+        transAnim.duration =
+            contentView.context.resources.getInteger(android.R.integer.config_shortAnimTime)
+                .toLong()
+        fadeAnim.duration =
+            contentView.context.resources.getInteger(android.R.integer.config_mediumAnimTime)
+                .toLong()
+        val animSet = AnimatorSet()
+        animSet.addListener(object : AnimatorListenerAdapter() {
+            override fun onAnimationEnd(animation: Animator) {
+                onDestroy()
+            }
+        })
+        animSet.playTogether(transAnim, fadeAnim)
+        animSet.start()
+    }
+
+    private fun onDestroy() {
+        windowManager.removeViewImmediate(contentView)
+    }
+
+    private fun addViewToWindowManager(view: ViewGroup) {
+        val focusable =
+            WindowManager.LayoutParams.FLAG_HARDWARE_ACCELERATED.or(WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN)
+                .or(WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL)
+
+        val width = displayMetrics.widthPixels - (ViewUtils.dpToPx(32f, view.context).toInt())
+
+        val layoutParams = WindowManager.LayoutParams(
+            width,
+            WindowManager.LayoutParams.WRAP_CONTENT,
+            WindowOverlayCompat.TYPE_SYSTEM_ERROR,
+            focusable,
+            PixelFormat.TRANSLUCENT
+        )
+
+        layoutParams.gravity = Gravity.CENTER_HORIZONTAL.or(Gravity.BOTTOM)
+
+        layoutParams.y += ViewUtils.dpToPx(24f, view.context).toInt()
+
+        windowManager.addView(view, layoutParams)
+    }
+
+    protected fun autoHideAfter(millis: Long) {
+        autoHideHandler.postDelayed(autoHideRunnable, millis)
+    }
+
+    fun hide() {
+        autoHideHandler.removeCallbacksAndMessages(null)
+        contentView.setOnClickListener(null)
+        playExitAnimation(contentView)
+    }
+
+    internal object WindowOverlayCompat {
+        private const val ANDROID_OREO = 26
+        private const val TYPE_APPLICATION_OVERLAY = 2038
+
+        @Suppress("DEPRECATION")
+        val TYPE_SYSTEM_ERROR =
+            if (Build.VERSION.SDK_INT < ANDROID_OREO) WindowManager.LayoutParams.TYPE_SYSTEM_ERROR else TYPE_APPLICATION_OVERLAY
     }
 }
