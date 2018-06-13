@@ -242,8 +242,8 @@ enum class AndroidAchievement(
         mapOf(
             1 to R.string.achievement_pet_revived_desc
         ),
-        R.color.md_blue_500,
-        R.drawable.ic_armor
+        R.color.achievement_brown,
+        R.drawable.achievement_pet_revived
     ),
     FIRST_AVATAR_CHANGED(
         R.string.achievement_first_avatar_changed_name,
