@@ -125,7 +125,7 @@ enum class AndroidAchievement(
             2 to R.string.achievement_plan_day_streak_level_2_desc,
             3 to R.string.achievement_plan_day_streak_level_3_desc
         ),
-        R.color.achievement_green,
+        R.color.achievement_black,
         R.drawable.achievement_plan_day_streak
     ),
     GEMS_CONVERTED(
