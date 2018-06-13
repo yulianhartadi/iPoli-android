@@ -165,7 +165,7 @@ enum class AndroidAchievement(
             2 to R.string.achievement_invite_friend_level_2_desc,
             3 to R.string.achievement_invite_friend_level_3_desc
         ),
-        R.color.achievement_orange,
+        R.color.achievement_purple,
         R.drawable.achievement_invite_friend
     ),
     GAIN_999_XP_IN_A_DAY(
