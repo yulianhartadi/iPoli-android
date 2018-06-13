@@ -85,8 +85,8 @@ enum class AndroidAchievement(
     COMPLETE_10_QUESTS_IN_A_DAY(
         R.string.achievement_complete_10_quests_in_a_day_name,
         mapOf(1 to R.string.achievement_complete_10_quests_in_a_day_desc),
-        R.color.achievement_green,
-        R.drawable.ic_armor
+        R.color.achievement_orange,
+        R.drawable.achievement_complete_10_quests_in_a_day
     ),
     KEEP_PET_HAPPY(
         R.string.achievement_keep_pet_happy_name,
@@ -105,7 +105,7 @@ enum class AndroidAchievement(
             2 to R.string.achievement_awesomeness_streak_level_2_desc,
             3 to R.string.achievement_awesomeness_streak_level_3_desc
         ),
-        R.color.achievement_orange,
+        R.color.achievement_green,
         R.drawable.achievement_awesomeness_streak
     ),
     FOCUS_HOURS_STREAK(
