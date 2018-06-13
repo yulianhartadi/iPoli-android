@@ -284,8 +284,8 @@ enum class AndroidAchievement(
         mapOf(
             1 to R.string.achievement_complete_quests_in_row_desc
         ),
-        R.color.md_blue_500,
-        R.drawable.ic_armor
+        R.color.achievement_blue,
+        R.drawable.achievement_complete_quest_for_100_days_in_a_row
     ),
     FEEDBACK_SENT(
         R.string.achievement_send_feedback_name,
