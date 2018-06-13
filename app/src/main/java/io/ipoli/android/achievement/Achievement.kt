@@ -145,7 +145,7 @@ enum class AndroidAchievement(
             2 to R.string.achievement_level_up_level_2_desc,
             3 to R.string.achievement_level_up_level_3_desc
         ),
-        R.color.achievement_purple,
+        R.color.achievement_blue,
         R.drawable.achievement_level_up
     ),
     COINS_IN_INVENTORY(
@@ -276,7 +276,7 @@ enum class AndroidAchievement(
         mapOf(
             1 to R.string.achievement_first_pet_died_desc
         ),
-        R.color.achievement_black,
+        R.color.achievement_brown,
         R.drawable.achievement_pet_died
     ),
     COMPLETE_QUEST_FOR_100_DAYS_IN_A_ROW(
