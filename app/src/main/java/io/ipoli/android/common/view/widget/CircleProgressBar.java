@@ -272,10 +272,10 @@ public class CircleProgressBar extends View {
             float rotateDegrees = i * unitDegrees;
 
             float startX = mCenterX + (float) Math.sin(rotateDegrees) * interCircleRadius;
-            float startY = mCenterX - (float) Math.cos(rotateDegrees) * interCircleRadius;
+            float startY = mCenterY - (float) Math.cos(rotateDegrees) * interCircleRadius;
 
             float stopX = mCenterX + (float) Math.sin(rotateDegrees) * outerCircleRadius;
-            float stopY = mCenterX - (float) Math.cos(rotateDegrees) * outerCircleRadius;
+            float stopY = mCenterY - (float) Math.cos(rotateDegrees) * outerCircleRadius;
 
             if (i < progressLineCount) {
                 canvas.drawLine(startX, startY, stopX, stopY, mProgressPaint);
