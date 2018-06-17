@@ -102,8 +102,7 @@ open class EditChallengeViewController(args: Bundle? = null) :
     override fun onOptionsItemSelected(item: MenuItem) =
         when (item.itemId) {
             android.R.id.home -> {
-                router.popCurrentController()
-                true
+                router.handleBack()
             }
             R.id.actionSave -> {
                 dispatch(

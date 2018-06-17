@@ -80,7 +80,7 @@ class WheelItemPickerView : ScrollView {
                 val remainder = lastYPosition % measuredItemHeight
                 selectedIndex = getItemIndex(lastYPosition)
                 if (remainder != 0) {
-                    this@WheelItemPickerView.post({
+                    this@WheelItemPickerView.post {
                         if (remainder > measuredItemHeight / 2) {
                             this@WheelItemPickerView.smoothScrollTo(
                                 0,
@@ -89,7 +89,7 @@ class WheelItemPickerView : ScrollView {
                         } else {
                             this@WheelItemPickerView.smoothScrollTo(0, lastYPosition - remainder)
                         }
-                    })
+                    }
                 }
             } else {
                 startAutoScroll()

@@ -28,6 +28,7 @@ import io.ipoli.android.player.ProfileViewController
 import io.ipoli.android.player.auth.AuthViewController
 import io.ipoli.android.player.data.Player
 import io.ipoli.android.quest.Color
+import io.ipoli.android.quest.CompletedQuestViewController
 import io.ipoli.android.quest.Icon
 import io.ipoli.android.quest.edit.EditQuestViewController
 import io.ipoli.android.quest.reminder.picker.ReminderPickerDialogController
@@ -121,6 +122,10 @@ class Navigator(private val router: Router) {
         changeHandler: ControllerChangeHandler? = null
     ) {
         pushController({ EditQuestViewController(questId, params) }, changeHandler)
+    }
+
+    fun toCompletedQuest(questId: String, changeHandler: ControllerChangeHandler? = null) {
+        pushController({ CompletedQuestViewController(questId) }, changeHandler)
     }
 
     fun toAddChallenge() {
@@ -324,6 +329,17 @@ class Navigator(private val router: Router) {
         }
     }
 
+    private inline fun <reified C : Controller> replaceTopController(
+        createController: () -> C,
+        changeHandler: ControllerChangeHandler?
+    ) {
+        val tag = tag<C>()
+        val c = router.getControllerWithTag(tag)
+        if (c == null || c.isBeingDestroyed || c.isDestroyed) {
+            router.replaceTopController(createTransaction(createController(), changeHandler, tag))
+        }
+    }
+
     private fun createTransaction(
         controller: Controller,
         changeHandler: ControllerChangeHandler?,
@@ -338,6 +354,10 @@ class Navigator(private val router: Router) {
             RouterTransaction.with(controller)
                 .tag(tag)
         }
+
+    fun replaceWithCompletedQuest(questId: String, changeHandler: ControllerChangeHandler? = null) {
+        replaceTopController({ CompletedQuestViewController(questId) }, changeHandler)
+    }
 
     companion object {
         inline fun <reified C : Controller> tag(): String = C::class.java.simpleName

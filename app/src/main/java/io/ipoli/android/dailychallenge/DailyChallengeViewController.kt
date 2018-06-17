@@ -75,7 +75,7 @@ class DailyChallengeViewController(args: Bundle? = null) :
         view.descriptionIcon.setImageDrawable(
             IconicsDrawable(activity!!)
                 .icon(GoogleMaterial.Icon.gmd_info_outline)
-                .color(attrData(R.attr.colorAccent))
+                .color(attrData(R.attr.colorPrimary))
                 .sizeDp(24)
         )
 

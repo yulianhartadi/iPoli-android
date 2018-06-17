@@ -89,8 +89,7 @@ class GemStoreViewController(args: Bundle? = null) :
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         if (item.itemId == android.R.id.home) {
-            router.popCurrentController()
-            return true
+            return router.handleBack()
         }
         return super.onOptionsItemSelected(item)
     }

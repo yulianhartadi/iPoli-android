@@ -298,9 +298,9 @@ class EditQuestViewController(args: Bundle? = null) :
     ) {
         view.questChallenge.text = state.challengeText
         view.questChallenge.onDebounceClick {
-            navigate().toChallengePicker(state.challenge, { challenge ->
+            navigate().toChallengePicker(state.challenge) { challenge ->
                 dispatch(EditQuestAction.ChangeChallenge(challenge))
-            })
+            }
         }
     }
 
@@ -319,8 +319,8 @@ class EditQuestViewController(args: Bundle? = null) :
             )
             datePickerDialog.setButton(
                 Dialog.BUTTON_NEUTRAL,
-                view.context.getString(R.string.do_not_know),
-                { _, _ -> dispatch(EditQuestAction.ChangeDate(null)) })
+                view.context.getString(R.string.do_not_know)
+            ) { _, _ -> dispatch(EditQuestAction.ChangeDate(null)) }
             datePickerDialog.show()
         }
     }
@@ -333,9 +333,8 @@ class EditQuestViewController(args: Bundle? = null) :
         view.questDuration.onDebounceClick {
             navigate()
                 .toDurationPicker(
-                    state.duration,
-                    { dispatch(EditQuestAction.ChangeDuration(it)) }
-                )
+                    state.duration
+                ) { dispatch(EditQuestAction.ChangeDuration(it)) }
         }
     }
 

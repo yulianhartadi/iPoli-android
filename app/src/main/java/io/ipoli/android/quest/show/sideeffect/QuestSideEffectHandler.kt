@@ -1,5 +1,6 @@
 package io.ipoli.android.quest.show.sideeffect
 
+import io.ipoli.android.Constants
 import io.ipoli.android.common.AppSideEffectHandler
 import io.ipoli.android.common.AppState
 import io.ipoli.android.common.DataLoadedAction
@@ -8,11 +9,11 @@ import io.ipoli.android.common.redux.Action
 import io.ipoli.android.note.usecase.SaveQuestNoteUseCase
 import io.ipoli.android.quest.CompletedQuestAction
 import io.ipoli.android.quest.Quest
-import io.ipoli.android.quest.subquest.usecase.*
 import io.ipoli.android.quest.show.QuestAction
 import io.ipoli.android.quest.show.QuestReducer
 import io.ipoli.android.quest.show.QuestViewState
 import io.ipoli.android.quest.show.usecase.*
+import io.ipoli.android.quest.subquest.usecase.*
 import space.traversal.kapsule.required
 
 /**
@@ -39,6 +40,8 @@ object QuestSideEffectHandler : AppSideEffectHandler() {
     private val removeSubQuestUseCase by required { removeSubQuestUseCase }
     private val reorderSubQuestUseCase by required { reorderSubQuestUseCase }
     private val saveQuestNoteUseCase by required { saveQuestNoteUseCase }
+    private val removeQuestUseCase by required { removeQuestUseCase }
+    private val undoRemoveQuestUseCase by required { undoRemoveQuestUseCase }
 
     data class QuestParams(val questId: String)
 
@@ -60,7 +63,6 @@ object QuestSideEffectHandler : AppSideEffectHandler() {
                     } else {
                         (result as SplitDurationForPomodoroTimerUseCase.Result.DurationSplit).timeRanges
                     }
-
                 q.copy(
                     timeRangesToComplete = timeRangesToComplete
                 )
@@ -139,13 +141,17 @@ object QuestSideEffectHandler : AppSideEffectHandler() {
                 completeTimeRangeUseCase.execute(CompleteTimeRangeUseCase.Params(questId(state)))
 
             QuestAction.AddPomodoro ->
-                addPomodoroUseCase.execute(AddPomodoroUseCase.Params(questId(state)))
+                if (questState(state).pomodoroCount < Constants.MAX_POMODORO_COUNT) {
+                    addPomodoroUseCase.execute(AddPomodoroUseCase.Params(questId(state)))
+                }
 
-            QuestAction.RemovePomodoro -> removePomodoroUseCase.execute(
-                RemovePomodoroUseCase.Params(
-                    questId = questId(state)
-                )
-            )
+            QuestAction.RemovePomodoro ->
+                if (questState(state).pomodoroCount > 1)
+                    removePomodoroUseCase.execute(
+                        RemovePomodoroUseCase.Params(
+                            questId = questId(state)
+                        )
+                    )
 
             is QuestAction.CompleteSubQuest ->
                 completeSubQuestUseCase.execute(
@@ -205,11 +211,17 @@ object QuestSideEffectHandler : AppSideEffectHandler() {
                     )
                 )
             }
+
+            is QuestAction.Remove ->
+                removeQuestUseCase.execute(action.questId)
+
+            is QuestAction.UndoRemove ->
+                undoRemoveQuestUseCase.execute(action.questId)
         }
     }
 
     private fun isPomodoroQuest(q: Quest) =
-        q.hasPomodoroTimer || q.duration >= QuestReducer.MIN_INITIAL_POMODORO_TIMER_DURATION
+        q.hasPomodoroTimer || q.duration >= QuestReducer.MIN_POMODORO_TIMER_DURATION
 
     private fun questId(state: AppState) =
         questState(state).quest!!.id

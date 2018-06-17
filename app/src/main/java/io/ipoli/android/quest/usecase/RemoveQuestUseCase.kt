@@ -4,6 +4,7 @@ import io.ipoli.android.common.UseCase
 import io.ipoli.android.quest.data.persistence.QuestRepository
 import io.ipoli.android.quest.job.ReminderScheduler
 import io.ipoli.android.quest.show.job.TimerCompleteScheduler
+import timber.log.Timber
 
 /**
  * Created by Polina Zhelyazkova <polina@mypoli.fun>
@@ -22,7 +23,11 @@ class RemoveQuestUseCase(
         if (quest.isStarted) {
             timerCompleteScheduler.cancelAll()
         }
-        questRepository.remove(parameters)
+        try {
+            questRepository.remove(parameters)
+        } catch (e: Throwable) {
+            Timber.e(e)
+        }
         reminderScheduler.schedule()
     }
 }

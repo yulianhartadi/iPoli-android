@@ -3,10 +3,8 @@ package io.ipoli.android.note
 import io.ipoli.android.common.AppState
 import io.ipoli.android.common.BaseViewStateReducer
 import io.ipoli.android.common.mvi.BaseViewState
-import io.ipoli.android.common.mvi.ViewState
 import io.ipoli.android.common.redux.Action
 import io.ipoli.android.note.NoteViewState.Type.*
-import io.ipoli.android.quest.show.QuestAction
 
 /**
  * Created by Venelin Valkov <venelin@mypoli.fun>
@@ -16,7 +14,6 @@ sealed class NoteAction : Action {
     data class Load(val note: String, val startEdit: Boolean, val isClosable: Boolean) :
         NoteAction()
     data class Save(val text: String) : NoteAction()
-    data class Update(val note: String) : NoteAction()
     data class Preview(val text: String) : NoteAction()
 
     object Edit : NoteAction()
@@ -63,15 +60,6 @@ object NoteReducer : BaseViewStateReducer<NoteViewState>() {
                     showEmpty = false,
                     showText = false
                 )
-
-            is QuestAction.UpdateNote -> {
-                subState.copy(
-                    type = CHANGED,
-                    text = action.note,
-                    showEmpty = action.note.isEmpty(),
-                    showText = action.note.isNotEmpty()
-                )
-            }
 
             else -> subState
         }

@@ -13,14 +13,12 @@ import com.mikepenz.iconics.IconicsDrawable
 import io.ipoli.android.R
 import io.ipoli.android.common.datetime.Duration
 import io.ipoli.android.common.datetime.Minute
-import io.ipoli.android.common.navigation.Navigator
 import io.ipoli.android.common.redux.android.ReduxViewController
 import io.ipoli.android.common.text.DateFormatter
 import io.ipoli.android.common.text.DurationFormatter
 import io.ipoli.android.common.view.*
 import io.ipoli.android.quest.CompletedQuestViewState.StateType.DATA_LOADED
 import io.ipoli.android.quest.CompletedQuestViewState.Timer
-import io.ipoli.android.quest.show.QuestViewController
 import io.ipoli.android.tag.Tag
 import kotlinx.android.synthetic.main.controller_completed_quest.view.*
 import kotlinx.android.synthetic.main.item_quest_tag_list.view.*
@@ -48,11 +46,6 @@ class CompletedQuestViewController :
         container: ViewGroup,
         savedViewState: Bundle?
     ): View {
-
-        rootRouter.getControllerWithTag(Navigator.tag<QuestViewController>())?.let {
-            rootRouter.popController(it)
-        }
-
         setHasOptionsMenu(true)
         val view = inflater.inflate(R.layout.controller_completed_quest, container, false)
 
@@ -64,9 +57,7 @@ class CompletedQuestViewController :
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         if (item.itemId == android.R.id.home) {
-            rootRouter.popController(this)
-//            popCurrentFromRootRouter()
-            return true
+            return router.handleBack()
         }
         return super.onOptionsItemSelected(item)
     }
@@ -76,6 +67,7 @@ class CompletedQuestViewController :
     override fun onAttach(view: View) {
         showBackButton()
         super.onAttach(view)
+
     }
 
     override fun render(state: CompletedQuestViewState, view: View) {

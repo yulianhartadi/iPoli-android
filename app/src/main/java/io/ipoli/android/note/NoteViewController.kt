@@ -215,9 +215,9 @@ class NotePickerDialogController(args: Bundle? = null) : BaseFullscreenDialogCon
 
         setChildController(
             view.noteContainer,
-            NoteViewController(note, resultListener, true, {
+            NoteViewController(note, resultListener, true) {
                 dismiss()
-            })
+            }
         )
 
         view.closeNote.setOnClickListener(Debounce.clickListener {

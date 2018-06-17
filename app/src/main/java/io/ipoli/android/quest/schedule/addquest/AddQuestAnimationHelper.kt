@@ -124,10 +124,10 @@ class AddQuestAnimationHelper(
             "backgroundTint",
             startColor, endColor
         )
-        rgbAnim.addUpdateListener({ animation ->
+        rgbAnim.addUpdateListener { animation ->
             val value = animation.animatedValue as Int
             fab.backgroundTintList = ColorStateList.valueOf(value)
-        })
+        }
 
         return AnimatorSet().also {
             it.playTogether(fabTranslation, rgbAnim)

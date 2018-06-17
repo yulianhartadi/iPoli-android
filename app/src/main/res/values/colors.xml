@@ -313,6 +313,7 @@
     <color name="md_light_text_100">#FFFFFFFF</color>
     <color name="md_light_text_70">#B3FFFFFF</color>
     <color name="md_light_text_50">#80FFFFFF</color>
+    <color name="md_light_text_38">#61FFFFFF</color>
     <color name="md_light_text_12">#1FFFFFFF</color>
 
     <color name="achievement_blue">#31ABF5</color>

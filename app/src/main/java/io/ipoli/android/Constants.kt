@@ -264,5 +264,7 @@ interface Constants {
         )
         const val DISPLAY_NAME_MAX_LENGTH = 50
         const val BIO_MAX_LENGTH = 250
+
+        const val MAX_POMODORO_COUNT = 8
     }
 }

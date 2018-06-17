@@ -237,8 +237,7 @@ class ScheduleViewController(args: Bundle? = null) :
                         CalendarViewController(state.currentDate)
                     else
                         AgendaViewController(state.currentDate)
-                childRouter.popCurrentController()
-                childRouter.setRoot(
+                childRouter.replaceTopController(
                     RouterTransaction.with(newController)
                         .pushChangeHandler(handler)
                         .popChangeHandler(handler)

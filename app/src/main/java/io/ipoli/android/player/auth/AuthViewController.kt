@@ -91,7 +91,7 @@ class AuthViewController(args: Bundle? = null) :
         registerForActivityResult(RC_SIGN_IN)
 
         view.avatarList.layoutManager =
-                LinearLayoutManager(activity!!, LinearLayoutManager.HORIZONTAL, false)
+            LinearLayoutManager(activity!!, LinearLayoutManager.HORIZONTAL, false)
         view.avatarList.adapter = AvatarAdapter()
 
         view.username.setCompoundDrawablesRelativeWithIntrinsicBounds(
@@ -348,8 +348,7 @@ class AuthViewController(args: Bundle? = null) :
     }
 
     private fun startHomeViewController() {
-        rootRouter.popCurrentController()
-        navigateFromRoot().toHome()
+        rootRouter.replaceTopController(RouterTransaction.with(HomeViewController()))
     }
 
     private fun startSignUpForProvider(provider: AuthUI.IdpConfig): Intent {
