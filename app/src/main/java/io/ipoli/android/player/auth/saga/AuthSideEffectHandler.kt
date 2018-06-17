@@ -10,11 +10,11 @@ import io.ipoli.android.common.LoadDataAction
 import io.ipoli.android.common.api.Api
 import io.ipoli.android.common.redux.Action
 import io.ipoli.android.pet.Pet
-import io.ipoli.android.player.data.AuthProvider
-import io.ipoli.android.player.data.Player
 import io.ipoli.android.player.auth.AuthAction
 import io.ipoli.android.player.auth.AuthViewState
 import io.ipoli.android.player.auth.UsernameValidator
+import io.ipoli.android.player.data.AuthProvider
+import io.ipoli.android.player.data.Player
 import io.ipoli.android.quest.Color
 import io.ipoli.android.quest.Icon
 import io.ipoli.android.repeatingquest.usecase.SaveRepeatingQuestUseCase
@@ -154,7 +154,7 @@ object AuthSideEffectHandler : AppSideEffectHandler() {
         }
     }
 
-    private suspend fun updatePlayerAuthProvider(
+    private fun updatePlayerAuthProvider(
         user: FirebaseUser
     ) {
         val authProviders =
