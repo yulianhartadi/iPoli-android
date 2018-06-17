@@ -170,6 +170,7 @@ class QuestViewController : ReduxViewController<QuestAction, QuestViewState, Que
         private val context: Context
     ) :
         GestureDetector.SimpleOnGestureListener() {
+
         override fun onFling(
             e1: MotionEvent,
             e2: MotionEvent,
@@ -177,34 +178,49 @@ class QuestViewController : ReduxViewController<QuestAction, QuestViewState, Que
             velocityY: Float
         ): Boolean {
 
-            if (e1.x > e2.x && switcher.displayedChild == 0) {
-
-                switcher.setInAnimation(context, R.anim.left_in)
-                switcher.setOutAnimation(context, R.anim.left_out)
-
-                switcher.showNext()
-                pomodoroIndicator.setBackgroundResource(R.drawable.progress_indicator_empty)
-                countdownIndicator.setBackgroundResource(R.drawable.progress_indicator_full)
-
-                dispatch(QuestAction.ShowCountDownTimer)
+            val distanceX = e2.x - e1.x
+            val distanceY = e2.y - e1.y
+            if (
+                Math.abs(distanceX) > Math.abs(distanceY) &&
+                Math.abs(distanceX) > SWIPE_DISTANCE_THRESHOLD &&
+                Math.abs(velocityX) > SWIPE_VELOCITY_THRESHOLD
+            ) {
+                if (distanceX > 0 && switcher.displayedChild == 1)
+                    onSwipeLeft()
+                else if (switcher.displayedChild == 0)
+                    onSwipeRight()
                 return true
             }
-
-            if (e1.x < e2.x && switcher.displayedChild == 1) {
-                switcher.setInAnimation(context, R.anim.right_in)
-                switcher.setOutAnimation(context, R.anim.right_out)
-
-                switcher.showPrevious()
-                pomodoroIndicator.setBackgroundResource(R.drawable.progress_indicator_full)
-                countdownIndicator.setBackgroundResource(R.drawable.progress_indicator_empty)
-
-                dispatch(QuestAction.ShowPomodoroTimer)
-                return true
-            }
-
-
-            return super.onFling(e1, e2, velocityX, velocityY)
+            return false
         }
+
+        private fun onSwipeRight() {
+            switcher.setInAnimation(context, R.anim.left_in)
+            switcher.setOutAnimation(context, R.anim.left_out)
+
+            switcher.showNext()
+            pomodoroIndicator.setBackgroundResource(R.drawable.progress_indicator_empty)
+            countdownIndicator.setBackgroundResource(R.drawable.progress_indicator_full)
+
+            dispatch(QuestAction.ShowCountDownTimer)
+        }
+
+        private fun onSwipeLeft() {
+            switcher.setInAnimation(context, R.anim.right_in)
+            switcher.setOutAnimation(context, R.anim.right_out)
+
+            switcher.showPrevious()
+            pomodoroIndicator.setBackgroundResource(R.drawable.progress_indicator_full)
+            countdownIndicator.setBackgroundResource(R.drawable.progress_indicator_empty)
+
+            dispatch(QuestAction.ShowPomodoroTimer)
+        }
+    }
+
+    companion object {
+
+        private const val SWIPE_DISTANCE_THRESHOLD = 100
+        private const val SWIPE_VELOCITY_THRESHOLD = 100
     }
 
     override fun onPrepareOptionsMenu(menu: Menu) {
