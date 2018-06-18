@@ -94,7 +94,7 @@ object SettingsReducer : BaseViewStateReducer<SettingsViewState>() {
             planDays = player.preferences.planDays,
             selectedCalendars = selectedCalendars,
 //            isCalendarSyncEnabled = player.isPowerUpEnabled(PowerUp.Type.CALENDAR_SYNC) && selectedCalendars > 0,
-            isCalendarSyncEnabled = true,
+            isCalendarSyncEnabled = selectedCalendars > 0,
             isQuickDoNotificationEnabled = player.preferences.isQuickDoNotificationEnabled
         )
 
