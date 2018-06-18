@@ -122,67 +122,65 @@ class AchievementListViewController(args: Bundle? = null) :
 
             registerBinder<ItemViewModel.SectionItem>(
                 ViewType.SECTION.value,
-                R.layout.item_list_section,
-                { vm, view ->
-                    (view as TextView).text = vm.text
-                }
-            )
+                R.layout.item_list_section
+            ) { vm, view ->
+                (view as TextView).text = vm.text
+            }
 
             registerBinder<ItemViewModel.LockedAchievementViewModel>(
                 ViewType.LOCKED_ACHIEVEMENT.value,
-                R.layout.item_achievement_list,
-                { vm, view ->
-                    view.achievementTitle.text = vm.name
-                    view.achievementDesc.text = vm.description
-                    view.achievementIcon.setImageResource(vm.icon)
-                    view.achievementBackground.backgroundTintList =
-                        ColorStateList.valueOf(colorRes(vm.backgroundColor))
+                R.layout.item_achievement_list
+            ) { vm, view ->
+                view.achievementTitle.text = vm.name
+                view.achievementDesc.text = vm.description
+                view.achievementIcon.setImageResource(vm.icon)
+                view.achievementBackground.backgroundTintList =
+                    ColorStateList.valueOf(colorRes(vm.backgroundColor))
 
-                    if (vm.showStars) {
-                        view.stars.visible()
-                        view.star1.setImageResource(vm.star1)
-                        view.star2.setImageResource(vm.star2)
-                        view.star3.setImageResource(vm.star3)
-                    } else {
-                        view.stars.gone()
-                    }
-
-                    if (vm.showProgress) {
-                        view.achievementProgress.visible()
-                        view.achievementProgressText.visible()
-                        view.achievementProgress.progress = vm.progress
-                        view.achievementProgress.max = vm.maxProgress
-                        @SuppressLint("SetTextI18n")
-                        view.achievementProgressText.text = "${vm.progress}/${vm.maxProgress}"
-                    } else {
-                        view.achievementProgress.gone()
-                        view.achievementProgressText.gone()
-                    }
+                if (vm.showStars) {
+                    view.stars.visible()
+                    view.star1.setImageResource(vm.star1)
+                    view.star2.setImageResource(vm.star2)
+                    view.star3.setImageResource(vm.star3)
+                } else {
+                    view.stars.gone()
                 }
-            )
+
+                if (vm.showProgress) {
+                    view.achievementProgress.visible()
+                    view.achievementProgressText.visible()
+                    view.achievementProgress.max = vm.maxProgress
+                    view.achievementProgress.progress = vm.progress
+                    @SuppressLint("SetTextI18n")
+                    view.achievementProgressText.text = "${vm.progress}/${vm.maxProgress}"
+                } else {
+                    view.achievementProgress.gone()
+                    view.achievementProgressText.gone()
+                }
+            }
 
             registerBinder<ItemViewModel.UnlockedAchievementViewModel>(
                 ViewType.UNLOCKED_ACHIEVEMENT.value,
-                R.layout.item_achievement_list,
-                { vm, view ->
-                    view.achievementTitle.text = vm.name
-                    view.achievementDesc.text = vm.description
-                    view.achievementIcon.setImageResource(vm.icon)
-                    view.achievementBackground.backgroundTintList =
-                        ColorStateList.valueOf(colorRes(vm.backgroundColor))
+                R.layout.item_achievement_list
+            ) { vm, view ->
+                view.achievementTitle.text = vm.name
+                view.achievementDesc.text = vm.description
+                view.achievementIcon.setImageResource(vm.icon)
+                view.achievementBackground.backgroundTintList =
+                    ColorStateList.valueOf(colorRes(vm.backgroundColor))
 
-                    if (vm.showStars) {
-                        view.stars.visible()
-                        view.star1.setImageResource(R.drawable.achievement_star)
-                        view.star2.setImageResource(R.drawable.achievement_star)
-                        view.star3.setImageResource(R.drawable.achievement_star)
-                    } else {
-                        view.stars.gone()
-                    }
+                if (vm.showStars) {
+                    view.stars.visible()
+                    view.star1.setImageResource(R.drawable.achievement_star)
+                    view.star2.setImageResource(R.drawable.achievement_star)
+                    view.star3.setImageResource(R.drawable.achievement_star)
+                } else {
+                    view.stars.gone()
+                }
 
-                    view.achievementProgress.gone()
-                    view.achievementProgressText.gone()
-                })
+                view.achievementProgress.gone()
+                view.achievementProgressText.gone()
+            }
         }
 
     }
@@ -207,7 +205,7 @@ class AchievementListViewController(args: Bundle? = null) :
                     val star2 =
                         if (starsToShow > 1) R.drawable.achievement_star else R.drawable.achievement_star_empty
                     val star3 =
-                        if (starsToShow > 1) R.drawable.achievement_star else R.drawable.achievement_star_empty
+                        if (starsToShow > 2) R.drawable.achievement_star else R.drawable.achievement_star_empty
 
                     ItemViewModel.LockedAchievementViewModel(
                         id = stringRes(aa.title),

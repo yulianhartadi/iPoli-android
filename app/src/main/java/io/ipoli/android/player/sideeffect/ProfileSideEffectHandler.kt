@@ -70,7 +70,7 @@ object ProfileSideEffectHandler : AppSideEffectHandler() {
     }
 
     private fun hasUnlockedAtLeast1Level(it: CreateAchievementItemsUseCase.AchievementListItem) =
-        it is CreateAchievementItemsUseCase.AchievementListItem.LockedItem && it.achievementItem.isMultiLevel && it.achievementItem.currentLevel > 1
+        it is CreateAchievementItemsUseCase.AchievementListItem.LockedItem && it.achievementItem.isMultiLevel && it.achievementItem.currentLevel >= 1
 
     override fun canHandle(action: Action) =
         action is ProfileAction || action is DataLoadedAction.PlayerChanged

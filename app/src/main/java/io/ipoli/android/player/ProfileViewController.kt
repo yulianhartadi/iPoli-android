@@ -338,9 +338,9 @@ class ProfileViewController(args: Bundle? = null) :
                 ColorStateList.valueOf(colorRes(vm.backgroundColor))
             if (vm.hasStars) {
                 view.stars.visible()
-                view.star1.setImageResource(if (vm.starsCount == 0) R.drawable.achievement_star_empty else R.drawable.achievement_star)
-                view.star2.setImageResource(if (vm.starsCount == 1) R.drawable.achievement_star_empty else R.drawable.achievement_star)
-                view.star3.setImageResource(if (vm.starsCount == 2) R.drawable.achievement_star_empty else R.drawable.achievement_star)
+                view.star1.setImageResource(if (vm.starsCount >= 1) R.drawable.achievement_star else R.drawable.achievement_star_empty)
+                view.star2.setImageResource(if (vm.starsCount >= 2) R.drawable.achievement_star else R.drawable.achievement_star_empty)
+                view.star3.setImageResource(if (vm.starsCount == 3) R.drawable.achievement_star else R.drawable.achievement_star_empty)
             } else {
                 view.stars.gone()
             }

@@ -31,45 +31,45 @@ class CreateAchievementItemsUseCase :
             AchievementItem.KeepPetHappyStreak(
                 stats.petHappyStateStreak.toInt(),
                 currentLevelFrom(
-                    Achievement.KEEP_PET_HAPPY_40_DAY_STREAK,
-                    Achievement.KEEP_PET_HAPPY_15_DAY_STREAK,
                     Achievement.KEEP_PET_HAPPY_5_DAY_STREAK,
+                    Achievement.KEEP_PET_HAPPY_15_DAY_STREAK,
+                    Achievement.KEEP_PET_HAPPY_40_DAY_STREAK,
                     at
                 )
             ),
             AchievementItem.AwesomenessScoreStreak(
                 stats.awesomenessScoreStreak.toInt(),
                 currentLevelFrom(
-                    Achievement.AWESOMENESS_SCORE_50_DAY_STREAK,
-                    Achievement.AWESOMENESS_SCORE_20_DAY_STREAK,
                     Achievement.AWESOMENESS_SCORE_5_DAY_STREAK,
+                    Achievement.AWESOMENESS_SCORE_20_DAY_STREAK,
+                    Achievement.AWESOMENESS_SCORE_50_DAY_STREAK,
                     at
                 )
             ),
             AchievementItem.FocusHoursStreak(
                 stats.focusHoursStreak.toInt(),
                 currentLevelFrom(
-                    Achievement.FOCUS_HOURS_50_DAY_STREAK,
-                    Achievement.FOCUS_HOURS_20_DAY_STREAK,
                     Achievement.FOCUS_HOURS_5_DAY_STREAK,
+                    Achievement.FOCUS_HOURS_20_DAY_STREAK,
+                    Achievement.FOCUS_HOURS_50_DAY_STREAK,
                     at
                 )
             ),
             AchievementItem.PlanDayStreak(
                 stats.planDayStreak.count.toInt(),
                 currentLevelFrom(
-                    Achievement.PLAN_DAY_50_DAY_STREAK,
-                    Achievement.PLAN_DAY_20_DAY_STREAK,
                     Achievement.PLAN_DAY_5_DAY_STREAK,
+                    Achievement.PLAN_DAY_20_DAY_STREAK,
+                    Achievement.PLAN_DAY_50_DAY_STREAK,
                     at
                 )
             ),
             AchievementItem.GemsConverted(
                 stats.gemConvertedCount.toInt(),
                 currentLevelFrom(
-                    Achievement.CONVERT_50_GEMS,
-                    Achievement.CONVERT_20_GEMS,
                     Achievement.CONVERT_1_GEM,
+                    Achievement.CONVERT_20_GEMS,
+                    Achievement.CONVERT_50_GEMS,
                     at
                 )
             ),
@@ -198,9 +198,9 @@ class CreateAchievementItemsUseCase :
         if (at.contains(achievement)) 1 else 0
 
     private fun currentLevelFrom(
-        level3Achievement: Achievement,
-        level2Achievement: Achievement,
         level1Achievement: Achievement,
+        level2Achievement: Achievement,
+        level3Achievement: Achievement,
         unlockedAchievements: Set<Achievement>
     ) =
         when {
