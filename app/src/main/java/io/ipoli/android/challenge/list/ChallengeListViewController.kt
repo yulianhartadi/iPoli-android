@@ -295,7 +295,9 @@ class ChallengeListViewController(args: Bundle? = null) :
                                 DateFormatter.format(context, c.nextDate)
                             )
                             res += if (c.nextStartTime != null) {
-                                " ${c.nextStartTime} - ${c.nextEndTime}"
+                                " ${c.nextStartTime.toString(shouldUse24HourFormat)} - ${c.nextEndTime!!.toString(
+                                    shouldUse24HourFormat
+                                )}"
                             } else {
                                 " " + stringRes(
                                     R.string.for_time,

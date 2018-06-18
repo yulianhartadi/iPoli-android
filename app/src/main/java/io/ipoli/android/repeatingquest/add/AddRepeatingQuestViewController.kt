@@ -782,9 +782,10 @@ class AddRepeatingQuestViewController(args: Bundle? = null) :
             view.summaryNote.onDebounceClick {
                 navigate()
                     .toNotePicker(
-                        state.note, { text ->
-                            dispatch(EditRepeatingQuestAction.ChangeNote(text))
-                        })
+                        state.note
+                    ) { text ->
+                        dispatch(EditRepeatingQuestAction.ChangeNote(text))
+                    }
             }
         }
 
@@ -792,7 +793,8 @@ class AddRepeatingQuestViewController(args: Bundle? = null) :
             get() = icon?.androidIcon?.icon ?: GoogleMaterial.Icon.gmd_local_florist
 
         private val EditRepeatingQuestViewState.startTimeText: String
-            get() = startTime?.let { "At $it" } ?: stringRes(R.string.unscheduled)
+            get() = startTime?.let { "At ${it.toString(shouldUse24HourFormat)}" }
+                ?: stringRes(R.string.unscheduled)
 
         private val EditRepeatingQuestViewState.durationText: String
             get() = "For ${DurationFormatter.formatReadable(activity!!, duration.intValue)}"

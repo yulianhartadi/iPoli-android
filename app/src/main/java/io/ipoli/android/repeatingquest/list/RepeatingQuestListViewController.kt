@@ -186,7 +186,9 @@ class RepeatingQuestListViewController(args: Bundle? = null) :
                         DateFormatter.formatWithoutYear(context, it.nextDate)
                     )
                     res += if (it.startTime != null) {
-                        " ${it.startTime} - ${it.endTime}"
+                        " ${it.startTime.toString(shouldUse24HourFormat)} - ${it.endTime!!.toString(
+                            shouldUse24HourFormat
+                        )}"
                     } else {
                         " " + stringRes(
                             R.string.for_time,

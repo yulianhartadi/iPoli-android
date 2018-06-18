@@ -297,7 +297,7 @@ class RepeatingQuestViewController(args: Bundle? = null) :
                     DateFormatter.format(view!!.context, nextScheduledDate)
                 )
                 res += if (startTime != null) {
-                    " $startTime - $endTime"
+                    " ${startTime.toString(shouldUse24HourFormat)} - ${endTime!!.toString(shouldUse24HourFormat)}"
                 } else {
                     " " + stringRes(
                         R.string.for_time,
