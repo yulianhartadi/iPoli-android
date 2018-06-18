@@ -9,8 +9,8 @@ import io.ipoli.android.common.NamespaceAction
 import io.ipoli.android.common.di.Module
 import io.ipoli.android.common.home.HomeAction
 import io.ipoli.android.common.redux.Action
-import io.ipoli.android.common.redux.AsyncMiddleware
 import io.ipoli.android.common.redux.Dispatcher
+import io.ipoli.android.common.redux.MiddleWare
 import io.ipoli.android.common.view.CurrencyConverterAction
 import io.ipoli.android.myPoliApp
 import io.ipoli.android.pet.PetAction
@@ -32,16 +32,20 @@ import space.traversal.kapsule.required
  * Created by Polina Zhelyazkova <polina@mypoli.fun>
  * on 6/7/18.
  */
-object AchievementProgressMiddleWare : AsyncMiddleware<AppState>, Injects<Module> {
+object AchievementProgressMiddleWare : MiddleWare<AppState>, Injects<Module> {
 
     private val unlockAchievementsUseCase by required { unlockAchievementsUseCase }
 
-    override fun onExecute(state: AppState, dispatcher: Dispatcher, action: Action) {
+    override fun execute(
+        state: AppState,
+        dispatcher: Dispatcher,
+        action: Action
+    ): MiddleWare.Result {
         inject(myPoliApp.module(myPoliApp.instance))
 
         val player = state.dataState.player
         if (player == null) {
-            return
+            return MiddleWare.Result.Continue
         }
 
         val a = (action as? NamespaceAction)?.source ?: action
@@ -101,7 +105,6 @@ object AchievementProgressMiddleWare : AsyncMiddleware<AppState>, Injects<Module
         }
 
         eventType?.let {
-            //            playerRepository.saveStatistics(newStats)
             unlockAchievementsUseCase.execute(
                 UnlockAchievementsUseCase.Params(
                     player = player,
@@ -109,5 +112,7 @@ object AchievementProgressMiddleWare : AsyncMiddleware<AppState>, Injects<Module
                 )
             )
         }
+
+        return MiddleWare.Result.Continue
     }
 }

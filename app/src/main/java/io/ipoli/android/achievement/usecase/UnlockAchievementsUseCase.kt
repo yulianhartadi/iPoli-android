@@ -177,7 +177,7 @@ class UnlockAchievementsUseCase(
                 )
             )
             showUnlockedAchievementsScheduler.schedule(newAchievements)
-        } else {
+        } else if (newStats != stats) {
             playerRepository.saveStatistics(newStats)
         }
 
