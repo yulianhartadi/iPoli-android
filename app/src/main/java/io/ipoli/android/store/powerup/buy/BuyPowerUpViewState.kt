@@ -59,7 +59,7 @@ object BuyPowerUpReducer : BaseViewStateReducer<BuyPowerUpViewState>() {
 
     override fun defaultState() = BuyPowerUpViewState(
         type = BuyPowerUpViewState.StateType.LOADING,
-        powerUp = PowerUp.Type.CALENDAR_SYNC,
+        powerUp = PowerUp.Type.GROWTH,
         coins = -1
     )
 

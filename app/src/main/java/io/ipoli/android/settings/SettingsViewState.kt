@@ -11,8 +11,6 @@ import io.ipoli.android.player.data.Player
 import io.ipoli.android.player.data.Player.Preferences.TemperatureUnit.FAHRENHEIT
 import io.ipoli.android.player.data.Player.Preferences.TimeFormat.TWELVE_HOURS
 import io.ipoli.android.settings.SettingsViewState.StateType.*
-import io.ipoli.android.store.powerup.PowerUp
-import io.ipoli.android.store.powerup.middleware.ShowBuyPowerUpAction
 import org.threeten.bp.DayOfWeek
 
 /**
@@ -70,14 +68,14 @@ object SettingsReducer : BaseViewStateReducer<SettingsViewState>() {
             )
         }
 
-        is ShowBuyPowerUpAction -> {
-            if (action.powerUp == PowerUp.Type.CALENDAR_SYNC) {
-                subState.copy(
-                    type = DATA_CHANGED,
-                    isCalendarSyncEnabled = false
-                )
-            } else subState
-        }
+//        is ShowBuyPowerUpAction -> {
+//            if (action.powerUp == PowerUp.Type.CALENDAR_SYNC) {
+//                subState.copy(
+//                    type = DATA_CHANGED,
+//                    isCalendarSyncEnabled = false
+//                )
+//            } else subState
+//        }
 
         else -> subState
     }
@@ -95,7 +93,8 @@ object SettingsReducer : BaseViewStateReducer<SettingsViewState>() {
             planTime = player.preferences.planDayTime,
             planDays = player.preferences.planDays,
             selectedCalendars = selectedCalendars,
-            isCalendarSyncEnabled = player.isPowerUpEnabled(PowerUp.Type.CALENDAR_SYNC) && selectedCalendars > 0,
+//            isCalendarSyncEnabled = player.isPowerUpEnabled(PowerUp.Type.CALENDAR_SYNC) && selectedCalendars > 0,
+            isCalendarSyncEnabled = true,
             isQuickDoNotificationEnabled = player.preferences.isQuickDoNotificationEnabled
         )
 

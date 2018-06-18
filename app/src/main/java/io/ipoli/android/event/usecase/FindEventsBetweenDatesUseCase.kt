@@ -5,7 +5,6 @@ import io.ipoli.android.common.permission.PermissionChecker
 import io.ipoli.android.event.Event
 import io.ipoli.android.event.persistence.EventRepository
 import io.ipoli.android.player.persistence.PlayerRepository
-import io.ipoli.android.store.powerup.PowerUp
 import org.threeten.bp.LocalDate
 
 /**
@@ -26,9 +25,9 @@ class FindEventsBetweenDatesUseCase(
 
         val p = playerRepository.find() ?: return emptyList()
 
-        if (!p.isPowerUpEnabled(PowerUp.Type.CALENDAR_SYNC)) {
-            return emptyList()
-        }
+//        if (!p.isPowerUpEnabled(PowerUp.Type.CALENDAR_SYNC)) {
+//            return emptyList()
+//        }
 
         val calendars = p.preferences.syncCalendars
 

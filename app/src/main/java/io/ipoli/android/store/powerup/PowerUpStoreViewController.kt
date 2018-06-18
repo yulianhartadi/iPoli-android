@@ -1,6 +1,5 @@
 package io.ipoli.android.store.powerup
 
-import android.Manifest
 import android.os.Bundle
 import android.support.annotation.ColorInt
 import android.support.annotation.ColorRes
@@ -17,7 +16,6 @@ import com.mikepenz.iconics.IconicsDrawable
 import com.mikepenz.iconics.typeface.IIcon
 import com.mikepenz.ionicons_typeface_library.Ionicons
 import com.mikepenz.material_design_iconic_typeface_library.MaterialDesignIconic
-import io.ipoli.android.Constants
 import io.ipoli.android.R
 import io.ipoli.android.common.ViewUtils
 import io.ipoli.android.common.redux.android.ReduxViewController
@@ -221,12 +219,12 @@ class PowerUpStoreViewController(args: Bundle? = null) :
 
             PowerUpStoreViewState.StateType.POWER_UP_BOUGHT -> {
                 showLongToast(state.message)
-                if (state.powerUp == PowerUp.Type.CALENDAR_SYNC) {
-                    requestPermissions(
-                        mapOf(Manifest.permission.READ_CALENDAR to stringRes(R.string.allow_read_calendars_perm_reason)),
-                        Constants.RC_CALENDAR_PERM
-                    )
-                }
+//                if (state.powerUp == PowerUp.Type.CALENDAR_SYNC) {
+//                    requestPermissions(
+//                        mapOf(Manifest.permission.READ_CALENDAR to stringRes(R.string.allow_read_calendars_perm_reason)),
+//                        Constants.RC_CALENDAR_PERM
+//                    )
+//                }
             }
 
             PowerUpStoreViewState.StateType.POWER_UP_TOO_EXPENSIVE ->
@@ -239,9 +237,9 @@ class PowerUpStoreViewController(args: Bundle? = null) :
 
 
     private fun showCalendarPicker() {
-        navigate().toCalendarPicker({ calendarIds ->
+        navigate().toCalendarPicker { calendarIds ->
             dispatch(PowerUpStoreAction.SyncCalendarsSelected(calendarIds))
-        })
+        }
     }
 
     override fun onPermissionsGranted(requestCode: Int, permissions: List<String>) {

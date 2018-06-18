@@ -1,17 +1,12 @@
 package io.ipoli.android.store.powerup.middleware
 
 import io.ipoli.android.Constants
-import io.ipoli.android.challenge.list.ChallengeListAction
 import io.ipoli.android.common.AppState
 import io.ipoli.android.common.redux.Action
 import io.ipoli.android.common.redux.Dispatcher
 import io.ipoli.android.common.redux.MiddleWare
 import io.ipoli.android.growth.GrowthAction
-import io.ipoli.android.note.NoteAction
 import io.ipoli.android.player.data.Inventory
-import io.ipoli.android.quest.show.QuestAction
-import io.ipoli.android.repeatingquest.add.EditRepeatingQuestAction
-import io.ipoli.android.settings.SettingsAction
 import io.ipoli.android.store.powerup.PowerUp
 import io.ipoli.android.tag.list.TagListAction
 
@@ -38,11 +33,11 @@ object CheckEnabledPowerUpMiddleWare : MiddleWare<AppState> {
             is GrowthAction.ShowMonth ->
                 checkForAvailablePowerUp(PowerUp.Type.GROWTH, inventory, dispatcher)
 
-            is ChallengeListAction.AddChallenge ->
-                checkForAvailablePowerUp(PowerUp.Type.CHALLENGES, inventory, dispatcher)
+//            is ChallengeListAction.AddChallenge ->
+//                checkForAvailablePowerUp(PowerUp.Type.CHALLENGES, inventory, dispatcher)
 
-            is QuestAction.Start ->
-                checkForAvailablePowerUp(PowerUp.Type.TIMER, inventory, dispatcher)
+//            is QuestAction.Start ->
+//                checkForAvailablePowerUp(PowerUp.Type.TIMER, inventory, dispatcher)
 
             is TagListAction.AddTag ->
                 if (state.dataState.tags.size < Constants.MAX_FREE_TAGS)
@@ -50,15 +45,15 @@ object CheckEnabledPowerUpMiddleWare : MiddleWare<AppState> {
                 else
                     checkForAvailablePowerUp(PowerUp.Type.TAGS, inventory, dispatcher)
 
-            is QuestAction.AddSubQuest,
-            is EditRepeatingQuestAction.AddSubQuest ->
-                checkForAvailablePowerUp(PowerUp.Type.SUB_QUESTS, inventory, dispatcher)
-
-            is NoteAction.Save ->
-                checkForAvailablePowerUp(PowerUp.Type.NOTES, inventory, dispatcher)
-
-            is SettingsAction.ToggleSyncCalendar ->
-                checkForAvailablePowerUp(PowerUp.Type.CALENDAR_SYNC, inventory, dispatcher)
+//            is QuestAction.AddSubQuest,
+//            is EditRepeatingQuestAction.AddSubQuest ->
+//                checkForAvailablePowerUp(PowerUp.Type.SUB_QUESTS, inventory, dispatcher)
+//
+//            is NoteAction.Save ->
+//                checkForAvailablePowerUp(PowerUp.Type.NOTES, inventory, dispatcher)
+//
+//            is SettingsAction.ToggleSyncCalendar ->
+//                checkForAvailablePowerUp(PowerUp.Type.CALENDAR_SYNC, inventory, dispatcher)
 
             else -> MiddleWare.Result.Continue
         }

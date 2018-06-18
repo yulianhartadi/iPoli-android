@@ -71,7 +71,7 @@ object PowerUpStoreReducer : BaseViewStateReducer<PowerUpStoreViewState>() {
     private fun createPowerUps(player: Player): List<PowerUpItem> {
         val inventory = player.inventory
         return PowerUp.Type.values()
-            .filter { it != PowerUp.Type.CUSTOM_DURATION }.map {
+            .filter { it == PowerUp.Type.GROWTH || it == PowerUp.Type.TAGS }.map {
                 when {
                     inventory.isPowerUpEnabled(it) -> {
                         val p = inventory.getPowerUp(it)!!
@@ -92,7 +92,7 @@ object PowerUpStoreReducer : BaseViewStateReducer<PowerUpStoreViewState>() {
 
     override fun defaultState() = PowerUpStoreViewState(
         type = PowerUpStoreViewState.StateType.LOADING,
-        powerUp = PowerUp.Type.CALENDAR_SYNC,
+        powerUp = PowerUp.Type.GROWTH,
         powerUps = emptyList()
     )
 }
