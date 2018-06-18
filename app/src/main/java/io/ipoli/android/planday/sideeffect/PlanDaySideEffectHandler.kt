@@ -69,8 +69,9 @@ object PlanDaySideEffectHandler : AppSideEffectHandler() {
 
             is PlanDayAction.Done -> {
                 val yesterday = LocalDate.now().minusDays(1)
-                val yesterdayQuests = questRepository.findScheduledAt(yesterday)
-                yesterdayQuests.forEach {
+                val yesterdayNotCompletedQuests =
+                    questRepository.findScheduledAt(yesterday).filter { !it.isCompleted }
+                yesterdayNotCompletedQuests.forEach {
                     rescheduleQuestUseCase.execute(RescheduleQuestUseCase.Params(it.id, null))
                 }
             }
