@@ -281,6 +281,7 @@ object EditRepeatingQuestReducer : BaseViewStateReducer<EditRepeatingQuestViewSt
                 )
             }
 
+            EditRepeatingQuestAction.SaveNew,
             EditRepeatingQuestAction.Save ->
                 subState.copy(
                     type = CLOSE

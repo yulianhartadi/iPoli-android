@@ -96,7 +96,7 @@ class AddChallengeViewController(args: Bundle? = null) :
             }
 
             CLOSE ->
-                router.handleBack()
+                router.popCurrentController()
 
             COLOR_CHANGED ->
                 colorLayout(view, state)

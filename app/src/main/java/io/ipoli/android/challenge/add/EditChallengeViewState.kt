@@ -257,6 +257,7 @@ object EditChallengeReducer : BaseViewStateReducer<EditChallengeViewState>() {
                 }
             }
 
+            EditChallengeAction.SaveNew,
             EditChallengeAction.Save ->
                 subState.copy(
                     type = CLOSE
