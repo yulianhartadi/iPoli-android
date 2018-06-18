@@ -106,6 +106,10 @@ class ProfileViewController(args: Bundle? = null) :
         view.achievementList.layoutManager = GridLayoutManager(view.context, 5)
         view.achievementList.adapter = AchievementAdapter()
 
+        view.post {
+            view.requestFocus()
+        }
+
         return view
     }
 
