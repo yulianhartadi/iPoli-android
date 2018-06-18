@@ -1,7 +1,6 @@
 package io.ipoli.android.quest.show
 
 import android.annotation.SuppressLint
-import android.content.Context
 import android.graphics.Paint
 import android.graphics.PorterDuff
 import android.graphics.drawable.GradientDrawable
@@ -19,7 +18,6 @@ import android.support.v7.widget.helper.ItemTouchHelper
 import android.view.*
 import android.view.inputmethod.EditorInfo
 import android.widget.ImageView
-import android.widget.ViewSwitcher
 import com.bluelinelabs.conductor.changehandler.HorizontalChangeHandler
 import com.mikepenz.google_material_typeface_library.GoogleMaterial
 import com.mikepenz.iconics.IconicsDrawable
@@ -163,64 +161,8 @@ class QuestViewController : ReduxViewController<QuestAction, QuestViewState, Que
         return view
     }
 
-    inner class SwipeGestureListener(
-        private val switcher: ViewSwitcher,
-        private val pomodoroIndicator: View,
-        private val countdownIndicator: View,
-        private val context: Context
-    ) :
-        GestureDetector.SimpleOnGestureListener() {
-
-        override fun onFling(
-            e1: MotionEvent,
-            e2: MotionEvent,
-            velocityX: Float,
-            velocityY: Float
-        ): Boolean {
-
-            val distanceX = e2.x - e1.x
-            val distanceY = e2.y - e1.y
-            if (
-                Math.abs(distanceX) > Math.abs(distanceY) &&
-                Math.abs(distanceX) > SWIPE_DISTANCE_THRESHOLD &&
-                Math.abs(velocityX) > SWIPE_VELOCITY_THRESHOLD
-            ) {
-                if (distanceX > 0 && switcher.displayedChild == 1)
-                    onSwipeLeft()
-                else if (switcher.displayedChild == 0)
-                    onSwipeRight()
-                return true
-            }
-            return false
-        }
-
-        private fun onSwipeRight() {
-            switcher.setInAnimation(context, R.anim.left_in)
-            switcher.setOutAnimation(context, R.anim.left_out)
-
-            switcher.showNext()
-            pomodoroIndicator.setBackgroundResource(R.drawable.progress_indicator_empty)
-            countdownIndicator.setBackgroundResource(R.drawable.progress_indicator_full)
-
-            dispatch(QuestAction.ShowCountDownTimer)
-        }
-
-        private fun onSwipeLeft() {
-            switcher.setInAnimation(context, R.anim.right_in)
-            switcher.setOutAnimation(context, R.anim.right_out)
-
-            switcher.showPrevious()
-            pomodoroIndicator.setBackgroundResource(R.drawable.progress_indicator_full)
-            countdownIndicator.setBackgroundResource(R.drawable.progress_indicator_empty)
-
-            dispatch(QuestAction.ShowPomodoroTimer)
-        }
-    }
-
     companion object {
-
         private const val SWIPE_DISTANCE_THRESHOLD = 100
-        private const val SWIPE_VELOCITY_THRESHOLD = 100
     }
 
     override fun onPrepareOptionsMenu(menu: Menu) {
@@ -271,6 +213,7 @@ class QuestViewController : ReduxViewController<QuestAction, QuestViewState, Que
     }
 
     override fun onDetach(view: View) {
+        view.appbar.setOnTouchListener(null)
         (activity as MainActivity).supportActionBar?.setDisplayShowTitleEnabled(true)
         handler.removeCallbacksAndMessages(null)
         cancelAnimations(view)
@@ -489,20 +432,61 @@ class QuestViewController : ReduxViewController<QuestAction, QuestViewState, Que
 
     private fun setAppBarSwipeListener(view: View) {
         view.appbar.setOnClickListener(null)
-        val d = GestureDetector(
-            view.context,
-            SwipeGestureListener(
-                view.timerType,
-                view.timerTypePomodoroIndicator,
-                view.timerTypeCountdownIndicator,
-                view.context
-            )
-        )
+        var x1 = 0f
+        var y1 = 0f
 
         view.appbar.setOnTouchListener { _, event ->
-            d.onTouchEvent(event)
-            true
+            when (event.action) {
+
+                MotionEvent.ACTION_DOWN -> {
+                    x1 = event.x
+                    y1 = event.y
+                    return@setOnTouchListener true
+                }
+
+                MotionEvent.ACTION_UP, MotionEvent.ACTION_CANCEL -> {
+                    val distanceX = event.x - x1
+                    val distanceY = event.y - y1
+                    if (
+                        Math.abs(distanceX) > Math.abs(distanceY) &&
+                        Math.abs(distanceX) > SWIPE_DISTANCE_THRESHOLD
+                    ) {
+
+                        if (distanceX > 0 && view.timerType.displayedChild == 1) {
+                            onSwipeLeft(view)
+                        } else if (distanceX < 0 && view.timerType.displayedChild == 0) {
+                            onSwipeRight(view)
+                        }
+                    }
+
+                    return@setOnTouchListener true
+                }
+            }
+
+            false
         }
+    }
+
+    private fun onSwipeRight(view: View) {
+        view.timerType.setInAnimation(view.context, R.anim.left_in)
+        view.timerType.setOutAnimation(view.context, R.anim.left_out)
+
+        view.timerType.showNext()
+        view.timerTypePomodoroIndicator.setBackgroundResource(R.drawable.progress_indicator_empty)
+        view.timerTypeCountdownIndicator.setBackgroundResource(R.drawable.progress_indicator_full)
+
+        dispatch(QuestAction.ShowCountDownTimer)
+    }
+
+    private fun onSwipeLeft(view: View) {
+        view.timerType.setInAnimation(view.context, R.anim.right_in)
+        view.timerType.setOutAnimation(view.context, R.anim.right_out)
+
+        view.timerType.showPrevious()
+        view.timerTypePomodoroIndicator.setBackgroundResource(R.drawable.progress_indicator_full)
+        view.timerTypeCountdownIndicator.setBackgroundResource(R.drawable.progress_indicator_empty)
+
+        dispatch(QuestAction.ShowPomodoroTimer)
     }
 
     private fun renderTags(
