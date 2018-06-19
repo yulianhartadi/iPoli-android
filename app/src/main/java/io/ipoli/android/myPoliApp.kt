@@ -8,7 +8,6 @@ import android.app.NotificationManager
 import android.content.Context
 import android.net.Uri
 import android.os.Build
-import android.preference.PreferenceManager
 import com.amplitude.api.Amplitude
 import com.crashlytics.android.Crashlytics
 import com.evernote.android.job.JobManager
@@ -58,15 +57,6 @@ class myPoliApp : Application() {
         } else {
             Amplitude.getInstance().setOptOut(true)
             Timber.plant(Timber.DebugTree())
-        }
-
-        val preferences = PreferenceManager.getDefaultSharedPreferences(this)
-        val pId = preferences.getString(Constants.KEY_PLAYER_ID, null)
-        pId?.let {
-            // Check for iPoli Player
-            if (it.contains("-")) {
-                preferences.edit().remove(Constants.KEY_PLAYER_ID).commit()
-            }
         }
 
         JobManager.create(this).addJobCreator(myPoliJobCreator())

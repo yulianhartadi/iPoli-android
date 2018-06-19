@@ -27,18 +27,6 @@ object Api {
         .readTimeout(Constants.API_READ_TIMEOUT_SECONDS.toLong(), TimeUnit.SECONDS)
         .retryOnConnectionFailure(false).build()
 
-    suspend fun migratePlayer(playerId: String, email: String) {
-        val params = mapOf(
-            "player_id" to playerId,
-            "email" to email
-        )
-        val request = createPostRequest(params, urlProvider.migratePlayer)
-        val response = callServer(request)
-        if (!response.isSuccessful) {
-            throw PlayerMigrationException("Api Player migration call failed with response ${response.message()}")
-        }
-    }
-
     /**
      * @throws MembershipStatusException
      */
