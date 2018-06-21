@@ -13,13 +13,12 @@ class HabitReward(private val randomSeed: Long? = null) {
     fun generate(
         coinBonusPercentage: Float,
         xpBonusPercentage: Float
-    ): SimpleReward {
-        return SimpleReward(
+    ) =
+        SimpleReward(
             experience = experience(xpBonusPercentage),
             coins = coins(coinBonusPercentage),
             bounty = Quest.Bounty.None
         )
-    }
 
     private fun coins(coinBonusPercentage: Float): Int {
         val rewards = intArrayOf(1, 2, 3)
