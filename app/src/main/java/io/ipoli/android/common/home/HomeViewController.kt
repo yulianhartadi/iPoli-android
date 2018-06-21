@@ -37,6 +37,7 @@ import io.ipoli.android.common.redux.android.ReduxViewController
 import io.ipoli.android.common.text.LongFormatter
 import io.ipoli.android.common.view.*
 import io.ipoli.android.growth.GrowthViewController
+import io.ipoli.android.habit.list.HabitListViewController
 import io.ipoli.android.pet.AndroidPetAvatar
 import io.ipoli.android.pet.AndroidPetMood
 import io.ipoli.android.player.data.AndroidAvatar
@@ -115,6 +116,8 @@ class HomeViewController(args: Bundle? = null) :
             R.id.repeatingQuests ->
                 changeChildController(RepeatingQuestListViewController())
 
+            R.id.habits ->
+                changeChildController(HabitListViewController())
 
             R.id.challenges ->
                 changeChildController(ChallengeListViewController())
