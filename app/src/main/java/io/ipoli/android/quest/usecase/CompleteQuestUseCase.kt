@@ -12,8 +12,8 @@ import io.ipoli.android.player.persistence.PlayerRepository
 import io.ipoli.android.player.usecase.RewardPlayerUseCase
 import io.ipoli.android.quest.Quest
 import io.ipoli.android.quest.data.persistence.QuestRepository
-import io.ipoli.android.quest.job.QuestCompleteScheduler
 import io.ipoli.android.quest.job.ReminderScheduler
+import io.ipoli.android.quest.job.RewardScheduler
 import org.threeten.bp.LocalDate
 import java.util.*
 
@@ -25,7 +25,7 @@ open class CompleteQuestUseCase(
     private val questRepository: QuestRepository,
     private val playerRepository: PlayerRepository,
     private val reminderScheduler: ReminderScheduler,
-    private val questCompleteScheduler: QuestCompleteScheduler,
+    private val rewardScheduler: RewardScheduler,
     private val ratePopupScheduler: RatePopupScheduler,
     private val rewardPlayerUseCase: RewardPlayerUseCase,
     private val checkForDailyChallengeCompletionUseCase: CheckForDailyChallengeCompletionUseCase,
@@ -67,7 +67,7 @@ open class CompleteQuestUseCase(
         )
         rewardPlayerUseCase.execute(reward)
 
-        questCompleteScheduler.schedule(reward)
+        rewardScheduler.schedule(reward)
         ratePopupScheduler.schedule()
 
         val r = checkForDailyChallengeCompletionUseCase.execute(Unit)

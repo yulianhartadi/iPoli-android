@@ -201,11 +201,10 @@ open class EditChallengeViewController(args: Bundle? = null) :
         view.challengeNote.onDebounceClick {
             navigate()
                 .toNotePicker(
-                    state.note,
-                    { note ->
-                        dispatch(EditChallengeAction.ChangeNote(note))
-                    }
-                )
+                    state.note
+                ) { note ->
+                    dispatch(EditChallengeAction.ChangeNote(note))
+                }
         }
     }
 

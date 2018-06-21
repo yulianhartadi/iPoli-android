@@ -2,6 +2,7 @@ package io.ipoli.android.challenge.usecase
 
 import io.ipoli.android.challenge.persistence.ChallengeRepository
 import io.ipoli.android.common.UseCase
+import io.ipoli.android.habit.persistence.HabitRepository
 import io.ipoli.android.quest.Quest
 import io.ipoli.android.quest.data.persistence.QuestRepository
 import io.ipoli.android.quest.job.ReminderScheduler
@@ -15,6 +16,7 @@ class RemoveChallengeUseCase(
     private val challengeRepository: ChallengeRepository,
     private val questRepository: QuestRepository,
     private val repeatingQuestRepository: RepeatingQuestRepository,
+    private val habitRepository: HabitRepository,
     private val reminderScheduler: ReminderScheduler
 ) : UseCase<RemoveChallengeUseCase.Params, Unit> {
 
@@ -22,12 +24,14 @@ class RemoveChallengeUseCase(
         val c = challengeRepository.findById(parameters.challengeId)
         require(c != null)
 
+        val habits = habitRepository.findAllForChallenge(c!!.id)
+        habitRepository.save(habits.map { it.copy(challengeId = null) })
 
         val questsToUpdate = mutableListOf<Quest>()
         val questsToPurge = mutableListOf<Quest>()
 
         questRepository
-            .findAllForChallenge(c!!.id)
+            .findAllForChallenge(c.id)
             .forEach {
                 if (it.isCompleted) {
                     questsToUpdate.add(

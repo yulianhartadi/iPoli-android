@@ -58,9 +58,8 @@ class MainActivity : AppCompatActivity(), Injects<Module>, SideEffectHandler<App
 
     private val playerRepository by required { playerRepository }
     private val sharedPreferences by required { sharedPreferences }
-    private val planDayScheduler by required { planDayScheduler }
-    private val updateAchievementProgressScheduler by required { updateAchievementProgressScheduler }
     private val unlockAchievementsUseCase by required { unlockAchievementsUseCase }
+    private val updateHabitStreaksScheduler by required { updateHabitStreaksScheduler }
 
     private val stateStore by required { stateStore }
 
@@ -118,18 +117,18 @@ class MainActivity : AppCompatActivity(), Injects<Module>, SideEffectHandler<App
         launch(CommonPool) {
             val hasPlayer = playerRepository.hasPlayer()
             if (!hasPlayer) {
-                withContext(UI) {
+                launch(UI) {
                     router.setRoot(RouterTransaction.with(OnboardViewController()))
                 }
             } else {
                 val pSchemaVersion = playerRepository.findSchemaVersion()!!
                 if (migrationExecutor.shouldMigrate(pSchemaVersion)) {
-                    withContext(UI) {
+                    launch(UI) {
                         router.setRoot(RouterTransaction.with(MigrationViewController(pSchemaVersion)))
                     }
                 } else {
                     val p = playerRepository.find()!!
-                    withContext(UI) {
+                    launch(UI) {
                         if (p.isLoggedIn() && p.username.isNullOrEmpty()) {
                             Navigator(router).setAuth()
                         } else {
@@ -190,8 +189,7 @@ class MainActivity : AppCompatActivity(), Injects<Module>, SideEffectHandler<App
             navigator.setPlanDay()
         } else if (!router.hasRootController()) {
             navigator.setHome()
-            planDayScheduler.schedule()
-            updateAchievementProgressScheduler.schedule()
+            updateHabitStreaksScheduler.schedule()
             if (Random().nextInt(10) == 1 && player.membership == Membership.NONE) {
                 showPremiumSnackbar()
             }
@@ -268,11 +266,6 @@ class MainActivity : AppCompatActivity(), Injects<Module>, SideEffectHandler<App
                 is HomeAction.ShowPlayerSetup ->
                     Navigator(router).setAuth()
 
-                AuthAction.GuestCreated,
-                AuthAction.PlayerSetupCompleted -> {
-                    showPremiumSnackbar()
-                }
-
                 is DataLoadedAction.PlayerChanged -> {
                     val editor = sharedPreferences.edit()
                     val player = action.player
@@ -286,7 +279,7 @@ class MainActivity : AppCompatActivity(), Injects<Module>, SideEffectHandler<App
     }
 
     private fun showPowerUpDialog(action: ShowBuyPowerUpAction) {
-        Navigator(router).toBuyPowerUp(action.powerUp, { result ->
+        Navigator(router).toBuyPowerUp(action.powerUp) { result ->
             when (result) {
                 BuyPowerUpDialogController.Result.TooExpensive ->
                     Toast.makeText(
@@ -309,7 +302,7 @@ class MainActivity : AppCompatActivity(), Injects<Module>, SideEffectHandler<App
                 is BuyPowerUpDialogController.Result.UnlockAll ->
                     Navigator(router).toMembership(FadeChangeHandler())
             }
-        })
+        }
     }
 
     override fun canHandle(action: Action) =

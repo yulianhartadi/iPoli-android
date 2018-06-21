@@ -29,10 +29,10 @@ class DailyChallengeCompleteJob : Job() {
         val coins = params.extras.getInt(KEY_COINS, -1)
         val experience = params.extras.getInt(KEY_EXPERIENCE, -1)
 
-        require(coins > 0, { "DailyChallengeCompleteJob has incorrect coins param $coins" })
+        require(coins > 0) { "DailyChallengeCompleteJob has incorrect coins param $coins" }
         require(
-            experience > 0,
-            { "DailyChallengeCompleteJob has incorrect experience param $experience" })
+            experience > 0
+        ) { "DailyChallengeCompleteJob has incorrect experience param $experience" }
 
         val c = context.asThemedWrapper()
         launch(UI) {

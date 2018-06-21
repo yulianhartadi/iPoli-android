@@ -56,6 +56,12 @@ import io.ipoli.android.growth.persistence.AndroidAppUsageStatRepository
 import io.ipoli.android.growth.persistence.AppUsageStatRepository
 import io.ipoli.android.growth.sideeffect.GrowthSideEffectHandler
 import io.ipoli.android.growth.usecase.CalculateGrowthStatsUseCase
+import io.ipoli.android.habit.job.AndroidUpdateHabitStreaksScheduler
+import io.ipoli.android.habit.job.UpdateHabitStreaksScheduler
+import io.ipoli.android.habit.persistence.FirestoreHabitRepository
+import io.ipoli.android.habit.persistence.HabitRepository
+import io.ipoli.android.habit.sideeffect.HabitSideEffectHandler
+import io.ipoli.android.habit.usecase.*
 import io.ipoli.android.note.usecase.SaveQuestNoteUseCase
 import io.ipoli.android.onboarding.sideeffecthandler.OnboardingSideEffectHandler
 import io.ipoli.android.pet.AndroidJobLowerPetStatsScheduler
@@ -88,10 +94,10 @@ import io.ipoli.android.quest.bucketlist.usecase.CreateBucketListItemsUseCase
 import io.ipoli.android.quest.data.persistence.FirestoreQuestRepository
 import io.ipoli.android.quest.data.persistence.QuestRepository
 import io.ipoli.android.quest.edit.sideeffect.EditQuestSideEffectHandler
-import io.ipoli.android.quest.job.AndroidJobQuestCompleteScheduler
 import io.ipoli.android.quest.job.AndroidJobReminderScheduler
-import io.ipoli.android.quest.job.QuestCompleteScheduler
+import io.ipoli.android.quest.job.AndroidJobRewardScheduler
 import io.ipoli.android.quest.job.ReminderScheduler
+import io.ipoli.android.quest.job.RewardScheduler
 import io.ipoli.android.quest.reminder.formatter.TimeUnitFormatter
 import io.ipoli.android.quest.schedule.agenda.sideeffect.AgendaSideEffectHandler
 import io.ipoli.android.quest.schedule.agenda.usecase.CreateAgendaItemsUseCase
@@ -162,6 +168,7 @@ interface RepositoryModule {
     val quoteRepository: QuoteRepository
     val dailyChallengeRepository: DailyChallengeRepository
     val appUsageStatRepository: AppUsageStatRepository
+    val habitRepository: HabitRepository
 }
 
 class AndroidRepositoryModule(private val appContext: Context) : RepositoryModule, Injects<Module> {
@@ -246,6 +253,16 @@ class AndroidRepositoryModule(private val appContext: Context) : RepositoryModul
     override val appUsageStatRepository by required {
         AndroidAppUsageStatRepository(appContext)
     }
+
+    override val habitRepository
+        by required {
+            FirestoreHabitRepository(
+                database,
+                job + CommonPool,
+                sharedPreferences,
+                executor
+            )
+        }
 }
 
 class Firestore {
@@ -279,7 +296,7 @@ interface AndroidModule {
 
     val timerCompleteScheduler: TimerCompleteScheduler
 
-    val questCompleteScheduler: QuestCompleteScheduler
+    val rewardScheduler: RewardScheduler
 
     val levelUpScheduler: LevelUpScheduler
 
@@ -302,6 +319,8 @@ interface AndroidModule {
     val updateAchievementProgressScheduler: UpdateAchievementProgressScheduler
 
     val showUnlockedAchievementsScheduler: ShowUnlockedAchievementsScheduler
+
+    val updateHabitStreaksScheduler: UpdateHabitStreaksScheduler
 
     val permissionChecker: PermissionChecker
 
@@ -335,7 +354,7 @@ class MainAndroidModule(
 
     override val timerCompleteScheduler get() = AndroidJobTimerCompleteScheduler()
 
-    override val questCompleteScheduler get() = AndroidJobQuestCompleteScheduler(context)
+    override val rewardScheduler get() = AndroidJobRewardScheduler(context)
 
     override val levelUpScheduler get() = AndroidLevelUpScheduler()
 
@@ -360,6 +379,9 @@ class MainAndroidModule(
 
     override val showUnlockedAchievementsScheduler
         get() = AndroidShowUnlockedAchievementsScheduler(context)
+
+    override val updateHabitStreaksScheduler
+        get() = AndroidUpdateHabitStreaksScheduler()
 
     override val database get() = Firestore.instance
 
@@ -397,6 +419,111 @@ class MainAndroidModule(
     override val executor: ExecutorService = Executors.newCachedThreadPool()
 }
 
+interface UseCaseModule {
+    val loadScheduleForDateUseCase: LoadScheduleForDateUseCase
+    val saveQuestUseCase: SaveQuestUseCase
+    val removeQuestUseCase: RemoveQuestUseCase
+    val undoRemoveQuestUseCase: UndoRemovedQuestUseCase
+    val findQuestsToRemindUseCase: FindQuestsToRemindUseCase
+    val snoozeQuestUseCase: SnoozeQuestUseCase
+    val completeQuestUseCase: CompleteQuestUseCase
+    val undoCompletedQuestUseCase: UndoCompletedQuestUseCase
+    val rewardPlayerUseCase: RewardPlayerUseCase
+    val removeRewardFromPlayerUseCase: RemoveRewardFromPlayerUseCase
+    val feedPetUseCase: FeedPetUseCase
+    val revivePetUseCase: RevivePetUseCase
+    val buyPetUseCase: BuyPetUseCase
+    val changePetUseCase: ChangePetUseCase
+    val findPetUseCase: FindPetUseCase
+    val changeThemeUseCase: ChangeThemeUseCase
+    val buyThemeUseCase: BuyThemeUseCase
+    val renamePetUseCase: RenamePetUseCase
+    val buyIconPackUseCase: BuyIconPackUseCase
+    val buyColorPackUseCase: BuyColorPackUseCase
+    val convertCoinsToGemsUseCase: ConvertCoinsToGemsUseCase
+    val comparePetItemsUseCase: ComparePetItemsUseCase
+    val buyPetItemUseCase: BuyPetItemUseCase
+    val equipPetItemUseCase: EquipPetItemUseCase
+    val takeOffPetItemUseCase: TakeOffPetItemUseCase
+    val purchaseGemPackUseCase: PurchaseGemPackUseCase
+    val schedulePredefinedChallengeUseCase: SchedulePredefinedChallengeUseCase
+    val buyChallengeUseCase: BuyChallengeUseCase
+    val splitDurationForPomodoroTimerUseCase: SplitDurationForPomodoroTimerUseCase
+    val findPlayerLevelUseCase: FindPlayerLevelUseCase
+    val lowerPetStatsUseCase: LowerPetStatsUseCase
+    val completeTimeRangeUseCase: CompleteTimeRangeUseCase
+    val cancelTimerUseCase: CancelTimerUseCase
+    val addPomodoroUseCase: AddPomodoroUseCase
+    val removePomodoroUseCase: RemovePomodoroUseCase
+    val addTimerToQuestUseCase: AddTimerToQuestUseCase
+    val findAgendaDatesUseCase: FindAgendaDatesUseCase
+    val createAgendaItemsUseCase: CreateAgendaItemsUseCase
+    val saveRepeatingQuestUseCase: SaveRepeatingQuestUseCase
+    val findNextDateForRepeatingQuestUseCase: FindNextDateForRepeatingQuestUseCase
+    val findPeriodProgressForRepeatingQuestUseCase: FindPeriodProgressForRepeatingQuestUseCase
+    val saveQuestsForRepeatingQuestUseCase: SaveQuestsForRepeatingQuestUseCase
+    val removeRepeatingQuestUseCase: RemoveRepeatingQuestUseCase
+    val createRepeatingQuestHistoryUseCase: CreateRepeatingQuestHistoryUseCase
+    val createPlaceholderQuestsForRepeatingQuestsUseCase: CreatePlaceholderQuestsForRepeatingQuestsUseCase
+    val saveChallengeUseCase: SaveChallengeUseCase
+    val saveQuestsForChallengeUseCase: SaveQuestsForChallengeUseCase
+    val removeQuestFromChallengeUseCase: RemoveQuestFromChallengeUseCase
+    val removeChallengeUseCase: RemoveChallengeUseCase
+    val loadQuestPickerQuestsUseCase: LoadQuestPickerQuestsUseCase
+    val findQuestsForChallengeUseCase: FindQuestsForChallengeUseCase
+    val findNextDateForChallengeUseCase: FindNextDateForChallengeUseCase
+    val findChallengeProgressUseCase: FindChallengeProgressUseCase
+    val completeChallengeUseCase: CompleteChallengeUseCase
+    val buyPowerUpUseCase: BuyPowerUpUseCase
+    val removeExpiredPowerUpsUseCase: RemoveExpiredPowerUpsUseCase
+    val enableAllPowerUpsUseCase: EnableAllPowerUpsUseCase
+    val updatePlayerMembershipUseCase: UpdatePlayerMembershipUseCase
+    val calculateMembershipPlanPriceUseCase: CalculateMembershipPlanPriceUseCase
+    val removeMembershipUseCase: RemoveMembershipUseCase
+    val buyAvatarUseCase: BuyAvatarUseCase
+    val changeAvatarUseCase: ChangeAvatarUseCase
+    val completeSubQuestUseCase: CompleteSubQuestUseCase
+    val undoCompletedSubQuestUseCase: UndoCompletedSubQuestUseCase
+    val saveSubQuestNameUseCase: SaveSubQuestNameUseCase
+    val addSubQuestUseCase: AddSubQuestUseCase
+    val removeSubQuestUseCase: RemoveSubQuestUseCase
+    val reorderSubQuestUseCase: ReorderSubQuestUseCase
+    val saveQuestNoteUseCase: SaveQuestNoteUseCase
+    val findEventsBetweenDatesUseCase: FindEventsBetweenDatesUseCase
+    val saveSyncCalendarsUseCase: SaveSyncCalendarsUseCase
+    val saveTagUseCase: SaveTagUseCase
+    val favoriteTagUseCase: FavoriteTagUseCase
+    val unfavoriteTagUseCase: UnfavoriteTagUseCase
+    val createTagItemsUseCase: CreateTagItemsUseCase
+    val addQuestCountToTagUseCase: AddQuestCountToTagUseCase
+    val removeTagUseCase: RemoveTagUseCase
+    val createBucketListItemsUseCase: CreateBucketListItemsUseCase
+    val rescheduleQuestUseCase: RescheduleQuestUseCase
+    val calculateAwesomenessScoreUseCase: CalculateAwesomenessScoreUseCase
+    val calculateFocusDurationUseCase: CalculateFocusDurationUseCase
+    val savePlanDayTimeUseCase: SavePlanDayTimeUseCase
+    val savePlanDaysUseCase: SavePlanDaysUseCase
+    val saveTimeFormatUseCase: SaveTimeFormatUseCase
+    val saveTemperatureUnitUseCase: SaveTemperatureUnitUseCase
+    val checkForDailyChallengeCompletionUseCase: CheckForDailyChallengeCompletionUseCase
+    val loadDailyChallengeUseCase: LoadDailyChallengeUseCase
+    val saveDailyChallengeQuestIdsUseCase: SaveDailyChallengeQuestIdsUseCase
+    val calculateGrowthStatsUseCase: CalculateGrowthStatsUseCase
+    val findDailyChallengeStreakUseCase: FindDailyChallengeStreakUseCase
+    val findAverageFocusedDurationForPeriodUseCase: FindAverageFocusedDurationForPeriodUseCase
+    val saveQuickDoNotificationSettingUseCase: SaveQuickDoNotificationSettingUseCase
+    val saveProfileUseCase: SaveProfileUseCase
+    val unlockAchievementsUseCase: UnlockAchievementsUseCase
+    val updateAchievementProgressUseCase: UpdateAchievementProgressUseCase
+    val createAchievementItemsUseCase: CreateAchievementItemsUseCase
+    val saveHabitUseCase: SaveHabitUseCase
+    val completeHabitUseCase: CompleteHabitUseCase
+    val undoCompleteHabitUseCase: UndoCompleteHabitUseCase
+    val removeHabitUseCase: RemoveHabitUseCase
+    val updateHabitStreaksUseCase: UpdateHabitStreaksUseCase
+    val createHabitItemsUseCase: CreateHabitItemsUseCase
+}
+
 class MainUseCaseModule : UseCaseModule, Injects<Module> {
     private val questRepository by required { questRepository }
     private val eventRepository by required { eventRepository }
@@ -405,8 +532,9 @@ class MainUseCaseModule : UseCaseModule, Injects<Module> {
     private val playerRepository by required { playerRepository }
     private val challengeRepository by required { challengeRepository }
     private val tagRepository by required { tagRepository }
+    private val habitRepository by required { habitRepository }
     private val reminderScheduler by required { reminderScheduler }
-    private val questCompleteScheduler by required { questCompleteScheduler }
+    private val rewardScheduler by required { rewardScheduler }
     private val levelUpScheduler by required { levelUpScheduler }
     private val levelDownScheduler by required { levelDownScheduler }
     private val rateDialogScheduler by required { ratePopupScheduler }
@@ -442,7 +570,7 @@ class MainUseCaseModule : UseCaseModule, Injects<Module> {
             questRepository,
             playerRepository,
             reminderScheduler,
-            questCompleteScheduler,
+            rewardScheduler,
             rateDialogScheduler,
             rewardPlayerUseCase,
             checkForDailyChallengeCompletionUseCase,
@@ -578,6 +706,7 @@ class MainUseCaseModule : UseCaseModule, Injects<Module> {
             challengeRepository,
             questRepository,
             repeatingQuestRepository,
+            habitRepository,
             reminderScheduler
         )
 
@@ -752,105 +881,35 @@ class MainUseCaseModule : UseCaseModule, Injects<Module> {
 
     override val createAchievementItemsUseCase
         get() = CreateAchievementItemsUseCase()
-}
 
-interface UseCaseModule {
-    val loadScheduleForDateUseCase: LoadScheduleForDateUseCase
-    val saveQuestUseCase: SaveQuestUseCase
-    val removeQuestUseCase: RemoveQuestUseCase
-    val undoRemoveQuestUseCase: UndoRemovedQuestUseCase
-    val findQuestsToRemindUseCase: FindQuestsToRemindUseCase
-    val snoozeQuestUseCase: SnoozeQuestUseCase
-    val completeQuestUseCase: CompleteQuestUseCase
-    val undoCompletedQuestUseCase: UndoCompletedQuestUseCase
-    val rewardPlayerUseCase: RewardPlayerUseCase
-    val removeRewardFromPlayerUseCase: RemoveRewardFromPlayerUseCase
-    val feedPetUseCase: FeedPetUseCase
-    val revivePetUseCase: RevivePetUseCase
-    val buyPetUseCase: BuyPetUseCase
-    val changePetUseCase: ChangePetUseCase
-    val findPetUseCase: FindPetUseCase
-    val changeThemeUseCase: ChangeThemeUseCase
-    val buyThemeUseCase: BuyThemeUseCase
-    val renamePetUseCase: RenamePetUseCase
-    val buyIconPackUseCase: BuyIconPackUseCase
-    val buyColorPackUseCase: BuyColorPackUseCase
-    val convertCoinsToGemsUseCase: ConvertCoinsToGemsUseCase
-    val comparePetItemsUseCase: ComparePetItemsUseCase
-    val buyPetItemUseCase: BuyPetItemUseCase
-    val equipPetItemUseCase: EquipPetItemUseCase
-    val takeOffPetItemUseCase: TakeOffPetItemUseCase
-    val purchaseGemPackUseCase: PurchaseGemPackUseCase
-    val schedulePredefinedChallengeUseCase: SchedulePredefinedChallengeUseCase
-    val buyChallengeUseCase: BuyChallengeUseCase
-    val splitDurationForPomodoroTimerUseCase: SplitDurationForPomodoroTimerUseCase
-    val findPlayerLevelUseCase: FindPlayerLevelUseCase
-    val lowerPetStatsUseCase: LowerPetStatsUseCase
-    val completeTimeRangeUseCase: CompleteTimeRangeUseCase
-    val cancelTimerUseCase: CancelTimerUseCase
-    val addPomodoroUseCase: AddPomodoroUseCase
-    val removePomodoroUseCase: RemovePomodoroUseCase
-    val addTimerToQuestUseCase: AddTimerToQuestUseCase
-    val findAgendaDatesUseCase: FindAgendaDatesUseCase
-    val createAgendaItemsUseCase: CreateAgendaItemsUseCase
-    val saveRepeatingQuestUseCase: SaveRepeatingQuestUseCase
-    val findNextDateForRepeatingQuestUseCase: FindNextDateForRepeatingQuestUseCase
-    val findPeriodProgressForRepeatingQuestUseCase: FindPeriodProgressForRepeatingQuestUseCase
-    val saveQuestsForRepeatingQuestUseCase: SaveQuestsForRepeatingQuestUseCase
-    val removeRepeatingQuestUseCase: RemoveRepeatingQuestUseCase
-    val createRepeatingQuestHistoryUseCase: CreateRepeatingQuestHistoryUseCase
-    val createPlaceholderQuestsForRepeatingQuestsUseCase: CreatePlaceholderQuestsForRepeatingQuestsUseCase
-    val saveChallengeUseCase: SaveChallengeUseCase
-    val saveQuestsForChallengeUseCase: SaveQuestsForChallengeUseCase
-    val removeQuestFromChallengeUseCase: RemoveQuestFromChallengeUseCase
-    val removeChallengeUseCase: RemoveChallengeUseCase
-    val loadQuestPickerQuestsUseCase: LoadQuestPickerQuestsUseCase
-    val findQuestsForChallengeUseCase: FindQuestsForChallengeUseCase
-    val findNextDateForChallengeUseCase: FindNextDateForChallengeUseCase
-    val findChallengeProgressUseCase: FindChallengeProgressUseCase
-    val completeChallengeUseCase: CompleteChallengeUseCase
-    val buyPowerUpUseCase: BuyPowerUpUseCase
-    val removeExpiredPowerUpsUseCase: RemoveExpiredPowerUpsUseCase
-    val enableAllPowerUpsUseCase: EnableAllPowerUpsUseCase
-    val updatePlayerMembershipUseCase: UpdatePlayerMembershipUseCase
-    val calculateMembershipPlanPriceUseCase: CalculateMembershipPlanPriceUseCase
-    val removeMembershipUseCase: RemoveMembershipUseCase
-    val buyAvatarUseCase: BuyAvatarUseCase
-    val changeAvatarUseCase: ChangeAvatarUseCase
-    val completeSubQuestUseCase: CompleteSubQuestUseCase
-    val undoCompletedSubQuestUseCase: UndoCompletedSubQuestUseCase
-    val saveSubQuestNameUseCase: SaveSubQuestNameUseCase
-    val addSubQuestUseCase: AddSubQuestUseCase
-    val removeSubQuestUseCase: RemoveSubQuestUseCase
-    val reorderSubQuestUseCase: ReorderSubQuestUseCase
-    val saveQuestNoteUseCase: SaveQuestNoteUseCase
-    val findEventsBetweenDatesUseCase: FindEventsBetweenDatesUseCase
-    val saveSyncCalendarsUseCase: SaveSyncCalendarsUseCase
-    val saveTagUseCase: SaveTagUseCase
-    val favoriteTagUseCase: FavoriteTagUseCase
-    val unfavoriteTagUseCase: UnfavoriteTagUseCase
-    val createTagItemsUseCase: CreateTagItemsUseCase
-    val addQuestCountToTagUseCase: AddQuestCountToTagUseCase
-    val removeTagUseCase: RemoveTagUseCase
-    val createBucketListItemsUseCase: CreateBucketListItemsUseCase
-    val rescheduleQuestUseCase: RescheduleQuestUseCase
-    val calculateAwesomenessScoreUseCase: CalculateAwesomenessScoreUseCase
-    val calculateFocusDurationUseCase: CalculateFocusDurationUseCase
-    val savePlanDayTimeUseCase: SavePlanDayTimeUseCase
-    val savePlanDaysUseCase: SavePlanDaysUseCase
-    val saveTimeFormatUseCase: SaveTimeFormatUseCase
-    val saveTemperatureUnitUseCase: SaveTemperatureUnitUseCase
-    val checkForDailyChallengeCompletionUseCase: CheckForDailyChallengeCompletionUseCase
-    val loadDailyChallengeUseCase: LoadDailyChallengeUseCase
-    val saveDailyChallengeQuestIdsUseCase: SaveDailyChallengeQuestIdsUseCase
-    val calculateGrowthStatsUseCase: CalculateGrowthStatsUseCase
-    val findDailyChallengeStreakUseCase: FindDailyChallengeStreakUseCase
-    val findAverageFocusedDurationForPeriodUseCase: FindAverageFocusedDurationForPeriodUseCase
-    val saveQuickDoNotificationSettingUseCase: SaveQuickDoNotificationSettingUseCase
-    val saveProfileUseCase: SaveProfileUseCase
-    val unlockAchievementsUseCase: UnlockAchievementsUseCase
-    val updateAchievementProgressUseCase: UpdateAchievementProgressUseCase
-    val createAchievementItemsUseCase: CreateAchievementItemsUseCase
+    override val saveHabitUseCase
+        get() = SaveHabitUseCase(
+            habitRepository,
+            playerRepository,
+            rewardPlayerUseCase,
+            removeRewardFromPlayerUseCase
+        )
+
+    override val completeHabitUseCase
+        get() = CompleteHabitUseCase(
+            habitRepository,
+            playerRepository,
+            rewardScheduler,
+            rewardPlayerUseCase,
+            removeRewardFromPlayerUseCase
+        )
+
+    override val undoCompleteHabitUseCase
+        get() = UndoCompleteHabitUseCase(habitRepository, removeRewardFromPlayerUseCase)
+
+    override val removeHabitUseCase
+        get() = RemoveHabitUseCase(habitRepository)
+
+    override val updateHabitStreaksUseCase
+        get() = UpdateHabitStreaksUseCase(habitRepository)
+
+    override val createHabitItemsUseCase
+        get() = CreateHabitItemsUseCase()
 }
 
 interface PresenterModule {
@@ -914,7 +973,8 @@ class AndroidStateStoreModule : StateStoreModule, Injects<Module> {
                 DailyChallengeSideEffectHandler,
                 GrowthSideEffectHandler,
                 ProfileSideEffectHandler,
-                AchievementListSideEffectHandler
+                AchievementListSideEffectHandler,
+                HabitSideEffectHandler
             ),
             sideEffectHandlerExecutor = CoroutineSideEffectHandlerExecutor(job + CommonPool),
             middleware = listOf(

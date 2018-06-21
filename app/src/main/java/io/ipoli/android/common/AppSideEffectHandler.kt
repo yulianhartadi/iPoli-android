@@ -13,6 +13,7 @@ import io.ipoli.android.common.redux.Action
 import io.ipoli.android.common.redux.Dispatcher
 import io.ipoli.android.common.redux.SideEffectHandler
 import io.ipoli.android.common.view.AppWidgetUtil
+import io.ipoli.android.habit.data.Habit
 import io.ipoli.android.myPoliApp
 import io.ipoli.android.pet.store.PetStoreAction
 import io.ipoli.android.pet.usecase.BuyPetUseCase
@@ -118,6 +119,7 @@ object LoadAllDataSideEffectHandler : AppSideEffectHandler() {
     private val challengeRepository by required { challengeRepository }
     private val repeatingQuestRepository by required { repeatingQuestRepository }
     private val tagRepository by required { tagRepository }
+    private val habitRepository by required { habitRepository }
     private val findNextDateForRepeatingQuestUseCase by required { findNextDateForRepeatingQuestUseCase }
     private val findPeriodProgressForRepeatingQuestUseCase by required { findPeriodProgressForRepeatingQuestUseCase }
     private val findQuestsForChallengeUseCase by required { findQuestsForChallengeUseCase }
@@ -156,6 +158,15 @@ object LoadAllDataSideEffectHandler : AppSideEffectHandler() {
                     addQuestCountToTagUseCase.execute(AddQuestCountToTagUseCase.Params(it))
                 }
             dispatch(DataLoadedAction.TagsChanged(tags))
+        }
+    )
+
+    private val habitsChannelRelay = ChannelRelay<List<Habit>, Unit>(
+        producer = { c, _ ->
+            habitRepository.listenForAll(c)
+        },
+        consumer = { hs, _ ->
+            dispatch(DataLoadedAction.HabitsChanged(hs))
         }
     )
 
@@ -234,6 +245,7 @@ object LoadAllDataSideEffectHandler : AppSideEffectHandler() {
         playerChannelRelay.listen(Unit)
         todayQuestsChannelRelay.listen(TodayQuestsParams(LocalDate.now()))
         repeatingQuestsChannelRelay.listen(Unit)
+        habitsChannelRelay.listen(Unit)
         challengesChannelRelay.listen(Unit)
         tagsChannelRelay.listen(Unit)
         unscheduledQuestsChannelRelay.listen(Unit)

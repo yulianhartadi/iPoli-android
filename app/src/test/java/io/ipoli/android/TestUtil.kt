@@ -6,6 +6,8 @@ import com.nhaarman.mockito_kotlin.doReturn
 import com.nhaarman.mockito_kotlin.mock
 import io.ipoli.android.challenge.entity.Challenge
 import io.ipoli.android.challenge.persistence.ChallengeRepository
+import io.ipoli.android.habit.data.Habit
+import io.ipoli.android.habit.persistence.HabitRepository
 import io.ipoli.android.pet.Pet
 import io.ipoli.android.pet.PetAvatar
 import io.ipoli.android.player.data.AuthProvider
@@ -68,6 +70,13 @@ object TestUtil {
         }
     }
 
+    fun habitRepoMock(habit: Habit?) = mock<HabitRepository> {
+        on { findById(habit?.id ?: "") } doReturn habit
+        on { save(any<Habit>()) } doAnswer { invocation ->
+            invocation.getArgument(0)
+        }
+    }
+
     val firstDateOfWeek: LocalDate = LocalDate.now().with(DayOfWeek.MONDAY)
     val lastDateOfWeek: LocalDate = LocalDate.now().with(DayOfWeek.SUNDAY)
 
@@ -93,5 +102,14 @@ object TestUtil {
         startDate = LocalDate.now(),
         endDate = LocalDate.now(),
         motivations = listOf()
+    )
+
+    val habit = Habit(
+        name = "Eat a fruit",
+        color = Color.GREEN,
+        icon = Icon.FLOWER,
+        days = DayOfWeek.values().toSet(),
+        isGood = true,
+        timesADay = 1
     )
 }

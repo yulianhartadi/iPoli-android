@@ -15,19 +15,20 @@ import io.ipoli.android.common.ViewUtils
 import io.ipoli.android.common.view.anim.TypewriterTextAnimator
 import io.ipoli.android.common.view.visible
 import io.ipoli.android.pet.Food
-import kotlinx.android.synthetic.main.popup_quest_complete.view.*
+import kotlinx.android.synthetic.main.popup_reward.view.*
 import java.util.*
 
-class QuestCompletePopup(
+class RewardPopup(
     @DrawableRes private val petHeadImage: Int,
     private val earnedXP: Int,
     private val earnedCoins: Int,
-    private val bounty: Food? = null
+    private val bounty: Food? = null,
+    private val isPositive: Boolean = true
 ) : ToastOverlay() {
 
 
     override fun createView(inflater: LayoutInflater): View =
-        inflater.inflate(R.layout.popup_quest_complete, null)
+        inflater.inflate(R.layout.popup_reward, null)
 
     override fun onViewShown(contentView: View) {
         contentView.pet.setImageResource(petHeadImage)
@@ -39,7 +40,10 @@ class QuestCompletePopup(
 
     private fun startTypingAnimation(contentView: View) {
         val title = contentView.message
-        val messages = contentView.resources.getStringArray(R.array.quest_complete_message)
+        val messages = contentView.resources.getStringArray(
+            if (isPositive) R.array.reward_positive_message
+            else R.array.reward_negative_message
+        )
         val message = messages[Random().nextInt(messages.size)]
         val typewriterAnim = TypewriterTextAnimator.of(
             title,

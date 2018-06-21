@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string-array name="quest_complete_message">
+    <string-array name="reward_positive_message">
         <item>Well done</item>
         <item>Doing great</item>
         <item>Awesome</item>
@@ -31,6 +31,16 @@
         <item>You\'re doing it</item>
         <item>That\'s A work</item>
         <item>You got this</item>
+    </string-array>
+    <string-array name="reward_negative_message">
+        <item>Why?!</item>
+        <item>Be stronger!</item>
+        <item>Don\'t give up!</item>
+        <item>Stay strong!</item>
+        <item>You don\'t need this</item>
+        <item>Keep it together</item>
+        <item>More willpower</item>
+        <item>No more!</item>
     </string-array>
     <string-array name="plan_day_names">
         <item>sexy</item>

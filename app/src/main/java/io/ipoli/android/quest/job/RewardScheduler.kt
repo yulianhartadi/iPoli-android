@@ -7,7 +7,7 @@ import io.ipoli.android.common.view.asThemedWrapper
 import io.ipoli.android.myPoliApp
 import io.ipoli.android.pet.AndroidPetAvatar
 import io.ipoli.android.quest.Quest
-import io.ipoli.android.quest.view.QuestCompletePopup
+import io.ipoli.android.quest.view.RewardPopup
 import kotlinx.coroutines.experimental.android.UI
 import kotlinx.coroutines.experimental.launch
 import space.traversal.kapsule.Kapsule
@@ -17,12 +17,12 @@ import space.traversal.kapsule.Kapsule
  * on 11/15/17.
  */
 
-interface QuestCompleteScheduler {
-    fun schedule(reward: Reward)
+interface RewardScheduler {
+    fun schedule(reward: Reward, isPositive: Boolean = true)
 }
 
-class AndroidJobQuestCompleteScheduler(private val context: Context) : QuestCompleteScheduler {
-    override fun schedule(reward: Reward) {
+class AndroidJobRewardScheduler(private val context: Context) : RewardScheduler {
+    override fun schedule(reward: Reward, isPositive: Boolean) {
 
         val c = context.asThemedWrapper()
 
@@ -35,7 +35,7 @@ class AndroidJobQuestCompleteScheduler(private val context: Context) : QuestComp
         val petAvatar = playerRepository.find()!!.pet.avatar
         val petHeadImage = AndroidPetAvatar.valueOf(petAvatar.name).headImage
         launch(UI) {
-            QuestCompletePopup(
+            RewardPopup(
                 petHeadImage,
                 reward.experience,
                 reward.coins,
@@ -43,7 +43,8 @@ class AndroidJobQuestCompleteScheduler(private val context: Context) : QuestComp
                     bounty.food
                 } else {
                     null
-                }
+                },
+                isPositive
             ).show(c)
         }
     }

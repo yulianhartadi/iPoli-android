@@ -35,7 +35,7 @@ import io.ipoli.android.quest.schedule.calendar.dayview.view.widget.ScheduledEve
 import kotlinx.android.synthetic.main.calendar_hour_cell.view.*
 import kotlinx.android.synthetic.main.controller_onboard_first_quest.view.*
 import kotlinx.android.synthetic.main.item_calendar_quest.view.*
-import kotlinx.android.synthetic.main.popup_quest_complete.view.*
+import kotlinx.android.synthetic.main.popup_reward.view.*
 import kotlinx.android.synthetic.main.view_default_toolbar.view.*
 
 class FirstQuestViewController(args: Bundle? = null) :
@@ -306,7 +306,7 @@ class FirstQuestViewController(args: Bundle? = null) :
     ) {
 
         override fun createView(inflater: LayoutInflater): View =
-            inflater.inflate(R.layout.popup_quest_complete, null)
+            inflater.inflate(R.layout.popup_reward, null)
 
         override fun onViewShown(contentView: View) {
             super.onViewShown(contentView)

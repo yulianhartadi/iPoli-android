@@ -18,6 +18,7 @@ import io.ipoli.android.common.home.HomeViewController
 import io.ipoli.android.common.view.*
 import io.ipoli.android.dailychallenge.DailyChallengeViewController
 import io.ipoli.android.event.calendar.picker.CalendarPickerDialogController
+import io.ipoli.android.habit.edit.EditHabitViewController
 import io.ipoli.android.note.NotePickerDialogController
 import io.ipoli.android.onboarding.OnboardData
 import io.ipoli.android.pet.PetViewController
@@ -35,6 +36,7 @@ import io.ipoli.android.quest.reminder.picker.ReminderPickerDialogController
 import io.ipoli.android.quest.reminder.picker.ReminderViewModel
 import io.ipoli.android.quest.schedule.addquest.AddQuestViewController
 import io.ipoli.android.quest.show.QuestViewController
+import io.ipoli.android.repeatingquest.add.AddRepeatingQuestViewController
 import io.ipoli.android.repeatingquest.edit.picker.RepeatPatternPickerDialogController
 import io.ipoli.android.repeatingquest.entity.RepeatPattern
 import io.ipoli.android.settings.view.DaysPickerDialogController
@@ -126,6 +128,18 @@ class Navigator(private val router: Router) {
 
     fun toCompletedQuest(questId: String, changeHandler: ControllerChangeHandler? = null) {
         pushController({ CompletedQuestViewController(questId) }, changeHandler)
+    }
+
+    fun toAddRepeatingQuest() {
+        pushController({ AddRepeatingQuestViewController() }, VerticalChangeHandler())
+    }
+
+    fun toAddHabit() {
+        pushController({ EditHabitViewController() }, VerticalChangeHandler())
+    }
+
+    fun toEditHabit(habitId: String) {
+        pushController({ EditHabitViewController(habitId) }, VerticalChangeHandler())
     }
 
     fun toAddChallenge() {

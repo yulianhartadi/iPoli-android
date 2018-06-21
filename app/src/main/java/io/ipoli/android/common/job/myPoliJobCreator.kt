@@ -5,6 +5,7 @@ import com.evernote.android.job.JobCreator
 import io.ipoli.android.achievement.job.UpdateAchievementProgressJob
 import io.ipoli.android.common.rate.RatePopupJob
 import io.ipoli.android.dailychallenge.job.DailyChallengeCompleteJob
+import io.ipoli.android.habit.job.UpdateHabitStreaksJob
 import io.ipoli.android.pet.LowerPetStatsJob
 import io.ipoli.android.planday.job.PlanDayJob
 import io.ipoli.android.planday.job.SnoozedPlanDayJob
@@ -30,6 +31,7 @@ class myPoliJobCreator : JobCreator {
             SnoozedPlanDayJob.TAG -> SnoozedPlanDayJob()
             DailyChallengeCompleteJob.TAG -> DailyChallengeCompleteJob()
             UpdateAchievementProgressJob.TAG -> UpdateAchievementProgressJob()
+            UpdateHabitStreaksJob.TAG -> UpdateHabitStreaksJob()
             else -> null
         }
 }

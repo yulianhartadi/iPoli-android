@@ -12,8 +12,8 @@ import io.ipoli.android.player.persistence.PlayerRepository
 import io.ipoli.android.player.usecase.RewardPlayerUseCase
 import io.ipoli.android.quest.Quest
 import io.ipoli.android.quest.data.persistence.QuestRepository
-import io.ipoli.android.quest.job.QuestCompleteScheduler
 import io.ipoli.android.quest.job.ReminderScheduler
+import io.ipoli.android.quest.job.RewardScheduler
 import io.ipoli.android.quest.usecase.CompleteQuestUseCase.Params.WithQuestId
 import org.amshove.kluent.*
 import org.jetbrains.spek.api.Spek
@@ -42,7 +42,7 @@ class CompleteQuestUseCaseSpek : Spek({
 
         val questRepo = createQuestRepository(quest)
 
-        val questCompleteScheduler = mock<QuestCompleteScheduler>()
+        val rewardScheduler = mock<RewardScheduler>()
         val reminderScheduler = mock<ReminderScheduler>()
         val ratePopupScheduler = mock<RatePopupScheduler>()
         val rewardPlayerUseCase = mock<RewardPlayerUseCase>()
@@ -55,7 +55,7 @@ class CompleteQuestUseCaseSpek : Spek({
             questRepo,
             playerRepo,
             reminderScheduler,
-            questCompleteScheduler,
+            rewardScheduler,
             ratePopupScheduler,
             rewardPlayerUseCase,
             mock(),
@@ -64,7 +64,7 @@ class CompleteQuestUseCaseSpek : Spek({
         )
 
         beforeEachTest {
-            reset(rewardPlayerUseCase, questCompleteScheduler, reminderScheduler)
+            reset(rewardPlayerUseCase, rewardScheduler, reminderScheduler)
         }
 
         val questId = "sampleid"
@@ -89,7 +89,7 @@ class CompleteQuestUseCaseSpek : Spek({
 
         it("should schedule show quest complete message") {
             useCase.execute(WithQuestId(questId))
-            Verify on questCompleteScheduler that questCompleteScheduler.schedule(any()) was called
+            Verify on rewardScheduler that rewardScheduler.schedule(any(), any()) was called
         }
 
         it("should have XP") {
@@ -115,7 +115,7 @@ class CompleteQuestUseCaseSpek : Spek({
                 questRepo,
                 playerRepo,
                 reminderScheduler,
-                questCompleteScheduler,
+                rewardScheduler,
                 ratePopupScheduler,
                 rewardPlayerUseCase,
                 mock(),
@@ -136,7 +136,7 @@ class CompleteQuestUseCaseSpek : Spek({
                 ),
                 playerRepo,
                 reminderScheduler,
-                questCompleteScheduler,
+                rewardScheduler,
                 ratePopupScheduler,
                 rewardPlayerUseCase,
                 mock(),
@@ -164,7 +164,7 @@ class CompleteQuestUseCaseSpek : Spek({
                 ),
                 playerRepo,
                 reminderScheduler,
-                questCompleteScheduler,
+                rewardScheduler,
                 ratePopupScheduler,
                 rewardPlayerUseCaseMock,
                 mock(),

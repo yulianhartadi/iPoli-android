@@ -10,6 +10,8 @@ import io.ipoli.android.common.redux.State
 import io.ipoli.android.event.Calendar
 import io.ipoli.android.event.Event
 import io.ipoli.android.growth.usecase.CalculateGrowthStatsUseCase
+import io.ipoli.android.habit.data.Habit
+import io.ipoli.android.habit.usecase.CreateHabitItemsUseCase
 import io.ipoli.android.planday.data.Weather
 import io.ipoli.android.planday.persistence.MotivationalImage
 import io.ipoli.android.planday.persistence.Quote
@@ -34,6 +36,9 @@ sealed class DataLoadedAction : Action {
     data class PlayerChanged(val player: Player) : DataLoadedAction()
     data class TodayQuestsChanged(val quests: List<Quest>) : DataLoadedAction()
     data class RepeatingQuestsChanged(val repeatingQuests: List<RepeatingQuest>) :
+        DataLoadedAction()
+
+    data class HabitsChanged(val habits: List<Habit>) :
         DataLoadedAction()
 
     data class ChallengesChanged(val challenges: List<Challenge>) :
@@ -92,6 +97,9 @@ sealed class DataLoadedAction : Action {
 
     data class AchievementItemsChanged(val achievementListItems: List<CreateAchievementItemsUseCase.AchievementListItem>) :
         DataLoadedAction()
+
+    data class HabitItemsChanged(val habitItems: List<CreateHabitItemsUseCase.HabitItem>) :
+        DataLoadedAction()
 }
 
 data class AppDataState(
@@ -100,6 +108,7 @@ data class AppDataState(
     val unscheduledQuests: List<Quest>,
     val calendarSchedule: Map<LocalDate, Schedule>,
     val repeatingQuests: List<RepeatingQuest>?,
+    val habits: List<Habit>?,
     val challenges: List<Challenge>?,
     val events: List<Event>,
     val tags: List<Tag>
@@ -133,6 +142,11 @@ object AppDataReducer : Reducer<AppState, AppDataState> {
                     repeatingQuests = action.repeatingQuests
                 )
 
+            is DataLoadedAction.HabitsChanged ->
+                subState.copy(
+                    habits = action.habits
+                )
+
             is DataLoadedAction.ChallengesChanged ->
                 subState.copy(
                     challenges = action.challenges
@@ -163,6 +177,7 @@ object AppDataReducer : Reducer<AppState, AppDataState> {
             unscheduledQuests = emptyList(),
             calendarSchedule = mapOf(),
             repeatingQuests = null,
+            habits = null,
             challenges = null,
             events = listOf(),
             tags = listOf()

@@ -19,6 +19,13 @@
             android:title="@string/title_bucket_list" />
 
         <item
+            android:id="@+id/habits"
+            android:checked="false"
+            android:icon="@drawable/ic_favorite_white_24dp"
+            android:orderInCategory="0"
+            android:title="@string/drawer_habits" />
+
+        <item
             android:id="@+id/repeatingQuests"
             android:checked="false"
             android:icon="@drawable/ic_repeat_white_24dp"

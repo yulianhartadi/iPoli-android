@@ -21,7 +21,6 @@ import io.ipoli.android.common.view.*
 import io.ipoli.android.common.view.recyclerview.BaseRecyclerViewAdapter
 import io.ipoli.android.common.view.recyclerview.RecyclerViewViewModel
 import io.ipoli.android.common.view.recyclerview.SimpleViewHolder
-import io.ipoli.android.repeatingquest.add.AddRepeatingQuestViewController
 import io.ipoli.android.repeatingquest.entity.repeatType
 import io.ipoli.android.repeatingquest.list.RepeatingQuestListViewState.StateType.CHANGED
 import io.ipoli.android.repeatingquest.show.RepeatingQuestViewController
@@ -46,7 +45,6 @@ class RepeatingQuestListViewController(args: Bundle? = null) :
         container: ViewGroup,
         savedViewState: Bundle?
     ): View {
-
         val view = inflater.inflate(
             R.layout.controller_repeating_quest_list, container, false
         )
@@ -54,8 +52,8 @@ class RepeatingQuestListViewController(args: Bundle? = null) :
                 LinearLayoutManager(container.context, LinearLayoutManager.VERTICAL, false)
         view.repeatingQuestList.adapter = RepeatingQuestAdapter()
 
-        view.addRepeatingQuest.setOnClickListener {
-            rootRouter.pushController(AddRepeatingQuestViewController.routerTransaction)
+        view.addRepeatingQuest.onDebounceClick {
+            navigateFromRoot().toAddRepeatingQuest()
         }
         view.emptyAnimation.setAnimation("empty_repeating_quest_list.json")
         return view
