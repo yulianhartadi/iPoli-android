@@ -55,12 +55,13 @@ object QuestReducer : BaseViewStateReducer<QuestViewState>() {
         when (action) {
 
             is DataLoadedAction.QuestChanged -> {
-                if (action.quest.isCompleted) {
+                val quest = action.quest
+                if (quest.isCompleted) {
                     subState.copy(
                         type = QUEST_COMPLETED
                     )
                 } else {
-                    createQuestChangedState(subState.copy(quest = action.quest))
+                    createQuestChangedState(subState.copy(quest = quest))
                 }
             }
 

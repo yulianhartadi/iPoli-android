@@ -68,7 +68,7 @@ class TimerCompleteNotificationJob : Job(), Injects<Module> {
                     "Your pomodoro is added to ${quest.name}. Ready for a break?"
                 )
             } else {
-                if (quest.hasCompletedAllTimeRanges()) {
+                if (quest.hasExceededEstimatedDuration()) {
                     addMarkDoneAction(questId, notificationBuilder)
                     Pair(
                         "Break complete",

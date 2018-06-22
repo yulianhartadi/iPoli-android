@@ -203,11 +203,11 @@ class AuthViewController(args: Bundle? = null) :
                 view.username.setSelection(state.username.length)
                 hideLoader()
                 renderPlayerAvatars(view, state)
-                playShowLoginAnimation(view, {
+                playShowLoginAnimation(view) {
                     view.loginContainer.invisible()
                     view.loginPet.invisible()
                     view.signUpHeadline.setText(R.string.choose_your_avatar)
-                })
+                }
             }
 
             AVATAR_CHANGED -> {

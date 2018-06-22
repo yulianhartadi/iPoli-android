@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <item
+        android:id="@+id/actionPredefinedHabits"
+        android:checked="false"
+        android:title="@string/predefined_habits_title"
+        app:showAsAction="always" />
+</menu>

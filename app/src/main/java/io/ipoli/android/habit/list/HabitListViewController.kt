@@ -6,10 +6,7 @@ import android.graphics.drawable.GradientDrawable
 import android.os.Bundle
 import android.support.annotation.ColorRes
 import android.support.v7.widget.GridLayoutManager
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewAnimationUtils
-import android.view.ViewGroup
+import android.view.*
 import android.view.animation.AccelerateDecelerateInterpolator
 import android.widget.TextView
 import com.mikepenz.google_material_typeface_library.GoogleMaterial
@@ -43,6 +40,7 @@ class HabitListViewController(args: Bundle? = null) :
         container: ViewGroup,
         savedViewState: Bundle?
     ): View {
+        setHasOptionsMenu(true)
         val view = inflater.inflate(R.layout.controller_habit_list, container, false)
 
         toolbarTitle = stringRes(R.string.habits)
@@ -69,6 +67,19 @@ class HabitListViewController(args: Bundle? = null) :
     }
 
     override fun onCreateLoadAction() = HabitListAction.Load
+
+    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+        super.onCreateOptionsMenu(menu, inflater)
+        inflater.inflate(R.menu.habit_list_menu, menu)
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        if (item.itemId == R.id.actionPredefinedHabits) {
+            navigateFromRoot().toPredefinedHabits()
+            return true
+        }
+        return super.onOptionsItemSelected(item)
+    }
 
     override fun render(state: HabitListViewState, view: View) {
 
@@ -147,7 +158,7 @@ class HabitListViewController(args: Bundle? = null) :
                 R.layout.item_habit_list
             ) { vm, view ->
 
-                renderName(view, vm.name)
+                renderName(view, vm.name, vm.isGood)
                 renderIcon(view, vm.icon, if (vm.isCompleted) R.color.md_white else vm.color)
                 renderStreak(
                     view = view,
@@ -208,7 +219,6 @@ class HabitListViewController(args: Bundle? = null) :
                 view.habitCompletedBackground.onDebounceClick {
                     startUndoCompleteAnimation(view, vm)
                 }
-
             }
 
             registerBinder<ItemViewModel.OtherDayItem>(
@@ -216,7 +226,7 @@ class HabitListViewController(args: Bundle? = null) :
                 R.layout.item_habit_list
             ) { vm, view ->
 
-                renderName(view, vm.name)
+                renderName(view, vm.name, vm.isGood)
                 renderIcon(view, vm.icon, R.color.md_white)
                 renderStreak(view, vm.streak, vm.isBestStreak, R.color.md_white, R.color.md_white)
                 renderCompletedBackground(view, vm.color)
@@ -273,9 +283,11 @@ class HabitListViewController(args: Bundle? = null) :
 
         private fun renderName(
             view: View,
-            name: String
+            name: String,
+            isGood: Boolean
         ) {
-            view.habitName.text = name
+
+            view.habitName.text = if (isGood) name else "\u2205 $name"
         }
 
         private fun renderProgress(

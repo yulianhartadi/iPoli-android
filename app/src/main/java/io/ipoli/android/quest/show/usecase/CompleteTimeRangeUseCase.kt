@@ -36,8 +36,7 @@ class CompleteTimeRangeUseCase(
         val time = parameters.time
 
         if (quest.hasCountDownTimer) {
-            val newQuest = questRepository.save(endLastTimeRange(quest, time))
-            return completeQuestUseCase.execute(WithQuest(newQuest))
+            return completeQuestUseCase.execute(WithQuest(endLastTimeRange(quest, time)))
         }
 
         val splitResult = splitDurationForPomodoroTimerUseCase
@@ -45,7 +44,7 @@ class CompleteTimeRangeUseCase(
 
         if (splitResult == SplitDurationForPomodoroTimerUseCase.Result.DurationNotSplit) {
             val newQuest = if (quest.timeRanges.isNotEmpty()) {
-                questRepository.save(endLastTimeRange(quest, time))
+                endLastTimeRange(quest, time)
             } else quest
 
             return completeQuestUseCase.execute(WithQuest(newQuest))
@@ -55,8 +54,7 @@ class CompleteTimeRangeUseCase(
             (splitResult as SplitDurationForPomodoroTimerUseCase.Result.DurationSplit).timeRanges
 
         if (timeRanges.size <= quest.timeRanges.size) {
-            val newQuest = questRepository.save(endLastTimeRange(quest, time))
-            return completeQuestUseCase.execute(WithQuest(newQuest))
+            return completeQuestUseCase.execute(WithQuest(endLastTimeRange(quest, time)))
         }
 
         val questWithEndedLastRange = endLastTimeRange(quest, time)

@@ -25,7 +25,10 @@ sealed class EditHabitAction : Action {
     object MakeBad : EditHabitAction()
     object MakeGood : EditHabitAction()
 
-    data class Load(val habitId: String) : EditHabitAction()
+    data class Load(
+        val habitId: String,
+        val params: EditHabitViewController.Params?
+    ) : EditHabitAction()
     data class DeselectDay(val weekDay: DayOfWeek) : EditHabitAction()
     data class SelectDay(val weekDay: DayOfWeek) : EditHabitAction()
     data class AddTag(val tagName: String) : EditHabitAction()
@@ -53,7 +56,7 @@ object EditHabitReducer : BaseViewStateReducer<EditHabitViewState>() {
     ) =
         when (action) {
             is EditHabitAction.Load -> {
-                if (action.habitId.isBlank()) {
+                val s = if (action.habitId.isBlank()) {
                     subState.copy(
                         type = EditHabitViewState.StateType.HABIT_DATA_CHANGED,
                         tags = state.dataState.tags,
@@ -62,6 +65,17 @@ object EditHabitReducer : BaseViewStateReducer<EditHabitViewState>() {
                 } else {
                     createFromHabits(state.dataState.habits!!, action.habitId, subState, state)
                 }
+                val params = action.params
+                if (params != null) {
+                    s.copy(
+                        name = params.name,
+                        color = params.color,
+                        icon = params.icon,
+                        timesADay = params.timesADay,
+                        isGood = params.isGood,
+                        days = params.days
+                    )
+                } else s
             }
 
             is DataLoadedAction.TagsChanged ->
@@ -81,13 +95,13 @@ object EditHabitReducer : BaseViewStateReducer<EditHabitViewState>() {
 
             is EditHabitAction.SelectDay ->
                 subState.copy(
-                    type = DAYS_CHANGED,
+    type = EditHabitViewState.StateType.DAYS_CHANGED,
                     days = subState.days + action.weekDay
                 )
 
             is EditHabitAction.DeselectDay ->
                 subState.copy(
-                    type = DAYS_CHANGED,
+                    type = EditHabitViewState.StateType.DAYS_CHANGED,
                     days = subState.days - action.weekDay
                 )
 

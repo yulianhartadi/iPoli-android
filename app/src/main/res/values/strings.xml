@@ -1212,7 +1212,7 @@
     <string name="calendar_picker_title">Which Calendars to sync?</string>
     <string name="sync_selected">Sync selected</string>
     <string name="challenge_motivations_question">Motivate yourself</string>
-    <string name="predefined_challenges_title">Planned Challenges</string>
+    <string name="predefined_challenges_title">Preset Challenges</string>
     <string name="empty_state_quest_picker_title">No quests found</string>
     <string name="empty_state_quest_picker_text">Go add some quests to challenge you</string>
     <string name="complete">Complete</string>
@@ -1477,4 +1477,5 @@
     <string name="add_habit">Add Habit</string>
     <string name="edit_habit">Edit Habit</string>
     <string name="habits">Habits</string>
+    <string name="predefined_habits_title">Preset habits</string>
 </resources>

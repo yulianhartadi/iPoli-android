@@ -19,6 +19,7 @@ import io.ipoli.android.common.view.*
 import io.ipoli.android.dailychallenge.DailyChallengeViewController
 import io.ipoli.android.event.calendar.picker.CalendarPickerDialogController
 import io.ipoli.android.habit.edit.EditHabitViewController
+import io.ipoli.android.habit.predefined.PredefinedHabitListViewController
 import io.ipoli.android.note.NotePickerDialogController
 import io.ipoli.android.onboarding.OnboardData
 import io.ipoli.android.pet.PetViewController
@@ -134,8 +135,8 @@ class Navigator(private val router: Router) {
         pushController({ AddRepeatingQuestViewController() }, VerticalChangeHandler())
     }
 
-    fun toAddHabit() {
-        pushController({ EditHabitViewController() }, VerticalChangeHandler())
+    fun toAddHabit(params: EditHabitViewController.Params? = null) {
+        pushController({ EditHabitViewController("", params) }, VerticalChangeHandler())
     }
 
     fun toEditHabit(habitId: String) {
@@ -144,6 +145,10 @@ class Navigator(private val router: Router) {
 
     fun toAddChallenge() {
         pushController({ AddChallengeViewController() }, VerticalChangeHandler())
+    }
+
+    fun toPredefinedHabits() {
+        pushController({ PredefinedHabitListViewController() }, VerticalChangeHandler())
     }
 
     fun toEditTag(tagId: String? = null, changeHandler: ControllerChangeHandler?) {

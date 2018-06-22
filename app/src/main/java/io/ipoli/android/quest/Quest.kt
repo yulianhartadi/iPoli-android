@@ -123,6 +123,18 @@ enum class Icon(val pack: IconPack) {
     CROISSANT(IconPack.BASIC),
     APPLE(IconPack.BASIC),
     FISH(IconPack.BASIC),
+    SMILE(IconPack.BASIC),
+    TOOTH(IconPack.BASIC),
+    SMOKE(IconPack.BASIC),
+    HAND(IconPack.BASIC),
+    STRETCH(IconPack.BASIC),
+    PAUSE(IconPack.BASIC),
+    BASKETBALL(IconPack.BASIC),
+    ROSE(IconPack.BASIC),
+    SCALE(IconPack.BASIC),
+    EVENT_NOTE(IconPack.BASIC),
+    GLASS_WATER(IconPack.BASIC),
+    PHOTO_CAMERA(IconPack.BASIC),
 }
 
 enum class IconPack(val gemPrice: Int) {
@@ -222,7 +234,10 @@ data class Quest(
                 (hasCountDownTimer ||
                     (hasPomodoroTimer && timeRanges.last().end == null))
 
-    fun hasCompletedAllTimeRanges() = timeRanges.sumBy { it.duration } >= duration
+    fun hasExceededEstimatedDuration() = timeRanges.sumBy { it.duration } >= duration
+
+    fun areAllTimeRangesCompleted() = timeRangesToComplete.isNotEmpty() &&
+        timeRangesToComplete.count { it.start != null && it.end != null } == timeRangesToComplete.size
 
     val isFromRepeatingQuest get() = repeatingQuestId != null
 

@@ -20,6 +20,7 @@ import io.ipoli.android.common.redux.android.ReduxViewController
 import io.ipoli.android.common.view.*
 import io.ipoli.android.habit.edit.EditHabitViewState.StateType.*
 import io.ipoli.android.quest.Color
+import io.ipoli.android.quest.Icon
 import io.ipoli.android.tag.widget.EditItemAutocompleteTagAdapter
 import io.ipoli.android.tag.widget.EditItemTagAdapter
 import kotlinx.android.synthetic.main.controller_edit_habit.view.*
@@ -37,9 +38,21 @@ class EditHabitViewController(args: Bundle? = null) :
     override val reducer = EditHabitReducer
 
     private var habitId: String = ""
+    private var params: Params? = null
 
-    constructor(habitId: String) : this() {
+    data class Params(
+        val name: String,
+        val color: Color,
+        val icon: Icon,
+        val isGood: Boolean,
+        val timesADay: Int,
+        val days: Set<DayOfWeek>
+    )
+
+
+    constructor(habitId: String, params: Params? = null) : this() {
         this.habitId = habitId
+        this.params = params
     }
 
     override fun onCreateView(
@@ -77,7 +90,7 @@ class EditHabitViewController(args: Bundle? = null) :
         showBackButton()
     }
 
-    override fun onCreateLoadAction() = EditHabitAction.Load(habitId)
+    override fun onCreateLoadAction() = EditHabitAction.Load(habitId, params)
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         super.onCreateOptionsMenu(menu, inflater)
