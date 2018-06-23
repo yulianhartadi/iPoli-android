@@ -42,6 +42,7 @@
                         android:id="@+id/questNameBackground"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
+                        android:layout_marginBottom="16dp"
                         android:layout_marginEnd="16dp"
                         android:layout_marginStart="16dp"
                         android:background="@drawable/rounded_rectangle_white_background"
@@ -245,9 +246,9 @@
                         android:id="@+id/timerProgressScroll"
                         android:layout_width="0dp"
                         android:layout_height="82dp"
-                        android:layout_marginBottom="16dp"
                         android:layout_marginEnd="16dp"
                         android:layout_marginStart="16dp"
+                        android:layout_marginBottom="32dp"
                         android:orientation="horizontal"
                         android:scrollbars="none"
                         app:layout_constraintBottom_toBottomOf="parent"
@@ -291,6 +292,17 @@
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintTop_toTopOf="@+id/timerProgressScroll" />
 
+                    <ImageView
+                        android:id="@+id/scrollDownHint"
+                        android:layout_width="40dp"
+                        android:layout_height="40dp"
+                        android:scaleType="fitXY"
+                        android:src="@drawable/ic_scroll_down_light_24dp"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintHorizontal_bias="0.5"
+                        app:layout_constraintStart_toStartOf="parent" />
+
                     <android.support.constraint.Group
                         android:id="@+id/timerPreviewGroup"
                         android:layout_width="wrap_content"
@@ -301,7 +313,7 @@
                         android:id="@+id/timerRunningGroup"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        app:constraint_referenced_ids="timerLabel,startStop,timerProgressCircle,questNameBackground" />
+                        app:constraint_referenced_ids="timerLabel,startStop,timerProgressCircle,questNameBackground,scrollDownHint" />
 
                 </android.support.constraint.ConstraintLayout>
 
