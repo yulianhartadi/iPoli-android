@@ -1,13 +1,14 @@
 package io.ipoli.android.quest.schedule.calendar.dayview.view.widget
 
 import android.animation.ObjectAnimator
+import android.content.BroadcastReceiver
 import android.content.Context
+import android.content.Intent
+import android.content.IntentFilter
 import android.content.res.Resources
 import android.database.DataSetObserver
 import android.graphics.Rect
 import android.graphics.drawable.Drawable
-import android.os.Handler
-import android.os.Looper
 import android.support.annotation.LayoutRes
 import android.support.transition.AutoTransition
 import android.support.transition.TransitionManager
@@ -25,10 +26,7 @@ import io.ipoli.android.common.view.AndroidColor
 import io.ipoli.android.common.view.visible
 import io.ipoli.android.quest.schedule.calendar.dayview.view.widget.util.PositionToTimeMapper
 import kotlinx.android.synthetic.main.view_calendar_day.view.*
-import org.threeten.bp.Duration
-import org.threeten.bp.LocalDateTime
 import java.lang.Math.*
-import java.util.concurrent.TimeUnit
 import kotlin.reflect.KClass
 
 /**
@@ -148,6 +146,13 @@ class CalendarDayView : FrameLayout, StateChangeListener {
 
     private lateinit var inflater: LayoutInflater
     private lateinit var asyncLayoutInflater: AsyncLayoutInflater
+    private val timeChangeReceiver: BroadcastReceiver = object : BroadcastReceiver() {
+        override fun onReceive(context: Context, intent: Intent) {
+            if (Intent.ACTION_TIME_TICK == intent.action) {
+                moveTimeLineToNow()
+            }
+        }
+    }
 
     private var dragView: View? = null
     private var lastY: Float? = null
@@ -180,8 +185,6 @@ class CalendarDayView : FrameLayout, StateChangeListener {
     )
 
     private val r = Rect()
-
-    private val minuteChangeHandler = Handler(Looper.getMainLooper())
 
     private val dataSetObserver = object : DataSetObserver() {
         override fun onChanged() {
@@ -245,12 +248,6 @@ class CalendarDayView : FrameLayout, StateChangeListener {
 
         scaleDetector = createScaleDetector()
 
-        val delaySec = Duration.ofMinutes(1).seconds - LocalDateTime.now().second
-        minuteChangeHandler.postDelayed(
-            moveTimeLineToNow(),
-            TimeUnit.SECONDS.toMillis(delaySec)
-        )
-
         eventContainer.setOnLongClickListener {
             onAddNewEvent()
             false
@@ -279,11 +276,8 @@ class CalendarDayView : FrameLayout, StateChangeListener {
         fsm.fire(Event.LayoutChange)
     }
 
-    private fun moveTimeLineToNow(): Runnable =
-        Runnable {
-            timeLineView.addToTopPosition(fsm.state.minuteHeight)
-            minuteChangeHandler.postDelayed(moveTimeLineToNow(), TimeUnit.MINUTES.toMillis(1))
-        }
+    private fun moveTimeLineToNow() =
+        timeLineView.setTopPosition(Time.now().toPosition(fsm.state.minuteHeight) - (timeLineView.height / 2))
 
     private fun createScaleDetector(): ScaleGestureDetector =
         ScaleGestureDetector(context, object : ScaleGestureDetector.SimpleOnScaleGestureListener() {
@@ -307,8 +301,7 @@ class CalendarDayView : FrameLayout, StateChangeListener {
     private fun setupTimeLine() {
         timeLineView = inflater.inflate(timeLineLayout, eventContainer, false)
         timeLineView.post {
-            val timeLineHeight = timeLineView.height
-            timeLineView.setTopPosition(Time.now().toPosition(fsm.state.minuteHeight) - (timeLineHeight / 2))
+            timeLineView.setTopPosition(Time.now().toPosition(fsm.state.minuteHeight) - (timeLineView.height / 2))
         }
 
         eventContainer.addView(timeLineView)
@@ -785,16 +778,16 @@ class CalendarDayView : FrameLayout, StateChangeListener {
             post {
                 asyncLayoutInflater.inflate(
                     R.layout.calendar_hour_cell,
-                    eventContainer,
-                    { hourView, _, _ ->
-                        val layoutParams = hourView.layoutParams as MarginLayoutParams
-                        layoutParams.height = hourHeight.toInt()
-                        layoutParams.topMargin = (hour * hourHeight).toInt()
-                        hourCellAdapter.bind(hourView, hour)
-                        hourCellViews.add(hourView)
-                        eventContainer.addView(hourView)
-                        fsm.fire(Event.HourViewAdded)
-                    })
+                    eventContainer
+                ) { hourView, _, _ ->
+                    val layoutParams = hourView.layoutParams as MarginLayoutParams
+                    layoutParams.height = hourHeight.toInt()
+                    layoutParams.topMargin = (hour * hourHeight).toInt()
+                    hourCellAdapter.bind(hourView, hour)
+                    hourCellViews.add(hourView)
+                    eventContainer.addView(hourView)
+                    fsm.fire(Event.HourViewAdded)
+                }
             }
         }
     }
@@ -894,11 +887,11 @@ class CalendarDayView : FrameLayout, StateChangeListener {
     }
 
     private fun addEditView() {
-        asyncLayoutInflater.inflate(R.layout.item_calendar_drag, this, { v, _, _ ->
+        asyncLayoutInflater.inflate(R.layout.item_calendar_drag, this) { v, _, _ ->
             v.visible = false
             addView(v)
             dragView = v
-        })
+        }
     }
 
     override fun dispatchTouchEvent(ev: MotionEvent): Boolean {
@@ -1110,14 +1103,20 @@ class CalendarDayView : FrameLayout, StateChangeListener {
         timeLineView.visible = false
     }
 
+    override fun onAttachedToWindow() {
+        super.onAttachedToWindow()
+        moveTimeLineToNow()
+        context.registerReceiver(timeChangeReceiver, IntentFilter(Intent.ACTION_TIME_TICK))
+    }
+
     override fun onDetachedFromWindow() {
+        context.unregisterReceiver(timeChangeReceiver)
         eventViews.clear()
         hourCellViews.clear()
         dragView = null
         hourCellAdapter = object : HourCellAdapter {
             override fun bind(view: View, hour: Int) {}
         }
-        minuteChangeHandler.removeCallbacksAndMessages(null)
         viewTreeObserver.removeOnGlobalLayoutListener(layoutListener)
         super.onDetachedFromWindow()
     }
