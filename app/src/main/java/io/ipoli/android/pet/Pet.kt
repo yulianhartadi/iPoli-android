@@ -232,23 +232,23 @@ enum class PetItem(
     val type: PetItemType,
     val gemPrice: Int
 ) {
-    GLASSES(4, 5, -9, PetItemType.MASK, 4),
-    EYE_PATCH(5, -1, 3, PetItemType.MASK, 6),
-    MASK(8, -3, 4, PetItemType.MASK, 7),
-    GLASSES_CLOWN(2, 6, -1, PetItemType.MASK, 6),
-    BEARD(-3, 2, 1, PetItemType.MASK, 1),
+    GLASSES(12, 15, -27, PetItemType.MASK, 4),
+    EYE_PATCH(15, -3, 9, PetItemType.MASK, 6),
+    MASK(24, -9, 12, PetItemType.MASK, 7),
+    GLASSES_CLOWN(6, 18, -3, PetItemType.MASK, 6),
+    BEARD(-9, 6, 3, PetItemType.MASK, 1),
 
 
-    PIRATE_CLOTH(3, 6, 1, PetItemType.HAT, 8),
-    CLOWN_HAIR(2, 1, 7, PetItemType.HAT, 8),
-    RED_WHITE_HAT(1, 1, 5, PetItemType.HAT, 4),
-    HORNS(2, 10, 1, PetItemType.HAT, 9),
-    RED_HAT(4, -3, 2, PetItemType.HAT, 3),
+    PIRATE_CLOTH(9, 18, 3, PetItemType.HAT, 8),
+    CLOWN_HAIR(6, 3, 21, PetItemType.HAT, 8),
+    RED_WHITE_HAT(3, 3, 15, PetItemType.HAT, 4),
+    HORNS(6, 30, 3, PetItemType.HAT, 9),
+    RED_HAT(12, -9, 6, PetItemType.HAT, 3),
 
 
-    RED_DEER_SWEATER(11, -5, 0, PetItemType.BODY_ARMOR, 5),
-    RED_SNOWFLAKES_SWEATER(2, 7, 2, PetItemType.BODY_ARMOR, 8),
-    RED_WHITE_SWEATER(5, 5, 9, PetItemType.BODY_ARMOR, 11)
+    RED_DEER_SWEATER(33, -15, 0, PetItemType.BODY_ARMOR, 5),
+    RED_SNOWFLAKES_SWEATER(6, 21, 6, PetItemType.BODY_ARMOR, 8),
+    RED_WHITE_SWEATER(15, 15, 27, PetItemType.BODY_ARMOR, 11)
 }
 
 enum class AndroidPetItem(
