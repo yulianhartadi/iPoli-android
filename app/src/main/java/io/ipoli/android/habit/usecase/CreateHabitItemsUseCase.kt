@@ -10,8 +10,9 @@ class CreateHabitItemsUseCase :
     override fun execute(parameters: Params): List<HabitItem> {
         val habits = parameters.habits.sortedWith(
             compareByDescending<Habit> { it.shouldBeDoneOn(LocalDate.now()) }
-                .thenBy { it.isCompletedFor(LocalDate.now()) }
+                .thenBy { it.isCompletedFor(LocalDate.now())}
                 .thenByDescending { it.timesADay }
+                .thenByDescending { it.isGood }
         )
         val currentDate = parameters.currentDate
         val (todayHabits, otherDayHabits) = habits.partition { it.shouldBeDoneOn(currentDate) }
