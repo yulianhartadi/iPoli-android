@@ -123,6 +123,7 @@ class DayViewReducer(namespace: String) : NamespaceViewStateReducer<DayViewState
                     },
                     reminder = vm.reminder,
                     repeatingQuestId = vm.repeatingQuestId,
+                    challengeId = vm.challengeId,
                     tags = vm.tags.map { it.tag }
                 )
             }
@@ -141,6 +142,7 @@ class DayViewReducer(namespace: String) : NamespaceViewStateReducer<DayViewState
                     reminder = vm.reminder,
                     startTime = null,
                     repeatingQuestId = vm.repeatingQuestId,
+                    challengeId = vm.challengeId,
                     tags = vm.tags.map { it.tag }
                 )
             }
@@ -290,6 +292,7 @@ class DayViewReducer(namespace: String) : NamespaceViewStateReducer<DayViewState
             reminder = null,
             icon = null,
             repeatingQuestId = null,
+            challengeId = null,
             tags = emptyList()
         )
 }
@@ -309,6 +312,7 @@ data class DayViewState(
     val reminder: ReminderViewModel?,
     val icon: Icon?,
     val repeatingQuestId: String?,
+    val challengeId: String?,
     val tags : List<Tag>
 ) : BaseViewState() {
 
