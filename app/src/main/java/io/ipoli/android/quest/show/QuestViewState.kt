@@ -102,7 +102,7 @@ object QuestReducer : BaseViewStateReducer<QuestViewState>() {
 
             QuestAction.CompletePomodoro -> {
                 subState.copy(
-                    type = TIMER_STOPPED
+                    type = POMODORO_COMPLETED
                 )
             }
 
@@ -365,6 +365,7 @@ data class QuestViewState(
         POMODORO_ADDED,
         POMODORO_REMOVED,
         POMODORO_COUNT_NOT_CHANGED,
+        POMODORO_COMPLETED,
         QUEST_COMPLETED,
         SUB_QUEST_ADDED
     }

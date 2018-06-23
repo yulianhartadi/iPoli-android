@@ -166,7 +166,7 @@ class AndroidJobTimerCompleteScheduler : TimerCompleteScheduler {
         JobRequest.Builder(TimerCompleteNotificationJob.TAG)
             .setUpdateCurrent(true)
             .setExtras(bundle)
-            .setExact(after.millisValue)
+            .setExact(after.millisValue + 5000)
             .build()
             .schedule()
     }
