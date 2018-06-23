@@ -234,8 +234,14 @@ class QuestViewController : ReduxViewController<QuestAction, QuestViewState, Que
 
     override fun render(state: QuestViewState, view: View) {
 
-        renderTags(view, state.tags)
-        renderSubQuests(state, view)
+        if (
+            state.type != QuestViewState.StateType.TIMER_TICK &&
+            state.type == QuestViewState.StateType.QUEST_COMPLETED
+        ) {
+            renderTags(view, state.tags)
+            renderSubQuests(state, view)
+            renderNote(state, view)
+        }
 
         when (state.type) {
 
@@ -257,12 +263,6 @@ class QuestViewController : ReduxViewController<QuestAction, QuestViewState, Que
                 view.questName.text = state.questName
                 view.questNameInfo.text = state.questName
                 toolbarTitle = state.questName
-                view.questNote.setMarkdown(state.noteText)
-                view.questNote.onDebounceClick {
-                    navigateFromRoot().toNotePicker(state.note) { newNote ->
-                        dispatch(QuestAction.SaveNote(newNote))
-                    }
-                }
 
                 view.questStartTimer.visible()
                 view.questPomodoroCountText.text = state.pomodoroTimerText
@@ -297,7 +297,6 @@ class QuestViewController : ReduxViewController<QuestAction, QuestViewState, Que
                 view.questName.text = state.questName
                 view.questNameInfo.text = state.questName
                 toolbarTitle = state.questName
-                view.questNote.setMarkdown(state.noteText)
 
                 renderTimerProgress(view, state)
                 view.startStop.dispatchOnClick { QuestAction.Start }
@@ -377,6 +376,15 @@ class QuestViewController : ReduxViewController<QuestAction, QuestViewState, Que
                 navigateFromRoot().replaceWithCompletedQuest(questId, HorizontalChangeHandler())
 
             else -> {
+            }
+        }
+    }
+
+    private fun renderNote(state: QuestViewState, view: View) {
+        view.questNote.setMarkdown(state.noteText)
+        view.questNote.onDebounceClick {
+            navigateFromRoot().toNotePicker(state.note) { newNote ->
+                dispatch(QuestAction.SaveNote(newNote))
             }
         }
     }

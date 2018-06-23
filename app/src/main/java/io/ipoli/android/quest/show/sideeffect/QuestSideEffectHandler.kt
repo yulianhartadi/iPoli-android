@@ -203,14 +203,13 @@ object QuestSideEffectHandler : AppSideEffectHandler() {
                     )
                 )
 
-            is QuestAction.SaveNote -> {
+            is QuestAction.SaveNote ->
                 saveQuestNoteUseCase.execute(
                     SaveQuestNoteUseCase.Params(
                         questId = questId(state),
                         note = action.note
                     )
                 )
-            }
 
             is QuestAction.Remove ->
                 removeQuestUseCase.execute(action.questId)
