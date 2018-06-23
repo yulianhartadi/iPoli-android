@@ -176,16 +176,16 @@ data class Pet(
         const val HAPPY_MIN_MOOD_POINTS = 60
         const val GOOD_MIN_MOOD_POINTS = 35
 
-        const val MAX_XP_BONUS = 20f
-        const val MAX_COIN_BONUS = 18f
-        const val MAX_BOUNTY_BONUS = 16f
+        const val MAX_XP_BONUS = 100f
+        const val MAX_COIN_BONUS = 80f
+        const val MAX_BOUNTY_BONUS = 40f
 
         private fun bonusFor(state: PetState, maxBonus: Float): Float {
             val percentage = when (state) {
                 AWESOME -> 1.0f
-                HAPPY -> 0.5f
-                GOOD -> 0.25f
-                SAD -> 0.1f
+                HAPPY -> 0.75f
+                GOOD -> 0.5f
+                SAD -> 0.2f
                 else -> 0.0f
             }
             return maxBonus * percentage

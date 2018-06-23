@@ -82,14 +82,14 @@ open class CompleteQuestUseCase(
     }
 
     private fun coins(coinBonusPercentage: Float): Int {
-        val rewards = intArrayOf(2, 5, 7, 10)
+        val rewards = intArrayOf(1, 2, 3, 5)
         val bonusCoef = (100 + coinBonusPercentage) / 100
         val reward = rewards[createRandom().nextInt(rewards.size)]
         return (reward * bonusCoef).toInt()
     }
 
     private fun experience(xpBonusPercentage: Float): Int {
-        val rewards = intArrayOf(5, 10, 15, 20, 30)
+        val rewards = intArrayOf(2, 5, 7, 10, 15)
         val bonusCoef = (100 + xpBonusPercentage) / 100
         val reward = rewards[createRandom().nextInt(rewards.size)]
         return (reward * bonusCoef).toInt()
@@ -100,10 +100,10 @@ open class CompleteQuestUseCase(
         val totalBountyPercentage = Constants.QUEST_BOUNTY_DROP_PERCENTAGE + bountyBonus
 
         val random = createRandom().nextDouble()
-        if (random > totalBountyPercentage / 100) {
-            return Quest.Bounty.None
+        return if (random > totalBountyPercentage / 100) {
+            Quest.Bounty.None
         } else {
-            return chooseBounty()
+            chooseBounty()
         }
     }
 

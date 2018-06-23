@@ -42,16 +42,14 @@ class CompleteChallengeUseCase(
     data class Params(val challengeId: String, val randomSeed: Long? = null)
 
     private fun coins(coinBonusPercentage: Float, randomSeed: Long? = null): Int {
-//        val rewards = intArrayOf(2, 5, 7, 10)
-        val rewards = intArrayOf(20, 30, 50, 80, 100)
+        val rewards = intArrayOf(10, 15, 25, 40, 50)
         val bonusCoef = (100 + coinBonusPercentage) / 100
         val reward = rewards[createRandom(randomSeed).nextInt(rewards.size)]
         return (reward * bonusCoef).toInt()
     }
 
     private fun experience(xpBonusPercentage: Float, randomSeed: Long? = null): Int {
-//        val rewards = intArrayOf(5, 10, 15, 20, 30)
-        val rewards = intArrayOf(40, 60, 80, 100, 120)
+        val rewards = intArrayOf(20, 30, 40, 50, 60)
         val bonusCoef = (100 + xpBonusPercentage) / 100
         val reward = rewards[createRandom(randomSeed).nextInt(rewards.size)]
         return (reward * bonusCoef).toInt()

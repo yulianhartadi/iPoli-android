@@ -21,14 +21,14 @@ class HabitReward(private val randomSeed: Long? = null) {
         )
 
     private fun coins(coinBonusPercentage: Float): Int {
-        val rewards = intArrayOf(1, 2, 3)
+        val rewards = intArrayOf(1, 2)
         val bonusCoef = (100 + coinBonusPercentage) / 100
         val reward = rewards[createRandom().nextInt(rewards.size)]
         return (reward * bonusCoef).toInt()
     }
 
     private fun experience(xpBonusPercentage: Float): Int {
-        val rewards = intArrayOf(2, 5, 8, 10)
+        val rewards = intArrayOf(1, 2, 4, 5)
         val bonusCoef = (100 + xpBonusPercentage) / 100
         val reward = rewards[createRandom().nextInt(rewards.size)]
         return (reward * bonusCoef).toInt()

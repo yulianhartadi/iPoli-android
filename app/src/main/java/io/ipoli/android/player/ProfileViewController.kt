@@ -35,6 +35,7 @@ import kotlinx.android.synthetic.main.item_achievement.view.*
 import kotlinx.android.synthetic.main.view_loader.view.*
 import org.threeten.bp.LocalDate
 import org.threeten.bp.Period
+import kotlin.math.roundToInt
 
 class ProfileViewController(args: Bundle? = null) :
     ReduxViewController<ProfileAction, ProfileViewState, ProfileReducer>(args = args) {
@@ -223,7 +224,7 @@ class ProfileViewController(args: Bundle? = null) :
         state: ProfileViewState
     ) {
         (view.achievementList.adapter as AchievementAdapter).updateAll(state.achievementViewModels)
-        if(state.unlockedAchievements.isEmpty()) {
+        if (state.unlockedAchievements.isEmpty()) {
             view.achievementList.gone()
             view.emptyAchievements.visible()
         } else {
@@ -407,13 +408,13 @@ class ProfileViewController(args: Bundle? = null) :
         get() = Pet.MAX_HP
 
     private val ProfileViewState.coinBonus
-        get() = "+ %.2f".format(pet!!.coinBonus) + "%"
+        get() = "+ ${pet!!.coinBonus.roundToInt()}%"
 
     private val ProfileViewState.xpBonus
-        get() = "+ %.2f".format(pet!!.experienceBonus) + "%"
+        get() = "+ ${pet!!.experienceBonus.roundToInt()}%"
 
     private val ProfileViewState.itemDropBonus
-        get() = "+ %.2f".format(pet!!.itemDropBonus) + "%"
+        get() = "+ ${pet!!.itemDropBonus.roundToInt()}%"
 
     private val ProfileViewState.petImage
         get() = AndroidPetAvatar.valueOf(pet!!.avatar.name).image

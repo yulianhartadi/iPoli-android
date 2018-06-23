@@ -35,6 +35,7 @@ import kotlinx.android.synthetic.main.controller_pet.view.*
 import kotlinx.android.synthetic.main.item_pet_food.view.*
 import kotlinx.android.synthetic.main.item_pet_item.view.*
 import kotlinx.android.synthetic.main.view_inventory_toolbar.view.*
+import kotlin.math.roundToInt
 
 
 /**
@@ -660,9 +661,9 @@ class PetViewController(args: Bundle? = null) :
             view.moodPoints.text = state.mp.toString() + "/" + state.maxMP
             view.moodProgress.max = state.maxMP
 
-            view.coinBonus.text = "+ %.2f".format(state.coinsBonus) + "%"
-            view.xpBonus.text = "+ %.2f".format(state.xpBonus) + "%"
-            view.unlockChanceBonus.text = "+ %.2f".format(state.unlockChanceBonus) + "%"
+            view.coinBonus.text = "+ ${state.coinsBonus.roundToInt()}%"
+            view.xpBonus.text = "+ ${state.xpBonus.roundToInt()}%"
+            view.unlockChanceBonus.text = "+ ${state.unlockChanceBonus.roundToInt()}%"
             view.petState.setImageResource(avatar.stateImage[state.state]!!)
             ViewUtils.showViews(view.hat, view.mask, view.bodyArmor)
         } else {
