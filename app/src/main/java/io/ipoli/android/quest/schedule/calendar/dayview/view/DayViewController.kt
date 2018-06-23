@@ -234,34 +234,16 @@ class DayViewController :
 
             TAGS_PICKED -> {
                 tagsPickedListener = { showTagPicker(state.tags) }
+                state.color?.let { renderDragEventColor(state.color.androidColor, view) }
+                renderDragEventIcon(state.icon?.androidIcon, view)
             }
 
             COLOR_PICKED -> {
-                colorPickListener = { showColorPicker(color) }
-                val dragView = view.dragContainer
-                ObjectAnimator.ofArgb(
-                    dragView,
-                    "backgroundColor",
-                    (dragView.background as ColorDrawable).color,
-                    ContextCompat.getColor(dragView.context, color!!.color500)
-                )
-                    .setDuration(dragView.context.resources.getInteger(android.R.integer.config_longAnimTime).toLong())
-                    .start()
+                renderDragEventColor(color!!, view)
             }
 
             ICON_PICKED -> {
-                iconPickedListener = { showIconPicker(icon) }
-                val dragIcon = view.dragContainer.dragIcon
-                if (icon == null) {
-                    dragIcon.setImageDrawable(null)
-                } else {
-                    dragIcon.setImageDrawable(
-                        IconicsDrawable(dragIcon.context)
-                            .icon(icon.icon)
-                            .colorRes(R.color.md_white)
-                            .sizeDp(24)
-                    )
-                }
+                renderDragEventIcon(icon, view)
             }
 
             QUEST_COMPLETED -> {
@@ -305,6 +287,40 @@ class DayViewController :
             else -> {
             }
         }
+    }
+
+    private fun renderDragEventIcon(
+        icon: AndroidIcon?,
+        view: View
+    ) {
+        iconPickedListener = { showIconPicker(icon) }
+        val dragIcon = view.dragContainer.dragIcon
+        if (icon == null) {
+            dragIcon.setImageDrawable(null)
+        } else {
+            dragIcon.setImageDrawable(
+                IconicsDrawable(dragIcon.context)
+                    .icon(icon.icon)
+                    .colorRes(R.color.md_white)
+                    .sizeDp(24)
+            )
+        }
+    }
+
+    private fun renderDragEventColor(
+        color: AndroidColor,
+        view: View
+    ) {
+        colorPickListener = { showColorPicker(color) }
+        val dragView = view.dragContainer
+        ObjectAnimator.ofArgb(
+            dragView,
+            "backgroundColor",
+            (dragView.background as ColorDrawable).color,
+            ContextCompat.getColor(dragView.context, color.color500)
+        )
+            .setDuration(dragView.context.resources.getInteger(android.R.integer.config_longAnimTime).toLong())
+            .start()
     }
 
     private fun startFullEdit(state: DayViewState) {

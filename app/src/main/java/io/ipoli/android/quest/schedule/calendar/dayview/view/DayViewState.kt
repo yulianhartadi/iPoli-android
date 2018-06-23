@@ -240,9 +240,12 @@ class DayViewReducer(namespace: String) : NamespaceViewStateReducer<DayViewState
             }
 
             is DayViewAction.TagsPicked -> {
+                val tags = action.tags
                 subState.copy(
                     type = TAGS_PICKED,
-                    tags = action.tags.toList()
+                    tags = tags.toList(),
+                    color = if (tags.isNotEmpty()) tags.first().color else subState.color,
+                    icon = if (tags.isNotEmpty() && subState.icon == null) tags.first().icon else subState.icon
                 )
             }
 
