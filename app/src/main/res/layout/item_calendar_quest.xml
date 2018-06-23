@@ -109,7 +109,7 @@
         app:layout_constraintBottom_toBottomOf="@+id/questSchedule"
         app:layout_constraintStart_toEndOf="@+id/questSchedule"
         app:layout_constraintTop_toTopOf="@+id/questSchedule"
-        app:srcCompat="@drawable/ic_repeat_white_24dp" />
+        android:src="@drawable/ic_repeat_white_24dp" />
 
     <ImageView
         android:id="@+id/challengeIndicator"
@@ -119,7 +119,7 @@
         app:layout_constraintBottom_toBottomOf="@+id/questSchedule"
         app:layout_constraintStart_toEndOf="@+id/repeatIndicator"
         app:layout_constraintTop_toTopOf="@+id/questSchedule"
-        app:srcCompat="@drawable/ic_sword_white_24dp" />
+        android:src="@drawable/ic_sword_white_24dp" />
 
     <TextView
         android:id="@+id/questTags"

@@ -665,14 +665,16 @@ class DayViewController :
             view.backgroundView.setBackgroundColor(colorRes(vm.backgroundColor.color600))
 
             if (vm.isCompleted) {
+                val color = colorRes(R.color.md_dark_text_54)
+
                 val span = SpannableString(vm.name)
                 span.setSpan(StrikethroughSpan(), 0, vm.name.length, 0)
                 view.questName.text = span
-                view.questName.setTextColor(colorRes(R.color.md_dark_text_54))
-                view.questSchedule.setTextColor(colorRes(R.color.md_dark_text_54))
-                view.questTags.setTextColor(colorRes(R.color.md_dark_text_54))
+                view.questName.setTextColor(color)
+                view.questSchedule.setTextColor(color)
+                view.questTags.setTextColor(color)
                 view.questTags.setCompoundDrawablesRelativeWithIntrinsicBounds(
-                    R.drawable.ic_tag_black_24dp,
+                    R.drawable.ic_tag_black_16dp,
                     0,
                     0,
                     0
@@ -681,16 +683,19 @@ class DayViewController :
                 view.checkBox.isChecked = true
                 (view.checkBox as TintableCompoundButton).supportButtonTintList =
                     tintList(R.color.md_grey_700)
-                view.completedBackgroundView.visibility = View.VISIBLE
+                view.completedBackgroundView.visible()
 
                 vm.icon?.let {
                     val icon = IconicsDrawable(context)
                         .icon(it.icon)
                         .colorRes(R.color.md_dark_text_38)
                         .sizeDp(24)
-                    view.questIcon.visible = true
+                    view.questIcon.visible()
                     view.questIcon.setImageDrawable(icon)
                 }
+
+                view.repeatIndicator.setColorFilter(color)
+                view.challengeIndicator.setColorFilter(color)
 
                 view.setOnClickListener {
                     showCompletedQuest(vm.id)
@@ -708,32 +713,35 @@ class DayViewController :
                 )
 
                 view.questName.text = vm.name
-                view.questName.setTextColor(colorRes(R.color.md_white))
+                val white = colorRes(R.color.md_white)
+                view.questName.setTextColor(white)
 
                 vm.icon?.let {
                     val icon = IconicsDrawable(context)
                         .icon(it.icon)
                         .colorRes(vm.backgroundColor.color200)
                         .sizeDp(24)
-                    view.questIcon.visible = true
+                    view.questIcon.visible()
                     view.questIcon.setImageDrawable(icon)
                 }
 
                 (view.checkBox as TintableCompoundButton).supportButtonTintList =
                     tintList(vm.backgroundColor.color200)
-                view.completedBackgroundView.visibility = View.INVISIBLE
+                view.completedBackgroundView.invisible()
 
                 if (vm.isPlaceholder) {
                     view.setOnClickListener(null)
-                    view.checkBox.visible = false
+                    view.checkBox.invisible()
                 } else {
 
-                    view.checkBox.visible = true
+                    view.checkBox.visible()
                     view.setOnClickListener {
                         showQuest(vm.id)
                     }
                 }
 
+                view.repeatIndicator.setColorFilter(white)
+                view.challengeIndicator.setColorFilter(white)
             }
 
             view.repeatIndicator.visibility = if (vm.isRepeating) View.VISIBLE else View.GONE
@@ -744,7 +752,7 @@ class DayViewController :
             if (vm.tags.isEmpty()) {
                 view.questTags.gone()
             } else {
-                view.questTags.text = vm.tags.map { it.name }.joinToString()
+                view.questTags.text = vm.tags.joinToString { it.name }
                 view.questTags.visible()
             }
 
@@ -755,7 +763,7 @@ class DayViewController :
                     val anim = RevealAnimator().create(view.completedBackgroundView, cb)
                     anim.addListener(object : AnimatorListenerAdapter() {
                         override fun onAnimationStart(animation: Animator?) {
-                            view.completedBackgroundView.visibility = View.VISIBLE
+                            view.completedBackgroundView.visible()
                         }
 
                         override fun onAnimationEnd(animation: Animator?) {
@@ -775,7 +783,7 @@ class DayViewController :
                     anim.addListener(object : AnimatorListenerAdapter() {
 
                         override fun onAnimationEnd(animation: Animator?) {
-                            view.completedBackgroundView.visibility = View.INVISIBLE
+                            view.completedBackgroundView.invisible()
                             dispatch(DayViewAction.UndoCompleteQuest(vm.id))
                         }
                     })
