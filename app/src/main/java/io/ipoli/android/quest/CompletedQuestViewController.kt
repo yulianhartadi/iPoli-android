@@ -92,7 +92,10 @@ class CompletedQuestViewController :
                 view.questName.setBackgroundResource(color.color500)
 
                 view.questDate.text = DateFormatter.format(view.context, state.completeAt)
-                view.questTime.text = "${state.startedAt} - ${state.finishedAt}"
+                view.questTime.text =
+                    "${state.startedAt!!.toString(shouldUse24HourFormat)} - ${state.finishedAt!!.toString(
+                        shouldUse24HourFormat
+                    )}"
                 view.questProgressDuration.text =
                     DurationFormatter.formatShort(view.context, state.totalDuration!!.intValue)
 
