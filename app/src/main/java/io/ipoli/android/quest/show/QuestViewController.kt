@@ -38,6 +38,7 @@ import kotlinx.android.synthetic.main.item_quest_sub_quest.view.*
 import kotlinx.android.synthetic.main.item_quest_tag_list.view.*
 import kotlinx.android.synthetic.main.item_timer_progress.view.*
 import kotlinx.android.synthetic.main.view_loader.view.*
+import timber.log.Timber
 
 class QuestViewController : ReduxViewController<QuestAction, QuestViewState, QuestReducer> {
 
@@ -236,7 +237,7 @@ class QuestViewController : ReduxViewController<QuestAction, QuestViewState, Que
 
         if (
             state.type != QuestViewState.StateType.TIMER_TICK &&
-            state.type == QuestViewState.StateType.QUEST_COMPLETED
+            state.type != QuestViewState.StateType.QUEST_COMPLETED
         ) {
             renderTags(view, state.tags)
             renderSubQuests(state, view)
