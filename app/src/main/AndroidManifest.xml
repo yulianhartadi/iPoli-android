@@ -47,7 +47,7 @@
             </intent-filter>
         </receiver>
 
-        <receiver android:name="io.ipoli.android.common.DateChangedReceived">
+        <receiver android:name="io.ipoli.android.common.DateChangedReceiver">
             <intent-filter>
                 <action android:name="android.intent.action.DATE_CHANGED" />
             </intent-filter>
