@@ -104,7 +104,7 @@ object TagSideEffectHandler : AppSideEffectHandler() {
     }
 
     override fun canHandle(action: Action) = action is TagAction
-            || action === EditTagAction.Save
-            || action is TagListAction.Favorite
-            || action is TagListAction.Unfavorite
+        || action === EditTagAction.Save
+        || action is TagListAction.Favorite
+        || action is TagListAction.Unfavorite
 }

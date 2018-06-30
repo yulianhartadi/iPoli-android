@@ -20,8 +20,9 @@ import io.ipoli.android.R
 import io.ipoli.android.common.AppState
 import io.ipoli.android.common.BaseViewStateReducer
 import io.ipoli.android.common.DataLoadedAction
-import io.ipoli.android.common.mvi.BaseViewState
+
 import io.ipoli.android.common.redux.Action
+import io.ipoli.android.common.redux.BaseViewState
 import io.ipoli.android.common.view.IconPickerViewState.Type.*
 import io.ipoli.android.pet.AndroidPetAvatar
 import io.ipoli.android.pet.PetAvatar

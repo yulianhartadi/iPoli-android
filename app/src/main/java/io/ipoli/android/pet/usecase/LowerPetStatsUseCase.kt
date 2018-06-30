@@ -108,10 +108,10 @@ class LowerPetStatsUseCase(
                 val qEnd = it.endTime!! - 1
                 qEnd >= start && qStart <= end
             }.map {
-                    val startMinute =
-                        Math.max(start.toMinuteOfDay(), it.startTime!!.toMinuteOfDay())
-                    val endMinute = Math.min(end.toMinuteOfDay(), it.endTime!!.toMinuteOfDay())
-                    endMinute - startMinute
-                }.fold(0, { acc, dur -> acc + dur })
+                val startMinute =
+                    Math.max(start.toMinuteOfDay(), it.startTime!!.toMinuteOfDay())
+                val endMinute = Math.min(end.toMinuteOfDay(), it.endTime!!.toMinuteOfDay())
+                endMinute - startMinute
+            }.fold(0, { acc, dur -> acc + dur })
     }
 }

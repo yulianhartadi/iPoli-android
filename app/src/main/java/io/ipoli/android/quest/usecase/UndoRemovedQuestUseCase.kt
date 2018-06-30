@@ -8,7 +8,10 @@ import io.ipoli.android.quest.job.ReminderScheduler
  * Created by Venelin Valkov <venelin@mypoli.fun>
  * on 10/20/17.
  */
-class UndoRemovedQuestUseCase(private val questRepository: QuestRepository, private val reminderScheduler: ReminderScheduler) :
+class UndoRemovedQuestUseCase(
+    private val questRepository: QuestRepository,
+    private val reminderScheduler: ReminderScheduler
+) :
     UseCase<String, Unit> {
     override fun execute(parameters: String) {
         val questId = parameters

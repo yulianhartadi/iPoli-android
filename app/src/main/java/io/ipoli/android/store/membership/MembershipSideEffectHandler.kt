@@ -21,7 +21,7 @@ object MembershipSideEffectHandler : AppSideEffectHandler() {
     private lateinit var subscriptionManager: SubscriptionManager
 
     override suspend fun doExecute(action: Action, state: AppState) {
-        when(action) {
+        when (action) {
             is MembershipAction.Load -> {
                 subscriptionManager = action.subscriptionManager
                 subscriptionManager.loadInventory { product, activeSkus ->
@@ -68,7 +68,12 @@ object MembershipSideEffectHandler : AppSideEffectHandler() {
                                     expirationDate = expirationDate
                                 )
                             )
-                            dispatch(MembershipAction.Subscribed(action.plan, setOf(action.plan.sku)))
+                            dispatch(
+                                MembershipAction.Subscribed(
+                                    action.plan,
+                                    setOf(action.plan.sku)
+                                )
+                            )
                         },
                         { message, exception ->
                             Crashlytics.logException(
@@ -89,7 +94,12 @@ object MembershipSideEffectHandler : AppSideEffectHandler() {
                                     plan = action.plan
                                 )
                             )
-                            dispatch(MembershipAction.Subscribed(action.plan, setOf(action.plan.sku)))
+                            dispatch(
+                                MembershipAction.Subscribed(
+                                    action.plan,
+                                    setOf(action.plan.sku)
+                                )
+                            )
                         },
                         { responseCode, exception ->
                             SubscriptionError(

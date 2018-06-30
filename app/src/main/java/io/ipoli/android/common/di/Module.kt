@@ -5,8 +5,8 @@ import android.content.SharedPreferences
 import android.preference.PreferenceManager
 import android.view.LayoutInflater
 import com.amplitude.api.Amplitude
-import com.google.firebase.analytics.FirebaseAnalytics
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.FirebaseFirestoreSettings
 import io.ipoli.android.achievement.job.AndroidShowUnlockedAchievementsScheduler
 import io.ipoli.android.achievement.job.AndroidUpdateAchievementProgressScheduler
 import io.ipoli.android.achievement.job.ShowUnlockedAchievementsScheduler
@@ -17,7 +17,7 @@ import io.ipoli.android.achievement.usecase.CreateAchievementItemsUseCase
 import io.ipoli.android.achievement.usecase.UnlockAchievementsUseCase
 import io.ipoli.android.achievement.usecase.UpdateAchievementProgressUseCase
 import io.ipoli.android.challenge.persistence.ChallengeRepository
-import io.ipoli.android.challenge.persistence.FirestoreChallengeRepository
+import io.ipoli.android.challenge.persistence.RoomChallengeRepository
 import io.ipoli.android.challenge.predefined.usecase.SchedulePredefinedChallengeUseCase
 import io.ipoli.android.challenge.sideeffect.ChallengeSideEffectHandler
 import io.ipoli.android.challenge.usecase.*
@@ -27,18 +27,23 @@ import io.ipoli.android.common.analytics.SimpleEventLogger
 import io.ipoli.android.common.image.AndroidImageLoader
 import io.ipoli.android.common.image.ImageLoader
 import io.ipoli.android.common.middleware.LogEventsMiddleWare
-import io.ipoli.android.common.migration.*
+import io.ipoli.android.common.migration.DataExporter
+import io.ipoli.android.common.migration.DataImporter
+import io.ipoli.android.common.migration.FirestoreToLocalPlayerMigrator
+import io.ipoli.android.common.migration.MigrationSideEffectHandler
 import io.ipoli.android.common.permission.AndroidPermissionChecker
 import io.ipoli.android.common.permission.PermissionChecker
+import io.ipoli.android.common.persistence.EntityReminderRepository
+import io.ipoli.android.common.persistence.MyPoliRoomDatabase
+import io.ipoli.android.common.persistence.RoomEntityReminderRepository
 import io.ipoli.android.common.rate.AndroidRatePopupScheduler
 import io.ipoli.android.common.rate.RatePopupScheduler
-import io.ipoli.android.common.rate.RatePresenter
 import io.ipoli.android.common.redux.CoroutineSideEffectHandlerExecutor
 import io.ipoli.android.common.redux.StateStore
 import io.ipoli.android.common.text.CalendarFormatter
-import io.ipoli.android.common.view.PetMessagePresenter
+import io.ipoli.android.common.view.PetMessageSideEffectHandler
 import io.ipoli.android.dailychallenge.data.persistence.DailyChallengeRepository
-import io.ipoli.android.dailychallenge.data.persistence.FirestoreDailyChallengeRepository
+import io.ipoli.android.dailychallenge.data.persistence.RoomDailyChallengeRepository
 import io.ipoli.android.dailychallenge.job.AndroidDailyChallengeCompleteScheduler
 import io.ipoli.android.dailychallenge.job.DailyChallengeCompleteScheduler
 import io.ipoli.android.dailychallenge.sideeffect.DailyChallengeSideEffectHandler
@@ -58,8 +63,8 @@ import io.ipoli.android.growth.sideeffect.GrowthSideEffectHandler
 import io.ipoli.android.growth.usecase.CalculateGrowthStatsUseCase
 import io.ipoli.android.habit.job.AndroidUpdateHabitStreaksScheduler
 import io.ipoli.android.habit.job.UpdateHabitStreaksScheduler
-import io.ipoli.android.habit.persistence.FirestoreHabitRepository
 import io.ipoli.android.habit.persistence.HabitRepository
+import io.ipoli.android.habit.persistence.RoomHabitRoomRepository
 import io.ipoli.android.habit.sideeffect.HabitSideEffectHandler
 import io.ipoli.android.habit.usecase.*
 import io.ipoli.android.note.usecase.SaveQuestNoteUseCase
@@ -84,15 +89,15 @@ import io.ipoli.android.player.AndroidLevelUpScheduler
 import io.ipoli.android.player.LevelDownScheduler
 import io.ipoli.android.player.LevelUpScheduler
 import io.ipoli.android.player.auth.saga.AuthSideEffectHandler
-import io.ipoli.android.player.persistence.FirestorePlayerRepository
+import io.ipoli.android.player.persistence.AndroidPlayerRepository
 import io.ipoli.android.player.persistence.PlayerRepository
 import io.ipoli.android.player.sideeffect.ProfileSideEffectHandler
 import io.ipoli.android.player.usecase.*
-import io.ipoli.android.player.view.LevelUpPresenter
+import io.ipoli.android.player.view.LevelUpSideEffectHandler
 import io.ipoli.android.quest.bucketlist.sideeffect.BucketListSideEffectHandler
 import io.ipoli.android.quest.bucketlist.usecase.CreateBucketListItemsUseCase
-import io.ipoli.android.quest.data.persistence.FirestoreQuestRepository
 import io.ipoli.android.quest.data.persistence.QuestRepository
+import io.ipoli.android.quest.data.persistence.RoomQuestRepository
 import io.ipoli.android.quest.edit.sideeffect.EditQuestSideEffectHandler
 import io.ipoli.android.quest.job.AndroidJobReminderScheduler
 import io.ipoli.android.quest.job.AndroidJobRewardScheduler
@@ -111,8 +116,8 @@ import io.ipoli.android.quest.subquest.usecase.*
 import io.ipoli.android.quest.usecase.*
 import io.ipoli.android.repeatingquest.AndroidSaveQuestsForRepeatingQuestScheduler
 import io.ipoli.android.repeatingquest.SaveQuestsForRepeatingQuestScheduler
-import io.ipoli.android.repeatingquest.persistence.FirestoreRepeatingQuestRepository
 import io.ipoli.android.repeatingquest.persistence.RepeatingQuestRepository
+import io.ipoli.android.repeatingquest.persistence.RoomRepeatingQuestRepository
 import io.ipoli.android.repeatingquest.sideeffect.RepeatingQuestSideEffectHandler
 import io.ipoli.android.repeatingquest.usecase.*
 import io.ipoli.android.settings.sideeffect.SettingsSideEffectHandler
@@ -139,7 +144,7 @@ import io.ipoli.android.store.theme.sideeffect.ThemeSideEffectHandler
 import io.ipoli.android.store.theme.usecase.BuyThemeUseCase
 import io.ipoli.android.store.theme.usecase.ChangeThemeUseCase
 import io.ipoli.android.store.usecase.PurchaseGemPackUseCase
-import io.ipoli.android.tag.persistence.FirestoreTagRepository
+import io.ipoli.android.tag.persistence.RoomTagRepository
 import io.ipoli.android.tag.persistence.TagRepository
 import io.ipoli.android.tag.sideeffect.TagSideEffectHandler
 import io.ipoli.android.tag.usecase.*
@@ -155,7 +160,9 @@ import java.util.concurrent.Executors
  * Created by Venelin Valkov <venelin@mypoli.fun>
  * on 9/10/17.
  */
+
 interface RepositoryModule {
+
     val questRepository: QuestRepository
     val playerRepository: PlayerRepository
     val repeatingQuestRepository: RepeatingQuestRepository
@@ -169,45 +176,40 @@ interface RepositoryModule {
     val dailyChallengeRepository: DailyChallengeRepository
     val appUsageStatRepository: AppUsageStatRepository
     val habitRepository: HabitRepository
+    val entityReminderRepository: EntityReminderRepository
 }
 
-class AndroidRepositoryModule(private val appContext: Context) : RepositoryModule, Injects<Module> {
+class AndroidRepositoryModule(private val appContext: Context) :
+    RepositoryModule, Injects<Module> {
 
     override val questRepository by required {
-        FirestoreQuestRepository(
-            database,
-            job + CommonPool,
-            sharedPreferences,
-            executor
+        RoomQuestRepository(
+            dao = localDatabase.questDao(),
+            entityReminderDao = localDatabase.entityReminderDao(),
+            tagDao = localDatabase.tagDao()
         )
     }
 
     override val playerRepository
         by required {
-            FirestorePlayerRepository(
-                database,
-                job + CommonPool,
-                sharedPreferences,
-                executor
+            AndroidPlayerRepository(
+                remoteDatabase,
+                localDatabase.playerDao()
             )
         }
 
     override val repeatingQuestRepository
         by required {
-            FirestoreRepeatingQuestRepository(
-                database,
-                job + CommonPool,
-                sharedPreferences,
-                executor
+            RoomRepeatingQuestRepository(
+                dao = localDatabase.repeatingQuestDao(),
+                tagDao = localDatabase.tagDao()
             )
         }
 
     override val challengeRepository by required {
-        FirestoreChallengeRepository(
-            database,
-            job + CommonPool,
-            sharedPreferences,
-            executor
+        RoomChallengeRepository(
+            dao = localDatabase.challengeDao(),
+            tagDao = localDatabase.tagDao()
         )
     }
 
@@ -221,33 +223,23 @@ class AndroidRepositoryModule(private val appContext: Context) : RepositoryModul
 
     override val tagRepository
         by required {
-            FirestoreTagRepository(
-                database,
-                job + CommonPool,
-                sharedPreferences,
-                executor
-            )
+            RoomTagRepository(localDatabase)
         }
 
     override val weatherRepository by required { AndroidWeatherRepository(appContext) }
 
     override val motivationalImageRepository by required {
         FirestoreMotivationalImageRepository(
-            database
+            remoteDatabase
         )
     }
 
     override val quoteRepository by required {
-        FirestoreQuoteRepository(database)
+        FirestoreQuoteRepository(remoteDatabase)
     }
 
     override val dailyChallengeRepository by required {
-        FirestoreDailyChallengeRepository(
-            database,
-            job + CommonPool,
-            sharedPreferences,
-            executor
-        )
+        RoomDailyChallengeRepository(localDatabase.dailyChallengeDao())
     }
 
     override val appUsageStatRepository by required {
@@ -256,26 +248,16 @@ class AndroidRepositoryModule(private val appContext: Context) : RepositoryModul
 
     override val habitRepository
         by required {
-            FirestoreHabitRepository(
-                database,
-                job + CommonPool,
-                sharedPreferences,
-                executor
+            RoomHabitRoomRepository(
+                dao = localDatabase.habitDao(),
+                tagDao = localDatabase.tagDao()
             )
         }
-}
 
-class Firestore {
-    companion object {
-        val instance: FirebaseFirestore by lazy {
-            return@lazy synchronized(Firestore::class) {
-                FirebaseFirestore.getInstance().apply { lock() }
-            }
-        }
-
-        private fun FirebaseFirestore.lock() {
-            collection("config").document("db").update("locked", true)
-        }
+    override val entityReminderRepository by required {
+        RoomEntityReminderRepository(
+            localDatabase.entityReminderDao()
+        )
     }
 }
 
@@ -288,7 +270,9 @@ interface AndroidModule {
 
     val calendarFormatter: CalendarFormatter
 
-    val database: FirebaseFirestore
+    val remoteDatabase: FirebaseFirestore
+
+    val localDatabase: MyPoliRoomDatabase
 
     val eventLogger: EventLogger
 
@@ -328,7 +312,11 @@ interface AndroidModule {
 
     val imageLoader: ImageLoader
 
-    val migrationExecutor: MigrationExecutor
+    val dataImporter: DataImporter
+
+    val dataExporter: DataExporter
+
+    val firestoreToLocalPlayerMigrator: FirestoreToLocalPlayerMigrator
 
     val internetConnectionChecker: InternetConnectionChecker
 
@@ -383,11 +371,21 @@ class MainAndroidModule(
     override val updateHabitStreaksScheduler
         get() = AndroidUpdateHabitStreaksScheduler()
 
-    override val database get() = Firestore.instance
+    override val remoteDatabase = FirebaseFirestore.getInstance().also {
+        it.firestoreSettings =
+            FirebaseFirestoreSettings.Builder().setPersistenceEnabled(false).build()
+    }
+
+    override val localDatabase = MyPoliRoomDatabase.getInstance(context)
+
+    override val dataImporter = DataImporter(context)
+
+    override val dataExporter = DataExporter(context)
+
+    override val firestoreToLocalPlayerMigrator = FirestoreToLocalPlayerMigrator(context)
 
     override val eventLogger
         get() = SimpleEventLogger(
-            firebaseAnalytics = FirebaseAnalytics.getInstance(context),
             amplitude = Amplitude.getInstance()
         )
 
@@ -400,19 +398,6 @@ class MainAndroidModule(
     override val job get() = Job()
 
     override val imageLoader = AndroidImageLoader()
-
-    override val migrationExecutor =
-        MigrationExecutor(
-            database = database,
-            migrations = listOf(
-                MigrationFrom100To101(),
-                MigrationFrom101To102(),
-                MigrationFrom102To103(),
-                MigrationFrom103To104(),
-                MigrationFrom104To105(),
-                MigrationFrom105To106()
-            )
-        )
 
     override val internetConnectionChecker = InternetConnectionChecker(context)
 
@@ -617,6 +602,7 @@ class MainUseCaseModule : UseCaseModule, Injects<Module> {
     override val cancelTimerUseCase
         get() = CancelTimerUseCase(
             questRepository,
+            reminderScheduler,
             timerCompleteScheduler
         )
     override val addPomodoroUseCase
@@ -633,6 +619,7 @@ class MainUseCaseModule : UseCaseModule, Injects<Module> {
         get() = AddTimerToQuestUseCase(
             questRepository,
             cancelTimerUseCase,
+            reminderScheduler,
             timerCompleteScheduler
         )
 
@@ -789,12 +776,7 @@ class MainUseCaseModule : UseCaseModule, Injects<Module> {
         get() = SaveSyncCalendarsUseCase(playerRepository)
 
     override val saveTagUseCase
-        get() = SaveTagUseCase(
-            tagRepository,
-            questRepository,
-            repeatingQuestRepository,
-            challengeRepository
-        )
+        get() = SaveTagUseCase(tagRepository)
 
     override val favoriteTagUseCase
         get() = FavoriteTagUseCase(tagRepository, saveTagUseCase)
@@ -809,12 +791,7 @@ class MainUseCaseModule : UseCaseModule, Injects<Module> {
         get() = AddQuestCountToTagUseCase(questRepository)
 
     override val removeTagUseCase
-        get() = RemoveTagUseCase(
-            questRepository,
-            repeatingQuestRepository,
-            challengeRepository,
-            tagRepository
-        )
+        get() = RemoveTagUseCase(tagRepository)
 
     override val createBucketListItemsUseCase
         get() = CreateBucketListItemsUseCase()
@@ -912,22 +889,6 @@ class MainUseCaseModule : UseCaseModule, Injects<Module> {
         get() = CreateHabitItemsUseCase()
 }
 
-interface PresenterModule {
-    val petMessagePresenter: PetMessagePresenter
-    val levelUpPresenter: LevelUpPresenter
-    val ratePresenter: RatePresenter
-}
-
-class AndroidPresenterModule : PresenterModule, Injects<Module> {
-
-    private val playerRepository by required { playerRepository }
-    private val job by required { job }
-
-    override val petMessagePresenter get() = PetMessagePresenter(playerRepository, job)
-    override val levelUpPresenter get() = LevelUpPresenter(playerRepository, job)
-    override val ratePresenter get() = RatePresenter(job)
-}
-
 interface StateStoreModule {
     val stateStore: StateStore<AppState>
 }
@@ -974,7 +935,9 @@ class AndroidStateStoreModule : StateStoreModule, Injects<Module> {
                 GrowthSideEffectHandler,
                 ProfileSideEffectHandler,
                 AchievementListSideEffectHandler,
-                HabitSideEffectHandler
+                HabitSideEffectHandler,
+                LevelUpSideEffectHandler,
+                PetMessageSideEffectHandler
             ),
             sideEffectHandlerExecutor = CoroutineSideEffectHandlerExecutor(job + CommonPool),
             middleware = listOf(
@@ -990,13 +953,11 @@ class Module(
     androidModule: AndroidModule,
     repositoryModule: RepositoryModule,
     useCaseModule: UseCaseModule,
-    presenterModule: PresenterModule,
     stateStoreModule: StateStoreModule
 ) :
     AndroidModule by androidModule,
     RepositoryModule by repositoryModule,
     UseCaseModule by useCaseModule,
-    PresenterModule by presenterModule,
     StateStoreModule by stateStoreModule,
     HasModules {
 
@@ -1005,7 +966,6 @@ class Module(
             androidModule,
             repositoryModule,
             useCaseModule,
-            presenterModule,
             stateStoreModule
         )
 }

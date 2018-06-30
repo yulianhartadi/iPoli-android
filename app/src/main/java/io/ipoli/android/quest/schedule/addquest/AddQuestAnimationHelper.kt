@@ -10,7 +10,6 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.animation.AccelerateDecelerateInterpolator
 import com.bluelinelabs.conductor.RestoreViewOnCreateController
-import com.bluelinelabs.conductor.RouterTransaction
 import io.ipoli.android.R
 import io.ipoli.android.common.ViewUtils
 import io.ipoli.android.common.navigation.Navigator

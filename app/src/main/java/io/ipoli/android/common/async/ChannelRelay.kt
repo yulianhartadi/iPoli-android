@@ -2,7 +2,6 @@ package io.ipoli.android.common.async
 
 import kotlinx.coroutines.experimental.CommonPool
 import kotlinx.coroutines.experimental.channels.Channel
-import kotlinx.coroutines.experimental.channels.consumeEach
 import kotlinx.coroutines.experimental.launch
 
 class ChannelRelay<E, in P>(
@@ -15,8 +14,8 @@ class ChannelRelay<E, in P>(
 
     init {
         launch(CommonPool) {
-            channel.consumeEach {
-                consumer(it, params!!)
+            for (e in channel) {
+                consumer(e, params!!)
             }
         }
     }

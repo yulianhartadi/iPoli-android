@@ -11,15 +11,16 @@ import io.ipoli.android.R
 import io.ipoli.android.common.AppState
 import io.ipoli.android.common.BaseViewStateReducer
 import io.ipoli.android.common.EmailUtils
-import io.ipoli.android.common.mvi.BaseViewState
+
 import io.ipoli.android.common.redux.Action
+import io.ipoli.android.common.redux.BaseViewState
 import io.ipoli.android.common.redux.android.ReduxViewController
 import io.ipoli.android.common.view.*
 import kotlinx.android.synthetic.main.controller_migration.view.*
 
 sealed class MigrationAction : Action {
 
-    data class Load(val playerSchemaVersion: Int) : MigrationAction()
+    data class Load(val playerId: String, val playerSchemaVersion: Int) : MigrationAction()
     object StartMigration : MigrationAction()
     object ShowNoInternetConnection : MigrationAction()
     object CompleteMigration : MigrationAction()
@@ -61,9 +62,11 @@ class MigrationViewController(args: Bundle? = null) :
 
     override val reducer = MigrationReducer
 
-    private var playerSchemaVersion: Int = 0
+    private var playerId = ""
+    private var playerSchemaVersion = 0
 
-    constructor(playerSchemaVersion: Int) : this() {
+    constructor(playerId: String, playerSchemaVersion: Int) : this() {
+        this.playerId = playerId
         this.playerSchemaVersion = playerSchemaVersion
     }
 
@@ -92,7 +95,7 @@ class MigrationViewController(args: Bundle? = null) :
         return true
     }
 
-    override fun onCreateLoadAction() = MigrationAction.Load(playerSchemaVersion)
+    override fun onCreateLoadAction() = MigrationAction.Load(playerId, playerSchemaVersion)
 
     override fun render(state: MigrationViewState, view: View) {
         when (state.type) {
@@ -128,7 +131,7 @@ class MigrationViewController(args: Bundle? = null) :
                         null,
                         null
                     )
-                    dispatch(MigrationAction.Load(playerSchemaVersion))
+                    dispatch(MigrationAction.Load(playerId, playerSchemaVersion))
                 }
             }
 

@@ -122,7 +122,8 @@ class PetStoreViewController(args: Bundle? = null) :
 
                 PetViewModel.Action.UNLOCK -> {
                     action.onDebounceClick {
-                        navigate().toGemStore(FadeChangeHandler()) }
+                        navigate().toGemStore(FadeChangeHandler())
+                    }
                 }
 
                 PetViewModel.Action.BUY -> {

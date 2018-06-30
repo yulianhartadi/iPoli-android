@@ -3,8 +3,9 @@ package io.ipoli.android.tag.show
 import io.ipoli.android.common.AppState
 import io.ipoli.android.common.BaseViewStateReducer
 import io.ipoli.android.common.DataLoadedAction
-import io.ipoli.android.common.mvi.BaseViewState
+
 import io.ipoli.android.common.redux.Action
+import io.ipoli.android.common.redux.BaseViewState
 import io.ipoli.android.quest.Color
 import io.ipoli.android.quest.Icon
 import io.ipoli.android.tag.Tag
@@ -18,12 +19,29 @@ sealed class TagAction : Action {
 
     object TagCountLimitReached : TagAction()
 
-    data class Load(val tagId: String) : TagAction()
-    data class Unfavorite(val tagId: String) : TagAction()
-    data class Favorite(val tagId: String) : TagAction()
-    data class Remove(val tagId: String) : TagAction()
-    data class CompleteQuest(val questId: String) : TagAction()
-    data class UndoCompleteQuest(val questId: String) : TagAction()
+    data class Load(val tagId: String) : TagAction() {
+        override fun toMap() = mapOf("tagId" to tagId)
+    }
+
+    data class Unfavorite(val tagId: String) : TagAction() {
+        override fun toMap() = mapOf("tagId" to tagId)
+    }
+
+    data class Favorite(val tagId: String) : TagAction() {
+        override fun toMap() = mapOf("tagId" to tagId)
+    }
+
+    data class Remove(val tagId: String) : TagAction() {
+        override fun toMap() = mapOf("tagId" to tagId)
+    }
+
+    data class CompleteQuest(val questId: String) : TagAction() {
+        override fun toMap() = mapOf("questId" to questId)
+    }
+
+    data class UndoCompleteQuest(val questId: String) : TagAction() {
+        override fun toMap() = mapOf("questId" to questId)
+    }
 }
 
 object TagReducer : BaseViewStateReducer<TagViewState>() {

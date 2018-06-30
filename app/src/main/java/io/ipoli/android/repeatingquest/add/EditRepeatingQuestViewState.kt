@@ -10,8 +10,8 @@ import io.ipoli.android.common.datetime.Duration
 import io.ipoli.android.common.datetime.Minute
 import io.ipoli.android.common.datetime.Time
 import io.ipoli.android.common.datetime.minutes
-import io.ipoli.android.common.mvi.BaseViewState
 import io.ipoli.android.common.redux.Action
+import io.ipoli.android.common.redux.BaseViewState
 import io.ipoli.android.quest.Color
 import io.ipoli.android.quest.Icon
 import io.ipoli.android.quest.Reminder
@@ -28,31 +28,82 @@ import org.threeten.bp.DayOfWeek
  * on 04/09/2018.
  */
 sealed class EditRepeatingQuestAction : Action {
-    data class ChangeColor(val color: Color) : EditRepeatingQuestAction()
-    data class ChangeIcon(val icon: Icon?) : EditRepeatingQuestAction()
-    data class ShowRepeatPatternPicker(val name: String) : EditRepeatingQuestAction()
+    data class ChangeColor(val color: Color) : EditRepeatingQuestAction() {
+        override fun toMap() = mapOf("color" to color.name)
+    }
+
+    data class ChangeIcon(val icon: Icon?) : EditRepeatingQuestAction() {
+        override fun toMap() = mapOf("icon" to icon?.name)
+    }
+
+    data class ShowRepeatPatternPicker(val name: String) : EditRepeatingQuestAction() {
+        override fun toMap() = mapOf("name" to name)
+    }
     data class PickRepeatPattern(val repeatPatternOption: EditRepeatingQuestViewState.RepeatPatternOption) :
-        EditRepeatingQuestAction()
+        EditRepeatingQuestAction() {
+        override fun toMap() = mapOf("repeatPatternOption" to repeatPatternOption)
+    }
 
     data class RepeatPatternPicked(val repeatPattern: RepeatPattern) :
-        EditRepeatingQuestAction()
+        EditRepeatingQuestAction() {
+        override fun toMap() = mapOf("repeatPattern" to repeatPattern)
+    }
 
     data class PickDuration(val durationOption: EditRepeatingQuestViewState.DurationOption) :
-        EditRepeatingQuestAction()
+        EditRepeatingQuestAction() {
+        override fun toMap() = mapOf("durationOption" to durationOption)
+    }
 
-    data class DurationPicked(val minutes: Int) : EditRepeatingQuestAction()
-    data class AddSubQuest(val name: String) : EditRepeatingQuestAction()
-    data class ChangeChallenge(val challenge: Challenge?) : EditRepeatingQuestAction()
-    data class ChangeReminder(val reminder: ReminderViewModel?) : EditRepeatingQuestAction()
-    data class ChangeRepeatPattern(val repeatPattern: RepeatPattern?) : EditRepeatingQuestAction()
-    data class ChangeStartTime(val time: Time?) : EditRepeatingQuestAction()
-    data class ChangeDuration(val minutes: Int) : EditRepeatingQuestAction()
-    data class ChangeNote(val text: String) : EditRepeatingQuestAction()
+    data class DurationPicked(val minutes: Int) : EditRepeatingQuestAction() {
+        override fun toMap() = mapOf("minutes" to minutes)
+    }
 
-    data class RemoveTag(val tag: Tag) : EditRepeatingQuestAction()
-    data class AddTag(val tagName: String) : EditRepeatingQuestAction()
-    data class ValidateName(val name: String) : EditRepeatingQuestAction()
-    data class Load(val repeatingQuestId: String) : EditRepeatingQuestAction()
+    data class AddSubQuest(val name: String) : EditRepeatingQuestAction() {
+        override fun toMap() = mapOf("name" to name)
+    }
+
+    data class ChangeChallenge(val challenge: Challenge?) : EditRepeatingQuestAction() {
+        override fun toMap() = mapOf("challenge" to challenge)
+    }
+
+    data class ChangeReminder(val reminder: ReminderViewModel?) : EditRepeatingQuestAction() {
+        override fun toMap() = mapOf("reminder" to reminder)
+    }
+
+    data class ChangeRepeatPattern(val repeatPattern: RepeatPattern?) : EditRepeatingQuestAction() {
+        override fun toMap() = mapOf("repeatPattern" to repeatPattern)
+    }
+
+    data class ChangeStartTime(val time: Time?) : EditRepeatingQuestAction() {
+        override fun toMap() = mapOf("time" to time)
+    }
+
+    data class ChangeDuration(val minutes: Int) : EditRepeatingQuestAction() {
+        override fun toMap() = mapOf("minutes" to minutes)
+    }
+
+    data class ChangeNote(val text: String) : EditRepeatingQuestAction() {
+        override fun toMap() = mapOf("text" to text)
+    }
+
+    data class RemoveTag(val tag: Tag) : EditRepeatingQuestAction() {
+        override fun toMap() = mapOf("tag" to tag)
+    }
+
+    data class AddTag(val tagName: String) : EditRepeatingQuestAction() {
+        override fun toMap() = mapOf("tagName" to tagName)
+    }
+
+    data class ValidateName(val name: String) : EditRepeatingQuestAction() {
+        override fun toMap() = mapOf("name" to name)
+    }
+
+    data class Load(val repeatingQuestId: String) : EditRepeatingQuestAction() {
+        override fun toMap() = mapOf(
+            "mode" to if (repeatingQuestId.isBlank()) "add" else "edit",
+            "repeatingQuestId" to repeatingQuestId
+        )
+    }
 
     object Back : EditRepeatingQuestAction()
 

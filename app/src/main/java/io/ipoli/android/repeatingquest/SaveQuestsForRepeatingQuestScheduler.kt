@@ -24,7 +24,7 @@ class SaveQuestsForRepeatingQuestJob : DailyJob(), Injects<Module> {
         val saveQuestsForRepeatingQuestUseCase by kap.required { saveQuestsForRepeatingQuestUseCase }
         kap.inject(myPoliApp.module(context))
 
-        val rqs = repeatingQuestRepository.findServerAllActive()
+        val rqs = repeatingQuestRepository.findAllActive()
         rqs.forEach {
             val currentPeriod = it.repeatPattern.periodRangeFor(LocalDate.now())
             val nextPeriodFirstDate = currentPeriod.end.plusDays(1)

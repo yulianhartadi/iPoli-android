@@ -5,8 +5,9 @@ import io.ipoli.android.challenge.predefined.entity.PredefinedChallenge
 import io.ipoli.android.challenge.predefined.entity.PredefinedChallengeData
 import io.ipoli.android.common.AppState
 import io.ipoli.android.common.BaseViewStateReducer
-import io.ipoli.android.common.mvi.BaseViewState
+
 import io.ipoli.android.common.redux.Action
+import io.ipoli.android.common.redux.BaseViewState
 
 /**
  * Created by Venelin Valkov <venelin@mypoli.fun>
@@ -14,10 +15,14 @@ import io.ipoli.android.common.redux.Action
  */
 
 sealed class PersonalizeChallengeAction : Action {
-    data class Load(val challenge: PredefinedChallenge) : PersonalizeChallengeAction()
+    data class Load(val challenge: PredefinedChallenge) : PersonalizeChallengeAction() {
+        override fun toMap() = mapOf("challenge" to challenge)
+    }
     object AcceptChallenge : PersonalizeChallengeAction()
     data class ToggleSelected(val quest: PredefinedChallengeData.Quest) :
-        PersonalizeChallengeAction()
+        PersonalizeChallengeAction() {
+        override fun toMap() = mapOf("quest" to quest)
+    }
 
     object Validate : PersonalizeChallengeAction()
 }

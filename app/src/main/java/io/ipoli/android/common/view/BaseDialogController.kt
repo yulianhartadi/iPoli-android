@@ -18,8 +18,8 @@ import com.bluelinelabs.conductor.RouterTransaction
 import com.bluelinelabs.conductor.changehandler.SimpleSwapChangeHandler
 import io.ipoli.android.R
 import io.ipoli.android.common.AppState
-import io.ipoli.android.common.mvi.ViewState
 import io.ipoli.android.common.redux.Action
+import io.ipoli.android.common.redux.ViewState
 import io.ipoli.android.common.redux.ViewStateReducer
 import io.ipoli.android.common.redux.android.ReduxViewController
 

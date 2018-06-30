@@ -2,8 +2,9 @@ package io.ipoli.android.store.membership
 
 import io.ipoli.android.common.AppState
 import io.ipoli.android.common.BaseViewStateReducer
-import io.ipoli.android.common.mvi.BaseViewState
+
 import io.ipoli.android.common.redux.Action
+import io.ipoli.android.common.redux.BaseViewState
 import io.ipoli.android.player.data.Membership
 import io.ipoli.android.store.membership.MembershipViewState.StateType.*
 import io.ipoli.android.store.purchase.SubscriptionManager
@@ -19,12 +20,28 @@ sealed class MembershipAction : Action {
         val yearlyPrice: String,
         val quarterlyPrice: String,
         val activeSkus: Set<String>
-    ) : MembershipAction()
+    ) : MembershipAction() {
+        override fun toMap() = mapOf(
+            "monthlyPrice" to monthlyPrice,
+            "yearlyPrice" to yearlyPrice,
+            "quarterlyPrice" to quarterlyPrice,
+            "activeSkus" to activeSkus.joinToString(",")
+        )
+    }
 
-    data class SelectPlan(val plan: MembershipPlan) : MembershipAction()
-    data class GoPremium(val plan: MembershipPlan, val activeSkus: Set<String>) : MembershipAction()
+    data class SelectPlan(val plan: MembershipPlan) : MembershipAction() {
+        override fun toMap() = mapOf("plan" to plan)
+    }
+
+    data class GoPremium(val plan: MembershipPlan, val activeSkus: Set<String>) :
+        MembershipAction() {
+        override fun toMap() = mapOf("plan" to plan)
+    }
     data class Subscribed(val plan: MembershipPlan, val activeSkus: Set<String>) :
-        MembershipAction()
+        MembershipAction() {
+        override fun toMap() = mapOf("plan" to plan, "activeSkus" to activeSkus.joinToString(","))
+    }
+
     object SubscriptionError : MembershipAction()
 }
 

@@ -12,7 +12,7 @@ import android.view.*
 import android.view.animation.AccelerateDecelerateInterpolator
 import android.view.animation.AnticipateInterpolator
 import io.ipoli.android.R
-import io.ipoli.android.common.view.MviPopup
+import io.ipoli.android.common.view.Popup
 import io.ipoli.android.common.view.gone
 import io.ipoli.android.common.view.views
 import io.ipoli.android.pet.AndroidPetAvatar
@@ -86,23 +86,23 @@ class PetNotificationPopup(
         with(overlayView) {
             dismiss.setOnClickListener {
                 dismiss.isClickable = false
-                hide({
+                hide {
                     onDismiss()
-                })
+                }
             }
 
             snooze.setOnClickListener {
                 snooze.isClickable = false
-                hide({
+                hide {
                     onSnooze()
-                })
+                }
             }
 
             start.setOnClickListener {
                 start.isClickable = false
-                hide({
+                hide {
                     onStart()
-                })
+                }
             }
         }
 
@@ -125,7 +125,7 @@ class PetNotificationPopup(
         val layoutParams = WindowManager.LayoutParams(
             WindowManager.LayoutParams.MATCH_PARENT,
             WindowManager.LayoutParams.MATCH_PARENT,
-            MviPopup.WindowOverlayCompat.TYPE_SYSTEM_ERROR,
+            Popup.WindowOverlayCompat.TYPE_SYSTEM_ERROR,
             focusable,
             PixelFormat.TRANSLUCENT
         )

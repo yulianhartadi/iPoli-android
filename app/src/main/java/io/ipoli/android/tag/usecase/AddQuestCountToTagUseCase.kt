@@ -13,7 +13,7 @@ class AddQuestCountToTagUseCase(private val questRepository: QuestRepository) :
 
     override fun execute(parameters: Params): Tag {
         val tag = parameters.tag
-        val questCount =  questRepository.findCountForTag(tag.id)
+        val questCount = questRepository.findCountForTag(tag.id)
         return tag.copy(
             questCount = questCount
         )

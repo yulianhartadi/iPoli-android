@@ -32,6 +32,6 @@ object StoreSideEffectHandler : AppSideEffectHandler() {
 
     override fun canHandle(action: Action) =
         action is ColorPickerAction
-                || action is IconPickerAction
+            || action is IconPickerAction
 
 }

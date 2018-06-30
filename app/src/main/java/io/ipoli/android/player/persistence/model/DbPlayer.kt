@@ -18,7 +18,7 @@ data class DbPlayer(override val map: MutableMap<String, Any?> = mutableMapOf())
     var coins: Long by map
     var gems: Long by map
     var experience: Long by map
-    var authProvider: MutableMap<String, Any?> by map
+    var authProvider: MutableMap<String, Any?>? by map
     var avatar: String by map
     var pet: MutableMap<String, Any?> by map
     var inventory: MutableMap<String, Any?> by map

@@ -1,22 +1,28 @@
 package io.ipoli.android.quest.data.persistence
 
-import android.content.SharedPreferences
+import android.arch.lifecycle.LiveData
+import android.arch.persistence.room.*
+import android.arch.persistence.room.Entity
+import android.arch.persistence.room.ForeignKey.CASCADE
 import com.google.firebase.firestore.CollectionReference
 import com.google.firebase.firestore.FirebaseFirestore
-import com.google.firebase.firestore.Query
 import io.ipoli.android.common.datetime.*
-import io.ipoli.android.common.persistence.BaseCollectionFirestoreRepository
-import io.ipoli.android.common.persistence.CollectionRepository
-import io.ipoli.android.common.persistence.FirestoreModel
+import io.ipoli.android.common.distinct
+import io.ipoli.android.common.persistence.*
 import io.ipoli.android.dailychallenge.data.DailyChallenge
 import io.ipoli.android.pet.Food
 import io.ipoli.android.quest.*
 import io.ipoli.android.quest.subquest.SubQuest
 import io.ipoli.android.tag.Tag
+import io.ipoli.android.tag.persistence.RoomTag
+import io.ipoli.android.tag.persistence.RoomTagMapper
+import io.ipoli.android.tag.persistence.TagDao
 import kotlinx.coroutines.experimental.channels.Channel
-import org.threeten.bp.*
-import java.util.concurrent.ExecutorService
-import kotlin.coroutines.experimental.CoroutineContext
+import org.jetbrains.annotations.NotNull
+import org.threeten.bp.LocalDate
+import org.threeten.bp.LocalDateTime
+import org.threeten.bp.LocalTime
+import java.util.*
 
 interface QuestRepository : CollectionRepository<Quest> {
 
@@ -44,14 +50,6 @@ interface QuestRepository : CollectionRepository<Quest> {
         start: LocalDate,
         end: LocalDate
     ): List<Quest>
-
-    fun findServerScheduledForRepeatingQuestBetween(
-        repeatingQuestId: String,
-        start: LocalDate,
-        end: LocalDate
-    ): List<Quest>
-
-    fun findNextReminderTime(afterTime: ZonedDateTime = ZonedDateTime.now(ZoneId.systemDefault())): LocalDateTime?
 
     fun findQuestsToRemind(remindTime: LocalDateTime): List<Quest>
     fun findCompletedForDate(date: LocalDate): List<Quest>
@@ -85,7 +83,7 @@ interface QuestRepository : CollectionRepository<Quest> {
         end: LocalDate? = null
     ): List<Quest>
 
-    fun purgeAllNotCompletedForRepeating(
+    fun removeAllNotCompletedForRepeating(
         repeatingQuestId: String,
         startDate: LocalDate = LocalDate.now()
     )
@@ -106,9 +104,6 @@ interface QuestRepository : CollectionRepository<Quest> {
 
     fun findCountForTag(tagId: String): Int
 
-    fun findByTag(tagId: String): List<Quest>
-    fun findByTagWithRemoved(tagId: String): List<Quest>
-
     fun findQuestsForDailyChallenge(dailyChallenge: DailyChallenge): List<Quest>
 
     fun findOriginallyScheduledOrCompletedInPeriod(
@@ -121,8 +116,847 @@ interface QuestRepository : CollectionRepository<Quest> {
         endDate: LocalDate
     ): List<Quest>
 
-    fun purge(questIds: List<String>)
+    fun remove(questIds: List<String>)
+
+    fun removeFromRepeatingQuest(questId: String, newRepeatingQuestId: String)
 }
+
+@Dao
+abstract class QuestDao : BaseDao<RoomQuest>() {
+    @Query("SELECT * FROM quests")
+    abstract fun findAll(): List<RoomQuest>
+
+    @Query("SELECT * FROM quests WHERE id = :id")
+    abstract fun findById(id: String): RoomQuest
+
+    @Query("SELECT * FROM quests WHERE challengeId = :challengeId")
+    abstract fun findAllForChallenge(challengeId: String): List<RoomQuest>
+
+    @Query("SELECT * FROM quests WHERE removedAt IS NULL")
+    abstract fun listenForNotRemoved(): LiveData<List<RoomQuest>>
+
+    @Query("SELECT * FROM quests WHERE id = :id")
+    abstract fun listenById(id: String): LiveData<RoomQuest>
+
+    @Query(
+        """
+        SELECT *
+        FROM quests
+        WHERE removedAt IS NULL AND scheduledDate >= :startDate AND scheduledDate <= :endDate
+        ORDER BY scheduledDate ASC, startMinute ASC
+        """
+    )
+    abstract fun listenForScheduledBetween(
+        startDate: Long,
+        endDate: Long
+    ): LiveData<List<RoomQuest>>
+
+    @Query("SELECT * FROM quests WHERE removedAt IS NULL AND scheduledDate = :date ORDER BY scheduledDate ASC, startMinute ASC")
+    abstract fun listenForScheduledAt(
+        date: Long
+    ): LiveData<List<RoomQuest>>
+
+    @Query("SELECT * FROM quests WHERE removedAt IS NULL AND scheduledDate = :date ORDER BY scheduledDate ASC, startMinute ASC")
+    abstract fun findScheduledAt(
+        date: Long
+    ): List<RoomQuest>
+
+    @Query("SELECT * FROM quests WHERE removedAt IS NULL AND scheduledDate > :date ORDER BY scheduledDate ASC LIMIT :maxQuests")
+    abstract fun findScheduledAfter(
+        date: Long,
+        maxQuests: Int
+    ): List<RoomQuest>
+
+
+    @Query("SELECT * FROM quests WHERE removedAt IS NULL AND scheduledDate < :date ORDER BY scheduledDate DESC LIMIT :maxQuests")
+    abstract fun findScheduledBefore(
+        date: Long,
+        maxQuests: Int
+    ): List<RoomQuest>
+
+    @Query("SELECT * FROM quests WHERE removedAt IS NULL ORDER BY RANDOM() LIMIT :count")
+    abstract fun findRandomUnscheduled(count: Int): List<RoomQuest>
+
+    @Query("SELECT * FROM quests WHERE removedAt IS NULL AND completedAtDate = :date")
+    abstract fun findCompletedForDate(date: Long): List<RoomQuest>
+
+    @Query("SELECT * FROM quests WHERE removedAt IS NULL AND completedAtDate IS NULL AND timeRangeCount > 0")
+    abstract fun findStarted(): List<RoomQuest>
+
+    @Query("SELECT * FROM quests WHERE removedAt IS NULL AND completedAtDate >= :startDate AND completedAtDate <= :endDate")
+    abstract fun findCompletedInPeriod(startDate: Long, endDate: Long): List<RoomQuest>
+
+    @Query("SELECT DISTINCT * FROM quests WHERE removedAt IS NULL AND ((completedAtDate >= :startDate AND completedAtDate <= :endDate) OR (originalScheduledDate >= :startDate AND originalScheduledDate <= :endDate))")
+    abstract fun findOriginallyScheduledOrCompletedInPeriod(
+        startDate: Long,
+        endDate: Long
+    ): List<RoomQuest>
+
+    @Query("SELECT * FROM quests WHERE repeatingQuestId LIKE :repeatingQuestId AND scheduledDate >= :startDate AND scheduledDate <= :endDate")
+    abstract fun findScheduledForRepeatingQuestBetween(
+        repeatingQuestId: String,
+        startDate: Long,
+        endDate: Long
+    ): List<RoomQuest>
+
+    @Query(
+        """
+        SELECT *
+        FROM quests
+        WHERE removedAt is NULL AND repeatingQuestId = :repeatingQuestId AND scheduledDate >= :date AND completedAtDate IS NULL
+        ORDER BY scheduledDate ASC
+        LIMIT 1
+        """
+    )
+    abstract fun findNextScheduledNotCompletedForRepeatingQuest(
+        repeatingQuestId: String,
+        date: Long
+    ): List<RoomQuest>
+
+    @Query("SELECT * FROM quests WHERE repeatingQuestId = :repeatingQuestId")
+    abstract fun findAllForRepeatingQuestIncludingRemoved(repeatingQuestId: String): List<RoomQuest>
+
+    @Query("SELECT * FROM quests WHERE removedAt is NULL AND repeatingQuestId = :repeatingQuestId")
+    abstract fun findAllForRepeatingQuest(repeatingQuestId: String): List<RoomQuest>
+
+    @Query("SELECT * FROM quests WHERE repeatingQuestId = :repeatingQuestId AND originalScheduledDate = :date LIMIT 1")
+    abstract fun findOriginalScheduledForRepeatingQuestAtDate(
+        repeatingQuestId: String,
+        date: Long
+    ): List<RoomQuest>
+
+    @Query("SELECT COUNT(*) FROM quests WHERE repeatingQuestId = :repeatingQuestId AND completedAtDate >= :startDate")
+    abstract fun findCompletedCountForRepeatingQuestAfter(
+        repeatingQuestId: String,
+        startDate: Long
+    ): Int
+
+    @Query("SELECT COUNT(*) FROM quests WHERE repeatingQuestId = :repeatingQuestId AND completedAtDate >= :startDate AND completedAtDate <= :endDate")
+    abstract fun findCompletedCountForRepeatingQuestInPeriod(
+        repeatingQuestId: String,
+        startDate: Long,
+        endDate: Long
+    ): Int
+
+    @Query("SELECT * FROM quests WHERE repeatingQuestId = :repeatingQuestId AND completedAtDate >= :startDate")
+    abstract fun findCompletedForRepeatingQuestAfter(
+        repeatingQuestId: String,
+        startDate: Long
+    ): List<RoomQuest>
+
+    @Query("SELECT * FROM quests WHERE repeatingQuestId = :repeatingQuestId AND completedAtDate >= :startDate AND completedAtDate <= :endDate")
+    abstract fun findCompletedForRepeatingQuestInPeriod(
+        repeatingQuestId: String,
+        startDate: Long,
+        endDate: Long
+    ): List<RoomQuest>
+
+    @Query("SELECT * FROM quests WHERE removedAt IS NULL and repeatingQuestId IS NULL and completedAtDate IS NULL AND scheduledDate >= :startDate AND challengeId != :challengeId")
+    abstract fun findNotCompletedNotForChallengeNotRepeating(
+        challengeId: String,
+        startDate: Long
+    ): List<RoomQuest>
+
+    @Query("SELECT * FROM quests WHERE removedAt IS NULL and repeatingQuestId IS NULL and challengeId = :challengeId")
+    abstract fun findAllForChallengeNotRepeating(challengeId: String): List<RoomQuest>
+
+    @Query("SELECT * FROM quests WHERE repeatingQuestId = :repeatingQuestId AND scheduledDate >= :date")
+    abstract fun findAllForRepeatingQuestAfterDateWithRemoved(
+        repeatingQuestId: String,
+        date: Long
+    ): List<RoomQuest>
+
+    @Query("SELECT * FROM quests WHERE removedAt IS NULL AND repeatingQuestId = :repeatingQuestId AND scheduledDate >= :date")
+    abstract fun findAllForRepeatingQuestAfterDate(
+        repeatingQuestId: String,
+        date: Long
+    ): List<RoomQuest>
+
+    @Query("SELECT * FROM quests WHERE removedAt IS NULL AND id IN (:ids)")
+    abstract fun findAll(ids: List<String>): List<RoomQuest>
+
+    @Query("SELECT * FROM quests WHERE removedAt IS NULL AND scheduledDate IS NULL ORDER BY dueDate ASC")
+    abstract fun listenForAllUnscheduled(): LiveData<List<RoomQuest>>
+
+    @Query("UPDATE quests $REMOVE_QUERY")
+    abstract fun remove(id: String, currentTimeMillis: Long = System.currentTimeMillis())
+
+    @Query("UPDATE quests SET removedAt = null, updatedAt = :currentTimeMillis, repeatingQuestId = :newRepeatingQuestId WHERE id = :id")
+    abstract fun undoRemove(
+        id: String,
+        newRepeatingQuestId: String?,
+        currentTimeMillis: Long = System.currentTimeMillis()
+    )
+
+    @Query("UPDATE quests SET removedAt = :currentTimeMillis, updatedAt = :currentTimeMillis WHERE id IN (:ids)")
+    abstract fun remove(ids: List<String>, currentTimeMillis: Long = System.currentTimeMillis())
+
+    @Query("UPDATE quests SET removedAt = :currentTimeMillis, updatedAt = :currentTimeMillis, repeatingQuestId = NULL WHERE id IN (:ids)")
+    abstract fun removeAndClearRepeatingQuestId(
+        ids: List<String>,
+        currentTimeMillis: Long = System.currentTimeMillis()
+    )
+
+    @Query("SELECT * FROM quests WHERE repeatingQuestId = :repeatingQuestId AND completedAtDate IS NULL AND scheduledDate >= :date ")
+    abstract fun findAllNotCompletedForRepeating(
+        repeatingQuestId: String,
+        date: Long
+    ): List<RoomQuest>
+
+    @Query(
+        """
+        SELECT quests.*
+        FROM quests
+        INNER JOIN entity_reminders ON quests.id = entity_reminders.entityId
+        WHERE entity_reminders.entityType = 'QUEST' AND entity_reminders.date = :date AND entity_reminders.millisOfDay = :millisOfDay AND quests.removedAt IS NULL
+        """
+    )
+    abstract fun findAllToRemindAt(date: Long, millisOfDay: Long): List<RoomQuest>
+
+    @Query(
+        """
+        SELECT quests.*
+        FROM quests
+        INNER JOIN quest_tag_join ON quests.id = quest_tag_join.questId
+        WHERE quest_tag_join.tagId = :tagId AND quests.removedAt IS NULL
+        """
+    )
+    abstract fun listenByTag(tagId: String): LiveData<List<RoomQuest>>
+
+    @Insert(onConflict = OnConflictStrategy.IGNORE)
+    abstract fun saveTags(joins: List<RoomQuest.Companion.RoomTagJoin>)
+
+    @Query("DELETE FROM quest_tag_join WHERE questId = :questId")
+    abstract fun deleteAllTags(questId: String)
+
+    @Query("DELETE FROM quest_tag_join WHERE questId IN (:questIds)")
+    abstract fun deleteAllTags(questIds: List<String>)
+
+    @Query("SELECT COUNT(*) FROM quest_tag_join WHERE tagId = :tagId")
+    abstract fun countForTag(tagId: String): Int
+
+    @Query("SELECT * FROM quests $FIND_SYNC_QUERY")
+    abstract fun findAllForSync(lastSync: Long): List<RoomQuest>
+
+    @Query("UPDATE quests SET removedAt = :currentTimeMillis, updatedAt = :currentTimeMillis, repeatingQuestId = :newRepeatingQuestId WHERE id = :id")
+    abstract fun removeFromRepeatingQuest(
+        id: String,
+        newRepeatingQuestId: String,
+        currentTimeMillis: Long = System.currentTimeMillis()
+    )
+}
+
+class RoomQuestRepository(
+    dao: QuestDao,
+    private val entityReminderDao: EntityReminderDao,
+    private val tagDao: TagDao
+) :
+    BaseRoomRepositoryWithTags<Quest, RoomQuest, QuestDao, RoomQuest.Companion.RoomTagJoin>(dao),
+    QuestRepository {
+
+    override fun findAllForSync(lastSync: Duration<Millisecond>) =
+        dao.findAllForSync(lastSync.millisValue).map { toEntityObject(it) }
+
+    override fun createTagJoin(entityId: String, tagId: String) =
+        RoomQuest.Companion.RoomTagJoin(entityId, tagId)
+
+    override fun newIdForEntity(id: String, entity: Quest) = entity.copy(id = id)
+
+    override fun saveTags(joins: List<RoomQuest.Companion.RoomTagJoin>) = dao.saveTags(joins)
+
+    override fun deleteAllTags(entityId: String) = dao.deleteAllTags(entityId)
+
+    override fun deleteAllTags(entityIds: List<String>) = dao.deleteAllTags(entityIds)
+
+    override suspend fun listenForScheduledBetween(
+        startDate: LocalDate,
+        endDate: LocalDate,
+        channel: Channel<List<Quest>>
+    ) =
+        dao.listenForScheduledBetween(startDate.startOfDayUTC(), endDate.startOfDayUTC())
+            .notify(channel)
+
+    override suspend fun listenForScheduledAt(
+        date: LocalDate,
+        channel: Channel<List<Quest>>
+    ) =
+        dao.listenForScheduledAt(date.startOfDayUTC())
+            .notify(channel)
+
+    override suspend fun listenByTag(
+        tagId: String,
+        channel: Channel<List<Quest>>
+    ) =
+        dao.listenByTag(tagId).notify(channel)
+
+    override suspend fun listenForAllUnscheduled(channel: Channel<List<Quest>>) =
+        dao.listenForAllUnscheduled().notify(channel)
+
+    override fun findRandomUnscheduled(count: Int) =
+        dao.findRandomUnscheduled(count).map { toEntityObject(it) }
+
+    override fun findScheduledAt(date: LocalDate) =
+        dao.findScheduledAt(date.startOfDayUTC()).map { toEntityObject(it) }
+
+    override fun findScheduledForRepeatingQuestBetween(
+        repeatingQuestId: String,
+        start: LocalDate,
+        end: LocalDate
+    ) =
+        dao.findScheduledForRepeatingQuestBetween(
+            "$repeatingQuestId%",
+            start.startOfDayUTC(),
+            end.startOfDayUTC()
+        ).map { toEntityObject(it) }
+
+    override fun findQuestsToRemind(remindTime: LocalDateTime): List<Quest> {
+        val date = remindTime.toLocalDate().startOfDayUTC()
+        val millisOfDay = remindTime.toLocalTime().toSecondOfDay().seconds.millisValue
+        return dao.findAllToRemindAt(date, millisOfDay).map { toEntityObject(it) }
+    }
+
+    override fun findCompletedForDate(date: LocalDate) =
+        dao.findCompletedForDate(date.startOfDayUTC()).map { toEntityObject(it) }
+
+    override fun findStartedQuests() = dao.findStarted().map { toEntityObject(it) }
+
+    override fun findLastScheduledDate(currentDate: LocalDate, maxQuests: Int) =
+        dao
+            .findScheduledAfter(currentDate.startOfDayUTC(), maxQuests)
+            .lastOrNull()?.let {
+                it.scheduledDate!!.startOfDayUTC
+            }
+
+    override fun findFirstScheduledDate(currentDate: LocalDate, maxQuests: Int) =
+        dao
+            .findScheduledBefore(currentDate.startOfDayUTC(), maxQuests)
+            .lastOrNull()?.let {
+                it.scheduledDate!!.startOfDayUTC
+            }
+
+    override fun findNextScheduledNotCompletedForRepeatingQuest(
+        repeatingQuestId: String,
+        currentDate: LocalDate
+    ) =
+        dao.findNextScheduledNotCompletedForRepeatingQuest(
+            repeatingQuestId,
+            currentDate.startOfDayUTC()
+        ).firstOrNull()?.let { toEntityObject(it) }
+
+    override fun findAllForRepeatingQuest(
+        repeatingQuestId: String,
+        includeRemoved: Boolean
+    ) =
+        if (includeRemoved) {
+            dao.findAllForRepeatingQuestIncludingRemoved(repeatingQuestId)
+        } else {
+            dao.findAllForRepeatingQuest(repeatingQuestId)
+        }.map { toEntityObject(it) }
+
+    override fun findOriginalScheduledForRepeatingQuestAtDate(
+        repeatingQuestId: String,
+        currentDate: LocalDate
+    ) =
+        dao.findOriginalScheduledForRepeatingQuestAtDate(
+            repeatingQuestId,
+            currentDate.startOfDayUTC()
+        ).firstOrNull()?.let {
+            toEntityObject(it)
+        }
+
+    override fun findCompletedCountForRepeatingQuestInPeriod(
+        repeatingQuestId: String,
+        start: LocalDate,
+        end: LocalDate?
+    ) =
+        if (end == null) {
+            dao.findCompletedCountForRepeatingQuestAfter(repeatingQuestId, start.startOfDayUTC())
+        } else {
+            dao.findCompletedCountForRepeatingQuestInPeriod(
+                repeatingQuestId,
+                start.startOfDayUTC(),
+                end.startOfDayUTC()
+            )
+        }
+
+    override fun findCompletedForRepeatingQuestInPeriod(
+        repeatingQuestId: String,
+        start: LocalDate,
+        end: LocalDate?
+    ) =
+        if (end == null) {
+            dao.findCompletedForRepeatingQuestAfter(repeatingQuestId, start.startOfDayUTC())
+        } else {
+            dao.findCompletedForRepeatingQuestInPeriod(
+                repeatingQuestId,
+                start.startOfDayUTC(),
+                end.startOfDayUTC()
+            )
+        }.map { toEntityObject(it) }
+
+    override fun removeAllNotCompletedForRepeating(repeatingQuestId: String, startDate: LocalDate) {
+        val rqs = dao.findAllNotCompletedForRepeating(repeatingQuestId, startDate.startOfDayUTC())
+        removeWithRepeatingQuestIdAndReminders(rqs.map { it.id })
+    }
+
+    @Transaction
+    private fun removeWithRepeatingQuestIdAndReminders(questIds: List<String>) {
+        dao.removeAndClearRepeatingQuestId(questIds)
+        purgeReminders(questIds)
+    }
+
+    override fun removeFromRepeatingQuest(questId: String, newRepeatingQuestId: String) {
+        dao.removeFromRepeatingQuest(questId, newRepeatingQuestId)
+    }
+
+    override fun findNotCompletedNotForChallengeNotRepeating(
+        challengeId: String,
+        start: LocalDate
+    ) =
+        dao
+            .findNotCompletedNotForChallengeNotRepeating(challengeId, start.startOfDayUTC())
+            .map { toEntityObject(it) }
+
+    override fun findAllForChallengeNotRepeating(challengeId: String) =
+        dao.findAllForChallengeNotRepeating(challengeId).map { toEntityObject(it) }
+
+    override fun findAllForChallenge(challengeId: String) =
+        dao.findAllForChallenge(challengeId).map { toEntityObject(it) }
+
+    override fun findAllForRepeatingQuestAfterDate(
+        repeatingQuestId: String,
+        includeRemoved: Boolean,
+        currentDate: LocalDate
+    ) =
+        if (includeRemoved) {
+            dao.findAllForRepeatingQuestAfterDateWithRemoved(
+                repeatingQuestId,
+                currentDate.startOfDayUTC()
+            )
+        } else {
+            dao.findAllForRepeatingQuestAfterDate(repeatingQuestId, currentDate.startOfDayUTC())
+        }
+            .map { toEntityObject(it) }
+
+    override fun findCountForTag(tagId: String): Int {
+        return dao.countForTag(tagId)
+    }
+
+    override fun findQuestsForDailyChallenge(dailyChallenge: DailyChallenge): List<Quest> {
+        if (dailyChallenge.questIds.isEmpty()) {
+            return emptyList()
+        }
+        return dao
+            .findAll(dailyChallenge.questIds)
+            .map { toEntityObject(it) }
+    }
+
+    override fun findOriginallyScheduledOrCompletedInPeriod(
+        startDate: LocalDate,
+        endDate: LocalDate
+    ) =
+        dao.findOriginallyScheduledOrCompletedInPeriod(
+            startDate.startOfDayUTC(),
+            endDate.startOfDayUTC()
+        ).map { toEntityObject(it) }
+
+    override fun findCompletedInPeriod(startDate: LocalDate, endDate: LocalDate): List<Quest> =
+        dao.findCompletedInPeriod(
+            startDate.startOfDayUTC(),
+            endDate.startOfDayUTC()
+        ).map { toEntityObject(it) }
+
+    override fun remove(questIds: List<String>) {
+        dao.remove(questIds)
+        purgeReminders(questIds)
+    }
+
+
+    override fun save(entities: List<Quest>): List<Quest> {
+        val roomQs = entities.map { toDatabaseObject(it) }
+        return bulkSave(roomQs, entities)
+    }
+
+    @Transaction
+    private fun bulkSave(
+        roomQs: List<RoomQuest>,
+        entities: List<Quest>
+    ): List<Quest> {
+        val ids = entities.filter { it.id.isNotBlank() }.map { it.id }
+        deleteAllTags(ids)
+
+        dao.saveAll(roomQs)
+
+        val newEntities = entities.mapIndexed { index, quest ->
+            quest.copy(
+                id = roomQs[index].id
+            )
+        }
+
+        val joins = newEntities.map { e ->
+            e.tags.map { t ->
+                createTagJoin(e.id, t.id)
+            }
+        }.flatten()
+
+        saveTags(joins)
+
+        val questToReminder = newEntities.map { q -> q.reminders.map { Pair(q, it) } }.flatten()
+        bulkPurgeReminders(newEntities.map { it.id }, questToReminder)
+        return newEntities
+    }
+
+    private fun bulkPurgeReminders(
+        questIds: List<String>,
+        questToReminder: List<Pair<Quest, Reminder>>
+    ) {
+
+        purgeReminders(questIds)
+
+        val rems = questToReminder.filter { !it.first.isCompleted && !it.first.isStarted }
+            .mapNotNull { createReminderData(it.second, it.first) }
+
+        entityReminderDao.saveAll(rems)
+    }
+
+    override fun save(entity: Quest): Quest {
+        val rq = toDatabaseObject(entity)
+        return save(rq, entity)
+    }
+
+    @Transaction
+    private fun save(
+        rq: RoomQuest,
+        entity: Quest
+    ): Quest {
+        if (entity.id.isNotBlank()) {
+            deleteAllTags(entity.id)
+        }
+        dao.save(rq)
+        val joins = entity.tags.map {
+            createTagJoin(rq.id, it.id)
+        }
+        saveTags(joins)
+
+        val newQuest = entity.copy(id = rq.id)
+        saveReminders(newQuest, newQuest.reminders)
+        return newQuest
+    }
+
+    private fun purgeReminders(
+        questIds: List<String>
+    ) {
+        entityReminderDao.purgeForEntities(questIds)
+    }
+
+    private fun saveReminders(quest: Quest, reminders: List<Reminder>) {
+        purgeQuestReminders(quest.id)
+        if (!quest.isCompleted && !quest.isStarted) {
+            addReminders(reminders, quest)
+        }
+    }
+
+    private fun addReminders(
+        reminders: List<Reminder>,
+        quest: Quest
+    ) {
+        val ers = reminders.mapNotNull {
+            createReminderData(it, quest)
+        }
+        entityReminderDao.saveAll(ers)
+    }
+
+    private fun createReminderData(reminder: Reminder, quest: Quest) =
+        when (reminder) {
+            is Reminder.Fixed ->
+                createRoomEntityReminder(quest.id, reminder.date, reminder.time)
+            is Reminder.Relative ->
+                if (quest.isScheduled) {
+
+                    val questDateTime =
+                        LocalDateTime.of(
+                            quest.scheduledDate!!,
+                            LocalTime.of(quest.startTime!!.hours, quest.startTime.getMinutes())
+                        )
+                    val reminderDateTime =
+                        questDateTime.minusMinutes(reminder.minutesFromStart)
+                    val toLocalTime = reminderDateTime.toLocalTime()
+
+                    createRoomEntityReminder(
+                        quest.id,
+                        reminderDateTime.toLocalDate(),
+                        Time.at(toLocalTime.hour, toLocalTime.minute)
+                    )
+                } else null
+
+        }
+
+    private fun createRoomEntityReminder(
+        questId: String,
+        date: LocalDate,
+        time: Time
+    ) =
+        RoomEntityReminder(
+            id = UUID.randomUUID().toString(),
+            date = date.startOfDayUTC(),
+            millisOfDay = time.toMillisOfDay(),
+            entityType = RoomEntityReminder.EntityType.QUEST.name,
+            entityId = questId
+        )
+
+    private fun purgeQuestReminders(questId: String) {
+        entityReminderDao.purgeForEntity(questId)
+    }
+
+    override fun findById(id: String) =
+        toEntityObject(dao.findById(id))
+
+    override fun findAll() =
+        dao.findAll().map { toEntityObject(it) }
+
+    override fun listenById(id: String, channel: Channel<Quest?>): Channel<Quest?> =
+        dao.listenById(id).distinct().notifySingle(channel)
+
+    override fun listenForAll(channel: Channel<List<Quest>>): Channel<List<Quest>> =
+        dao.listenForNotRemoved().notify(channel)
+
+    override fun remove(entity: Quest) {
+        remove(entity.id)
+    }
+
+    override fun remove(id: String) {
+        dao.remove(id)
+    }
+
+    override fun undoRemove(id: String) {
+        val newRepeatingQuestId = dao.findById(id).repeatingQuestId?.replace("*", "")
+        dao.undoRemove(id, newRepeatingQuestId)
+    }
+
+    private val tagMapper = RoomTagMapper()
+
+    override fun toEntityObject(dbObject: RoomQuest) =
+        Quest(
+            id = dbObject.id,
+            name = dbObject.name,
+            color = Color.valueOf(dbObject.color),
+            icon = dbObject.icon?.let {
+                Icon.valueOf(it)
+            },
+            tags = tagDao.findForQuest(dbObject.id).map { tagMapper.toEntityObject(it) },
+            startDate = dbObject.startDate?.startOfDayUTC,
+            dueDate = dbObject.dueDate?.startOfDayUTC,
+            scheduledDate = dbObject.scheduledDate?.startOfDayUTC,
+            originalScheduledDate = dbObject.originalScheduledDate?.startOfDayUTC,
+            startTime = dbObject.startMinute?.let { Time.of(it.toInt()) },
+            duration = dbObject.duration.toInt(),
+            priority = Priority.valueOf(dbObject.priority),
+            preferredStartTime = TimePreference.valueOf(dbObject.preferredStartTime),
+            experience = dbObject.experience?.toInt(),
+            coins = dbObject.coins?.toInt(),
+            bounty = dbObject.bounty?.let {
+                val cr = DbBounty(it)
+                when {
+                    cr.type == DbBounty.Type.NONE.name -> Quest.Bounty.None
+                    cr.type == DbBounty.Type.FOOD.name -> Quest.Bounty.Food(Food.valueOf(cr.name!!))
+                    else -> null
+                }
+            },
+            completedAtDate = dbObject.completedAtDate?.startOfDayUTC,
+            completedAtTime = dbObject.completedAtMinute?.let {
+                Time.of(it.toInt())
+            },
+            reminders = dbObject.reminders.map {
+                val cr = DbReminder(it)
+                val type = DbReminder.Type.valueOf(cr.type)
+                when (type) {
+                    DbReminder.Type.RELATIVE ->
+                        Reminder.Relative(cr.message, cr.minutesFromStart!!.toLong())
+
+                    DbReminder.Type.FIXED ->
+                        Reminder.Fixed(
+                            cr.message,
+                            cr.date!!.startOfDayUTC,
+                            Time.of(cr.minute!!.toInt())
+                        )
+                }
+
+            },
+            subQuests = dbObject.subQuests.map {
+                val dsq = DbSubQuest(it)
+                SubQuest(
+                    name = dsq.name,
+                    completedAtDate = dsq.completedAtDate?.startOfDayUTC,
+                    completedAtTime = dsq.completedAtMinute?.let { Time.of(it.toInt()) }
+                )
+            },
+            timeRanges = dbObject.timeRanges.map {
+                val ctr = DbTimeRange(it)
+                TimeRange(
+                    TimeRange.Type.valueOf(ctr.type),
+                    ctr.duration.toInt(),
+                    ctr.start?.instant,
+                    ctr.end?.instant
+                )
+            },
+            repeatingQuestId = dbObject.repeatingQuestId,
+            challengeId = dbObject.challengeId,
+            note = dbObject.note,
+            createdAt = dbObject.createdAt.instant,
+            updatedAt = dbObject.updatedAt.instant,
+            removedAt = dbObject.removedAt?.instant
+        )
+
+    override fun toDatabaseObject(entity: Quest) =
+        RoomQuest(
+            id = if (entity.id.isEmpty()) UUID.randomUUID().toString() else entity.id,
+            name = entity.name,
+            color = entity.color.name,
+            icon = entity.icon?.name,
+            duration = entity.duration.toLong(),
+            priority = entity.priority.name,
+            preferredStartTime = entity.preferredStartTime.name,
+            startDate = entity.startDate?.startOfDayUTC(),
+            dueDate = entity.dueDate?.startOfDayUTC(),
+            scheduledDate = entity.scheduledDate?.startOfDayUTC(),
+            originalScheduledDate = entity.originalScheduledDate?.startOfDayUTC(),
+            reminders = entity.reminders.map {
+                createDbReminder(it).map
+            },
+            subQuests = entity.subQuests.map {
+                DbSubQuest().apply {
+                    name = it.name
+                    completedAtDate = it.completedAtDate?.startOfDayUTC()
+                    completedAtMinute = it.completedAtTime?.toMinuteOfDay()?.toLong()
+                }.map
+            },
+            experience = entity.experience?.toLong(),
+            coins = entity.coins?.toLong(),
+            bounty = entity.bounty?.let {
+                val cr = DbBounty()
+
+                cr.type = when (it) {
+                    Quest.Bounty.None -> DbBounty.Type.NONE.name
+                    is Quest.Bounty.Food -> DbBounty.Type.FOOD.name
+                }
+
+                if (it is Quest.Bounty.Food) {
+                    cr.name = it.food.name
+                }
+                cr.map
+            },
+            startMinute = entity.startTime?.toMinuteOfDay()?.toLong(),
+            completedAtDate = entity.completedAtDate?.startOfDayUTC(),
+            completedAtMinute = entity.completedAtTime?.toMinuteOfDay()?.toLong(),
+            timeRanges = entity.timeRanges.map {
+                createDbTimeRange(it).map
+            },
+            timeRangeCount = entity.timeRanges.size.toLong(),
+            repeatingQuestId = entity.repeatingQuestId,
+            challengeId = entity.challengeId,
+            note = entity.note,
+            createdAt = entity.createdAt.toEpochMilli(),
+            updatedAt = System.currentTimeMillis(),
+            removedAt = entity.removedAt?.toEpochMilli()
+        )
+
+    private fun createDbTimeRange(timeRange: TimeRange): DbTimeRange {
+        val cTimeRange = DbTimeRange()
+        cTimeRange.type = timeRange.type.name
+        cTimeRange.duration = timeRange.duration.toLong()
+        cTimeRange.start = timeRange.start?.toEpochMilli()
+        cTimeRange.end = timeRange.end?.toEpochMilli()
+        return cTimeRange
+    }
+
+    private fun createDbReminder(reminder: Reminder): DbReminder {
+        val cr = DbReminder()
+        cr.message = reminder.message
+        when (reminder) {
+
+            is Reminder.Fixed -> {
+                cr.type = DbReminder.Type.FIXED.name
+                cr.date = reminder.date.startOfDayUTC()
+                cr.minute = reminder.time.toMinuteOfDay().toLong()
+            }
+
+            is Reminder.Relative -> {
+                cr.type = DbReminder.Type.RELATIVE.name
+                cr.minutesFromStart = reminder.minutesFromStart
+            }
+        }
+        return cr
+    }
+}
+
+
+@Entity(
+    tableName = "quests",
+    indices = [
+        Index("repeatingQuestId"),
+        Index("challengeId"),
+        Index("scheduledDate"),
+        Index("completedAtDate"),
+        Index("updatedAt"),
+        Index("removedAt")
+    ]
+)
+data class RoomQuest(
+    @NotNull
+    @PrimaryKey(autoGenerate = false)
+    override val id: String,
+    val name: String,
+    val color: String,
+    val icon: String?,
+    val duration: Long,
+    val priority: String,
+    val preferredStartTime: String,
+    val reminders: List<MutableMap<String, Any?>>,
+    val startMinute: Long?,
+    val experience: Long?,
+    val coins: Long?,
+    val bounty: MutableMap<String, Any?>?,
+    val startDate: Long?,
+    val dueDate: Long?,
+    val scheduledDate: Long?,
+    val originalScheduledDate: Long?,
+    val completedAtDate: Long?,
+    val completedAtMinute: Long?,
+    val subQuests: List<MutableMap<String, Any?>>,
+    val timeRanges: List<MutableMap<String, Any?>>,
+    val timeRangeCount: Long,
+    val repeatingQuestId: String?,
+    val challengeId: String?,
+    val note: String,
+    val createdAt: Long,
+    val updatedAt: Long,
+    val removedAt: Long?
+) : RoomEntity {
+    companion object {
+
+        @Entity(
+            tableName = "quest_tag_join",
+            primaryKeys = ["questId", "tagId"],
+            foreignKeys = [
+                ForeignKey(
+                    entity = RoomQuest::class,
+                    parentColumns = ["id"],
+                    childColumns = ["questId"],
+                    onDelete = CASCADE
+                ),
+                (ForeignKey(
+                    entity = RoomTag::class,
+                    parentColumns = ["id"],
+                    childColumns = ["tagId"],
+                    onDelete = CASCADE
+                ))
+            ],
+            indices = [Index("questId"), Index("tagId")]
+        )
+        data class RoomTagJoin(val questId: String, val tagId: String)
+    }
+}
+
 
 data class DbQuest(override val map: MutableMap<String, Any?> = mutableMapOf()) :
     FirestoreModel {
@@ -191,509 +1025,15 @@ data class DbTimeRange(val map: MutableMap<String, Any?> = mutableMapOf()) {
 }
 
 class FirestoreQuestRepository(
-    database: FirebaseFirestore,
-    coroutineContext: CoroutineContext,
-    sharedPreferences: SharedPreferences,
-    executor: ExecutorService
+    database: FirebaseFirestore
 ) : BaseCollectionFirestoreRepository<Quest, DbQuest>(
-    database,
-    coroutineContext,
-    sharedPreferences,
-    executor
-), QuestRepository {
-
-    override fun findAllForRepeatingQuestAfterDate(
-        repeatingQuestId: String,
-        includeRemoved: Boolean,
-        currentDate: LocalDate
-    ): List<Quest> {
-        val query = collectionReference
-            .whereEqualTo("repeatingQuestId", repeatingQuestId)
-            .whereGreaterThanOrEqualTo("scheduledDate", currentDate.startOfDayUTC())
-        return if (includeRemoved)
-            toEntityObjects(query.documents)
-        else
-            query.notRemovedEntities
-    }
-
-    override fun findOriginallyScheduledOrCompletedInPeriod(
-        startDate: LocalDate,
-        endDate: LocalDate
-    ): List<Quest> {
-        val scheduled = collectionReference
-            .whereGreaterThanOrEqualTo("originalScheduledDate", startDate.startOfDayUTC())
-            .whereLessThanOrEqualTo("originalScheduledDate", endDate.startOfDayUTC())
-            .notRemovedEntities
-
-        val completed = collectionReference
-            .whereGreaterThanOrEqualTo("completedAtDate", startDate.startOfDayUTC())
-            .whereLessThanOrEqualTo("completedAtDate", endDate.startOfDayUTC())
-            .notRemovedEntities
-
-        return (scheduled + completed).toSet().toList()
-    }
-
-    override fun findCompletedInPeriod(startDate: LocalDate, endDate: LocalDate): List<Quest> =
-        collectionReference
-            .whereGreaterThanOrEqualTo("completedAtDate", startDate.startOfDayUTC())
-            .whereLessThanOrEqualTo("completedAtDate", endDate.startOfDayUTC())
-            .notRemovedEntities
-
-    /**
-     * Includes removed Quests
-     */
-    override fun findAllForChallenge(challengeId: String) =
-        toEntityObjects(
-            collectionReference
-                .whereEqualTo("challengeId", challengeId)
-                .documents
-        )
-
-    override fun findNotCompletedNotForChallengeNotRepeating(
-        challengeId: String,
-        start: LocalDate
-    ): List<Quest> {
-        val quests = collectionReference
-            .whereEqualTo("repeatingQuestId", null)
-            .whereEqualTo("completedAtDate", null)
-            .whereGreaterThanOrEqualTo("scheduledDate", start.startOfDayUTC()).notRemovedEntities
-
-        return quests.filter { it.challengeId != challengeId }
-    }
-
-    override fun findAllForRepeatingQuest(
-        repeatingQuestId: String,
-        includeRemoved: Boolean
-    ): List<Quest> {
-
-        val query = collectionReference.whereEqualTo("repeatingQuestId", repeatingQuestId)
-        return if (includeRemoved)
-            toEntityObjects(query.documents)
-        else
-            query.notRemovedEntities
-    }
-
-    override fun findQuestsForDailyChallenge(dailyChallenge: DailyChallenge): List<Quest> {
-        if (dailyChallenge.questIds.isEmpty()) {
-            return emptyList()
-        }
-        return dailyChallenge.questIds.map {
-            findById(it)!!
-        }.filter { !it.isRemoved }
-    }
-
-
-    override fun purgeAllNotCompletedForRepeating(
-        repeatingQuestId: String,
-        startDate: LocalDate
-    ) =
-        collectionReference
-            .whereEqualTo("repeatingQuestId", repeatingQuestId)
-            .whereEqualTo("completedAtDate", null)
-            .whereGreaterThanOrEqualTo("scheduledDate", startDate.startOfDayUTC())
-            .documents
-            .map { it.id }
-            .let { purge(it) }
-
-    override fun findAllForChallengeNotRepeating(challengeId: String) =
-        collectionReference
-            .whereEqualTo("challengeId", challengeId)
-            .whereEqualTo("repeatingQuestId", null)
-            .notRemovedEntities
-
-
-    override fun findCompletedForRepeatingQuestInPeriod(
-        repeatingQuestId: String,
-        start: LocalDate,
-        end: LocalDate?
-    ) = createCompletedForRepeatingInPeriodQuery(repeatingQuestId, start, end).notRemovedEntities
-
-    override fun findCompletedCountForRepeatingQuestInPeriod(
-        repeatingQuestId: String,
-        start: LocalDate,
-        end: LocalDate?
-    ) = createCompletedForRepeatingInPeriodQuery(repeatingQuestId, start, end).documents.size
-
-    private fun createCompletedForRepeatingInPeriodQuery(
-        repeatingQuestId: String,
-        start: LocalDate,
-        end: LocalDate?
-    ): Query {
-        var ref = collectionReference
-            .whereEqualTo("repeatingQuestId", repeatingQuestId)
-            .whereGreaterThanOrEqualTo("completedAtDate", start.startOfDayUTC())
-        if (end != null) {
-            ref = ref.whereLessThanOrEqualTo("completedAtDate", end.startOfDayUTC())
-        }
-        return ref
-    }
-
-    override fun findNextScheduledNotCompletedForRepeatingQuest(
-        repeatingQuestId: String,
-        currentDate: LocalDate
-    ) =
-        collectionReference
-            .whereEqualTo("repeatingQuestId", repeatingQuestId)
-            .whereGreaterThanOrEqualTo("scheduledDate", currentDate.startOfDayUTC())
-            .whereEqualTo("completedAtDate", null)
-            .orderBy("scheduledDate", Query.Direction.ASCENDING)
-            .limit(1)
-            .notRemovedEntities.firstOrNull()
-
-    override fun findOriginalScheduledForRepeatingQuestAtDate(
-        repeatingQuestId: String,
-        currentDate: LocalDate
-    ): Quest? {
-        val doc = collectionReference
-            .whereEqualTo("repeatingQuestId", repeatingQuestId)
-            .whereEqualTo("originalScheduledDate", currentDate.startOfDayUTC())
-            .limit(1)
-            .execute().documents
-        if (doc.isEmpty()) {
-            return null
-        }
-        return toEntityObject(doc.first().data!!)
-    }
-
-    override suspend fun listenByTag(
-        tagId: String,
-        channel: Channel<List<Quest>>
-    ) =
-        collectionReference
-            .whereEqualTo("tags.$tagId.id", tagId)
-            .listenForChanges(channel)
-
-    override suspend fun listenForAllUnscheduled(channel: Channel<List<Quest>>) =
-        collectionReference
-            .whereEqualTo("scheduledDate", null)
-            .orderBy("dueDate", Query.Direction.ASCENDING)
-            .listenForChanges(channel)
-
-    override fun findByTag(tagId: String) =
-        collectionReference
-            .whereEqualTo("tags.$tagId.id", tagId)
-            .notRemovedEntities
-
-    override fun findByTagWithRemoved(tagId: String) =
-        collectionReference
-            .whereEqualTo("tags.$tagId.id", tagId)
-            .entities
-
-    override fun findCountForTag(tagId: String): Int =
-        collectionReference
-            .whereEqualTo("tags.$tagId.id", tagId)
-            .whereEqualTo("completedAtDate", null)
-            .documents.size
-
-    override suspend fun listenForScheduledBetween(
-        startDate: LocalDate,
-        endDate: LocalDate,
-        channel: Channel<List<Quest>>
-    ) =
-        collectionReference
-            .whereGreaterThanOrEqualTo("scheduledDate", startDate.startOfDayUTC())
-            .whereLessThanOrEqualTo("scheduledDate", endDate.startOfDayUTC())
-            .orderBy("scheduledDate")
-            .orderBy("startMinute")
-            .listenForChanges(channel)
-
-    override fun findRandomUnscheduled(count: Int) =
-        collectionReference
-            .whereEqualTo("scheduledDate", null)
-            .whereEqualTo("completedAtDate", null)
-            .notRemovedEntities
-            .shuffled()
-            .take(count)
-
-    override fun findScheduledAt(date: LocalDate) =
-        collectionReference
-            .whereGreaterThan("scheduledDate", date.startOfDayUTC() - 1)
-            .whereLessThanOrEqualTo("scheduledDate", date.startOfDayUTC())
-            .orderBy("scheduledDate")
-            .orderBy("startMinute")
-            .notRemovedEntities
-
-    override fun findScheduledForRepeatingQuestBetween(
-        repeatingQuestId: String,
-        start: LocalDate,
-        end: LocalDate
-    ) =
-        collectionReference
-            .whereEqualTo("repeatingQuestId", repeatingQuestId)
-            .whereGreaterThan("scheduledDate", start.startOfDayUTC() - 1)
-            .whereLessThanOrEqualTo("scheduledDate", end.startOfDayUTC())
-            .entities
-
-    override fun findServerScheduledForRepeatingQuestBetween(
-        repeatingQuestId: String,
-        start: LocalDate,
-        end: LocalDate
-    ) =
-        toEntityObjects(collectionReference
-            .whereEqualTo("repeatingQuestId", repeatingQuestId)
-            .whereGreaterThan("scheduledDate", start.startOfDayUTC() - 1)
-            .whereLessThanOrEqualTo("scheduledDate", end.startOfDayUTC())
-            .serverDocuments)
-
-    override suspend fun listenForScheduledAt(
-        date: LocalDate,
-        channel: Channel<List<Quest>>
-    ) =
-        collectionReference
-            .whereEqualTo("scheduledDate", date.startOfDayUTC())
-            .orderBy("startMinute")
-            .listenForChanges(channel)
-
-    override fun findNextReminderTime(afterTime: ZonedDateTime): LocalDateTime? {
-
-        val currentDateMillis = afterTime.toLocalDate().startOfDayUTC()
-
-        val millisOfDay = afterTime.toLocalTime().toSecondOfDay().seconds.millisValue
-
-        val query =
-            remindersReference
-                .orderBy("date")
-                .orderBy("millisOfDay")
-                .startAt(
-                    currentDateMillis,
-                    millisOfDay + 1
-                )
-                .limit(1)
-
-        val documents = query.serverDocuments
-        if (documents.isEmpty()) {
-            return null
-        }
-
-        val reminder = documents[0]
-
-        val remindDate = (reminder.get("date") as Long).startOfDayUTC
-        val remindMillis = reminder.get("millisOfDay") as Long
-        return LocalDateTime.of(
-            remindDate,
-            LocalTime.ofSecondOfDay(remindMillis.milliseconds.asSeconds.longValue)
-        )
-    }
-
-    override fun findQuestsToRemind(remindTime: LocalDateTime): List<Quest> {
-        val query = remindersReference
-            .whereEqualTo("date", remindTime.toLocalDate().startOfDayUTC())
-            .whereEqualTo(
-                "millisOfDay", remindTime.toLocalTime().toSecondOfDay().seconds.millisValue
-            )
-        val documents = query.serverDocuments
-        if (documents.isEmpty()) {
-            return listOf()
-        }
-        val questIds = documents.map {
-            it["questId"]
-        }
-
-        var questRef: Query = collectionReference
-        questIds.forEach {
-            questRef = questRef.whereEqualTo("id", it)
-        }
-        return questRef.notRemovedEntities
-    }
-
-    override fun findStartedQuests(): List<Quest> {
-        val query = collectionReference
-            .whereEqualTo("completedAtDate", null)
-            .whereGreaterThan("timeRangeCount", 0)
-        return query.notRemovedEntities
-    }
-
-    override fun findCompletedForDate(date: LocalDate): List<Quest> {
-        val query = collectionReference
-            // Due to Firestore bug (kinda) we can't query using the same value as data
-            // see https://stackoverflow.com/a/47379643/6336582
-            .whereGreaterThan("completedAtDate", date.startOfDayUTC() - 1)
-            .whereLessThanOrEqualTo("completedAtDate", date.startOfDayUTC())
-        return query.notRemovedEntities
-    }
-
-    override fun findLastScheduledDate(currentDate: LocalDate, maxQuests: Int): LocalDate? {
-        val endDateQuery = collectionReference
-            .whereGreaterThan("scheduledDate", currentDate.startOfDayUTC())
-            .limit(maxQuests.toLong())
-            .orderBy("scheduledDate", Query.Direction.ASCENDING)
-        val endDateQuests = endDateQuery.notRemovedEntities
-
-        if (endDateQuests.isEmpty()) {
-            return null
-        }
-
-        return endDateQuests.last().scheduledDate
-    }
-
-    override fun findFirstScheduledDate(currentDate: LocalDate, maxQuests: Int): LocalDate? {
-        val startDateQuery = collectionReference
-            .whereLessThan("scheduledDate", currentDate.startOfDayUTC())
-            .limit(maxQuests.toLong())
-            .orderBy("scheduledDate", Query.Direction.DESCENDING)
-        val startDateQuests = startDateQuery.notRemovedEntities
-
-        if (startDateQuests.isEmpty()) {
-            return null
-        }
-
-        return startDateQuests.last().scheduledDate
-    }
+    database
+) {
 
     override val collectionReference: CollectionReference
         get() {
             return database.collection("players").document(playerId).collection("quests")
         }
-
-    private val remindersReference
-        get() = database.collection("players").document(playerId).collection("questReminders")
-
-    override fun save(entity: Quest): Quest {
-        val quest = super.save(entity)
-        saveReminders(quest, quest.reminders)
-        return quest
-    }
-
-    override fun save(entities: List<Quest>): List<Quest> {
-        val quests = super.save(entities)
-
-        val batch = database.batch()
-
-        val questToReminder = quests.map { q -> q.reminders.map { Pair(q, it) } }.flatten()
-
-        val questIds = quests.map { it.id }
-        batch.commit()
-
-        bulkPurgeReminders(questIds, questToReminder)
-        return quests
-    }
-
-    private fun bulkPurgeReminders(
-        questIds: List<String>,
-        questToReminder: List<Pair<Quest, Reminder>>
-    ) {
-
-        purgeReminders(questIds)
-
-        val batch = database.batch()
-        questToReminder.forEach {
-            if (!it.first.isCompleted) {
-                createReminderData(it.second, it.first)?.let {
-                    val ref = remindersReference.document()
-                    batch.set(ref, it)
-                }
-            }
-        }
-        batch.commit()
-
-    }
-
-    private fun purgeReminders(
-        questIds: List<String>
-    ) {
-        val batch = database.batch()
-        var allRemindersQuery: Query = remindersReference
-
-        questIds.forEach {
-            allRemindersQuery = allRemindersQuery.whereEqualTo("questId", it)
-        }
-
-        allRemindersQuery.serverDocuments.forEach {
-            val ref = remindersReference.document(it.id)
-            batch.delete(ref)
-        }
-        batch.commit()
-    }
-
-    private fun saveReminders(quest: Quest, reminders: List<Reminder>) {
-        purgeQuestReminders(quest.id)
-        if (!quest.isCompleted) {
-            addReminders(reminders, quest)
-        }
-    }
-
-    private fun addReminders(
-        reminders: List<Reminder>,
-        quest: Quest
-    ) {
-        reminders.forEach {
-            createReminderData(it, quest)?.let {
-                remindersReference.add(it)
-            }
-        }
-    }
-
-    private fun createReminderData(reminder: Reminder, quest: Quest) =
-        when (reminder) {
-            is Reminder.Fixed ->
-                createReminderData(quest.id, reminder.date, reminder.time)
-            is Reminder.Relative ->
-                if (quest.isScheduled) {
-
-                    val questDateTime =
-                        LocalDateTime.of(
-                            quest.scheduledDate!!,
-                            LocalTime.of(quest.startTime!!.hours, quest.startTime.getMinutes())
-                        )
-                    val reminderDateTime =
-                        questDateTime.minusMinutes(reminder.minutesFromStart)
-                    val toLocalTime = reminderDateTime.toLocalTime()
-
-                    createReminderData(
-                        quest.id,
-                        reminderDateTime.toLocalDate(),
-                        Time.at(toLocalTime.hour, toLocalTime.minute)
-                    )
-                } else null
-
-        }
-
-    private fun createReminderData(
-        questId: String,
-        date: LocalDate,
-        time: Time
-    ) =
-        mapOf(
-            "questId" to questId,
-            "date" to date.startOfDayUTC(),
-            "millisOfDay" to time.toMillisOfDay()
-        )
-
-    private fun purgeQuestReminders(questId: String) {
-        val batch = database.batch()
-
-        val query = remindersReference.whereEqualTo("questId", questId)
-        query.serverDocuments.forEach {
-            val ref = remindersReference.document(it.id)
-            batch.delete(ref)
-        }
-        batch.commit()
-    }
-
-    override fun remove(id: String) {
-        super.remove(id)
-        purgeQuestReminders(id)
-    }
-
-    override fun undoRemove(id: String) {
-        super.undoRemove(id)
-        val quest = findById(id)!!
-        if (quest.reminders.isNotEmpty()) {
-            addReminders(quest.reminders, quest)
-        }
-    }
-
-    override fun purge(questIds: List<String>) {
-        val batch = database.batch()
-        questIds.forEach {
-            val ref = collectionReference.document(it)
-            batch.delete(ref)
-        }
-
-        batch.commit()
-
-        purgeReminders(questIds)
-    }
 
     override fun toEntityObject(dataMap: MutableMap<String, Any?>): Quest {
         val cq = DbQuest(dataMap.withDefault {
@@ -768,8 +1108,9 @@ class FirestoreQuestRepository(
             repeatingQuestId = cq.repeatingQuestId,
             challengeId = cq.challengeId,
             note = cq.note,
-            createdAt = Instant.ofEpochMilli(cq.createdAt),
-            updatedAt = Instant.ofEpochMilli(cq.updatedAt)
+            createdAt = cq.createdAt.instant,
+            updatedAt = cq.updatedAt.instant,
+            removedAt = cq.removedAt?.instant
         )
     }
 
@@ -824,6 +1165,7 @@ class FirestoreQuestRepository(
         q.note = entity.note
         q.createdAt = entity.createdAt.toEpochMilli()
         q.updatedAt = entity.updatedAt.toEpochMilli()
+        q.removedAt = entity.removedAt?.toEpochMilli()
         return q
     }
 

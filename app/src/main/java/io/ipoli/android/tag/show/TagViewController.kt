@@ -14,6 +14,7 @@ import android.view.*
 import android.widget.TextView
 import com.bluelinelabs.conductor.RouterTransaction
 import com.bluelinelabs.conductor.changehandler.FadeChangeHandler
+import com.bluelinelabs.conductor.changehandler.HorizontalChangeHandler
 import com.bluelinelabs.conductor.changehandler.VerticalChangeHandler
 import com.mikepenz.iconics.IconicsDrawable
 import com.mikepenz.iconics.typeface.IIcon
@@ -145,7 +146,7 @@ class TagViewController(args: Bundle? = null) :
             R.id.actionEdit -> {
                 navigateFromRoot().toEditTag(
                     tagId = tagId,
-                    changeHandler = FadeChangeHandler()
+                    changeHandler = HorizontalChangeHandler()
                 )
             }
 

@@ -8,8 +8,9 @@ import io.ipoli.android.R
 import io.ipoli.android.common.AppState
 import io.ipoli.android.common.BaseViewStateReducer
 import io.ipoli.android.common.DataLoadedAction
-import io.ipoli.android.common.mvi.BaseViewState
+
 import io.ipoli.android.common.redux.Action
+import io.ipoli.android.common.redux.BaseViewState
 import io.ipoli.android.common.redux.android.ReduxViewController
 import io.ipoli.android.common.view.gone
 import kotlinx.android.synthetic.main.controller_inventory.view.*

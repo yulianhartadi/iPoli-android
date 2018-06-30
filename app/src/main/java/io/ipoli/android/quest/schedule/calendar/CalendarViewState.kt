@@ -2,9 +2,8 @@ package io.ipoli.android.quest.schedule.calendar
 
 import io.ipoli.android.common.AppState
 import io.ipoli.android.common.BaseViewStateReducer
-import io.ipoli.android.common.mvi.BaseViewState
-import io.ipoli.android.common.mvi.ViewState
 import io.ipoli.android.common.redux.Action
+import io.ipoli.android.common.redux.BaseViewState
 import io.ipoli.android.quest.schedule.ScheduleAction
 import org.threeten.bp.LocalDate
 
@@ -73,9 +72,17 @@ object CalendarReducer : BaseViewStateReducer<CalendarViewState>() {
 }
 
 sealed class CalendarAction : Action {
-    data class SwipeChangeDate(val adapterPosition: Int) : CalendarAction()
-    data class ChangeVisibleDate(val date: LocalDate) : CalendarAction()
-    data class Load(val startDate: LocalDate) : CalendarAction()
+    data class SwipeChangeDate(val adapterPosition: Int) : CalendarAction() {
+        override fun toMap() = mapOf("adapterPosition" to adapterPosition)
+    }
+
+    data class ChangeVisibleDate(val date: LocalDate) : CalendarAction() {
+        override fun toMap() = mapOf("date" to date)
+    }
+
+    data class Load(val startDate: LocalDate) : CalendarAction() {
+        override fun toMap() = mapOf("startDate" to startDate)
+    }
 }
 
 data class CalendarViewState(

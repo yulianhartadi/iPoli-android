@@ -44,7 +44,8 @@ class UpdatePlayerMembershipUseCase(
             resultExpirationDate = expirationDate
         }
 
-        val newPlayer = enableAllPowerUpsUseCase.execute(EnableAllPowerUpsUseCase.Params(resultExpirationDate))
+        val newPlayer =
+            enableAllPowerUpsUseCase.execute(EnableAllPowerUpsUseCase.Params(resultExpirationDate))
 
         return playerRepository.save(
             newPlayer.copy(

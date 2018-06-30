@@ -5,8 +5,8 @@ import io.ipoli.android.challenge.picker.ChallengePickerViewState.StateType.*
 import io.ipoli.android.common.AppState
 import io.ipoli.android.common.BaseViewStateReducer
 import io.ipoli.android.common.DataLoadedAction
-import io.ipoli.android.common.mvi.BaseViewState
 import io.ipoli.android.common.redux.Action
+import io.ipoli.android.common.redux.BaseViewState
 import io.ipoli.android.pet.PetAvatar
 
 /**
@@ -15,8 +15,13 @@ import io.ipoli.android.pet.PetAvatar
  */
 sealed class ChallengePickerAction : Action {
     object Select : ChallengePickerAction()
-    data class Load(val challenge: Challenge?) : ChallengePickerAction()
-    data class ChangeSelected(val challenge: Challenge) : ChallengePickerAction()
+    data class Load(val challenge: Challenge?) : ChallengePickerAction() {
+        override fun toMap() = mapOf("challenge" to challenge)
+    }
+
+    data class ChangeSelected(val challenge: Challenge) : ChallengePickerAction() {
+        override fun toMap() = mapOf("challenge" to challenge)
+    }
 }
 
 object ChallengePickerReducer : BaseViewStateReducer<ChallengePickerViewState>() {

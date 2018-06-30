@@ -8,6 +8,7 @@ import io.ipoli.android.challenge.entity.Challenge
 import io.ipoli.android.challenge.predefined.entity.PredefinedChallengeData.Quest.OneTime
 import io.ipoli.android.challenge.predefined.entity.PredefinedChallengeData.Quest.Repeating
 import io.ipoli.android.common.datetime.Time
+import io.ipoli.android.habit.data.Habit
 import io.ipoli.android.quest.Color
 import io.ipoli.android.quest.Icon
 import org.threeten.bp.DayOfWeek
@@ -67,6 +68,7 @@ enum class PredefinedChallenge(
     val category: PredefinedChallengeData.Category,
     val gemPrice: Int,
     val quests: List<PredefinedChallengeData.Quest>,
+    val habits: List<Habit>,
     val durationDays: Int = 30
 ) {
 
@@ -117,15 +119,15 @@ enum class PredefinedChallenge(
                 ),
                 color = Color.GREEN,
                 icon = Icon.TREE
-            ),
-            Repeating(
-                "Say 3 things that I am grateful for every morning",
-                "Say 3 things that I am grateful for",
-                duration = 15,
-                weekDays = DayOfWeek.values().toList(),
-                startTime = Time.at(10, 0),
-                color = Color.RED,
-                icon = Icon.LIGHT_BULB
+            )
+        ),
+        habits = listOf(
+            Habit(
+                name = "Say 3 things that I am grateful for",
+                color = Color.BLUE,
+                icon = Icon.LIGHT_BULB,
+                days = DayOfWeek.values().toSet(),
+                isGood = true
             )
         )
     ),
@@ -171,15 +173,6 @@ enum class PredefinedChallenge(
                 icon = Icon.FITNESS
             ),
             Repeating(
-                "Measure & record my weight every morning",
-                "Measure & record my weight",
-                duration = 15,
-                weekDays = DayOfWeek.values().toList(),
-                startTime = Time.at(10, 0),
-                color = Color.GREEN,
-                icon = Icon.STAR
-            ),
-            Repeating(
                 "Prepare healthy dinner 6 times a week",
                 "Prepare healthy dinner",
                 duration = 45,
@@ -195,6 +188,15 @@ enum class PredefinedChallenge(
                 color = Color.ORANGE,
                 icon = Icon.RESTAURANT
             )
+        ),
+        habits = listOf(
+            Habit(
+                name = "Measure & record my weight",
+                days = DayOfWeek.values().toSet(),
+                color = Color.GREEN,
+                icon = Icon.STAR,
+                isGood = true
+            )
         )
     ),
     HEALTHY_FIT(
@@ -206,17 +208,6 @@ enum class PredefinedChallenge(
         category = PredefinedChallengeData.Category.HEALTH_AND_FITNESS,
         gemPrice = 5,
         quests = listOf(
-            Repeating(
-                "Drink 1 big bottle of water every day",
-                "Drink 1 big bottle of water",
-                20,
-                null,
-                Color.GREEN,
-                Icon.STAR,
-                null,
-                DayOfWeek.values().toList(),
-                true
-            ),
             Repeating(
                 "Eat healthy breakfast every day",
                 "Eat healthy breakfast",
@@ -235,15 +226,6 @@ enum class PredefinedChallenge(
                 Icon.FITNESS,
                 null,
                 listOf(DayOfWeek.MONDAY, DayOfWeek.WEDNESDAY, DayOfWeek.SATURDAY)
-            ),
-            Repeating(
-                "Eat a fruit every day",
-                "Eat a fruit",
-                20,
-                null,
-                Color.GREEN,
-                Icon.TREE,
-                null
             ),
             Repeating(
                 "Meditate 3 times a week",
@@ -271,6 +253,22 @@ enum class PredefinedChallenge(
                     DayOfWeek.SATURDAY
                 )
             )
+        ),
+        habits = listOf(
+            Habit(
+                name = "Eat a fruit",
+                days = DayOfWeek.values().toSet(),
+                color = Color.GREEN,
+                icon = Icon.APPLE,
+                isGood = true
+            ),
+            Habit(
+                name = "Drink a glass of water",
+                days = DayOfWeek.values().toSet(),
+                color = Color.BLUE,
+                icon = Icon.GLASS_WATER,
+                isGood = true
+            )
         )
     ),
     ENGLISH_JEDI(
@@ -278,7 +276,11 @@ enum class PredefinedChallenge(
         color = Color.BLUE,
         icon = Icon.BOOK,
         difficulty = Challenge.Difficulty.HARD,
-        motivations = listOf("Learn to read great books", "Participate in conversations", "Meet & speak with new people"),
+        motivations = listOf(
+            "Learn to read great books",
+            "Participate in conversations",
+            "Meet & speak with new people"
+        ),
         category = PredefinedChallengeData.Category.BUILD_SKILL,
         gemPrice = 5,
         quests = listOf(
@@ -349,14 +351,19 @@ enum class PredefinedChallenge(
                     DayOfWeek.SATURDAY
                 )
             )
-        )
+        ),
+        habits = emptyList()
     ),
     CODING_NINJA(
         title = "Coding Ninja",
         color = Color.BLUE,
         icon = Icon.LIGHT_BULB,
         difficulty = Challenge.Difficulty.HARD,
-        motivations = listOf("Learn to command my computer", "Understand technologies better", "Find new job"),
+        motivations = listOf(
+            "Learn to command my computer",
+            "Understand technologies better",
+            "Find new job"
+        ),
         category = PredefinedChallengeData.Category.BUILD_SKILL,
         gemPrice = 5,
         quests = listOf(
@@ -412,7 +419,8 @@ enum class PredefinedChallenge(
                     DayOfWeek.SUNDAY
                 )
             )
-        )
+        ),
+        habits = emptyList()
     ),
     FAMOUS_WRITER(
         title = "Famous writer",
@@ -433,8 +441,8 @@ enum class PredefinedChallenge(
                 2
             ),
             OneTime(
-                "Choose what I am going to write about",
-                "Choose what I am going to write about",
+                "Choose a topic to write about",
+                "Choose a topic to write about",
                 30,
                 Time.at(11, 30),
                 Color.BLUE,
@@ -471,7 +479,8 @@ enum class PredefinedChallenge(
                     DayOfWeek.SATURDAY
                 )
             )
-        )
+        ),
+        habits = emptyList()
     ),
     MASTER_COMMUNICATOR(
         title = "Master Presenter",
@@ -537,6 +546,7 @@ enum class PredefinedChallenge(
                 10
             )
         ),
+        habits = emptyList(),
         durationDays = 10
     ),
     FOCUSED_WORK(
@@ -592,7 +602,8 @@ enum class PredefinedChallenge(
                 startAtDay = 6,
                 weekDays = listOf(DayOfWeek.SATURDAY)
             )
-        )
+        ),
+        habits = emptyList()
     ),
     JOB_INTERVIEW(
         title = "Job interview",
@@ -650,6 +661,7 @@ enum class PredefinedChallenge(
                 startAtDay = 12
             )
         ),
+        habits = emptyList(),
         durationDays = 14
     ),
     FRIENDS_BLAST(
@@ -661,19 +673,6 @@ enum class PredefinedChallenge(
         category = PredefinedChallengeData.Category.ME_TIME,
         gemPrice = 4,
         quests = listOf(
-            Repeating(
-                "Call a friend 2 times a week",
-                "Call a friend",
-                30,
-                null,
-                Color.PURPLE,
-                Icon.PHONE,
-                null,
-                listOf(
-                    DayOfWeek.WEDNESDAY,
-                    DayOfWeek.SATURDAY
-                )
-            ),
             Repeating(
                 "Go out with friends 2 times a week",
                 "Go out with friends",
@@ -705,6 +704,15 @@ enum class PredefinedChallenge(
                 Icon.FRIENDS,
                 null,
                 DayOfWeek.SUNDAY
+            )
+        ),
+        habits = listOf(
+            Habit(
+                name = "Call a friend",
+                days = setOf(DayOfWeek.WEDNESDAY, DayOfWeek.SATURDAY),
+                color = Color.PURPLE,
+                icon = Icon.PHONE,
+                isGood = true
             )
         )
     ),
@@ -757,7 +765,8 @@ enum class PredefinedChallenge(
                 startAtDay = 7,
                 preferredDayOfWeek = DayOfWeek.SATURDAY
             )
-        )
+        ),
+        habits = emptyList()
     ),
     FAMILY_TIME(
         title = "Family time",
@@ -769,7 +778,7 @@ enum class PredefinedChallenge(
         gemPrice = 0,
         quests = listOf(
             Repeating(
-                "Call my parents every week",
+                "Call my parents every Sunday",
                 "Call my parents",
                 20,
                 Time.atHours(20),
@@ -805,8 +814,8 @@ enum class PredefinedChallenge(
                 )
             ),
             Repeating(
-                "Play with my children every weekend",
-                "Play with my children",
+                "Play with the kids every weekend",
+                "Play with the kids",
                 60,
                 Time.atHours(11),
                 Color.PINK,
@@ -827,7 +836,8 @@ enum class PredefinedChallenge(
                 null,
                 DayOfWeek.SUNDAY
             )
-        )
+        ),
+        habits = emptyList()
     ),
     KEEP_THINGS_TIDY(
         title = "Keep things tidy",
@@ -912,7 +922,8 @@ enum class PredefinedChallenge(
                     DayOfWeek.FRIDAY
                 )
             )
-        )
+        ),
+        habits = emptyList()
     ),
     ORGANIZE_MY_DAY(
         title = "Organize my day",
@@ -975,7 +986,8 @@ enum class PredefinedChallenge(
                     DayOfWeek.THURSDAY
                 )
             )
-        )
+        ),
+        habits = emptyList()
     ),
     STAY_ON_TOP_OF_THINGS(
         title = "Stay on top of things",
@@ -1048,7 +1060,8 @@ enum class PredefinedChallenge(
                 ),
                 isSelected = false
             )
-        )
+        ),
+        habits = emptyList()
     );
 }
 

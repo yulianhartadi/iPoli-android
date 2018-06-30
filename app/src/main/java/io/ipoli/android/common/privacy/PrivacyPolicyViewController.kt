@@ -32,8 +32,10 @@ class PrivacyPolicyViewController(args: Bundle? = null) :
         savedViewState: Bundle?
     ): View {
         val view = inflater.inflate(R.layout.controller_privacy_policy, container, false)
-        view.firebasePrivacyPolicy.paintFlags = view.firebasePrivacyPolicy.paintFlags or Paint.UNDERLINE_TEXT_FLAG
-        view.amplitudePrivacyPolicy.paintFlags = view.amplitudePrivacyPolicy.paintFlags or Paint.UNDERLINE_TEXT_FLAG
+        view.firebasePrivacyPolicy.paintFlags = view.firebasePrivacyPolicy.paintFlags or
+            Paint.UNDERLINE_TEXT_FLAG
+        view.amplitudePrivacyPolicy.paintFlags = view.amplitudePrivacyPolicy.paintFlags or
+            Paint.UNDERLINE_TEXT_FLAG
 
         view.firebasePrivacyPolicy.onDebounceClick {
             val i = Intent(Intent.ACTION_VIEW)
@@ -47,10 +49,16 @@ class PrivacyPolicyViewController(args: Bundle? = null) :
             startActivity(i)
         }
 
-        if(sharedPreferences.getInt(Constants.KEY_PRIVACY_ACCEPTED_VERSION, -1) != Constants.PRIVACY_POLICY_VERSION) {
+        if (sharedPreferences.getInt(
+                Constants.KEY_PRIVACY_ACCEPTED_VERSION,
+                -1
+            ) != Constants.PRIVACY_POLICY_VERSION) {
             view.acceptPrivacy.visible()
             view.acceptPrivacy.onDebounceClick {
-                sharedPreferences.edit().putInt(Constants.KEY_PRIVACY_ACCEPTED_VERSION, Constants.PRIVACY_POLICY_VERSION).commit()
+                sharedPreferences.edit().putInt(
+                    Constants.KEY_PRIVACY_ACCEPTED_VERSION,
+                    Constants.PRIVACY_POLICY_VERSION
+                ).commit()
                 rootRouter.popCurrentController()
                 activity?.recreate()
             }

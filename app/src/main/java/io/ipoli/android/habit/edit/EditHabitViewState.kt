@@ -6,8 +6,9 @@ import io.ipoli.android.common.AppState
 import io.ipoli.android.common.BaseViewStateReducer
 import io.ipoli.android.common.DataLoadedAction
 import io.ipoli.android.common.Validator
-import io.ipoli.android.common.mvi.BaseViewState
+
 import io.ipoli.android.common.redux.Action
+import io.ipoli.android.common.redux.BaseViewState
 import io.ipoli.android.habit.data.Habit
 import io.ipoli.android.habit.edit.EditHabitViewState.StateType.*
 import io.ipoli.android.quest.Color
@@ -28,21 +29,63 @@ sealed class EditHabitAction : Action {
     data class Load(
         val habitId: String,
         val params: EditHabitViewController.Params?
-    ) : EditHabitAction()
-    data class DeselectDay(val weekDay: DayOfWeek) : EditHabitAction()
-    data class SelectDay(val weekDay: DayOfWeek) : EditHabitAction()
-    data class AddTag(val tagName: String) : EditHabitAction()
-    data class RemoveTag(val tag: Tag) : EditHabitAction()
-    data class ChangeColor(val color: Color) : EditHabitAction()
-    data class ChangeIcon(val icon: Icon) : EditHabitAction()
-    data class ChangeChallenge(val challenge: Challenge?) : EditHabitAction()
-    data class ChangeNote(val note: String) : EditHabitAction()
+    ) : EditHabitAction() {
+        override fun toMap() = mapOf(
+            "mode" to if (params != null) "addPreset" else if (habitId.isBlank()) "add" else "edit",
+            "habitId" to habitId,
+            "name" to params?.name,
+            "color" to params?.color?.name,
+            "icon" to params?.icon?.name,
+            "isGood" to params?.isGood,
+            "timesADay" to params?.timesADay,
+            "days" to params?.days?.joinToString(",") { it.name }
+        )
+    }
+
+    data class DeselectDay(val weekDay: DayOfWeek) : EditHabitAction() {
+        override fun toMap() = mapOf("weekDay" to weekDay.name)
+    }
+
+    data class SelectDay(val weekDay: DayOfWeek) : EditHabitAction() {
+        override fun toMap() = mapOf("weekDay" to weekDay.name)
+    }
+
+    data class AddTag(val tagName: String) : EditHabitAction() {
+        override fun toMap() = mapOf("tagName" to tagName)
+    }
+
+    data class RemoveTag(val tag: Tag) : EditHabitAction() {
+        override fun toMap() = mapOf("tag" to tag)
+    }
+
+    data class ChangeColor(val color: Color) : EditHabitAction() {
+        override fun toMap() = mapOf("color" to color.name)
+    }
+
+    data class ChangeIcon(val icon: Icon) : EditHabitAction() {
+        override fun toMap() = mapOf("icon" to icon.name)
+    }
+
+    data class ChangeChallenge(val challenge: Challenge?) : EditHabitAction() {
+        override fun toMap() = mapOf("challenge" to challenge)
+    }
+
+    data class ChangeNote(val note: String) : EditHabitAction() {
+        override fun toMap() = mapOf("note" to note)
+    }
     data class Validate(
         val name: String,
         val selectedTimesADayPosition: Int
-    ) : EditHabitAction()
+    ) : EditHabitAction() {
+        override fun toMap() = mapOf(
+            "name" to name,
+            "selectedTimesADayPosition" to selectedTimesADayPosition
+        )
+    }
 
-    data class Remove(val habitId: String) : EditHabitAction()
+    data class Remove(val habitId: String) : EditHabitAction() {
+        override fun toMap() = mapOf("habitId" to habitId)
+    }
 }
 
 object EditHabitReducer : BaseViewStateReducer<EditHabitViewState>() {
@@ -95,7 +138,7 @@ object EditHabitReducer : BaseViewStateReducer<EditHabitViewState>() {
 
             is EditHabitAction.SelectDay ->
                 subState.copy(
-    type = EditHabitViewState.StateType.DAYS_CHANGED,
+                    type = EditHabitViewState.StateType.DAYS_CHANGED,
                     days = subState.days + action.weekDay
                 )
 

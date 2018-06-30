@@ -78,6 +78,8 @@ interface Constants {
         val KEY_APP_VERSION_CODE = "APP_VERSION_CODE"
 
         val KEY_PLAYER_ID = "PLAYER_ID"
+        val KEY_PLAYER_DATA_IMPORTED = "PLAYER_DATA_IMPORTED"
+        const val KEY_LAST_SYNC_MILLIS = "LAST_SYNC_MILLIS"
         val KEY_TIME_FORMAT = "TIME_FORMAT"
         val KEY_SCHEMA_VERSION = "SCHEMA_VERSION"
 
@@ -180,7 +182,8 @@ interface Constants {
         val PREDEFINED_CHALLENGE_INDEX = "predefined_challenge_index"
         val RANDOM_SEED = 42 // duh!
         val MAX_TIMES_A_DAY_COUNT = 8
-        const val SCHEMA_VERSION = 106
+
+        const val SCHEMA_VERSION = 200
 
         val MAX_PENALTY_COEFFICIENT = 0.5
         val NO_QUESTS_PENALTY_COEFFICIENT = 0.3

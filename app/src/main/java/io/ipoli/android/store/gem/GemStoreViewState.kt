@@ -3,8 +3,9 @@ package io.ipoli.android.store.gem
 import io.ipoli.android.common.AppState
 import io.ipoli.android.common.BaseViewStateReducer
 import io.ipoli.android.common.DataLoadedAction
-import io.ipoli.android.common.mvi.BaseViewState
+
 import io.ipoli.android.common.redux.Action
+import io.ipoli.android.common.redux.BaseViewState
 import io.ipoli.android.pet.PetAvatar
 import io.ipoli.android.store.purchase.GemPack
 import io.ipoli.android.store.purchase.InAppPurchaseManager
@@ -17,9 +18,13 @@ import io.ipoli.android.store.purchase.InAppPurchaseManager
 sealed class GemStoreAction : Action {
     data class Load(val purchaseManager: InAppPurchaseManager) : GemStoreAction()
     data class BuyGemPack(val gemPack: GemPack) :
-        GemStoreAction()
+        GemStoreAction() {
+        override fun toMap() = mapOf("gemPack" to gemPack)
+    }
 
-    data class GemPackPurchased(val dogUnlocked: Boolean) : GemStoreAction()
+    data class GemPackPurchased(val dogUnlocked: Boolean) : GemStoreAction() {
+        override fun toMap() = mapOf("dogUnlocked" to dogUnlocked)
+    }
     object PurchaseFailed : GemStoreAction()
 }
 

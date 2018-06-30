@@ -17,7 +17,7 @@ class UsernameValidator(private val playerRepository: PlayerRepository) {
         INVALID_FORMAT,
         INVALID_LENGTH
     }
-    
+
     public fun validate(
         username: String
     ): ValidationError? {

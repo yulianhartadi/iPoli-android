@@ -2,20 +2,18 @@ package io.ipoli.android.quest.schedule
 
 import android.os.Bundle
 import android.view.*
-import com.bluelinelabs.conductor.RouterTransaction
-import com.bluelinelabs.conductor.changehandler.FadeChangeHandler
 import com.mikepenz.entypo_typeface_library.Entypo
 import com.mikepenz.google_material_typeface_library.GoogleMaterial
 import com.mikepenz.iconics.IconicsDrawable
 import com.mikepenz.iconics.typeface.IIcon
 import io.ipoli.android.R
 import io.ipoli.android.common.ViewUtils
+import io.ipoli.android.common.navigation.Navigator
 import io.ipoli.android.common.redux.android.ReduxViewController
 import io.ipoli.android.common.view.*
 import io.ipoli.android.quest.schedule.ScheduleViewState.DatePickerState.*
 import io.ipoli.android.quest.schedule.ScheduleViewState.StateType.*
 import io.ipoli.android.quest.schedule.addquest.AddQuestAnimationHelper
-import io.ipoli.android.quest.schedule.agenda.AgendaViewController
 import io.ipoli.android.quest.schedule.calendar.CalendarViewController
 import kotlinx.android.synthetic.main.controller_schedule.view.*
 import kotlinx.android.synthetic.main.view_calendar_toolbar.view.*
@@ -230,18 +228,14 @@ class ScheduleViewController(args: Bundle? = null) :
             }
 
             VIEW_MODE_CHANGED -> {
-                val handler = FadeChangeHandler()
+
                 val childRouter = getChildRouter(view.contentContainer, null)
-                val newController =
-                    if (state.viewMode == ScheduleViewState.ViewMode.CALENDAR)
-                        CalendarViewController(state.currentDate)
-                    else
-                        AgendaViewController(state.currentDate)
-                childRouter.replaceTopController(
-                    RouterTransaction.with(newController)
-                        .pushChangeHandler(handler)
-                        .popChangeHandler(handler)
-                )
+                val n = Navigator(childRouter)
+                if (state.viewMode == ScheduleViewState.ViewMode.CALENDAR) {
+                    n.replaceWithCalendar(state.currentDate)
+                } else {
+                    n.replaceWithAgenda(state.currentDate)
+                }
 
                 viewModeIcon = state.viewModeIcon
                 viewModeTitle = state.viewModeTitle

@@ -1,10 +1,6 @@
 package io.ipoli.android.common
 
-import io.ipoli.android.common.mvi.ViewState
-import io.ipoli.android.common.redux.Action
-import io.ipoli.android.common.redux.CompositeState
-import io.ipoli.android.common.redux.State
-import io.ipoli.android.common.redux.ViewStateReducer
+import io.ipoli.android.common.redux.*
 
 /**
  * Created by Venelin Valkov <venelin@io.ipoli.io>
@@ -13,8 +9,6 @@ import io.ipoli.android.common.redux.ViewStateReducer
 
 sealed class LoadDataAction : Action {
     object All : LoadDataAction()
-
-    data class ChangePlayer(val oldPlayerId: String) : LoadDataAction()
 }
 
 sealed class UiAction : Action {

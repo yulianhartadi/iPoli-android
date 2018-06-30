@@ -3,10 +3,10 @@ package io.ipoli.android.store.avatar
 import io.ipoli.android.common.AppState
 import io.ipoli.android.common.BaseViewStateReducer
 import io.ipoli.android.common.DataLoadedAction
-import io.ipoli.android.common.mvi.BaseViewState
 import io.ipoli.android.common.redux.Action
-import io.ipoli.android.player.data.Player
+import io.ipoli.android.common.redux.BaseViewState
 import io.ipoli.android.player.data.Avatar
+import io.ipoli.android.player.data.Player
 import io.ipoli.android.store.avatar.sideeffect.BuyAvatarCompletedAction
 import io.ipoli.android.store.avatar.usecase.BuyAvatarUseCase
 
@@ -17,8 +17,13 @@ import io.ipoli.android.store.avatar.usecase.BuyAvatarUseCase
 
 sealed class AvatarStoreAction : Action {
     object Load : AvatarStoreAction()
-    data class Buy(val avatar: Avatar) : AvatarStoreAction()
-    data class Change(val avatar: Avatar) : AvatarStoreAction()
+    data class Buy(val avatar: Avatar) : AvatarStoreAction() {
+        override fun toMap() = mapOf("avatar" to avatar.name)
+    }
+
+    data class Change(val avatar: Avatar) : AvatarStoreAction() {
+        override fun toMap() = mapOf("avatar" to avatar.name)
+    }
 }
 
 object AvatarStoreReducer : BaseViewStateReducer<AvatarStoreViewState>() {

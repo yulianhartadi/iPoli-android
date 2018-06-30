@@ -4,8 +4,9 @@ import io.ipoli.android.Constants
 import io.ipoli.android.common.AppState
 import io.ipoli.android.common.BaseViewStateReducer
 import io.ipoli.android.common.DataLoadedAction
-import io.ipoli.android.common.mvi.BaseViewState
+
 import io.ipoli.android.common.redux.Action
+import io.ipoli.android.common.redux.BaseViewState
 import io.ipoli.android.dailychallenge.DailyChallengeViewState.StateType.*
 import io.ipoli.android.dailychallenge.data.DailyChallenge
 import io.ipoli.android.pet.PetAvatar
@@ -16,16 +17,22 @@ import io.ipoli.android.quest.Quest
  * on 5/24/18.
  */
 sealed class DailyChallengeAction : Action {
-    data class AddQuest(val questId: String) : DailyChallengeAction()
-    data class RemoveQuest(val questId: String) : DailyChallengeAction()
+    data class AddQuest(val questId: String) : DailyChallengeAction() {
+        override fun toMap() = mapOf("questId" to questId)
+    }
+    data class RemoveQuest(val questId: String) : DailyChallengeAction() {
+        override fun toMap() = mapOf("questId" to questId)
+    }
 
     object Load : DailyChallengeAction()
     object Save : DailyChallengeAction()
 
-    data class Loaded(val dailyChallenge: DailyChallenge) : DailyChallengeAction()
+    data class Loaded(val dailyChallenge: DailyChallenge) : DailyChallengeAction() {
+        override fun toMap() = mapOf("dailyChallenge" to dailyChallenge)
+    }
 }
 
-object DailyChallengeReducer : BaseViewStateReducer<DailyChallengeViewState> () {
+object DailyChallengeReducer : BaseViewStateReducer<DailyChallengeViewState>() {
     override val stateKey = key<DailyChallengeViewState>()
 
     override fun reduce(
@@ -117,7 +124,7 @@ data class DailyChallengeViewState(
     val selectedQuests: List<Quest>?,
     val todayQuests: List<Quest>?,
     val isCompleted: Boolean
-    ) : BaseViewState() {
+) : BaseViewState() {
 
     enum class StateType {
         LOADING,

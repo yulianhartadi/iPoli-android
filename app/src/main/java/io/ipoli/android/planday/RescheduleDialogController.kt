@@ -11,9 +11,8 @@ import io.ipoli.android.Constants
 import io.ipoli.android.R
 import io.ipoli.android.common.AppState
 import io.ipoli.android.common.BaseViewStateReducer
-import io.ipoli.android.common.mvi.BaseViewState
-import io.ipoli.android.common.mvi.ViewState
 import io.ipoli.android.common.redux.Action
+import io.ipoli.android.common.redux.BaseViewState
 import io.ipoli.android.common.view.ReduxDialogController
 import io.ipoli.android.common.view.recyclerview.BaseRecyclerViewAdapter
 import io.ipoli.android.common.view.recyclerview.RecyclerViewViewModel
@@ -33,7 +32,9 @@ import org.threeten.bp.LocalDate
  * on 5/17/18.
  */
 sealed class RescheduleDialogAction : Action {
-    data class Load(val includeToday: Boolean) : RescheduleDialogAction()
+    data class Load(val includeToday: Boolean) : RescheduleDialogAction() {
+        override fun toMap() = mapOf("includeToday" to includeToday)
+    }
 }
 
 object RescheduleDialogReducer : BaseViewStateReducer<RescheduleDialogViewState>() {

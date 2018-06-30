@@ -1,7 +1,6 @@
 package io.ipoli.android.store.membership
 
 import android.content.Intent
-import android.content.IntentSender
 import android.content.res.ColorStateList
 import android.os.Bundle
 import android.support.annotation.ColorRes
@@ -13,7 +12,6 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.animation.AnimationUtils
 import android.widget.TextView
-import com.bluelinelabs.conductor.RestoreViewOnCreateController
 import io.ipoli.android.BillingConstants
 import io.ipoli.android.Constants
 import io.ipoli.android.R
@@ -21,16 +19,13 @@ import io.ipoli.android.common.LoaderDialogController
 import io.ipoli.android.common.redux.android.ReduxViewController
 import io.ipoli.android.common.view.*
 import io.ipoli.android.store.membership.MembershipViewState.StateType.*
-import io.ipoli.android.store.purchase.AndroidInAppPurchaseManager
 import io.ipoli.android.store.purchase.AndroidSubscriptionManager
 import io.ipoli.android.store.purchase.SubscriptionManager
 import kotlinx.android.synthetic.main.controller_membership.view.*
 import kotlinx.android.synthetic.main.view_no_elevation_toolbar.view.*
 import org.solovyev.android.checkout.Billing
 import org.solovyev.android.checkout.Checkout
-import org.solovyev.android.checkout.IntentStarter
 import org.solovyev.android.checkout.UiCheckout
-import timber.log.Timber
 
 /**
  * Created by Polina Zhelyazkova <polina@mypoli.fun>

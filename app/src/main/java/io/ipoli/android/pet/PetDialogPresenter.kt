@@ -1,15 +1,11 @@
 package io.ipoli.android.pet
 
+import android.content.Intent
 import io.ipoli.android.common.AppState
 import io.ipoli.android.common.BaseViewStateReducer
 import io.ipoli.android.common.DataLoadedAction
-import io.ipoli.android.common.mvi.BaseMviPresenter
-import io.ipoli.android.common.mvi.BaseViewState
-import io.ipoli.android.common.mvi.Intent
-import io.ipoli.android.common.mvi.ViewStateRenderer
 import io.ipoli.android.common.redux.Action
-import io.ipoli.android.pet.usecase.FindPetUseCase
-import kotlin.coroutines.experimental.CoroutineContext
+import io.ipoli.android.common.redux.BaseViewState
 
 /**
  * Created by Venelin Valkov <venelin@mypoli.fun>
@@ -46,8 +42,6 @@ object PetDialogReducer : BaseViewStateReducer<PetDialogViewState>() {
     override val stateKey = key<PetDialogViewState>()
 
 }
-
-object LoadPetIntent : Intent
 
 data class PetDialogViewState(
     val type: Type,

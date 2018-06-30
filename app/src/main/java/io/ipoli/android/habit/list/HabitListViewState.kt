@@ -3,8 +3,9 @@ package io.ipoli.android.habit.list
 import io.ipoli.android.common.AppState
 import io.ipoli.android.common.BaseViewStateReducer
 import io.ipoli.android.common.DataLoadedAction
-import io.ipoli.android.common.mvi.BaseViewState
+
 import io.ipoli.android.common.redux.Action
+import io.ipoli.android.common.redux.BaseViewState
 import io.ipoli.android.habit.usecase.CreateHabitItemsUseCase
 
 /**
@@ -12,8 +13,13 @@ import io.ipoli.android.habit.usecase.CreateHabitItemsUseCase
  * on 6/13/18.
  */
 sealed class HabitListAction : Action {
-    data class CompleteHabit(val habitId: String) : HabitListAction()
-    data class UndoCompleteHabit(val habitId: String) : HabitListAction()
+    data class CompleteHabit(val habitId: String) : HabitListAction() {
+        override fun toMap() = mapOf("habitId" to habitId)
+    }
+
+    data class UndoCompleteHabit(val habitId: String) : HabitListAction() {
+        override fun toMap() = mapOf("habitId" to habitId)
+    }
 
     object Load : HabitListAction()
 }

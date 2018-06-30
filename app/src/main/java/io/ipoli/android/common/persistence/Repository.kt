@@ -1,5 +1,7 @@
 package io.ipoli.android.common.persistence
 
+import io.ipoli.android.common.datetime.Duration
+import io.ipoli.android.common.datetime.Millisecond
 import io.ipoli.android.quest.Entity
 import kotlinx.coroutines.experimental.channels.Channel
 
@@ -8,6 +10,10 @@ import kotlinx.coroutines.experimental.channels.Channel
  * on 8/18/17.
  */
 interface Repository<T> where T : Entity {
+
+    fun findAllForSync(lastSync: Duration<Millisecond>): List<T> {
+        return emptyList()
+    }
 
     fun save(entity: T): T
     fun save(entities: List<T>): List<T>

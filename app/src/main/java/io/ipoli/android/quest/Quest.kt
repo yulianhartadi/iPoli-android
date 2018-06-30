@@ -1,6 +1,7 @@
 package io.ipoli.android.quest
 
 import io.ipoli.android.common.datetime.*
+import io.ipoli.android.common.persistence.EntityWithTags
 import io.ipoli.android.common.sumByLong
 import io.ipoli.android.quest.subquest.SubQuest
 import io.ipoli.android.repeatingquest.entity.PeriodProgress
@@ -18,8 +19,8 @@ import org.threeten.bp.LocalTime
 
 interface Entity {
     val id: String
-    val createdAt: Instant
     val updatedAt: Instant
+    val createdAt: Instant
 }
 
 sealed class Reminder(open val message: String) {
@@ -149,7 +150,7 @@ data class Quest(
     val name: String,
     val color: Color,
     val icon: Icon? = null,
-    val tags: List<Tag> = listOf(),
+    override val tags: List<Tag> = listOf(),
     val startTime: Time? = null,
     val duration: Int,
     val priority: Priority = Priority.NOT_IMPORTANT_NOT_URGENT,
@@ -173,8 +174,9 @@ data class Quest(
     val challengeId: String? = null,
     val note: String = "",
     override val createdAt: Instant = Instant.now(),
-    override val updatedAt: Instant = Instant.now()
-) : BaseQuest(id), Entity {
+    override val updatedAt: Instant = Instant.now(),
+    val removedAt: Instant? = null
+) : BaseQuest(id), EntityWithTags {
 
     sealed class Bounty {
         object None : Bounty()
@@ -277,7 +279,7 @@ data class RepeatingQuest(
     val name: String,
     val color: Color,
     val icon: Icon? = null,
-    val tags: List<Tag> = listOf(),
+    override val tags: List<Tag> = listOf(),
     val startTime: Time? = null,
     val duration: Int,
     val priority: Priority = Priority.NOT_IMPORTANT_NOT_URGENT,
@@ -290,8 +292,9 @@ data class RepeatingQuest(
     val challengeId: String? = null,
     val note: String = "",
     override val createdAt: Instant = Instant.now(),
-    override val updatedAt: Instant = Instant.now()
-) : BaseQuest(id), Entity {
+    override val updatedAt: Instant = Instant.now(),
+    val removedAt: Instant? = null
+) : BaseQuest(id), EntityWithTags {
     val start
         get() = repeatPattern.startDate
 

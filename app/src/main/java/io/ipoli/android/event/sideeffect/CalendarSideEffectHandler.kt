@@ -45,9 +45,9 @@ object CalendarSideEffectHandler : AppSideEffectHandler() {
 
     override fun canHandle(action: Action) =
         action == CalendarPickerAction.Load
-                || action is SettingsAction.ToggleSyncCalendar
-                || action is SettingsAction.SyncCalendarsSelected
-                || action is PowerUpStoreAction.SyncCalendarsSelected
+            || action is SettingsAction.ToggleSyncCalendar
+            || action is SettingsAction.SyncCalendarsSelected
+            || action is PowerUpStoreAction.SyncCalendarsSelected
 
 
 }

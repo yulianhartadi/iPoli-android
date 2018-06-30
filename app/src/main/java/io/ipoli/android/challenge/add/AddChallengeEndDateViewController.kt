@@ -1,14 +1,11 @@
 package io.ipoli.android.challenge.add
 
 import android.app.DatePickerDialog
-import android.arch.lifecycle.ViewModel
 import android.os.Bundle
 import android.support.v7.widget.LinearLayoutManager
-import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.TextView
 import io.ipoli.android.R
 import io.ipoli.android.common.datetime.DateUtils
 import io.ipoli.android.common.redux.android.BaseViewController
@@ -17,7 +14,6 @@ import io.ipoli.android.common.view.recyclerview.RecyclerViewViewModel
 import io.ipoli.android.common.view.recyclerview.SimpleViewHolder
 import io.ipoli.android.common.view.stringRes
 import kotlinx.android.synthetic.main.controller_add_challenge_end_date.view.*
-import kotlinx.android.synthetic.main.dialog_text_picker.view.*
 import kotlinx.android.synthetic.main.item_add_challenge_end_date.view.*
 import org.threeten.bp.LocalDate
 
@@ -38,7 +34,7 @@ class AddChallengeEndDateViewController(args: Bundle? = null) :
     ): View {
         val view = inflater.inflate(R.layout.controller_add_challenge_end_date, container, false)
         view.dateList.layoutManager =
-                LinearLayoutManager(container.context, LinearLayoutManager.VERTICAL, false)
+            LinearLayoutManager(container.context, LinearLayoutManager.VERTICAL, false)
         val adapter = DateAdapter()
         view.dateList.adapter = adapter
         adapter.updateAll(viewModels)

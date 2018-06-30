@@ -29,7 +29,6 @@ class myPoliApp : Application() {
     private lateinit var module: Module
 
     companion object {
-//        lateinit var refWatcher: RefWatcher
 
         lateinit var instance: myPoliApp
 
@@ -65,7 +64,6 @@ class myPoliApp : Application() {
             androidModule = MainAndroidModule(this),
             repositoryModule = AndroidRepositoryModule(this),
             useCaseModule = MainUseCaseModule(),
-            presenterModule = AndroidPresenterModule(),
             stateStoreModule = AndroidStateStoreModule()
         ).transitive()
 

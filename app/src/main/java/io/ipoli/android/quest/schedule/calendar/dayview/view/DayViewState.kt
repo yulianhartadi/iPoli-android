@@ -4,8 +4,8 @@ import io.ipoli.android.common.AppState
 import io.ipoli.android.common.DataLoadedAction
 import io.ipoli.android.common.NamespaceViewStateReducer
 import io.ipoli.android.common.datetime.Time
-import io.ipoli.android.common.mvi.BaseViewState
 import io.ipoli.android.common.redux.Action
+import io.ipoli.android.common.redux.BaseViewState
 import io.ipoli.android.quest.Color
 import io.ipoli.android.quest.Icon
 import io.ipoli.android.quest.reminder.picker.ReminderViewModel
@@ -22,35 +22,79 @@ import org.threeten.bp.LocalDate
 
 sealed class DayViewAction : Action {
     data class Load(val currentDate: LocalDate) :
-        DayViewAction()
+        DayViewAction() {
+        override fun toMap() = mapOf("currentDate" to currentDate)
+    }
 
     data class StartEditScheduledQuest(val questViewModel: DayViewController.ScheduledEventViewModel.Quest) :
-        DayViewAction()
+        DayViewAction() {
+        override fun toMap() = mapOf("questViewModel" to questViewModel)
+    }
 
-    data class CompleteQuest(val questId: String, val isStarted: Boolean) : DayViewAction()
-    data class UndoCompleteQuest(val questId: String) : DayViewAction()
-    data class AddNewScheduledQuest(val startTime: Time, val duration: Int) : DayViewAction()
+    data class CompleteQuest(val questId: String, val isStarted: Boolean) : DayViewAction() {
+        override fun toMap() = mapOf("questId" to questId, "isStarted" to isStarted)
+    }
+
+    data class UndoCompleteQuest(val questId: String) : DayViewAction() {
+        override fun toMap() = mapOf("questId" to questId)
+    }
+
+    data class AddNewScheduledQuest(val startTime: Time, val duration: Int) : DayViewAction() {
+        override fun toMap() = mapOf("startTime" to startTime, "duration" to duration)
+    }
     data class DragResizeView(val startTime: Time?, val endTime: Time?, val duration: Int) :
-        DayViewAction()
+        DayViewAction() {
+        override fun toMap() = mapOf(
+            "startTime" to startTime, "endTime" to endTime, "duration" to duration
+        )
+    }
 
-    data class DragMoveView(val startTime: Time?, val endTime: Time?) : DayViewAction()
+    data class DragMoveView(val startTime: Time?, val endTime: Time?) : DayViewAction() {
+        override fun toMap() = mapOf("startTime" to startTime, "endTime" to endTime)
+    }
     object AddQuest : DayViewAction()
     object QuestSaved : DayViewAction()
     object SaveInvalidQuestName : DayViewAction()
-    data class SaveInvalidQuest(val result: Result.Invalid) : DayViewAction()
-    data class ChangeEditViewName(val name: String) : DayViewAction()
+    data class SaveInvalidQuest(val result: Result.Invalid) : DayViewAction() {
+        override fun toMap() = mapOf("result" to result.error.name)
+    }
+
+    data class ChangeEditViewName(val name: String) : DayViewAction() {
+        override fun toMap() = mapOf("name" to name)
+    }
     object EditQuest : DayViewAction()
     object EditUnscheduledQuest : DayViewAction()
-    data class DatePicked(val date: LocalDate?) : DayViewAction()
-    data class ReminderPicked(val reminder: ReminderViewModel?) : DayViewAction()
-    data class IconPicked(val icon: Icon?) : DayViewAction()
-    data class ColorPicked(val color: Color) : DayViewAction()
-    data class TagsPicked(val tags: Set<Tag>) : DayViewAction()
-    data class StartEditUnscheduledQuest(val questViewModel: DayViewController.UnscheduledQuestViewModel) :
-        DayViewAction()
+    data class DatePicked(val date: LocalDate?) : DayViewAction() {
+        override fun toMap() = mapOf("date" to date)
+    }
 
-    data class RemoveQuest(val questId: String) : DayViewAction()
-    data class UndoRemoveQuest(val questId: String) : DayViewAction()
+    data class ReminderPicked(val reminder: ReminderViewModel?) : DayViewAction() {
+        override fun toMap() = mapOf("reminder" to reminder)
+    }
+
+    data class IconPicked(val icon: Icon?) : DayViewAction() {
+        override fun toMap() = mapOf("icon" to icon?.name)
+    }
+
+    data class ColorPicked(val color: Color) : DayViewAction() {
+        override fun toMap() = mapOf("color" to color.name)
+    }
+
+    data class TagsPicked(val tags: Set<Tag>) : DayViewAction() {
+        override fun toMap() = mapOf("tags" to tags.joinToString(",") { it.name })
+    }
+    data class StartEditUnscheduledQuest(val questViewModel: DayViewController.UnscheduledQuestViewModel) :
+        DayViewAction() {
+        override fun toMap() = mapOf("questViewModel" to questViewModel)
+    }
+
+    data class RemoveQuest(val questId: String) : DayViewAction() {
+        override fun toMap() = mapOf("questId" to questId)
+    }
+
+    data class UndoRemoveQuest(val questId: String) : DayViewAction() {
+        override fun toMap() = mapOf("questId" to questId)
+    }
 }
 
 class DayViewReducer(namespace: String) : NamespaceViewStateReducer<DayViewState>(namespace) {
@@ -313,7 +357,7 @@ data class DayViewState(
     val icon: Icon?,
     val repeatingQuestId: String?,
     val challengeId: String?,
-    val tags : List<Tag>
+    val tags: List<Tag>
 ) : BaseViewState() {
 
     enum class StateType {

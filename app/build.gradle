@@ -2,7 +2,6 @@ apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-android-extensions'
 apply plugin: 'kotlin-kapt'
-apply plugin: 'com.getkeepsafe.dexcount'
 apply plugin: 'io.fabric'
 apply plugin: "de.mannodermaus.android-junit5"
 apply plugin: 'jacoco'
@@ -82,20 +81,23 @@ dependencies {
     implementation 'com.android.support.constraint:constraint-layout:1.1.2'
     implementation 'com.google.android.gms:play-services-auth:15.0.1'
     implementation 'com.google.android.gms:play-services-awareness:15.0.1'
-    implementation 'com.google.firebase:firebase-core:16.0.0'
-    implementation 'com.google.firebase:firebase-analytics:16.0.0'
-    implementation 'com.google.firebase:firebase-auth:16.0.1'
-    implementation 'com.google.firebase:firebase-firestore:17.0.1'
-    implementation 'com.google.firebase:firebase-invites:16.0.0'
+    implementation 'com.google.firebase:firebase-core:16.0.1'
+    implementation 'com.google.firebase:firebase-auth:16.0.2'
+    implementation 'com.google.firebase:firebase-firestore:17.0.2'
+    implementation 'com.google.firebase:firebase-invites:16.0.1'
+
+    implementation "android.arch.persistence.room:runtime:$room_version"
+    kapt "android.arch.persistence.room:compiler:$room_version"
+
     implementation 'com.amplitude:android-sdk:2.18.1'
-    implementation "com.github.SUPERCILEX.FirebaseUI-Android:firebase-ui-auth:c280098444"
-    implementation 'com.facebook.android:facebook-login:4.33.0'
-    implementation 'com.facebook.android:facebook-share:4.33.0'
+    implementation 'com.firebaseui:firebase-ui-auth:4.1.0'
+    implementation 'com.facebook.android:facebook-login:4.34.0'
+    implementation 'com.facebook.android:facebook-share:4.34.0'
     implementation 'com.bluelinelabs:conductor:2.1.4'
     implementation 'com.bluelinelabs:conductor-support:2.1.4'
     implementation 'com.jakewharton.timber:timber:4.7.0'
     implementation 'com.jakewharton.threetenabp:threetenabp:1.1.0'
-    implementation('com.crashlytics.sdk.android:crashlytics:2.9.3@aar') {
+    implementation('com.crashlytics.sdk.android:crashlytics:2.9.4@aar') {
         transitive = true
     }
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
@@ -110,21 +112,20 @@ dependencies {
     implementation 'sun.bob:mcalendarview:1.1.0'
     implementation "space.traversal.kapsule:kapsule-core:0.3"
 
-    implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-android:0.22.5'
+    implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-android:0.23.3'
 
     implementation 'com.evernote:android-job:1.2.6'
     implementation 'org.solovyev.android:checkout:1.2.1'
     implementation 'com.github.PhilJay:MPAndroidChart:b65ba08324'
     implementation 'com.github.florent37:tutoshowcase:1.0.1'
     implementation 'org.apmem.tools:layouts:1.10@aar'
-    implementation 'com.fasterxml.jackson.core:jackson-databind:2.9.5'
     implementation 'com.squareup.okhttp3:okhttp:3.10.0'
 
     implementation 'com.github.bumptech.glide:glide:4.7.1'
     kapt 'com.github.bumptech.glide:compiler:4.7.1'
 
     implementation 'com.airbnb.android:lottie:2.5.5'
-    implementation 'ru.noties:markwon:1.0.4'
+    implementation 'ru.noties:markwon:1.0.6'
 
     androidTestImplementation('com.android.support.test.espresso:espresso-core:3.0.0', {
         exclude group: 'com.android.support', module: 'support-annotations'

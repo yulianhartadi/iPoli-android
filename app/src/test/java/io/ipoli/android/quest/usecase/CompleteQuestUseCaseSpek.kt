@@ -19,7 +19,6 @@ import org.amshove.kluent.*
 import org.jetbrains.spek.api.Spek
 import org.jetbrains.spek.api.dsl.describe
 import org.jetbrains.spek.api.dsl.it
-import org.threeten.bp.LocalDateTime
 
 /**
  * Created by Venelin Valkov <venelin@io.ipoli.io>
@@ -32,8 +31,6 @@ class CompleteQuestUseCaseSpek : Spek({
         fun createQuestRepository(quest: Quest): QuestRepository = mock {
             on { findById(any()) } doReturn
                 quest
-
-            on { findNextReminderTime(any()) } doReturn LocalDateTime.now()
         }
 
         val player = TestUtil.player()

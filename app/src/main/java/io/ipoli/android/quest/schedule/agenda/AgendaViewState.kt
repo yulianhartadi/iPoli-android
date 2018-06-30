@@ -4,8 +4,9 @@ import io.ipoli.android.common.AppState
 import io.ipoli.android.common.BaseViewStateReducer
 import io.ipoli.android.common.DataLoadedAction
 import io.ipoli.android.common.datetime.isBetween
-import io.ipoli.android.common.mvi.BaseViewState
+
 import io.ipoli.android.common.redux.Action
+import io.ipoli.android.common.redux.BaseViewState
 import io.ipoli.android.quest.schedule.agenda.usecase.CreateAgendaItemsUseCase.AgendaItem
 import org.threeten.bp.LocalDate
 
@@ -15,12 +16,29 @@ import org.threeten.bp.LocalDate
  */
 
 sealed class AgendaAction : Action {
-    data class Load(val startDate: LocalDate) : AgendaAction()
-    data class LoadBefore(val itemPosition: Int) : AgendaAction()
-    data class LoadAfter(val itemPosition: Int) : AgendaAction()
-    data class CompleteQuest(val itemPosition: Int) : AgendaAction()
-    data class UndoCompleteQuest(val itemPosition: Int) : AgendaAction()
-    data class FirstVisibleItemChanged(val itemPosition: Int) : AgendaAction()
+    data class Load(val startDate: LocalDate) : AgendaAction() {
+        override fun toMap() = mapOf("startDate" to startDate)
+    }
+
+    data class LoadBefore(val itemPosition: Int) : AgendaAction() {
+        override fun toMap() = mapOf("itemPosition" to itemPosition)
+    }
+
+    data class LoadAfter(val itemPosition: Int) : AgendaAction() {
+        override fun toMap() = mapOf("itemPosition" to itemPosition)
+    }
+
+    data class CompleteQuest(val itemPosition: Int) : AgendaAction() {
+        override fun toMap() = mapOf("itemPosition" to itemPosition)
+    }
+
+    data class UndoCompleteQuest(val itemPosition: Int) : AgendaAction() {
+        override fun toMap() = mapOf("itemPosition" to itemPosition)
+    }
+
+    data class FirstVisibleItemChanged(val itemPosition: Int) : AgendaAction() {
+        override fun toMap() = mapOf("itemPosition" to itemPosition)
+    }
 }
 
 object AgendaReducer : BaseViewStateReducer<AgendaViewState>() {

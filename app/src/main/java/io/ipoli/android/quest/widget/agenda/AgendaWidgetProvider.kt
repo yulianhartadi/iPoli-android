@@ -5,7 +5,6 @@ import android.appwidget.AppWidgetManager
 import android.appwidget.AppWidgetProvider
 import android.content.Context
 import android.content.Intent
-import android.net.Uri
 import android.widget.RemoteViews
 import io.ipoli.android.Constants
 import io.ipoli.android.R

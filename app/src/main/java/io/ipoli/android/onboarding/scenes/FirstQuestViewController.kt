@@ -193,10 +193,11 @@ class FirstQuestViewController(args: Bundle? = null) :
                 })
         }
     }
+
     override fun onDetach(view: View) {
         showcase?.dismiss()
         showcase = null
-        for(a in animations) {
+        for (a in animations) {
             a.cancel()
         }
         animations.clear()
@@ -247,10 +248,10 @@ class FirstQuestViewController(args: Bundle? = null) :
             view.questCategoryIndicator.setBackgroundResource(R.color.md_green_900)
 
             (view.checkBox as TintableCompoundButton).supportButtonTintList =
-                    ContextCompat.getColorStateList(
-                        context,
-                        R.color.md_green_200
-                    )
+                ContextCompat.getColorStateList(
+                    context,
+                    R.color.md_green_200
+                )
             view.completedBackgroundView.invisible()
             view.repeatIndicator.gone()
             view.challengeIndicator.gone()
@@ -258,10 +259,10 @@ class FirstQuestViewController(args: Bundle? = null) :
             view.checkBox.setOnCheckedChangeListener { cb, checked ->
                 if (checked) {
                     (view.checkBox as TintableCompoundButton).supportButtonTintList =
-                            ContextCompat.getColorStateList(
-                                context,
-                                R.color.md_grey_700
-                            )
+                        ContextCompat.getColorStateList(
+                            context,
+                            R.color.md_grey_700
+                        )
                     val anim = RevealAnimator()
                         .create(view.completedBackgroundView, cb)
                     anim.addListener(object : AnimatorListenerAdapter() {

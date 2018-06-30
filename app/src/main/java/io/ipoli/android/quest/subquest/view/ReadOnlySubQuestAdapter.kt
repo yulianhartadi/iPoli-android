@@ -26,20 +26,21 @@ import kotlinx.android.synthetic.main.item_edit_repeating_quest_sub_quest.view.*
  * on 04/11/2018.
  */
 class ReadOnlySubQuestAdapter(
-        private val recyclerView: RecyclerView,
-        useLightTheme: Boolean = false
+    private val recyclerView: RecyclerView,
+    useLightTheme: Boolean = false
 ) :
-        BaseRecyclerViewAdapter<ReadOnlySubQuestAdapter.ReadOnlySubQuestViewModel>(
-                R.layout.item_edit_repeating_quest_sub_quest
-        ) {
+    BaseRecyclerViewAdapter<ReadOnlySubQuestAdapter.ReadOnlySubQuestViewModel>(
+        R.layout.item_edit_repeating_quest_sub_quest
+    ) {
 
-    data class ReadOnlySubQuestViewModel(override val id: String, val name: String) : RecyclerViewViewModel
+    data class ReadOnlySubQuestViewModel(override val id: String, val name: String) :
+        RecyclerViewViewModel
 
     data class ItemColorConfig(
-            @ColorRes val indicatorColor: Int,
-            @ColorRes val nameColor: Int,
-            @ColorRes val nameHintColor: Int,
-            @ColorRes val buttonColor: Int
+        @ColorRes val indicatorColor: Int,
+        @ColorRes val nameColor: Int,
+        @ColorRes val nameHintColor: Int,
+        @ColorRes val buttonColor: Int
     )
 
     private val touchHelper: ItemTouchHelper
@@ -47,55 +48,55 @@ class ReadOnlySubQuestAdapter(
 
     init {
         val dragHelper =
-                ReorderItemHelper(
-                        onItemMoved = { oldPosition, newPosition ->
-                            move(oldPosition, newPosition)
-                        }
-                )
+            ReorderItemHelper(
+                onItemMoved = { oldPosition, newPosition ->
+                    move(oldPosition, newPosition)
+                }
+            )
 
         touchHelper = ItemTouchHelper(dragHelper)
         touchHelper.attachToRecyclerView(recyclerView)
 
 
         itemColorConfig =
-                if (useLightTheme)
-                    ItemColorConfig(
-                            indicatorColor = R.color.md_light_text_50,
-                            nameColor = R.color.md_light_text_100,
-                            nameHintColor = R.color.md_light_text_70,
-                            buttonColor = R.color.md_light_text_70
-                    )
-                else
-                    ItemColorConfig(
-                            indicatorColor = R.color.md_dark_text_54,
-                            nameColor = R.color.md_dark_text_87,
-                            nameHintColor = R.color.md_dark_text_54,
-                            buttonColor = R.color.md_dark_text_54
-                    )
+            if (useLightTheme)
+                ItemColorConfig(
+                    indicatorColor = R.color.md_light_text_50,
+                    nameColor = R.color.md_light_text_100,
+                    nameHintColor = R.color.md_light_text_70,
+                    buttonColor = R.color.md_light_text_70
+                )
+            else
+                ItemColorConfig(
+                    indicatorColor = R.color.md_dark_text_54,
+                    nameColor = R.color.md_dark_text_87,
+                    nameHintColor = R.color.md_dark_text_54,
+                    buttonColor = R.color.md_dark_text_54
+                )
     }
 
     override fun onBindViewModel(
-            vm: ReadOnlySubQuestViewModel,
-            view: View,
-            holder: SimpleViewHolder
+        vm: ReadOnlySubQuestViewModel,
+        view: View,
+        holder: SimpleViewHolder
     ) {
 
         view.subQuestIndicator.backgroundTintList =
-                ColorStateList.valueOf(
-                        ContextCompat.getColor(
-                                view.context,
-                                itemColorConfig.indicatorColor
-                        )
+            ColorStateList.valueOf(
+                ContextCompat.getColor(
+                    view.context,
+                    itemColorConfig.indicatorColor
                 )
+            )
         view.editSubQuestName.setText(vm.name)
         view.editSubQuestName.tag = vm.id
 
         view.reorderButton.setImageDrawable(
-                IconicsDrawable(view.context).normalIcon(
-                        GoogleMaterial.Icon.gmd_reorder,
-                        itemColorConfig.buttonColor
-                )
-                        .respectFontBounds(true)
+            IconicsDrawable(view.context).normalIcon(
+                GoogleMaterial.Icon.gmd_reorder,
+                itemColorConfig.buttonColor
+            )
+                .respectFontBounds(true)
         )
 
         view.reorderButton.setOnTouchListener { _, event ->
@@ -106,11 +107,11 @@ class ReadOnlySubQuestAdapter(
         }
 
         view.removeButton.setImageDrawable(
-                IconicsDrawable(view.context).normalIcon(
-                        GoogleMaterial.Icon.gmd_close,
-                        itemColorConfig.buttonColor
-                )
-                        .respectFontBounds(true)
+            IconicsDrawable(view.context).normalIcon(
+                GoogleMaterial.Icon.gmd_close,
+                itemColorConfig.buttonColor
+            )
+                .respectFontBounds(true)
         )
 
         view.removeButton.setOnClickListener {
@@ -118,16 +119,16 @@ class ReadOnlySubQuestAdapter(
         }
 
         view.editSubQuestName.setTextColor(
-                ContextCompat.getColor(
-                        view.context,
-                        itemColorConfig.nameColor
-                )
+            ContextCompat.getColor(
+                view.context,
+                itemColorConfig.nameColor
+            )
         )
         view.editSubQuestName.setHintTextColor(
-                ContextCompat.getColor(
-                        view.context,
-                        itemColorConfig.nameHintColor
-                )
+            ContextCompat.getColor(
+                view.context,
+                itemColorConfig.nameHintColor
+            )
         )
 
         view.editSubQuestName.setOnFocusChangeListener { _, hasFocus ->

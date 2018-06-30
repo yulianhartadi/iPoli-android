@@ -1,57 +1,61 @@
 package io.ipoli.android.common.view
 
+import android.annotation.SuppressLint
 import android.view.LayoutInflater
 import android.view.View
 import io.ipoli.android.R
-import io.ipoli.android.common.mvi.BaseMviPresenter
-import io.ipoli.android.common.mvi.BaseViewState
-import io.ipoli.android.common.mvi.Intent
-import io.ipoli.android.common.mvi.ViewStateRenderer
+import io.ipoli.android.common.AppSideEffectHandler
+import io.ipoli.android.common.AppState
+import io.ipoli.android.common.BaseViewStateReducer
+
+import io.ipoli.android.common.redux.Action
+import io.ipoli.android.common.redux.BaseViewState
 import io.ipoli.android.pet.AndroidPetAvatar
 import io.ipoli.android.pet.PetAvatar
 import io.ipoli.android.player.data.Player
-import io.ipoli.android.player.persistence.PlayerRepository
 import kotlinx.android.synthetic.main.popup_pet_message.view.*
-import kotlinx.coroutines.experimental.launch
 import space.traversal.kapsule.required
 import java.util.concurrent.TimeUnit
-import kotlin.coroutines.experimental.CoroutineContext
 
 data class PetMessageViewState(
     val message: String? = null,
-    val avatar: PetAvatar? = null
+    val petAvatar: PetAvatar? = null
 ) : BaseViewState()
 
-sealed class PetMessageIntent : Intent {
-    data class LoadData(val message: String) : PetMessageIntent()
-    data class ChangePlayer(val player: Player) : PetMessageIntent()
+sealed class PetMessageAction : Action {
+    data class Load(val message: String) : PetMessageAction()
+    data class PlayerLoaded(val player: Player) : PetMessageAction()
 }
 
-class PetMessagePresenter(
-    private val playerRepository: PlayerRepository,
-    coroutineContext: CoroutineContext
-) : BaseMviPresenter<ViewStateRenderer<PetMessageViewState>, PetMessageViewState, PetMessageIntent>(
-    PetMessageViewState(),
-    coroutineContext
-) {
-    override fun reduceState(intent: PetMessageIntent, state: PetMessageViewState) =
-        when (intent) {
-            is PetMessageIntent.LoadData -> {
-                launch {
-                    sendChannel.send(PetMessageIntent.ChangePlayer(playerRepository.find()!!))
-                }
-                state.copy(
-                    message = intent.message
-                )
-            }
+object PetMessageSideEffectHandler : AppSideEffectHandler() {
 
-            is PetMessageIntent.ChangePlayer -> {
-                state.copy(
-                    avatar = intent.player.pet.avatar
-                )
-            }
+    private val playerRepository by required { playerRepository }
+
+    override suspend fun doExecute(action: Action, state: AppState) {
+        if (action is PetMessageAction.Load) {
+            dispatch(PetMessageAction.PlayerLoaded(playerRepository.find()!!))
+        }
+    }
+
+    override fun canHandle(action: Action) = action is PetMessageAction.Load
+}
+
+object PetMessageReducer : BaseViewStateReducer<PetMessageViewState>() {
+
+    override val stateKey = key<PetMessageViewState>()
+
+    override fun reduce(
+        state: AppState,
+        subState: PetMessageViewState,
+        action: Action
+    ) =
+        when (action) {
+            is PetMessageAction.Load -> subState.copy(message = action.message)
+            is PetMessageAction.PlayerLoaded -> subState.copy(petAvatar = action.player.pet.avatar)
+            else -> subState
         }
 
+    override fun defaultState() = PetMessageViewState(message = null, petAvatar = null)
 }
 
 
@@ -59,28 +63,15 @@ class PetMessagePopup(
     private val message: String,
     private val actionListener: () -> Unit = {},
     private val actionText: String = ""
-) : MviPopup<PetMessageViewState, PetMessagePopup, PetMessagePresenter, PetMessageIntent>(
-    position = MviPopup.Position.BOTTOM,
+) : ReduxPopup<PetMessageAction, PetMessageViewState, PetMessageReducer>(
+    position = ReduxPopup.Position.BOTTOM,
     isAutoHide = true
 ) {
 
-    private val presenter by required { petMessagePresenter }
-
-    override fun createPresenter() = presenter
-
-    override fun render(state: PetMessageViewState, view: View) {
-        state.message?.let {
-            view.petMessage.text = it
-        }
-
-        state.avatar?.let {
-            val androidAvatar = AndroidPetAvatar.valueOf(it.name)
-            view.petHead.setImageResource(androidAvatar.headImage)
-        }
-
-    }
+    override val reducer = PetMessageReducer
 
     override fun createView(inflater: LayoutInflater): View {
+        @SuppressLint("InflateParams")
         val v = inflater.inflate(R.layout.popup_pet_message, null)
 
         if (actionText.isNotBlank()) {
@@ -95,9 +86,21 @@ class PetMessagePopup(
         return v
     }
 
+    override fun onCreateLoadAction() = PetMessageAction.Load(message)
 
     override fun onViewShown(contentView: View) {
-        send(PetMessageIntent.LoadData(message))
-        autoHideAfter(TimeUnit.SECONDS.toMillis(2))
+        autoHideAfter(TimeUnit.SECONDS.toMillis(3))
+    }
+
+    override fun render(state: PetMessageViewState, view: View) {
+        state.message?.let {
+            view.petMessage.text = it
+        }
+
+        state.petAvatar?.let {
+            val androidAvatar = AndroidPetAvatar.valueOf(it.name)
+            view.petHead.setImageResource(androidAvatar.headImage)
+        }
+
     }
 }

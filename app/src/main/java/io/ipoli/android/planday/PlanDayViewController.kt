@@ -15,8 +15,9 @@ import io.ipoli.android.common.BaseViewStateReducer
 import io.ipoli.android.common.DataLoadedAction
 import io.ipoli.android.common.datetime.Time
 import io.ipoli.android.common.datetime.TimeOfDay
-import io.ipoli.android.common.mvi.BaseViewState
+
 import io.ipoli.android.common.redux.Action
+import io.ipoli.android.common.redux.BaseViewState
 import io.ipoli.android.common.redux.android.ReduxViewController
 import io.ipoli.android.common.text.DateFormatter
 import io.ipoli.android.common.view.exitFullScreen
@@ -38,17 +39,49 @@ import org.threeten.bp.format.TextStyle
 import java.util.*
 
 sealed class PlanDayAction : Action {
-    data class CompleteYesterdayQuest(val questId: String) : PlanDayAction()
-    data class UndoCompleteQuest(val questId: String) : PlanDayAction()
-    data class ScheduleQuestForToday(val questId: String) : PlanDayAction()
-    data class MoveQuestToBucketList(val questId: String) : PlanDayAction()
-    data class RemoveQuest(val questId: String) : PlanDayAction()
-    data class UndoRemoveQuest(val questId: String) : PlanDayAction()
-    data class RescheduleQuest(val questId: String, val date: LocalDate?) : PlanDayAction()
-    data class AcceptSuggestion(val questId: String) : PlanDayAction()
-    data class AddDailyChallengeQuest(val questId: String) : PlanDayAction()
-    data class RemoveDailyChallengeQuest(val questId: String) : PlanDayAction()
-    data class DailyChallengeLoaded(val dailyChallenge: DailyChallenge) : PlanDayAction()
+    data class CompleteYesterdayQuest(val questId: String) : PlanDayAction() {
+        override fun toMap() = mapOf("questId" to questId)
+    }
+
+    data class UndoCompleteQuest(val questId: String) : PlanDayAction() {
+        override fun toMap() = mapOf("questId" to questId)
+    }
+
+    data class ScheduleQuestForToday(val questId: String) : PlanDayAction() {
+        override fun toMap() = mapOf("questId" to questId)
+    }
+
+    data class MoveQuestToBucketList(val questId: String) : PlanDayAction() {
+        override fun toMap() = mapOf("questId" to questId)
+    }
+
+    data class RemoveQuest(val questId: String) : PlanDayAction() {
+        override fun toMap() = mapOf("questId" to questId)
+    }
+
+    data class UndoRemoveQuest(val questId: String) : PlanDayAction() {
+        override fun toMap() = mapOf("questId" to questId)
+    }
+
+    data class RescheduleQuest(val questId: String, val date: LocalDate?) : PlanDayAction() {
+        override fun toMap() = mapOf("questId" to questId, "date" to date)
+    }
+
+    data class AcceptSuggestion(val questId: String) : PlanDayAction() {
+        override fun toMap() = mapOf("questId" to questId)
+    }
+
+    data class AddDailyChallengeQuest(val questId: String) : PlanDayAction() {
+        override fun toMap() = mapOf("questId" to questId)
+    }
+
+    data class RemoveDailyChallengeQuest(val questId: String) : PlanDayAction() {
+        override fun toMap() = mapOf("questId" to questId)
+    }
+
+    data class DailyChallengeLoaded(val dailyChallenge: DailyChallenge) : PlanDayAction() {
+        override fun toMap() = mapOf("dailyChallenge" to dailyChallenge)
+    }
 
     object Load : PlanDayAction()
     object ShowNext : PlanDayAction()

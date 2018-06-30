@@ -24,7 +24,11 @@ class RemoveQuestUseCase(
             timerCompleteScheduler.cancelAll()
         }
         try {
-            questRepository.remove(parameters)
+            if (quest.isFromRepeatingQuest) {
+                questRepository.removeFromRepeatingQuest(parameters, "${quest.repeatingQuestId!!}*")
+            } else {
+                questRepository.remove(parameters)
+            }
         } catch (e: Throwable) {
             Timber.e(e)
         }

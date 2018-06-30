@@ -2,8 +2,9 @@ package io.ipoli.android.common.privacy
 
 import io.ipoli.android.common.AppState
 import io.ipoli.android.common.BaseViewStateReducer
-import io.ipoli.android.common.mvi.BaseViewState
+
 import io.ipoli.android.common.redux.Action
+import io.ipoli.android.common.redux.BaseViewState
 
 sealed class PrivacyPolicyAction : Action
 

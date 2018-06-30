@@ -1,7 +1,6 @@
 package io.ipoli.android.common.migration
 
 import com.crashlytics.android.Crashlytics
-import com.google.firebase.auth.FirebaseAuth
 import io.ipoli.android.BuildConfig
 import io.ipoli.android.common.AppSideEffectHandler
 import io.ipoli.android.common.AppState
@@ -12,7 +11,7 @@ import timber.log.Timber
 object MigrationSideEffectHandler : AppSideEffectHandler() {
 
     private val internetConnectionChecker by required { internetConnectionChecker }
-    private val migrationExecutor by required { migrationExecutor }
+    private val firestoreToLocalPlayerMigrator by required { firestoreToLocalPlayerMigrator }
 
     override suspend fun doExecute(action: Action, state: AppState) {
 
@@ -21,16 +20,16 @@ object MigrationSideEffectHandler : AppSideEffectHandler() {
                 startMigrating(action)
             }
         }
-
     }
 
-    private suspend fun startMigrating(action: MigrationAction.Load) {
+    private fun startMigrating(action: MigrationAction.Load) {
+
         if (internetConnectionChecker.isConnected()) {
             dispatch(MigrationAction.StartMigration)
             try {
-                migrationExecutor.migrate(
-                    playerSchemaVersion = action.playerSchemaVersion,
-                    playerId = FirebaseAuth.getInstance().currentUser!!.uid
+                firestoreToLocalPlayerMigrator.migrate(
+                    playerId = action.playerId,
+                    playerSchemaVersion = action.playerSchemaVersion
                 )
                 dispatch(MigrationAction.CompleteMigration)
             } catch (e: MigrationException) {

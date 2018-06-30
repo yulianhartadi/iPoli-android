@@ -3,10 +3,10 @@ package io.ipoli.android.store.theme
 import io.ipoli.android.common.AppState
 import io.ipoli.android.common.BaseViewStateReducer
 import io.ipoli.android.common.DataLoadedAction
-import io.ipoli.android.common.mvi.BaseViewState
 import io.ipoli.android.common.redux.Action
-import io.ipoli.android.player.data.Player
+import io.ipoli.android.common.redux.BaseViewState
 import io.ipoli.android.player.Theme
+import io.ipoli.android.player.data.Player
 import io.ipoli.android.store.theme.sideeffect.BuyThemeCompletedAction
 import io.ipoli.android.store.theme.usecase.BuyThemeUseCase
 
@@ -16,8 +16,12 @@ import io.ipoli.android.store.theme.usecase.BuyThemeUseCase
  */
 sealed class ThemeStoreAction : Action {
     object Load : ThemeStoreAction()
-    data class Buy(val theme: Theme) : ThemeStoreAction()
-    data class Change(val theme: Theme) : ThemeStoreAction()
+    data class Buy(val theme: Theme) : ThemeStoreAction() {
+        override fun toMap() = mapOf("theme" to theme.name)
+    }
+    data class Change(val theme: Theme) : ThemeStoreAction() {
+        override fun toMap() = mapOf("theme" to theme.name)
+    }
 }
 
 object ThemeStoreReducer : BaseViewStateReducer<ThemeStoreViewState>() {

@@ -18,6 +18,7 @@ import io.ipoli.android.quest.Icon
 import io.ipoli.android.repeatingquest.usecase.SaveRepeatingQuestUseCase
 import io.ipoli.android.tag.Tag
 import space.traversal.kapsule.required
+import java.util.*
 
 /**
  * Created by Venelin Valkov <venelin@mypoli.fun>
@@ -36,7 +37,8 @@ object AuthSideEffectHandler : AppSideEffectHandler() {
     private val planDayScheduler by required { planDayScheduler }
     private val updateAchievementProgressScheduler by required { updateAchievementProgressScheduler }
     private val saveRepeatingQuestUseCase by required { saveRepeatingQuestUseCase }
-    private val migrationExecutor by required { migrationExecutor }
+    private val dataImporter by required { dataImporter }
+    private val dataExporter by required { dataExporter }
 
     override fun canHandle(action: Action) = action is AuthAction
 
@@ -49,7 +51,7 @@ object AuthSideEffectHandler : AppSideEffectHandler() {
                 var hasUsername = false
                 if (hasPlayer) {
                     val player = playerRepository.find()
-                    isGuest = player!!.authProvider is AuthProvider.Guest
+                    isGuest = player!!.authProvider == null
                     hasUsername = !player.username.isNullOrEmpty()
                 }
                 dispatch(AuthAction.Loaded(hasPlayer, isGuest, hasUsername, action.onboardData))
@@ -58,43 +60,24 @@ object AuthSideEffectHandler : AppSideEffectHandler() {
             is AuthAction.UserAuthenticated -> {
                 val user = action.user
 
-                val metadata = user.metadata
-                val isNewUser =
-                    metadata == null || metadata.creationTimestamp == metadata.lastSignInTimestamp
                 val currentPlayerId = sharedPreferences.getString(Constants.KEY_PLAYER_ID, null)
-                val hasDevicePlayer = currentPlayerId != null
+                val isCurrentlyGuest = currentPlayerId != null
                 when {
-                    !isNewUser && hasDevicePlayer -> {
-                        //TODO: delete anonymous account
-                        savePlayerId(user)
+                    !action.isNew && isCurrentlyGuest ->
+                        loginExistingPlayerFromGuest()
 
-                        val pSchemaVersion = playerRepository.findServerSchemaVersion()!!
-                        if (migrationExecutor.shouldMigrate(pSchemaVersion)) {
-                            dispatch(
-                                AuthAction.ExistingPlayerLoggedInFromGuest(
-                                    true,
-                                    pSchemaVersion
-                                )
-                            )
-                        } else {
-                            dispatch(LoadDataAction.ChangePlayer(currentPlayerId))
-                            dispatch(
-                                AuthAction.ExistingPlayerLoggedInFromGuest(
-                                    false,
-                                    pSchemaVersion
-                                )
-                            )
-                        }
-                    }
-                    isNewUser && hasDevicePlayer -> {
-                        updatePlayerAuthProvider(user)
-                        dispatch(AuthAction.AccountsLinked)
-                    }
-                    isNewUser && !hasDevicePlayer -> {
+                    action.isNew && isCurrentlyGuest ->
+                        loginNewPlayerFromGuest(user)
+
+                    action.isNew && !isCurrentlyGuest ->
                         createNewPlayer(user, state.stateFor(AuthViewState::class.java))
-                    }
-                    else -> loginExistingPlayer(user)
+
+                    else -> loginExistingPlayer()
                 }
+            }
+
+            is AuthAction.ContinueAsGuest -> {
+                createGuestPlayer(state.stateFor(AuthViewState::class.java))
             }
 
             is AuthAction.CompleteSetup -> {
@@ -122,6 +105,7 @@ object AuthSideEffectHandler : AppSideEffectHandler() {
                     playerRepository.addUsername(action.username)
                     prepareAppStart()
                     dispatch(AuthAction.PlayerSetupCompleted)
+                    dataExporter.export()
                 }
             }
 
@@ -141,6 +125,22 @@ object AuthSideEffectHandler : AppSideEffectHandler() {
                 }
             }
         }
+    }
+
+    private fun loginNewPlayerFromGuest(user: FirebaseUser) {
+        updatePlayerAuthProvider(user)
+        dispatch(AuthAction.NewPlayerLoggedInFromGuest)
+        dataExporter.export()
+    }
+
+    private fun loginExistingPlayerFromGuest() {
+        try {
+            dataImporter.import()
+        } catch (e: Throwable) {
+            dispatch(AuthAction.ShowImportDataError)
+            return
+        }
+        dispatch(AuthAction.ExistingPlayerLoggedInFromGuest)
     }
 
     private fun updatePlayerAuthProvider(
@@ -165,9 +165,11 @@ object AuthSideEffectHandler : AppSideEffectHandler() {
             else -> throw IllegalStateException("Unknown Auth provider")
         }
 
+        savePlayerId(user.uid)
         val player = playerRepository.find()
         playerRepository.save(
             player!!.copy(
+                id = user.uid,
                 authProvider = auth
             )
         )
@@ -217,31 +219,55 @@ object AuthSideEffectHandler : AppSideEffectHandler() {
             authProvider.providerId == GoogleAuthProvider.PROVIDER_ID ->
                 createGoogleAuthProvider(authProvider, user)
 
-            authProvider.providerId == FirebaseAuthProvider.PROVIDER_ID ->
-                AuthProvider.Guest(authProvider.uid)
-
             else -> throw IllegalStateException("Unknown Auth provider")
         }
 
+        val displayName = if (user.displayName != null) user.displayName!! else ""
+
+        saveNewPlayerData(state, user.uid, auth, displayName)
+        dispatch(AuthAction.ShowSetUp)
+    }
+
+    private fun createGuestPlayer(
+        state: AuthViewState
+    ) {
+        saveNewPlayerData(state, UUID.randomUUID().toString(), null, "")
+        prepareAppStart()
+        dispatch(AuthAction.GuestCreated)
+    }
+
+    private fun saveNewPlayerData(
+        state: AuthViewState,
+        playerId: String,
+        auth: AuthProvider?,
+        displayName: String
+    ) {
         val petAvatar = state.petAvatar ?: Constants.DEFAULT_PET_AVATAR
         val petName =
             if (state.petName.isNullOrBlank()) Constants.DEFAULT_PET_NAME else state.petName!!
 
         val player = Player(
+            id = playerId,
             authProvider = auth,
             username = null,
             bio = null,
-            displayName = if (user.displayName != null) user.displayName!! else "",
+            displayName = displayName,
             schemaVersion = Constants.SCHEMA_VERSION,
             pet = Pet(petName, petAvatar),
             avatar = state.playerAvatar
         )
 
-        playerRepository.create(player, user.uid)
-        savePlayerId(user)
+        playerRepository.save(player)
+        savePlayerId(playerId)
 
         val tags = saveDefaultTags()
+        saveRepeatingQuests(state, tags)
+    }
 
+    private fun saveRepeatingQuests(
+        state: AuthViewState,
+        tags: List<Tag>
+    ) {
         state.repeatingQuests.forEach {
             val rq = it.first
             val ts = it.second?.let { onboardTag ->
@@ -260,13 +286,6 @@ object AuthSideEffectHandler : AppSideEffectHandler() {
                     repeatPattern = rq.repeatPattern
                 )
             )
-        }
-
-        if (auth is AuthProvider.Guest) {
-            prepareAppStart()
-            dispatch(AuthAction.GuestCreated)
-        } else {
-            dispatch(AuthAction.ShowSetUp)
         }
     }
 
@@ -294,22 +313,21 @@ object AuthSideEffectHandler : AppSideEffectHandler() {
             )
         )
 
-    private fun loginExistingPlayer(user: FirebaseUser) {
-        savePlayerId(user)
-
-        val pSchemaVersion = playerRepository.findServerSchemaVersion()!!
-        if (migrationExecutor.shouldMigrate(pSchemaVersion)) {
-            dispatch(AuthAction.PlayerLoggedIn(true, pSchemaVersion))
-        } else {
-            dispatch(AuthAction.PlayerLoggedIn(false, pSchemaVersion))
-            prepareAppStart()
+    private fun loginExistingPlayer() {
+        try {
+            dataImporter.import()
+        } catch (e: Throwable) {
+            dispatch(AuthAction.ShowImportDataError)
+            return
         }
+        dispatch(AuthAction.ExistingPlayerLoggedIn)
+        prepareAppStart()
     }
 
     @SuppressLint("ApplySharedPref")
-    private fun savePlayerId(user: FirebaseUser) {
-        eventLogger.setPlayerId(user.uid)
-        sharedPreferences.edit().putString(Constants.KEY_PLAYER_ID, user.uid).commit()
+    private fun savePlayerId(playerId: String) {
+        eventLogger.setPlayerId(playerId)
+        sharedPreferences.edit().putString(Constants.KEY_PLAYER_ID, playerId).commit()
     }
 
     private fun prepareAppStart() {

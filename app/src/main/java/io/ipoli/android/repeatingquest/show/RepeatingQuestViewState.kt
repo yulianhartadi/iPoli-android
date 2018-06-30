@@ -7,8 +7,9 @@ import io.ipoli.android.common.datetime.Duration
 import io.ipoli.android.common.datetime.Minute
 import io.ipoli.android.common.datetime.Time
 import io.ipoli.android.common.datetime.minutes
-import io.ipoli.android.common.mvi.BaseViewState
+
 import io.ipoli.android.common.redux.Action
+import io.ipoli.android.common.redux.BaseViewState
 import io.ipoli.android.quest.Color
 import io.ipoli.android.quest.RepeatingQuest
 import io.ipoli.android.repeatingquest.entity.PeriodProgress
@@ -23,8 +24,13 @@ import org.threeten.bp.LocalDate
  */
 
 sealed class RepeatingQuestAction : Action {
-    data class Load(val repeatingQuestId: String) : RepeatingQuestAction()
-    data class Remove(val repeatingQuestId: String) : RepeatingQuestAction()
+    data class Load(val repeatingQuestId: String) : RepeatingQuestAction() {
+        override fun toMap() = mapOf("repeatingQuestId" to repeatingQuestId)
+    }
+
+    data class Remove(val repeatingQuestId: String) : RepeatingQuestAction() {
+        override fun toMap() = mapOf("repeatingQuestId" to repeatingQuestId)
+    }
 }
 
 data class RepeatingQuestViewState(

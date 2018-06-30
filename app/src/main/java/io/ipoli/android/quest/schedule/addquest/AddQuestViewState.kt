@@ -3,8 +3,9 @@ package io.ipoli.android.quest.schedule.addquest
 import io.ipoli.android.common.AppState
 import io.ipoli.android.common.BaseViewStateReducer
 import io.ipoli.android.common.datetime.Time
-import io.ipoli.android.common.mvi.BaseViewState
+
 import io.ipoli.android.common.redux.Action
+import io.ipoli.android.common.redux.BaseViewState
 import io.ipoli.android.quest.Color
 import io.ipoli.android.quest.Icon
 import io.ipoli.android.quest.schedule.agenda.AgendaReducer
@@ -17,17 +18,38 @@ import org.threeten.bp.LocalDate
  */
 
 sealed class AddQuestAction : Action {
-    data class Save(val name: String) : AddQuestAction()
-    data class DatePicked(val date: LocalDate?) : AddQuestAction()
+    data class Save(val name: String) : AddQuestAction() {
+        override fun toMap() = mapOf("name" to name)
+    }
+
+    data class DatePicked(val date: LocalDate?) : AddQuestAction() {
+        override fun toMap() = mapOf("date" to date)
+    }
     object DatePickerCanceled : AddQuestAction()
-    data class TimePicked(val time: Time?) : AddQuestAction()
-    data class ColorPicked(val color: Color) : AddQuestAction()
-    data class IconPicked(val icon: Icon?) : AddQuestAction()
-    data class Load(val date: LocalDate?) : AddQuestAction()
+    data class TimePicked(val time: Time?) : AddQuestAction() {
+        override fun toMap() = mapOf("time" to time)
+    }
+
+    data class ColorPicked(val color: Color) : AddQuestAction() {
+        override fun toMap() = mapOf("color" to color.name)
+    }
+
+    data class IconPicked(val icon: Icon?) : AddQuestAction() {
+        override fun toMap() = mapOf("icon" to icon?.name)
+    }
+
+    data class Load(val date: LocalDate?) : AddQuestAction() {
+        override fun toMap() = mapOf("date" to date)
+    }
     object QuestSaved : AddQuestAction()
     object SaveInvalidQuestName : AddQuestAction()
-    data class DurationPicked(val minutes: Int) : AddQuestAction()
-    data class TagsPicked(val tags: Set<Tag>) : AddQuestAction()
+    data class DurationPicked(val minutes: Int) : AddQuestAction() {
+        override fun toMap() = mapOf("minutes" to minutes)
+    }
+
+    data class TagsPicked(val tags: Set<Tag>) : AddQuestAction() {
+        override fun toMap() = mapOf("tags" to tags.joinToString(",") { it.name })
+    }
 }
 
 object AddQuestReducer : BaseViewStateReducer<AddQuestViewState>() {
@@ -66,8 +88,8 @@ object AddQuestReducer : BaseViewStateReducer<AddQuestViewState>() {
                 subState.copy(
                     type = StateType.TAGS_PICKED,
                     tags = tags,
-                    icon = if(useTagColorAndIcon) tags.first().icon else subState.icon,
-                    color = if(useTagColorAndIcon) tags.first().color else subState.color
+                    icon = if (useTagColorAndIcon) tags.first().icon else subState.icon,
+                    color = if (useTagColorAndIcon) tags.first().color else subState.color
                 )
             }
 

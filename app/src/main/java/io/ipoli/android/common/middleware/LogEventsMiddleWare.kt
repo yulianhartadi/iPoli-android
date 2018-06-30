@@ -1,6 +1,5 @@
 package io.ipoli.android.common.middleware
 
-import android.os.Bundle
 import io.ipoli.android.common.AppState
 import io.ipoli.android.common.NamespaceAction
 import io.ipoli.android.common.UiAction
@@ -36,9 +35,8 @@ object LogEventsMiddleWare : AsyncMiddleware<AppState>, Injects<Module> {
             return
         }
 
-        val params = Bundle()
-        params.putString("action_data", a.toString())
-        params.putString("state", a.toString())
+        val params = action.toMap()
+            .plus("current_state_data" to state.toString())
 
         eventLogger.logEvent(createEventName(a), params)
     }

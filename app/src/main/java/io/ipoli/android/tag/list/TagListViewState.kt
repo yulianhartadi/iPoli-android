@@ -3,8 +3,9 @@ package io.ipoli.android.tag.list
 import io.ipoli.android.common.AppState
 import io.ipoli.android.common.BaseViewStateReducer
 import io.ipoli.android.common.DataLoadedAction
-import io.ipoli.android.common.mvi.BaseViewState
+
 import io.ipoli.android.common.redux.Action
+import io.ipoli.android.common.redux.BaseViewState
 import io.ipoli.android.tag.Tag
 
 /**
@@ -12,8 +13,13 @@ import io.ipoli.android.tag.Tag
  * on 04/03/2018.
  */
 sealed class TagListAction : Action {
-    data class Favorite(val tag: Tag) : TagListAction()
-    data class Unfavorite(val tag: Tag) : TagListAction()
+    data class Favorite(val tag: Tag) : TagListAction() {
+        override fun toMap() = mapOf("tag" to tag.name)
+    }
+
+    data class Unfavorite(val tag: Tag) : TagListAction() {
+        override fun toMap() = mapOf("tag" to tag.name)
+    }
 
     object Load : TagListAction()
     object AddTag : TagListAction()

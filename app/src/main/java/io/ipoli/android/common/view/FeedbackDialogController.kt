@@ -4,9 +4,9 @@ import android.os.Bundle
 import android.support.v7.app.AlertDialog
 import android.view.LayoutInflater
 import android.view.View
+import io.ipoli.android.R
 import kotlinx.android.synthetic.main.dialog_feedback.view.*
 import kotlinx.android.synthetic.main.view_dialog_header.view.*
-import io.ipoli.android.R
 
 /**
  * Created by Venelin Valkov <venelin@mypoli.fun>

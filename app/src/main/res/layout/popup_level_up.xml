@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/container"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
+    android:layout_height="match_parent"
     android:elevation="24dp"
     android:inAnimation="@anim/slide_in_right"
     android:outAnimation="@anim/slide_out_left">
@@ -13,6 +13,7 @@
         android:id="@+id/levelUpContainer"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_gravity="center_vertical"
         android:background="@drawable/popup_background">
 
         <ImageView
@@ -87,6 +88,7 @@
         xmlns:app="http://schemas.android.com/apk/res-auto"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_gravity="center_vertical"
         android:background="@drawable/popup_background"
         android:elevation="24dp">
 
@@ -103,16 +105,16 @@
 
         <Button
             android:id="@+id/positive"
+            style="@style/Widget.AppCompat.Button.Borderless"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginBottom="16dp"
             android:layout_marginEnd="8dp"
             android:layout_marginTop="16dp"
-            android:textColor="@color/md_green_500"
             android:drawablePadding="8dp"
             android:drawableStart="@drawable/ic_thumb_up_green_24dp"
             android:text="Love it"
-            style="@style/Widget.AppCompat.Button.Borderless"
+            android:textColor="@color/md_green_500"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.5"
@@ -122,17 +124,17 @@
 
         <Button
             android:id="@+id/negative"
+            style="@style/Widget.AppCompat.Button.Borderless"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginBottom="16dp"
             android:layout_marginEnd="8dp"
             android:layout_marginStart="8dp"
             android:layout_marginTop="16dp"
-            android:textColor="@color/md_red_500"
             android:drawablePadding="8dp"
             android:drawableStart="@drawable/ic_thumb_down_red_24dp"
             android:text="It sucks"
-            style="@style/Widget.AppCompat.Button.Borderless"
+            android:textColor="@color/md_red_500"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@+id/positive"
             app:layout_constraintHorizontal_bias="0.5"

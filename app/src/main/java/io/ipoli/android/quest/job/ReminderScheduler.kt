@@ -31,10 +31,10 @@ class AndroidJobReminderScheduler(private val context: Context) : ReminderSchedu
             val c = this@AndroidJobReminderScheduler.context
 
             val kap = Kapsule<Module>()
-            val questRepository by kap.required { questRepository }
+            val entityReminderRepository by kap.required { entityReminderRepository }
             kap.inject(myPoliApp.module(c))
 
-            val remindAt = questRepository.findNextReminderTime()
+            val remindAt = entityReminderRepository.findNextReminderTime()
 
             val alarmManager = c.getSystemService(Context.ALARM_SERVICE) as AlarmManager
 

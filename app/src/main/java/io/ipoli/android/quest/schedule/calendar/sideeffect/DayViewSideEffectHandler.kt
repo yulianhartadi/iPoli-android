@@ -192,7 +192,7 @@ object DayViewSideEffectHandler : AppSideEffectHandler() {
         )
         val result = saveQuestUseCase.execute(questParams)
         if (result is Result.Invalid) {
-                dispatch(DayViewAction.SaveInvalidQuest(result))
+            dispatch(DayViewAction.SaveInvalidQuest(result))
         }
     }
 
@@ -203,10 +203,10 @@ object DayViewSideEffectHandler : AppSideEffectHandler() {
     override fun canHandle(action: Action): Boolean {
         val a = (action as? NamespaceAction)?.source ?: action
         return a is DayViewAction
-                || a === LoadDataAction.All
-                || a is CalendarAction.ChangeVisibleDate
-                || a is ScheduleAction.ScheduleChangeDate
-                || a === ScheduleAction.ToggleViewMode
-                || a is ScheduleAction.Load
+            || a === LoadDataAction.All
+            || a is CalendarAction.ChangeVisibleDate
+            || a is ScheduleAction.ScheduleChangeDate
+            || a === ScheduleAction.ToggleViewMode
+            || a is ScheduleAction.Load
     }
 }

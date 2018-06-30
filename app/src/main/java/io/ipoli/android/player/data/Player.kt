@@ -30,7 +30,7 @@ data class Player(
     val coins: Int = Constants.DEFAULT_PLAYER_COINS,
     val gems: Int = Constants.DEFAULT_PLAYER_GEMS,
     val experience: Long = Constants.DEFAULT_PLAYER_XP,
-    val authProvider: AuthProvider,
+    val authProvider: AuthProvider?,
     val avatar: Avatar = Avatar.AVATAR_00,
     val membership: Membership = Membership.NONE,
     val pet: Pet = Pet(
@@ -51,7 +51,8 @@ data class Player(
     val achievements: List<UnlockedAchievement> = listOf(),
     val statistics: Statistics = Statistics(),
     override val updatedAt: Instant = Instant.now(),
-    override val createdAt: Instant = Instant.now()
+    override val createdAt: Instant = Instant.now(),
+    val removedAt: Instant? = null
 ) : Entity {
 
     data class UnlockedAchievement(
@@ -321,10 +322,6 @@ sealed class AuthProvider {
         val displayName: String?,
         val email: String?,
         val imageUrl: Uri?
-    ) : AuthProvider()
-
-    data class Guest(
-        val userId: String
     ) : AuthProvider()
 }
 

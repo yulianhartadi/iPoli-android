@@ -210,5 +210,5 @@ object AgendaSideEffectHandler : AppSideEffectHandler() {
 
     override fun canHandle(action: Action) =
         action == LoadDataAction.All
-                || action is AgendaAction
+            || action is AgendaAction
 }

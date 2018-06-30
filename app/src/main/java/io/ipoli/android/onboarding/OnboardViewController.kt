@@ -14,8 +14,9 @@ import io.ipoli.android.Constants
 import io.ipoli.android.R
 import io.ipoli.android.common.AppState
 import io.ipoli.android.common.BaseViewStateReducer
-import io.ipoli.android.common.mvi.BaseViewState
+
 import io.ipoli.android.common.redux.Action
+import io.ipoli.android.common.redux.BaseViewState
 import io.ipoli.android.common.redux.android.ReduxViewController
 import io.ipoli.android.common.view.*
 import io.ipoli.android.onboarding.OnboardViewState.StateType.*
@@ -29,11 +30,21 @@ import io.ipoli.android.quest.RepeatingQuest
 import kotlinx.android.synthetic.main.controller_onboard.view.*
 
 sealed class OnboardAction : Action {
-    data class SelectAvatar(val index: Int) : OnboardAction()
-    data class ValidatePetName(val name: String) : OnboardAction()
-    data class ValidateUsername(val name: String) : OnboardAction()
+    data class SelectAvatar(val index: Int) : OnboardAction() {
+        override fun toMap() = mapOf("index" to index)
+    }
+
+    data class ValidatePetName(val name: String) : OnboardAction() {
+        override fun toMap() = mapOf("name" to name)
+    }
+
+    data class ValidateUsername(val name: String) : OnboardAction() {
+        override fun toMap() = mapOf("name" to name)
+    }
     data class UsernameValidationFailed(val error: UsernameValidator.ValidationError) :
-        OnboardAction()
+        OnboardAction() {
+        override fun toMap() = mapOf("error" to error.name)
+    }
 
     object SelectPet1 : OnboardAction()
     object SelectPet2 : OnboardAction()
@@ -45,7 +56,9 @@ sealed class OnboardAction : Action {
     object LoadFirstQuest : OnboardAction()
     object Skip : OnboardAction()
 
-    data class UsernameValid(val username: String) : OnboardAction()
+    data class UsernameValid(val username: String) : OnboardAction() {
+        override fun toMap() = mapOf("username" to username)
+    }
     data class LoadRepeatingQuests(val repeatingQuests: Map<Int, Pair<RepeatingQuest, OnboardViewController.OnboardTag?>>) :
         OnboardAction()
 
@@ -54,9 +67,17 @@ sealed class OnboardAction : Action {
         val repeatingQuest: RepeatingQuest,
         val tag: OnboardViewController.OnboardTag?
     ) :
-        OnboardAction()
+        OnboardAction() {
+        override fun toMap() = mapOf(
+            "index" to index,
+            "repeatingQuest" to repeatingQuest,
+            "tag" to tag
+        )
+    }
 
-    data class DeselectRepeatingQuest(val index: Int) : OnboardAction()
+    data class DeselectRepeatingQuest(val index: Int) : OnboardAction() {
+        override fun toMap() = mapOf("index" to index)
+    }
 }
 
 object OnboardReducer : BaseViewStateReducer<OnboardViewState>() {

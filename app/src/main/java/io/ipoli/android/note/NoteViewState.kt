@@ -2,8 +2,9 @@ package io.ipoli.android.note
 
 import io.ipoli.android.common.AppState
 import io.ipoli.android.common.BaseViewStateReducer
-import io.ipoli.android.common.mvi.BaseViewState
+
 import io.ipoli.android.common.redux.Action
+import io.ipoli.android.common.redux.BaseViewState
 import io.ipoli.android.note.NoteViewState.Type.*
 
 /**
@@ -12,9 +13,21 @@ import io.ipoli.android.note.NoteViewState.Type.*
  */
 sealed class NoteAction : Action {
     data class Load(val note: String, val startEdit: Boolean, val isClosable: Boolean) :
-        NoteAction()
-    data class Save(val text: String) : NoteAction()
-    data class Preview(val text: String) : NoteAction()
+        NoteAction() {
+        override fun toMap() = mapOf(
+            "note" to note,
+            "startEdit" to startEdit,
+            "isClosable" to isClosable
+        )
+    }
+
+    data class Save(val text: String) : NoteAction() {
+        override fun toMap() = mapOf("text" to text)
+    }
+
+    data class Preview(val text: String) : NoteAction() {
+        override fun toMap() = mapOf("text" to text)
+    }
 
     object Edit : NoteAction()
 }

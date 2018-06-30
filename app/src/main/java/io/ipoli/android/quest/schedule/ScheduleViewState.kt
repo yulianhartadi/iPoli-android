@@ -5,8 +5,9 @@ import io.ipoli.android.common.AppDataState
 import io.ipoli.android.common.AppState
 import io.ipoli.android.common.BaseViewStateReducer
 import io.ipoli.android.common.DataLoadedAction
-import io.ipoli.android.common.mvi.BaseViewState
+
 import io.ipoli.android.common.redux.Action
+import io.ipoli.android.common.redux.BaseViewState
 import io.ipoli.android.common.text.CalendarFormatter
 import io.ipoli.android.quest.schedule.agenda.AgendaAction
 import io.ipoli.android.quest.schedule.agenda.AgendaViewState
@@ -24,9 +25,13 @@ sealed class ScheduleAction : Action {
     object ExpandToolbar : ScheduleAction()
     object ExpandWeekToolbar : ScheduleAction()
 
-    data class ScheduleChangeDate(val date: LocalDate) : ScheduleAction()
+    data class ScheduleChangeDate(val date: LocalDate) : ScheduleAction() {
+        override fun toMap() = mapOf("date" to date)
+    }
 
-    data class ChangeMonth(val year: Int, val month: Int) : ScheduleAction()
+    data class ChangeMonth(val year: Int, val month: Int) : ScheduleAction() {
+        override fun toMap() = mapOf("year" to year, "month" to month)
+    }
     object ToggleViewMode : ScheduleAction()
     object Load : ScheduleAction()
 }

@@ -16,7 +16,7 @@ class RemoveRepeatingQuestUseCase(
 ) : UseCase<RemoveRepeatingQuestUseCase.Params, Unit> {
 
     override fun execute(parameters: Params) {
-        questRepository.purgeAllNotCompletedForRepeating(parameters.repeatingQuestId)
+        questRepository.removeAllNotCompletedForRepeating(parameters.repeatingQuestId)
         repeatingQuestRepository.remove(parameters.repeatingQuestId)
         reminderScheduler.schedule()
     }

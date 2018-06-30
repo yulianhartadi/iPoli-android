@@ -5,8 +5,9 @@ import io.ipoli.android.challenge.list.ChallengeListViewState.ChallengeItem.*
 import io.ipoli.android.common.AppState
 import io.ipoli.android.common.BaseViewStateReducer
 import io.ipoli.android.common.DataLoadedAction
-import io.ipoli.android.common.mvi.BaseViewState
+
 import io.ipoli.android.common.redux.Action
+import io.ipoli.android.common.redux.BaseViewState
 
 /**
  * Created by Venelin Valkov <venelin@mypoli.fun>

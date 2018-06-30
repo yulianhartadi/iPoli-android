@@ -111,7 +111,7 @@ class PetViewController(args: Bundle? = null) :
     }
 
     override fun onDetach(view: View) {
-        for(a in animations) {
+        for (a in animations) {
             a.cancel()
         }
         animations.clear()

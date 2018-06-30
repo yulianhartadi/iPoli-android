@@ -6,6 +6,7 @@ import io.ipoli.android.common.datetime.minutes
 import io.ipoli.android.quest.Quest
 import io.ipoli.android.quest.TimeRange
 import io.ipoli.android.quest.data.persistence.QuestRepository
+import io.ipoli.android.quest.job.ReminderScheduler
 import io.ipoli.android.quest.show.job.TimerCompleteScheduler
 import org.threeten.bp.Instant
 
@@ -16,6 +17,7 @@ import org.threeten.bp.Instant
 class AddTimerToQuestUseCase(
     private val questRepository: QuestRepository,
     private val cancelTimerUseCase: CancelTimerUseCase,
+    private val reminderScheduler: ReminderScheduler,
     private val timerCompleteScheduler: TimerCompleteScheduler
 ) :
     UseCase<AddTimerToQuestUseCase.Params, AddTimerToQuestUseCase.Result> {
@@ -33,11 +35,14 @@ class AddTimerToQuestUseCase(
         }
 
         val time = parameters.time
-        if (!parameters.isPomodoro) {
-            return addContDownTimer(quest, time, startedQuest)
+        val res = if (!parameters.isPomodoro) {
+            addContDownTimer(quest, time, startedQuest)
+        } else {
+            addPomodoroTimer(quest, time, startedQuest)
         }
 
-        return addPomodoroTimer(quest, time, startedQuest)
+        reminderScheduler.schedule()
+        return res
     }
 
     private fun addPomodoroTimer(

@@ -1,7 +1,6 @@
 package io.ipoli.android.common.redux
 
 import io.ipoli.android.common.UiAction
-import io.ipoli.android.common.mvi.ViewState
 import kotlinx.coroutines.experimental.CommonPool
 import kotlinx.coroutines.experimental.channels.Channel
 import kotlinx.coroutines.experimental.channels.actor
@@ -14,7 +13,9 @@ import kotlin.coroutines.experimental.CoroutineContext
  * on 01/20/2018.
  */
 
-interface Action
+interface Action {
+    fun toMap() = emptyMap<String, Any?>()
+}
 
 interface State
 

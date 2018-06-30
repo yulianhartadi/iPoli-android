@@ -5,8 +5,9 @@ import io.ipoli.android.common.AppState
 import io.ipoli.android.common.BaseViewStateReducer
 import io.ipoli.android.common.DataLoadedAction
 import io.ipoli.android.common.datetime.Time
-import io.ipoli.android.common.mvi.BaseViewState
+
 import io.ipoli.android.common.redux.Action
+import io.ipoli.android.common.redux.BaseViewState
 import io.ipoli.android.player.data.Player
 import io.ipoli.android.player.data.Player.Preferences.TemperatureUnit.FAHRENHEIT
 import io.ipoli.android.player.data.Player.Preferences.TimeFormat.TWELVE_HOURS
@@ -19,16 +20,33 @@ import org.threeten.bp.DayOfWeek
  */
 sealed class SettingsAction : Action {
     data class SyncCalendarsSelected(val calendars: Set<Player.Preferences.SyncCalendar>) :
-        SettingsAction()
+        SettingsAction() {
+        override fun toMap() = mapOf("calendars" to calendars)
+    }
 
-    data class ToggleSyncCalendar(val isChecked: Boolean) : SettingsAction()
-    data class PlanDayTimeChanged(val time: Time) : SettingsAction()
-    data class PlanDaysChanged(val days: Set<DayOfWeek>) : SettingsAction()
-    data class TimeFormatChanged(val format: Player.Preferences.TimeFormat) : SettingsAction()
+    data class ToggleSyncCalendar(val isChecked: Boolean) : SettingsAction() {
+        override fun toMap() = mapOf("isChecked" to isChecked)
+    }
+
+    data class PlanDayTimeChanged(val time: Time) : SettingsAction() {
+        override fun toMap() = mapOf("time" to time)
+    }
+
+    data class PlanDaysChanged(val days: Set<DayOfWeek>) : SettingsAction() {
+        override fun toMap() = mapOf("days" to days.joinToString(",") { it.name })
+    }
+
+    data class TimeFormatChanged(val format: Player.Preferences.TimeFormat) : SettingsAction() {
+        override fun toMap() = mapOf("format" to format.name)
+    }
     data class TemperatureUnitChanged(val unit: Player.Preferences.TemperatureUnit) :
-        SettingsAction()
+        SettingsAction() {
+        override fun toMap() = mapOf("unit" to unit.name)
+    }
 
-    data class ToggleQuickDoNotification(val isEnabled: Boolean) : SettingsAction()
+    data class ToggleQuickDoNotification(val isEnabled: Boolean) : SettingsAction() {
+        override fun toMap() = mapOf("isEnabled" to isEnabled)
+    }
 
     object Load : SettingsAction()
 }

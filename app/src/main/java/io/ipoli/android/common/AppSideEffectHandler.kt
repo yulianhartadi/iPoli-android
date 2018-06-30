@@ -231,11 +231,6 @@ object LoadAllDataSideEffectHandler : AppSideEffectHandler() {
             }
         }
 
-        if (action is LoadDataAction.ChangePlayer) {
-            playerRepository.purge(action.oldPlayerId)
-            listenForPlayerData()
-        }
-
         if (action == LoadDataAction.All) {
             listenForPlayerData()
         }
@@ -250,6 +245,7 @@ object LoadAllDataSideEffectHandler : AppSideEffectHandler() {
         tagsChannelRelay.listen(Unit)
         unscheduledQuestsChannelRelay.listen(Unit)
         reminderScheduler.schedule()
+        // @TODO reschedule jobs
     }
 
     private fun updateWidgets() {
@@ -258,6 +254,5 @@ object LoadAllDataSideEffectHandler : AppSideEffectHandler() {
 
     override fun canHandle(action: Action) =
         action == LoadDataAction.All
-            || action is LoadDataAction.ChangePlayer
             || action is DataLoadedAction.TodayQuestsChanged
 }

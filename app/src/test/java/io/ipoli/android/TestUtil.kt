@@ -10,7 +10,6 @@ import io.ipoli.android.habit.data.Habit
 import io.ipoli.android.habit.persistence.HabitRepository
 import io.ipoli.android.pet.Pet
 import io.ipoli.android.pet.PetAvatar
-import io.ipoli.android.player.data.AuthProvider
 import io.ipoli.android.player.data.Player
 import io.ipoli.android.player.persistence.PlayerRepository
 import io.ipoli.android.quest.Color
@@ -36,7 +35,7 @@ object TestUtil {
         displayName = "",
         bio = null,
         experience = 10,
-        authProvider = AuthProvider.Guest(""),
+        authProvider = null,
         pet = Pet(
             "",
             avatar = PetAvatar.ELEPHANT,

@@ -17,7 +17,7 @@ class UndoCompletedQuestUseCase(
     private val removeRewardFromPlayerUseCase: RemoveRewardFromPlayerUseCase
 ) : UseCase<String, Quest> {
     override fun execute(parameters: String): Quest {
-        require(parameters.isNotEmpty(), { "questId cannot be empty" })
+        require(parameters.isNotEmpty()) { "questId cannot be empty" }
 
         val newQuest = questRepository.findById(parameters)!!.copy(
             completedAtDate = null,

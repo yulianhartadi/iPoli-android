@@ -3,8 +3,9 @@ package io.ipoli.android.repeatingquest.edit.picker
 import android.support.annotation.DrawableRes
 import io.ipoli.android.common.AppState
 import io.ipoli.android.common.BaseViewStateReducer
-import io.ipoli.android.common.mvi.BaseViewState
+
 import io.ipoli.android.common.redux.Action
+import io.ipoli.android.common.redux.BaseViewState
 import io.ipoli.android.pet.AndroidPetAvatar
 import io.ipoli.android.repeatingquest.edit.picker.RepeatPatternViewState.StateType.*
 import io.ipoli.android.repeatingquest.entity.RepeatPattern
@@ -18,15 +19,41 @@ import org.threeten.bp.LocalDate
  * on 2/21/18.
  */
 sealed class RepeatPatternAction : Action {
-    data class LoadData(val repeatPattern: RepeatPattern?) : RepeatPatternAction()
-    data class ChangeFrequency(val index: Int) : RepeatPatternAction()
-    data class ToggleWeekDay(val weekDay: DayOfWeek) : RepeatPatternAction()
-    data class ChangeWeekDayCount(val index: Int) : RepeatPatternAction()
-    data class ToggleMonthDay(val day: Int) : RepeatPatternAction()
-    data class ChangeMonthDayCount(val index: Int) : RepeatPatternAction()
-    data class ChangeDayOfYear(val date: LocalDate) : RepeatPatternAction()
-    data class ChangeStartDate(val date: LocalDate) : RepeatPatternAction()
-    data class ChangeEndDate(val date: LocalDate) : RepeatPatternAction()
+    data class LoadData(val repeatPattern: RepeatPattern?) : RepeatPatternAction() {
+        override fun toMap() = mapOf("repeatPattern" to repeatPattern)
+    }
+
+    data class ChangeFrequency(val index: Int) : RepeatPatternAction() {
+        override fun toMap() = mapOf("index" to index)
+    }
+
+    data class ToggleWeekDay(val weekDay: DayOfWeek) : RepeatPatternAction() {
+        override fun toMap() = mapOf("weekDay" to weekDay.name)
+    }
+
+    data class ChangeWeekDayCount(val index: Int) : RepeatPatternAction() {
+        override fun toMap() = mapOf("index" to index)
+    }
+
+    data class ToggleMonthDay(val day: Int) : RepeatPatternAction() {
+        override fun toMap() = mapOf("day" to day)
+    }
+
+    data class ChangeMonthDayCount(val index: Int) : RepeatPatternAction() {
+        override fun toMap() = mapOf("index" to index)
+    }
+
+    data class ChangeDayOfYear(val date: LocalDate) : RepeatPatternAction() {
+        override fun toMap() = mapOf("date" to date)
+    }
+
+    data class ChangeStartDate(val date: LocalDate) : RepeatPatternAction() {
+        override fun toMap() = mapOf("date" to date)
+    }
+
+    data class ChangeEndDate(val date: LocalDate) : RepeatPatternAction() {
+        override fun toMap() = mapOf("date" to date)
+    }
     object CreatePattern : RepeatPatternAction()
 }
 

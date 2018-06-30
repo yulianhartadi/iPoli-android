@@ -5,8 +5,6 @@ import android.support.annotation.ColorRes
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
 import android.view.*
-import kotlinx.android.synthetic.main.controller_personalize_challenge.view.*
-import kotlinx.android.synthetic.main.item_predefeined_challenge_quest.view.*
 import io.ipoli.android.R
 import io.ipoli.android.challenge.predefined.PersonalizeChallengeViewState.StateType.*
 import io.ipoli.android.challenge.predefined.entity.AndroidPredefinedChallenge
@@ -14,6 +12,8 @@ import io.ipoli.android.challenge.predefined.entity.PredefinedChallenge
 import io.ipoli.android.challenge.predefined.entity.PredefinedChallengeData
 import io.ipoli.android.common.redux.android.ReduxViewController
 import io.ipoli.android.common.view.*
+import kotlinx.android.synthetic.main.controller_personalize_challenge.view.*
+import kotlinx.android.synthetic.main.item_predefeined_challenge_quest.view.*
 
 
 /**
@@ -42,7 +42,7 @@ class PersonalizeChallengeViewController(args: Bundle? = null) :
         setHasOptionsMenu(true)
         val view = inflater.inflate(R.layout.controller_personalize_challenge, container, false)
         view.challengeQuestList.layoutManager =
-                LinearLayoutManager(container.context, LinearLayoutManager.VERTICAL, false)
+            LinearLayoutManager(container.context, LinearLayoutManager.VERTICAL, false)
         val androidChallenge = AndroidPredefinedChallenge.valueOf(challenge.name)
         view.challengeBackgroundImage.setBackgroundResource(androidChallenge.backgroundImage)
         view.challengeImage.setBackgroundResource(androidChallenge.smallImage)
@@ -113,7 +113,7 @@ class PersonalizeChallengeViewController(args: Bundle? = null) :
             val itemView = holder.itemView
             itemView.dispatchOnClick {
                 itemView.challengeQuestCheckbox.isChecked =
-                        !itemView.challengeQuestCheckbox.isChecked
+                    !itemView.challengeQuestCheckbox.isChecked
                 PersonalizeChallengeAction.ToggleSelected(vm.quest)
             }
 

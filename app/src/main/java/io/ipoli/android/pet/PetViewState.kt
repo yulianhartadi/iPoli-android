@@ -4,8 +4,9 @@ import io.ipoli.android.Constants
 import io.ipoli.android.common.AppState
 import io.ipoli.android.common.BaseViewStateReducer
 import io.ipoli.android.common.DataLoadedAction
-import io.ipoli.android.common.mvi.BaseViewState
+
 import io.ipoli.android.common.redux.Action
+import io.ipoli.android.common.redux.BaseViewState
 import io.ipoli.android.pet.PetViewState.StateType.*
 import io.ipoli.android.pet.usecase.ComparePetItemsUseCase
 import io.ipoli.android.player.data.Player
@@ -29,21 +30,49 @@ sealed class PetAction : Action {
     object PetRevived : PetAction()
     object FoodTooExpensive : PetAction()
 
-    data class RenamePet(val name: String) : PetAction()
-    data class Feed(val food: Food) : PetAction()
+    data class RenamePet(val name: String) : PetAction() {
+        override fun toMap() = mapOf("name" to name)
+    }
+
+    data class Feed(val food: Food) : PetAction() {
+        override fun toMap() = mapOf("name" to food.name)
+    }
     data class ShowItemList(val cmpRes: ComparePetItemsUseCase.Result) : PetAction()
     data class ShowHeadItemList(val cmpRes: ComparePetItemsUseCase.Result) : PetAction()
     data class ShowFaceItemList(val cmpRes: ComparePetItemsUseCase.Result) : PetAction()
     data class ShowBodyArmorItemList(val cmpRes: ComparePetItemsUseCase.Result) : PetAction()
-    data class TakeItemOff(val item: PetItem) : PetAction()
-    data class EquipItem(val item: PetItem) : PetAction()
-    data class BuyItem(val item: PetItem) : PetAction()
-    data class PetFed(val pet: Pet, val food: Food, val wasFoodTasty: Boolean) : PetAction()
-    data class CompareItem(val item: PetItem) : PetAction()
+    data class TakeItemOff(val item: PetItem) : PetAction() {
+        override fun toMap() = mapOf("item" to item)
+    }
+
+    data class EquipItem(val item: PetItem) : PetAction() {
+        override fun toMap() = mapOf("item" to item)
+    }
+
+    data class BuyItem(val item: PetItem) : PetAction() {
+        override fun toMap() = mapOf("item" to item)
+    }
+
+    data class PetFed(val pet: Pet, val food: Food, val wasFoodTasty: Boolean) : PetAction() {
+        override fun toMap() = mapOf(
+            "pet" to pet,
+            "food" to food.name,
+            "wasFoodTasty" to wasFoodTasty
+        )
+    }
+
+    data class CompareItem(val item: PetItem) : PetAction() {
+        override fun toMap() = mapOf("item" to item)
+    }
     class ItemsCompared(
         val cmpRes: ComparePetItemsUseCase.Result,
         val item: PetItem
-    ) : PetAction()
+    ) : PetAction() {
+        override fun toMap() = mapOf(
+            "item" to item,
+            "cmpRes" to cmpRes
+        )
+    }
 
 }
 

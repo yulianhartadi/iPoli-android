@@ -4,7 +4,7 @@ import android.animation.Animator
 import android.animation.AnimatorListenerAdapter
 import android.animation.AnimatorSet
 import android.animation.ObjectAnimator
-import android.os.Bundle
+import android.annotation.SuppressLint
 import android.support.v4.view.animation.LinearOutSlowInInterpolator
 import android.view.LayoutInflater
 import android.view.View
@@ -12,83 +12,91 @@ import android.widget.ImageView
 import com.bumptech.glide.Glide
 import io.ipoli.android.Constants
 import io.ipoli.android.R
-import io.ipoli.android.common.mvi.BaseMviPresenter
-import io.ipoli.android.common.mvi.BaseViewState
-import io.ipoli.android.common.mvi.Intent
-import io.ipoli.android.common.mvi.ViewStateRenderer
-import io.ipoli.android.common.view.MviPopup
+import io.ipoli.android.common.AppSideEffectHandler
+import io.ipoli.android.common.AppState
+import io.ipoli.android.common.BaseViewStateReducer
+import io.ipoli.android.common.redux.Action
+import io.ipoli.android.common.redux.BaseViewState
+import io.ipoli.android.common.view.ReduxPopup
 import io.ipoli.android.common.view.anim.TypewriterTextAnimator
 import io.ipoli.android.common.view.visible
 import io.ipoli.android.pet.AndroidPetAvatar
 import io.ipoli.android.pet.PetAvatar
 import io.ipoli.android.player.data.Player
-import io.ipoli.android.player.persistence.PlayerRepository
 import kotlinx.android.synthetic.main.popup_level_up.view.*
-import kotlinx.coroutines.experimental.launch
 import space.traversal.kapsule.required
-import kotlin.coroutines.experimental.CoroutineContext
 
 
 data class LevelUpViewState(
-    val level: Int? = null,
-    val avatar: PetAvatar? = null
+    val level: Int?,
+    val avatar: PetAvatar?
 ) : BaseViewState()
 
-sealed class LevelUpIntent : Intent {
-    data class LoadData(val newLevel: Int) : LevelUpIntent()
-    data class ChangePlayer(val player: Player) : LevelUpIntent()
+sealed class LevelUpAction : Action {
+    data class Load(val newLevel: Int) : LevelUpAction() {
+        override fun toMap() = mapOf("newLevel" to newLevel)
+    }
+
+    data class PlayerLoaded(val player: Player) : LevelUpAction() {
+        override fun toMap() = mapOf("player" to player)
+    }
 }
 
-class LevelUpPresenter(
-    private val playerRepository: PlayerRepository,
-    coroutineContext: CoroutineContext
-) : BaseMviPresenter<ViewStateRenderer<LevelUpViewState>, LevelUpViewState, LevelUpIntent>(
-    LevelUpViewState(),
-    coroutineContext
-) {
-    override fun reduceState(intent: LevelUpIntent, state: LevelUpViewState) =
-        when (intent) {
-            is LevelUpIntent.LoadData -> {
-                launch {
-                    sendChannel.send(LevelUpIntent.ChangePlayer(playerRepository.find()!!))
-                }
-                state.copy(
-                    level = intent.newLevel
-                )
-            }
+object LevelUpSideEffectHandler : AppSideEffectHandler() {
 
-            is LevelUpIntent.ChangePlayer -> {
-                val player = intent.player
-                state.copy(
-                    avatar = player.pet.avatar
-                )
-            }
+    private val playerRepository by required { playerRepository }
+
+    override suspend fun doExecute(action: Action, state: AppState) {
+        if (action is LevelUpAction.Load) {
+            dispatch(LevelUpAction.PlayerLoaded(playerRepository.find()!!))
+        }
+    }
+
+    override fun canHandle(action: Action) = action is LevelUpAction.Load
+
+}
+
+object LevelUpReducer : BaseViewStateReducer<LevelUpViewState>() {
+    override fun reduce(
+        state: AppState,
+        subState: LevelUpViewState,
+        action: Action
+    ) =
+        when (action) {
+            is LevelUpAction.Load ->
+                subState.copy(level = action.newLevel)
+
+            is LevelUpAction.PlayerLoaded ->
+                subState.copy(avatar = action.player.pet.avatar)
+
+            else -> subState
         }
 
+    override fun defaultState() = LevelUpViewState(level = null, avatar = null)
+
+    override val stateKey = key<LevelUpViewState>()
 }
 
 class LevelUpPopup(private val newLevel: Int) :
-    MviPopup<LevelUpViewState, LevelUpPopup, LevelUpPresenter, LevelUpIntent>() {
+    ReduxPopup<LevelUpAction, LevelUpViewState, LevelUpReducer>() {
 
-    private val presenter by required { levelUpPresenter }
+    override val reducer = LevelUpReducer
 
     private val eventLogger by required { eventLogger }
-
-    override fun createPresenter() = presenter
 
     override fun render(state: LevelUpViewState, view: View) {
         state.avatar?.let {
             val androidAvatar = AndroidPetAvatar.valueOf(it.name)
             view.pet.setImageResource(androidAvatar.headImage)
-            val params = Bundle()
-            params.putInt("level", state.level!!)
+            val params = mutableMapOf<String, Any>()
+            params["level"] = state.level!!
             view.positive.setOnClickListener {
-                params.putString("sentiment", "positive")
+                params["sentiment"] = "positive"
                 eventLogger.logEvent("reward_response", params)
                 hide()
             }
             view.negative.setOnClickListener {
-                params.putString("sentiment", "negative")
+                params["sentiment"] = "negative"
                 eventLogger.logEvent("reward_response", params)
                 hide()
             }
@@ -96,12 +104,11 @@ class LevelUpPopup(private val newLevel: Int) :
         }
     }
 
+    @SuppressLint("InflateParams")
     override fun createView(inflater: LayoutInflater): View =
         inflater.inflate(R.layout.popup_level_up, null)
 
-    override fun onViewShown(contentView: View) {
-        send(LevelUpIntent.LoadData(newLevel))
-    }
+    override fun onCreateLoadAction() = LevelUpAction.Load(newLevel)
 
     private fun startTypingAnimation(contentView: View, level: Int) {
         val title = contentView.title

@@ -10,8 +10,8 @@ import org.threeten.bp.DayOfWeek
  */
 data class PredefinedHabit(
     val name: String,
-    val color : Color,
-    val icon : Icon,
+    val color: Color,
+    val icon: Icon,
     val isGood: Boolean,
     val timesADay: Int = 1,
     val days: Set<DayOfWeek>

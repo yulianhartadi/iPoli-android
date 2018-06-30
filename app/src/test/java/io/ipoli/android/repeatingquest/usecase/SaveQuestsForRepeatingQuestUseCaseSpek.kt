@@ -61,7 +61,7 @@ class SaveQuestsForRepeatingQuestUseCaseSpek : Spek({
         fun mockQuestsForRepeatingQuest(quests: List<Quest> = listOf()) =
             mock<QuestRepository> {
                 on {
-                    findServerScheduledForRepeatingQuestBetween(
+                    findScheduledForRepeatingQuestBetween(
                         any(),
                         any(),
                         any()

@@ -6,8 +6,9 @@ import io.ipoli.android.Constants
 import io.ipoli.android.R
 import io.ipoli.android.common.AppState
 import io.ipoli.android.common.BaseViewStateReducer
-import io.ipoli.android.common.mvi.BaseViewState
+
 import io.ipoli.android.common.redux.Action
+import io.ipoli.android.common.redux.BaseViewState
 import io.ipoli.android.onboarding.OnboardData
 import io.ipoli.android.onboarding.OnboardViewController
 import io.ipoli.android.pet.PetAvatar
@@ -22,31 +23,65 @@ import io.ipoli.android.quest.RepeatingQuest
  * on 2/5/18.
  */
 sealed class AuthAction : Action {
-    data class Load(val onboardData: OnboardData?) : AuthAction()
+    data class Load(val onboardData: OnboardData?) : AuthAction() {
+        override fun toMap() = mapOf(
+            "username" to onboardData?.username,
+            "avatar" to onboardData?.avatar?.name,
+            "petName" to onboardData?.petName,
+            "petAvatar" to onboardData?.petAvatar?.name,
+            "repeatingQuests" to onboardData?.repeatingQuests
+        )
+    }
     data class Loaded(
         val hasPlayer: Boolean,
         val isGuest: Boolean,
         val hasUsername: Boolean,
         val onboardData: OnboardData?
-    ) : AuthAction()
+    ) : AuthAction() {
+        override fun toMap() = mapOf(
+            "hasPlayer" to hasPlayer,
+            "isGuest" to isGuest,
+            "hasUsername" to hasUsername,
+            "username" to onboardData?.username,
+            "avatar" to onboardData?.avatar?.name,
+            "petName" to onboardData?.petName,
+            "petAvatar" to onboardData?.petAvatar?.name,
+            "repeatingQuests" to onboardData?.repeatingQuests
+        )
+    }
 
-    data class UserAuthenticated(val user: FirebaseUser) : AuthAction()
-    data class UsernameValidationFailed(val error: ValidationError) : AuthAction()
+    data class UserAuthenticated(val user: FirebaseUser, val isNew: Boolean) : AuthAction() {
+        override fun toMap() = mapOf("user" to user, "isNew" to isNew)
+    }
+
+    data class UsernameValidationFailed(val error: ValidationError) : AuthAction() {
+        override fun toMap() = mapOf("error" to error.name)
+    }
     data class CompleteSetup(
         val username: String,
         val avatar: Avatar
-    ) : AuthAction()
+    ) : AuthAction() {
+        override fun toMap() = mapOf("username" to username, "avatar" to avatar.name)
+    }
 
-    data class ValidateUsername(val username: String) : AuthAction()
-    data class ChangeAvatar(val avatar: Avatar) : AuthAction()
+    data class ValidateUsername(val username: String) : AuthAction() {
+        override fun toMap() = mapOf("username" to username)
+    }
 
-    object AccountsLinked : AuthAction()
+    data class ChangeAvatar(val avatar: Avatar) : AuthAction() {
+        override fun toMap() = mapOf("avatar" to avatar.name)
+    }
+
+    object NewPlayerLoggedInFromGuest : AuthAction()
     object GuestCreated : AuthAction()
     object PlayerSetupCompleted : AuthAction()
-    data class PlayerLoggedIn(val shouldMigrate: Boolean, val schemaVersion: Int) : AuthAction()
-    data class ExistingPlayerLoggedInFromGuest(val shouldMigrate: Boolean, val schemaVersion: Int) : AuthAction()
+    object ExistingPlayerLoggedIn : AuthAction()
+    object ExistingPlayerLoggedInFromGuest : AuthAction()
+
     object ShowSetUp : AuthAction()
     object UsernameValid : AuthAction()
+    object ContinueAsGuest : AuthAction()
+    object ShowImportDataError : AuthAction()
 }
 
 object AuthReducer : BaseViewStateReducer<AuthViewState>() {
@@ -102,40 +137,37 @@ object AuthReducer : BaseViewStateReducer<AuthViewState>() {
                 )
             }
 
-            is AuthAction.PlayerLoggedIn -> {
+            is AuthAction.ExistingPlayerLoggedIn -> {
                 subState.copy(
-                    type = PLAYER_LOGGED_IN,
-                    shouldMigrate = action.shouldMigrate,
-                    schemaVersion = action.schemaVersion
+                    type = EXISTING_PLAYER_LOGGED_IN
                 )
             }
 
-            is AuthAction.ExistingPlayerLoggedInFromGuest -> {
+            is AuthAction.ExistingPlayerLoggedInFromGuest ->
                 subState.copy(
-                    type = EXISTING_PLAYER_LOGGED_IN_FROM_GUEST,
-                    shouldMigrate = action.shouldMigrate,
-                    schemaVersion = action.schemaVersion
+                    type = EXISTING_PLAYER_LOGGED_IN_FROM_GUEST
                 )
-            }
 
-            AuthAction.ShowSetUp -> {
+            AuthAction.ShowSetUp ->
                 subState.copy(
                     type = SWITCH_TO_SETUP
                 )
-            }
 
-            AuthAction.AccountsLinked -> {
+            AuthAction.NewPlayerLoggedInFromGuest ->
                 subState.copy(
                     type = SWITCH_TO_SETUP
                 )
-            }
 
-            is AuthAction.ChangeAvatar -> {
+            is AuthAction.ChangeAvatar ->
                 subState.copy(
                     type = AVATAR_CHANGED,
                     playerAvatar = action.avatar
                 )
-            }
+
+            is AuthAction.ShowImportDataError ->
+                subState.copy(
+                    type = SHOW_IMPORT_ERROR
+                )
 
             else -> subState
 
@@ -160,9 +192,7 @@ object AuthReducer : BaseViewStateReducer<AuthViewState>() {
             ),
             petName = null,
             petAvatar = null,
-            repeatingQuests = emptyList(),
-            shouldMigrate = false,
-            schemaVersion = Constants.SCHEMA_VERSION
+            repeatingQuests = emptyList()
         )
 
 }
@@ -176,9 +206,7 @@ data class AuthViewState(
     val avatars: List<Avatar>,
     val petName: String?,
     val petAvatar: PetAvatar?,
-    val repeatingQuests: List<Pair<RepeatingQuest, OnboardViewController.OnboardTag?>>,
-    val shouldMigrate : Boolean,
-    val schemaVersion: Int
+    val repeatingQuests: List<Pair<RepeatingQuest, OnboardViewController.OnboardTag?>>
 ) : BaseViewState() {
     enum class StateType {
         IDLE,
@@ -190,9 +218,10 @@ data class AuthViewState(
         USERNAME_VALID,
         GUEST_CREATED,
         PLAYER_SETUP_COMPLETED,
-        PLAYER_LOGGED_IN,
+        EXISTING_PLAYER_LOGGED_IN,
         EXISTING_PLAYER_LOGGED_IN_FROM_GUEST,
-        AVATAR_CHANGED
+        AVATAR_CHANGED,
+        SHOW_IMPORT_ERROR
     }
 }
 

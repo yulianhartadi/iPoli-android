@@ -14,8 +14,9 @@ import io.ipoli.android.R
 import io.ipoli.android.challenge.QuestPickerViewState.StateType.*
 import io.ipoli.android.common.AppState
 import io.ipoli.android.common.BaseViewStateReducer
-import io.ipoli.android.common.mvi.BaseViewState
+
 import io.ipoli.android.common.redux.Action
+import io.ipoli.android.common.redux.BaseViewState
 import io.ipoli.android.common.view.AndroidColor
 import io.ipoli.android.common.view.AndroidIcon
 import io.ipoli.android.common.view.listItemIcon
@@ -32,9 +33,16 @@ import org.threeten.bp.LocalDate
  */
 
 sealed class QuestPickerAction : Action {
-    data class Load(val challengeId: String = "") : QuestPickerAction()
+    data class Load(val challengeId: String = "") : QuestPickerAction() {
+        override fun toMap() = mapOf("challengeId" to challengeId)
+    }
     data class Loaded(val quests: List<Quest>, val repeatingQuests: List<RepeatingQuest>) :
-        QuestPickerAction()
+        QuestPickerAction() {
+        override fun toMap() = mapOf(
+            "quests" to quests.joinToString(",") { it.name },
+            "repeatingQuests" to repeatingQuests.joinToString(",") { it.name }
+        )
+    }
 
     data class Filter(val query: String) : QuestPickerAction()
     data class Check(val id: String, val isSelected: Boolean) : QuestPickerAction()
@@ -109,11 +117,11 @@ object QuestPickerReducer : BaseViewStateReducer<QuestPickerViewState>() {
     ) =
         sortQuests(
             quests.map { PickerQuest.OneTime(it) } +
-                    repeatingQuests.map {
-                        PickerQuest.Repeating(
-                            it
-                        )
-                    })
+                repeatingQuests.map {
+                    PickerQuest.Repeating(
+                        it
+                    )
+                })
 
     private fun filterQuests(
         query: String,
@@ -217,7 +225,7 @@ class QuestAdapter(
         val view = holder.itemView
         view.questName.text = vm.name
         view.questIcon.backgroundTintList =
-                ColorStateList.valueOf(ContextCompat.getColor(view.context, vm.color))
+            ColorStateList.valueOf(ContextCompat.getColor(view.context, vm.color))
         view.questIcon.setImageDrawable(IconicsDrawable(view.context).listItemIcon(vm.icon))
         view.questRepeatIndicator.visible = vm.isRepeating
 
@@ -258,7 +266,7 @@ fun QuestPickerViewState.toViewModels() =
                     name = quest.name,
                     color = AndroidColor.valueOf(quest.color.name).color500,
                     icon = quest.icon?.let { AndroidIcon.valueOf(it.name).icon }
-                            ?: Ionicons.Icon.ion_android_clipboard,
+                        ?: Ionicons.Icon.ion_android_clipboard,
                     isRepeating = false,
                     isSelected = selectedQuests.contains(it.id)
                 )
@@ -270,7 +278,7 @@ fun QuestPickerViewState.toViewModels() =
                     name = rq.name,
                     color = AndroidColor.valueOf(rq.color.name).color500,
                     icon = rq.icon?.let { AndroidIcon.valueOf(it.name).icon }
-                            ?: Ionicons.Icon.ion_android_clipboard,
+                        ?: Ionicons.Icon.ion_android_clipboard,
                     isRepeating = true,
                     isSelected = selectedQuests.contains(it.id)
                 )

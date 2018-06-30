@@ -378,7 +378,8 @@ class EditRepeatingQuestViewController(args: Bundle? = null) :
         get() = icon?.androidIcon?.icon ?: GoogleMaterial.Icon.gmd_local_florist
 
     private val EditRepeatingQuestViewState.startTimeText: String
-        get() = startTime?.let { "At ${it.toString(shouldUse24HourFormat)}" } ?: stringRes(R.string.unscheduled)
+        get() = startTime?.let { "At ${it.toString(shouldUse24HourFormat)}" }
+            ?: stringRes(R.string.unscheduled)
 
     private val EditRepeatingQuestViewState.durationText: String
         get() = "For ${DurationFormatter.formatReadable(activity!!, duration.intValue)}"

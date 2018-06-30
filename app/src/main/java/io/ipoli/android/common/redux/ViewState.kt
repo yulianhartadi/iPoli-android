@@ -1,11 +1,10 @@
-package io.ipoli.android.common.mvi
+package io.ipoli.android.common.redux
 
-import io.ipoli.android.common.redux.State
 import java.util.*
 
 /**
  * Created by Venelin Valkov <venelin@mypoli.fun>
- * on 9/8/17.
+ * on 06/30/2018.
  */
 interface ViewState : State {
     val stateId: String
@@ -16,5 +15,3 @@ interface ViewState : State {
 abstract class BaseViewState : ViewState {
     override val stateId = UUID.randomUUID().toString()
 }
-
-interface Intent

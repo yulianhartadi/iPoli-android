@@ -20,9 +20,7 @@ import android.view.animation.OvershootInterpolator
 import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
-import com.bluelinelabs.conductor.RouterTransaction
 import com.bluelinelabs.conductor.changehandler.FadeChangeHandler
-import com.bluelinelabs.conductor.changehandler.VerticalChangeHandler
 import com.mikepenz.iconics.IconicsDrawable
 import com.mikepenz.ionicons_typeface_library.Ionicons
 import io.ipoli.android.R

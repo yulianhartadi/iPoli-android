@@ -1,7 +1,6 @@
 package io.ipoli.android.dailychallenge.usecase
 
 import io.ipoli.android.common.UseCase
-import io.ipoli.android.common.datetime.startOfDayUTC
 import io.ipoli.android.dailychallenge.data.persistence.DailyChallengeRepository
 import io.ipoli.android.quest.data.persistence.QuestRepository
 import org.threeten.bp.LocalDate
@@ -13,7 +12,7 @@ open class CheckForDailyChallengeCompletionUseCase(
     UseCase<Unit, CheckForDailyChallengeCompletionUseCase.Result> {
 
     override fun execute(parameters: Unit): Result {
-        val dc = dailyChallengeRepository.findById(LocalDate.now().startOfDayUTC().toString())
+        val dc = dailyChallengeRepository.findForDate(LocalDate.now())
             ?: return Result.NotScheduledForToday
 
         if (dc.isCompleted) {

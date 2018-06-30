@@ -1,11 +1,9 @@
 package io.ipoli.android.planday.persistence
 
-import android.os.Looper
 import com.google.android.gms.tasks.Tasks
 import com.google.firebase.firestore.CollectionReference
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.Source
-import timber.log.Timber
 
 /**
  * Created by Venelin Valkov <venelin@mypoli.fun>

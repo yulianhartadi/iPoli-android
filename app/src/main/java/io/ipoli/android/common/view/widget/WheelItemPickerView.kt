@@ -142,10 +142,10 @@ class WheelItemPickerView : ScrollView {
                 measuredItemHeight * visibleItemCount
             )
             this.layoutParams =
-                    RelativeLayout.LayoutParams(
-                        layoutParams.width,
-                        measuredItemHeight * visibleItemCount
-                    )
+                RelativeLayout.LayoutParams(
+                    layoutParams.width,
+                    measuredItemHeight * visibleItemCount
+                )
         }
         return numView
     }

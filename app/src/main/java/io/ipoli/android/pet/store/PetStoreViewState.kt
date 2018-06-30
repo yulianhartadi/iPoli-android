@@ -4,8 +4,9 @@ import io.ipoli.android.R
 import io.ipoli.android.common.AppState
 import io.ipoli.android.common.BaseViewStateReducer
 import io.ipoli.android.common.DataLoadedAction
-import io.ipoli.android.common.mvi.BaseViewState
+
 import io.ipoli.android.common.redux.Action
+import io.ipoli.android.common.redux.BaseViewState
 import io.ipoli.android.pet.AndroidPetAvatar
 import io.ipoli.android.pet.PetAvatar
 import io.ipoli.android.pet.PetState
@@ -17,8 +18,13 @@ import io.ipoli.android.player.data.Player
  */
 sealed class PetStoreAction : Action {
     object Load : PetStoreAction()
-    data class BuyPet(val pet: PetAvatar) : PetStoreAction()
-    data class ChangePet(val pet: PetAvatar) : PetStoreAction()
+    data class BuyPet(val pet: PetAvatar) : PetStoreAction() {
+        override fun toMap() = mapOf("pet" to pet)
+    }
+
+    data class ChangePet(val pet: PetAvatar) : PetStoreAction() {
+        override fun toMap() = mapOf("pet" to pet)
+    }
     object PetBought : PetStoreAction()
     object PetTooExpensive : PetStoreAction()
 }

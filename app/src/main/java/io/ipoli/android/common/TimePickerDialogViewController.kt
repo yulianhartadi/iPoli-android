@@ -7,8 +7,9 @@ import android.view.View
 import android.widget.TimePicker
 import io.ipoli.android.R
 import io.ipoli.android.common.datetime.Time
-import io.ipoli.android.common.mvi.BaseViewState
+
 import io.ipoli.android.common.redux.Action
+import io.ipoli.android.common.redux.BaseViewState
 import io.ipoli.android.common.view.BaseDialogController
 
 /**

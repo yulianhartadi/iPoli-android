@@ -1,7 +1,7 @@
 package io.ipoli.android.common.redux
 
 import io.ipoli.android.common.UiAction
-import io.ipoli.android.common.mvi.BaseViewState
+
 import kotlinx.coroutines.experimental.Unconfined
 import kotlinx.coroutines.experimental.runBlocking
 import org.amshove.kluent.`should be equal to`

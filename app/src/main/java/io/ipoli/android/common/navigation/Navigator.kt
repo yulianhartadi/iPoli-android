@@ -36,6 +36,8 @@ import io.ipoli.android.quest.edit.EditQuestViewController
 import io.ipoli.android.quest.reminder.picker.ReminderPickerDialogController
 import io.ipoli.android.quest.reminder.picker.ReminderViewModel
 import io.ipoli.android.quest.schedule.addquest.AddQuestViewController
+import io.ipoli.android.quest.schedule.agenda.AgendaViewController
+import io.ipoli.android.quest.schedule.calendar.CalendarViewController
 import io.ipoli.android.quest.show.QuestViewController
 import io.ipoli.android.repeatingquest.add.AddRepeatingQuestViewController
 import io.ipoli.android.repeatingquest.edit.picker.RepeatPatternPickerDialogController
@@ -376,6 +378,18 @@ class Navigator(private val router: Router) {
 
     fun replaceWithCompletedQuest(questId: String, changeHandler: ControllerChangeHandler? = null) {
         replaceTopController({ CompletedQuestViewController(questId) }, changeHandler)
+    }
+
+    fun replaceWithCalendar(currentDate: LocalDate) {
+        replaceTopController({ CalendarViewController(currentDate) }, FadeChangeHandler())
+    }
+
+    fun replaceWithAgenda(currentDate: LocalDate) {
+        replaceTopController({ AgendaViewController(currentDate) }, FadeChangeHandler())
+    }
+
+    fun replaceWithHome(changeHandler: ControllerChangeHandler? = null) {
+        replaceTopController({ HomeViewController() }, changeHandler)
     }
 
     companion object {

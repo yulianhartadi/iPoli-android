@@ -144,7 +144,7 @@ class RepeatingQuestViewController(args: Bundle? = null) :
 
             RepeatingQuestViewState.StateType.HISTORY_CHANGED ->
                 view.historyChart.updateData(state.history!!)
-            
+
             else -> {
             }
         }
@@ -297,7 +297,9 @@ class RepeatingQuestViewController(args: Bundle? = null) :
                     DateFormatter.format(view!!.context, nextScheduledDate)
                 )
                 res += if (startTime != null) {
-                    " ${startTime.toString(shouldUse24HourFormat)} - ${endTime!!.toString(shouldUse24HourFormat)}"
+                    " ${startTime.toString(shouldUse24HourFormat)} - ${endTime!!.toString(
+                        shouldUse24HourFormat
+                    )}"
                 } else {
                     " " + stringRes(
                         R.string.for_time,

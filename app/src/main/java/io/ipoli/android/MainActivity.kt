@@ -15,6 +15,7 @@ import com.bluelinelabs.conductor.Conductor
 import com.bluelinelabs.conductor.Router
 import com.bluelinelabs.conductor.RouterTransaction
 import com.bluelinelabs.conductor.changehandler.FadeChangeHandler
+import com.crashlytics.android.Crashlytics
 import io.ipoli.android.achievement.usecase.UnlockAchievementsUseCase
 import io.ipoli.android.common.AppState
 import io.ipoli.android.common.DataLoadedAction
@@ -45,6 +46,7 @@ import org.threeten.bp.LocalDate
 import space.traversal.kapsule.Injects
 import space.traversal.kapsule.inject
 import space.traversal.kapsule.required
+import timber.log.Timber
 import java.util.*
 
 
@@ -62,8 +64,7 @@ class MainActivity : AppCompatActivity(), Injects<Module>, SideEffectHandler<App
     private val updateHabitStreaksScheduler by required { updateHabitStreaksScheduler }
 
     private val stateStore by required { stateStore }
-
-    private val migrationExecutor by required { migrationExecutor }
+    private val dataExporter by required { dataExporter }
 
     val rootRouter get() = router
 
@@ -114,29 +115,43 @@ class MainActivity : AppCompatActivity(), Injects<Module>, SideEffectHandler<App
             return
         }
 
+        val schemaVer =
+            sharedPreferences.getInt(Constants.KEY_SCHEMA_VERSION, Constants.SCHEMA_VERSION)
+
+        if (schemaVer < 200 || !sharedPreferences.getBoolean(
+                Constants.KEY_PLAYER_DATA_IMPORTED,
+                true
+            )) {
+            router.setRoot(
+                RouterTransaction.with(
+                    MigrationViewController(
+                        sharedPreferences.getString(
+                            Constants.KEY_PLAYER_ID,
+                            ""
+                        ), schemaVer
+                    )
+                )
+            )
+            return
+        }
+
         launch(CommonPool) {
-            val hasPlayer = playerRepository.hasPlayer()
-            if (!hasPlayer) {
+            val p = playerRepository.find()
+            val hasPlayer = p != null
+            if (hasPlayer) {
+
+                launch(UI) {
+                    if (p!!.isLoggedIn() && p.username.isNullOrEmpty()) {
+                        Navigator(router).setAuth()
+                    } else {
+                        startApp(p)
+                        stateStore.dispatch(LoadDataAction.All)
+                    }
+                }
+                unlockAchievementsUseCase.execute(UnlockAchievementsUseCase.Params(p!!))
+            } else {
                 launch(UI) {
                     router.setRoot(RouterTransaction.with(OnboardViewController()))
-                }
-            } else {
-                val pSchemaVersion = playerRepository.findSchemaVersion()!!
-                if (migrationExecutor.shouldMigrate(pSchemaVersion)) {
-                    launch(UI) {
-                        router.setRoot(RouterTransaction.with(MigrationViewController(pSchemaVersion)))
-                    }
-                } else {
-                    val p = playerRepository.find()!!
-                    launch(UI) {
-                        if (p.isLoggedIn() && p.username.isNullOrEmpty()) {
-                            Navigator(router).setAuth()
-                        } else {
-                            startApp(p)
-                            stateStore.dispatch(LoadDataAction.All)
-                        }
-                    }
-                    unlockAchievementsUseCase.execute(UnlockAchievementsUseCase.Params(p))
                 }
             }
         }
@@ -193,6 +208,19 @@ class MainActivity : AppCompatActivity(), Injects<Module>, SideEffectHandler<App
             updateHabitStreaksScheduler.schedule()
             if (Random().nextInt(10) == 1 && player.membership == Membership.NONE) {
                 showPremiumSnackbar()
+            }
+            if (player.isLoggedIn()) {
+                launch(CommonPool) {
+                    try {
+                        dataExporter.exportNewData()
+                    } catch (e: Throwable) {
+                        if (BuildConfig.DEBUG) {
+                            Timber.e(e)
+                        } else {
+                            Crashlytics.logException(e)
+                        }
+                    }
+                }
             }
         }
     }

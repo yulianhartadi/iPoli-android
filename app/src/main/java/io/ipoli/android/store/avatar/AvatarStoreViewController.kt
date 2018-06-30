@@ -84,7 +84,8 @@ class AvatarStoreViewController(args: Bundle? = null) :
                 showShortToast(R.string.avatar_too_expensive)
             }
 
-            else -> {}
+            else -> {
+            }
         }
     }
 

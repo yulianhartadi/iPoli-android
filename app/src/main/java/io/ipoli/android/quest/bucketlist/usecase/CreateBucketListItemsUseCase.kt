@@ -17,11 +17,11 @@ class CreateBucketListItemsUseCase :
         val (dueToday, dueOtherDay) = notOverdue.partition { it.dueDate == today }
         val (dueTomorrow, upcoming) = dueOtherDay.partition { it.dueDate == tomorrow }
         return createSectionWithQuests(BucketListItem.Overdue, overdue) +
-                createSectionWithQuests(BucketListItem.Today, dueToday) +
-                createSectionWithQuests(BucketListItem.Tomorrow, dueTomorrow) +
-                createSectionWithQuests(BucketListItem.Upcoming, upcoming) +
-                createSectionWithQuests(BucketListItem.SomeDay, someday) +
-                createSectionWithQuests(BucketListItem.Completed, completed)
+            createSectionWithQuests(BucketListItem.Today, dueToday) +
+            createSectionWithQuests(BucketListItem.Tomorrow, dueTomorrow) +
+            createSectionWithQuests(BucketListItem.Upcoming, upcoming) +
+            createSectionWithQuests(BucketListItem.SomeDay, someday) +
+            createSectionWithQuests(BucketListItem.Completed, completed)
     }
 
     private fun createSectionWithQuests(

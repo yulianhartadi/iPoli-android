@@ -12,8 +12,9 @@ import io.ipoli.android.R
 import io.ipoli.android.common.AppState
 import io.ipoli.android.common.BaseViewStateReducer
 import io.ipoli.android.common.DataLoadedAction
-import io.ipoli.android.common.mvi.BaseViewState
+
 import io.ipoli.android.common.redux.Action
+import io.ipoli.android.common.redux.BaseViewState
 import io.ipoli.android.common.view.ReduxDialogController
 import io.ipoli.android.common.view.normalIcon
 import io.ipoli.android.common.view.recyclerview.BaseRecyclerViewAdapter
@@ -35,10 +36,17 @@ import kotlinx.android.synthetic.main.view_dialog_header.view.*
  * on 5/1/18.
  */
 sealed class TagPickerAction : Action {
-    data class AddTag(val tag: Tag) : TagPickerAction()
-    data class RemoveTag(val tag: Tag) : TagPickerAction()
+    data class AddTag(val tag: Tag) : TagPickerAction() {
+        override fun toMap() = mapOf("tag" to tag.name)
+    }
 
-    data class Load(val selectedTags: Set<Tag>) : TagPickerAction()
+    data class RemoveTag(val tag: Tag) : TagPickerAction() {
+        override fun toMap() = mapOf("tag" to tag.name)
+    }
+
+    data class Load(val selectedTags: Set<Tag>) : TagPickerAction() {
+        override fun toMap() = mapOf("selectedTags" to selectedTags.joinToString(",") { it.name })
+    }
     object Close : TagPickerAction()
 }
 

@@ -9,21 +9,20 @@ import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
+import com.bluelinelabs.conductor.RestoreViewOnCreateController
+import com.mikepenz.iconics.IconicsDrawable
 import com.mikepenz.iconics.typeface.IIcon
 import io.ipoli.android.Constants
 import io.ipoli.android.R
-import io.ipoli.android.common.redux.android.ReduxViewController
 import io.ipoli.android.common.view.*
 import io.ipoli.android.common.view.recyclerview.MultiViewRecyclerViewAdapter
 import io.ipoli.android.common.view.recyclerview.RecyclerViewViewModel
 import io.ipoli.android.habit.edit.EditHabitViewController
-import io.ipoli.android.habit.predefined.PredefinedHabitListViewState.StateType.DATA_LOADED
 import io.ipoli.android.quest.Color
 import io.ipoli.android.quest.Icon
 import kotlinx.android.synthetic.main.controller_predefined_habit_list.view.*
 import kotlinx.android.synthetic.main.item_predefined_habit.view.*
 import kotlinx.android.synthetic.main.view_default_toolbar.view.*
-import kotlinx.android.synthetic.main.view_loader.view.*
 import org.threeten.bp.DayOfWeek
 
 /**
@@ -31,11 +30,9 @@ import org.threeten.bp.DayOfWeek
  * on 6/21/18.
  */
 class PredefinedHabitListViewController(args: Bundle? = null) :
-    ReduxViewController<PredefinedHabitListAction, PredefinedHabitListViewState, PredefinedHabitListReducer>(
+    RestoreViewOnCreateController(
         args
     ) {
-
-    override val reducer = PredefinedHabitListReducer
 
     private val predefinedHabits: List<PredefinedHabit> = listOf(
         PredefinedHabit(
@@ -237,7 +234,9 @@ class PredefinedHabitListViewController(args: Bundle? = null) :
         toolbarTitle = stringRes(R.string.predefined_habits_title)
 
         view.habitList.layoutManager = LinearLayoutManager(view.context)
-        view.habitList.adapter = HabitListAdapter()
+        val adapter = HabitListAdapter()
+        view.habitList.adapter = adapter
+        adapter.updateAll(viewModels)
 
         return view
     }
@@ -254,15 +253,6 @@ class PredefinedHabitListViewController(args: Bundle? = null) :
 
             else -> super.onOptionsItemSelected(item)
         }
-
-    override fun render(state: PredefinedHabitListViewState, view: View) {
-        when (state.type) {
-            DATA_LOADED -> {
-                view.loader.gone()
-                (view.habitList.adapter as HabitListAdapter).updateAll(state.viewModels)
-            }
-        }
-    }
 
     sealed class ItemViewModel(override val id: String) : RecyclerViewViewModel {
         data class SectionItem(val text: String) : ItemViewModel(text)
@@ -299,8 +289,11 @@ class PredefinedHabitListViewController(args: Bundle? = null) :
                 view.habitName.text = vm.name
                 view.habitIcon.backgroundTintList =
                     ColorStateList.valueOf(colorRes(vm.color))
-                view.habitIcon.setImageDrawable(listItemIcon(vm.icon))
-                view.onDebounceClick {
+
+                val icon = IconicsDrawable(view.context).listItemIcon(vm.icon)
+
+                view.habitIcon.setImageDrawable(icon)
+                view.setOnClickListener(Debounce.clickListener {
                     val habit = vm.habit
                     navigate().toAddHabit(
                         EditHabitViewController.Params(
@@ -312,12 +305,12 @@ class PredefinedHabitListViewController(args: Bundle? = null) :
                             days = habit.days
                         )
                     )
-                }
+                })
             }
         }
     }
 
-    val PredefinedHabitListViewState.viewModels: List<ItemViewModel>
+    val viewModels: List<ItemViewModel>
         get() {
             val (good, bad) = predefinedHabits.partition { it.isGood }
             val vms = mutableListOf<ItemViewModel>()
@@ -344,4 +337,10 @@ class PredefinedHabitListViewController(args: Bundle? = null) :
             return vms
         }
 
+
+    private val Color.androidColor: AndroidColor
+        get() = AndroidColor.valueOf(this.name)
+
+    private val Icon.androidIcon: AndroidIcon
+        get() = AndroidIcon.valueOf(this.name)
 }

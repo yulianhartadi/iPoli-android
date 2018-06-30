@@ -16,7 +16,8 @@ class FindNextDateForRepeatingQuestUseCase(
     override fun execute(parameters: Params): RepeatingQuest {
         val fromDate = parameters.fromDate
         val rq = parameters.repeatingQuest
-        val nextScheduled = questRepository.findNextScheduledNotCompletedForRepeatingQuest(rq.id, fromDate)
+        val nextScheduled =
+            questRepository.findNextScheduledNotCompletedForRepeatingQuest(rq.id, fromDate)
 
         if (nextScheduled != null) {
             val patternNext = rq.repeatPattern.nextDate(fromDate)

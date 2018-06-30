@@ -29,7 +29,7 @@ class CompleteTimeRangeUseCase(
 
         timerCompleteScheduler.cancelAll()
 
-        if(!quest!!.hasTimer) {
+        if (!quest!!.hasTimer) {
             return completeQuestUseCase.execute(WithQuest(quest))
         }
 

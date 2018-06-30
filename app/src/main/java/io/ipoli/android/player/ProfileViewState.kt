@@ -6,15 +6,18 @@ import io.ipoli.android.common.BaseViewStateReducer
 import io.ipoli.android.common.DataLoadedAction
 import io.ipoli.android.common.datetime.Duration
 import io.ipoli.android.common.datetime.Minute
-import io.ipoli.android.common.mvi.BaseViewState
+
 import io.ipoli.android.common.redux.Action
+import io.ipoli.android.common.redux.BaseViewState
 import io.ipoli.android.pet.Pet
 import io.ipoli.android.player.ProfileViewState.StateType.*
 import io.ipoli.android.player.data.Avatar
 import io.ipoli.android.player.data.Player
 
 sealed class ProfileAction : Action {
-    data class Save(val displayName: String, val bio: String) : ProfileAction()
+    data class Save(val displayName: String, val bio: String) : ProfileAction() {
+        override fun toMap() = mapOf("displayName" to displayName)
+    }
 
     object Load : ProfileAction()
     object StartEdit : ProfileAction()

@@ -4,10 +4,10 @@ import android.os.Bundle
 import android.support.v7.app.AlertDialog
 import android.view.LayoutInflater
 import android.view.View
-import kotlinx.android.synthetic.main.dialog_challenge_motivations.view.*
-import kotlinx.android.synthetic.main.view_dialog_header.view.*
 import io.ipoli.android.R
 import io.ipoli.android.common.view.BaseDialogController
+import kotlinx.android.synthetic.main.dialog_challenge_motivations.view.*
+import kotlinx.android.synthetic.main.view_dialog_header.view.*
 
 /**
  * Created by Polina Zhelyazkova <polina@mypoli.fun>
@@ -19,7 +19,7 @@ class ChallengeMotivationsDialogController(args: Bundle? = null) : BaseDialogCon
     private lateinit var motivation2: String
     private lateinit var motivation3: String
 
-    private var listener: (String, String, String) -> Unit = {_, _, _ -> }
+    private var listener: (String, String, String) -> Unit = { _, _, _ -> }
 
     constructor(
         motivation1: String,

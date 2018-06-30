@@ -1,8 +1,8 @@
 package io.ipoli.android.store.theme.usecase
 
 import io.ipoli.android.common.UseCase
-import io.ipoli.android.player.data.Player
 import io.ipoli.android.player.Theme
+import io.ipoli.android.player.data.Player
 import io.ipoli.android.player.persistence.PlayerRepository
 
 /**

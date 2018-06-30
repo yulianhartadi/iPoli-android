@@ -33,7 +33,7 @@ class CancelTimerUseCaseSpek : Spek({
                     invocation.getArgument(0)
                 }
             }
-            return CancelTimerUseCase(questRepoMock, mock<TimerCompleteScheduler>())
+            return CancelTimerUseCase(questRepoMock, mock(), mock())
                 .execute(CancelTimerUseCase.Params(quest.id))
         }
 

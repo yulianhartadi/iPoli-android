@@ -4,8 +4,9 @@ import io.ipoli.android.common.AppState
 import io.ipoli.android.common.BaseViewStateReducer
 import io.ipoli.android.common.DataLoadedAction
 import io.ipoli.android.common.datetime.daysUntil
-import io.ipoli.android.common.mvi.BaseViewState
+
 import io.ipoli.android.common.redux.Action
+import io.ipoli.android.common.redux.BaseViewState
 import io.ipoli.android.player.data.Membership
 import io.ipoli.android.player.data.Player
 import io.ipoli.android.store.powerup.sideeffect.BuyPowerUpCompletedAction
@@ -19,9 +20,13 @@ import org.threeten.bp.LocalDate
 
 sealed class PowerUpStoreAction : Action {
     object Load : PowerUpStoreAction()
-    data class Enable(val type: PowerUp.Type) : PowerUpStoreAction()
+    data class Enable(val type: PowerUp.Type) : PowerUpStoreAction() {
+        override fun toMap() = mapOf("type" to type.name)
+    }
     data class SyncCalendarsSelected(val calendars: Set<Player.Preferences.SyncCalendar>) :
-        PowerUpStoreAction()
+        PowerUpStoreAction() {
+        override fun toMap() = mapOf("calendars" to calendars)
+    }
 }
 
 object PowerUpStoreReducer : BaseViewStateReducer<PowerUpStoreViewState>() {

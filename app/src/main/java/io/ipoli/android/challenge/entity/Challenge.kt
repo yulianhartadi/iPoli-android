@@ -1,6 +1,7 @@
 package io.ipoli.android.challenge.entity
 
 import io.ipoli.android.common.datetime.Time
+import io.ipoli.android.common.persistence.EntityWithTags
 import io.ipoli.android.quest.*
 import io.ipoli.android.tag.Tag
 import org.threeten.bp.Instant
@@ -16,7 +17,7 @@ data class Challenge(
     val color: Color,
     val icon: Icon? = null,
     val difficulty: Difficulty,
-    val tags: List<Tag> = listOf(),
+    override val tags: List<Tag> = listOf(),
     val startDate: LocalDate,
     val endDate: LocalDate,
     val motivations: List<String>,
@@ -33,8 +34,9 @@ data class Challenge(
     val progress: Progress = Progress(),
     val note: String = "",
     override val createdAt: Instant = Instant.now(),
-    override val updatedAt: Instant = Instant.now()
-) : Entity {
+    override val updatedAt: Instant = Instant.now(),
+    val removedAt: Instant? = null
+) : EntityWithTags {
 
     enum class Difficulty {
         EASY, NORMAL, HARD, HELL

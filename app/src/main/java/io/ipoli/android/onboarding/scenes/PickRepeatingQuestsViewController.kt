@@ -4,7 +4,6 @@ import android.content.res.ColorStateList
 import android.os.Bundle
 import android.support.v7.widget.LinearLayoutManager
 import android.view.*
-import com.mikepenz.iconics.IconicsDrawable
 import io.ipoli.android.R
 import io.ipoli.android.common.redux.android.BaseViewController
 import io.ipoli.android.common.view.*
@@ -49,11 +48,11 @@ class PickRepeatingQuestsViewController(args: Bundle? = null) :
         repeatingQuestViewModels.addAll(createViewModels())
 
         view.onboardRepeatingQuests.layoutManager =
-                LinearLayoutManager(
-                    container.context,
-                    LinearLayoutManager.VERTICAL,
-                    false
-                )
+            LinearLayoutManager(
+                container.context,
+                LinearLayoutManager.VERTICAL,
+                false
+            )
         val adapter = RepeatingQuestsAdapter()
         view.onboardRepeatingQuests.adapter = adapter
         adapter.updateAll(repeatingQuestViewModels)
@@ -346,7 +345,7 @@ class PickRepeatingQuestsViewController(args: Bundle? = null) :
             view.rqRepeatPattern.text = "${vm.repeatingQuest.repeatPattern.periodCount} x week"
 
             view.rqIcon.backgroundTintList =
-                    ColorStateList.valueOf(colorRes(vm.repeatingQuest.color.androidColor.color500))
+                ColorStateList.valueOf(colorRes(vm.repeatingQuest.color.androidColor.color500))
             view.rqIcon.setImageDrawable(listItemIcon(vm.repeatingQuest.icon!!.androidIcon.icon))
 
             view.rqCheck.setOnCheckedChangeListener(null)

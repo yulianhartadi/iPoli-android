@@ -1,34 +1,46 @@
 package io.ipoli.android.common.job
 
+import com.crashlytics.android.Crashlytics
 import com.evernote.android.job.Job
 import com.evernote.android.job.JobRequest
 import com.evernote.android.job.util.support.PersistableBundleCompat
+import io.ipoli.android.BuildConfig
 import io.ipoli.android.common.datetime.Time
 import io.ipoli.android.common.datetime.toMillis
 import org.threeten.bp.LocalDate
 import org.threeten.bp.LocalDateTime
 import org.threeten.bp.LocalTime
+import timber.log.Timber
 
 abstract class FixedDailyJob(private val tag: String) : Job() {
 
     override fun onRunJob(params: Params): Result {
-        val r = doRunJob(params)
-        if (r == Result.SUCCESS) {
-
-            val scheduleAt = Time.of(params.extras.getInt("minuteOfDay", -1))
-
-            val nextSchedule = LocalDateTime.of(
-                LocalDate.now().plusDays(1),
-                LocalTime.of(scheduleAt.hours, scheduleAt.getMinutes())
-            ).toMillis()
-
-            JobRequest.Builder(tag)
-                .setUpdateCurrent(true)
-                .setExact(nextSchedule - System.currentTimeMillis())
-                .build()
-                .schedule()
+        try {
+            doRunJob(params)
+        } catch (e: Throwable) {
+            if (BuildConfig.DEBUG) {
+                Timber.e(e)
+            } else {
+                Crashlytics.logException(e)
+            }
         }
-        return r
+
+        val scheduleAt = Time.of(params.extras.getInt("minuteOfDay", -1))
+
+        val nextSchedule = LocalDateTime.of(
+            LocalDate.now().plusDays(1),
+            LocalTime.of(scheduleAt.hours, scheduleAt.getMinutes())
+        ).toMillis()
+
+        JobRequest.Builder(tag)
+            .setUpdateCurrent(true)
+            .setExtras(PersistableBundleCompat().apply {
+                putInt("minuteOfDay", scheduleAt.toMinuteOfDay())
+            })
+            .setExact(nextSchedule - System.currentTimeMillis())
+            .build()
+            .schedule()
+        return Result.SUCCESS
     }
 
     abstract fun doRunJob(params: Params): Result

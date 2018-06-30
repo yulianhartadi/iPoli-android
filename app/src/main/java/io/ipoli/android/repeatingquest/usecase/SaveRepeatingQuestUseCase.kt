@@ -73,7 +73,7 @@ class SaveRepeatingQuestUseCase(
                 )
             )
         } else {
-            questRepository.purgeAllNotCompletedForRepeating(repeatingQuest.id, LocalDate.now())
+            questRepository.removeAllNotCompletedForRepeating(repeatingQuest.id, LocalDate.now())
             saveQuestsFor(repeatingQuest)
         }
         reminderScheduler.schedule()

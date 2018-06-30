@@ -13,7 +13,6 @@ import io.ipoli.android.common.IntentUtil
 import io.ipoli.android.common.datetime.Duration
 import io.ipoli.android.common.datetime.Minute
 import io.ipoli.android.common.datetime.minutes
-import io.ipoli.android.common.datetime.startOfDayUTC
 import io.ipoli.android.common.di.Module
 import io.ipoli.android.common.job.FixedDailyJob
 import io.ipoli.android.common.job.FixedDailyJobScheduler
@@ -142,8 +141,8 @@ class PlanDayJob : FixedDailyJob(PlanDayJob.TAG) {
             return Job.Result.SUCCESS
         }
 
-        dailyChallengeRepository.findById(LocalDate.now().startOfDayUTC().toString())
-            ?: dailyChallengeRepository.save(DailyChallenge())
+        dailyChallengeRepository.findForDate(LocalDate.now())
+            ?: dailyChallengeRepository.save(DailyChallenge(date = LocalDate.now()))
 
         val pet = p.pet
         launch(UI) {

@@ -1,7 +1,6 @@
 package io.ipoli.android.dailychallenge.usecase
 
 import io.ipoli.android.common.UseCase
-import io.ipoli.android.common.datetime.startOfDayUTC
 import io.ipoli.android.dailychallenge.data.DailyChallenge
 import io.ipoli.android.dailychallenge.data.persistence.DailyChallengeRepository
 import org.threeten.bp.LocalDate
@@ -15,14 +14,13 @@ class LoadDailyChallengeUseCase(
 ) : UseCase<LoadDailyChallengeUseCase.Params, DailyChallenge> {
 
     override fun execute(parameters: Params): DailyChallenge {
-        val id = parameters.date.startOfDayUTC().toString()
         val dc =
-            dailyChallengeRepository.findById(id)
+            dailyChallengeRepository.findForDate(parameters.date)
         if (dc != null) {
             return dc
         }
 
-        return dailyChallengeRepository.save(DailyChallenge())
+        return dailyChallengeRepository.save(DailyChallenge(date = parameters.date))
     }
 
     data class Params(val date: LocalDate = LocalDate.now())

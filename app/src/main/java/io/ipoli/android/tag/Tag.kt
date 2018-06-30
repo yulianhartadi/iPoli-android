@@ -17,7 +17,8 @@ data class Tag(
     val isFavorite: Boolean,
     val questCount: Int = -1,
     override val createdAt: Instant = Instant.now(),
-    override val updatedAt: Instant = Instant.now()
+    override val updatedAt: Instant = Instant.now(),
+    val removedAt: Instant? = null
 ) : Entity {
     override fun equals(other: Any?): Boolean {
         if (other == null) return false

@@ -46,7 +46,8 @@ abstract class SwipeCallback :
         isCurrentlyActive: Boolean
     ) {
 
-        val alpha = ALPHA_FULL - (Math.abs(dX) / viewHolder.itemView.width.toFloat()) * ALPHA_MAGNIFICATION
+        val alpha =
+            ALPHA_FULL - (Math.abs(dX) / viewHolder.itemView.width.toFloat()) * ALPHA_MAGNIFICATION
         if (dX > 0) {
             val res = swipeStartResources(viewHolder.itemViewType)
             drawSwipeStartBackground(res.color, viewHolder.itemView, dX, c)

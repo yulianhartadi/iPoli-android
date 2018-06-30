@@ -3,6 +3,7 @@ package io.ipoli.android.player.auth
 import android.animation.Animator
 import android.animation.AnimatorListenerAdapter
 import android.animation.AnimatorSet
+import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
@@ -16,7 +17,7 @@ import android.view.View
 import android.view.ViewAnimationUtils
 import android.view.ViewGroup
 import android.view.animation.AccelerateDecelerateInterpolator
-import com.bluelinelabs.conductor.RouterTransaction
+import com.bluelinelabs.conductor.changehandler.HorizontalChangeHandler
 import com.bumptech.glide.Glide
 import com.bumptech.glide.request.RequestOptions
 import com.crashlytics.android.Crashlytics
@@ -29,8 +30,6 @@ import com.mikepenz.iconics.IconicsDrawable
 import io.ipoli.android.Constants
 import io.ipoli.android.R
 import io.ipoli.android.common.LoaderDialogController
-import io.ipoli.android.common.home.HomeViewController
-import io.ipoli.android.common.migration.MigrationViewController
 import io.ipoli.android.common.redux.android.ReduxViewController
 import io.ipoli.android.common.view.*
 import io.ipoli.android.common.view.recyclerview.BaseRecyclerViewAdapter
@@ -129,6 +128,7 @@ class AuthViewController(args: Bundle? = null) :
         )
 
     private fun renderUsernameLengthHint(length: Int) {
+        @SuppressLint("SetTextI18n")
         view!!.usernameLengthHint.text = "$length/${Constants.USERNAME_MAX_LENGTH}"
     }
 
@@ -172,20 +172,8 @@ class AuthViewController(args: Bundle? = null) :
                 }
 
                 view.anonymousSignUp.onDebounceClick {
-                    showLoader()
-                    FirebaseAuth.getInstance().signInAnonymously().addOnCompleteListener {
-                        if (it.isSuccessful) {
-                            dispatch(
-                                AuthAction.UserAuthenticated(
-                                    FirebaseAuth.getInstance().currentUser!!
-                                )
-                            )
-                        } else {
-                            hideLoader()
-                            showShortToast(R.string.something_went_wrong)
-                            Crashlytics.logException(it.exception)
-                        }
-                    }
+                    dispatch(AuthAction.ContinueAsGuest)
+                    showShortToast(R.string.welcome_hero)
                 }
             }
 
@@ -235,6 +223,7 @@ class AuthViewController(args: Bundle? = null) :
                 if (state.isGuest) {
                     router.handleBack()
                 } else {
+                    showShortToast(R.string.welcome_hero)
                     startHomeViewController()
                 }
             }
@@ -244,24 +233,21 @@ class AuthViewController(args: Bundle? = null) :
                 startHomeViewController()
             }
 
-            PLAYER_LOGGED_IN -> {
+            EXISTING_PLAYER_LOGGED_IN -> {
                 hideLoader()
-                showShortToast(R.string.welcome_hero)
-                if (state.shouldMigrate) {
-                    router.setRoot(RouterTransaction.with(MigrationViewController(state.schemaVersion)))
-                } else {
-                    startHomeViewController()
-                }
+                showShortToast(R.string.welcome_back_hero)
+                startHomeViewController()
             }
 
             EXISTING_PLAYER_LOGGED_IN_FROM_GUEST -> {
                 hideLoader()
-                showShortToast(R.string.welcome_hero)
-                if (state.shouldMigrate) {
-                    router.setRoot(RouterTransaction.with(MigrationViewController(state.schemaVersion)))
-                } else {
-                    router.handleBack()
-                }
+                showShortToast(R.string.welcome_back_hero)
+                router.handleBack()
+            }
+
+            SHOW_IMPORT_ERROR -> {
+                showLongToast(R.string.import_data_error_message)
+                activity?.finish()
             }
 
             else -> {
@@ -348,14 +334,13 @@ class AuthViewController(args: Bundle? = null) :
     }
 
     private fun startHomeViewController() {
-        rootRouter.replaceTopController(RouterTransaction.with(HomeViewController()))
+        navigateFromRoot().replaceWithHome(HorizontalChangeHandler())
     }
 
     private fun startSignUpForProvider(provider: AuthUI.IdpConfig): Intent {
         return AuthUI.getInstance()
             .createSignInIntentBuilder()
             .setAvailableProviders(listOf(provider))
-            .setIsAccountLinkingEnabled(true, null)
             .build()
     }
 
@@ -368,7 +353,8 @@ class AuthViewController(args: Bundle? = null) :
             if (resultCode == Activity.RESULT_OK) {
                 dispatch(
                     AuthAction.UserAuthenticated(
-                        FirebaseAuth.getInstance().currentUser!!
+                        FirebaseAuth.getInstance().currentUser!!,
+                        response!!.isNewUser
                     )
                 )
                 return

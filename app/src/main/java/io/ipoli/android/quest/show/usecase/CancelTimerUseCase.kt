@@ -3,6 +3,7 @@ package io.ipoli.android.quest.show.usecase
 import io.ipoli.android.common.UseCase
 import io.ipoli.android.quest.Quest
 import io.ipoli.android.quest.data.persistence.QuestRepository
+import io.ipoli.android.quest.job.ReminderScheduler
 import io.ipoli.android.quest.show.job.TimerCompleteScheduler
 
 /**
@@ -11,6 +12,7 @@ import io.ipoli.android.quest.show.job.TimerCompleteScheduler
  */
 open class CancelTimerUseCase(
     private val questRepository: QuestRepository,
+    private val reminderScheduler: ReminderScheduler,
     private val completeScheduler: TimerCompleteScheduler
 ) : UseCase<CancelTimerUseCase.Params, Quest> {
 
@@ -21,16 +23,20 @@ open class CancelTimerUseCase(
         completeScheduler.cancelAll()
 
         if (quest!!.hasCountDownTimer) {
-            return questRepository.save(quest.copy(timeRanges = listOf()))
+            val q = questRepository.save(quest.copy(timeRanges = listOf()))
+            reminderScheduler.schedule()
+            return q
         }
 
         require(quest.hasPomodoroTimer)
 
-        return questRepository.save(
+        val q = questRepository.save(
             quest.copy(
                 timeRanges = quest.timeRanges.toMutableList() - quest.timeRanges.last()
             )
         )
+        reminderScheduler.schedule()
+        return q
     }
 
     data class Params(val questId: String)

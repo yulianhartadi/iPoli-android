@@ -78,7 +78,7 @@ class SaveQuestsForRepeatingQuestUseCase(
                 periods.forEach {
                     if (!scheduledPeriods.containsKey(it.start)) {
                         scheduledPeriods[it.start] =
-                                generateWeeklyFlexibleDates(rq.repeatPattern, it)
+                            generateWeeklyFlexibleDates(rq.repeatPattern, it)
                     }
                 }
                 val pattern = rq.repeatPattern.copy(
@@ -104,7 +104,7 @@ class SaveQuestsForRepeatingQuestUseCase(
                 periods.forEach {
                     if (!scheduledPeriods.containsKey(it.start)) {
                         scheduledPeriods[it.start] =
-                                generateMonthlyFlexibleDates(rq.repeatPattern, it)
+                            generateMonthlyFlexibleDates(rq.repeatPattern, it)
                     }
                 }
 
@@ -131,7 +131,7 @@ class SaveQuestsForRepeatingQuestUseCase(
         }
 
         val scheduledQuests =
-            questRepository.findServerScheduledForRepeatingQuestBetween(rq.id, start, end)
+            questRepository.findScheduledForRepeatingQuestBetween(rq.id, start, end)
 
         val (removed, existing) = scheduledQuests.partition { it.isRemoved }
         val scheduledDateToQuest = existing.associateBy({ it.originalScheduledDate }, { it })

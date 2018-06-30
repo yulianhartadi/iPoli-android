@@ -1,7 +1,5 @@
 package io.ipoli.android.common.api
 
-import com.fasterxml.jackson.core.type.TypeReference
-import com.fasterxml.jackson.databind.ObjectMapper
 import io.ipoli.android.BuildConfig
 import io.ipoli.android.Constants
 import io.ipoli.android.common.datetime.startOfDayUTC
@@ -21,7 +19,6 @@ import java.util.concurrent.TimeUnit
 
 object Api {
 
-    private val objectMapper = ObjectMapper()
     private val urlProvider = if (BuildConfig.DEBUG) DevUrlProvider() else ProdUrlProvider()
     private val httpClient = OkHttpClient().newBuilder()
         .readTimeout(Constants.API_READ_TIMEOUT_SECONDS.toLong(), TimeUnit.SECONDS)
@@ -49,12 +46,12 @@ object Api {
     }
 
     private fun toMembershipStatus(response: Response): MembershipStatus {
-        val mapTypeReference = object : TypeReference<Map<String, Any>>() {}
-        val subs: Map<String, Any> =
-            objectMapper.readValue(response.body()!!.charStream(), mapTypeReference)
-        val startTimeMillis = subs["start_time"].toString().toLong()
-        val expiryTimeMillis = subs["end_time"].toString().toLong()
-        val autoRenewing = subs["autorenew"].toString().toBoolean()
+
+        val jsonObject = JSONObject(response.body()!!.string())
+
+        val startTimeMillis = jsonObject.getLong("start_time")
+        val expiryTimeMillis = jsonObject.getLong("end_time")
+        val autoRenewing = jsonObject.getBoolean("autorenew")
 
         return MembershipStatus(
             startDate = startTimeMillis.startOfDayUTC,
@@ -113,13 +110,12 @@ suspend fun Call.await(): Response {
             }
         })
 
-        continuation.invokeOnCompletion {
-            if (continuation.isCancelled)
-                try {
-                    cancel()
-                } catch (ex: Throwable) {
-                    //Ignore cancel exception
-                }
+        continuation.invokeOnCancellation {
+            try {
+                cancel()
+            } catch (ex: Throwable) {
+                //Ignore cancel exception
+            }
         }
     }
 }

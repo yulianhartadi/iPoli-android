@@ -37,12 +37,12 @@ import io.ipoli.android.common.redux.android.ReduxViewController
 import io.ipoli.android.common.text.LongFormatter
 import io.ipoli.android.common.view.*
 import io.ipoli.android.growth.GrowthViewController
+import io.ipoli.android.habit.list.HabitListViewController
 import io.ipoli.android.pet.AndroidPetAvatar
 import io.ipoli.android.pet.AndroidPetMood
 import io.ipoli.android.player.data.AndroidAvatar
 import io.ipoli.android.quest.bucketlist.BucketListViewController
 import io.ipoli.android.quest.schedule.ScheduleViewController
-import io.ipoli.android.habit.list.HabitListViewController
 import io.ipoli.android.repeatingquest.list.RepeatingQuestListViewController
 import io.ipoli.android.settings.SettingsViewController
 import io.ipoli.android.store.StoreViewController
@@ -171,7 +171,7 @@ class HomeViewController(args: Bundle? = null) :
                         if (feedback.isNotEmpty()) {
                             eventLogger.logEvent(
                                 "feedback",
-                                Bundle().apply { putString("feedback", feedback) }
+                                mapOf("feedback" to feedback)
                             )
                             showShortToast(R.string.feedback_response)
                             dispatch(HomeAction.FeedbackSent)

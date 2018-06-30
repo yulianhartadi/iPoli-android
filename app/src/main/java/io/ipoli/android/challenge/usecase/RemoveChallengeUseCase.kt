@@ -46,11 +46,11 @@ class RemoveChallengeUseCase(
             }
 
         questRepository.save(questsToUpdate)
-        questRepository.purge(questsToPurge.map { it.id })
+        questRepository.remove(questsToPurge.map { it.id })
 
         val rqs = repeatingQuestRepository
             .findAllForChallenge(c.id)
-        repeatingQuestRepository.purge(rqs.map { it.id })
+        repeatingQuestRepository.remove(rqs.map { it.id })
         reminderScheduler.schedule()
         challengeRepository.remove(c)
     }

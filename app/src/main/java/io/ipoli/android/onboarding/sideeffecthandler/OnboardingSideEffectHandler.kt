@@ -16,7 +16,7 @@ object OnboardingSideEffectHandler : AppSideEffectHandler() {
     private val playerRepository by required { playerRepository }
 
     override suspend fun doExecute(action: Action, state: AppState) {
-        when(action) {
+        when (action) {
             is OnboardAction.ValidateUsername -> {
                 val usernameValidationError =
                     UsernameValidator(playerRepository).validate(action.name)
@@ -32,6 +32,7 @@ object OnboardingSideEffectHandler : AppSideEffectHandler() {
             }
         }
     }
+
     override fun canHandle(action: Action) = action is OnboardAction
 
 }

@@ -7,8 +7,8 @@ import io.ipoli.android.common.BaseViewStateReducer
 import io.ipoli.android.common.DataLoadedAction
 import io.ipoli.android.common.Validator
 import io.ipoli.android.common.datetime.Time
-import io.ipoli.android.common.mvi.BaseViewState
 import io.ipoli.android.common.redux.Action
+import io.ipoli.android.common.redux.BaseViewState
 import io.ipoli.android.quest.Color
 import io.ipoli.android.quest.Icon
 import io.ipoli.android.quest.Quest
@@ -26,29 +26,98 @@ import java.util.*
  */
 sealed class EditQuestAction : Action {
 
-    data class StartAdd(val params: EditQuestViewController.Params?) : EditQuestAction()
+    data class StartAdd(val params: EditQuestViewController.Params?) : EditQuestAction() {
+        override fun toMap() = mapOf(
+            "name" to params?.name,
+            "scheduleDate" to params?.scheduleDate,
+            "startTime" to params?.startTime,
+            "duration" to params?.duration,
+            "icon" to params?.icon?.name,
+            "color" to params?.color?.name,
+            "reminderViewModel" to params?.reminderViewModel
+        )
+    }
     data class Load(
         val questId: String,
         val params: EditQuestViewController.Params?
-    ) : EditQuestAction()
+    ) : EditQuestAction() {
+        override fun toMap() = mapOf(
+            "questId" to questId,
+            "name" to params?.name,
+            "scheduleDate" to params?.scheduleDate,
+            "startTime" to params?.startTime,
+            "duration" to params?.duration,
+            "icon" to params?.icon?.name,
+            "color" to params?.color?.name,
+            "reminderViewModel" to params?.reminderViewModel
+        )
+    }
 
     data class Loaded(val quest: Quest, val params: EditQuestViewController.Params?) :
-        EditQuestAction()
+        EditQuestAction() {
+        override fun toMap() = mapOf(
+            "quest" to quest,
+            "name" to params?.name,
+            "scheduleDate" to params?.scheduleDate,
+            "startTime" to params?.startTime,
+            "duration" to params?.duration,
+            "icon" to params?.icon?.name,
+            "color" to params?.color?.name,
+            "reminderViewModel" to params?.reminderViewModel
+        )
+    }
 
-    data class ChangeColor(val color: Color) : EditQuestAction()
-    data class ChangeIcon(val icon: Icon?) : EditQuestAction()
-    data class ChangeDate(val scheduleDate: LocalDate?) : EditQuestAction()
-    data class ChangeDuration(val duration: Int) : EditQuestAction()
-    data class ChangeStartTime(val time: Time?) : EditQuestAction()
-    data class ChangeNote(val note: String) : EditQuestAction()
-    data class ChangeReminder(val reminder: ReminderViewModel?) : EditQuestAction()
-    data class ChangeChallenge(val challenge: Challenge?) : EditQuestAction()
-    data class Validate(val name: String) : EditQuestAction()
-    data class AddSubQuest(val name: String) : EditQuestAction()
+    data class ChangeColor(val color: Color) : EditQuestAction() {
+        override fun toMap() = mapOf("color" to color.name)
+    }
 
-    data class Save(val newSubQuestNames: Map<String, String>) : EditQuestAction()
-    data class RemoveTag(val tag: Tag) : EditQuestAction()
-    data class AddTag(val tagName: String) : EditQuestAction()
+    data class ChangeIcon(val icon: Icon?) : EditQuestAction() {
+        override fun toMap() = mapOf("icon" to icon?.name)
+    }
+
+    data class ChangeDate(val scheduleDate: LocalDate?) : EditQuestAction() {
+        override fun toMap() = mapOf("scheduleDate" to scheduleDate)
+    }
+
+    data class ChangeDuration(val duration: Int) : EditQuestAction() {
+        override fun toMap() = mapOf("duration" to duration)
+    }
+
+    data class ChangeStartTime(val time: Time?) : EditQuestAction() {
+        override fun toMap() = mapOf("time" to time)
+    }
+
+    data class ChangeNote(val note: String) : EditQuestAction() {
+        override fun toMap() = mapOf("note" to note)
+    }
+
+    data class ChangeReminder(val reminder: ReminderViewModel?) : EditQuestAction() {
+        override fun toMap() = mapOf("reminder" to reminder)
+    }
+
+    data class ChangeChallenge(val challenge: Challenge?) : EditQuestAction() {
+        override fun toMap() = mapOf("challenge" to challenge)
+    }
+
+    data class Validate(val name: String) : EditQuestAction() {
+        override fun toMap() = mapOf("name" to name)
+    }
+
+    data class AddSubQuest(val name: String) : EditQuestAction() {
+        override fun toMap() = mapOf("name" to name)
+    }
+
+    data class Save(val newSubQuestNames: Map<String, String>) : EditQuestAction() {
+        override fun toMap() = mapOf("newSubQuestNames" to newSubQuestNames)
+    }
+
+    data class RemoveTag(val tag: Tag) : EditQuestAction() {
+        override fun toMap() = mapOf("tag" to tag)
+    }
+
+    data class AddTag(val tagName: String) : EditQuestAction() {
+        override fun toMap() = mapOf("tagName" to tagName)
+    }
 }
 
 object EditQuestReducer : BaseViewStateReducer<EditQuestViewState>() {

@@ -3,8 +3,9 @@ package io.ipoli.android.tag.edit
 import io.ipoli.android.common.AppState
 import io.ipoli.android.common.BaseViewStateReducer
 import io.ipoli.android.common.Validator
-import io.ipoli.android.common.mvi.BaseViewState
+
 import io.ipoli.android.common.redux.Action
+import io.ipoli.android.common.redux.BaseViewState
 import io.ipoli.android.quest.Color
 import io.ipoli.android.quest.Icon
 import io.ipoli.android.tag.edit.EditTagViewState.StateType.*
@@ -16,10 +17,22 @@ import io.ipoli.android.tag.list.TagListReducer
  */
 sealed class EditTagAction : Action {
     object Save : EditTagAction()
-    data class Load(val tagId: String?) : EditTagAction()
-    data class ChangeIcon(val icon: Icon?) : EditTagAction()
-    data class ChangeColor(val color: Color) : EditTagAction()
-    data class Validate(val name: String) : EditTagAction()
+    data class Load(val tagId: String?) : EditTagAction() {
+        override fun toMap() =
+            mapOf("tagId" to tagId, "mode" to if (tagId.isNullOrBlank()) "add" else "edit ")
+    }
+
+    data class ChangeIcon(val icon: Icon?) : EditTagAction() {
+        override fun toMap() = mapOf("icon" to icon?.name)
+    }
+
+    data class ChangeColor(val color: Color) : EditTagAction() {
+        override fun toMap() = mapOf("color" to color.name)
+    }
+
+    data class Validate(val name: String) : EditTagAction() {
+        override fun toMap() = mapOf("name" to name)
+    }
 }
 
 object EditTagReducer : BaseViewStateReducer<EditTagViewState>() {

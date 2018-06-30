@@ -9,8 +9,8 @@ import io.ipoli.android.common.AppState
 import io.ipoli.android.common.BaseViewStateReducer
 import io.ipoli.android.common.DataLoadedAction
 import io.ipoli.android.common.Validator
-import io.ipoli.android.common.mvi.BaseViewState
 import io.ipoli.android.common.redux.Action
+import io.ipoli.android.common.redux.BaseViewState
 import io.ipoli.android.quest.BaseQuest
 import io.ipoli.android.quest.Color
 import io.ipoli.android.quest.Icon
@@ -22,22 +22,62 @@ import org.threeten.bp.LocalDate
  * on 3/8/18.
  */
 sealed class EditChallengeAction : Action {
-    data class ChangeColor(val color: Color) : EditChallengeAction()
-    data class ChangeIcon(val icon: Icon?) : EditChallengeAction()
-    data class ChangeDifficulty(val position: Int) : EditChallengeAction()
-    data class ValidateName(val name: String) : EditChallengeAction()
-    data class ValidateMotivation(val motivationList: List<String>) : EditChallengeAction()
-    data class SelectDate(val date: LocalDate) : EditChallengeAction()
-    data class ChangeNote(val note: String) : EditChallengeAction()
-    data class RemoveTag(val tag: Tag) : EditChallengeAction()
-    data class AddTag(val tagName: String) : EditChallengeAction()
-    data class Load(val challengeId: String) : EditChallengeAction()
-    data class ChangeEndDate(val date: LocalDate) : EditChallengeAction()
+    data class ChangeColor(val color: Color) : EditChallengeAction() {
+        override fun toMap() = mapOf("color" to color.name)
+    }
+
+    data class ChangeIcon(val icon: Icon?) : EditChallengeAction() {
+        override fun toMap() = mapOf("icon" to icon?.name)
+    }
+
+    data class ChangeDifficulty(val position: Int) : EditChallengeAction() {
+        override fun toMap() = mapOf("position" to position)
+    }
+
+    data class ValidateName(val name: String) : EditChallengeAction() {
+        override fun toMap() = mapOf("name" to name)
+    }
+
+    data class ValidateMotivation(val motivationList: List<String>) : EditChallengeAction() {
+        override fun toMap() = mapOf("motivationList" to motivationList.joinToString(","))
+    }
+
+    data class SelectDate(val date: LocalDate) : EditChallengeAction() {
+        override fun toMap() = mapOf("date" to date)
+    }
+
+    data class ChangeNote(val note: String) : EditChallengeAction() {
+        override fun toMap() = mapOf("note" to note)
+    }
+
+    data class RemoveTag(val tag: Tag) : EditChallengeAction() {
+        override fun toMap() = mapOf("tag" to tag)
+    }
+
+    data class AddTag(val tagName: String) : EditChallengeAction() {
+        override fun toMap() = mapOf("tagName" to tagName)
+    }
+
+    data class Load(val challengeId: String) : EditChallengeAction() {
+        override fun toMap() = mapOf("challengeId" to challengeId)
+    }
+
+    data class ChangeEndDate(val date: LocalDate) : EditChallengeAction() {
+        override fun toMap() = mapOf("date" to date)
+    }
     data class ChangeMotivations(
         val motivation1: String,
         val motivation2: String,
         val motivation3: String
-    ) : EditChallengeAction()
+    ) : EditChallengeAction() {
+
+        override fun toMap() = mapOf(
+            "motivation1" to motivation1,
+            "motivation2" to motivation2,
+            "motivation3" to motivation3
+        )
+
+    }
 
     object ShowNext : EditChallengeAction()
     object UpdateSummary : EditChallengeAction()

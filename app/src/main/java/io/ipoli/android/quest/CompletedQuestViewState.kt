@@ -7,8 +7,9 @@ import io.ipoli.android.common.datetime.Duration
 import io.ipoli.android.common.datetime.Minute
 import io.ipoli.android.common.datetime.Time
 import io.ipoli.android.common.datetime.minutes
-import io.ipoli.android.common.mvi.BaseViewState
+
 import io.ipoli.android.common.redux.Action
+import io.ipoli.android.common.redux.BaseViewState
 import io.ipoli.android.common.view.AndroidColor
 import io.ipoli.android.common.view.AndroidIcon
 import io.ipoli.android.pet.Food
@@ -21,7 +22,9 @@ import org.threeten.bp.LocalDate
  */
 
 sealed class CompletedQuestAction : Action {
-    data class Load(val questId: String) : CompletedQuestAction()
+    data class Load(val questId: String) : CompletedQuestAction() {
+        override fun toMap() = mapOf("questId" to questId)
+    }
 }
 
 object CompletedQuestReducer : BaseViewStateReducer<CompletedQuestViewState>() {

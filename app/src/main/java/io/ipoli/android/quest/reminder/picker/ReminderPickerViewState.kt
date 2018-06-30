@@ -3,9 +3,10 @@ package io.ipoli.android.quest.reminder.picker
 import io.ipoli.android.Constants
 import io.ipoli.android.common.AppState
 import io.ipoli.android.common.BaseViewStateReducer
-import io.ipoli.android.common.mvi.BaseViewState
+
 import io.ipoli.android.common.parser.ReminderMinutesParser
 import io.ipoli.android.common.redux.Action
+import io.ipoli.android.common.redux.BaseViewState
 import io.ipoli.android.pet.PetAvatar
 import io.ipoli.android.quest.reminder.picker.ReminderPickerViewState.StateType.*
 
@@ -15,13 +16,25 @@ import io.ipoli.android.quest.reminder.picker.ReminderPickerViewState.StateType.
  */
 
 sealed class ReminderPickerAction : Action {
-    data class Load(val reminder: ReminderViewModel?) : ReminderPickerAction()
-    data class ChangeMessage(val message: String) : ReminderPickerAction()
-    data class ChangeCustomTime(val timeValue: String) : ReminderPickerAction()
-    data class ChangePredefinedTime(val index: Int) :
-        ReminderPickerAction()
+    data class Load(val reminder: ReminderViewModel?) : ReminderPickerAction() {
+        override fun toMap() = mapOf("reminder" to reminder)
+    }
 
-    data class ChangeTimeUnit(val index: Int) : ReminderPickerAction()
+    data class ChangeMessage(val message: String) : ReminderPickerAction() {
+        override fun toMap() = mapOf("message" to message)
+    }
+
+    data class ChangeCustomTime(val timeValue: String) : ReminderPickerAction() {
+        override fun toMap() = mapOf("timeValue" to timeValue)
+    }
+    data class ChangePredefinedTime(val index: Int) :
+        ReminderPickerAction() {
+        override fun toMap() = mapOf("index" to index)
+    }
+
+    data class ChangeTimeUnit(val index: Int) : ReminderPickerAction() {
+        override fun toMap() = mapOf("index" to index)
+    }
     object PickReminder : ReminderPickerAction()
 }
 

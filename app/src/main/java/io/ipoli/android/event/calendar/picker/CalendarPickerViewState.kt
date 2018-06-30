@@ -3,8 +3,9 @@ package io.ipoli.android.event.calendar.picker
 import io.ipoli.android.common.AppState
 import io.ipoli.android.common.BaseViewStateReducer
 import io.ipoli.android.common.DataLoadedAction
-import io.ipoli.android.common.mvi.BaseViewState
+
 import io.ipoli.android.common.redux.Action
+import io.ipoli.android.common.redux.BaseViewState
 import io.ipoli.android.event.Calendar
 import io.ipoli.android.pet.PetAvatar
 import io.ipoli.android.player.data.Player
@@ -16,7 +17,9 @@ import io.ipoli.android.player.data.Player
 
 sealed class CalendarPickerAction : Action {
     object Load : CalendarPickerAction()
-    data class SelectCalendars(val selectedCalendarPositions: List<Int>) : CalendarPickerAction()
+    data class SelectCalendars(val selectedCalendarPositions: List<Int>) : CalendarPickerAction() {
+        override fun toMap() = mapOf("selectedCalendarPositions" to selectedCalendarPositions)
+    }
 }
 
 object CalendarPickerReducer : BaseViewStateReducer<CalendarPickerViewState>() {

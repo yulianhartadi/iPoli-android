@@ -27,7 +27,7 @@ class UpdateHabitStreaksUseCase(
                     it.copy(
                         currentStreak = it.currentStreak + 1,
                         bestStreak = Math.max(it.bestStreak, it.currentStreak + 1)
-                )
+                    )
             }
         })
     }

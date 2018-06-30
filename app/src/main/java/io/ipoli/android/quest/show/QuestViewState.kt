@@ -5,8 +5,9 @@ import io.ipoli.android.common.AppState
 import io.ipoli.android.common.BaseViewStateReducer
 import io.ipoli.android.common.DataLoadedAction
 import io.ipoli.android.common.datetime.*
-import io.ipoli.android.common.mvi.BaseViewState
+
 import io.ipoli.android.common.redux.Action
+import io.ipoli.android.common.redux.BaseViewState
 import io.ipoli.android.quest.Color
 import io.ipoli.android.quest.Quest
 import io.ipoli.android.quest.TimeRange
@@ -24,14 +25,37 @@ import org.threeten.bp.Instant
  */
 
 sealed class QuestAction : Action {
-    data class Load(val questId: String) : QuestAction()
-    data class CompleteSubQuest(val position: Int) : QuestAction()
-    data class UndoCompletedSubQuest(val position: Int) : QuestAction()
-    data class SaveSubQuestName(val name: String, val position: Int) : QuestAction()
-    data class AddSubQuest(val name: String) : QuestAction()
-    data class RemoveSubQuest(val position: Int) : QuestAction()
-    data class ReorderSubQuest(val oldPosition: Int, val newPosition: Int) : QuestAction()
-    data class SaveNote(val note: String) : QuestAction()
+    data class Load(val questId: String) : QuestAction() {
+        override fun toMap() = mapOf("questId" to questId)
+    }
+
+    data class CompleteSubQuest(val position: Int) : QuestAction() {
+        override fun toMap() = mapOf("position" to position)
+    }
+
+    data class UndoCompletedSubQuest(val position: Int) : QuestAction() {
+        override fun toMap() = mapOf("position" to position)
+    }
+
+    data class SaveSubQuestName(val name: String, val position: Int) : QuestAction() {
+        override fun toMap() = mapOf("name" to name, "position" to position)
+    }
+
+    data class AddSubQuest(val name: String) : QuestAction() {
+        override fun toMap() = mapOf("name" to name)
+    }
+
+    data class RemoveSubQuest(val position: Int) : QuestAction() {
+        override fun toMap() = mapOf("position" to position)
+    }
+
+    data class ReorderSubQuest(val oldPosition: Int, val newPosition: Int) : QuestAction() {
+        override fun toMap() = mapOf("oldPosition" to oldPosition, "newPosition" to newPosition)
+    }
+
+    data class SaveNote(val note: String) : QuestAction() {
+        override fun toMap() = mapOf("note" to note)
+    }
 
     object Start : QuestAction()
     object Stop : QuestAction()
@@ -40,8 +64,13 @@ sealed class QuestAction : Action {
     object ShowCountDownTimer : QuestAction()
     object ShowPomodoroTimer : QuestAction()
     object CompleteQuest : QuestAction()
-    data class Remove(val questId: String) : QuestAction()
-    data class UndoRemove(val questId: String) : QuestAction()
+    data class Remove(val questId: String) : QuestAction() {
+        override fun toMap() = mapOf("questId" to questId)
+    }
+
+    data class UndoRemove(val questId: String) : QuestAction() {
+        override fun toMap() = mapOf("questId" to questId)
+    }
 
     object AddPomodoro : QuestAction()
     object RemovePomodoro : QuestAction()

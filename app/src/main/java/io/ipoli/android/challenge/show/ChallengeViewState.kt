@@ -5,8 +5,9 @@ import io.ipoli.android.common.AppState
 import io.ipoli.android.common.BaseViewStateReducer
 import io.ipoli.android.common.DataLoadedAction
 import io.ipoli.android.common.datetime.datesBetween
-import io.ipoli.android.common.mvi.BaseViewState
+
 import io.ipoli.android.common.redux.Action
+import io.ipoli.android.common.redux.BaseViewState
 import io.ipoli.android.quest.BaseQuest
 import io.ipoli.android.quest.Color
 import io.ipoli.android.tag.Tag
@@ -19,10 +20,21 @@ import java.util.*
  */
 
 sealed class ChallengeAction : Action {
-    data class Load(val challengeId: String) : ChallengeAction()
-    data class Remove(val challengeId: String) : ChallengeAction()
-    data class RemoveQuestFromChallenge(val questIndex: Int) : ChallengeAction()
-    data class Complete(val challengeId: String) : ChallengeAction()
+    data class Load(val challengeId: String) : ChallengeAction() {
+        override fun toMap() = mapOf("challengeId" to challengeId)
+    }
+
+    data class Remove(val challengeId: String) : ChallengeAction() {
+        override fun toMap() = mapOf("challengeId" to challengeId)
+    }
+
+    data class RemoveQuestFromChallenge(val questIndex: Int) : ChallengeAction() {
+        override fun toMap() = mapOf("questIndex" to questIndex)
+    }
+
+    data class Complete(val challengeId: String) : ChallengeAction() {
+        override fun toMap() = mapOf("challengeId" to challengeId)
+    }
 }
 
 object ChallengeReducer : BaseViewStateReducer<ChallengeViewState>() {

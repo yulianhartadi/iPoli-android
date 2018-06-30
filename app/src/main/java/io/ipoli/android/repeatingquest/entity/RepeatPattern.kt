@@ -131,7 +131,7 @@ sealed class RepeatPattern(
 
                 val periodStart =
                     from.with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY))
-                if(!scheduledPeriods.containsKey(periodStart)) {
+                if (!scheduledPeriods.containsKey(periodStart)) {
                     return null
                 }
 
@@ -167,7 +167,7 @@ sealed class RepeatPattern(
                 require(scheduledPeriods.isNotEmpty())
                 val periodStart = from.with(TemporalAdjusters.firstDayOfMonth())
 
-                if(!scheduledPeriods.containsKey(periodStart)) {
+                if (!scheduledPeriods.containsKey(periodStart)) {
                     return null
                 }
 

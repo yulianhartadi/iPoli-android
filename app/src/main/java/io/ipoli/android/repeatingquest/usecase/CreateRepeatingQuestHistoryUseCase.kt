@@ -6,7 +6,6 @@ import io.ipoli.android.common.datetime.isBeforeOrEqual
 import io.ipoli.android.quest.data.persistence.QuestRepository
 import io.ipoli.android.repeatingquest.persistence.RepeatingQuestRepository
 import org.threeten.bp.LocalDate
-import timber.log.Timber
 
 /**
  * Created by Polina Zhelyazkova <polina@mypoli.fun>

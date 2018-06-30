@@ -199,7 +199,8 @@ class InviteFriendsDialogController : BaseDialogController(), Injects<Module> {
 
                 eventLogger.logEvent(
                     "firebase_invite_sent",
-                    Bundle().apply { putInt("count", inviteIds.size) })
+                    mapOf("count" to inviteIds.size)
+                )
             } else {
                 eventLogger.logEvent("firebase_invite_canceled")
             }

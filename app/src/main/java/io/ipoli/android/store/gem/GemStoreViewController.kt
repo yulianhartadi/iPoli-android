@@ -124,7 +124,7 @@ class GemStoreViewController(args: Bundle? = null) :
                             view.smartPackPrice.text = it.price
                             view.smartPackTitle.text = it.title
                             view.smartPackGems.text = "x ${it.gems}"
-                            view.smartPackBuy.onDebounceClick  {
+                            view.smartPackBuy.onDebounceClick {
                                 disableButtons()
                                 dispatch(GemStoreAction.BuyGemPack(gp))
                             }

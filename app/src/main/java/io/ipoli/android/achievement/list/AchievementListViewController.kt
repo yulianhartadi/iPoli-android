@@ -212,7 +212,9 @@ class AchievementListViewController(args: Bundle? = null) :
                         name = stringRes(aa.title),
                         icon = if (aa.isHidden) R.drawable.ic_question_mark_yellow_24dp else aa.icon,
                         backgroundColor = if (aa.isHidden) R.color.md_grey_500 else aa.color,
-                        description = if (aa.isHidden) stringRes(R.string.hidden_achievement_desc) else stringRes(aa.levelDescriptions[a.currentLevel + 1]!!),
+                        description = if (aa.isHidden) stringRes(R.string.hidden_achievement_desc) else stringRes(
+                            aa.levelDescriptions[a.currentLevel + 1]!!
+                        ),
                         showStars = a.isMultiLevel,
                         star1 = star1,
                         star2 = star2,

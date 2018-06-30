@@ -2,16 +2,24 @@ package io.ipoli.android.quest.bucketlist
 
 import io.ipoli.android.common.AppState
 import io.ipoli.android.common.BaseViewStateReducer
-import io.ipoli.android.common.mvi.BaseViewState
+
 import io.ipoli.android.common.redux.Action
+import io.ipoli.android.common.redux.BaseViewState
 import io.ipoli.android.quest.bucketlist.usecase.CreateBucketListItemsUseCase
 
 sealed class BucketListAction : Action {
     data class ItemsChanged(val items: List<CreateBucketListItemsUseCase.BucketListItem>) :
-        BucketListAction()
+        BucketListAction() {
+        override fun toMap() = mapOf("items" to items)
+    }
 
-    data class CompleteQuest(val questId: String) : BucketListAction()
-    data class ScheduleForToday(val questId: String) : BucketListAction()
+    data class CompleteQuest(val questId: String) : BucketListAction() {
+        override fun toMap() = mapOf("questId" to questId)
+    }
+
+    data class ScheduleForToday(val questId: String) : BucketListAction() {
+        override fun toMap() = mapOf("questId" to questId)
+    }
 
     object Load : BucketListAction()
 }
