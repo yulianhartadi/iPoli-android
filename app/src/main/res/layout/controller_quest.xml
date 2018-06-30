@@ -37,54 +37,25 @@
                     android:layout_height="match_parent"
                     android:layout_marginTop="?attr/actionBarSize">
 
-
-                    <android.support.constraint.ConstraintLayout
-                        android:id="@+id/questNameBackground"
-                        android:layout_width="match_parent"
+                    <TextView
+                        android:id="@+id/questName"
+                        style="@style/TextAppearance.AppCompat.Headline"
+                        android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_marginBottom="16dp"
                         android:layout_marginEnd="16dp"
                         android:layout_marginStart="16dp"
-                        android:background="@drawable/rounded_rectangle_white_background"
+                        android:ellipsize="marquee"
+                        android:gravity="center"
+                        android:maxLines="3"
+                        android:textColor="@color/md_white"
                         android:paddingBottom="8dp"
                         android:paddingTop="8dp"
                         app:layout_constraintBottom_toTopOf="@+id/timerProgressCircle"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toTopOf="parent"
-                        app:layout_constraintVertical_chainStyle="spread_inside">
-
-                        <TextView
-                            android:id="@+id/questName"
-                            style="@style/TextAppearance.AppCompat.Headline"
-                            android:layout_width="0dp"
-                            android:layout_height="match_parent"
-                            android:layout_marginEnd="16dp"
-                            android:layout_marginStart="16dp"
-                            android:ellipsize="marquee"
-                            android:gravity="center"
-                            android:maxLines="3"
-                            android:textColor="@color/md_dark_text_87"
-                            app:layout_constraintBottom_toTopOf="@+id/tagList"
-                            app:layout_constraintEnd_toEndOf="parent"
-                            app:layout_constraintStart_toStartOf="parent"
-                            app:layout_constraintTop_toTopOf="parent"
-                            app:layout_constraintVertical_chainStyle="packed" />
-
-                        <org.apmem.tools.layouts.FlowLayout
-                            android:id="@+id/tagList"
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:layout_marginEnd="16dp"
-                            android:layout_marginStart="16dp"
-                            android:layout_marginTop="8dp"
-                            android:gravity="center_horizontal"
-                            android:maxHeight="108dp"
-                            app:layout_constraintBottom_toBottomOf="parent"
-                            app:layout_constraintEnd_toEndOf="parent"
-                            app:layout_constraintStart_toStartOf="parent"
-                            app:layout_constraintTop_toBottomOf="@+id/questName" />
-                    </android.support.constraint.ConstraintLayout>
+                        app:layout_constraintVertical_chainStyle="spread_inside" />
 
 
                     <TextView
@@ -193,7 +164,7 @@
                         app:layout_constraintBottom_toTopOf="@+id/timerProgressScroll"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toBottomOf="@+id/questNameBackground"
+                        app:layout_constraintTop_toBottomOf="@+id/questName"
                         app:line_count="60"
                         app:line_width="0.5dp"
                         app:progress_background_color="@color/md_light_text_50"
@@ -313,7 +284,7 @@
                         android:id="@+id/timerRunningGroup"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        app:constraint_referenced_ids="timerLabel,startStop,timerProgressCircle,questNameBackground,scrollDownHint" />
+                        app:constraint_referenced_ids="timerLabel,startStop,timerProgressCircle,questName,scrollDownHint" />
 
                 </android.support.constraint.ConstraintLayout>
 

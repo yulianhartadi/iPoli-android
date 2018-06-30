@@ -32,10 +32,8 @@ import io.ipoli.android.common.view.recyclerview.BaseRecyclerViewAdapter
 import io.ipoli.android.common.view.recyclerview.RecyclerViewViewModel
 import io.ipoli.android.common.view.recyclerview.ReorderItemHelper
 import io.ipoli.android.common.view.recyclerview.SimpleViewHolder
-import io.ipoli.android.tag.Tag
 import kotlinx.android.synthetic.main.controller_quest.view.*
 import kotlinx.android.synthetic.main.item_quest_sub_quest.view.*
-import kotlinx.android.synthetic.main.item_quest_tag_list.view.*
 import kotlinx.android.synthetic.main.item_timer_progress.view.*
 import kotlinx.android.synthetic.main.view_loader.view.*
 
@@ -238,7 +236,6 @@ class QuestViewController : ReduxViewController<QuestAction, QuestViewState, Que
             state.type != QuestViewState.StateType.TIMER_TICK &&
             state.type != QuestViewState.StateType.QUEST_COMPLETED
         ) {
-            renderTags(view, state.tags)
             renderSubQuests(state, view)
             renderNote(state, view)
         }
@@ -495,26 +492,6 @@ class QuestViewController : ReduxViewController<QuestAction, QuestViewState, Que
         view.timerTypeCountdownIndicator.setBackgroundResource(R.drawable.progress_indicator_empty)
 
         dispatch(QuestAction.ShowPomodoroTimer)
-    }
-
-    private fun renderTags(
-        view: View,
-        tags: List<Tag>
-    ) {
-        view.tagList.removeAllViews()
-
-        val inflater = LayoutInflater.from(activity!!)
-        tags.forEach { tag ->
-            val item = inflater.inflate(R.layout.item_quest_tag_list, view.tagList, false)
-            renderTag(item, tag)
-            view.tagList.addView(item)
-        }
-    }
-
-    private fun renderTag(view: View, tag: Tag) {
-        view.tagName.text = tag.name
-        val indicator = view.tagName.compoundDrawablesRelative[0] as GradientDrawable
-        indicator.setColor(colorRes(tag.color.androidColor.color500))
     }
 
     private fun cancelAnimations(view: View) {
