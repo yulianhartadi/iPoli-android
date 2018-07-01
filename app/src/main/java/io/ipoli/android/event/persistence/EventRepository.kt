@@ -102,7 +102,10 @@ class AndroidCalendarEventRepository : EventRepository {
                 null
             ).use {
                 while (it.moveToNext()) {
-                    events.add(createEvent(it))
+                    val e = createEvent(it)
+                    if (e.startDate >= start && e.endDate <= end) {
+                        events.add(e)
+                    }
                 }
             }
         }
@@ -115,9 +118,13 @@ class AndroidCalendarEventRepository : EventRepository {
         val eventEndTime = Time.of(cursor.getInt(PROJECTION_END_MIN_INDEX))
         val tz = ZoneId.of(cursor.getString(PROJECTION_TIME_ZONE_INDEX))
         val rRule = cursor.getString(PROJECTION_RRULE)
+        val title = if (cursor.isNull(PROJECTION_TITLE_INDEX))
+            "(No title)"
+        else
+            cursor.getString(PROJECTION_TITLE_INDEX)
         return Event(
             id = cursor.getString(PROJECTION_ID_INDEX),
-            name = cursor.getString(PROJECTION_TITLE_INDEX),
+            name = if (title.isBlank()) "(No title)" else title,
             startTime = eventStartTime,
             duration = (eventEndTime - eventStartTime).toMinuteOfDay().minutes,
             startDate = cursor.getLong(PROJECTION_BEGIN_INDEX).instant.atZone(tz).toLocalDate(),
