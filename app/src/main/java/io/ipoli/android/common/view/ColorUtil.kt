@@ -1,6 +1,9 @@
 package io.ipoli.android.common.view
 
 import android.graphics.Color
+import android.support.annotation.ColorInt
+import android.support.annotation.FloatRange
+
 
 /**
  * Created by Venelin Valkov <venelin@mypoli.fun>
@@ -85,5 +88,17 @@ object ColorUtil {
             colorData[2] = colorData[2] * 0.8f
         }
         return Color.HSVToColor(Color.alpha(color), colorData)
+    }
+
+    @ColorInt
+    fun darkenColor(@ColorInt color: Int): Int {
+        val hsv = FloatArray(3)
+        Color.colorToHSV(color, hsv)
+        hsv[2] *= 0.5f
+        return Color.HSVToColor(hsv)
+    }
+
+    fun alphaInt(@FloatRange(from = 0.0, to = 1.0) value: Float): Int {
+        return (255 * value).toInt()
     }
 }

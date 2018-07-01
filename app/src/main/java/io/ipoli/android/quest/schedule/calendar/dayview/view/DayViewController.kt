@@ -9,8 +9,10 @@ import android.content.Context
 import android.graphics.drawable.ColorDrawable
 import android.graphics.drawable.GradientDrawable
 import android.os.Bundle
+import android.support.annotation.ColorInt
 import android.support.annotation.ColorRes
 import android.support.v4.content.ContextCompat
+import android.support.v4.graphics.ColorUtils
 import android.support.v4.widget.TextViewCompat
 import android.support.v4.widget.TintableCompoundButton
 import android.text.Editable
@@ -598,7 +600,9 @@ class DayViewController :
             override val startMinute: Int,
             val startTime: String,
             val endTime: String,
-            val backgroundColor: Int,
+            @ColorInt val nameColor: Int,
+            @ColorInt val timeColor: Int,
+            @ColorInt val backgroundColor: Int,
             val isRepeating: Boolean
         ) : ScheduledEventViewModel()
     }
@@ -635,8 +639,8 @@ class DayViewController :
 
             view.questName.text = vm.name
 
-            view.questSchedule.setTextColor(colorRes(R.color.md_light_text_70))
-            view.questName.setTextColor(colorRes(R.color.md_white))
+            view.questSchedule.setTextColor(vm.timeColor)
+            view.questName.setTextColor(vm.nameColor)
 
             view.repeatIndicator.visible = vm.isRepeating
             view.challengeIndicator.gone()
@@ -1113,7 +1117,12 @@ class DayViewController :
                     startMinute = e.startTime.toMinuteOfDay(),
                     startTime = e.startTime.toString(shouldUse24HourFormat),
                     endTime = e.endTime.toString(shouldUse24HourFormat),
-                    backgroundColor = e.color,
+                    nameColor = ColorUtil.darkenColor(e.color),
+                    timeColor = ColorUtil.darkenColor(e.color),
+                    backgroundColor = ColorUtils.setAlphaComponent(
+                        e.color,
+                        ColorUtil.alphaInt(0.4f)
+                    ),
                     isRepeating = e.isRepeating
                 )
             }
