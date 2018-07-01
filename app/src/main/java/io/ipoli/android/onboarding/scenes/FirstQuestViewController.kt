@@ -245,7 +245,7 @@ class FirstQuestViewController(args: Bundle? = null) :
                 )
             )
 
-            view.questCategoryIndicator.setBackgroundResource(R.color.md_green_900)
+            view.questColorIndicator.setBackgroundResource(R.color.md_green_900)
 
             (view.checkBox as TintableCompoundButton).supportButtonTintList =
                 ContextCompat.getColorStateList(
@@ -267,7 +267,7 @@ class FirstQuestViewController(args: Bundle? = null) :
                         .create(view.completedBackgroundView, cb)
                     anim.addListener(object : AnimatorListenerAdapter() {
                         override fun onAnimationStart(animation: Animator?) {
-                            view.questCategoryIndicator.setBackgroundResource(R.color.md_grey_400)
+                            view.questColorIndicator.setBackgroundResource(R.color.md_grey_400)
                             view.completedBackgroundView.visibility = View.VISIBLE
 
                             view.questIcon.setImageDrawable(

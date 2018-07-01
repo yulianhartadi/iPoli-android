@@ -702,7 +702,7 @@ class DayViewController :
                 }
             } else {
 
-                view.questCategoryIndicator.setBackgroundResource(vm.backgroundColor.color900)
+                view.questColorIndicator.setBackgroundResource(vm.backgroundColor.color800)
                 view.questSchedule.setTextColor(colorRes(R.color.md_light_text_70))
                 view.questTags.setTextColor(colorRes(R.color.md_light_text_70))
                 view.questTags.setCompoundDrawablesRelativeWithIntrinsicBounds(

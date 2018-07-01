@@ -28,7 +28,7 @@
         android:visibility="invisible"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="@+id/questCategoryIndicator"
+        app:layout_constraintStart_toStartOf="@+id/questColorIndicator"
         app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
@@ -44,14 +44,10 @@
         tools:text="10:30 - 12:45" />
 
     <View
-        android:id="@+id/questCategoryIndicator"
+        android:id="@+id/questColorIndicator"
         android:layout_width="4dp"
         android:layout_height="match_parent"
-        android:layout_marginEnd="8dp"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@+id/checkBox"
-        app:layout_constraintHorizontal_bias="0.5"
-        app:layout_constraintHorizontal_chainStyle="spread_inside"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
@@ -83,8 +79,7 @@
         app:layout_constraintEnd_toStartOf="@+id/questName"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintHorizontal_chainStyle="spread_inside"
-        app:layout_constraintStart_toEndOf="@+id/questCategoryIndicator"
-        app:layout_constraintStart_toStartOf="@+id/questCategoryIndicator"
+        app:layout_constraintStart_toEndOf="@+id/questColorIndicator"
         app:layout_constraintTop_toTopOf="parent" />
 
     <ImageView
