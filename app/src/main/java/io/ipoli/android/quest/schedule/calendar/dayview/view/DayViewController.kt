@@ -602,6 +602,7 @@ class DayViewController :
             val endTime: String,
             @ColorInt val nameColor: Int,
             @ColorInt val timeColor: Int,
+            @ColorInt val indicatorColor: Int,
             @ColorInt val backgroundColor: Int,
             val isRepeating: Boolean
         ) : ScheduledEventViewModel()
@@ -633,6 +634,8 @@ class DayViewController :
             vm: ScheduledEventViewModel.Event
         ) {
             view.checkBox.gone()
+            view.questColorIndicator.visible()
+            view.questColorIndicator.setBackgroundColor(vm.indicatorColor)
 
             view.questSchedule.text = "${vm.startTime} - ${vm.endTime}"
             view.backgroundView.setBackgroundColor(vm.backgroundColor)
@@ -652,6 +655,7 @@ class DayViewController :
         ) {
 
             view.checkBox.visible()
+            view.questColorIndicator.gone()
 
             view.setOnLongClickListener {
 
@@ -706,7 +710,6 @@ class DayViewController :
                 }
             } else {
 
-                view.questColorIndicator.setBackgroundResource(vm.backgroundColor.color800)
                 view.questSchedule.setTextColor(colorRes(R.color.md_light_text_70))
                 view.questTags.setTextColor(colorRes(R.color.md_light_text_70))
                 view.questTags.setCompoundDrawablesRelativeWithIntrinsicBounds(
@@ -1119,9 +1122,10 @@ class DayViewController :
                     endTime = e.endTime.toString(shouldUse24HourFormat),
                     nameColor = ColorUtil.darkenColor(e.color),
                     timeColor = ColorUtil.darkenColor(e.color),
+                    indicatorColor = e.color,
                     backgroundColor = ColorUtils.setAlphaComponent(
                         e.color,
-                        ColorUtil.alphaInt(0.4f)
+                        ColorUtil.alphaInt(0.30f)
                     ),
                     isRepeating = e.isRepeating
                 )
