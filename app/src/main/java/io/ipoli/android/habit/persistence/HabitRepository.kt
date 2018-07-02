@@ -94,7 +94,7 @@ abstract class HabitDao : BaseDao<RoomHabit>() {
     abstract fun findAllForSync(lastSync: Long): List<RoomHabit>
 }
 
-class RoomHabitRoomRepository(dao: HabitDao, tagDao: TagDao) : HabitRepository,
+class RoomHabitRepository(dao: HabitDao, tagDao: TagDao) : HabitRepository,
     BaseRoomRepositoryWithTags<Habit, RoomHabit, HabitDao, RoomHabit.Companion.RoomTagJoin>(dao) {
 
     private val mapper = RoomHabitMapper(tagDao)

@@ -159,13 +159,17 @@ class RoomTagRepository(roomDb: MyPoliRoomDatabase) :
         dao.findAllForSync(lastSync.millisValue).map { toEntityObject(it) }
 
     override fun save(entity: Tag): Tag {
-        dao.save(toDatabaseObject(entity))
-        return entity
+        val rEntity = toDatabaseObject(entity)
+        dao.save(rEntity)
+        return entity.copy(id = rEntity.id)
     }
 
     override fun save(entities: List<Tag>): List<Tag> {
-        dao.saveAll(entities.map { toDatabaseObject(it) })
-        return entities
+        val rEntities = entities.map { toDatabaseObject(it) }
+        dao.saveAll(rEntities)
+        return rEntities.mapIndexed { i, rdc ->
+            entities[i].copy(id = rdc.id)
+        }
     }
 
     override fun findById(id: String): Tag? =

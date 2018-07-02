@@ -6,8 +6,6 @@ import android.arch.persistence.room.Dao
 import android.arch.persistence.room.Insert
 import android.arch.persistence.room.OnConflictStrategy
 import android.arch.persistence.room.Transaction
-import io.ipoli.android.common.datetime.Duration
-import io.ipoli.android.common.datetime.Millisecond
 import io.ipoli.android.quest.Entity
 import io.ipoli.android.tag.Tag
 import kotlinx.coroutines.experimental.CommonPool
@@ -43,7 +41,8 @@ interface EntityWithTags : Entity {
     val tags: List<Tag>
 }
 
-abstract class BaseRoomRepository<E : io.ipoli.android.quest.Entity, RE, D : BaseDao<RE>>(protected val dao: D) {
+abstract class BaseRoomRepository<E : io.ipoli.android.quest.Entity, RE, D : BaseDao<RE>>(protected val dao: D) :
+    Repository<E> {
 
     data class Subscription(val liveData: LiveData<*>, val observer: Observer<*>)
 
@@ -135,15 +134,13 @@ abstract class BaseRoomRepository<E : io.ipoli.android.quest.Entity, RE, D : Bas
         channelToSubscription.remove(channel)
     }
 
-    abstract fun findAllForSync(lastSync: Duration<Millisecond>): List<E>
-
     protected abstract fun toEntityObject(dbObject: RE): E
 
     protected abstract fun toDatabaseObject(entity: E): RE
 }
 
 abstract class BaseRoomRepositoryWithTags<E : EntityWithTags, RE : RoomEntity, D : BaseDao<RE>, JE>
-    (dao: D) : BaseRoomRepository<E, RE, D>(dao), Repository<E> {
+    (dao: D) : BaseRoomRepository<E, RE, D>(dao) {
 
     abstract fun createTagJoin(entityId: String, tagId: String): JE
 

@@ -111,6 +111,10 @@ class AndroidPlayerRepository(
     dao: PlayerDao
 ) : BaseRoomRepository<Player, RoomPlayer, PlayerDao>(dao), PlayerRepository {
 
+    override fun save(entities: List<Player>): List<Player> {
+        TODO("not implemented")
+    }
+
     override fun findAllForSync(lastSync: Duration<Millisecond>) =
         dao.findAllForSync(lastSync.millisValue).map { toEntityObject(it) }
 

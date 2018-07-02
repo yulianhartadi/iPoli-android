@@ -64,7 +64,7 @@ import io.ipoli.android.growth.usecase.CalculateGrowthStatsUseCase
 import io.ipoli.android.habit.job.AndroidUpdateHabitStreaksScheduler
 import io.ipoli.android.habit.job.UpdateHabitStreaksScheduler
 import io.ipoli.android.habit.persistence.HabitRepository
-import io.ipoli.android.habit.persistence.RoomHabitRoomRepository
+import io.ipoli.android.habit.persistence.RoomHabitRepository
 import io.ipoli.android.habit.sideeffect.HabitSideEffectHandler
 import io.ipoli.android.habit.usecase.*
 import io.ipoli.android.note.usecase.SaveQuestNoteUseCase
@@ -248,7 +248,7 @@ class AndroidRepositoryModule(private val appContext: Context) :
 
     override val habitRepository
         by required {
-            RoomHabitRoomRepository(
+            RoomHabitRepository(
                 dao = localDatabase.habitDao(),
                 tagDao = localDatabase.tagDao()
             )
