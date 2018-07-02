@@ -19,26 +19,22 @@ class AddTimerToQuestUseCase(
     private val cancelTimerUseCase: CancelTimerUseCase,
     private val reminderScheduler: ReminderScheduler,
     private val timerCompleteScheduler: TimerCompleteScheduler
-) :
-    UseCase<AddTimerToQuestUseCase.Params, AddTimerToQuestUseCase.Result> {
+) : UseCase<AddTimerToQuestUseCase.Params, AddTimerToQuestUseCase.Result> {
 
     override fun execute(parameters: Params): Result {
         val quest = questRepository.findById(parameters.questId)
         requireNotNull(quest)
 
         val startedQuests = questRepository.findStartedQuests()
-        require(startedQuests.size <= 1)
-        val startedQuest = startedQuests.firstOrNull()
-
-        if (startedQuest != null) {
-            cancelTimerUseCase.execute(CancelTimerUseCase.Params(startedQuest.id))
+        startedQuests.forEach {
+            cancelTimerUseCase.execute(CancelTimerUseCase.Params(it.id))
         }
 
         val time = parameters.time
         val res = if (!parameters.isPomodoro) {
-            addContDownTimer(quest, time, startedQuest)
+            addContDownTimer(quest, time, startedQuests.isNotEmpty())
         } else {
-            addPomodoroTimer(quest, time, startedQuest)
+            addPomodoroTimer(quest, time, startedQuests.isNotEmpty())
         }
 
         reminderScheduler.schedule()
@@ -48,7 +44,7 @@ class AddTimerToQuestUseCase(
     private fun addPomodoroTimer(
         quest: Quest?,
         time: Instant,
-        startedQuest: Quest?
+        hasStoppedOtherQuests: Boolean
     ): Result {
         require(!quest!!.hasPomodoroTimer)
 
@@ -64,13 +60,13 @@ class AddTimerToQuestUseCase(
                     start = time
                 )
         )
-        return Result(questRepository.save(newQuest), startedQuest != null)
+        return Result(questRepository.save(newQuest), hasStoppedOtherQuests)
     }
 
     private fun addContDownTimer(
         quest: Quest?,
         time: Instant,
-        startedQuest: Quest?
+        hasStoppedOtherQuests: Boolean
     ): Result {
         require(!quest!!.hasCountDownTimer)
         timerCompleteScheduler.schedule(
@@ -89,7 +85,7 @@ class AddTimerToQuestUseCase(
                     )
                 )
             ),
-            startedQuest != null
+            hasStoppedOtherQuests
         )
     }
 

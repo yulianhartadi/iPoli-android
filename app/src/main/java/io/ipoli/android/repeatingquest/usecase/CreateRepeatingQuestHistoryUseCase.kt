@@ -14,8 +14,7 @@ import org.threeten.bp.LocalDate
 class CreateRepeatingQuestHistoryUseCase(
     private val questRepository: QuestRepository,
     private val repeatingQuestRepository: RepeatingQuestRepository
-) :
-    UseCase<CreateRepeatingQuestHistoryUseCase.Params, CreateRepeatingQuestHistoryUseCase.History> {
+) : UseCase<CreateRepeatingQuestHistoryUseCase.Params, CreateRepeatingQuestHistoryUseCase.History> {
 
     override fun execute(parameters: Params): History {
         val start = parameters.start
@@ -36,8 +35,8 @@ class CreateRepeatingQuestHistoryUseCase(
                 !shouldBeCompleted && isCompleted -> DateHistory.DONE_NOT_ON_SCHEDULE
                 it.isBefore(rq.start) -> DateHistory.BEFORE_START
                 rq.end != null && it.isAfter(rq.end) -> DateHistory.AFTER_END
-                shouldBeCompleted && !isCompleted && it.isBeforeOrEqual(parameters.currentDate) -> DateHistory.FAILED
                 it.isEqual(parameters.currentDate) -> DateHistory.TODAY
+                shouldBeCompleted && !isCompleted && it.isBeforeOrEqual(parameters.currentDate) -> DateHistory.FAILED
                 it.isBefore(parameters.currentDate) -> DateHistory.SKIPPED
                 shouldBeCompleted && !isCompleted -> DateHistory.TODO
                 else -> DateHistory.EMPTY

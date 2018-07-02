@@ -32,7 +32,6 @@ class HistoryChart @JvmOverloads constructor(
 ) : View(context, attrs, defStyleAttr) {
 
     private val completedPaint = Paint()
-    private val doneNotOnSchedulePaint = Paint()
     private val skippedPaint = Paint()
     private val failedPaint = Paint()
     private val nonePaint = Paint()
@@ -388,16 +387,13 @@ class HistoryChart @JvmOverloads constructor(
         completedPaint.color = ContextCompat.getColor(context, R.color.md_green_500)
         completedPaint.isAntiAlias = true
 
-        doneNotOnSchedulePaint.color = ContextCompat.getColor(context, R.color.md_green_200)
-        doneNotOnSchedulePaint.isAntiAlias = true
-
-        skippedPaint.color = ContextCompat.getColor(context, R.color.md_blue_500)
+        skippedPaint.color = ContextCompat.getColor(context, R.color.md_green_300)
         skippedPaint.isAntiAlias = true
 
         failedPaint.color = ContextCompat.getColor(context, R.color.md_red_500)
         failedPaint.isAntiAlias = true
 
-        nonePaint.color = ContextCompat.getColor(context, R.color.md_grey_500)
+        nonePaint.color = ContextCompat.getColor(context, R.color.md_dark_text_12)
         nonePaint.isAntiAlias = true
 
         todoPaint.color = ContextCompat.getColor(context, R.color.md_green_700)
@@ -412,7 +408,7 @@ class HistoryChart @JvmOverloads constructor(
 
         todayPaint.color = accentColor
         todayPaint.isAntiAlias = true
-        todayPaint.strokeWidth = ViewUtils.dpToPx(3f, context)
+        todayPaint.strokeWidth = ViewUtils.dpToPx(1.5f, context)
         todayPaint.style = Paint.Style.STROKE
 
         monthPaint.color = ContextCompat.getColor(context, R.color.md_dark_text_87)
@@ -420,7 +416,7 @@ class HistoryChart @JvmOverloads constructor(
         monthPaint.textAlign = Paint.Align.CENTER
         monthPaint.textSize = ViewUtils.spToPx(18, context).toFloat()
 
-        dayPaintLight = createTextPaint(context, R.color.md_light_text_70, 14)
+        dayPaintLight = createTextPaint(context, R.color.md_light_text_100, 14)
         dayPaintDark = createTextPaint(context, R.color.md_dark_text_87, 14)
 
         dayOfWeekPaint.color = ContextCompat.getColor(context, R.color.md_dark_text_87)
@@ -512,7 +508,7 @@ class HistoryChart @JvmOverloads constructor(
                 }
 
                 DONE_NOT_ON_SCHEDULE -> {
-                    canvas.drawCell(doneNotOnSchedulePaint, x, y)
+                    canvas.drawCell(completedPaint, x, y)
                     canvas.drawDayOfMonth(dayOfMonth, dayPaintLight, x, y)
                 }
 
@@ -532,8 +528,7 @@ class HistoryChart @JvmOverloads constructor(
                 }
 
                 BEFORE_START, AFTER_END, EMPTY -> {
-                    canvas.drawCell(nonePaint, x, y)
-                    canvas.drawDayOfMonth(dayOfMonth, dayPaintLight, x, y)
+                    canvas.drawDayOfMonth(dayOfMonth, dayPaintDark, x, y)
                 }
 
                 TODO -> {
