@@ -6,6 +6,7 @@ import io.ipoli.android.common.datetime.isBeforeOrEqual
 import io.ipoli.android.quest.data.persistence.QuestRepository
 import io.ipoli.android.repeatingquest.persistence.RepeatingQuestRepository
 import org.threeten.bp.LocalDate
+import timber.log.Timber
 
 /**
  * Created by Polina Zhelyazkova <polina@mypoli.fun>
@@ -27,6 +28,7 @@ class CreateRepeatingQuestHistoryUseCase(
         val completedDates = quests.map { it.completedAtDate }.toSet()
 
         val data = start.datesBetween(end).map {
+
             val shouldBeCompleted = rq.repeatPattern.shouldScheduleOn(it)
             val isCompleted = completedDates.contains(it)
 

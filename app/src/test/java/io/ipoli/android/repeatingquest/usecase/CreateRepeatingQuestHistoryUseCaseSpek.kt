@@ -80,7 +80,7 @@ class CreateRepeatingQuestHistoryUseCaseSpek : Spek({
         }
 
         it("should return not completed") {
-            val date = LocalDate.now()
+            val date = LocalDate.now().minusDays(1)
             val questRepoMock = mock<QuestRepository> {
                 on {
                     findCompletedForRepeatingQuestInPeriod(
@@ -92,8 +92,11 @@ class CreateRepeatingQuestHistoryUseCaseSpek : Spek({
             }
             val result = executeUseCase(
                 questRepoMock, TestUtil.repeatingQuest.copy(
-                    repeatPattern = RepeatPattern.Daily()
-                ), date, date
+                    repeatPattern = RepeatPattern.Daily(
+                        startDate = date,
+                        endDate = date.plusDays(1)
+                    )
+                ), date, date.plusDays(1)
             ).data
             result[date].`should equal`(CreateRepeatingQuestHistoryUseCase.DateHistory.FAILED)
         }
@@ -184,9 +187,13 @@ class CreateRepeatingQuestHistoryUseCaseSpek : Spek({
                 )
             }
             val result = executeUseCase(
-                questRepoMock, TestUtil.repeatingQuest.copy(
+                questRepo = questRepoMock,
+                repeatingQuest = TestUtil.repeatingQuest.copy(
                     repeatPattern = RepeatPattern.Daily()
-                ), today, tomorrow
+                ),
+                start = today,
+                end = tomorrow,
+                currentDate = tomorrow.plusDays(1)
             ).data
             result.size.`should equal`(2)
             result[today].`should equal`(CreateRepeatingQuestHistoryUseCase.DateHistory.FAILED)
