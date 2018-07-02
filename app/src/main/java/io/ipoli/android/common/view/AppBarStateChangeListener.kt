@@ -8,7 +8,7 @@ import android.support.design.widget.AppBarLayout
  */
 abstract class AppBarStateChangeListener : AppBarLayout.OnOffsetChangedListener {
 
-    private var currentState = State.IDLE
+    var currentState = State.IDLE
 
     enum class State {
         EXPANDED,

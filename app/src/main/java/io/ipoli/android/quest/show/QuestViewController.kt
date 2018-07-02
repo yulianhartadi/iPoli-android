@@ -48,6 +48,23 @@ class QuestViewController : ReduxViewController<QuestAction, QuestViewState, Que
 
     private lateinit var touchHelper: ItemTouchHelper
 
+    private val appBarOffsetListener = object :
+        AppBarStateChangeListener() {
+        override fun onStateChanged(appBarLayout: AppBarLayout, state: State) {
+
+            appBarLayout.post {
+                if (state == State.EXPANDED) {
+                    (activity as MainActivity).supportActionBar?.setDisplayShowTitleEnabled(
+                        false
+                    )
+                    view?.clearFocus()
+                } else if (state == State.COLLAPSED) {
+                    (activity as MainActivity).supportActionBar?.setDisplayShowTitleEnabled(true)
+                }
+            }
+        }
+    }
+
     @Suppress("unused")
     constructor(args: Bundle? = null) : super(args)
 
@@ -66,22 +83,7 @@ class QuestViewController : ReduxViewController<QuestAction, QuestViewState, Que
         setToolbar(view.toolbar)
         view.collapsingToolbarContainer.isTitleEnabled = false
 
-        view.appbar.addOnOffsetChangedListener(object :
-            AppBarStateChangeListener() {
-            override fun onStateChanged(appBarLayout: AppBarLayout, state: State) {
-
-                appBarLayout.post {
-                    if (state == State.EXPANDED) {
-                        val supportActionBar = (activity as MainActivity).supportActionBar
-                        supportActionBar?.setDisplayShowTitleEnabled(false)
-                        view.clearFocus()
-                    } else if (state == State.COLLAPSED) {
-                        val supportActionBar = (activity as MainActivity).supportActionBar
-                        supportActionBar?.setDisplayShowTitleEnabled(true)
-                    }
-                }
-            }
-        })
+        view.appbar.addOnOffsetChangedListener(appBarOffsetListener)
 
         view.questStartTimer.onDebounceClick {
             dispatch(QuestAction.Start)
@@ -218,6 +220,11 @@ class QuestViewController : ReduxViewController<QuestAction, QuestViewState, Que
         super.onDetach(view)
     }
 
+    override fun onDestroyView(view: View) {
+        view.appbar.removeOnOffsetChangedListener(appBarOffsetListener)
+        super.onDestroyView(view)
+    }
+
     private fun colorLayout(
         state: QuestViewState,
         view: View
@@ -316,6 +323,10 @@ class QuestViewController : ReduxViewController<QuestAction, QuestViewState, Que
             }
 
             QuestViewState.StateType.RESUMED -> {
+
+                val showTitle =
+                    appBarOffsetListener.currentState != AppBarStateChangeListener.State.EXPANDED
+                (activity as MainActivity).supportActionBar?.setDisplayShowTitleEnabled(showTitle)
 
                 showDataContainer(view)
 
