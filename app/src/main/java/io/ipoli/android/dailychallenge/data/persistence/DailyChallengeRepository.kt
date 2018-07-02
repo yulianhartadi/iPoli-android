@@ -160,7 +160,7 @@ class FirestoreDailyChallengeRepository(
         })
         return DailyChallenge(
             id = dc.id,
-            date = dc.id.toLong().startOfDayUTC,
+            date = dc.date.startOfDayUTC,
             questIds = dc.questIds,
             isCompleted = dc.isCompleted,
             createdAt = dc.createdAt.instant,
