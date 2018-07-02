@@ -9,6 +9,7 @@ import io.ipoli.android.common.BaseViewStateReducer
 
 import io.ipoli.android.common.redux.Action
 import io.ipoli.android.common.redux.BaseViewState
+import io.ipoli.android.habit.predefined.PredefinedHabit
 import io.ipoli.android.onboarding.OnboardData
 import io.ipoli.android.onboarding.OnboardViewController
 import io.ipoli.android.pet.PetAvatar
@@ -108,7 +109,8 @@ object AuthReducer : BaseViewStateReducer<AuthViewState>() {
                     playerAvatar = onboardData?.avatar ?: subState.playerAvatar,
                     petName = onboardData?.petName ?: subState.petName,
                     petAvatar = onboardData?.petAvatar ?: subState.petAvatar,
-                    repeatingQuests = onboardData?.repeatingQuests ?: subState.repeatingQuests
+                    repeatingQuests = onboardData?.repeatingQuests ?: subState.repeatingQuests,
+                    habits = onboardData?.habits ?: subState.habits
                 )
             }
 
@@ -192,7 +194,8 @@ object AuthReducer : BaseViewStateReducer<AuthViewState>() {
             ),
             petName = null,
             petAvatar = null,
-            repeatingQuests = emptyList()
+            repeatingQuests = emptySet(),
+            habits = emptySet()
         )
 
 }
@@ -206,7 +209,8 @@ data class AuthViewState(
     val avatars: List<Avatar>,
     val petName: String?,
     val petAvatar: PetAvatar?,
-    val repeatingQuests: List<Pair<RepeatingQuest, OnboardViewController.OnboardTag?>>
+    val repeatingQuests: Set<Pair<RepeatingQuest, OnboardViewController.OnboardTag?>>,
+    val habits: Set<Pair<PredefinedHabit, OnboardViewController.OnboardTag?>>
 ) : BaseViewState() {
     enum class StateType {
         IDLE,

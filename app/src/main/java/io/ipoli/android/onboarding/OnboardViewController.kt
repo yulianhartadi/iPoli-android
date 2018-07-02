@@ -8,17 +8,17 @@ import android.view.View
 import android.view.ViewGroup
 import com.bluelinelabs.conductor.Controller
 import com.bluelinelabs.conductor.RouterTransaction
-import com.bluelinelabs.conductor.changehandler.FadeChangeHandler
 import com.bluelinelabs.conductor.changehandler.HorizontalChangeHandler
+import com.bluelinelabs.conductor.changehandler.VerticalChangeHandler
 import io.ipoli.android.Constants
 import io.ipoli.android.R
 import io.ipoli.android.common.AppState
 import io.ipoli.android.common.BaseViewStateReducer
-
 import io.ipoli.android.common.redux.Action
 import io.ipoli.android.common.redux.BaseViewState
 import io.ipoli.android.common.redux.android.ReduxViewController
 import io.ipoli.android.common.view.*
+import io.ipoli.android.habit.predefined.PredefinedHabit
 import io.ipoli.android.onboarding.OnboardViewState.StateType.*
 import io.ipoli.android.onboarding.scenes.*
 import io.ipoli.android.pet.PetAvatar
@@ -41,6 +41,7 @@ sealed class OnboardAction : Action {
     data class ValidateUsername(val name: String) : OnboardAction() {
         override fun toMap() = mapOf("name" to name)
     }
+
     data class UsernameValidationFailed(val error: UsernameValidator.ValidationError) :
         OnboardAction() {
         override fun toMap() = mapOf("error" to error.name)
@@ -59,24 +60,40 @@ sealed class OnboardAction : Action {
     data class UsernameValid(val username: String) : OnboardAction() {
         override fun toMap() = mapOf("username" to username)
     }
-    data class LoadRepeatingQuests(val repeatingQuests: Map<Int, Pair<RepeatingQuest, OnboardViewController.OnboardTag?>>) :
-        OnboardAction()
+
+    data class LoadPresetItems(
+        val repeatingQuests: Set<Pair<RepeatingQuest, OnboardViewController.OnboardTag?>>,
+        val habits: Set<Pair<PredefinedHabit, OnboardViewController.OnboardTag?>>
+    ) : OnboardAction()
 
     data class SelectRepeatingQuest(
-        val index: Int,
         val repeatingQuest: RepeatingQuest,
         val tag: OnboardViewController.OnboardTag?
     ) :
         OnboardAction() {
         override fun toMap() = mapOf(
-            "index" to index,
             "repeatingQuest" to repeatingQuest,
             "tag" to tag
         )
     }
 
-    data class DeselectRepeatingQuest(val index: Int) : OnboardAction() {
-        override fun toMap() = mapOf("index" to index)
+    data class DeselectRepeatingQuest(val repeatingQuest: RepeatingQuest) : OnboardAction() {
+        override fun toMap() = mapOf("repeatingQuest" to repeatingQuest)
+    }
+
+    data class SelectHabit(
+        val habit: PredefinedHabit,
+        val tag: OnboardViewController.OnboardTag?
+    ) : OnboardAction() {
+
+        override fun toMap() = mapOf(
+            "habit" to habit,
+            "tag" to tag
+        )
+    }
+
+    data class DeselectHabit(val habit: PredefinedHabit) : OnboardAction() {
+        override fun toMap() = mapOf("habit" to habit)
     }
 }
 
@@ -152,24 +169,44 @@ object OnboardReducer : BaseViewStateReducer<OnboardViewState>() {
                     type = FIRST_QUEST_DATA_LOADED
                 )
 
-            is OnboardAction.LoadRepeatingQuests ->
+            is OnboardAction.LoadPresetItems ->
                 subState.copy(
                     type = REPEATING_QUESTS_LOADED,
-                    repeatingQuests = action.repeatingQuests
+                    repeatingQuests = action.repeatingQuests,
+                    habits = action.habits
                 )
 
             is OnboardAction.SelectRepeatingQuest ->
                 subState.copy(
                     type = REPEATING_QUESTS_LOADED,
                     repeatingQuests = subState.repeatingQuests +
-                        Pair(action.index, Pair(action.repeatingQuest, action.tag))
+                        Pair(action.repeatingQuest, action.tag)
                 )
 
-            is OnboardAction.DeselectRepeatingQuest ->
+            is OnboardAction.DeselectRepeatingQuest -> {
+                val pair = subState.repeatingQuests.find { it.first == action.repeatingQuest }
+
                 subState.copy(
                     type = REPEATING_QUESTS_LOADED,
-                    repeatingQuests = subState.repeatingQuests - action.index
+                    repeatingQuests = subState.repeatingQuests - pair!!
                 )
+            }
+
+            is OnboardAction.SelectHabit ->
+                subState.copy(
+                    type = REPEATING_QUESTS_LOADED,
+                    habits = subState.habits +
+                        Pair(action.habit, action.tag)
+                )
+
+            is OnboardAction.DeselectHabit -> {
+                val pair = subState.habits.find { it.first == action.habit }
+
+                subState.copy(
+                    type = REPEATING_QUESTS_LOADED,
+                    habits = subState.habits - pair!!
+                )
+            }
 
             is OnboardAction.Done ->
                 subState.copy(
@@ -205,7 +242,8 @@ object OnboardReducer : BaseViewStateReducer<OnboardViewState>() {
             pet = PetAvatar.ELEPHANT,
             pet1 = PetAvatar.PIG,
             pet2 = PetAvatar.MONKEY,
-            repeatingQuests = mapOf()
+            repeatingQuests = emptySet(),
+            habits = emptySet()
         )
 
     override val stateKey = key<OnboardViewState>()
@@ -222,7 +260,8 @@ data class OnboardViewState(
     val pet: PetAvatar,
     val pet1: PetAvatar,
     val pet2: PetAvatar,
-    val repeatingQuests: Map<Int, Pair<RepeatingQuest, OnboardViewController.OnboardTag?>>
+    val repeatingQuests: Set<Pair<RepeatingQuest, OnboardViewController.OnboardTag?>>,
+    val habits: Set<Pair<PredefinedHabit, OnboardViewController.OnboardTag?>>
 ) : BaseViewState() {
     enum class StateType {
         INITIAL,
@@ -261,7 +300,8 @@ data class OnboardData(
     val avatar: Avatar,
     val petName: String,
     val petAvatar: PetAvatar,
-    val repeatingQuests: List<Pair<RepeatingQuest, OnboardViewController.OnboardTag?>>
+    val repeatingQuests: Set<Pair<RepeatingQuest, OnboardViewController.OnboardTag?>>,
+    val habits: Set<Pair<PredefinedHabit, OnboardViewController.OnboardTag?>>
 )
 
 class OnboardViewController(args: Bundle? = null) :
@@ -305,11 +345,11 @@ class OnboardViewController(args: Bundle? = null) :
                     avatar = state.avatar,
                     petName = state.petName,
                     petAvatar = state.pet,
-                    repeatingQuests = state.repeatingQuests.values.toList()
+                    repeatingQuests = state.repeatingQuests,
+                    habits = state.habits
                 )
 
-
-                navigate().setAuth(onboardData = onboardData, changeHandler = FadeChangeHandler())
+                navigate().setAuth(onboardData = onboardData, changeHandler = VerticalChangeHandler())
             }
 
             else -> {

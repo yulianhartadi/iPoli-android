@@ -7,6 +7,9 @@ import io.ipoli.android.common.AppSideEffectHandler
 import io.ipoli.android.common.AppState
 import io.ipoli.android.common.LoadDataAction
 import io.ipoli.android.common.redux.Action
+import io.ipoli.android.habit.data.Habit
+import io.ipoli.android.habit.predefined.PredefinedHabit
+import io.ipoli.android.onboarding.OnboardViewController
 import io.ipoli.android.pet.Pet
 import io.ipoli.android.player.auth.AuthAction
 import io.ipoli.android.player.auth.AuthViewState
@@ -15,6 +18,7 @@ import io.ipoli.android.player.data.AuthProvider
 import io.ipoli.android.player.data.Player
 import io.ipoli.android.quest.Color
 import io.ipoli.android.quest.Icon
+import io.ipoli.android.quest.RepeatingQuest
 import io.ipoli.android.repeatingquest.usecase.SaveRepeatingQuestUseCase
 import io.ipoli.android.tag.Tag
 import space.traversal.kapsule.required
@@ -29,6 +33,7 @@ object AuthSideEffectHandler : AppSideEffectHandler() {
     private val eventLogger by required { eventLogger }
     private val playerRepository by required { playerRepository }
     private val tagRepository by required { tagRepository }
+    private val habitRepository by required { habitRepository }
     private val sharedPreferences by required { sharedPreferences }
     private val petStatsChangeScheduler by required { lowerPetStatsScheduler }
     private val saveQuestsForRepeatingQuestScheduler by required { saveQuestsForRepeatingQuestScheduler }
@@ -261,14 +266,15 @@ object AuthSideEffectHandler : AppSideEffectHandler() {
         savePlayerId(playerId)
 
         val tags = saveDefaultTags()
-        saveRepeatingQuests(state, tags)
+        saveRepeatingQuests(state.repeatingQuests, tags)
+        saveHabits(state.habits, tags)
     }
 
     private fun saveRepeatingQuests(
-        state: AuthViewState,
+        repeatingQuests: Set<Pair<RepeatingQuest, OnboardViewController.OnboardTag?>>,
         tags: List<Tag>
     ) {
-        state.repeatingQuests.forEach {
+        repeatingQuests.forEach {
             val rq = it.first
             val ts = it.second?.let { onboardTag ->
                 listOf(tags.first { it.name.toUpperCase() == onboardTag.name })
@@ -284,6 +290,30 @@ object AuthSideEffectHandler : AppSideEffectHandler() {
                     duration = rq.duration,
                     reminders = rq.reminders,
                     repeatPattern = rq.repeatPattern
+                )
+            )
+        }
+    }
+
+    private fun saveHabits(
+        habits: Set<Pair<PredefinedHabit, OnboardViewController.OnboardTag?>>,
+        tags: List<Tag>
+    ) {
+        habits.forEach {
+            val h = it.first
+            val ts = it.second?.let { onboardTag ->
+                listOf(tags.first { it.name.toUpperCase() == onboardTag.name })
+            } ?: listOf()
+
+            habitRepository.save(
+                Habit(
+                    name = h.name,
+                    color = h.color,
+                    icon = h.icon,
+                    tags = ts,
+                    isGood = h.isGood,
+                    timesADay = h.timesADay,
+                    days = h.days
                 )
             )
         }

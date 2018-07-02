@@ -86,7 +86,7 @@ abstract class MultiViewRecyclerViewAdapter<VM : RecyclerViewViewModel> :
 
     inline fun <reified ITEM> registerBinder(
         viewType: Int, @LayoutRes layoutRes: Int,
-        crossinline binder: (ITEM, View) -> Unit
+        crossinline binder: (ITEM, View, SimpleViewHolder) -> Unit
     ) {
 
         itemTypeToViewType[ITEM::class.java] = viewType
@@ -97,8 +97,8 @@ abstract class MultiViewRecyclerViewAdapter<VM : RecyclerViewViewModel> :
                 get() = layoutRes
 
             @Suppress("UNCHECKED_CAST")
-            override fun <T> bind(item: T, view: View) {
-                binder(item as ITEM, view)
+            override fun <T> bind(item: T, view: View, holder: SimpleViewHolder) {
+                binder(item as ITEM, view, holder)
             }
         }
     }
@@ -128,7 +128,7 @@ abstract class MultiViewRecyclerViewAdapter<VM : RecyclerViewViewModel> :
 
     override fun onBindViewHolder(holder: SimpleViewHolder, position: Int) {
         val viewType = getItemViewType(position)
-        viewTypeToItemBinder[viewType]?.bind(getItem(position), holder.itemView)
+        viewTypeToItemBinder[viewType]?.bind(getItem(position), holder.itemView, holder)
     }
 
     override fun getItemViewType(position: Int): Int {
@@ -145,7 +145,7 @@ abstract class MultiViewRecyclerViewAdapter<VM : RecyclerViewViewModel> :
         @get:LayoutRes
         val layoutResId: Int
 
-        fun <T> bind(item: T, view: View)
+        fun <T> bind(item: T, view: View, holder: SimpleViewHolder)
 
     }
 

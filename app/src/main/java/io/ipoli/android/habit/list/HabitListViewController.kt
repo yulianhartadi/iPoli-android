@@ -149,14 +149,14 @@ class HabitListViewController(args: Bundle? = null) :
             registerBinder<ItemViewModel.SectionItem>(
                 ViewType.SECTION.value,
                 R.layout.item_list_section
-            ) { vm, view ->
+            ) { vm, view, _ ->
                 (view as TextView).text = vm.text
             }
 
             registerBinder<ItemViewModel.TodayItem>(
                 ViewType.TODAY.value,
                 R.layout.item_habit_list
-            ) { vm, view ->
+            ) { vm, view, _ ->
 
                 renderName(view, vm.name, vm.isGood)
                 renderIcon(view, vm.icon, if (vm.isCompleted) R.color.md_white else vm.color)
@@ -224,7 +224,7 @@ class HabitListViewController(args: Bundle? = null) :
             registerBinder<ItemViewModel.OtherDayItem>(
                 ViewType.ANY_OTHER_DAY.value,
                 R.layout.item_habit_list
-            ) { vm, view ->
+            ) { vm, view, _ ->
 
                 renderName(view, vm.name, vm.isGood)
                 renderIcon(view, vm.icon, R.color.md_white)

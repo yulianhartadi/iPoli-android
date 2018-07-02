@@ -123,14 +123,14 @@ class AchievementListViewController(args: Bundle? = null) :
             registerBinder<ItemViewModel.SectionItem>(
                 ViewType.SECTION.value,
                 R.layout.item_list_section
-            ) { vm, view ->
+            ) { vm, view, _ ->
                 (view as TextView).text = vm.text
             }
 
             registerBinder<ItemViewModel.LockedAchievementViewModel>(
                 ViewType.LOCKED_ACHIEVEMENT.value,
                 R.layout.item_achievement_list
-            ) { vm, view ->
+            ) { vm, view, _ ->
                 view.achievementTitle.text = vm.name
                 view.achievementDesc.text = vm.description
                 view.achievementIcon.setImageResource(vm.icon)
@@ -162,7 +162,7 @@ class AchievementListViewController(args: Bundle? = null) :
             registerBinder<ItemViewModel.UnlockedAchievementViewModel>(
                 ViewType.UNLOCKED_ACHIEVEMENT.value,
                 R.layout.item_achievement_list
-            ) { vm, view ->
+            ) { vm, view, _ ->
                 view.achievementTitle.text = vm.name
                 view.achievementDesc.text = vm.description
                 view.achievementIcon.setImageResource(vm.icon)

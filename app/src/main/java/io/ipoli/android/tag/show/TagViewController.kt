@@ -292,68 +292,66 @@ class TagViewController(args: Bundle? = null) :
 
             registerBinder<ItemViewModel.SectionItem>(
                 ViewType.SECTION.value,
-                R.layout.item_list_section,
-                { vm, view ->
-                    (view as TextView).text = vm.text
-                }
-            )
+                R.layout.item_list_section
+            ) { vm, view, _ ->
+                (view as TextView).text = vm.text
+            }
 
             registerBinder<ItemViewModel.QuestItem>(
                 ViewType.QUEST.value,
-                R.layout.item_agenda_quest,
-                { vm, view ->
-                    view.questName.text = vm.name
-                    view.questTagName.gone()
+                R.layout.item_agenda_quest
+            ) { vm, view, _ ->
+                view.questName.text = vm.name
+                view.questTagName.gone()
 
-                    view.questIcon.backgroundTintList =
-                        ColorStateList.valueOf(colorRes(vm.color))
-                    view.questIcon.setImageDrawable(listItemIcon(vm.icon))
+                view.questIcon.backgroundTintList =
+                    ColorStateList.valueOf(colorRes(vm.color))
+                view.questIcon.setImageDrawable(listItemIcon(vm.icon))
 
-                    view.questStartTime.text = vm.startTime
+                view.questStartTime.text = vm.startTime
 
-                    view.questRepeatIndicator.visibility =
-                        if (vm.isRepeating) View.VISIBLE else View.GONE
-                    view.questChallengeIndicator.visibility =
-                        if (vm.isFromChallenge) View.VISIBLE else View.GONE
+                view.questRepeatIndicator.visibility =
+                    if (vm.isRepeating) View.VISIBLE else View.GONE
+                view.questChallengeIndicator.visibility =
+                    if (vm.isFromChallenge) View.VISIBLE else View.GONE
 
-                    view.onDebounceClick {
-                        navigateFromRoot().toQuest(vm.id)
-                    }
+                view.onDebounceClick {
+                    navigateFromRoot().toQuest(vm.id)
                 }
-            )
+            }
 
             registerBinder<ItemViewModel.CompletedQuestItem>(
                 ViewType.COMPLETED_QUEST.value,
-                R.layout.item_agenda_quest,
-                { vm, view ->
-                    val span = SpannableString(vm.name)
-                    span.setSpan(StrikethroughSpan(), 0, vm.name.length, 0)
+                R.layout.item_agenda_quest
+            ) { vm, view, _ ->
+                val span = SpannableString(vm.name)
+                span.setSpan(StrikethroughSpan(), 0, vm.name.length, 0)
 
-                    view.questName.text = span
+                view.questName.text = span
 
-                    view.questTagName.gone()
+                view.questTagName.gone()
 
-                    view.questIcon.backgroundTintList =
-                        ColorStateList.valueOf(colorRes(vm.color))
-                    view.questIcon.setImageDrawable(listItemIcon(vm.icon))
+                view.questIcon.backgroundTintList =
+                    ColorStateList.valueOf(colorRes(vm.color))
+                view.questIcon.setImageDrawable(listItemIcon(vm.icon))
 
-                    view.questStartTime.text = vm.startTime
+                view.questStartTime.text = vm.startTime
 
-                    view.questRepeatIndicator.visibility =
-                        if (vm.isRepeating) View.VISIBLE else View.GONE
-                    view.questChallengeIndicator.visibility =
-                        if (vm.isFromChallenge) View.VISIBLE else View.GONE
+                view.questRepeatIndicator.visibility =
+                    if (vm.isRepeating) View.VISIBLE else View.GONE
+                view.questChallengeIndicator.visibility =
+                    if (vm.isFromChallenge) View.VISIBLE else View.GONE
 
-                    view.onDebounceClick {
-                        val handler = FadeChangeHandler()
-                        rootRouter.pushController(
-                            RouterTransaction
-                                .with(CompletedQuestViewController(vm.id))
-                                .pushChangeHandler(handler)
-                                .popChangeHandler(handler)
-                        )
-                    }
-                })
+                view.onDebounceClick {
+                    val handler = FadeChangeHandler()
+                    rootRouter.pushController(
+                        RouterTransaction
+                            .with(CompletedQuestViewController(vm.id))
+                            .pushChangeHandler(handler)
+                            .popChangeHandler(handler)
+                    )
+                }
+            }
         }
 
     }

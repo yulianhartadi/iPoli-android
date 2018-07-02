@@ -4,12 +4,14 @@ import android.content.res.ColorStateList
 import android.os.Bundle
 import android.support.v7.widget.LinearLayoutManager
 import android.view.*
+import com.mikepenz.google_material_typeface_library.GoogleMaterial
+import com.mikepenz.iconics.IconicsDrawable
 import io.ipoli.android.R
 import io.ipoli.android.common.redux.android.BaseViewController
 import io.ipoli.android.common.view.*
-import io.ipoli.android.common.view.recyclerview.BaseRecyclerViewAdapter
+import io.ipoli.android.common.view.recyclerview.MultiViewRecyclerViewAdapter
 import io.ipoli.android.common.view.recyclerview.RecyclerViewViewModel
-import io.ipoli.android.common.view.recyclerview.SimpleViewHolder
+import io.ipoli.android.habit.predefined.PredefinedHabit
 import io.ipoli.android.onboarding.OnboardAction
 import io.ipoli.android.onboarding.OnboardReducer
 import io.ipoli.android.onboarding.OnboardViewController
@@ -22,6 +24,7 @@ import io.ipoli.android.repeatingquest.entity.RepeatPattern
 import kotlinx.android.synthetic.main.controller_onboard_pick_repeating_quests.view.*
 import kotlinx.android.synthetic.main.item_onboard_repeating_quest.view.*
 import kotlinx.android.synthetic.main.view_default_toolbar.view.*
+import org.threeten.bp.DayOfWeek
 
 class PickRepeatingQuestsViewController(args: Bundle? = null) :
     BaseViewController<OnboardAction, OnboardViewState>(
@@ -30,7 +33,7 @@ class PickRepeatingQuestsViewController(args: Bundle? = null) :
 
     override val stateKey = OnboardReducer.stateKey
 
-    private var repeatingQuestViewModels = mutableListOf<RepeatingQuestViewModel>()
+    private var repeatingQuestViewModels = mutableListOf<OnboardItemViewModel>()
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -53,7 +56,7 @@ class PickRepeatingQuestsViewController(args: Bundle? = null) :
                 LinearLayoutManager.VERTICAL,
                 false
             )
-        val adapter = RepeatingQuestsAdapter()
+        val adapter = PresetItemsAdapter()
         view.onboardRepeatingQuests.adapter = adapter
         adapter.updateAll(repeatingQuestViewModels)
 
@@ -61,32 +64,31 @@ class PickRepeatingQuestsViewController(args: Bundle? = null) :
     }
 
     private fun createViewModels() = listOf(
-        RepeatingQuestViewModel(
-            name = stringRes(R.string.predefined_rq_floss),
-            repeatingQuest = RepeatingQuest(
-                name = stringRes(R.string.predefined_rq_floss),
-                icon = Icon.FLOWER,
+        OnboardItemViewModel.HabitItem(
+            habit = PredefinedHabit(
+                name = "Floss",
                 color = Color.GREEN,
-                reminders = listOf(Reminder.Relative("", 0)),
-                duration = 15,
-                repeatPattern = RepeatPattern.Daily()
+                icon = Icon.TOOTH,
+                isGood = true,
+                timesADay = 1,
+                days = DayOfWeek.values().toSet()
             ),
             isSelected = true,
             tag = OnboardViewController.OnboardTag.WELLNESS
         ),
-        RepeatingQuestViewModel(
-            name = stringRes(R.string.predefined_rq_drink_water),
-            repeatingQuest = RepeatingQuest(
-                name = stringRes(R.string.predefined_rq_drink_water),
-                icon = Icon.DROP,
+        OnboardItemViewModel.HabitItem(
+            habit = PredefinedHabit(
+                name = "Drink a glass of water",
                 color = Color.BLUE,
-                reminders = listOf(Reminder.Relative("", 0)),
-                duration = 15,
-                repeatPattern = RepeatPattern.Daily()
+                icon = Icon.GLASS_WATER,
+                isGood = true,
+                timesADay = 8,
+                days = DayOfWeek.values().toSet()
             ),
+            isSelected = true,
             tag = OnboardViewController.OnboardTag.WELLNESS
         ),
-        RepeatingQuestViewModel(
+        OnboardItemViewModel.RepeatingQuestItem(
             name = stringRes(R.string.predefined_rq_workout),
             repeatingQuest = RepeatingQuest(
                 name = stringRes(R.string.predefined_rq_workout),
@@ -101,7 +103,7 @@ class PickRepeatingQuestsViewController(args: Bundle? = null) :
             isSelected = true,
             tag = OnboardViewController.OnboardTag.WELLNESS
         ),
-        RepeatingQuestViewModel(
+        OnboardItemViewModel.RepeatingQuestItem(
             name = stringRes(R.string.predefined_rq_meditate),
             repeatingQuest = RepeatingQuest(
                 name = stringRes(R.string.predefined_rq_meditate),
@@ -115,7 +117,7 @@ class PickRepeatingQuestsViewController(args: Bundle? = null) :
             ),
             tag = OnboardViewController.OnboardTag.WELLNESS
         ),
-        RepeatingQuestViewModel(
+        OnboardItemViewModel.RepeatingQuestItem(
             name = stringRes(R.string.predefined_rq_email),
             repeatingQuest = RepeatingQuest(
                 name = stringRes(R.string.predefined_rq_email),
@@ -129,7 +131,7 @@ class PickRepeatingQuestsViewController(args: Bundle? = null) :
             ),
             tag = OnboardViewController.OnboardTag.WORK
         ),
-        RepeatingQuestViewModel(
+        OnboardItemViewModel.RepeatingQuestItem(
             name = stringRes(R.string.predefined_rq_read),
             repeatingQuest = RepeatingQuest(
                 name = stringRes(R.string.predefined_rq_read),
@@ -143,7 +145,7 @@ class PickRepeatingQuestsViewController(args: Bundle? = null) :
             ),
             isSelected = true
         ),
-        RepeatingQuestViewModel(
+        OnboardItemViewModel.RepeatingQuestItem(
             name = stringRes(R.string.predefined_rq_bike),
             repeatingQuest = RepeatingQuest(
                 name = stringRes(R.string.predefined_rq_bike),
@@ -157,7 +159,7 @@ class PickRepeatingQuestsViewController(args: Bundle? = null) :
             ),
             tag = OnboardViewController.OnboardTag.WELLNESS
         ),
-        RepeatingQuestViewModel(
+        OnboardItemViewModel.RepeatingQuestItem(
             name = stringRes(R.string.predefined_rq_family_dinner),
             repeatingQuest = RepeatingQuest(
                 name = stringRes(R.string.predefined_rq_family_dinner),
@@ -171,7 +173,7 @@ class PickRepeatingQuestsViewController(args: Bundle? = null) :
             ),
             tag = OnboardViewController.OnboardTag.PERSONAL
         ),
-        RepeatingQuestViewModel(
+        OnboardItemViewModel.RepeatingQuestItem(
             name = stringRes(R.string.predefined_rq_call_friend),
             repeatingQuest = RepeatingQuest(
                 name = stringRes(R.string.predefined_rq_call_friend),
@@ -186,7 +188,7 @@ class PickRepeatingQuestsViewController(args: Bundle? = null) :
             isSelected = true,
             tag = OnboardViewController.OnboardTag.PERSONAL
         ),
-        RepeatingQuestViewModel(
+        OnboardItemViewModel.RepeatingQuestItem(
             name = stringRes(R.string.predefined_rq_date_night),
             repeatingQuest = RepeatingQuest(
                 name = stringRes(R.string.predefined_rq_date_night),
@@ -200,7 +202,7 @@ class PickRepeatingQuestsViewController(args: Bundle? = null) :
             ),
             tag = OnboardViewController.OnboardTag.PERSONAL
         ),
-        RepeatingQuestViewModel(
+        OnboardItemViewModel.RepeatingQuestItem(
             name = stringRes(R.string.predefined_rq_learn_new_language),
             repeatingQuest = RepeatingQuest(
                 name = stringRes(R.string.predefined_rq_learn_new_language),
@@ -213,7 +215,7 @@ class PickRepeatingQuestsViewController(args: Bundle? = null) :
                 )
             )
         ),
-        RepeatingQuestViewModel(
+        OnboardItemViewModel.RepeatingQuestItem(
             name = stringRes(R.string.predefined_rq_call_parent),
             repeatingQuest = RepeatingQuest(
                 name = stringRes(R.string.predefined_rq_call_parent),
@@ -227,7 +229,7 @@ class PickRepeatingQuestsViewController(args: Bundle? = null) :
             ),
             tag = OnboardViewController.OnboardTag.PERSONAL
         ),
-        RepeatingQuestViewModel(
+        OnboardItemViewModel.RepeatingQuestItem(
             name = stringRes(R.string.predefined_rq_walk_the_dog),
             repeatingQuest = RepeatingQuest(
                 name = stringRes(R.string.predefined_rq_walk_the_dog),
@@ -238,7 +240,7 @@ class PickRepeatingQuestsViewController(args: Bundle? = null) :
                 repeatPattern = RepeatPattern.Daily()
             )
         ),
-        RepeatingQuestViewModel(
+        OnboardItemViewModel.RepeatingQuestItem(
             name = stringRes(R.string.predefined_rq_take_walk),
             repeatingQuest = RepeatingQuest(
                 name = stringRes(R.string.predefined_rq_take_walk),
@@ -252,7 +254,7 @@ class PickRepeatingQuestsViewController(args: Bundle? = null) :
             ),
             tag = OnboardViewController.OnboardTag.WELLNESS
         ),
-        RepeatingQuestViewModel(
+        OnboardItemViewModel.RepeatingQuestItem(
             name = stringRes(R.string.predefined_rq_run),
             repeatingQuest = RepeatingQuest(
                 name = stringRes(R.string.predefined_rq_run),
@@ -266,7 +268,7 @@ class PickRepeatingQuestsViewController(args: Bundle? = null) :
             ),
             tag = OnboardViewController.OnboardTag.WELLNESS
         ),
-        RepeatingQuestViewModel(
+        OnboardItemViewModel.RepeatingQuestItem(
             name = stringRes(R.string.predefined_rq_play_with_cat),
             repeatingQuest = RepeatingQuest(
                 name = stringRes(R.string.predefined_rq_play_with_cat),
@@ -277,7 +279,7 @@ class PickRepeatingQuestsViewController(args: Bundle? = null) :
                 repeatPattern = RepeatPattern.Daily()
             )
         ),
-        RepeatingQuestViewModel(
+        OnboardItemViewModel.RepeatingQuestItem(
             name = stringRes(R.string.predefined_rq_stretch),
             repeatingQuest = RepeatingQuest(
                 name = stringRes(R.string.predefined_rq_stretch),
@@ -307,65 +309,138 @@ class PickRepeatingQuestsViewController(args: Bundle? = null) :
     }
 
     override fun onCreateLoadAction(): OnboardAction? {
-        val rqs = mutableMapOf<Int, Pair<RepeatingQuest, OnboardViewController.OnboardTag?>>()
-        repeatingQuestViewModels.forEachIndexed { i, vm ->
-            if (vm.isSelected) {
-                rqs[i] = vm.repeatingQuest to vm.tag
+        val rqs = mutableSetOf<Pair<RepeatingQuest, OnboardViewController.OnboardTag?>>()
+        val hs = mutableSetOf<Pair<PredefinedHabit, OnboardViewController.OnboardTag?>>()
+        repeatingQuestViewModels.forEach { vm ->
+            when (vm) {
+                is OnboardItemViewModel.RepeatingQuestItem -> {
+                    if (vm.isSelected) {
+                        rqs.add(vm.repeatingQuest to vm.tag)
+                    }
+                }
+
+                is OnboardItemViewModel.HabitItem -> {
+                    if(vm.isSelected) {
+                        hs.add(vm.habit to vm.tag)
+                    }
+                }
             }
         }
-        return OnboardAction.LoadRepeatingQuests(rqs)
+
+        return OnboardAction.LoadPresetItems(rqs, hs)
     }
 
 
     override fun render(state: OnboardViewState, view: View) {
     }
 
-    data class RepeatingQuestViewModel(
-        val name: String,
-        val repeatingQuest: RepeatingQuest,
-        val isSelected: Boolean = false,
-        val tag: OnboardViewController.OnboardTag? = null
-    ) :
-        RecyclerViewViewModel {
-        override val id: String
-            get() = name
+    sealed class OnboardItemViewModel(override val id: String) : RecyclerViewViewModel {
+
+        data class RepeatingQuestItem(
+            val name: String,
+            val repeatingQuest: RepeatingQuest,
+            val isSelected: Boolean = false,
+            val tag: OnboardViewController.OnboardTag? = null
+        ) : OnboardItemViewModel(name)
+
+        data class HabitItem(
+            val habit: PredefinedHabit,
+            val isSelected: Boolean = false,
+            val tag: OnboardViewController.OnboardTag? = null
+        ) : OnboardItemViewModel(habit.name)
     }
 
-    inner class RepeatingQuestsAdapter :
-        BaseRecyclerViewAdapter<RepeatingQuestViewModel>(
-            R.layout.item_onboard_repeating_quest
-        ) {
+    enum class ViewType(val value: Int) {
+        REPEATING_QUEST(0),
+        HABIT(1)
+    }
 
-        override fun onBindViewModel(
-            vm: RepeatingQuestViewModel,
-            view: View,
-            holder: SimpleViewHolder
-        ) {
-            view.rqName.text = vm.name
-            view.rqRepeatPattern.text = "${vm.repeatingQuest.repeatPattern.periodCount} x week"
+    inner class PresetItemsAdapter : MultiViewRecyclerViewAdapter<OnboardItemViewModel>() {
 
-            view.rqIcon.backgroundTintList =
-                ColorStateList.valueOf(colorRes(vm.repeatingQuest.color.androidColor.color500))
-            view.rqIcon.setImageDrawable(listItemIcon(vm.repeatingQuest.icon!!.androidIcon.icon))
+        override fun onRegisterItemBinders() {
 
-            view.rqCheck.setOnCheckedChangeListener(null)
-            view.rqCheck.isChecked = vm.isSelected
+            registerBinder<OnboardItemViewModel.RepeatingQuestItem>(
+                ViewType.REPEATING_QUEST.value,
+                R.layout.item_onboard_repeating_quest
+            ) { vm, view, _ ->
+                view.rqName.text = vm.name
+                view.rqRepeatPattern.text = "${vm.repeatingQuest.repeatPattern.periodCount} x week"
 
-            view.setOnClickListener {
-                view.rqCheck.toggle()
+                view.rqRepeatPattern.setCompoundDrawablesRelativeWithIntrinsicBounds(
+                    IconicsDrawable(view.context)
+                        .icon(GoogleMaterial.Icon.gmd_autorenew)
+                        .colorRes(R.color.md_dark_text_54)
+                        .sizeDp(14),
+                    null, null, null
+                )
+
+                view.rqIcon.backgroundTintList =
+                    ColorStateList.valueOf(colorRes(vm.repeatingQuest.color.androidColor.color500))
+                view.rqIcon.setImageDrawable(listItemIcon(vm.repeatingQuest.icon!!.androidIcon.icon))
+
+                view.rqCheck.setOnCheckedChangeListener(null)
+                view.rqCheck.isChecked = vm.isSelected
+
+                view.setOnClickListener {
+                    view.rqCheck.toggle()
+                }
+
+                view.rqCheck.setOnCheckedChangeListener { _, isChecked ->
+                    if (isChecked) {
+                        dispatch(
+                            OnboardAction.SelectRepeatingQuest(
+                                vm.repeatingQuest,
+                                vm.tag
+                            )
+                        )
+                    } else {
+                        dispatch(OnboardAction.DeselectRepeatingQuest(vm.repeatingQuest))
+                    }
+                }
             }
 
-            view.rqCheck.setOnCheckedChangeListener { _, isChecked ->
-                if (isChecked) {
-                    dispatch(
-                        OnboardAction.SelectRepeatingQuest(
-                            holder.adapterPosition,
-                            vm.repeatingQuest,
-                            vm.tag
+            registerBinder<OnboardItemViewModel.HabitItem>(
+                ViewType.HABIT.value,
+                R.layout.item_onboard_repeating_quest
+            ) { vm, view, _ ->
+
+                val h = vm.habit
+
+                view.rqName.text = h.name
+
+                view.rqRepeatPattern.text =
+                    if (h.timesADay == 1) "Once per day" else "${h.timesADay} x day"
+
+                view.rqRepeatPattern.setCompoundDrawablesRelativeWithIntrinsicBounds(
+                    IconicsDrawable(view.context)
+                        .icon(GoogleMaterial.Icon.gmd_favorite)
+                        .colorRes(R.color.md_red_500)
+                        .sizeDp(12),
+                    null, null, null
+                )
+
+                view.rqIcon.backgroundTintList =
+                    ColorStateList.valueOf(colorRes(h.color.androidColor.color500))
+                view.rqIcon.setImageDrawable(listItemIcon(h.icon.androidIcon.icon))
+
+                view.rqCheck.setOnCheckedChangeListener(null)
+                view.rqCheck.isChecked = vm.isSelected
+
+                view.setOnClickListener {
+                    view.rqCheck.toggle()
+                }
+
+                view.rqCheck.setOnCheckedChangeListener { _, isChecked ->
+                    if (isChecked) {
+                        dispatch(
+                            OnboardAction.SelectHabit(
+                                h,
+                                vm.tag
+                            )
                         )
-                    )
-                } else {
-                    dispatch(OnboardAction.DeselectRepeatingQuest(holder.adapterPosition))
+                    } else {
+                        dispatch(OnboardAction.DeselectHabit(h))
+                    }
                 }
             }
         }

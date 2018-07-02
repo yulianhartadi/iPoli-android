@@ -278,14 +278,14 @@ class PredefinedHabitListViewController(args: Bundle? = null) :
             registerBinder<ItemViewModel.SectionItem>(
                 ViewType.SECTION.value,
                 R.layout.item_list_section
-            ) { vm, view ->
+            ) { vm, view, _ ->
                 (view as TextView).text = vm.text
             }
 
             registerBinder<ItemViewModel.HabitItem>(
                 ViewType.HABIT.value,
                 R.layout.item_predefined_habit
-            ) { vm, view ->
+            ) { vm, view, _ ->
                 view.habitName.text = vm.name
                 view.habitIcon.backgroundTintList =
                     ColorStateList.valueOf(colorRes(vm.color))
