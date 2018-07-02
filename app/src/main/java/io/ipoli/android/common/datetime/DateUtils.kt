@@ -5,6 +5,7 @@ import org.threeten.bp.*
 import org.threeten.bp.format.TextStyle
 import org.threeten.bp.temporal.TemporalAdjusters.firstDayOfMonth
 import org.threeten.bp.temporal.TemporalAdjusters.lastDayOfMonth
+import org.threeten.bp.temporal.TemporalField
 import org.threeten.bp.temporal.WeekFields
 import java.util.*
 
@@ -174,6 +175,9 @@ object DateUtils {
 
     val lastDayOfWeek: DayOfWeek
         get() = firstDayOfWeek.plus(6)
+
+    val weekOfMonth: TemporalField
+        get() = WeekFields.of(Locale.getDefault()).weekOfMonth()
 
     val today: LocalDate
         get() = LocalDate.now()

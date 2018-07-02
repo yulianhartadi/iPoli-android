@@ -14,6 +14,7 @@ import io.ipoli.android.common.ViewUtils
 import io.ipoli.android.common.datetime.DateUtils
 import io.ipoli.android.common.datetime.DateUtils.DAYS_IN_A_WEEK
 import io.ipoli.android.common.datetime.daysUntil
+import io.ipoli.android.common.datetime.weekOfMonth
 import io.ipoli.android.repeatingquest.usecase.CreateRepeatingQuestHistoryUseCase
 import io.ipoli.android.repeatingquest.usecase.CreateRepeatingQuestHistoryUseCase.DateHistory.*
 import org.threeten.bp.LocalDate
@@ -156,13 +157,18 @@ class HistoryChart @JvmOverloads constructor(
                 if (currentWeekStart.month == currentWeekEnd.month) {
                     result.add(RowData.CellRow(createCellsForWeek(currentWeekStart)))
 
-                    result.add(
-                        RowData.CellRow(
-                            createWeekWithNoneCellsAtEnd(
-                                previousMonthLastDay
+
+                    if (currentWeekStart.weekOfMonth != currentWeekEnd.weekOfMonth) {
+                        result.add(
+                            RowData.CellRow(
+                                createWeekWithNoneCellsAtEnd(
+                                    previousMonthLastDay
+                                )
                             )
                         )
-                    )
+                    }
+
+
                     val nextMonthFirst = previousMonthLastDay.plusDays(1)
 
                     result.addAll(createMonthWithWeekDaysRows())

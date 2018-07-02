@@ -61,6 +61,8 @@ fun LocalDate.daysUntil(date: LocalDate) =
 fun LocalDate.weeksUntil(date: LocalDate) =
     this.until(date, ChronoUnit.WEEKS)
 
+val LocalDate.weekOfMonth get() = get(DateUtils.weekOfMonth)
+
 fun LocalDateTime.toMillis(zoneId: ZoneId) = atZone(zoneId).toInstant().toEpochMilli()
 
 fun LocalDateTime.toMillis() = atZone(ZoneId.systemDefault()).toInstant().toEpochMilli()
