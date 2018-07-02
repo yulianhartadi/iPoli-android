@@ -135,7 +135,7 @@ sealed class RepeatPattern(
                     return null
                 }
 
-                val nextDate = scheduledPeriods[periodStart]!!.firstOrNull { !it.isBefore(from) }
+                val nextDate = scheduledPeriods[periodStart]!!.sorted().firstOrNull { !it.isBefore(from) }
                 return nextDate ?: firstDateForNextPeriod(periodStart)
             }
 
