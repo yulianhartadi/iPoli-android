@@ -332,13 +332,26 @@ abstract class QuestDao : BaseDao<RoomQuest>() {
     @Query("DELETE FROM quest_tag_join WHERE questId IN (:questIds)")
     abstract fun deleteAllTags(questIds: List<String>)
 
-    @Query("SELECT COUNT(*) FROM quest_tag_join WHERE tagId = :tagId")
+    @Query(
+        """
+        SELECT COUNT(*)
+        FROM quest_tag_join
+        INNER JOIN quests ON quests.id = quest_tag_join.questId
+        WHERE tagId = :tagId AND quests.completedAtDate is NULL AND quests.removedAt is NULL
+        """
+    )
     abstract fun countForTag(tagId: String): Int
 
     @Query("SELECT * FROM quests $FIND_SYNC_QUERY")
     abstract fun findAllForSync(lastSync: Long): List<RoomQuest>
 
-    @Query("UPDATE quests SET removedAt = :currentTimeMillis, updatedAt = :currentTimeMillis, repeatingQuestId = :newRepeatingQuestId WHERE id = :id")
+    @Query(
+        """
+        UPDATE quests
+        SET removedAt = :currentTimeMillis, updatedAt = :currentTimeMillis, repeatingQuestId = :newRepeatingQuestId
+        WHERE id = :id
+        """
+    )
     abstract fun removeFromRepeatingQuest(
         id: String,
         newRepeatingQuestId: String,
