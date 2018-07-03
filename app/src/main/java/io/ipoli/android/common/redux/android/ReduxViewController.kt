@@ -6,6 +6,7 @@ import android.animation.ObjectAnimator
 import android.animation.ValueAnimator
 import android.content.Context
 import android.content.pm.PackageManager
+import android.os.Build
 import android.os.Bundle
 import android.support.annotation.IdRes
 import android.support.annotation.LayoutRes
@@ -189,7 +190,11 @@ abstract class BaseViewController<A : Action, VS : ViewState> protected construc
         requestCode: Int
     ) {
         this.permissionsToRationale = permissionsToRationale
-        requestPermissions(permissionsToRationale.keys.toTypedArray(), requestCode)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            requestPermissions(permissionsToRationale.keys.toTypedArray(), requestCode)
+        } else {
+            onPermissionsGranted(requestCode, permissionsToRationale.keys.toList())
+        }
     }
 
     override fun onRequestPermissionsResult(

@@ -2,30 +2,33 @@ package io.ipoli.android.store.membership
 
 import io.ipoli.android.common.AppState
 import io.ipoli.android.common.BaseViewStateReducer
-
 import io.ipoli.android.common.redux.Action
 import io.ipoli.android.common.redux.BaseViewState
-import io.ipoli.android.player.data.Membership
 import io.ipoli.android.store.membership.MembershipViewState.StateType.*
-import io.ipoli.android.store.purchase.SubscriptionManager
 
 /**
  * Created by Polina Zhelyazkova <polina@mypoli.fun>
  * on 3/16/18.
  */
 sealed class MembershipAction : Action {
-    data class Load(val subscriptionManager: SubscriptionManager) : MembershipAction()
+    data class Load(
+        val monthlyPrice: Price,
+        val quarterlyPrice: Price,
+        val yearlyPrice: Price,
+        val activeSku: String?
+    ) : MembershipAction()
+
     data class Loaded(
         val monthlyPrice: String,
         val yearlyPrice: String,
         val quarterlyPrice: String,
-        val activeSkus: Set<String>
+        val activeSku: String?
     ) : MembershipAction() {
         override fun toMap() = mapOf(
             "monthlyPrice" to monthlyPrice,
             "yearlyPrice" to yearlyPrice,
             "quarterlyPrice" to quarterlyPrice,
-            "activeSkus" to activeSkus.joinToString(",")
+            "activeSku" to activeSku
         )
     }
 
@@ -33,16 +36,14 @@ sealed class MembershipAction : Action {
         override fun toMap() = mapOf("plan" to plan)
     }
 
-    data class GoPremium(val plan: MembershipPlan, val activeSkus: Set<String>) :
+    data class Subscribed(
+        val sku: String,
+        val purchaseTime: Long,
+        val purchaseToken: String
+    ) :
         MembershipAction() {
-        override fun toMap() = mapOf("plan" to plan)
+        override fun toMap() = mapOf("plan" to sku, "purchaseTime" to purchaseTime)
     }
-    data class Subscribed(val plan: MembershipPlan, val activeSkus: Set<String>) :
-        MembershipAction() {
-        override fun toMap() = mapOf("plan" to plan, "activeSkus" to activeSkus.joinToString(","))
-    }
-
-    object SubscriptionError : MembershipAction()
 }
 
 object MembershipReducer : BaseViewStateReducer<MembershipViewState>() {
@@ -56,15 +57,7 @@ object MembershipReducer : BaseViewStateReducer<MembershipViewState>() {
     ): MembershipViewState {
         return when (action) {
             is MembershipAction.Loaded -> {
-                val currentPlan = state.dataState.player?.let {
-                    when (state.dataState.player.membership) {
-                        Membership.MONTHLY -> MembershipPlan.MONTHLY
-                        Membership.YEARLY -> MembershipPlan.YEARLY
-                        Membership.QUARTERLY -> MembershipPlan.QUARTERLY
-                        Membership.NONE -> null
-                    }
-                }
-
+                val currentPlan = MembershipPlan.values().firstOrNull { it.sku == action.activeSku }
                 subState.copy(
                     type = DATA_CHANGED,
                     currentPlan = currentPlan,
@@ -72,13 +65,17 @@ object MembershipReducer : BaseViewStateReducer<MembershipViewState>() {
                     monthlyPlanPrice = action.monthlyPrice,
                     yearlyPlanPrice = action.yearlyPrice,
                     quarterlyPlanPrice = action.quarterlyPrice,
-                    activeSkus = action.activeSkus
+                    activeSku = action.activeSku
                 )
             }
 
-            is MembershipAction.GoPremium -> {
+            is MembershipAction.Subscribed -> {
+                val plan = MembershipPlan.values().first { it.sku == action.sku }
                 subState.copy(
-                    type = SUBCRIPTON_IN_PROGRESS
+                    type = SUBSCRIBED,
+                    currentPlan = plan,
+                    showCurrentPlan = plan == subState.selectedPlan,
+                    activeSku = action.sku
                 )
             }
 
@@ -90,20 +87,6 @@ object MembershipReducer : BaseViewStateReducer<MembershipViewState>() {
                 )
             }
 
-            is MembershipAction.Subscribed -> {
-                subState.copy(
-                    type = MembershipViewState.StateType.SUBSCRIBED,
-                    currentPlan = action.plan,
-                    showCurrentPlan = action.plan == subState.selectedPlan,
-                    activeSkus = action.activeSkus
-                )
-            }
-
-            is MembershipAction.SubscriptionError -> {
-                subState.copy(
-                    type = SUBSCRIPTION_ERROR
-                )
-            }
             else -> subState
         }
     }
@@ -116,10 +99,12 @@ object MembershipReducer : BaseViewStateReducer<MembershipViewState>() {
         monthlyPlanPrice = "0.00",
         quarterlyPlanPrice = "0.00",
         yearlyPlanPrice = "0.00",
-        activeSkus = setOf()
+        activeSku = null
     )
 
 }
+
+data class Price(val amount: Long, val currency: String)
 
 enum class MembershipPlan(val sku: String) {
     MONTHLY("monthly_plan_70_percent"),
@@ -135,14 +120,12 @@ data class MembershipViewState(
     val monthlyPlanPrice: String,
     val quarterlyPlanPrice: String,
     val yearlyPlanPrice: String,
-    val activeSkus: Set<String>
+    val activeSku: String?
 ) : BaseViewState() {
 
     enum class StateType {
         LOADING,
         DATA_CHANGED,
-        SUBCRIPTON_IN_PROGRESS,
-        SUBSCRIBED,
-        SUBSCRIPTION_ERROR
+        SUBSCRIBED
     }
 }

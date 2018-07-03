@@ -1,21 +1,27 @@
 package io.ipoli.android.store.membership.job
 
+import com.android.billingclient.api.BillingClient
+import com.android.billingclient.api.BillingClientStateListener
+import com.crashlytics.android.Crashlytics
 import com.evernote.android.job.DailyJob
 import com.evernote.android.job.JobRequest
-import io.ipoli.android.BillingConstants
+import io.ipoli.android.BuildConfig
 import io.ipoli.android.Constants
 import io.ipoli.android.common.api.Api
+import io.ipoli.android.common.billing.BillingError
 import io.ipoli.android.common.datetime.isBetween
 import io.ipoli.android.common.di.Module
 import io.ipoli.android.myPoliApp
+import io.ipoli.android.store.membership.error.SubscriptionError
 import io.ipoli.android.store.membership.usecase.RemoveMembershipUseCase
 import io.ipoli.android.store.powerup.usecase.EnableAllPowerUpsUseCase
-import io.ipoli.android.store.purchase.AndroidSubscriptionManager
+import kotlinx.coroutines.experimental.android.UI
 import kotlinx.coroutines.experimental.runBlocking
-import org.solovyev.android.checkout.*
+import kotlinx.coroutines.experimental.withContext
 import org.threeten.bp.LocalDate
 import space.traversal.kapsule.Injects
 import space.traversal.kapsule.Kapsule
+import java.lang.Exception
 import java.util.concurrent.TimeUnit
 import kotlin.coroutines.experimental.suspendCoroutine
 
@@ -25,44 +31,92 @@ import kotlin.coroutines.experimental.suspendCoroutine
  */
 class CheckMembershipStatusJob : DailyJob(), Injects<Module> {
 
+
     override fun onRunDailyJob(params: Params): DailyJobResult {
         val kap = Kapsule<Module>()
         val playerRepository by kap.required { playerRepository }
         val removeMembershipUseCase by kap.required { removeMembershipUseCase }
         val enableAllPowerUpsUseCase by kap.required { enableAllPowerUpsUseCase }
+
         kap.inject(myPoliApp.module(context))
 
         val p = playerRepository.find()
         requireNotNull(p)
 
-        val billing = Billing(context, object : Billing.DefaultConfiguration() {
-            override fun getPublicKey() = BillingConstants.APP_PUBLIC_KEY
-        })
-
-        val checkout = Checkout.forApplication(billing)
-        checkout.start()
-
         runBlocking {
-            checkMembershipStatus(checkout, removeMembershipUseCase, enableAllPowerUpsUseCase)
+            val billingClient = withContext(UI) {
+                try {
+                    val c = BillingClient.newBuilder(context).setListener { _, _ -> }.build()
+                    c.connect()
+                    c
+                } catch (e: BillingError) {
+                    logError(e)
+                    null
+                }
+            } ?: return@runBlocking
+            checkMembershipStatus(billingClient, removeMembershipUseCase, enableAllPowerUpsUseCase)
+            withContext(UI) { billingClient.endConnection() }
         }
 
         return DailyJobResult.SUCCESS
     }
 
+    private suspend fun BillingClient.connect() {
+        suspendCoroutine<Unit> {
+            startConnection(object : BillingClientStateListener {
+                override fun onBillingServiceDisconnected() {
+                    it.resumeWithException(BillingError("Unable to connect"))
+                }
+
+                override fun onBillingSetupFinished(responseCode: Int) {
+                    if (responseCode == BillingClient.BillingResponse.OK) {
+                        it.resume(Unit)
+                    } else {
+                        it.resumeWithException(BillingError("Unable to establish connection $responseCode"))
+                    }
+                }
+
+            })
+        }
+    }
+
     private suspend fun checkMembershipStatus(
-        checkout: Checkout,
+        billingClient: BillingClient,
         removeMembershipUseCase: RemoveMembershipUseCase,
         enableAllPowerUpsUseCase: EnableAllPowerUpsUseCase
     ) {
-        val activePurchase = loadActivePurchase(checkout)
 
-        if (activePurchase == null) {
+        val purchasesResult =
+            withContext(UI) { billingClient.queryPurchases(BillingClient.SkuType.SUBS) }
+
+        if (purchasesResult.responseCode != BillingClient.BillingResponse.OK) {
+            return
+        }
+        if (purchasesResult.purchasesList.isEmpty()) {
             removeMembershipUseCase.execute(Unit)
         } else {
-            val status = Api.getMembershipStatus(activePurchase.sku, activePurchase.token)
-            if (status.isAutoRenewing) {
-                updatePowerUpsExpirationDate(status, enableAllPowerUpsUseCase)
+            val activePurchase = purchasesResult.purchasesList.first()
+            try {
+                val status =
+                    Api.getMembershipStatus(activePurchase.sku, activePurchase.purchaseToken)
+                if (status.isAutoRenewing) {
+                    updatePowerUpsExpirationDate(status, enableAllPowerUpsUseCase)
+                }
+
+            } catch (e: Api.MembershipStatusException) {
+                logError(e)
             }
+
+        }
+    }
+
+    private fun logError(e: Exception) {
+        if (!BuildConfig.DEBUG) {
+            Crashlytics.logException(
+                SubscriptionError(
+                    "Check membership status job failed", e
+                )
+            )
         }
     }
 
@@ -89,20 +143,6 @@ class CheckMembershipStatusJob : DailyJob(), Injects<Module> {
         gracePeriodStart: LocalDate,
         expirationDate: LocalDate
     ) = LocalDate.now().isBetween(gracePeriodStart, expirationDate)
-
-    private suspend fun loadActivePurchase(checkout: Checkout) =
-        suspendCoroutine<Purchase?> { continuation ->
-            checkout.loadInventory(
-                Inventory.Request.create().loadAllPurchases()
-                    .loadSkus(ProductTypes.SUBSCRIPTION, AndroidSubscriptionManager.SKUS)
-            ) { products ->
-                val subscriptions = products.get(ProductTypes.SUBSCRIPTION)
-                continuation.resume(getActivePurchase(subscriptions.purchases))
-            }
-        }
-
-    private fun getActivePurchase(purchases: List<Purchase>) =
-        purchases.firstOrNull { it.state == Purchase.State.PURCHASED }
 
     companion object {
         const val TAG = "check_membership_status_tag"

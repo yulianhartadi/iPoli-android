@@ -12,14 +12,16 @@ import android.view.animation.AccelerateDecelerateInterpolator
 import android.widget.SeekBar
 import android.widget.TextView
 import android.widget.Toast
+import com.android.billingclient.api.BillingClient
+import com.android.billingclient.api.SkuDetailsParams
 import com.bluelinelabs.conductor.changehandler.FadeChangeHandler
-import io.ipoli.android.BillingConstants
 import io.ipoli.android.Constants
+import io.ipoli.android.Constants.Companion.GEM_PACK_TYPE_TO_GEMS
+import io.ipoli.android.Constants.Companion.GEM_PACK_TYPE_TO_SKU
 import io.ipoli.android.R
 import io.ipoli.android.common.AppState
 import io.ipoli.android.common.BaseViewStateReducer
 import io.ipoli.android.common.DataLoadedAction
-
 import io.ipoli.android.common.redux.Action
 import io.ipoli.android.common.redux.BaseViewState
 import io.ipoli.android.common.view.CurrencyConverterViewState.Type.*
@@ -27,15 +29,12 @@ import io.ipoli.android.pet.AndroidPetAvatar
 import io.ipoli.android.pet.PetAvatar
 import io.ipoli.android.player.data.Player
 import io.ipoli.android.player.usecase.ConvertCoinsToGemsUseCase
-import io.ipoli.android.store.purchase.AndroidInAppPurchaseManager
-import io.ipoli.android.store.purchase.GemPack
-import io.ipoli.android.store.purchase.GemPackType
-import io.ipoli.android.store.purchase.InAppPurchaseManager
+import io.ipoli.android.store.gem.GemPack
+import io.ipoli.android.store.gem.GemPackType
+import io.ipoli.android.store.gem.GemStoreViewController
 import kotlinx.android.synthetic.main.dialog_currency_converter.view.*
 import kotlinx.android.synthetic.main.view_currency_converter_dialog_header.view.*
-import org.solovyev.android.checkout.ActivityCheckout
-import org.solovyev.android.checkout.Billing
-import org.solovyev.android.checkout.Checkout
+import space.traversal.kapsule.required
 
 /**
  * Created by Polina Zhelyazkova <polina@mypoli.fun>
@@ -43,7 +42,9 @@ import org.solovyev.android.checkout.Checkout
  */
 
 sealed class CurrencyConverterAction : Action {
-    data class Load(val purchaseManager: InAppPurchaseManager) : CurrencyConverterAction()
+
+    object Load : CurrencyConverterAction()
+    data class GemPacksLoaded(val gemPacks: List<GemPack>) : CurrencyConverterAction()
     data class ChangeConvertAmount(val gems: Int) : CurrencyConverterAction()
     data class Convert(val gems: Int) : CurrencyConverterAction()
     data class ConvertTransactionComplete(val result: ConvertCoinsToGemsUseCase.Result) :
@@ -88,7 +89,7 @@ object CurrencyConverterReducer : BaseViewStateReducer<CurrencyConverterViewStat
             createPlayerChangeState(subState, action.player)
         }
 
-        is DataLoadedAction.GemPacksLoaded ->
+        is CurrencyConverterAction.GemPacksLoaded ->
             subState.copy(
                 type = GEM_PACKS_LOADED,
                 gemPacks = action.gemPacks
@@ -145,7 +146,10 @@ class CurrencyConverterDialogController :
 
     override val reducer = CurrencyConverterReducer
 
-    private lateinit var checkout: ActivityCheckout
+    private val billingResponseHandler by required { billingResponseHandler }
+    private val billingRequestExecutor by required { billingRequestExecutor }
+
+    private lateinit var billingClient: BillingClient
 
     override fun createHeaderView(inflater: LayoutInflater): View =
         inflater.inflate(R.layout.view_currency_converter_dialog_header, null)
@@ -166,14 +170,61 @@ class CurrencyConverterDialogController :
             showGemStore()
         }
 
-        val billing = Billing(activity!!, object : Billing.DefaultConfiguration() {
-            override fun getPublicKey() =
-                BillingConstants.APP_PUBLIC_KEY
-        })
+        billingClient =
+            BillingClient.newBuilder(activity!!).setListener { _, _ -> }.build()
 
-        checkout = Checkout.forActivity(activity!!, billing)
-        checkout.start()
         return view
+    }
+
+    override fun onAttach(view: View) {
+        super.onAttach(view)
+        billingClient.execute { bc ->
+
+            val params = SkuDetailsParams.newBuilder()
+                .setSkusList(GEM_PACK_TYPE_TO_SKU.values.toList())
+                .setType(BillingClient.SkuType.INAPP)
+                .build()
+
+            bc.querySkuDetailsAsync(params) { responseCode, skuDetailsList ->
+
+                billingResponseHandler.handle(
+                    responseCode = responseCode,
+                    onSuccess = {
+                        val gemPacks = GEM_PACK_TYPE_TO_SKU.map { (k, v) ->
+                            val sku = skuDetailsList.first { it.sku == v }
+                            val gems = GEM_PACK_TYPE_TO_GEMS[k]!!
+
+                            val titleRes = when (k) {
+                                GemPackType.BASIC -> R.string.gem_pack_basic_title
+                                GemPackType.SMART -> R.string.gem_pack_smart_title
+                                GemPackType.PLATINUM -> R.string.gem_pack_platinum_title
+                            }
+
+                            val shortTitleRes = when (k) {
+                                GemPackType.BASIC -> R.string.gem_pack_basic_title_short
+                                GemPackType.SMART -> R.string.gem_pack_smart_title_short
+                                GemPackType.PLATINUM -> R.string.gem_pack_platinum_title_short
+                            }
+
+                            GemPack(
+                                stringRes(titleRes),
+                                stringRes(shortTitleRes),
+                                sku.price,
+                                gems,
+                                k
+                            )
+                        }
+
+                        dispatch(CurrencyConverterAction.GemPacksLoaded(gemPacks))
+                    }
+                )
+            }
+        }
+    }
+
+    override fun onDetach(view: View) {
+        billingClient.endConnection()
+        super.onDetach(view)
     }
 
     override fun onCreateDialog(
@@ -185,8 +236,7 @@ class CurrencyConverterDialogController :
             .setNegativeButton(R.string.done, null)
             .create()
 
-    override fun onCreateLoadAction() =
-        CurrencyConverterAction.Load(AndroidInAppPurchaseManager(checkout, activity!!.resources))
+    override fun onCreateLoadAction() = CurrencyConverterAction.Load
 
     override fun render(state: CurrencyConverterViewState, view: View) {
         when (state.type) {
@@ -370,8 +420,7 @@ class CurrencyConverterDialogController :
         navigate().toGemStore(FadeChangeHandler())
     }
 
-    override fun onDestroy() {
-        checkout.stop()
-        super.onDestroy()
+    private fun BillingClient.execute(request: (BillingClient) -> Unit) {
+        billingRequestExecutor.execute(this, request)
     }
 }

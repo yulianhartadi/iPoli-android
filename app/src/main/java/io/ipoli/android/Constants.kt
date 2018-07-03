@@ -5,6 +5,7 @@ import io.ipoli.android.common.datetime.TimeOfDay
 import io.ipoli.android.pet.PetAvatar
 import io.ipoli.android.player.Theme
 import io.ipoli.android.player.data.Player
+import io.ipoli.android.store.gem.GemPackType
 import org.threeten.bp.DayOfWeek
 
 /**
@@ -269,5 +270,19 @@ interface Constants {
         const val BIO_MAX_LENGTH = 250
 
         const val MAX_POMODORO_COUNT = 8
+
+        val GEM_PACK_TYPE_TO_SKU = mapOf(
+            GemPackType.BASIC to "gems_8",
+            GemPackType.SMART to "gems_15",
+            GemPackType.PLATINUM to "gems_28"
+        )
+
+        val SKU_TO_GEM_PACK_TYPE = GEM_PACK_TYPE_TO_SKU.entries.associateBy({ it.value }) { it.key }
+
+        val GEM_PACK_TYPE_TO_GEMS = mapOf(
+            GemPackType.BASIC to 8,
+            GemPackType.SMART to 15,
+            GemPackType.PLATINUM to 28
+        )
     }
 }

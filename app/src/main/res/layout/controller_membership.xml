@@ -470,4 +470,10 @@
             app:layout_constraintTop_toTopOf="@+id/goPremium" />
 
     </android.support.constraint.ConstraintLayout>
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+        <include layout="@layout/view_loader" />
+    </FrameLayout>
 </LinearLayout>

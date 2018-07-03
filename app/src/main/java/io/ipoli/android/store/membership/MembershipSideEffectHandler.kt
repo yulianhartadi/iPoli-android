@@ -1,14 +1,17 @@
 package io.ipoli.android.store.membership
 
 import com.crashlytics.android.Crashlytics
+import io.ipoli.android.BuildConfig
 import io.ipoli.android.common.AppSideEffectHandler
 import io.ipoli.android.common.AppState
+import io.ipoli.android.common.api.Api
+import io.ipoli.android.common.datetime.startOfDayUTC
 import io.ipoli.android.common.redux.Action
 import io.ipoli.android.store.membership.error.SubscriptionError
 import io.ipoli.android.store.membership.usecase.CalculateMembershipPlanPriceUseCase
 import io.ipoli.android.store.membership.usecase.UpdatePlayerMembershipUseCase
-import io.ipoli.android.store.purchase.SubscriptionManager
 import space.traversal.kapsule.required
+import timber.log.Timber
 
 /**i
  * Created by Polina Zhelyazkova <polina@mypoli.fun>
@@ -18,96 +21,61 @@ object MembershipSideEffectHandler : AppSideEffectHandler() {
     private val updatePlayerMembershipUseCase by required { updatePlayerMembershipUseCase }
     private val calculateMembershipPlanPriceUseCase by required { calculateMembershipPlanPriceUseCase }
 
-    private lateinit var subscriptionManager: SubscriptionManager
-
     override suspend fun doExecute(action: Action, state: AppState) {
         when (action) {
             is MembershipAction.Load -> {
-                subscriptionManager = action.subscriptionManager
-                subscriptionManager.loadInventory { product, activeSkus ->
-                    val monthlySku = product.getSku(MembershipPlan.MONTHLY.sku)!!
-                    val yearlySku = product.getSku(MembershipPlan.YEARLY.sku)!!
-                    val quarterlySku = product.getSku(MembershipPlan.QUARTERLY.sku)!!
                     dispatch(
                         MembershipAction.Loaded(
                             monthlyPrice = calculateMembershipPlanPriceUseCase.execute(
                                 CalculateMembershipPlanPriceUseCase.Params(
-                                    monthlySku.detailedPrice.amount,
-                                    monthlySku.detailedPrice.currency,
+                                    action.monthlyPrice.amount,
+                                    action.monthlyPrice.currency,
                                     1
                                 )
                             ),
                             yearlyPrice = calculateMembershipPlanPriceUseCase.execute(
                                 CalculateMembershipPlanPriceUseCase.Params(
-                                    yearlySku.detailedPrice.amount,
-                                    yearlySku.detailedPrice.currency,
+                                    action.yearlyPrice.amount,
+                                    action.yearlyPrice.currency,
                                     12
                                 )
                             ),
                             quarterlyPrice = calculateMembershipPlanPriceUseCase.execute(
                                 CalculateMembershipPlanPriceUseCase.Params(
-                                    quarterlySku.detailedPrice.amount,
-                                    quarterlySku.detailedPrice.currency,
+                                    action.quarterlyPrice.amount,
+                                    action.quarterlyPrice.currency,
                                     3
                                 )
                             ),
-                            activeSkus = activeSkus
+                            activeSku = action.activeSku
                         )
                     )
-                }
             }
 
-            is MembershipAction.GoPremium -> {
-                if (action.activeSkus.isNotEmpty()) {
-                    subscriptionManager.changeSubscription(action.plan.sku, action.activeSkus,
-                        { startDate, expirationDate ->
-                            updatePlayerMembershipUseCase.execute(
-                                UpdatePlayerMembershipUseCase.Params(
-                                    plan = action.plan,
-                                    purchasedDate = startDate,
-                                    expirationDate = expirationDate
-                                )
-                            )
-                            dispatch(
-                                MembershipAction.Subscribed(
-                                    action.plan,
-                                    setOf(action.plan.sku)
-                                )
-                            )
-                        },
-                        { message, exception ->
-                            Crashlytics.logException(
-                                SubscriptionError(
-                                    "Change subscription error message: $message",
-                                    exception
-                                )
-                            )
-                            dispatch(MembershipAction.SubscriptionError)
-                        }
+            is MembershipAction.Subscribed -> {
+                val plan = MembershipPlan.values().first { it.sku == action.sku }
+                try {
+                    val status = Api.getMembershipStatus(action.sku, action.purchaseToken)
+                    updatePlayerMembershipUseCase.execute(
+                        UpdatePlayerMembershipUseCase.Params(
+                            plan = plan,
+                            purchasedDate = status.startDate,
+                            expirationDate = status.expirationDate
+                        )
                     )
-                } else {
-                    subscriptionManager.subscribe(action.plan.sku,
-                        { purchaseDate ->
-                            updatePlayerMembershipUseCase.execute(
-                                UpdatePlayerMembershipUseCase.Params(
-                                    purchasedDate = purchaseDate,
-                                    plan = action.plan
-                                )
-                            )
-                            dispatch(
-                                MembershipAction.Subscribed(
-                                    action.plan,
-                                    setOf(action.plan.sku)
-                                )
-                            )
-                        },
-                        { responseCode, exception ->
-                            SubscriptionError(
-                                "Subscribe with response code $responseCode",
-                                exception
-                            )
-                            dispatch(MembershipAction.SubscriptionError)
-                        }
+                } catch (e: Exception) {
+                    if (BuildConfig.DEBUG) {
+                        Timber.e(e)
+                    } else {
+                        Crashlytics.logException(
+                            SubscriptionError("Subscription error", e)
+                        )
+                    }
+                    updatePlayerMembershipUseCase.execute(
+                        UpdatePlayerMembershipUseCase.Params(
+                            plan = plan,
+                            purchasedDate = action.purchaseTime.startOfDayUTC
+                        )
                     )
                 }
             }

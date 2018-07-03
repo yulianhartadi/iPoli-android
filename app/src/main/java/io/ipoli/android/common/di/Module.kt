@@ -24,6 +24,8 @@ import io.ipoli.android.challenge.usecase.*
 import io.ipoli.android.common.*
 import io.ipoli.android.common.analytics.EventLogger
 import io.ipoli.android.common.analytics.SimpleEventLogger
+import io.ipoli.android.common.billing.BillingRequestExecutor
+import io.ipoli.android.common.billing.BillingResponseHandler
 import io.ipoli.android.common.image.AndroidImageLoader
 import io.ipoli.android.common.image.ImageLoader
 import io.ipoli.android.common.middleware.LogEventsMiddleWare
@@ -321,6 +323,10 @@ interface AndroidModule {
     val internetConnectionChecker: InternetConnectionChecker
 
     val executor: ExecutorService
+
+    val billingResponseHandler: BillingResponseHandler
+
+    val billingRequestExecutor: BillingRequestExecutor
 }
 
 class MainAndroidModule(
@@ -402,6 +408,12 @@ class MainAndroidModule(
     override val internetConnectionChecker = InternetConnectionChecker(context)
 
     override val executor: ExecutorService = Executors.newCachedThreadPool()
+
+    override val billingResponseHandler
+        get() = BillingResponseHandler(eventLogger)
+
+    override val billingRequestExecutor
+        get() = BillingRequestExecutor(billingResponseHandler)
 }
 
 interface UseCaseModule {

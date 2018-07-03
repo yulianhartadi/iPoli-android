@@ -1,6 +1,5 @@
 package io.ipoli.android.store.membership
 
-import android.content.Intent
 import android.content.res.ColorStateList
 import android.os.Bundle
 import android.support.annotation.ColorRes
@@ -12,20 +11,21 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.animation.AnimationUtils
 import android.widget.TextView
-import io.ipoli.android.BillingConstants
+import android.widget.Toast
+import com.android.billingclient.api.BillingClient
+import com.android.billingclient.api.BillingFlowParams
+import com.android.billingclient.api.SkuDetailsParams
 import io.ipoli.android.Constants
 import io.ipoli.android.R
-import io.ipoli.android.common.LoaderDialogController
+import io.ipoli.android.common.billing.BillingResponseHandler
 import io.ipoli.android.common.redux.android.ReduxViewController
 import io.ipoli.android.common.view.*
+import io.ipoli.android.store.membership.MembershipPlan.*
 import io.ipoli.android.store.membership.MembershipViewState.StateType.*
-import io.ipoli.android.store.purchase.AndroidSubscriptionManager
-import io.ipoli.android.store.purchase.SubscriptionManager
 import kotlinx.android.synthetic.main.controller_membership.view.*
+import kotlinx.android.synthetic.main.view_loader.view.*
 import kotlinx.android.synthetic.main.view_no_elevation_toolbar.view.*
-import org.solovyev.android.checkout.Billing
-import org.solovyev.android.checkout.Checkout
-import org.solovyev.android.checkout.UiCheckout
+import space.traversal.kapsule.required
 
 /**
  * Created by Polina Zhelyazkova <polina@mypoli.fun>
@@ -36,10 +36,31 @@ class MembershipViewController(args: Bundle? = null) :
 
     override val reducer = MembershipReducer
 
-    private lateinit var checkout: UiCheckout
-    private lateinit var subscriptionManager: SubscriptionManager
+    private lateinit var billingClient: BillingClient
+    private val billingResponseHandler by required { billingResponseHandler }
+    private val billingRequestExecutor by required { billingRequestExecutor }
 
-    private var loader: LoaderDialogController? = null
+    private val failureListener = object : BillingResponseHandler.FailureListener {
+
+        override fun onCanceledByUser() {
+        }
+
+        override fun onDisconnected() {
+            onBillingDisconnected()
+        }
+
+        override fun onUnavailable(responseCode: Int) {
+            activity?.let {
+                Toast.makeText(it, R.string.billing_unavailable, Toast.LENGTH_LONG).show()
+            }
+        }
+
+        override fun onError(responseCode: Int) {
+            activity?.let {
+                Toast.makeText(it, R.string.purchase_failed, Toast.LENGTH_LONG).show()
+            }
+        }
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -50,16 +71,21 @@ class MembershipViewController(args: Bundle? = null) :
         val view = inflater.inflate(R.layout.controller_membership, container, false)
         setToolbar(view.toolbar)
 
-        val billing = Billing(activity!!, object : Billing.DefaultConfiguration() {
-            override fun getPublicKey() =
-                BillingConstants.APP_PUBLIC_KEY
-        })
-
-        checkout = Checkout.forActivity(activity!!, billing)
-        checkout.start()
-        subscriptionManager = AndroidSubscriptionManager(checkout)
-
-        registerForActivityResult(AndroidSubscriptionManager.PURCHASE_REQUEST_CODE)
+        billingClient =
+            BillingClient.newBuilder(activity!!).setListener { responseCode, purchases ->
+                billingResponseHandler.handle(responseCode, {
+                    purchases!!.forEach { p ->
+                        dispatch(
+                            MembershipAction.Subscribed(
+                                p.sku,
+                                p.purchaseTime,
+                                p.purchaseToken
+                            )
+                        )
+                    }
+                }, failureListener)
+            }
+                .build()
 
         return view
     }
@@ -68,6 +94,66 @@ class MembershipViewController(args: Bundle? = null) :
         super.onAttach(view)
         toolbarTitle = stringRes(R.string.membership_store_title)
         showBackButton()
+        billingClient.execute { bc -> queryForSubscriptions(bc) }
+    }
+
+    override fun onDetach(view: View) {
+        billingClient.endConnection()
+        super.onDetach(view)
+    }
+
+    private fun queryForSubscriptions(billingClient: BillingClient) {
+
+
+        val params = SkuDetailsParams.newBuilder()
+            .setSkusList(MembershipPlan.values().map { it.sku })
+            .setType(BillingClient.SkuType.SUBS)
+            .build()
+
+        billingClient.querySkuDetailsAsync(params) { responseCode, skuDetailsList ->
+            billingResponseHandler.handle(
+                responseCode, {
+                    val monthlySku =
+                        skuDetailsList.first { it.sku == MONTHLY.sku }
+                    val quarterlySku =
+                        skuDetailsList.first { it.sku == QUARTERLY.sku }
+                    val yearlySku =
+                        skuDetailsList.first { it.sku == YEARLY.sku }
+
+                    val purchasesResponse =
+                        billingClient.queryPurchases(BillingClient.SkuType.SUBS)
+                    billingResponseHandler.handle(purchasesResponse.responseCode, {
+                        dispatch(
+                            MembershipAction.Load(
+                                monthlyPrice = Price(
+                                    monthlySku.priceAmountMicros,
+                                    monthlySku.priceCurrencyCode
+                                ),
+                                quarterlyPrice = Price(
+                                    quarterlySku.priceAmountMicros,
+                                    quarterlySku.priceCurrencyCode
+                                ),
+                                yearlyPrice = Price(
+                                    yearlySku.priceAmountMicros,
+                                    yearlySku.priceCurrencyCode
+                                ),
+                                activeSku = purchasesResponse.purchasesList
+                                    .firstOrNull {
+                                        it.isAutoRenewing
+                                    }?.sku
+                            )
+                        )
+                    }, failureListener)
+                }, failureListener
+            )
+        }
+    }
+
+
+    private fun onBillingDisconnected() {
+        activity?.let {
+            Toast.makeText(it, R.string.billing_disconnected, Toast.LENGTH_LONG).show()
+        }
     }
 
     override fun colorLayoutBars() {
@@ -83,33 +169,15 @@ class MembershipViewController(args: Bundle? = null) :
         return super.onOptionsItemSelected(item)
     }
 
-    override fun onCreateLoadAction() =
-        MembershipAction.Load(subscriptionManager)
-
-    private fun createLoader() =
-        LoaderDialogController()
-
-    private fun hideLoader() {
-        loader?.dismiss()
-        loader = null
-    }
-
-    private fun showLoader() {
-        loader = createLoader()
-        loader!!.show(router, "loader")
-    }
-
     override fun render(state: MembershipViewState, view: View) {
-        hideLoader()
         when (state.type) {
 
             LOADING -> {
                 view.membershipDataContainer.gone()
-                showLoader()
             }
 
             DATA_CHANGED -> {
-                view.membershipDataContainer.visible()
+                hideLoader(view)
                 view.membershipCurrentPlan.visible = state.showCurrentPlan
                 view.goPremium.visible = !state.showCurrentPlan
 
@@ -121,9 +189,15 @@ class MembershipViewController(args: Bundle? = null) :
                 renderReasons(view, state)
                 renderPrices(view, state)
 
-                view.monthlyPlanContainer.dispatchOnClick { MembershipAction.SelectPlan(io.ipoli.android.store.membership.MembershipPlan.MONTHLY) }
-                view.yearlyPlanContainer.dispatchOnClick { MembershipAction.SelectPlan(io.ipoli.android.store.membership.MembershipPlan.YEARLY) }
-                view.quarterlyPlanContainer.dispatchOnClick { MembershipAction.SelectPlan(io.ipoli.android.store.membership.MembershipPlan.QUARTERLY) }
+                view.monthlyPlanContainer.dispatchOnClick {
+                    MembershipAction.SelectPlan(MONTHLY)
+                }
+                view.yearlyPlanContainer.dispatchOnClick {
+                    MembershipAction.SelectPlan(YEARLY)
+                }
+                view.quarterlyPlanContainer.dispatchOnClick {
+                    MembershipAction.SelectPlan(QUARTERLY)
+                }
 
                 if (!state.showCurrentPlan) {
                     playGoPremiumAnimation(view)
@@ -131,24 +205,36 @@ class MembershipViewController(args: Bundle? = null) :
                     view.goPremium.text = state.premiumButtonText
                     view.goPremium.onDebounceClick {
                         view.goPremium.disableClick()
-                        dispatch(MembershipAction.GoPremium(state.selectedPlan, state.activeSkus))
+                        goPremium(state.selectedPlan, state.activeSku)
                     }
                 }
             }
 
-            SUBCRIPTON_IN_PROGRESS -> {
-                showLoader()
-            }
-
             SUBSCRIBED -> {
+                hideLoader(view)
                 showShortToast(R.string.premium_player)
                 view.membershipCurrentPlan.visible = state.showCurrentPlan
                 view.goPremium.visible = !state.showCurrentPlan
             }
-
-            SUBSCRIPTION_ERROR -> showShortToast(R.string.something_went_wrong)
         }
 
+    }
+
+    private fun hideLoader(view: View) {
+        view.loader.gone()
+        view.membershipDataContainer.visible()
+    }
+
+    private fun goPremium(plan: MembershipPlan, oldSku: String?) {
+        val flowParams = BillingFlowParams.newBuilder()
+            .setSku(plan.sku)
+            .setType(BillingClient.SkuType.SUBS)
+            .setOldSku(oldSku)
+            .build()
+        billingResponseHandler.handle(
+            responseCode = billingClient.launchBillingFlow(activity!!, flowParams),
+            listener = failureListener
+        )
     }
 
     private fun playGoPremiumAnimation(view: ViewGroup) {
@@ -230,18 +316,8 @@ class MembershipViewController(args: Bundle? = null) :
         }
     }
 
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        super.onActivityResult(requestCode, resultCode, data)
-        checkout.onActivityResult(requestCode, resultCode, data)
-    }
-
-    override fun onDestroy() {
-        checkout.stop()
-        super.onDestroy()
-    }
-
     private val MembershipViewState.showMostPopular: Boolean
-        get() = selectedPlan == io.ipoli.android.store.membership.MembershipPlan.YEARLY
+        get() = selectedPlan == YEARLY
 
     private val MembershipViewState.androidMembershipPlan: AndroidMembershipPlan
         get() = AndroidMembershipPlan.valueOf(selectedPlan.name)
@@ -277,5 +353,9 @@ class MembershipViewController(args: Bundle? = null) :
             R.color.md_green_800,
             R.color.md_green_900
         )
+    }
+
+    private fun BillingClient.execute(request: (BillingClient) -> Unit) {
+        billingRequestExecutor.execute(this, request, failureListener)
     }
 }

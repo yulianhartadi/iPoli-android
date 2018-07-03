@@ -21,7 +21,7 @@ import io.ipoli.android.quest.RepeatingQuest
 import io.ipoli.android.quest.schedule.agenda.usecase.CreateAgendaItemsUseCase
 import io.ipoli.android.quest.usecase.Schedule
 import io.ipoli.android.repeatingquest.usecase.CreateRepeatingQuestHistoryUseCase
-import io.ipoli.android.store.purchase.GemPack
+import io.ipoli.android.store.gem.GemPack
 import io.ipoli.android.tag.Tag
 import io.ipoli.android.tag.usecase.CreateTagItemsUseCase
 import org.threeten.bp.LocalDate

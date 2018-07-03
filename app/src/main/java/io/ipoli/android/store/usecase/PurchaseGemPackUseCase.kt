@@ -6,8 +6,8 @@ import io.ipoli.android.pet.Pet
 import io.ipoli.android.pet.PetAvatar
 import io.ipoli.android.player.data.Player
 import io.ipoli.android.player.persistence.PlayerRepository
-import io.ipoli.android.store.purchase.GemPack
-import io.ipoli.android.store.purchase.GemPackType
+import io.ipoli.android.store.gem.GemPack
+import io.ipoli.android.store.gem.GemPackType
 
 /**
  * Created by Venelin Valkov <venelin@mypoli.fun>

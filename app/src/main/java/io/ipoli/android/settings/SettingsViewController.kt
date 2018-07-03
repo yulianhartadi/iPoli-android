@@ -200,9 +200,9 @@ class SettingsViewController(args: Bundle? = null) :
     }
 
     private fun showCalendarPicker() {
-        navigate().toCalendarPicker({ calendarIds ->
+        navigate().toCalendarPicker { calendarIds ->
             dispatch(SettingsAction.SyncCalendarsSelected(calendarIds))
-        })
+        }
     }
 
     private fun showSyncCalendars() {

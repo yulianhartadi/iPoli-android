@@ -20,6 +20,7 @@ import io.ipoli.android.common.redux.Action
 import io.ipoli.android.common.redux.BaseViewState
 import io.ipoli.android.common.redux.android.ReduxViewController
 import io.ipoli.android.common.text.DateFormatter
+import io.ipoli.android.common.view.enterFullScreen
 import io.ipoli.android.common.view.exitFullScreen
 import io.ipoli.android.common.view.inflate
 import io.ipoli.android.dailychallenge.data.DailyChallenge
@@ -472,6 +473,7 @@ class PlanDayViewController(args: Bundle? = null) :
     override fun onCreateLoadAction() = PlanDayAction.Load
 
     override fun onPermissionsGranted(requestCode: Int, permissions: List<String>) {
+        enterFullScreen()
         dispatch(PlanDayAction.GetWeather)
     }
 
