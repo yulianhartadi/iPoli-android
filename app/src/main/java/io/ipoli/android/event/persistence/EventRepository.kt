@@ -116,7 +116,13 @@ class AndroidCalendarEventRepository : EventRepository {
     private fun createEvent(cursor: Cursor): Event {
         val eventStartTime = Time.of(cursor.getInt(PROJECTION_START_MIN_INDEX))
         val eventEndTime = Time.of(cursor.getInt(PROJECTION_END_MIN_INDEX))
-        val tz = ZoneId.of(cursor.getString(PROJECTION_TIME_ZONE_INDEX))
+
+        val tz =
+            if (cursor.isNull(PROJECTION_TIME_ZONE_INDEX))
+                ZoneId.systemDefault()
+            else
+                ZoneId.of(cursor.getString(PROJECTION_TIME_ZONE_INDEX))
+
         val rRule = cursor.getString(PROJECTION_RRULE)
         val title = if (cursor.isNull(PROJECTION_TITLE_INDEX))
             "(No title)"
