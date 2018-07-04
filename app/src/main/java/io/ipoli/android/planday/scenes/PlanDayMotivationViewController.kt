@@ -57,13 +57,16 @@ class PlanDayMotivationViewController(args: Bundle? = null) :
                 view.motivationAnimation.playAnimation()
             }
         })
-        view.motivationAnimation.playAnimation()
+        view.postDelayed({
+            view.motivationAnimation.playAnimation()
+        }, 100)
         return view
     }
 
     override fun onCreateLoadAction() = PlanDayAction.LoadMotivation
 
     override fun onAttach(view: View) {
+        enterFullScreen()
         super.onAttach(view)
         onTimeChanged()
         timeChangeReceiver = object : BroadcastReceiver() {
@@ -74,7 +77,6 @@ class PlanDayMotivationViewController(args: Bundle? = null) :
             }
         }
         activity!!.registerReceiver(timeChangeReceiver, IntentFilter(Intent.ACTION_TIME_TICK))
-        enterFullScreen()
     }
 
     override fun onDetach(view: View) {
