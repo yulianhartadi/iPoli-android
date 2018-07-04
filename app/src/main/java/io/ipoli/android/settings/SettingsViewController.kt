@@ -103,9 +103,10 @@ class SettingsViewController(args: Bundle? = null) :
         view.temperatureUnitContainer.onDebounceClick {
             navigate()
                 .toTemperatureUnitPicker(
-                    state.temperatureUnit, { unit ->
-                        dispatch(SettingsAction.TemperatureUnitChanged(unit))
-                    })
+                    state.temperatureUnit
+                ) { unit ->
+                    dispatch(SettingsAction.TemperatureUnitChanged(unit))
+                }
         }
 
     }
@@ -115,11 +116,10 @@ class SettingsViewController(args: Bundle? = null) :
         view.timeFormatContainer.onDebounceClick {
             navigate()
                 .toTimeFormatPicker(
-                    state.timeFormat,
-                    { format ->
-                        dispatch(SettingsAction.TimeFormatChanged(format))
-                    }
-                )
+                    state.timeFormat
+                ) { format ->
+                    dispatch(SettingsAction.TimeFormatChanged(format))
+                }
         }
     }
 
@@ -154,11 +154,10 @@ class SettingsViewController(args: Bundle? = null) :
         view.planDaysContainer.onDebounceClick {
             navigate()
                 .toDaysPicker(
-                    state.planDays,
-                    { days ->
-                        dispatch(SettingsAction.PlanDaysChanged(days))
-                    }
-                )
+                    state.planDays
+                ) { days ->
+                    dispatch(SettingsAction.PlanDaysChanged(days))
+                }
         }
 
         view.planNowContainer.onDebounceClick {

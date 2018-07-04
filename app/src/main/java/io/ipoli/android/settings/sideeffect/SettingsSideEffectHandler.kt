@@ -1,5 +1,6 @@
 package io.ipoli.android.settings.sideeffect
 
+import io.ipoli.android.Constants
 import io.ipoli.android.common.AppSideEffectHandler
 import io.ipoli.android.common.AppState
 import io.ipoli.android.common.notification.QuickDoNotificationUtil
@@ -20,6 +21,7 @@ object SettingsSideEffectHandler : AppSideEffectHandler() {
     private val saveTimeFormatUseCase by required { saveTimeFormatUseCase }
     private val saveTemperatureUnitUseCase by required { saveTemperatureUnitUseCase }
     private val saveQuickDoNotificationSettingUseCase by required { saveQuickDoNotificationSettingUseCase }
+    private val sharedPreferences by required { sharedPreferences }
 
     override suspend fun doExecute(action: Action, state: AppState) {
         when (action) {
@@ -36,19 +38,22 @@ object SettingsSideEffectHandler : AppSideEffectHandler() {
                 saveTemperatureUnitUseCase.execute(SaveTemperatureUnitUseCase.Params(action.unit))
 
             is SettingsAction.ToggleQuickDoNotification -> {
-                val p = saveQuickDoNotificationSettingUseCase.execute(
+                saveQuickDoNotificationSettingUseCase.execute(
                     SaveQuickDoNotificationSettingUseCase.Params(
                         action.isEnabled
                     )
                 )
 
-                if (p.preferences.isQuickDoNotificationEnabled) {
-                    QuickDoNotificationUtil.update(
-                        myPoliApp.instance,
-                        state.dataState.todayQuests,
-                        p
-                    )
+                if (action.isEnabled) {
+                    sharedPreferences.edit()
+                        .putBoolean(Constants.KEY_QUICK_DO_NOTIFICATION_ENABLED, true).apply()
+                    state.dataState.todayQuests?.let {
+                        QuickDoNotificationUtil.update(myPoliApp.instance, it)
+                    }
+
                 } else {
+                    sharedPreferences.edit()
+                        .putBoolean(Constants.KEY_QUICK_DO_NOTIFICATION_ENABLED, false).apply()
                     QuickDoNotificationUtil.disable(myPoliApp.instance)
                 }
 

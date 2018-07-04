@@ -44,13 +44,19 @@ object DailyChallengeReducer : BaseViewStateReducer<DailyChallengeViewState>() {
             is DailyChallengeAction.Loaded -> {
                 val player = state.dataState.player
                 val todayQuests = state.dataState.todayQuests
+
+                val type = if(player == null || todayQuests == null) LOADING else DATA_CHANGED
+
                 val selectedQuests =
-                    todayQuests.filter { action.dailyChallenge.questIds.contains(it.id) }
+                    todayQuests?.filter { action.dailyChallenge.questIds.contains(it.id) }
+
                 subState.copy(
-                    type = if (player != null) DATA_CHANGED else LOADING,
+                    type = type,
                     petAvatar = player?.pet?.avatar ?: subState.petAvatar,
                     selectedQuests = selectedQuests,
-                    todayQuests = todayQuests - selectedQuests,
+                    todayQuests = todayQuests?.let {
+                        it - selectedQuests!!
+                    },
                     isCompleted = action.dailyChallenge.isCompleted
                 )
             }

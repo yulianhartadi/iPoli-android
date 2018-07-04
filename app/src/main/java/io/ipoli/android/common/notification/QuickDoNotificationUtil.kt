@@ -14,16 +14,12 @@ import io.ipoli.android.common.text.DurationFormatter
 import io.ipoli.android.common.view.AndroidColor
 import io.ipoli.android.common.view.AndroidIcon
 import io.ipoli.android.common.view.largeIcon
-import io.ipoli.android.player.data.Player
 import io.ipoli.android.quest.Quest
 import io.ipoli.android.quest.receiver.CompleteQuestReceiver
 
 object QuickDoNotificationUtil {
 
-    fun update(context: Context, quests: List<Quest>, player: Player) {
-        if (!player.preferences.isQuickDoNotificationEnabled) {
-            return
-        }
+    fun update(context: Context, quests: List<Quest>) {
 
         val nextQuest = quests.firstOrNull { !it.isCompleted }
 

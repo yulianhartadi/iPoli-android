@@ -20,19 +20,21 @@ import space.traversal.kapsule.required
 class CompleteQuestReceiver : AsyncBroadcastReceiver() {
 
     private val completeTimeRangeUseCase by required { completeTimeRangeUseCase }
-    private val playerRepository by required { playerRepository }
     private val questRepository by required { questRepository }
+    private val sharedPreferences by required { sharedPreferences }
 
     override suspend fun onReceiveAsync(context: Context, intent: Intent) {
         val questId = intent.getStringExtra(Constants.QUEST_ID_EXTRA_KEY)
         completeTimeRangeUseCase.execute(CompleteTimeRangeUseCase.Params(questId))
 
-        val player = playerRepository.find()!!
-        if (player.preferences.isQuickDoNotificationEnabled) {
+        if (sharedPreferences.getBoolean(
+                Constants.KEY_QUICK_DO_NOTIFICATION_ENABLED,
+                Constants.DEFAULT_QUICK_DO_NOTIFICATION_ENABLED
+            )) {
             val todayQuests = questRepository.findScheduledAt(LocalDate.now())
 
+            QuickDoNotificationUtil.update(context, todayQuests)
             launch(UI) {
-                QuickDoNotificationUtil.update(context, todayQuests, player)
                 updateUIElements(context)
             }
         } else {

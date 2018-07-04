@@ -104,7 +104,7 @@ sealed class DataLoadedAction : Action {
 
 data class AppDataState(
     val player: Player?,
-    val todayQuests: List<Quest>,
+    val todayQuests: List<Quest>?,
     val unscheduledQuests: List<Quest>,
     val calendarSchedule: Map<LocalDate, Schedule>,
     val repeatingQuests: List<RepeatingQuest>?,
@@ -173,7 +173,7 @@ object AppDataReducer : Reducer<AppState, AppDataState> {
     override fun defaultState() =
         AppDataState(
             player = null,
-            todayQuests = listOf(),
+            todayQuests = null,
             unscheduledQuests = emptyList(),
             calendarSchedule = mapOf(),
             repeatingQuests = null,

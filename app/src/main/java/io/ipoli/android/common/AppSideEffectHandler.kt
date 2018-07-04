@@ -1,5 +1,6 @@
 package io.ipoli.android.common
 
+import io.ipoli.android.Constants
 import io.ipoli.android.challenge.entity.Challenge
 import io.ipoli.android.challenge.predefined.category.list.ChallengeListForCategoryAction
 import io.ipoli.android.challenge.usecase.BuyChallengeUseCase
@@ -127,6 +128,7 @@ object LoadAllDataSideEffectHandler : AppSideEffectHandler() {
     private val findChallengeProgressUseCase by required { findChallengeProgressUseCase }
     private val addQuestCountToTagUseCase by required { addQuestCountToTagUseCase }
     private val reminderScheduler by required { reminderScheduler }
+    private val sharedPreferences by required { sharedPreferences }
 
     private val playerChannelRelay = ChannelRelay<Player?, Unit>(
         producer = { c, _ ->
@@ -222,12 +224,14 @@ object LoadAllDataSideEffectHandler : AppSideEffectHandler() {
     override suspend fun doExecute(action: Action, state: AppState) {
 
         if (action is DataLoadedAction.TodayQuestsChanged) {
-            val p = state.dataState.player
             withContext(UI) {
                 updateWidgets()
             }
-            if (p != null) {
-                QuickDoNotificationUtil.update(myPoliApp.instance, action.quests, p)
+            if (sharedPreferences.getBoolean(
+                    Constants.KEY_QUICK_DO_NOTIFICATION_ENABLED,
+                    Constants.DEFAULT_QUICK_DO_NOTIFICATION_ENABLED
+                )) {
+                QuickDoNotificationUtil.update(myPoliApp.instance, action.quests)
             }
         }
 
