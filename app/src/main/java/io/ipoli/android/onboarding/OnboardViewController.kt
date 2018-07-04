@@ -106,7 +106,7 @@ object OnboardReducer : BaseViewStateReducer<OnboardViewState>() {
     ) =
         when (action) {
             OnboardAction.ShowNext ->
-                if (subState.adapterPosition + 1 > OnboardViewController.PICK_REPEATING_QUESTS_INDEX)
+                if (subState.adapterPosition + 1 > OnboardViewController.PICK_PRESET_ITEMS_INDEX)
                     subState
                 else
                     subState.copy(
@@ -171,14 +171,14 @@ object OnboardReducer : BaseViewStateReducer<OnboardViewState>() {
 
             is OnboardAction.LoadPresetItems ->
                 subState.copy(
-                    type = REPEATING_QUESTS_LOADED,
+                    type = PRESET_ITEMS_LOADED,
                     repeatingQuests = action.repeatingQuests,
                     habits = action.habits
                 )
 
             is OnboardAction.SelectRepeatingQuest ->
                 subState.copy(
-                    type = REPEATING_QUESTS_LOADED,
+                    type = PRESET_ITEMS_LOADED,
                     repeatingQuests = subState.repeatingQuests +
                         Pair(action.repeatingQuest, action.tag)
                 )
@@ -187,14 +187,14 @@ object OnboardReducer : BaseViewStateReducer<OnboardViewState>() {
                 val pair = subState.repeatingQuests.find { it.first == action.repeatingQuest }
 
                 subState.copy(
-                    type = REPEATING_QUESTS_LOADED,
+                    type = PRESET_ITEMS_LOADED,
                     repeatingQuests = subState.repeatingQuests - pair!!
                 )
             }
 
             is OnboardAction.SelectHabit ->
                 subState.copy(
-                    type = REPEATING_QUESTS_LOADED,
+                    type = PRESET_ITEMS_LOADED,
                     habits = subState.habits +
                         Pair(action.habit, action.tag)
                 )
@@ -203,7 +203,7 @@ object OnboardReducer : BaseViewStateReducer<OnboardViewState>() {
                 val pair = subState.habits.find { it.first == action.habit }
 
                 subState.copy(
-                    type = REPEATING_QUESTS_LOADED,
+                    type = PRESET_ITEMS_LOADED,
                     habits = subState.habits - pair!!
                 )
             }
@@ -275,7 +275,7 @@ data class OnboardViewState(
         PET_NAME_EMPTY,
         PET_NAME_VALID,
         DONE,
-        REPEATING_QUESTS_LOADED,
+        PRESET_ITEMS_LOADED,
         FIRST_QUEST_DATA_LOADED
     }
 }
@@ -361,7 +361,7 @@ class OnboardViewController(args: Bundle? = null) :
         state: OnboardViewState,
         view: View
     ) {
-        if (state.adapterPosition == TIME_BEFORE) {
+        if (state.adapterPosition == TIME_BEFORE || state.adapterPosition == PICK_PRESET_ITEMS_INDEX) {
             view.onboardNavigation.gone()
         } else {
             view.onboardNavigation.visible()
@@ -401,7 +401,7 @@ class OnboardViewController(args: Bundle? = null) :
             AVATAR_INDEX -> AvatarViewController()
             PET_INDEX -> PetViewController()
             ADD_QUEST_INDEX -> FirstQuestViewController()
-            PICK_REPEATING_QUESTS_INDEX -> PickRepeatingQuestsViewController()
+            PICK_PRESET_ITEMS_INDEX -> PickPresetItemsViewController()
             else -> throw IllegalArgumentException("Unknown controller position $position")
         }
 
@@ -411,7 +411,7 @@ class OnboardViewController(args: Bundle? = null) :
         const val AVATAR_INDEX = 2
         const val PET_INDEX = 3
         const val ADD_QUEST_INDEX = 4
-        const val PICK_REPEATING_QUESTS_INDEX = 5
+        const val PICK_PRESET_ITEMS_INDEX = 5
 
         const val TYPE_SPEED = 50
     }

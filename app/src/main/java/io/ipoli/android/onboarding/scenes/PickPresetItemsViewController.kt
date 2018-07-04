@@ -26,14 +26,14 @@ import kotlinx.android.synthetic.main.item_onboard_repeating_quest.view.*
 import kotlinx.android.synthetic.main.view_default_toolbar.view.*
 import org.threeten.bp.DayOfWeek
 
-class PickRepeatingQuestsViewController(args: Bundle? = null) :
+class PickPresetItemsViewController(args: Bundle? = null) :
     BaseViewController<OnboardAction, OnboardViewState>(
         args
     ) {
 
     override val stateKey = OnboardReducer.stateKey
 
-    private var repeatingQuestViewModels = mutableListOf<OnboardItemViewModel>()
+    private val presetItemViewModels = mutableListOf<OnboardItemViewModel>()
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -47,8 +47,7 @@ class PickRepeatingQuestsViewController(args: Bundle? = null) :
         setToolbar(view.toolbar)
         toolbarTitle = stringRes(R.string.onboard_pick_repeating_quests_title)
 
-        repeatingQuestViewModels.clear()
-        repeatingQuestViewModels.addAll(createViewModels())
+        presetItemViewModels.addAll(createViewModels())
 
         view.onboardRepeatingQuests.layoutManager =
             LinearLayoutManager(
@@ -56,9 +55,9 @@ class PickRepeatingQuestsViewController(args: Bundle? = null) :
                 LinearLayoutManager.VERTICAL,
                 false
             )
-        val adapter = PresetItemsAdapter()
+        val adapter = PresetItemAdapter()
         view.onboardRepeatingQuests.adapter = adapter
-        adapter.updateAll(repeatingQuestViewModels)
+        adapter.updateAll(presetItemViewModels)
 
         return view
     }
@@ -311,7 +310,7 @@ class PickRepeatingQuestsViewController(args: Bundle? = null) :
     override fun onCreateLoadAction(): OnboardAction? {
         val rqs = mutableSetOf<Pair<RepeatingQuest, OnboardViewController.OnboardTag?>>()
         val hs = mutableSetOf<Pair<PredefinedHabit, OnboardViewController.OnboardTag?>>()
-        repeatingQuestViewModels.forEach { vm ->
+        presetItemViewModels.forEach { vm ->
             when (vm) {
                 is OnboardItemViewModel.RepeatingQuestItem -> {
                     if (vm.isSelected) {
@@ -320,7 +319,7 @@ class PickRepeatingQuestsViewController(args: Bundle? = null) :
                 }
 
                 is OnboardItemViewModel.HabitItem -> {
-                    if(vm.isSelected) {
+                    if (vm.isSelected) {
                         hs.add(vm.habit to vm.tag)
                     }
                 }
@@ -332,6 +331,9 @@ class PickRepeatingQuestsViewController(args: Bundle? = null) :
 
 
     override fun render(state: OnboardViewState, view: View) {
+        if (state.type == OnboardViewState.StateType.PRESET_ITEMS_LOADED) {
+            (view.onboardRepeatingQuests.adapter as PresetItemAdapter).updateAll(state.itemViewModels)
+        }
     }
 
     sealed class OnboardItemViewModel(override val id: String) : RecyclerViewViewModel {
@@ -355,7 +357,7 @@ class PickRepeatingQuestsViewController(args: Bundle? = null) :
         HABIT(1)
     }
 
-    inner class PresetItemsAdapter : MultiViewRecyclerViewAdapter<OnboardItemViewModel>() {
+    inner class PresetItemAdapter : MultiViewRecyclerViewAdapter<OnboardItemViewModel>() {
 
         override fun onRegisterItemBinders() {
 
@@ -446,4 +448,17 @@ class PickRepeatingQuestsViewController(args: Bundle? = null) :
         }
 
     }
+
+    val OnboardViewState.itemViewModels
+        get() = presetItemViewModels.map {
+            when (it) {
+                is OnboardItemViewModel.HabitItem -> {
+                    it.copy(isSelected = habits.map { it.first }.contains(it.habit))
+                }
+
+                is OnboardItemViewModel.RepeatingQuestItem -> {
+                    it.copy(isSelected = repeatingQuests.map { it.first }.contains(it.repeatingQuest))
+                }
+            }
+        }
 }
