@@ -88,7 +88,6 @@ class AddChallengeNameViewController(args: Bundle? = null) :
         }
 
     override fun render(state: EditChallengeViewState, view: View) {
-        view.challengeName.setText(state.name)
         renderColor(view, state)
         renderIcon(view, state)
         when (state.type) {
