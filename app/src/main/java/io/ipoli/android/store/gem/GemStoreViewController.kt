@@ -294,15 +294,15 @@ class GemStoreViewController(args: Bundle? = null) :
     }
 
     private fun enableButtons() {
-        view!!.basicPackBuy.enableClick()
-        view!!.smartPackBuy.enableClick()
-        view!!.platinumPackBuy.enableClick()
+        view?.basicPackBuy?.enableClick()
+        view?.smartPackBuy?.enableClick()
+        view?.platinumPackBuy?.enableClick()
     }
 
     private fun disableButtons() {
-        view!!.basicPackBuy.disableClick()
-        view!!.smartPackBuy.disableClick()
-        view!!.platinumPackBuy.disableClick()
+        view?.basicPackBuy?.disableClick()
+        view?.smartPackBuy?.disableClick()
+        view?.platinumPackBuy?.disableClick()
     }
 
     private fun showMostPopular(view: View) {
