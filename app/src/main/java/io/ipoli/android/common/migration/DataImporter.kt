@@ -15,6 +15,7 @@ import io.ipoli.android.common.di.Module
 import io.ipoli.android.dailychallenge.data.persistence.FirestoreDailyChallengeRepository
 import io.ipoli.android.habit.persistence.FirestoreHabitRepository
 import io.ipoli.android.myPoliApp
+import io.ipoli.android.player.data.Player
 import io.ipoli.android.player.persistence.FirestorePlayerRepository
 import io.ipoli.android.quest.data.persistence.FirestoreQuestRepository
 import io.ipoli.android.repeatingquest.persistence.FirestoreRepeatingQuestRepository
@@ -73,8 +74,8 @@ class DataImporter(private val appContext: Context) : Injects<Module> {
             // @TODO require upgrade dialog !!important
         }
 
-        try {
-            importData()
+        val theme = try {
+            importData().preferences.theme
         } catch (e: Throwable) {
             if (BuildConfig.DEBUG) {
                 Timber.e(e)
@@ -89,12 +90,13 @@ class DataImporter(private val appContext: Context) : Injects<Module> {
             .putBoolean(Constants.KEY_PLAYER_DATA_IMPORTED, true)
             .putInt(Constants.KEY_SCHEMA_VERSION, remoteSchemaVersion.toInt())
             .putLong(Constants.KEY_LAST_SYNC_MILLIS, System.currentTimeMillis())
+            .putString(Constants.KEY_THEME, theme.name)
             .commit()
         eventLogger.setPlayerId(remotePlayerId)
     }
 
     @Transaction
-    private fun importData() {
+    private fun importData(): Player {
         localDatabase.clearAllTables()
 
         val fp = FirestorePlayerRepository(remoteDatabase).find()!!
@@ -121,5 +123,7 @@ class DataImporter(private val appContext: Context) : Injects<Module> {
                 !it.isRemoved || rqIds.contains(it.repeatingQuestId)
             }
         questRepository.save(qs)
+
+        return fp
     }
 }
