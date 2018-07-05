@@ -73,6 +73,7 @@ import io.ipoli.android.note.usecase.SaveQuestNoteUseCase
 import io.ipoli.android.onboarding.sideeffecthandler.OnboardingSideEffectHandler
 import io.ipoli.android.pet.AndroidJobLowerPetStatsScheduler
 import io.ipoli.android.pet.LowerPetStatsScheduler
+import io.ipoli.android.pet.PetDialogSideEffectHandler
 import io.ipoli.android.pet.sideeffect.PetSideEffectHandler
 import io.ipoli.android.pet.usecase.*
 import io.ipoli.android.planday.data.AndroidWeatherRepository
@@ -949,7 +950,8 @@ class AndroidStateStoreModule : StateStoreModule, Injects<Module> {
                 AchievementListSideEffectHandler,
                 HabitSideEffectHandler,
                 LevelUpSideEffectHandler,
-                PetMessageSideEffectHandler
+                PetMessageSideEffectHandler,
+                PetDialogSideEffectHandler
             ),
             sideEffectHandlerExecutor = CoroutineSideEffectHandlerExecutor(job + CommonPool),
             middleware = listOf(
