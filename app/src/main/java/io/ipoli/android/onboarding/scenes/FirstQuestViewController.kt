@@ -54,9 +54,9 @@ class FirstQuestViewController(args: Bundle? = null) :
     private val nameWatcher = object : TextWatcher {
         override fun afterTextChanged(s: Editable) {
             if (s.length > 2) {
-                view!!.saveQuest.visible()
+                view?.saveQuest?.visible()
             } else {
-                view!!.saveQuest.gone()
+                view?.saveQuest?.gone()
             }
         }
 
@@ -163,7 +163,7 @@ class FirstQuestViewController(args: Bundle? = null) :
             showcase?.dismiss()
             showcase = null
             popup.hide()
-            view!!.postDelayed({
+            view?.postDelayed({
                 dispatch(OnboardAction.ShowNext)
             }, 300)
         }

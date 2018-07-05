@@ -165,11 +165,10 @@ class AgendaViewController(args: Bundle? = null) :
                 15
             )
         val changeItemScrollListener = ChangeItemScrollListener(
-            agendaList.layoutManager as LinearLayoutManager,
-            { pos ->
-                dispatch(AgendaAction.FirstVisibleItemChanged(pos))
-            }
-        )
+            agendaList.layoutManager as LinearLayoutManager
+        ) { pos ->
+            dispatch(AgendaAction.FirstVisibleItemChanged(pos))
+        }
 
 
         scrollToPositionListener = object : RecyclerView.OnScrollListener() {
