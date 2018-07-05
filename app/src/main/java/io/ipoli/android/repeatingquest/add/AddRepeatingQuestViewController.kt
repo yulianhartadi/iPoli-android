@@ -65,7 +65,9 @@ class AddRepeatingQuestViewController(args: Bundle? = null) :
         savedViewState: Bundle?
     ): View {
         val view = container.inflate(R.layout.controller_add_repeating_quest)
+
         setToolbar(view.toolbar)
+
         return view
     }
 
@@ -73,9 +75,24 @@ class AddRepeatingQuestViewController(args: Bundle? = null) :
         super.onAttach(view)
         showBackButton()
         activity!!.window.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN)
+
+        view.toolbar.onDebounceMenuClick(
+            {
+                if (it.itemId == R.id.actionNext) {
+                    dispatch(EditRepeatingQuestAction.ShowRepeatPatternPicker(view.rqName.text.toString()))
+                }
+
+                if (it.itemId == R.id.actionSave) {
+                    dispatch(EditRepeatingQuestAction.ValidateName(view.summaryName.text.toString()))
+                }
+
+            }, {
+                dispatch(EditRepeatingQuestAction.Back)
+            })
     }
 
     override fun onDetach(view: View) {
+        view.toolbar.clearDebounceListeners()
         activity!!.window.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE)
         super.onDetach(view)
     }
@@ -198,20 +215,6 @@ class AddRepeatingQuestViewController(args: Bundle? = null) :
             super.onCreateOptionsMenu(menu, inflater)
             inflater.inflate(R.menu.next_wizard_menu, menu)
         }
-
-        override fun onOptionsItemSelected(item: MenuItem) =
-            when (item.itemId) {
-                android.R.id.home -> {
-                    dispatch(EditRepeatingQuestAction.Back)
-                    true
-                }
-                R.id.actionNext -> {
-                    dispatch(EditRepeatingQuestAction.ShowRepeatPatternPicker(view!!.rqName.text.toString()))
-                    true
-                }
-
-                else -> super.onOptionsItemSelected(item)
-            }
 
         override fun colorLayoutBars() {
 
@@ -556,23 +559,6 @@ class AddRepeatingQuestViewController(args: Bundle? = null) :
             inflater.inflate(R.menu.edit_repeating_quest_menu, menu)
         }
 
-        override fun onOptionsItemSelected(item: MenuItem) =
-            when (item.itemId) {
-
-                android.R.id.home -> {
-                    dispatch(EditRepeatingQuestAction.Back)
-                    true
-                }
-
-                R.id.actionSave -> {
-                    dispatch(EditRepeatingQuestAction.ValidateName(view!!.summaryName.text.toString()))
-                    true
-                }
-
-                else -> super.onOptionsItemSelected(item)
-            }
-
-
         override fun onCreateLoadAction() = EditRepeatingQuestAction.LoadSummary
 
         override fun colorLayoutBars() {
@@ -765,9 +751,9 @@ class AddRepeatingQuestViewController(args: Bundle? = null) :
         ) {
             view.summaryChallenge.text = state.challengeText
             view.summaryChallenge.onDebounceClick {
-                navigate().toChallengePicker(state.challenge, { challenge ->
+                navigate().toChallengePicker(state.challenge) { challenge ->
                     dispatch(EditRepeatingQuestAction.ChangeChallenge(challenge))
-                })
+                }
             }
         }
 

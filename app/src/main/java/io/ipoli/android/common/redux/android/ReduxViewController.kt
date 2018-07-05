@@ -10,9 +10,11 @@ import android.os.Build
 import android.os.Bundle
 import android.support.annotation.IdRes
 import android.support.annotation.LayoutRes
+import android.support.v7.widget.Toolbar
 import android.text.format.DateFormat
 import android.text.method.LinkMovementMethod
 import android.text.style.ForegroundColorSpan
+import android.view.MenuItem
 import android.view.View
 import android.view.animation.AccelerateDecelerateInterpolator
 import android.widget.ProgressBar
@@ -127,19 +129,51 @@ abstract class BaseViewController<A : Action, VS : ViewState> protected construc
 
     private fun createEventActor() = actor<ViewAction>(UI, start = CoroutineStart.UNDISPATCHED) {
         for (va in this) {
-            va.action(va.view)
+            when (va) {
+                is ViewAction.ClickAction -> va.action(va.view)
+                is ViewAction.MenuClickAction -> va.action(va.menuItem)
+            }
+
             delay(400)
         }
     }
 
-    data class ViewAction(val view: View, val action: suspend (View) -> Unit)
+    sealed class ViewAction {
+        data class ClickAction(val view: View, val action: suspend (View) -> Unit) : ViewAction()
+        data class MenuClickAction(val menuItem: MenuItem, val action: suspend (MenuItem) -> Unit) :
+            ViewAction()
+    }
 
     fun View.onDebounceClick(action: suspend (View) -> Unit) {
         setOnClickListener { v ->
             eventActor?.let {
-                if (!it.isClosedForSend) it.offer(ViewAction(v, action))
+                if (!it.isClosedForSend) it.offer(ViewAction.ClickAction(v, action))
             }
         }
+    }
+
+    fun Toolbar.onDebounceMenuClick(
+        action: suspend (MenuItem) -> Unit,
+        backAction: (suspend (View) -> Unit)? = null
+    ) {
+        setOnMenuItemClickListener { mi ->
+            eventActor?.let {
+                if (!it.isClosedForSend) it.offer(ViewAction.MenuClickAction(mi, action))
+            }
+            true
+        }
+        backAction?.let { ba ->
+            setNavigationOnClickListener { v ->
+                eventActor?.let {
+                    if (!it.isClosedForSend) it.offer(ViewAction.ClickAction(v, ba))
+                }
+            }
+        }
+    }
+
+    fun Toolbar.clearDebounceListeners() {
+        setOnMenuItemClickListener(null)
+        setNavigationOnClickListener(null)
     }
 
     fun dispatch(action: A) {

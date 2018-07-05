@@ -5,6 +5,7 @@ import com.bluelinelabs.conductor.ControllerChangeHandler
 import com.bluelinelabs.conductor.Router
 import com.bluelinelabs.conductor.RouterTransaction
 import com.bluelinelabs.conductor.changehandler.FadeChangeHandler
+import com.bluelinelabs.conductor.changehandler.HorizontalChangeHandler
 import com.bluelinelabs.conductor.changehandler.SimpleSwapChangeHandler
 import com.bluelinelabs.conductor.changehandler.VerticalChangeHandler
 import io.ipoli.android.achievement.list.AchievementListViewController
@@ -40,6 +41,7 @@ import io.ipoli.android.quest.schedule.agenda.AgendaViewController
 import io.ipoli.android.quest.schedule.calendar.CalendarViewController
 import io.ipoli.android.quest.show.QuestViewController
 import io.ipoli.android.repeatingquest.add.AddRepeatingQuestViewController
+import io.ipoli.android.repeatingquest.edit.EditRepeatingQuestViewController
 import io.ipoli.android.repeatingquest.edit.picker.RepeatPatternPickerDialogController
 import io.ipoli.android.repeatingquest.entity.RepeatPattern
 import io.ipoli.android.settings.view.DaysPickerDialogController
@@ -135,6 +137,13 @@ class Navigator(private val router: Router) {
 
     fun toAddRepeatingQuest() {
         pushController({ AddRepeatingQuestViewController() }, VerticalChangeHandler())
+    }
+
+    fun toEditRepeatingQuest(repeatingQuestId: String) {
+        pushController(
+            { EditRepeatingQuestViewController(repeatingQuestId) },
+            HorizontalChangeHandler()
+        )
     }
 
     fun toAddHabit(params: EditHabitViewController.Params? = null) {

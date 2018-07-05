@@ -9,7 +9,6 @@ import android.support.design.widget.AppBarLayout
 import android.support.v7.widget.LinearLayoutManager
 import android.view.*
 import com.bluelinelabs.conductor.RouterTransaction
-import com.bluelinelabs.conductor.changehandler.FadeChangeHandler
 import com.bluelinelabs.conductor.changehandler.VerticalChangeHandler
 import io.ipoli.android.MainActivity
 import io.ipoli.android.R
@@ -22,7 +21,6 @@ import io.ipoli.android.common.view.*
 import io.ipoli.android.common.view.recyclerview.BaseRecyclerViewAdapter
 import io.ipoli.android.common.view.recyclerview.SimpleRecyclerViewViewModel
 import io.ipoli.android.common.view.recyclerview.SimpleViewHolder
-import io.ipoli.android.repeatingquest.edit.EditRepeatingQuestViewController
 import io.ipoli.android.tag.Tag
 import kotlinx.android.synthetic.main.controller_repeating_quest.view.*
 import kotlinx.android.synthetic.main.item_quest_tag_list.view.*
@@ -109,12 +107,7 @@ class RepeatingQuestViewController(args: Bundle? = null) :
         }
 
     private fun showEdit() {
-        val changeHandler = FadeChangeHandler()
-        rootRouter.pushController(
-            RouterTransaction.with(EditRepeatingQuestViewController(repeatingQuestId))
-                .pushChangeHandler(changeHandler)
-                .popChangeHandler(changeHandler)
-        )
+        navigateFromRoot().toEditRepeatingQuest(repeatingQuestId)
     }
 
     override fun onAttach(view: View) {
