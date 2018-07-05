@@ -135,8 +135,10 @@ abstract class BaseViewController<A : Action, VS : ViewState> protected construc
     data class ViewAction(val view: View, val action: suspend (View) -> Unit)
 
     fun View.onDebounceClick(action: suspend (View) -> Unit) {
-        setOnClickListener {
-            eventActor!!.offer(ViewAction(it, action))
+        setOnClickListener { v ->
+            eventActor?.let {
+                if (!it.isClosedForSend) it.offer(ViewAction(v, action))
+            }
         }
     }
 
