@@ -27,7 +27,7 @@ import kotlin.math.roundToInt
 
 data class AppUsageStat(
     /**
-     * @param id package name of the app
+     * package name of the app
      */
     override val id: String,
     val name: String,
@@ -63,18 +63,26 @@ class AndroidAppUsageStatRepository(private val context: Context) : AppUsageStat
 
     private val packageManager = context.packageManager
 
-    override fun findForDate(date: LocalDate) =
-        toAppUsageStats(
-            usageStats.queryUsageStats(
-                UsageStatsManager.INTERVAL_DAILY,
-                date.startOfDay(),
-                System.currentTimeMillis()
-            )
+    override fun findForDate(date: LocalDate): List<AppUsageStat> {
+        val stats = usageStats.queryUsageStats(
+            UsageStatsManager.INTERVAL_DAILY,
+            date.startOfDay(),
+            System.currentTimeMillis()
+        ).groupBy { it.packageName }.map {
+            val first = it.value.first()
+            it.value.drop(1).forEach {
+                first.add(it)
+            }
+            first
+        }
+        return toAppUsageStats(
+            stats
         )
+    }
 
     override fun findForWeek(weekStart: LocalDate): List<AppUsageStat> {
         val stats = usageStats.queryUsageStats(
-            UsageStatsManager.INTERVAL_WEEKLY,
+            UsageStatsManager.INTERVAL_DAILY,
             weekStart.startOfDay(),
             System.currentTimeMillis()
         ).groupBy { it.packageName }.map {
@@ -91,7 +99,7 @@ class AndroidAppUsageStatRepository(private val context: Context) : AppUsageStat
 
     override fun findForMonth(monthStart: LocalDate): List<AppUsageStat> {
         val stats = usageStats.queryUsageStats(
-            UsageStatsManager.INTERVAL_WEEKLY,
+            UsageStatsManager.INTERVAL_DAILY,
             monthStart.startOfDay(),
             System.currentTimeMillis()
         ).groupBy { it.packageName }.map {

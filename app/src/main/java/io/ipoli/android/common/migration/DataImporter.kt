@@ -74,8 +74,8 @@ class DataImporter(private val appContext: Context) : Injects<Module> {
             // @TODO require upgrade dialog !!important
         }
 
-        val theme = try {
-            importData().preferences.theme
+        val pref = try {
+            importData().preferences
         } catch (e: Throwable) {
             if (BuildConfig.DEBUG) {
                 Timber.e(e)
@@ -90,7 +90,11 @@ class DataImporter(private val appContext: Context) : Injects<Module> {
             .putBoolean(Constants.KEY_PLAYER_DATA_IMPORTED, true)
             .putInt(Constants.KEY_SCHEMA_VERSION, remoteSchemaVersion.toInt())
             .putLong(Constants.KEY_LAST_SYNC_MILLIS, System.currentTimeMillis())
-            .putString(Constants.KEY_THEME, theme.name)
+            .putString(Constants.KEY_THEME, pref.theme.name)
+            .putBoolean(
+                Constants.KEY_QUICK_DO_NOTIFICATION_ENABLED,
+                pref.isQuickDoNotificationEnabled
+            )
             .commit()
         eventLogger.setPlayerId(remotePlayerId)
     }
