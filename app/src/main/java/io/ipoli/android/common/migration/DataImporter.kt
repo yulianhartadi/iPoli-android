@@ -19,6 +19,7 @@ import io.ipoli.android.player.data.Player
 import io.ipoli.android.player.persistence.FirestorePlayerRepository
 import io.ipoli.android.quest.data.persistence.FirestoreQuestRepository
 import io.ipoli.android.repeatingquest.persistence.FirestoreRepeatingQuestRepository
+import io.ipoli.android.tag.Tag
 import io.ipoli.android.tag.persistence.FirestoreTagRepository
 import space.traversal.kapsule.Injects
 import space.traversal.kapsule.inject
@@ -107,17 +108,38 @@ class DataImporter(private val appContext: Context) : Injects<Module> {
         playerRepository.save(fp)
 
         val ft = FirestoreTagRepository(remoteDatabase).findAllNotRemoved()
+        val validTagIds = ft.map { it.id }.toSet()
         tagRepository.save(ft)
 
-        val fh = FirestoreHabitRepository(remoteDatabase).findAllNotRemoved()
+        val fh = FirestoreHabitRepository(remoteDatabase)
+            .findAllNotRemoved()
+            .map {
+                it.copy(
+                    tags = filterInvalidTags(it.tags, validTagIds)
+                )
+            }
+
         habitRepository.save(fh)
 
         val fdc = FirestoreDailyChallengeRepository(remoteDatabase).findAllNotRemoved()
         dailyChallengeRepository.save(fdc)
 
-        challengeRepository.save(FirestoreChallengeRepository(remoteDatabase).findAllNotRemoved())
+        val fc = FirestoreChallengeRepository(remoteDatabase)
+            .findAllNotRemoved()
+            .map {
+                it.copy(
+                    tags = filterInvalidTags(it.tags, validTagIds)
+                )
+            }
+        challengeRepository.save(fc)
 
-        val rqs = FirestoreRepeatingQuestRepository(remoteDatabase).findAllNotRemoved()
+        val rqs = FirestoreRepeatingQuestRepository(remoteDatabase)
+            .findAllNotRemoved()
+            .map {
+                it.copy(
+                    tags = filterInvalidTags(it.tags, validTagIds)
+                )
+            }
         repeatingQuestRepository.save(rqs)
 
         val rqIds = rqs.map { it.id }.toSet()
@@ -126,8 +148,18 @@ class DataImporter(private val appContext: Context) : Injects<Module> {
             .filter {
                 !it.isRemoved || rqIds.contains(it.repeatingQuestId)
             }
+            .map {
+                it.copy(
+                    tags = filterInvalidTags(it.tags, validTagIds)
+                )
+            }
         questRepository.save(qs)
 
         return fp
     }
+
+    private fun filterInvalidTags(
+        tags: List<Tag>,
+        validTagIds: Set<String>
+    ) = tags.filter { validTagIds.contains(it.id) }
 }
