@@ -39,10 +39,13 @@ class SchedulePredefinedChallengeUseCase :
                         icon = q.icon,
                         startTime = q.startTime,
                         duration = q.duration,
-                        repeatPattern = if (q.weekDays.isEmpty()) {
-                            RepeatPattern.Daily(startDate, endDate)
-                        } else {
-                            RepeatPattern.Weekly(
+                        repeatPattern = when {
+                            q.weekDays.isEmpty() -> RepeatPattern.Daily(startDate, endDate)
+                            q.weekDays.size == 7 -> RepeatPattern.Daily(
+                                startDate = startDate,
+                                endDate = endDate
+                            )
+                            else -> RepeatPattern.Weekly(
                                 daysOfWeek = q.weekDays.toSet(),
                                 startDate = startDate,
                                 endDate = endDate

@@ -109,7 +109,7 @@ class PersonalizeChallengeViewController(args: Bundle? = null) :
     inner class ChallengeQuestAdapter(private var viewModels: List<ChallengeQuestViewModel> = listOf()) :
         RecyclerView.Adapter<ChallengeQuestAdapter.ViewHolder>() {
         override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-            val vm = viewModels[position]
+            val vm = viewModels[holder.adapterPosition]
             val itemView = holder.itemView
             itemView.dispatchOnClick {
                 itemView.challengeQuestCheckbox.isChecked =
