@@ -179,6 +179,9 @@ object DateUtils {
     val weekOfMonth: TemporalField
         get() = WeekFields.of(Locale.getDefault()).weekOfMonth()
 
+    val weekOfYear: TemporalField
+        get() = WeekFields.of(Locale.getDefault()).weekOfYear()
+
     val today: LocalDate
         get() = LocalDate.now()
 

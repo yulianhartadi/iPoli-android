@@ -22,12 +22,14 @@ import com.mikepenz.iconics.typeface.IIcon
 import com.mikepenz.ionicons_typeface_library.Ionicons
 import io.ipoli.android.R
 import io.ipoli.android.common.ViewUtils
+import io.ipoli.android.common.datetime.weekOfYear
 import io.ipoli.android.common.redux.android.ReduxViewController
 import io.ipoli.android.common.text.DateFormatter
 import io.ipoli.android.common.text.QuestStartTimeFormatter
 import io.ipoli.android.common.view.*
+import io.ipoli.android.common.view.recyclerview.MultiViewRecyclerViewAdapter
+import io.ipoli.android.common.view.recyclerview.RecyclerViewViewModel
 import io.ipoli.android.common.view.recyclerview.SimpleSwipeCallback
-import io.ipoli.android.common.view.recyclerview.SimpleViewHolder
 import io.ipoli.android.event.Event
 import io.ipoli.android.quest.CompletedQuestViewController
 import io.ipoli.android.quest.schedule.agenda.usecase.CreateAgendaItemsUseCase
@@ -100,11 +102,11 @@ class AgendaViewController(args: Bundle? = null) :
             }
 
             override fun getSwipeDirs(
-                recyclerView: RecyclerView?,
-                viewHolder: RecyclerView.ViewHolder?
-            ) = when (viewHolder) {
-                is AgendaAdapter.QuestViewHolder -> ItemTouchHelper.END
-                is AgendaAdapter.CompletedQuestViewHolder -> ItemTouchHelper.START
+                recyclerView: RecyclerView,
+                viewHolder: RecyclerView.ViewHolder
+            ) = when {
+                viewHolder.itemViewType == ItemType.QUEST.ordinal -> ItemTouchHelper.END
+                viewHolder.itemViewType == ItemType.COMPLETED_QUEST.ordinal -> ItemTouchHelper.START
                 else -> 0
             }
         }
@@ -201,83 +203,146 @@ class AgendaViewController(args: Bundle? = null) :
 
     data class TagViewModel(val name: String, @ColorRes val color: Int)
 
-    interface AgendaViewModel
+    sealed class AgendaViewModel(override val id: String) : RecyclerViewViewModel {
+        interface QuestItemViewModel {
+            val name: String
+            val tags: List<TagViewModel>
+            val startTime: String
+            val color: Int
+            val icon: IIcon
+            val showDivider: Boolean
+            val isRepeating: Boolean
+            val isFromChallenge: Boolean
+        }
 
-    data class QuestViewModel(
-        val id: String,
-        val name: String,
-        val tags: List<TagViewModel>,
-        val startTime: String,
-        @ColorRes val color: Int,
-        val icon: IIcon,
-        val isCompleted: Boolean,
-        val showDivider: Boolean,
-        val isRepeating: Boolean,
-        val isFromChallenge: Boolean,
-        val isPlaceholder: Boolean
-    ) : AgendaViewModel
+        data class QuestViewModel(
+            override val id: String,
+            override val name: String,
+            override val tags: List<TagViewModel>,
+            override val startTime: String,
+            override val color: Int,
+            override val icon: IIcon,
+            override val showDivider: Boolean,
+            override val isRepeating: Boolean,
+            override val isFromChallenge: Boolean
+        ) : AgendaViewModel(id), QuestItemViewModel
 
-    data class EventViewModel(
-        val name: String,
-        val startTime: String, @ColorInt val color: Int,
-        val icon: IIcon,
-        val showDivider: Boolean
-    ) :
-        AgendaViewModel
+        data class QuestPlaceholderViewModel(
+            override val id: String,
+            override val name: String,
+            override val tags: List<TagViewModel>,
+            override val startTime: String,
+            override val color: Int,
+            override val icon: IIcon,
+            override val showDivider: Boolean,
+            override val isRepeating: Boolean,
+            override val isFromChallenge: Boolean
+        ) : AgendaViewModel(id), QuestItemViewModel
 
-    data class DateHeaderViewModel(val text: String) : AgendaViewModel
-    data class MonthDividerViewModel(
-        @DrawableRes val image: Int, val text: String
-    ) : AgendaViewModel
+        data class CompletedQuestViewModel(
+            override val id: String,
+            override val name: String,
+            override val tags: List<TagViewModel>,
+            override val startTime: String,
+            override val color: Int,
+            override val icon: IIcon,
+            override val showDivider: Boolean,
+            override val isRepeating: Boolean,
+            override val isFromChallenge: Boolean
+        ) : AgendaViewModel(id), QuestItemViewModel
 
-    data class WeekHeaderViewModel(val text: String) : AgendaViewModel
+        data class EventViewModel(
+            override val id: String,
+            val name: String,
+            val startTime: String, @ColorInt val color: Int,
+            val icon: IIcon,
+            val showDivider: Boolean
+        ) :
+            AgendaViewModel(id)
+
+        data class DateHeaderViewModel(
+            override val id: String,
+            val text: String
+        ) : AgendaViewModel(id)
+
+        data class MonthDividerViewModel(
+            override val id: String,
+            @DrawableRes val image: Int, val text: String
+        ) : AgendaViewModel(id)
+
+        data class WeekHeaderViewModel(
+            override val id: String,
+            val text: String
+        ) : AgendaViewModel(id)
+    }
 
     enum class ItemType {
         QUEST_PLACEHOLDER, QUEST, COMPLETED_QUEST, EVENT, DATE_HEADER, MONTH_DIVIDER, WEEK_HEADER
     }
 
-    inner class AgendaAdapter(private var viewModels: MutableList<AgendaViewModel> = mutableListOf()) :
-        RecyclerView.Adapter<RecyclerView.ViewHolder>(), AutoUpdatableAdapter {
+    inner class AgendaAdapter : MultiViewRecyclerViewAdapter<AgendaViewModel>() {
+        override fun onRegisterItemBinders() {
 
-        override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
-            val vm = viewModels[holder.adapterPosition]
-            val itemView = holder.itemView
+            registerBinder<AgendaViewModel.QuestPlaceholderViewModel>(
+                ItemType.QUEST_PLACEHOLDER.ordinal,
+                R.layout.item_agenda_quest
+            ) { vm, view, _ ->
+                bindPlaceholderViewModel(view, vm)
+            }
 
-            val type = ItemType.values()[getItemViewType(position)]
-            when (type) {
-                ItemType.QUEST_PLACEHOLDER -> bindPlaceholderViewModel(
-                    itemView,
-                    vm as QuestViewModel
-                )
-                ItemType.QUEST -> bindQuestViewModel(itemView, vm as QuestViewModel)
-                ItemType.COMPLETED_QUEST -> bindCompleteQuestViewModel(
-                    itemView,
-                    vm as QuestViewModel
-                )
-                ItemType.EVENT ->
-                    bindEventViewModel(itemView, vm as EventViewModel)
-                ItemType.DATE_HEADER -> bindDateHeaderViewModel(itemView, vm as DateHeaderViewModel)
-                ItemType.MONTH_DIVIDER -> bindMonthDividerViewModel(
-                    itemView,
-                    vm as MonthDividerViewModel
-                )
-                ItemType.WEEK_HEADER -> bindWeekHeaderViewModel(
-                    itemView,
-                    vm as WeekHeaderViewModel
-                )
+            registerBinder<AgendaViewModel.QuestViewModel>(
+                ItemType.QUEST.ordinal,
+                R.layout.item_agenda_quest
+            ) { vm, view, _ ->
+                bindQuestViewModel(view, vm)
+            }
+
+            registerBinder<AgendaViewModel.CompletedQuestViewModel>(
+                ItemType.COMPLETED_QUEST.ordinal,
+                R.layout.item_agenda_quest
+            ) { vm, view, _ ->
+                bindCompleteQuestViewModel(view, vm)
+            }
+
+            registerBinder<AgendaViewModel.EventViewModel>(
+                ItemType.EVENT.ordinal,
+                R.layout.item_agenda_event
+            ) { vm, view, _ ->
+                bindEventViewModel(view, vm)
+            }
+
+            registerBinder<AgendaViewModel.DateHeaderViewModel>(
+                ItemType.DATE_HEADER.ordinal,
+                R.layout.item_agenda_date_header
+            ) { vm, view, _ ->
+                bindDateHeaderViewModel(view, vm)
+            }
+
+            registerBinder<AgendaViewModel.MonthDividerViewModel>(
+                ItemType.MONTH_DIVIDER.ordinal,
+                R.layout.item_agenda_month_divider
+            ) { vm, view, _ ->
+                bindMonthDividerViewModel(view, vm)
+            }
+
+            registerBinder<AgendaViewModel.WeekHeaderViewModel>(
+                ItemType.WEEK_HEADER.ordinal,
+                R.layout.item_agenda_week_header
+            ) { vm, view, _ ->
+                bindWeekHeaderViewModel(view, vm)
             }
         }
 
         private fun bindPlaceholderViewModel(
             view: View,
-            vm: QuestViewModel
+            vm: AgendaViewModel.QuestPlaceholderViewModel
         ) {
             view.setOnClickListener(null)
             view.questName.text = vm.name
             bindQuest(view, vm)
         }
 
-        private fun bindEventViewModel(view: View, viewModel: EventViewModel) {
+        private fun bindEventViewModel(view: View, viewModel: AgendaViewModel.EventViewModel) {
 
             view.eventDivider.visible = viewModel.showDivider
 
@@ -291,7 +356,7 @@ class AgendaViewController(args: Bundle? = null) :
 
         private fun bindWeekHeaderViewModel(
             view: View,
-            viewModel: WeekHeaderViewModel
+            viewModel: AgendaViewModel.WeekHeaderViewModel
         ) {
             view.setOnClickListener(null)
             (view as TextView).text = viewModel.text
@@ -299,7 +364,7 @@ class AgendaViewController(args: Bundle? = null) :
 
         private fun bindMonthDividerViewModel(
             view: View,
-            viewModel: MonthDividerViewModel
+            viewModel: AgendaViewModel.MonthDividerViewModel
         ) {
             view.setOnClickListener(null)
             view.dateLabel.text = viewModel.text
@@ -308,7 +373,7 @@ class AgendaViewController(args: Bundle? = null) :
 
         private fun bindDateHeaderViewModel(
             view: View,
-            viewModel: DateHeaderViewModel
+            viewModel: AgendaViewModel.DateHeaderViewModel
         ) {
             view.setOnClickListener(null)
             (view as TextView).text = viewModel.text
@@ -316,7 +381,7 @@ class AgendaViewController(args: Bundle? = null) :
 
         private fun bindCompleteQuestViewModel(
             view: View,
-            vm: QuestViewModel
+            vm: AgendaViewModel.CompletedQuestViewModel
         ) {
 
             view.setOnClickListener {
@@ -332,7 +397,7 @@ class AgendaViewController(args: Bundle? = null) :
 
         private fun bindQuestViewModel(
             view: View,
-            vm: QuestViewModel
+            vm: AgendaViewModel.QuestViewModel
         ) {
             view.setOnClickListener {
                 showQuest(vm.id)
@@ -343,7 +408,7 @@ class AgendaViewController(args: Bundle? = null) :
 
         private fun bindQuest(
             view: View,
-            vm: QuestViewModel
+            vm: AgendaViewModel.QuestItemViewModel
         ) {
             view.questIcon.backgroundTintList =
                 ColorStateList.valueOf(colorRes(vm.color))
@@ -383,119 +448,7 @@ class AgendaViewController(args: Bundle? = null) :
                 null
             )
         }
-
-        override fun getItemCount() = viewModels.size
-
-        override fun onCreateViewHolder(parent: ViewGroup, viewType: Int) =
-            when (viewType) {
-
-                ItemType.QUEST_PLACEHOLDER.ordinal -> {
-                    val view = LayoutInflater.from(parent.context).inflate(
-                        R.layout.item_agenda_quest,
-                        parent,
-                        false
-                    )
-                    view.layoutParams.width = parent.width
-                    QuestPlaceholderViewHolder(
-                        view
-                    )
-                }
-
-                ItemType.QUEST.ordinal -> {
-                    val view = LayoutInflater.from(parent.context).inflate(
-                        R.layout.item_agenda_quest,
-                        parent,
-                        false
-                    )
-                    view.layoutParams.width = parent.width
-                    QuestViewHolder(
-                        view
-                    )
-                }
-                ItemType.COMPLETED_QUEST.ordinal -> {
-                    val view = LayoutInflater.from(parent.context).inflate(
-                        R.layout.item_agenda_quest,
-                        parent,
-                        false
-                    )
-                    view.layoutParams.width = parent.width
-                    CompletedQuestViewHolder(
-                        view
-                    )
-                }
-
-                ItemType.EVENT.ordinal -> {
-                    val view = LayoutInflater.from(parent.context).inflate(
-                        R.layout.item_agenda_event,
-                        parent,
-                        false
-                    )
-                    view.layoutParams.width = parent.width
-                    SimpleViewHolder(
-                        view
-                    )
-                }
-
-                ItemType.DATE_HEADER.ordinal -> DateHeaderViewHolder(
-                    LayoutInflater.from(parent.context).inflate(
-                        R.layout.item_agenda_date_header,
-                        parent,
-                        false
-                    )
-                )
-                ItemType.MONTH_DIVIDER.ordinal -> MonthDividerViewHolder(
-                    LayoutInflater.from(parent.context).inflate(
-                        R.layout.item_agenda_month_divider,
-                        parent,
-                        false
-                    )
-                )
-                ItemType.WEEK_HEADER.ordinal -> WeekHeaderViewHolder(
-                    LayoutInflater.from(parent.context).inflate(
-                        R.layout.item_agenda_week_header,
-                        parent,
-                        false
-                    )
-                )
-                else -> {
-                    throw IllegalArgumentException("Unknown viewType $viewType")
-                }
-            }
-
-        inner class QuestPlaceholderViewHolder(view: View) : RecyclerView.ViewHolder(view)
-        inner class QuestViewHolder(view: View) : RecyclerView.ViewHolder(view)
-        inner class CompletedQuestViewHolder(view: View) : RecyclerView.ViewHolder(view)
-        inner class DateHeaderViewHolder(view: View) : RecyclerView.ViewHolder(view)
-        inner class MonthDividerViewHolder(view: View) : RecyclerView.ViewHolder(view)
-        inner class WeekHeaderViewHolder(view: View) : RecyclerView.ViewHolder(view)
-
-        override fun getItemViewType(position: Int) =
-            when (viewModels[position]) {
-
-                is QuestViewModel -> if ((viewModels[position] as QuestViewModel).isCompleted)
-                    ItemType.COMPLETED_QUEST.ordinal
-                else if ((viewModels[position] as QuestViewModel).isPlaceholder)
-                    ItemType.QUEST_PLACEHOLDER.ordinal
-                else
-                    ItemType.QUEST.ordinal
-                is EventViewModel -> ItemType.EVENT.ordinal
-                is DateHeaderViewModel -> ItemType.DATE_HEADER.ordinal
-                is MonthDividerViewModel -> ItemType.MONTH_DIVIDER.ordinal
-                is WeekHeaderViewModel -> ItemType.WEEK_HEADER.ordinal
-                else -> super.getItemViewType(position)
-
-            }
-
-        fun updateAll(viewModels: List<AgendaViewModel>) {
-            val oldViewModels = this.viewModels
-            val newViewModels = viewModels.toMutableList()
-            this.viewModels = newViewModels
-            autoNotify(oldViewModels, newViewModels, { vm1, vm2 ->
-                vm1 == vm2
-            })
-        }
     }
-
 
     fun AgendaViewState.toAgendaItemViewModels() =
         agendaItems.mapIndexed { index, item ->
@@ -518,35 +471,78 @@ class AgendaViewController(args: Bundle? = null) :
                 else
                     AndroidColor.valueOf(quest.color.name).color500
 
-                AgendaViewController.QuestViewModel(
-                    id = quest.id,
-                    name = quest.name,
-                    tags = quest.tags.map {
-                        AgendaViewController.TagViewModel(
-                            it.name,
-                            AndroidColor.valueOf(it.color.name).color500
-                        )
-                    },
-                    startTime = QuestStartTimeFormatter.formatWithDuration(
-                        quest,
-                        activity!!,
-                        shouldUse24HourFormat
-                    ),
-                    color = color,
-                    icon = quest.icon?.let { AndroidIcon.valueOf(it.name).icon }
-                        ?: Ionicons.Icon.ion_android_clipboard,
-                    isCompleted = quest.isCompleted,
-                    showDivider = shouldShowDivider(nextAgendaItem),
-                    isRepeating = quest.isFromRepeatingQuest,
-                    isFromChallenge = quest.isFromChallenge,
-                    isPlaceholder = quest.id.isEmpty()
-                )
+                when {
+                    quest.isCompleted -> AgendaViewController.AgendaViewModel.CompletedQuestViewModel(
+                        id = quest.id,
+                        name = quest.name,
+                        tags = quest.tags.map {
+                            AgendaViewController.TagViewModel(
+                                it.name,
+                                AndroidColor.valueOf(it.color.name).color500
+                            )
+                        },
+                        startTime = QuestStartTimeFormatter.formatWithDuration(
+                            quest,
+                            activity!!,
+                            shouldUse24HourFormat
+                        ),
+                        color = color,
+                        icon = quest.icon?.let { AndroidIcon.valueOf(it.name).icon }
+                            ?: Ionicons.Icon.ion_android_clipboard,
+                        showDivider = shouldShowDivider(nextAgendaItem),
+                        isRepeating = quest.isFromRepeatingQuest,
+                        isFromChallenge = quest.isFromChallenge
+                    )
+                    quest.id.isEmpty() -> AgendaViewController.AgendaViewModel.QuestPlaceholderViewModel(
+                        id = quest.id,
+                        name = quest.name,
+                        tags = quest.tags.map {
+                            AgendaViewController.TagViewModel(
+                                it.name,
+                                AndroidColor.valueOf(it.color.name).color500
+                            )
+                        },
+                        startTime = QuestStartTimeFormatter.formatWithDuration(
+                            quest,
+                            activity!!,
+                            shouldUse24HourFormat
+                        ),
+                        color = color,
+                        icon = quest.icon?.let { AndroidIcon.valueOf(it.name).icon }
+                            ?: Ionicons.Icon.ion_android_clipboard,
+                        showDivider = shouldShowDivider(nextAgendaItem),
+                        isRepeating = quest.isFromRepeatingQuest,
+                        isFromChallenge = quest.isFromChallenge
+                    )
+                    else -> AgendaViewController.AgendaViewModel.QuestViewModel(
+                        id = quest.id,
+                        name = quest.name,
+                        tags = quest.tags.map {
+                            AgendaViewController.TagViewModel(
+                                it.name,
+                                AndroidColor.valueOf(it.color.name).color500
+                            )
+                        },
+                        startTime = QuestStartTimeFormatter.formatWithDuration(
+                            quest,
+                            activity!!,
+                            shouldUse24HourFormat
+                        ),
+                        color = color,
+                        icon = quest.icon?.let { AndroidIcon.valueOf(it.name).icon }
+                            ?: Ionicons.Icon.ion_android_clipboard,
+                        showDivider = shouldShowDivider(nextAgendaItem),
+                        isRepeating = quest.isFromRepeatingQuest,
+                        isFromChallenge = quest.isFromChallenge
+                    )
+                }
             }
 
             is CreateAgendaItemsUseCase.AgendaItem.EventItem -> {
                 val event = agendaItem.event
 
-                AgendaViewController.EventViewModel(
+                AgendaViewController.AgendaViewModel.EventViewModel(
+                    id = event.name,
                     name = event.name,
                     startTime = formatStartTime(event),
                     color = event.color,
@@ -560,7 +556,10 @@ class AgendaViewController(args: Bundle? = null) :
                 val dayOfMonth = date.dayOfMonth
                 val dayOfWeek = date.dayOfWeek.getDisplayName(TextStyle.SHORT, Locale.getDefault())
                     .toUpperCase()
-                AgendaViewController.DateHeaderViewModel("$dayOfMonth $dayOfWeek")
+                AgendaViewController.AgendaViewModel.DateHeaderViewModel(
+                    date.toString(),
+                    "$dayOfMonth $dayOfWeek"
+                )
             }
             is CreateAgendaItemsUseCase.AgendaItem.Week -> {
                 val start = agendaItem.start
@@ -573,10 +572,14 @@ class AgendaViewController(args: Bundle? = null) :
                     "${start.dayOfMonth} - ${DateFormatter.formatDayWithWeek(end)}"
                 }
 
-                AgendaViewController.WeekHeaderViewModel(label)
+                AgendaViewController.AgendaViewModel.WeekHeaderViewModel(
+                    start.weekOfYear.toString() + start.year.toString(),
+                    label
+                )
             }
             is CreateAgendaItemsUseCase.AgendaItem.Month -> {
-                AgendaViewController.MonthDividerViewModel(
+                AgendaViewController.AgendaViewModel.MonthDividerViewModel(
+                    startDate.month.toString() + startDate.year.toString(),
                     monthToImage[agendaItem.month.month]!!,
                     agendaItem.month.format(
                         DateTimeFormatter.ofPattern("MMMM yyyy")
