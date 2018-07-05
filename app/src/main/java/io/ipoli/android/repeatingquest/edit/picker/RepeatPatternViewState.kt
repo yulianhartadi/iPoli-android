@@ -54,6 +54,7 @@ sealed class RepeatPatternAction : Action {
     data class ChangeEndDate(val date: LocalDate) : RepeatPatternAction() {
         override fun toMap() = mapOf("date" to date)
     }
+
     object CreatePattern : RepeatPatternAction()
 }
 
@@ -221,15 +222,18 @@ object RepeatPatternReducer : BaseViewStateReducer<RepeatPatternViewState>() {
                 RepeatPattern.Daily(state.startDate, state.endDate)
             }
             RepeatType.WEEKLY -> {
-                if (state.isFlexible) {
-                    RepeatPattern.Flexible.Weekly(
+                when {
+                    state.selectedWeekDays.size == 7 -> RepeatPattern.Daily(
+                        startDate = state.startDate,
+                        endDate = state.endDate
+                    )
+                    state.isFlexible -> RepeatPattern.Flexible.Weekly(
                         timesPerWeek = state.weekDaysCount,
                         preferredDays = state.selectedWeekDays,
                         startDate = state.startDate,
                         endDate = state.endDate
                     )
-                } else {
-                    RepeatPattern.Weekly(
+                    else -> RepeatPattern.Weekly(
                         daysOfWeek = state.selectedWeekDays,
                         startDate = state.startDate,
                         endDate = state.endDate
