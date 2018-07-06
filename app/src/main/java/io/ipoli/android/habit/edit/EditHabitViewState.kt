@@ -282,7 +282,7 @@ object EditHabitReducer : BaseViewStateReducer<EditHabitViewState>() {
         challenge = null,
         note = "",
         maxTagsReached = false,
-        timesADayValues = (1..8).toList(),
+        timesADayValues = (1..Constants.MAX_HABIT_TIMES_A_DAY).toList(),
         isEditing = false
     )
 

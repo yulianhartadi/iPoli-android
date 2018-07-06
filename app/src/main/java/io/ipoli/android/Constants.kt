@@ -284,5 +284,7 @@ interface Constants {
             GemPackType.SMART to 15,
             GemPackType.PLATINUM to 28
         )
+
+        const val MAX_HABIT_TIMES_A_DAY = 12
     }
 }

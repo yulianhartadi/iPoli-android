@@ -46,10 +46,12 @@ class UndoCompleteHabitUseCase(
         val currentStreak = habit.currentStreak
         val bestStreak = habit.bestStreak
 
-        val newStreak =
+        val newStreak = Math.max(
             if (wasCompleted && habit.isGood) currentStreak - 1
             else if (!habit.isGood) habit.prevStreak
-            else currentStreak
+            else currentStreak,
+            0
+        )
 
         return habitRepository.save(
             habit.copy(
@@ -57,7 +59,7 @@ class UndoCompleteHabitUseCase(
                 currentStreak = newStreak,
                 prevStreak = if (newStreak != currentStreak && currentStreak != 0) currentStreak else habit.prevStreak,
                 bestStreak = if (habit.isGood) {
-                    if (wasCompleted && bestStreak == currentStreak) bestStreak - 1 else bestStreak
+                    if (wasCompleted && bestStreak == currentStreak) Math.max(bestStreak - 1, 0) else bestStreak
                 } else {
                     if (habit.prevStreak > bestStreak) {
                         habit.prevStreak
