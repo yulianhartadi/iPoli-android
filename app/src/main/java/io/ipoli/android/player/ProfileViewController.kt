@@ -104,7 +104,9 @@ class ProfileViewController(args: Bundle? = null) :
         val avatarBackground = view.playerAvatarBackground.background as GradientDrawable
         avatarBackground.setColor(attrData(android.R.attr.colorBackground))
 
-        view.achievementList.layoutManager = GridLayoutManager(view.context, 5)
+        view.achievementList.layoutManager = object : GridLayoutManager(view.context, 5) {
+            override fun canScrollVertically() = false
+        }
         view.achievementList.adapter = AchievementAdapter()
 
         view.post {
