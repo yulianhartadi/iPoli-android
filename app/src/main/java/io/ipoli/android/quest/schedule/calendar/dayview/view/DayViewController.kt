@@ -3,6 +3,7 @@ package io.ipoli.android.quest.schedule.calendar.dayview.view
 import android.animation.Animator
 import android.animation.AnimatorListenerAdapter
 import android.animation.ObjectAnimator
+import android.annotation.SuppressLint
 import android.app.DatePickerDialog
 import android.app.Dialog
 import android.content.Context
@@ -507,7 +508,9 @@ class DayViewController :
 
             override fun onDestroyActionMode(p0: ActionMode?) {
                 cancelEdit()
-                (parentController as CalendarViewController).onStopEdit()
+                parentController?.let {
+                    (it as CalendarViewController).onStopEdit()
+                }
                 actionMode = null
             }
         })
@@ -522,8 +525,8 @@ class DayViewController :
         )
         datePickerDialog.setButton(
             Dialog.BUTTON_NEUTRAL,
-            view!!.context.getString(R.string.do_not_know),
-            { _, _ -> dispatch(DayViewAction.DatePicked(null)) })
+            view!!.context.getString(R.string.do_not_know)
+        ) { _, _ -> dispatch(DayViewAction.DatePicked(null)) }
         datePickerDialog.show()
     }
 
@@ -556,9 +559,9 @@ class DayViewController :
     }
 
     private fun showTagPicker(selectedTags: List<Tag>) {
-        navigate().toTagPicker(selectedTags.toSet(), {
+        navigate().toTagPicker(selectedTags.toSet()) {
             dispatch(DayViewAction.TagsPicked(it))
-        })
+        }
     }
 
     private fun onStopEditMode() {
@@ -637,6 +640,7 @@ class DayViewController :
             view.questColorIndicator.visible()
             view.questColorIndicator.setBackgroundColor(vm.indicatorColor)
 
+            @SuppressLint("SetTextI18n")
             view.questSchedule.text = "${vm.startTime} - ${vm.endTime}"
             view.backgroundView.setBackgroundColor(vm.backgroundColor)
 
@@ -668,6 +672,7 @@ class DayViewController :
                 true
             }
 
+            @SuppressLint("SetTextI18n")
             view.questSchedule.text = "${vm.startTime} - ${vm.endTime}"
 
             view.backgroundView.setBackgroundColor(colorRes(vm.backgroundColor.color600))
