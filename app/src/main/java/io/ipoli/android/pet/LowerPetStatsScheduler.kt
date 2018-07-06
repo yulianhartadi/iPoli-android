@@ -22,9 +22,13 @@ class LowerPetStatsJob : Job(), Injects<Module> {
         val kap = Kapsule<Module>()
         val changePetStatsUseCase by kap.required { lowerPetStatsUseCase }
         val lowerPetStatsScheduler by kap.required { lowerPetStatsScheduler }
+        val eventLogger by kap.required { eventLogger }
         kap.inject(myPoliApp.module(context))
 
         val time = Time.of(params.extras.getInt("lowerStatsTime", 0))
+
+        eventLogger.logEvent("lower_pet_stats", mapOf("loweStatsTime" to time))
+
         changePetStatsUseCase.execute(time)
 
         lowerPetStatsScheduler.schedule()
@@ -50,7 +54,6 @@ class AndroidJobLowerPetStatsScheduler : LowerPetStatsScheduler {
         }
 
         val bundle = PersistableBundleCompat()
-        bundle.putInt("lowerStatsTime", lowerStatsTime.toMinuteOfDay())
         JobRequest.Builder(LowerPetStatsJob.TAG)
             .setExtras(bundle)
             .setUpdateCurrent(true)
