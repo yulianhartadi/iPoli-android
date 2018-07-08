@@ -45,8 +45,8 @@ class CreateScheduleSummaryUseCase(
                     startTime = Time.atHours(0)
                 )
             )
-            if (startDate.plusDays(1).daysBetween(endDate) > 0) {
-                startDate.plusDays(1).datesBetween(endDate.minusDays(1)).forEach { date ->
+            if (it.startDate.plusDays(1) != it.endDate) {
+                it.startDate.plusDays(1).datesBetween(it.endDate.minusDays(1)).forEach { date ->
                     events.add(
                         it.copy(
                             startDate = date,
