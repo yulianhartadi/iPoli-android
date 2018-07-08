@@ -410,7 +410,7 @@ class ScheduleSummaryViewController(args: Bundle? = null) :
                 R.layout.item_monthly_preview_scheduled_quest
             ) { vm, view, _ ->
                 view.previewQuestIndicator.background.setColorFilter(
-                    colorRes(vm.color),
+                    vm.color,
                     PorterDuff.Mode.SRC_ATOP
                 )
 

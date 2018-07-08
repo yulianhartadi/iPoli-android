@@ -906,7 +906,7 @@ class MainUseCaseModule : UseCaseModule, Injects<Module> {
         get() = CreateHabitItemsUseCase()
 
     override val createScheduleSummaryUseCase
-        get() = CreateScheduleSummaryUseCase(eventRepository, playerRepository)
+        get() = CreateScheduleSummaryUseCase(eventRepository, playerRepository, permissionChecker)
 }
 
 interface StateStoreModule {

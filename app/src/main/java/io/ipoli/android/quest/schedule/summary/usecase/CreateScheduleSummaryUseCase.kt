@@ -3,6 +3,7 @@ package io.ipoli.android.quest.schedule.summary.usecase
 import io.ipoli.android.Constants
 import io.ipoli.android.common.UseCase
 import io.ipoli.android.common.datetime.*
+import io.ipoli.android.common.permission.PermissionChecker
 import io.ipoli.android.event.Event
 import io.ipoli.android.event.persistence.EventRepository
 import io.ipoli.android.player.data.Player
@@ -13,7 +14,8 @@ import org.threeten.bp.LocalDate
 
 class CreateScheduleSummaryUseCase(
     private val eventRepository: EventRepository,
-    private val playerRepository: PlayerRepository
+    private val playerRepository: PlayerRepository,
+    private val permissionChecker: PermissionChecker
 ) :
     UseCase<CreateScheduleSummaryUseCase.Params, List<CreateScheduleSummaryUseCase.ScheduleSummaryItem>> {
 
@@ -26,8 +28,48 @@ class CreateScheduleSummaryUseCase(
 
         val quests = parameters.quests
 
+        val eventsByDate = getEventsSortedByDate(p, startDate, endDate)
+
+        val questsByDate = quests.groupBy { it.scheduledDate!! }
+
+        return startDate.datesBetween(endDate).map {
+            val dailyQuests = questsByDate[it] ?: emptyList()
+            val dailyEvents = eventsByDate[it] ?: emptyList()
+
+            val tagColors =
+                dailyQuests
+                    .filter { it.tags.isNotEmpty() }
+                    .groupBy { it.tags.first().color }
+                    .map { Pair(it.key, it.value.sumBy { it.duration }) }
+                    .sortedByDescending { it.second }
+                    .map { it.first }
+
+            val scheduledQuests = dailyQuests.filter { it.isScheduled }
+
+            ScheduleSummaryItem(
+                it,
+                createMorningFullness(scheduledQuests, dailyEvents),
+                createAfternoonFullness(scheduledQuests, dailyEvents),
+                createEveningFullness(scheduledQuests, dailyEvents),
+                tagColors
+            )
+        }
+    }
+
+    private fun getEventsSortedByDate(
+        p: Player,
+        startDate: LocalDate,
+        endDate: LocalDate
+    ): Map<LocalDate, List<Event>> {
+
+        if (!permissionChecker.canReadCalendar()) {
+            return emptyMap()
+        }
+
         val calendarIds = p.preferences.syncCalendars.map { it.id.toInt() }.toSet()
+
         val allEvents = eventRepository.findScheduledBetween(calendarIds, startDate, endDate)
+            .filter { !it.isAllDay }
 
         val (multiDayEvents, singleDayEvents) = allEvents.partition { it.startDate != it.endDate }
 
@@ -59,31 +101,7 @@ class CreateScheduleSummaryUseCase(
             }
         }
 
-        val questsByDate = quests.groupBy { it.scheduledDate!! }
-        val eventsByDate = (singleDayEvents + events).groupBy { it.startDate }
-
-        return startDate.datesBetween(endDate).map {
-            val dailyQuests = questsByDate[it] ?: emptyList()
-            val dailyEvents = eventsByDate[it] ?: emptyList()
-
-            val tagColors =
-                dailyQuests
-                    .filter { it.tags.isNotEmpty() }
-                    .groupBy { it.tags.first().color }
-                    .map { Pair(it.key, it.value.sumBy { it.duration }) }
-                    .sortedByDescending { it.second }
-                    .map { it.first }
-
-            val scheduledQuests = dailyQuests.filter { it.isScheduled }
-
-            ScheduleSummaryItem(
-                it,
-                createMorningFullness(scheduledQuests, dailyEvents),
-                createAfternoonFullness(scheduledQuests, dailyEvents),
-                createEveningFullness(scheduledQuests, dailyEvents),
-                tagColors
-            )
-        }
+        return (singleDayEvents + events).groupBy { it.startDate }
     }
 
     private fun createMorningFullness(
