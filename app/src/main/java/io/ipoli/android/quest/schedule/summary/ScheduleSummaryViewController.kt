@@ -3,6 +3,7 @@ package io.ipoli.android.quest.schedule.summary
 import android.graphics.PorterDuff
 import android.os.Build
 import android.os.Bundle
+import android.support.annotation.ColorInt
 import android.support.annotation.ColorRes
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
@@ -221,7 +222,8 @@ class ScheduleSummaryViewController(args: Bundle? = null) :
         SCHEDULED_QUEST,
         SCHEDULED_COMPLETED_QUEST,
         SCHEDULED_PLACEHOLDER_QUEST,
-        EVENT_ITEM
+        EVENT_ITEM,
+        ALL_DAY_EVENT_ITEM
     }
 
     sealed class DailyItemViewModel(override val id: String) : RecyclerViewViewModel {
@@ -275,10 +277,16 @@ class ScheduleSummaryViewController(args: Bundle? = null) :
         data class EventItem(
             override val id: String,
             val name: String,
-            @ColorRes val color: Int,
+            @ColorInt val color: Int,
             override val startTime: Time,
             val scheduleText: String
         ) : DailyItemViewModel(id), ScheduledItem
+
+        data class AllDayEventItem(
+            override val id: String,
+            val name: String,
+            @ColorInt val color: Int
+        ) : DailyItemViewModel(id)
 
         interface ScheduledItem {
             val startTime: Time
@@ -300,6 +308,19 @@ class ScheduleSummaryViewController(args: Bundle? = null) :
                 R.layout.item_monthly_preview_day_summary
             ) { vm, view, _ ->
                 (view as TextView).text = vm.text
+            }
+
+            registerBinder<DailyItemViewModel.AllDayEventItem>(
+                ViewType.ALL_DAY_EVENT_ITEM.ordinal,
+                R.layout.item_monthly_preview_unscheduled_quest
+            ) { vm, view, _ ->
+                view.previewUnscheduledQuestIndicator.background.setColorFilter(
+                    vm.color,
+                    PorterDuff.Mode.SRC_ATOP
+                )
+
+                view.previewUnscheduledQuestName.text = vm.name
+                view.setOnClickListener(null)
             }
 
             registerBinder<DailyItemViewModel.UnscheduledQuestItem>(
@@ -430,7 +451,7 @@ class ScheduleSummaryViewController(args: Bundle? = null) :
             items.add(DailyItemViewModel.DayHeader(DateFormatter.format(c, s.date)))
 
             val questCount = s.scheduledQuests.size + s.unscheduledQuests.size
-            val eventCount = s.events.size
+            val eventCount = s.events.size + s.allDayEvents.size
             val completedCount =
                 s.scheduledQuests.count { it.isCompleted } + s.unscheduledQuests.count { it.isCompleted }
 
@@ -455,6 +476,16 @@ class ScheduleSummaryViewController(args: Bundle? = null) :
                 items.add(DailyItemViewModel.DaySummary("$qText ($completedCount $doneText), $eText"))
             } else {
                 items.add(DailyItemViewModel.DaySummary("$qText ($completedCount $doneText), $eText"))
+            }
+
+            s.allDayEvents.forEach {
+                items.add(
+                    DailyItemViewModel.AllDayEventItem(
+                        id = it.id,
+                        name = it.name,
+                        color = it.color
+                    )
+                )
             }
 
             s.unscheduledQuests.forEach {

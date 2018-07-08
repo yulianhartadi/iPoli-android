@@ -14,6 +14,7 @@ data class Schedule(
     val date: LocalDate,
     val scheduledQuests: List<Quest>,
     val unscheduledQuests: List<Quest>,
+    val allDayEvents: List<Event>,
     val events: List<Event>
 )
 
@@ -42,13 +43,26 @@ class LoadScheduleForDateUseCase :
             it to mutableListOf<Event>()
         }.toMap().toMutableMap()
 
+        val allDayEventData = scheduleDates.map {
+            it to mutableListOf<Event>()
+        }.toMap().toMutableMap()
 
-        for (e in parameters.events) {
+        for (e in parameters.events.filter { it.isAllDay }) {
+            allDayEventData[e.startDate]!!.add(e)
+        }
+
+        for (e in parameters.events.filter { !it.isAllDay }) {
             eventData[e.startDate]!!.add(e)
         }
 
         return questData.map {
-            it.key to Schedule(it.key, it.value.first, it.value.second, eventData[it.key]!!)
+            it.key to Schedule(
+                date = it.key,
+                scheduledQuests = it.value.first,
+                unscheduledQuests = it.value.second,
+                allDayEvents = allDayEventData[it.key]!!,
+                events = eventData[it.key]!!
+            )
         }.toMap()
     }
 
