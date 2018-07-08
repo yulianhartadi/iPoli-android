@@ -321,6 +321,7 @@ class ScheduleSummaryViewController(args: Bundle? = null) :
 
                 view.previewUnscheduledQuestName.text = vm.name
                 view.setOnClickListener(null)
+                view.isClickable = false
             }
 
             registerBinder<DailyItemViewModel.UnscheduledQuestItem>(
@@ -349,6 +350,7 @@ class ScheduleSummaryViewController(args: Bundle? = null) :
 
                 view.previewUnscheduledQuestName.text = vm.name
                 view.setOnClickListener(null)
+                view.isClickable = false
             }
 
             registerBinder<DailyItemViewModel.UnscheduledCompletedQuestItem>(
@@ -405,6 +407,7 @@ class ScheduleSummaryViewController(args: Bundle? = null) :
 
                 view.previewQuestName.text = vm.name
                 view.setOnClickListener(null)
+                view.isClickable = false
             }
 
             registerBinder<DailyItemViewModel.ScheduledCompletedQuestItem>(
@@ -438,6 +441,7 @@ class ScheduleSummaryViewController(args: Bundle? = null) :
                 view.previewQuestName.text = vm.name
                 view.previewQuestSchedule.text = vm.scheduleText
                 view.setOnClickListener(null)
+                view.isClickable = false
             }
         }
     }
