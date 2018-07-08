@@ -51,7 +51,7 @@ object DurationFormatter {
         }
 
         return if (hours > 0 && mins == 0) {
-            context.resources.getQuantityString(R.plurals.duration_hours, hours.toInt(), hours)
+            context.resources.getQuantityString(R.plurals.duration_hours, hours, hours)
         } else context.resources.getQuantityString(R.plurals.duration_minutes, mins.toInt(), mins)
 
     }

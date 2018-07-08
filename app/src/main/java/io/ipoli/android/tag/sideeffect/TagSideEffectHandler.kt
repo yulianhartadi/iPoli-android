@@ -4,7 +4,6 @@ import io.ipoli.android.Constants
 import io.ipoli.android.common.AppSideEffectHandler
 import io.ipoli.android.common.AppState
 import io.ipoli.android.common.DataLoadedAction
-import io.ipoli.android.common.async.ChannelRelay
 import io.ipoli.android.common.redux.Action
 import io.ipoli.android.quest.Quest
 import io.ipoli.android.tag.edit.EditTagAction
@@ -12,6 +11,7 @@ import io.ipoli.android.tag.edit.EditTagViewState
 import io.ipoli.android.tag.list.TagListAction
 import io.ipoli.android.tag.show.TagAction
 import io.ipoli.android.tag.usecase.*
+import kotlinx.coroutines.experimental.channels.Channel
 import org.threeten.bp.LocalDate
 import space.traversal.kapsule.required
 
@@ -28,29 +28,29 @@ object TagSideEffectHandler : AppSideEffectHandler() {
     private val unfavoriteTagUseCase by required { unfavoriteTagUseCase }
     private val removeTagUseCase by required { removeTagUseCase }
 
-    data class TagQuestsParams(val tagId: String)
-
-    private val tagQuestsChannelRelay = ChannelRelay<List<Quest>, TagQuestsParams>(
-        producer = { c, p ->
-            questRepository.listenByTag(tagId = p.tagId, channel = c)
-        },
-        consumer = { qs, p ->
-            val items =
-                createTagItemsUseCase.execute(
-                    CreateTagItemsUseCase.Params(
-                        quests = qs,
-                        currentDate = LocalDate.now()
-                    )
-                )
-            dispatch(DataLoadedAction.TagItemsChanged(p.tagId, items))
-        }
-    )
+    private var tagQuestsChannel: Channel<List<Quest>>? = null
 
     override suspend fun doExecute(action: Action, state: AppState) {
         when (action) {
 
             is TagAction.Load ->
-                tagQuestsChannelRelay.listen(TagQuestsParams(action.tagId))
+                listenForChanges(
+                    oldChannel = tagQuestsChannel,
+                    channelCreator = {
+                        tagQuestsChannel = questRepository.listenByTag(action.tagId)
+                        tagQuestsChannel!!
+                    },
+                    onResult = { qs ->
+                        val items =
+                            createTagItemsUseCase.execute(
+                                CreateTagItemsUseCase.Params(
+                                    quests = qs,
+                                    currentDate = LocalDate.now()
+                                )
+                            )
+                        dispatch(DataLoadedAction.TagItemsChanged(action.tagId, items))
+                    }
+                )
 
             EditTagAction.Save -> {
                 val subState = state.stateFor(EditTagViewState::class.java)

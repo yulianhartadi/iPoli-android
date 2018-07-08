@@ -4,7 +4,6 @@ import io.ipoli.android.common.AppSideEffectHandler
 import io.ipoli.android.common.AppState
 import io.ipoli.android.common.DataLoadedAction
 import io.ipoli.android.common.LoadDataAction
-import io.ipoli.android.common.async.ChannelRelay
 import io.ipoli.android.common.redux.Action
 import io.ipoli.android.event.usecase.FindEventsBetweenDatesUseCase
 import io.ipoli.android.quest.Quest
@@ -16,6 +15,7 @@ import io.ipoli.android.quest.schedule.agenda.usecase.FindAgendaDatesUseCase
 import io.ipoli.android.quest.show.usecase.CompleteTimeRangeUseCase
 import io.ipoli.android.quest.usecase.CompleteQuestUseCase
 import io.ipoli.android.repeatingquest.usecase.CreatePlaceholderQuestsForRepeatingQuestsUseCase
+import kotlinx.coroutines.experimental.channels.Channel
 import org.threeten.bp.LocalDate
 import space.traversal.kapsule.required
 
@@ -30,57 +30,7 @@ object AgendaSideEffectHandler : AppSideEffectHandler() {
     private val completeTimeRangeUseCase by required { completeTimeRangeUseCase }
     private val createPlaceholderQuestsForRepeatingQuestsUseCase by required { createPlaceholderQuestsForRepeatingQuestsUseCase }
 
-    data class AgendaConsumerParams(
-        val startDate: LocalDate,
-        val endDate: LocalDate,
-        val currentDate: LocalDate,
-        val changeCurrentAgendaItem: Boolean
-    )
-
-    private val agendaChannelRelay = ChannelRelay<List<Quest>, AgendaConsumerParams>(
-        producer = { c, p ->
-            questRepository.listenForScheduledBetween(
-                startDate = p.startDate,
-                endDate = p.endDate,
-                channel = c
-            )
-        },
-        consumer = { quests, p ->
-            val placeholderQuests =
-                createPlaceholderQuestsForRepeatingQuestsUseCase.execute(
-                    CreatePlaceholderQuestsForRepeatingQuestsUseCase.Params(
-                        startDate = p.startDate,
-                        endDate = p.endDate
-                    )
-                )
-
-            val events = findEventsBetweenDatesUseCase.execute(
-                FindEventsBetweenDatesUseCase.Params(
-                    startDate = p.startDate,
-                    endDate = p.endDate
-                )
-            )
-
-            val agendaItems = createAgendaItemsUseCase.execute(
-                CreateAgendaItemsUseCase.Params(
-                    date = p.currentDate,
-                    scheduledQuests = quests + placeholderQuests,
-                    events = events,
-                    itemsBefore = AgendaReducer.ITEMS_BEFORE_COUNT,
-                    itemsAfter = AgendaReducer.ITEMS_AFTER_COUNT
-                )
-            )
-
-            dispatch(
-                DataLoadedAction.AgendaItemsChanged(
-                    start = p.startDate,
-                    end = p.endDate,
-                    agendaItems = agendaItems,
-                    currentAgendaItemDate = if (p.changeCurrentAgendaItem) p.currentDate else null
-                )
-            )
-        }
-    )
+    private var agendaQuestsChannel: Channel<List<Quest>>? = null
 
     override suspend fun doExecute(action: Action, state: AppState) {
 
@@ -91,7 +41,7 @@ object AgendaSideEffectHandler : AppSideEffectHandler() {
                 listenForAgendaItems(
                     startDate = pair.first,
                     endDate = pair.second,
-                    agendaDate = action.startDate,
+                    currentDate = action.startDate,
                     changeCurrentAgendaItem = true
                 )
             }
@@ -116,7 +66,7 @@ object AgendaSideEffectHandler : AppSideEffectHandler() {
                 listenForAgendaItems(
                     startDate = startDate,
                     endDate = endDate,
-                    agendaDate = agendaDate,
+                    currentDate = agendaDate,
                     changeCurrentAgendaItem = false
                 )
             }
@@ -139,7 +89,7 @@ object AgendaSideEffectHandler : AppSideEffectHandler() {
                 listenForAgendaItems(
                     startDate = startDate,
                     endDate = endDate,
-                    agendaDate = agendaDate,
+                    currentDate = agendaDate,
                     changeCurrentAgendaItem = false
                 )
             }
@@ -180,16 +130,54 @@ object AgendaSideEffectHandler : AppSideEffectHandler() {
     private fun listenForAgendaItems(
         startDate: LocalDate,
         endDate: LocalDate,
-        agendaDate: LocalDate,
+        currentDate: LocalDate,
         changeCurrentAgendaItem: Boolean
     ) {
-        agendaChannelRelay.listen(
-            AgendaConsumerParams(
-                startDate = startDate,
-                endDate = endDate,
-                currentDate = agendaDate,
-                changeCurrentAgendaItem = changeCurrentAgendaItem
-            )
+
+        listenForChanges(
+            oldChannel = agendaQuestsChannel,
+            channelCreator = {
+                agendaQuestsChannel = questRepository.listenForScheduledBetween(
+                    startDate = startDate,
+                    endDate = endDate
+                )
+                agendaQuestsChannel!!
+            },
+            onResult = { quests ->
+                val placeholderQuests =
+                    createPlaceholderQuestsForRepeatingQuestsUseCase.execute(
+                        CreatePlaceholderQuestsForRepeatingQuestsUseCase.Params(
+                            startDate = startDate,
+                            endDate = endDate
+                        )
+                    )
+
+                val events = findEventsBetweenDatesUseCase.execute(
+                    FindEventsBetweenDatesUseCase.Params(
+                        startDate = startDate,
+                        endDate = endDate
+                    )
+                )
+
+                val agendaItems = createAgendaItemsUseCase.execute(
+                    CreateAgendaItemsUseCase.Params(
+                        date = currentDate,
+                        scheduledQuests = quests + placeholderQuests,
+                        events = events,
+                        itemsBefore = AgendaReducer.ITEMS_BEFORE_COUNT,
+                        itemsAfter = AgendaReducer.ITEMS_AFTER_COUNT
+                    )
+                )
+
+                dispatch(
+                    DataLoadedAction.AgendaItemsChanged(
+                        start = startDate,
+                        end = endDate,
+                        agendaItems = agendaItems,
+                        currentAgendaItemDate = if (changeCurrentAgendaItem) currentDate else null
+                    )
+                )
+            }
         )
     }
 

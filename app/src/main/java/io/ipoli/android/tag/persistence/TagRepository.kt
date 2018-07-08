@@ -12,7 +12,6 @@ import io.ipoli.android.common.persistence.*
 import io.ipoli.android.quest.Color
 import io.ipoli.android.quest.Icon
 import io.ipoli.android.tag.Tag
-import kotlinx.coroutines.experimental.channels.Channel
 import org.jetbrains.annotations.NotNull
 import java.util.*
 
@@ -178,11 +177,11 @@ class RoomTagRepository(roomDb: MyPoliRoomDatabase) :
     override fun findAll() =
         dao.findAll().map { toEntityObject(it) }
 
-    override fun listenById(id: String, channel: Channel<Tag?>) =
-        dao.listenById(id).distinct().notifySingle(channel)
+    override fun listenById(id: String) =
+        dao.listenById(id).distinct().notifySingle()
 
-    override fun listenForAll(channel: Channel<List<Tag>>) =
-        dao.listenForNotRemoved().notify(channel)
+    override fun listenForAll() =
+        dao.listenForNotRemoved().notify()
 
     override fun remove(entity: Tag) {
         remove(entity.id)

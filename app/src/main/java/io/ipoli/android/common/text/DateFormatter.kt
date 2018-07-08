@@ -27,6 +27,9 @@ object DateFormatter {
         if (DateUtils.isToday(date)) {
             return context.getString(R.string.today)
         }
+        if(DateUtils.isYesterday(date)) {
+            return context.getString(R.string.yesterday)
+        }
         return if (DateUtils.isTomorrow(date)) {
             context.getString(R.string.tomorrow)
         } else DEFAULT_DATE_FORMAT.format(DateUtils.toStartOfDay(date))

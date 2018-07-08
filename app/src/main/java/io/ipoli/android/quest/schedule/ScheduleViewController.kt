@@ -10,19 +10,16 @@ import io.ipoli.android.R
 import io.ipoli.android.common.ViewUtils
 import io.ipoli.android.common.navigation.Navigator
 import io.ipoli.android.common.redux.android.ReduxViewController
-import io.ipoli.android.common.view.*
-import io.ipoli.android.quest.schedule.ScheduleViewState.DatePickerState.*
+import io.ipoli.android.common.view.addToolbarView
+import io.ipoli.android.common.view.removeToolbarView
+import io.ipoli.android.common.view.setChildController
+import io.ipoli.android.common.view.visible
 import io.ipoli.android.quest.schedule.ScheduleViewState.StateType.*
 import io.ipoli.android.quest.schedule.addquest.AddQuestAnimationHelper
 import io.ipoli.android.quest.schedule.calendar.CalendarViewController
 import kotlinx.android.synthetic.main.controller_schedule.view.*
 import kotlinx.android.synthetic.main.view_calendar_toolbar.view.*
 import org.threeten.bp.LocalDate
-import sun.bob.mcalendarview.CellConfig
-import sun.bob.mcalendarview.MarkStyle
-import sun.bob.mcalendarview.listeners.OnDateClickListener
-import sun.bob.mcalendarview.listeners.OnMonthScrollListener
-import sun.bob.mcalendarview.vo.DateData
 
 class ScheduleViewController(args: Bundle? = null) :
     ReduxViewController<ScheduleAction, ScheduleViewState, ScheduleReducer>(args) {
@@ -38,6 +35,8 @@ class ScheduleViewController(args: Bundle? = null) :
     private var viewModeTitle = "Agenda"
 
     private var showDailyChallenge = false
+
+    private var currentDate: LocalDate = LocalDate.now()
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -58,20 +57,23 @@ class ScheduleViewController(args: Bundle? = null) :
 
         parentController!!.view!!.post {
             addToolbarView(R.layout.view_calendar_toolbar)?.let {
-                calendarToolbar = it as ViewGroup
+                val ct = it as ViewGroup
+                calendarToolbar = ct
+                ct.onDebounceClick {
+                    navigateFromRoot().toScheduleSummary(currentDate)
+                }
             }
-            initDayPicker(view)
         }
 
         setChildController(
             view.contentContainer,
-            CalendarViewController(LocalDate.now())
+            CalendarViewController(currentDate)
         )
 
         return view
     }
 
-    override fun onCreateLoadAction() = ScheduleAction.Load
+    override fun onCreateLoadAction() = ScheduleAction.Load(currentDate)
 
     override fun onDestroyView(view: View) {
         calendarToolbar?.let { removeToolbarView(it) }
@@ -124,55 +126,7 @@ class ScheduleViewController(args: Bundle? = null) :
     private fun addContainerRouter(view: View) =
         getChildRouter(view.addContainer, "add-quest")
 
-    private fun initDayPicker(view: View) {
-        view.datePickerContainer.visibility = View.GONE
-
-        view.datePicker.setMarkedStyle(MarkStyle.BACKGROUND, attrData(R.attr.colorAccent))
-
-        val currentDate = LocalDate.now()
-
-        val dateData = DateData(
-            currentDate.year,
-            currentDate.monthValue,
-            currentDate.dayOfMonth
-        )
-
-        CellConfig.m2wPointDate = dateData
-        CellConfig.w2mPointDate = dateData
-
-        view.datePicker.markDate(dateData)
-
-        calendarToolbar?.dispatchOnClick { ScheduleAction.ExpandToolbar }
-        view.expander.dispatchOnClick { ScheduleAction.ExpandWeekToolbar }
-
-        view.datePicker.setOnDateClickListener(object : OnDateClickListener() {
-            override fun onDateClick(v: View, date: DateData) {
-                dispatch(
-                    ScheduleAction.ScheduleChangeDate(
-                        LocalDate.of(
-                            date.year,
-                            date.month,
-                            date.day
-                        )
-                    )
-                )
-            }
-        })
-
-        view.datePicker.setOnMonthScrollListener(object : OnMonthScrollListener() {
-            override fun onMonthChange(year: Int, month: Int) {
-                dispatch(ScheduleAction.ChangeMonth(year, month))
-            }
-
-            override fun onMonthScroll(positionOffset: Float) {
-            }
-
-        })
-    }
-
-
     override fun render(state: ScheduleViewState, view: View) {
-        view.currentMonth.text = state.monthText
 
         view.addQuest.setOnClickListener {
             addQuestAnimationHelper.openAddContainer(state.currentDate)
@@ -181,7 +135,7 @@ class ScheduleViewController(args: Bundle? = null) :
         when (state.type) {
 
             INITIAL -> {
-                renderCalendarToolbar(state)
+                renderNewDate(state)
                 showDailyChallenge = state.showDailyChallenge
                 activity?.invalidateOptionsMenu()
             }
@@ -191,40 +145,16 @@ class ScheduleViewController(args: Bundle? = null) :
                 activity?.invalidateOptionsMenu()
             }
 
-            DATE_PICKER_CHANGED -> renderDatePicker(
-                state.datePickerState,
-                view,
-                state.currentDate
-            )
-
             DATE_AUTO_CHANGED -> {
-                val dateData = DateData(
-                    state.currentDate.year,
-                    state.currentDate.monthValue,
-                    state.currentDate.dayOfMonth
-                )
-                view.datePicker.markedDates.removeAdd()
-                view.datePicker.markDate(
-                    dateData
-                )
-                view.datePicker.travelTo(dateData)
-
-                renderDatePicker(
-                    state.datePickerState,
-                    view,
-                    state.currentDate
-                )
-                renderCalendarToolbar(state)
+                renderNewDate(state)
             }
 
             CALENDAR_DATE_CHANGED -> {
-                markSelectedDate(view, state.currentDate)
-                renderCalendarToolbar(state)
+                renderNewDate(state)
             }
 
             SWIPE_DATE_CHANGED -> {
-                markSelectedDate(view, state.currentDate)
-                renderCalendarToolbar(state)
+                renderNewDate(state)
             }
 
             VIEW_MODE_CHANGED -> {
@@ -247,68 +177,10 @@ class ScheduleViewController(args: Bundle? = null) :
         }
     }
 
-    private fun renderCalendarToolbar(state: ScheduleViewState) {
+    private fun renderNewDate(state: ScheduleViewState) {
+        currentDate = state.currentDate
         calendarToolbar?.day?.text = state.dayText(activity!!)
         calendarToolbar?.date?.text = state.dateText(activity!!)
-    }
-
-    private fun renderDatePicker(
-        datePickerState: ScheduleViewState.DatePickerState,
-        view: View,
-        currentDate: LocalDate
-    ) {
-        when (datePickerState) {
-            SHOW_MONTH -> showMonthDatePicker(view)
-            SHOW_WEEK -> showWeekDatePicker(view, currentDate)
-            INVISIBLE -> hideDatePicker(view, currentDate)
-        }
-    }
-
-    private fun showWeekDatePicker(view: View, currentDate: LocalDate) {
-        calendarToolbar?.let {
-            it.calendarIndicator.animate().rotation(180f).duration = shortAnimTime
-        }
-        CellConfig.Month2WeekPos = CellConfig.middlePosition
-        CellConfig.ifMonth = false
-        CellConfig.weekAnchorPointDate =
-            DateData(currentDate.year, currentDate.monthValue, currentDate.dayOfMonth)
-        view.datePicker.shrink()
-        view.datePickerContainer.visibility = View.VISIBLE
-        view.expander.setImageResource(R.drawable.ic_arrow_drop_down_white_24dp)
-    }
-
-    private fun showMonthDatePicker(view: View) {
-        CellConfig.ifMonth = true
-        CellConfig.Week2MonthPos = CellConfig.middlePosition
-        view.datePicker.expand()
-        view.expander.setImageResource(R.drawable.ic_arrow_drop_up_white_24dp)
-    }
-
-    private fun hideDatePicker(view: View, currentDate: LocalDate) {
-        calendarToolbar?.let {
-            it.calendarIndicator.animate().rotation(0f).duration = shortAnimTime
-        }
-        view.datePickerContainer.visibility = View.GONE
-        CellConfig.Month2WeekPos = CellConfig.middlePosition
-        CellConfig.ifMonth = false
-        CellConfig.weekAnchorPointDate =
-            DateData(currentDate.year, currentDate.monthValue, currentDate.dayOfMonth)
-        view.datePicker.shrink()
-    }
-
-    private fun markSelectedDate(view: View, currentDate: LocalDate) {
-        CellConfig.weekAnchorPointDate =
-            DateData(currentDate.year, currentDate.monthValue, currentDate.dayOfMonth)
-        view.datePicker.markedDates.removeAdd()
-
-        val dateData = DateData(
-            currentDate.year,
-            currentDate.monthValue,
-            currentDate.dayOfMonth
-        )
-        view.datePicker.markDate(
-            dateData
-        )
     }
 
     fun onStartEdit() {

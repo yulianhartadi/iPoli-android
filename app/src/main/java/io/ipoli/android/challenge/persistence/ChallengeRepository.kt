@@ -15,7 +15,6 @@ import io.ipoli.android.tag.Tag
 import io.ipoli.android.tag.persistence.RoomTag
 import io.ipoli.android.tag.persistence.RoomTagMapper
 import io.ipoli.android.tag.persistence.TagDao
-import kotlinx.coroutines.experimental.channels.Channel
 import org.jetbrains.annotations.NotNull
 import java.util.*
 
@@ -85,11 +84,11 @@ class RoomChallengeRepository(dao: ChallengeDao, private val tagDao: TagDao) : C
 
     override fun findAll() = dao.findAll().map { toEntityObject(it) }
 
-    override fun listenById(id: String, channel: Channel<Challenge?>) =
-        dao.listenById(id).notifySingle(channel)
+    override fun listenById(id: String) =
+        dao.listenById(id).notifySingle()
 
-    override fun listenForAll(channel: Channel<List<Challenge>>) =
-        dao.listenForNotRemoved().notify(channel)
+    override fun listenForAll() =
+        dao.listenForNotRemoved().notify()
 
     override fun remove(entity: Challenge) {
         remove(entity.id)

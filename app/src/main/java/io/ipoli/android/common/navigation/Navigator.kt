@@ -39,6 +39,7 @@ import io.ipoli.android.quest.reminder.picker.ReminderViewModel
 import io.ipoli.android.quest.schedule.addquest.AddQuestViewController
 import io.ipoli.android.quest.schedule.agenda.AgendaViewController
 import io.ipoli.android.quest.schedule.calendar.CalendarViewController
+import io.ipoli.android.quest.schedule.summary.ScheduleSummaryViewController
 import io.ipoli.android.quest.show.QuestViewController
 import io.ipoli.android.repeatingquest.add.AddRepeatingQuestViewController
 import io.ipoli.android.repeatingquest.edit.EditRepeatingQuestViewController
@@ -85,6 +86,10 @@ class Navigator(private val router: Router) {
 
     fun toPlanDay() {
         pushController({ PlanDayViewController() }, VerticalChangeHandler())
+    }
+
+    fun toScheduleSummary(currentDate: LocalDate) {
+        pushController({ ScheduleSummaryViewController(currentDate) }, VerticalChangeHandler())
     }
 
     fun setAddQuest(
@@ -175,7 +180,11 @@ class Navigator(private val router: Router) {
     }
 
     fun toQuest(questId: String) {
-        pushController({ QuestViewController(questId) }, VerticalChangeHandler())
+        toQuest(questId, VerticalChangeHandler())
+    }
+
+    fun toQuest(questId: String, changeHandler: ControllerChangeHandler? = null) {
+        pushController({ QuestViewController(questId) }, changeHandler)
     }
 
     fun toGemStore(changeHandler: ControllerChangeHandler? = null) {

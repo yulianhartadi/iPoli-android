@@ -17,7 +17,6 @@ import io.ipoli.android.tag.Tag
 import io.ipoli.android.tag.persistence.RoomTag
 import io.ipoli.android.tag.persistence.RoomTagMapper
 import io.ipoli.android.tag.persistence.TagDao
-import kotlinx.coroutines.experimental.channels.Channel
 import org.jetbrains.annotations.NotNull
 import org.threeten.bp.DayOfWeek
 import java.util.*
@@ -122,11 +121,11 @@ class RoomHabitRepository(dao: HabitDao, tagDao: TagDao) : HabitRepository,
     override fun findAll() =
         dao.findAll().map { toEntityObject(it) }
 
-    override fun listenById(id: String, channel: Channel<Habit?>) =
-        dao.listenById(id).distinct().notifySingle(channel)
+    override fun listenById(id: String) =
+        dao.listenById(id).distinct().notifySingle()
 
-    override fun listenForAll(channel: Channel<List<Habit>>) =
-        dao.listenForNotRemoved().notify(channel)
+    override fun listenForAll() =
+        dao.listenForNotRemoved().notify()
 
     override fun remove(entity: Habit) {
         remove(entity.id)

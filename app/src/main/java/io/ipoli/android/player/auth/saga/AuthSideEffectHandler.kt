@@ -41,6 +41,7 @@ object AuthSideEffectHandler : AppSideEffectHandler() {
     private val checkMembershipStatusScheduler by required { checkMembershipStatusScheduler }
     private val planDayScheduler by required { planDayScheduler }
     private val updateAchievementProgressScheduler by required { updateAchievementProgressScheduler }
+    private val updateHabitStreaksScheduler by required { updateHabitStreaksScheduler }
     private val saveRepeatingQuestUseCase by required { saveRepeatingQuestUseCase }
     private val dataImporter by required { dataImporter }
     private val dataExporter by required { dataExporter }
@@ -368,5 +369,6 @@ object AuthSideEffectHandler : AppSideEffectHandler() {
         checkMembershipStatusScheduler.schedule()
         planDayScheduler.schedule()
         updateAchievementProgressScheduler.schedule()
+        updateHabitStreaksScheduler.schedule()
     }
 }

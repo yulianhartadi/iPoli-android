@@ -34,17 +34,16 @@ class CreatePlaceholderQuestsForRepeatingQuestsUseCase(
         return rqs.filter { it.isFixed }.map {
             val rqStart = it.start
             if (end.isBefore(rqStart)) {
-                return listOf()
+                return@map listOf<Quest>()
             }
 
             val rqEnd = it.end
             if (rqEnd != null && start.isAfter(rqEnd)) {
-                return listOf()
+                return@map listOf<Quest>()
             }
 
             val currStart = if (start.isBefore(rqStart)) rqStart else start
             val currEnd = if (rqEnd != null && rqEnd.isBefore(end)) rqEnd else end
-
 
             val scheduleDates = when (it.repeatPattern) {
 

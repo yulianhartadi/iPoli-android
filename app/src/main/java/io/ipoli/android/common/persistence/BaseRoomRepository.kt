@@ -9,11 +9,11 @@ import android.arch.persistence.room.Transaction
 import io.ipoli.android.quest.Entity
 import io.ipoli.android.tag.Tag
 import kotlinx.coroutines.experimental.CommonPool
+import kotlinx.coroutines.experimental.CoroutineStart
 import kotlinx.coroutines.experimental.android.UI
 import kotlinx.coroutines.experimental.channels.Channel
-import kotlinx.coroutines.experimental.channels.SendChannel
+import kotlinx.coroutines.experimental.channels.ConflatedChannel
 import kotlinx.coroutines.experimental.launch
-import kotlinx.coroutines.experimental.withContext
 
 @Dao
 abstract class BaseDao<T> {
@@ -46,92 +46,69 @@ abstract class BaseRoomRepository<E : io.ipoli.android.quest.Entity, RE, D : Bas
 
     data class Subscription(val liveData: LiveData<*>, val observer: Observer<*>)
 
-    private val channelToSubscription = mutableMapOf<SendChannel<*>, Subscription>()
+    protected fun LiveData<RE>.notifySingle() =
+        listenSingle(this)
 
-    protected fun LiveData<RE>.notifySingle(channel: Channel<E?>) =
-        listenSingle(this, channel)
+    protected fun LiveData<List<RE>>.notify() =
+        listen(this)
 
-    protected fun LiveData<List<RE>>.notify(channel: Channel<List<E>>) =
-        listen(this, channel)
+    class SubscriptionChannel<D>(private val subscription: Subscription) : ConflatedChannel<D>() {
+
+        override fun afterClose(cause: Throwable?) {
+            launch(UI, start = CoroutineStart.ATOMIC) {
+                @Suppress("UNCHECKED_CAST")
+                val l = subscription.liveData as LiveData<D>
+                @Suppress("UNCHECKED_CAST")
+                val o = subscription.observer as Observer<D>
+                l.removeObserver(o)
+            }
+        }
+    }
 
     private fun listenSingle(
-        data: LiveData<RE>,
-        channel: Channel<E?>
+        data: LiveData<RE>
     ): Channel<E?> {
-        launch(CommonPool) {
+        var channel: SubscriptionChannel<E?>? = null
 
-            channelToSubscription[channel]?.let {
-                removeDataSubscription(it, channel)
-            }
+        val obs = Observer<RE> {
+            launch(CommonPool) {
 
-            val obs = Observer<RE> {
-                obsLaunch@ launch(CommonPool) {
-                    val s = channelToSubscription[channel] ?: return@obsLaunch
-
-                    if (channel.isClosedForSend || channel.isClosedForReceive) {
-                        removeDataSubscription(s, channel)
-                        return@obsLaunch
-                    }
-
-                    it?.let {
-                        channel.offer(toEntityObject(it))
-                    }
+                it?.let {
+                    channel!!.offer(toEntityObject(it))
                 }
             }
-
-            data.observeForever(obs)
-
-            channelToSubscription[channel] = Subscription(data, obs)
         }
 
+        val sub = Subscription(data, obs)
+
+        channel = SubscriptionChannel(sub)
+
+        data.observeForever(obs)
 
         return channel
     }
 
     private fun listen(
-        data: LiveData<List<RE>>,
-        channel: Channel<List<E>>
+        data: LiveData<List<RE>>
     ): Channel<List<E>> {
-        launch(CommonPool) {
 
-            channelToSubscription[channel]?.let {
-                removeDataSubscription(it, channel)
-            }
+        var channel: SubscriptionChannel<List<E>>? = null
 
-            val obs = Observer<List<RE>> {
-                obsLaunch@ launch(CommonPool) {
-                    val s = channelToSubscription[channel] ?: return@obsLaunch
-
-                    if (channel.isClosedForSend || channel.isClosedForReceive) {
-                        removeDataSubscription(s, channel)
-                        return@obsLaunch
-                    }
-
-                    it?.let {
-                        channel.offer(it.map { toEntityObject(it) })
-                    }
+        val obs = Observer<List<RE>> {
+            launch(CommonPool) {
+                it?.let {
+                    channel!!.offer(it.map { toEntityObject(it) })
                 }
             }
-
-            data.observeForever(obs)
-
-            channelToSubscription[channel] = Subscription(data, obs)
         }
 
-        return channel
-    }
+        val sub = Subscription(data, obs)
 
-    private suspend fun <T> removeDataSubscription(
-        s: Subscription,
-        channel: Channel<T>
-    ) {
-        @Suppress("UNCHECKED_CAST")
-        (withContext(UI) {
-            val l = s.liveData as LiveData<T>
-            val o = s.observer as Observer<T>
-            l.removeObserver(o)
-        })
-        channelToSubscription.remove(channel)
+        channel = SubscriptionChannel(sub)
+
+        data.observeForever(obs)
+
+        return channel
     }
 
     protected abstract fun toEntityObject(dbObject: RE): E

@@ -286,5 +286,9 @@ interface Constants {
         )
 
         const val MAX_HABIT_TIMES_A_DAY = 12
+
+        val MORNING_TIME_START by lazy { Time.atHours(4) }
+        val AFTERNOON_TIME_START by lazy { Time.atHours(12) }
+        val EVENING_TIME_START by lazy { Time.atHours(18) }
     }
 }

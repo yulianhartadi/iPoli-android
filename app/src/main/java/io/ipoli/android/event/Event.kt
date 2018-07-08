@@ -1,8 +1,6 @@
 package io.ipoli.android.event
 
-import io.ipoli.android.common.datetime.Duration
-import io.ipoli.android.common.datetime.Minute
-import io.ipoli.android.common.datetime.Time
+import io.ipoli.android.common.datetime.*
 import io.ipoli.android.quest.Entity
 import org.threeten.bp.Instant
 import org.threeten.bp.LocalDate
@@ -15,7 +13,7 @@ data class Event(
     override val id: String = "",
     val name: String,
     val startTime: Time,
-    val duration: Duration<Minute>,
+    val endTime: Time,
     val startDate: LocalDate,
     val endDate: LocalDate,
     val color: Int,
@@ -23,6 +21,8 @@ data class Event(
     override val createdAt: Instant = Instant.now(),
     override val updatedAt: Instant = Instant.now()
 ) : Entity {
-    val endTime: Time
-        get() = startTime.plus(duration.intValue)
+    val duration: Duration<Minute>
+        get() = ((endTime - startTime).toMinuteOfDay() +
+            startDate.plusDays(1).daysBetween(endDate) * Time.MINUTES_IN_A_DAY).minutes
+
 }

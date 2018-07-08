@@ -4,16 +4,17 @@ import io.ipoli.android.Constants
 import io.ipoli.android.common.AppSideEffectHandler
 import io.ipoli.android.common.AppState
 import io.ipoli.android.common.DataLoadedAction
-import io.ipoli.android.common.async.ChannelRelay
 import io.ipoli.android.common.redux.Action
 import io.ipoli.android.note.usecase.SaveQuestNoteUseCase
 import io.ipoli.android.quest.CompletedQuestAction
 import io.ipoli.android.quest.Quest
+import io.ipoli.android.quest.schedule.summary.ScheduleSummaryAction
 import io.ipoli.android.quest.show.QuestAction
 import io.ipoli.android.quest.show.QuestReducer
 import io.ipoli.android.quest.show.QuestViewState
 import io.ipoli.android.quest.show.usecase.*
 import io.ipoli.android.quest.subquest.usecase.*
+import kotlinx.coroutines.experimental.channels.Channel
 import space.traversal.kapsule.required
 
 /**
@@ -43,65 +44,17 @@ object QuestSideEffectHandler : AppSideEffectHandler() {
     private val removeQuestUseCase by required { removeQuestUseCase }
     private val undoRemoveQuestUseCase by required { undoRemoveQuestUseCase }
 
-    data class QuestParams(val questId: String)
-
-    private val questChannelRelay = ChannelRelay<Quest?, QuestParams>(
-        producer = { c, p ->
-            questRepository.listenById(p.questId, c)
-        },
-        consumer = { q, _ ->
-
-            val quest = if (isPomodoroQuest(q!!)) {
-                val timeRanges = q.timeRanges
-
-                val result = splitDurationForPomodoroTimerUseCase.execute(
-                    SplitDurationForPomodoroTimerUseCase.Params(q)
-                )
-                val timeRangesToComplete =
-                    if (result == SplitDurationForPomodoroTimerUseCase.Result.DurationNotSplit) {
-                        timeRanges
-                    } else {
-                        (result as SplitDurationForPomodoroTimerUseCase.Result.DurationSplit).timeRanges
-                    }
-                q.copy(
-                    timeRangesToComplete = timeRangesToComplete
-                )
-            } else q
-            dispatch(DataLoadedAction.QuestChanged(quest))
-        }
-    )
-
-    private val completedQuestChannelRelay = ChannelRelay<Quest?, QuestParams>(
-        producer = { c, p ->
-            questRepository.listenById(p.questId, c)
-        },
-        consumer = { q, _ ->
-
-            val quest = q!!
-
-            val splitResult = splitDurationForPomodoroTimerUseCase.execute(
-                SplitDurationForPomodoroTimerUseCase.Params(quest)
-            )
-            val totalPomodoros =
-                if (splitResult == SplitDurationForPomodoroTimerUseCase.Result.DurationNotSplit) {
-                    quest.timeRanges.size / 2
-                } else {
-                    (splitResult as SplitDurationForPomodoroTimerUseCase.Result.DurationSplit).timeRanges.size / 2
-                }
-            dispatch(DataLoadedAction.QuestChanged(quest.copy(totalPomodoros = totalPomodoros)))
-        }
-    )
-
-    override fun canHandle(action: Action) = action is QuestAction || action is CompletedQuestAction
+    private var questChannel: Channel<Quest?>? = null
+    private var completedQuestChannel: Channel<Quest?>? = null
 
     override suspend fun doExecute(action: Action, state: AppState) {
         when (action) {
 
             is QuestAction.Load ->
-                questChannelRelay.listen(QuestParams(action.questId))
+                listenForQuest(action)
 
             is CompletedQuestAction.Load ->
-                completedQuestChannelRelay.listen(QuestParams(action.questId))
+                listenForCompletedQuest(action)
 
             QuestAction.Start -> {
 
@@ -216,7 +169,67 @@ object QuestSideEffectHandler : AppSideEffectHandler() {
 
             is QuestAction.UndoRemove ->
                 undoRemoveQuestUseCase.execute(action.questId)
+
+            is ScheduleSummaryAction.RemoveQuest ->
+                removeQuestUseCase.execute(action.questId)
+
+            is ScheduleSummaryAction.UndoRemoveQuest ->
+                undoRemoveQuestUseCase.execute(action.questId)
         }
+    }
+
+    private fun listenForCompletedQuest(action: CompletedQuestAction.Load) {
+        listenForChanges(
+            oldChannel = completedQuestChannel,
+            channelCreator = {
+                completedQuestChannel = questRepository.listenById(action.questId)
+                completedQuestChannel!!
+            },
+            onResult = { q ->
+
+                val quest = q!!
+
+                val splitResult = splitDurationForPomodoroTimerUseCase.execute(
+                    SplitDurationForPomodoroTimerUseCase.Params(quest)
+                )
+                val totalPomodoros =
+                    if (splitResult == SplitDurationForPomodoroTimerUseCase.Result.DurationNotSplit) {
+                        quest.timeRanges.size / 2
+                    } else {
+                        (splitResult as SplitDurationForPomodoroTimerUseCase.Result.DurationSplit).timeRanges.size / 2
+                    }
+                dispatch(DataLoadedAction.QuestChanged(quest.copy(totalPomodoros = totalPomodoros)))
+            }
+        )
+    }
+
+    private fun listenForQuest(action: QuestAction.Load) {
+        listenForChanges(
+            oldChannel = questChannel,
+            channelCreator = {
+                questChannel = questRepository.listenById(action.questId)
+                questChannel!!
+            },
+            onResult = { q ->
+                val quest = if (isPomodoroQuest(q!!)) {
+                    val timeRanges = q.timeRanges
+
+                    val result = splitDurationForPomodoroTimerUseCase.execute(
+                        SplitDurationForPomodoroTimerUseCase.Params(q)
+                    )
+                    val timeRangesToComplete =
+                        if (result == SplitDurationForPomodoroTimerUseCase.Result.DurationNotSplit) {
+                            timeRanges
+                        } else {
+                            (result as SplitDurationForPomodoroTimerUseCase.Result.DurationSplit).timeRanges
+                        }
+                    q.copy(
+                        timeRangesToComplete = timeRangesToComplete
+                    )
+                } else q
+                dispatch(DataLoadedAction.QuestChanged(quest))
+            }
+        )
     }
 
     private fun isPomodoroQuest(q: Quest) =
@@ -228,4 +241,6 @@ object QuestSideEffectHandler : AppSideEffectHandler() {
     private fun questState(state: AppState) =
         state.stateFor(QuestViewState::class.java)
 
+    override fun canHandle(action: Action) =
+        action is QuestAction || action is CompletedQuestAction || action is ScheduleSummaryAction
 }

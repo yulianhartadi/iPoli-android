@@ -205,7 +205,6 @@ class MainActivity : AppCompatActivity(), Injects<Module>, SideEffectHandler<App
         } else if (!router.hasRootController()) {
             navigator.setHome()
 
-            updateHabitStreaksScheduler.schedule()
             if (Random().nextInt(10) == 1 && player.membership == Membership.NONE) {
                 showPremiumSnackbar()
             }

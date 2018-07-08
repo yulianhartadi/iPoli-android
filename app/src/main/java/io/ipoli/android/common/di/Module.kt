@@ -42,6 +42,7 @@ import io.ipoli.android.common.rate.AndroidRatePopupScheduler
 import io.ipoli.android.common.rate.RatePopupScheduler
 import io.ipoli.android.common.redux.CoroutineSideEffectHandlerExecutor
 import io.ipoli.android.common.redux.StateStore
+import io.ipoli.android.common.sideeffect.LoadAllDataSideEffectHandler
 import io.ipoli.android.common.text.CalendarFormatter
 import io.ipoli.android.common.view.PetMessageSideEffectHandler
 import io.ipoli.android.dailychallenge.data.persistence.DailyChallengeRepository
@@ -111,6 +112,8 @@ import io.ipoli.android.quest.schedule.agenda.sideeffect.AgendaSideEffectHandler
 import io.ipoli.android.quest.schedule.agenda.usecase.CreateAgendaItemsUseCase
 import io.ipoli.android.quest.schedule.agenda.usecase.FindAgendaDatesUseCase
 import io.ipoli.android.quest.schedule.calendar.sideeffect.DayViewSideEffectHandler
+import io.ipoli.android.quest.schedule.summary.sideeffect.ScheduleSummarySideEffectHandler
+import io.ipoli.android.quest.schedule.summary.usecase.CreateScheduleSummaryUseCase
 import io.ipoli.android.quest.show.job.AndroidJobTimerCompleteScheduler
 import io.ipoli.android.quest.show.job.TimerCompleteScheduler
 import io.ipoli.android.quest.show.sideeffect.QuestSideEffectHandler
@@ -520,6 +523,7 @@ interface UseCaseModule {
     val removeHabitUseCase: RemoveHabitUseCase
     val updateHabitStreaksUseCase: UpdateHabitStreaksUseCase
     val createHabitItemsUseCase: CreateHabitItemsUseCase
+    val createScheduleSummaryUseCase: CreateScheduleSummaryUseCase
 }
 
 class MainUseCaseModule : UseCaseModule, Injects<Module> {
@@ -900,6 +904,9 @@ class MainUseCaseModule : UseCaseModule, Injects<Module> {
 
     override val createHabitItemsUseCase
         get() = CreateHabitItemsUseCase()
+
+    override val createScheduleSummaryUseCase
+        get() = CreateScheduleSummaryUseCase(eventRepository, playerRepository)
 }
 
 interface StateStoreModule {
@@ -951,7 +958,8 @@ class AndroidStateStoreModule : StateStoreModule, Injects<Module> {
                 HabitSideEffectHandler,
                 LevelUpSideEffectHandler,
                 PetMessageSideEffectHandler,
-                PetDialogSideEffectHandler
+                PetDialogSideEffectHandler,
+                ScheduleSummarySideEffectHandler
             ),
             sideEffectHandlerExecutor = CoroutineSideEffectHandlerExecutor(job + CommonPool),
             middleware = listOf(

@@ -1,33 +1,17 @@
 package io.ipoli.android.common
 
-import io.ipoli.android.Constants
-import io.ipoli.android.challenge.entity.Challenge
 import io.ipoli.android.challenge.predefined.category.list.ChallengeListForCategoryAction
 import io.ipoli.android.challenge.usecase.BuyChallengeUseCase
-import io.ipoli.android.challenge.usecase.FindChallengeProgressUseCase
-import io.ipoli.android.challenge.usecase.FindNextDateForChallengeUseCase
-import io.ipoli.android.challenge.usecase.FindQuestsForChallengeUseCase
-import io.ipoli.android.common.async.ChannelRelay
 import io.ipoli.android.common.di.Module
-import io.ipoli.android.common.notification.QuickDoNotificationUtil
 import io.ipoli.android.common.redux.Action
 import io.ipoli.android.common.redux.Dispatcher
 import io.ipoli.android.common.redux.SideEffectHandler
-import io.ipoli.android.common.view.AppWidgetUtil
-import io.ipoli.android.habit.data.Habit
 import io.ipoli.android.myPoliApp
 import io.ipoli.android.pet.store.PetStoreAction
 import io.ipoli.android.pet.usecase.BuyPetUseCase
-import io.ipoli.android.player.data.Player
-import io.ipoli.android.quest.Quest
-import io.ipoli.android.quest.RepeatingQuest
-import io.ipoli.android.repeatingquest.usecase.FindNextDateForRepeatingQuestUseCase
-import io.ipoli.android.repeatingquest.usecase.FindPeriodProgressForRepeatingQuestUseCase
-import io.ipoli.android.tag.Tag
-import io.ipoli.android.tag.usecase.AddQuestCountToTagUseCase
-import kotlinx.coroutines.experimental.android.UI
-import kotlinx.coroutines.experimental.withContext
-import org.threeten.bp.LocalDate
+import kotlinx.coroutines.experimental.CommonPool
+import kotlinx.coroutines.experimental.channels.Channel
+import kotlinx.coroutines.experimental.launch
 import space.traversal.kapsule.Injects
 import space.traversal.kapsule.inject
 import space.traversal.kapsule.required
@@ -55,6 +39,21 @@ abstract class AppSideEffectHandler : SideEffectHandler<AppState>,
 
     fun dispatch(action: Action) {
         dispatcher!!.dispatch(action)
+    }
+
+    protected fun <E> listenForChanges(
+        oldChannel: Channel<E>?,
+        channelCreator: () -> Channel<E>,
+        onResult: (E) -> Unit
+    ) {
+        oldChannel?.close()
+        val newChannel = channelCreator()
+
+        launch(CommonPool) {
+            for (d in newChannel) {
+                onResult(d)
+            }
+        }
     }
 }
 
@@ -111,152 +110,4 @@ object BuyPetSideEffectHandler : AppSideEffectHandler() {
     }
 
     override fun canHandle(action: Action) = action is PetStoreAction.BuyPet
-}
-
-object LoadAllDataSideEffectHandler : AppSideEffectHandler() {
-
-    private val playerRepository by required { playerRepository }
-    private val questRepository by required { questRepository }
-    private val challengeRepository by required { challengeRepository }
-    private val repeatingQuestRepository by required { repeatingQuestRepository }
-    private val tagRepository by required { tagRepository }
-    private val habitRepository by required { habitRepository }
-    private val findNextDateForRepeatingQuestUseCase by required { findNextDateForRepeatingQuestUseCase }
-    private val findPeriodProgressForRepeatingQuestUseCase by required { findPeriodProgressForRepeatingQuestUseCase }
-    private val findQuestsForChallengeUseCase by required { findQuestsForChallengeUseCase }
-    private val findNextDateForChallengeUseCase by required { findNextDateForChallengeUseCase }
-    private val findChallengeProgressUseCase by required { findChallengeProgressUseCase }
-    private val addQuestCountToTagUseCase by required { addQuestCountToTagUseCase }
-    private val reminderScheduler by required { reminderScheduler }
-    private val sharedPreferences by required { sharedPreferences }
-
-    private val playerChannelRelay = ChannelRelay<Player?, Unit>(
-        producer = { c, _ ->
-            playerRepository.listen(c)
-        },
-        consumer = { p, _ ->
-            dispatch(DataLoadedAction.PlayerChanged(p!!))
-        }
-    )
-
-    data class TodayQuestsParams(val currentDate: LocalDate)
-
-    private val todayQuestsChannelRelay = ChannelRelay<List<Quest>, TodayQuestsParams>(
-        producer = { c, p ->
-            questRepository.listenForScheduledAt(p.currentDate, c)
-        },
-        consumer = { qs, _ ->
-            dispatch(DataLoadedAction.TodayQuestsChanged(qs))
-        }
-    )
-
-    private val tagsChannelRelay = ChannelRelay<List<Tag>, Unit>(
-        producer = { c, _ ->
-            tagRepository.listenForAll(c)
-        },
-        consumer = { ts, _ ->
-            val tags = ts
-                .map {
-                    addQuestCountToTagUseCase.execute(AddQuestCountToTagUseCase.Params(it))
-                }
-            dispatch(DataLoadedAction.TagsChanged(tags))
-        }
-    )
-
-    private val habitsChannelRelay = ChannelRelay<List<Habit>, Unit>(
-        producer = { c, _ ->
-            habitRepository.listenForAll(c)
-        },
-        consumer = { hs, _ ->
-            dispatch(DataLoadedAction.HabitsChanged(hs))
-        }
-    )
-
-    private val repeatingQuestsChannelRelay = ChannelRelay<List<RepeatingQuest>, Unit>(
-        producer = { c, _ ->
-            repeatingQuestRepository.listenForAll(c)
-        },
-        consumer = { rqs, _ ->
-            val repeatingQuests = rqs.map {
-                findNextDateForRepeatingQuestUseCase.execute(
-                    FindNextDateForRepeatingQuestUseCase.Params(it)
-                )
-            }.map {
-                findPeriodProgressForRepeatingQuestUseCase.execute(
-                    FindPeriodProgressForRepeatingQuestUseCase.Params(it)
-                )
-            }
-            dispatch(DataLoadedAction.RepeatingQuestsChanged(repeatingQuests))
-        }
-    )
-
-    private val challengesChannelRelay = ChannelRelay<List<Challenge>, Unit>(
-        producer = { c, _ ->
-            challengeRepository.listenForAll(c)
-        },
-        consumer = { cs, _ ->
-            val challenges = cs.map {
-                findQuestsForChallengeUseCase.execute(
-                    FindQuestsForChallengeUseCase.Params(it)
-                )
-            }.map {
-                findNextDateForChallengeUseCase.execute(
-                    FindNextDateForChallengeUseCase.Params(it)
-                )
-            }.map {
-                findChallengeProgressUseCase.execute(
-                    FindChallengeProgressUseCase.Params(it)
-                )
-            }
-            dispatch(DataLoadedAction.ChallengesChanged(challenges))
-        }
-    )
-
-    private val unscheduledQuestsChannelRelay = ChannelRelay<List<Quest>, Unit>(
-        producer = { c, _ ->
-            questRepository.listenForAllUnscheduled(c)
-        },
-        consumer = { qs, _ ->
-            dispatch(DataLoadedAction.UnscheduledQuestsChanged(qs))
-        }
-    )
-
-    override suspend fun doExecute(action: Action, state: AppState) {
-
-        if (action is DataLoadedAction.TodayQuestsChanged) {
-            withContext(UI) {
-                updateWidgets()
-            }
-            if (sharedPreferences.getBoolean(
-                    Constants.KEY_QUICK_DO_NOTIFICATION_ENABLED,
-                    Constants.DEFAULT_QUICK_DO_NOTIFICATION_ENABLED
-                )) {
-                QuickDoNotificationUtil.update(myPoliApp.instance, action.quests)
-            }
-        }
-
-        if (action == LoadDataAction.All) {
-            listenForPlayerData()
-        }
-    }
-
-    private fun listenForPlayerData() {
-        playerChannelRelay.listen(Unit)
-        todayQuestsChannelRelay.listen(TodayQuestsParams(LocalDate.now()))
-        repeatingQuestsChannelRelay.listen(Unit)
-        habitsChannelRelay.listen(Unit)
-        challengesChannelRelay.listen(Unit)
-        tagsChannelRelay.listen(Unit)
-        unscheduledQuestsChannelRelay.listen(Unit)
-        reminderScheduler.schedule()
-        // @TODO reschedule jobs
-    }
-
-    private fun updateWidgets() {
-        AppWidgetUtil.updateAgendaWidget(myPoliApp.instance)
-    }
-
-    override fun canHandle(action: Action) =
-        action == LoadDataAction.All
-            || action is DataLoadedAction.TodayQuestsChanged
 }

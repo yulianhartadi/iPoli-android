@@ -19,7 +19,6 @@ import io.ipoli.android.tag.Tag
 import io.ipoli.android.tag.persistence.RoomTag
 import io.ipoli.android.tag.persistence.RoomTagMapper
 import io.ipoli.android.tag.persistence.TagDao
-import kotlinx.coroutines.experimental.channels.Channel
 import org.jetbrains.annotations.NotNull
 import org.threeten.bp.DayOfWeek
 import org.threeten.bp.LocalDate
@@ -140,13 +139,12 @@ class RoomRepeatingQuestRepository(dao: RepeatingQuestDao, private val tagDao: T
     override fun findAll() = dao.findAll().map { toEntityObject(it) }
 
     override fun listenById(
-        id: String,
-        channel: Channel<RepeatingQuest?>
+        id: String
     ) =
-        dao.listenById(id).notifySingle(channel)
+        dao.listenById(id).notifySingle()
 
-    override fun listenForAll(channel: Channel<List<RepeatingQuest>>) =
-        dao.listenForNotRemoved().notify(channel)
+    override fun listenForAll() =
+        dao.listenForNotRemoved().notify()
 
     override fun remove(entity: RepeatingQuest) {
         remove(entity.id)

@@ -26,24 +26,24 @@ import java.util.*
 
 interface QuestRepository : CollectionRepository<Quest> {
 
-    suspend fun listenForScheduledBetween(
+    fun listenForScheduledBetween(
         startDate: LocalDate,
-        endDate: LocalDate,
-        channel: Channel<List<Quest>>
+        endDate: LocalDate
     ): Channel<List<Quest>>
 
-    suspend fun listenForScheduledAt(
-        date: LocalDate,
-        channel: Channel<List<Quest>>
+    fun listenForScheduledAt(
+        date: LocalDate
     ): Channel<List<Quest>>
 
-    suspend fun listenByTag(tagId: String, channel: Channel<List<Quest>>): Channel<List<Quest>>
+    fun listenByTag(tagId: String): Channel<List<Quest>>
 
-    suspend fun listenForAllUnscheduled(channel: Channel<List<Quest>>): Channel<List<Quest>>
+    fun listenForAllUnscheduled(): Channel<List<Quest>>
 
     fun findRandomUnscheduled(count: Int): List<Quest>
 
     fun findScheduledAt(date: LocalDate): List<Quest>
+
+    fun findScheduledBetween(startDate: LocalDate, endDate: LocalDate): List<Quest>
 
     fun findScheduledForRepeatingQuestBetween(
         repeatingQuestId: String,
@@ -357,6 +357,16 @@ abstract class QuestDao : BaseDao<RoomQuest>() {
         newRepeatingQuestId: String,
         currentTimeMillis: Long = System.currentTimeMillis()
     )
+
+    @Query(
+        """
+        SELECT *
+        FROM quests
+        WHERE removedAt IS NULL AND scheduledDate >= :startDate AND scheduledDate <= :endDate
+        ORDER BY scheduledDate ASC, startMinute ASC
+        """
+    )
+    abstract fun findScheduledBetween(startDate: Long, endDate: Long): List<RoomQuest>
 }
 
 class RoomQuestRepository(
@@ -381,35 +391,38 @@ class RoomQuestRepository(
 
     override fun deleteAllTags(entityIds: List<String>) = dao.deleteAllTags(entityIds)
 
-    override suspend fun listenForScheduledBetween(
+    override fun listenForScheduledBetween(
         startDate: LocalDate,
-        endDate: LocalDate,
-        channel: Channel<List<Quest>>
+        endDate: LocalDate
     ) =
         dao.listenForScheduledBetween(startDate.startOfDayUTC(), endDate.startOfDayUTC())
-            .notify(channel)
+            .notify()
 
-    override suspend fun listenForScheduledAt(
-        date: LocalDate,
-        channel: Channel<List<Quest>>
+    override fun listenForScheduledAt(
+        date: LocalDate
     ) =
         dao.listenForScheduledAt(date.startOfDayUTC())
-            .notify(channel)
+            .notify()
 
-    override suspend fun listenByTag(
-        tagId: String,
-        channel: Channel<List<Quest>>
+    override fun listenByTag(
+        tagId: String
     ) =
-        dao.listenByTag(tagId).notify(channel)
+        dao.listenByTag(tagId).notify()
 
-    override suspend fun listenForAllUnscheduled(channel: Channel<List<Quest>>) =
-        dao.listenForAllUnscheduled().notify(channel)
+    override fun listenForAllUnscheduled() =
+        dao.listenForAllUnscheduled().notify()
 
     override fun findRandomUnscheduled(count: Int) =
         dao.findRandomUnscheduled(count).map { toEntityObject(it) }
 
     override fun findScheduledAt(date: LocalDate) =
         dao.findScheduledAt(date.startOfDayUTC()).map { toEntityObject(it) }
+
+    override fun findScheduledBetween(startDate: LocalDate, endDate: LocalDate) =
+        dao.findScheduledBetween(
+            startDate.startOfDayUTC(),
+            endDate.startOfDayUTC()
+        ).map { toEntityObject(it) }
 
     override fun findScheduledForRepeatingQuestBetween(
         repeatingQuestId: String,
@@ -727,11 +740,11 @@ class RoomQuestRepository(
     override fun findAll() =
         dao.findAll().map { toEntityObject(it) }
 
-    override fun listenById(id: String, channel: Channel<Quest?>): Channel<Quest?> =
-        dao.listenById(id).distinct().notifySingle(channel)
+    override fun listenById(id: String): Channel<Quest?> =
+        dao.listenById(id).distinct().notifySingle()
 
-    override fun listenForAll(channel: Channel<List<Quest>>): Channel<List<Quest>> =
-        dao.listenForNotRemoved().notify(channel)
+    override fun listenForAll(): Channel<List<Quest>> =
+        dao.listenForNotRemoved().notify()
 
     override fun remove(entity: Quest) {
         remove(entity.id)

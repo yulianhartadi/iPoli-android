@@ -490,6 +490,20 @@
         <item quantity="other">%d minutes</item>
     </plurals>
 
+    <plurals name="quest_quantity">
+        <item quantity="one">%d Quest</item>
+        <item quantity="other">%d Quests</item>
+    </plurals>
+
+    <plurals name="event_quantity">
+        <item quantity="one">%d Event</item>
+        <item quantity="other">%d Events</item>
+    </plurals>
+
+    <string name="no_quests">No Quests</string>
+    <string name="no_events">No Events</string>
+    <string name="nothing_scheduled">Nothing scheduled</string>
+
     <string name="duration_for_time">For %s</string>
     <string name="once_a_day">Once a day</string>
     <string name="twice_a_day">Twice a day</string>
@@ -1481,4 +1495,5 @@
     <string name="habits">Habits</string>
     <string name="predefined_habits_title">Preset habits</string>
     <string name="import_data_error_message">Importing your data failed. Make sure you have Internet connection :)</string>
+    <string name="quest_rescheduled">Quest rescheduled</string>
 </resources>

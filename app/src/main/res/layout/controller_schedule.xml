@@ -8,64 +8,6 @@
     android:orientation="vertical"
     android:weightSum="1">
 
-    <RelativeLayout
-        android:visibility="gone"
-        android:id="@+id/datePickerContainer"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:clipChildren="false"
-        android:elevation="8dp">
-
-        <TextView
-            android:id="@+id/currentMonth"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_alignParentTop="true"
-            android:background="@color/md_white"
-            android:gravity="center"
-            android:paddingBottom="8dp"
-            android:paddingTop="8dp"
-            android:textAppearance="@style/TextAppearance.AppCompat.Title" />
-
-        <sun.bob.mcalendarview.views.WeekColumnView
-            android:id="@+id/weekColumnView"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_below="@+id/currentMonth"
-            android:paddingBottom="8dp"
-            android:paddingTop="8dp" />
-
-        <View
-            android:id="@+id/separator"
-            android:layout_width="match_parent"
-            android:layout_height="1px"
-            android:layout_below="@+id/weekColumnView"
-            android:background="#ccc" />
-
-        <sun.bob.mcalendarview.views.ExpCalendarView
-            android:id="@+id/datePicker"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_below="@+id/separator" />
-
-        <ImageView
-            android:id="@+id/expander"
-            android:layout_width="28dp"
-            android:layout_height="28dp"
-            android:layout_alignBottom="@+id/datePicker"
-            android:layout_centerHorizontal="true"
-            android:layout_marginBottom="-14dp"
-            android:background="@drawable/circle_primary"
-            android:elevation="4dp"
-            android:scaleType="fitXY" />
-
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="12dp"
-            android:layout_below="@+id/datePicker"
-            android:background="@android:color/transparent" />
-    </RelativeLayout>
-
     <com.bluelinelabs.conductor.ChangeHandlerFrameLayout
         android:id="@+id/contentContainer"
         android:layout_width="match_parent"

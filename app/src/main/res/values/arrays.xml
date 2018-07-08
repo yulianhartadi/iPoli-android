@@ -82,4 +82,13 @@
         <item>Let life surprise you</item>
         <item>Nothing great ever come that easy</item>
     </string-array>
+    <string-array name="week_bar_days_of_week">
+        <item>Sun</item>
+        <item>Mon</item>
+        <item>Tue</item>
+        <item>Wed</item>
+        <item>Thu</item>
+        <item>Fri</item>
+        <item>Sat</item>
+    </string-array>
 </resources>

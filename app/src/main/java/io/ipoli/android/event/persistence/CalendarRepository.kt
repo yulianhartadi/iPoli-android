@@ -70,11 +70,11 @@ class AndroidCalendarRepository : CalendarRepository {
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 
-    override fun listenById(id: String, channel: Channel<Calendar?>): Channel<Calendar?> {
+    override fun listenById(id: String): Channel<Calendar?> {
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 
-    override fun listenForAll(channel: Channel<List<Calendar>>): Channel<List<Calendar>> {
+    override fun listenForAll(): Channel<List<Calendar>> {
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 

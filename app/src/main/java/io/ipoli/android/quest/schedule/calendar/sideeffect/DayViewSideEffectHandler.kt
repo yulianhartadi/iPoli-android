@@ -2,7 +2,6 @@ package io.ipoli.android.quest.schedule.calendar.sideeffect
 
 import io.ipoli.android.Constants
 import io.ipoli.android.common.*
-import io.ipoli.android.common.async.ChannelRelay
 import io.ipoli.android.common.redux.Action
 import io.ipoli.android.event.usecase.FindEventsBetweenDatesUseCase
 import io.ipoli.android.quest.Quest
@@ -18,6 +17,7 @@ import io.ipoli.android.quest.usecase.LoadScheduleForDateUseCase
 import io.ipoli.android.quest.usecase.Result
 import io.ipoli.android.quest.usecase.SaveQuestUseCase
 import io.ipoli.android.repeatingquest.usecase.CreatePlaceholderQuestsForRepeatingQuestsUseCase
+import kotlinx.coroutines.experimental.channels.Channel
 import org.threeten.bp.LocalDate
 import space.traversal.kapsule.required
 
@@ -33,53 +33,14 @@ object DayViewSideEffectHandler : AppSideEffectHandler() {
     private val completeQuestUseCase by required { completeQuestUseCase }
     private val undoCompletedQuestUseCase by required { undoCompletedQuestUseCase }
 
-    data class ScheduledQuestsParams(val startDate: LocalDate, val endDate: LocalDate)
-
-    private val scheduledQuestsChannelRelay =
-        ChannelRelay<List<Quest>, ScheduledQuestsParams>(
-            producer = { c, p ->
-                questRepository
-                    .listenForScheduledBetween(
-                        startDate = p.startDate,
-                        endDate = p.endDate,
-                        channel = c
-                    )
-            },
-            consumer = { qs, p ->
-                val placeholderQuests =
-                    createPlaceholderQuestsForRepeatingQuestsUseCase.execute(
-                        CreatePlaceholderQuestsForRepeatingQuestsUseCase.Params(
-                            startDate = p.startDate,
-                            endDate = p.endDate
-                        )
-                    )
-
-                val events = findEventsBetweenDatesUseCase.execute(
-                    FindEventsBetweenDatesUseCase.Params(
-                        startDate = p.startDate,
-                        endDate = p.endDate
-                    )
-                )
-
-                val schedule =
-                    loadScheduleForDateUseCase.execute(
-                        LoadScheduleForDateUseCase.Params(
-                            startDate = p.startDate,
-                            endDate = p.endDate,
-                            quests = qs + placeholderQuests,
-                            events = events
-                        )
-                    )
-                dispatch(DataLoadedAction.CalendarScheduleChanged(schedule))
-            }
-        )
+    private var scheduledQuestsChannel: Channel<List<Quest>>? = null
 
     override suspend fun doExecute(action: Action, state: AppState) {
         val a = (action as? NamespaceAction)?.source ?: action
         when (a) {
 
-            is LoadDataAction.All ->
-                startListenForCalendarQuests(LocalDate.now())
+            is ScheduleAction.Load ->
+                startListenForCalendarQuests(a.currentDate)
 
             DayViewAction.AddQuest ->
                 saveQuest(state, action)
@@ -133,11 +94,47 @@ object DayViewSideEffectHandler : AppSideEffectHandler() {
     private fun startListenForCalendarQuests(
         currentDate: LocalDate
     ) {
-        scheduledQuestsChannelRelay.listen(
-            ScheduledQuestsParams(
-                startDate = currentDate.minusDays(1),
-                endDate = currentDate.plusDays(1)
-            )
+
+        val startDate = currentDate.minusDays(1)
+        val endDate = currentDate.plusDays(1)
+
+        listenForChanges(
+            oldChannel = scheduledQuestsChannel,
+            channelCreator = {
+                scheduledQuestsChannel = questRepository
+                    .listenForScheduledBetween(
+                        startDate = startDate,
+                        endDate = endDate
+                    )
+                scheduledQuestsChannel!!
+            },
+            onResult = { qs ->
+                val placeholderQuests =
+                    createPlaceholderQuestsForRepeatingQuestsUseCase.execute(
+                        CreatePlaceholderQuestsForRepeatingQuestsUseCase.Params(
+                            startDate = startDate,
+                            endDate = endDate
+                        )
+                    )
+
+                val events = findEventsBetweenDatesUseCase.execute(
+                    FindEventsBetweenDatesUseCase.Params(
+                        startDate = startDate,
+                        endDate = endDate
+                    )
+                )
+
+                val schedule =
+                    loadScheduleForDateUseCase.execute(
+                        LoadScheduleForDateUseCase.Params(
+                            startDate = startDate,
+                            endDate = endDate,
+                            quests = qs + placeholderQuests,
+                            events = events
+                        )
+                    )
+                dispatch(DataLoadedAction.CalendarScheduleChanged(schedule))
+            }
         )
     }
 
@@ -203,7 +200,6 @@ object DayViewSideEffectHandler : AppSideEffectHandler() {
     override fun canHandle(action: Action): Boolean {
         val a = (action as? NamespaceAction)?.source ?: action
         return a is DayViewAction
-            || a === LoadDataAction.All
             || a is CalendarAction.ChangeVisibleDate
             || a is ScheduleAction.ScheduleChangeDate
             || a === ScheduleAction.ToggleViewMode

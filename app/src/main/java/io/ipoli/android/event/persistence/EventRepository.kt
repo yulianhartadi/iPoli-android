@@ -6,7 +6,6 @@ import android.provider.CalendarContract
 import android.provider.CalendarContract.Instances
 import io.ipoli.android.common.datetime.Time
 import io.ipoli.android.common.datetime.instant
-import io.ipoli.android.common.datetime.minutes
 import io.ipoli.android.common.persistence.CollectionRepository
 import io.ipoli.android.common.view.ColorUtil
 import io.ipoli.android.event.Event
@@ -128,12 +127,13 @@ class AndroidCalendarEventRepository : EventRepository {
             "(No title)"
         else
             cursor.getString(PROJECTION_TITLE_INDEX)
+        val startDate = cursor.getLong(PROJECTION_BEGIN_INDEX).instant.atZone(tz).toLocalDate()
         return Event(
             id = cursor.getString(PROJECTION_ID_INDEX),
             name = if (title.isBlank()) "(No title)" else title,
             startTime = eventStartTime,
-            duration = (eventEndTime - eventStartTime).toMinuteOfDay().minutes,
-            startDate = cursor.getLong(PROJECTION_BEGIN_INDEX).instant.atZone(tz).toLocalDate(),
+            endTime = eventEndTime,
+            startDate = startDate,
             endDate = cursor.getLong(PROJECTION_END_INDEX).instant.atZone(tz).toLocalDate(),
             color = ColorUtil.fromGoogleCalendarDisplayColor(cursor.getInt(PROJECTION_DISPLAY_COLOR)),
             isRepeating = rRule != null && rRule.isNotEmpty()
@@ -152,11 +152,11 @@ class AndroidCalendarEventRepository : EventRepository {
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 
-    override fun listenById(id: String, channel: Channel<Event?>): Channel<Event?> {
+    override fun listenById(id: String): Channel<Event?> {
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 
-    override fun listenForAll(channel: Channel<List<Event>>): Channel<List<Event>> {
+    override fun listenForAll(): Channel<List<Event>> {
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 

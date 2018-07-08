@@ -40,7 +40,7 @@ import kotlin.coroutines.experimental.suspendCoroutine
  */
 interface PlayerRepository {
 
-    fun listen(channel: Channel<Player?>): Channel<Player?>
+    fun listen(): Channel<Player?>
     fun find(): Player?
     fun save(entity: Player): Player
 
@@ -137,8 +137,8 @@ class AndroidPlayerRepository(
         return stats
     }
 
-    override fun listen(channel: Channel<Player?>) =
-        dao.listen().distinct().notifySingle(channel)
+    override fun listen() =
+        dao.listen().distinct().notifySingle()
 
     override fun find(): Player? {
         return dao.find()?.let {

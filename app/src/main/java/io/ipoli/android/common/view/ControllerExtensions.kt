@@ -32,6 +32,9 @@ fun Controller.colorRes(@ColorRes colorRes: Int): Int =
 fun Controller.intRes(@IntegerRes res: Int): Int =
     resources!!.getInteger(res)
 
+fun Controller.quantityString(@PluralsRes res: Int, quantity: Int) =
+    resources!!.getQuantityString(res, quantity, quantity)
+
 val Controller.shortAnimTime: Long
     get() = resources!!.getInteger(android.R.integer.config_shortAnimTime).toLong()
 

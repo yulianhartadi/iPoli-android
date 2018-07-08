@@ -3,13 +3,13 @@ package io.ipoli.android.planday.sideeffect
 import io.ipoli.android.common.AppSideEffectHandler
 import io.ipoli.android.common.AppState
 import io.ipoli.android.common.DataLoadedAction
-import io.ipoli.android.common.async.ChannelRelay
 import io.ipoli.android.common.redux.Action
 import io.ipoli.android.planday.PlanDayAction
 import io.ipoli.android.planday.PlanDayViewState
 import io.ipoli.android.planday.usecase.CalculateAwesomenessScoreUseCase
 import io.ipoli.android.quest.Quest
 import io.ipoli.android.quest.usecase.RescheduleQuestUseCase
+import kotlinx.coroutines.experimental.channels.Channel
 import org.threeten.bp.LocalDate
 import space.traversal.kapsule.required
 
@@ -22,27 +22,30 @@ object PlanDaySideEffectHandler : AppSideEffectHandler() {
     private val calculateAwesomenessScoreUseCase by required { calculateAwesomenessScoreUseCase }
     private val rescheduleQuestUseCase by required { rescheduleQuestUseCase }
 
-    private val yesterdayQuestsChannelRelay = ChannelRelay<List<Quest>, Unit>(
-        producer = { c, _ ->
-            questRepository.listenForScheduledAt(LocalDate.now().minusDays(1), c)
-        },
-        consumer = { qs, _ ->
-            dispatch(
-                DataLoadedAction.ReviewDayQuestsChanged(
-                    quests = qs,
-                    awesomenessScore = calculateAwesomenessScoreUseCase.execute(
-                        CalculateAwesomenessScoreUseCase.Params.WithQuests(qs)
-                    )
-                )
-            )
-        }
-    )
+    private var yesterdayQuestsChannel: Channel<List<Quest>>? = null
 
     override suspend fun doExecute(action: Action, state: AppState) {
         when (action) {
             is PlanDayAction.Load -> {
                 val vs = state.stateFor(PlanDayViewState::class.java)
-                yesterdayQuestsChannelRelay.listen(Unit)
+
+                listenForChanges(
+                    oldChannel = yesterdayQuestsChannel,
+                    channelCreator = {
+                        yesterdayQuestsChannel =
+                            questRepository.listenForScheduledAt(LocalDate.now().minusDays(1))
+                        yesterdayQuestsChannel!!
+                    },
+                    onResult = { qs ->
+                        DataLoadedAction.ReviewDayQuestsChanged(
+                            quests = qs,
+                            awesomenessScore = calculateAwesomenessScoreUseCase.execute(
+                                CalculateAwesomenessScoreUseCase.Params.WithQuests(qs)
+                            )
+                        )
+                    }
+                )
+
                 if (vs.suggestedQuests == null) {
                     dispatch(
                         DataLoadedAction.SuggestionsChanged(

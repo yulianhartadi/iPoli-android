@@ -32,8 +32,9 @@ sealed class ScheduleAction : Action {
     data class ChangeMonth(val year: Int, val month: Int) : ScheduleAction() {
         override fun toMap() = mapOf("year" to year, "month" to month)
     }
+
     object ToggleViewMode : ScheduleAction()
-    object Load : ScheduleAction()
+    data class Load(val currentDate: LocalDate) : ScheduleAction()
 }
 
 object ScheduleReducer : BaseViewStateReducer<ScheduleViewState>() {
@@ -102,14 +103,14 @@ object ScheduleReducer : BaseViewStateReducer<ScheduleViewState>() {
         action: ScheduleAction
     ) =
         when (action) {
-            ScheduleAction.Load -> {
+            is ScheduleAction.Load -> {
                 if (state.type != ScheduleViewState.StateType.LOADING) {
                     state
                 } else {
                     state.copy(
                         type = ScheduleViewState.StateType.INITIAL,
                         showDailyChallenge = dataState.player?.preferences?.planDays?.contains(
-                            LocalDate.now().dayOfWeek
+                            action.currentDate.dayOfWeek
                         ) ?: false
                     )
                 }

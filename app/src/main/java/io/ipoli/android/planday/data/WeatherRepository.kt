@@ -1,5 +1,6 @@
 package io.ipoli.android.planday.data
 
+import android.annotation.SuppressLint
 import android.content.Context
 import com.google.android.gms.awareness.Awareness
 import com.google.android.gms.tasks.Tasks
@@ -23,6 +24,7 @@ interface WeatherRepository {
 
 class AndroidWeatherRepository(val context: Context) : WeatherRepository {
 
+    @SuppressLint("MissingPermission")
     override fun getCurrentWeather() =
         Tasks.await(Awareness.getSnapshotClient(context).weather).let {
             val w = it.weather

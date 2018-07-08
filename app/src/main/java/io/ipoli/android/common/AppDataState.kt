@@ -19,6 +19,7 @@ import io.ipoli.android.player.data.Player
 import io.ipoli.android.quest.Quest
 import io.ipoli.android.quest.RepeatingQuest
 import io.ipoli.android.quest.schedule.agenda.usecase.CreateAgendaItemsUseCase
+import io.ipoli.android.quest.schedule.summary.usecase.CreateScheduleSummaryUseCase
 import io.ipoli.android.quest.usecase.Schedule
 import io.ipoli.android.repeatingquest.usecase.CreateRepeatingQuestHistoryUseCase
 import io.ipoli.android.store.gem.GemPack
@@ -52,6 +53,9 @@ sealed class DataLoadedAction : Action {
     ) : DataLoadedAction()
 
     data class CalendarScheduleChanged(val schedule: Map<LocalDate, Schedule>) :
+        DataLoadedAction()
+
+    data class MonthPreviewScheduleChanged(val schedule: Map<LocalDate, Schedule>) :
         DataLoadedAction()
 
     data class RepeatingQuestHistoryChanged(
@@ -100,6 +104,11 @@ sealed class DataLoadedAction : Action {
 
     data class HabitItemsChanged(val habitItems: List<CreateHabitItemsUseCase.HabitItem>) :
         DataLoadedAction()
+
+    class ScheduleSummaryChanged(
+        val currentDate: LocalDate,
+        val scheduleSummaryItems: List<CreateScheduleSummaryUseCase.ScheduleSummaryItem>
+    ) : DataLoadedAction()
 }
 
 data class AppDataState(
