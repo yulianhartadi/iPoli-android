@@ -3,6 +3,7 @@ package io.ipoli.android.quest.schedule.summary.view.widget
 import android.content.Context
 import android.graphics.Canvas
 import android.graphics.Paint
+import android.os.Build
 import android.support.annotation.ColorRes
 import android.support.v4.content.ContextCompat
 import com.haibin.calendarview.Calendar
@@ -14,6 +15,22 @@ import io.ipoli.android.common.view.attrData
 import io.ipoli.android.quest.Color
 import io.ipoli.android.quest.schedule.summary.usecase.CreateScheduleSummaryUseCase
 import io.ipoli.android.quest.schedule.summary.usecase.CreateScheduleSummaryUseCase.ScheduleSummaryItem.Fullness
+
+class SelectionRectangle(
+    private val left: Float,
+    private val top: Float,
+    private val right: Float,
+    private val bottom: Float
+) {
+
+    fun draw(canvas: Canvas, paint: Paint) {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.N) {
+            canvas.drawRect(left, bottom, right, top, paint)
+        } else {
+            canvas.drawRect(left, top, right, bottom, paint)
+        }
+    }
+}
 
 @Suppress("unused")
 class ProgressMonthView(context: Context) : MonthView(context) {
@@ -65,13 +82,14 @@ class ProgressMonthView(context: Context) : MonthView(context) {
     ): Boolean {
         val widthOffset = ViewUtils.dpToPx(1f, context)
         val heightOffset = ViewUtils.dpToPx(0.5f, context)
-        canvas.drawRect(
-            x.toFloat() + widthOffset,
-            y + mItemHeight - heightOffset,
-            (x + mItemWidth).toFloat() - widthOffset,
-            y.toFloat() + heightOffset,
-            selectedBorderPaint
-        )
+
+        SelectionRectangle(
+            left = x.toFloat() + widthOffset,
+            top = y + mItemHeight - heightOffset,
+            right = (x + mItemWidth).toFloat() - widthOffset,
+            bottom = y.toFloat() + heightOffset
+        ).draw(canvas, selectedBorderPaint)
+
         return true
     }
 
@@ -196,13 +214,13 @@ class ProgressMonthView(context: Context) : MonthView(context) {
         if (calendar.isCurrentDay) {
             val widthOffset = ViewUtils.dpToPx(1f, context)
             val heightOffset = ViewUtils.dpToPx(0.5f, context)
-            canvas.drawRect(
-                x.toFloat() + widthOffset,
-                y + mItemHeight - heightOffset,
-                (x + mItemWidth).toFloat() - widthOffset,
-                y.toFloat() + heightOffset,
-                currentDayBorderPaint
-            )
+
+            SelectionRectangle(
+                left = x.toFloat() + widthOffset,
+                top = y + mItemHeight - heightOffset,
+                right = (x + mItemWidth).toFloat() - widthOffset,
+                bottom = y.toFloat() + heightOffset
+            ).draw(canvas, currentDayBorderPaint)
         }
     }
 

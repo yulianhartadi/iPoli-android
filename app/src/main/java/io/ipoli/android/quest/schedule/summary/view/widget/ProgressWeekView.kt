@@ -65,13 +65,13 @@ class ProgressWeekView(context: Context) : WeekView(context) {
         val widthOffset = ViewUtils.dpToPx(1f, context)
         val heightOffset = ViewUtils.dpToPx(0.5f, context)
 
-        canvas.drawRect(
-            x.toFloat() + widthOffset,
-            mItemHeight.toFloat() - heightOffset,
-            (x + mItemWidth).toFloat() - widthOffset,
-            heightOffset,
-            selectedBorderPaint
-        )
+        SelectionRectangle(
+            left = x.toFloat() + widthOffset,
+            top = mItemHeight - heightOffset,
+            right = (x + mItemWidth).toFloat() - widthOffset,
+            bottom = heightOffset
+        ).draw(canvas, selectedBorderPaint)
+
         return true
     }
 
@@ -194,13 +194,12 @@ class ProgressWeekView(context: Context) : WeekView(context) {
             val widthOffset = ViewUtils.dpToPx(1f, context)
             val heightOffset = ViewUtils.dpToPx(0.5f, context)
 
-            canvas.drawRect(
-                x.toFloat() + widthOffset,
-                mItemHeight.toFloat() - heightOffset,
-                (x + mItemWidth).toFloat() - widthOffset,
-                heightOffset,
-                currentDayBorderPaint
-            )
+            SelectionRectangle(
+                left = x.toFloat() + widthOffset,
+                top = mItemHeight - heightOffset,
+                right = (x + mItemWidth).toFloat() - widthOffset,
+                bottom = heightOffset
+            ).draw(canvas, currentDayBorderPaint)
         }
     }
 
