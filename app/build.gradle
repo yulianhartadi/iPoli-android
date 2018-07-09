@@ -20,8 +20,8 @@ android {
         applicationId "io.ipoli.android"
         minSdkVersion 21
         targetSdkVersion 27
-        versionCode 495
-        versionName "2.6.2"
+        versionCode 496
+        versionName "2.6.3"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
 
