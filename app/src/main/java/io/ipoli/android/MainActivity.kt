@@ -22,7 +22,6 @@ import io.ipoli.android.common.DataLoadedAction
 import io.ipoli.android.common.LoadDataAction
 import io.ipoli.android.common.di.Module
 import io.ipoli.android.common.home.HomeAction
-import io.ipoli.android.common.migration.MigrationViewController
 import io.ipoli.android.common.navigation.Navigator
 import io.ipoli.android.common.privacy.PrivacyPolicyViewController
 import io.ipoli.android.common.redux.Action
@@ -30,7 +29,6 @@ import io.ipoli.android.common.redux.Dispatcher
 import io.ipoli.android.common.redux.SideEffectHandler
 import io.ipoli.android.common.view.Debounce
 import io.ipoli.android.common.view.playerTheme
-import io.ipoli.android.onboarding.OnboardViewController
 import io.ipoli.android.player.auth.AuthAction
 import io.ipoli.android.player.data.Membership
 import io.ipoli.android.player.data.Player
@@ -122,15 +120,11 @@ class MainActivity : AppCompatActivity(), Injects<Module>, SideEffectHandler<App
                 Constants.KEY_PLAYER_DATA_IMPORTED,
                 true
             )) {
-            router.setRoot(
-                RouterTransaction.with(
-                    MigrationViewController(
-                        sharedPreferences.getString(
-                            Constants.KEY_PLAYER_ID,
-                            ""
-                        ), schemaVer
-                    )
-                )
+            Navigator(router).setMigration(
+                sharedPreferences.getString(
+                    Constants.KEY_PLAYER_ID,
+                    ""
+                ), schemaVer
             )
             return
         }
@@ -151,7 +145,7 @@ class MainActivity : AppCompatActivity(), Injects<Module>, SideEffectHandler<App
                 unlockAchievementsUseCase.execute(UnlockAchievementsUseCase.Params(p!!))
             } else {
                 launch(UI) {
-                    router.setRoot(RouterTransaction.with(OnboardViewController()))
+                    Navigator(router).setOnboard()
                 }
             }
         }

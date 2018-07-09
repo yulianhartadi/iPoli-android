@@ -792,14 +792,16 @@ class QuestViewController : ReduxViewController<QuestAction, QuestViewState, Que
             return
         }
 
-        view
-            .animate()
-            .alpha(if (reverse) 1f else 0f)
-            .setDuration(mediumAnimTime)
-            .withEndAction {
-                playBlinkIndicatorAnimation(view, !reverse, newRepeat)
-            }
-            .start()
+        resources?.let {
+            view
+                .animate()
+                .alpha(if (reverse) 1f else 0f)
+                .setDuration(mediumAnimTime)
+                .withEndAction {
+                    playBlinkIndicatorAnimation(view, !reverse, newRepeat)
+                }
+                .start()
+        }
     }
 
     data class SubQuestViewModel(

@@ -147,6 +147,10 @@ class PlanDayMotivationViewController(args: Bundle? = null) :
         view: View
     ) {
 
+        if(resources == null) {
+            return
+        }
+
         view.motivationDate.text = state.dateText
 
         view.motivationalImageAuthor.text = stringRes(R.string.image_author, state.imageAuthor)
