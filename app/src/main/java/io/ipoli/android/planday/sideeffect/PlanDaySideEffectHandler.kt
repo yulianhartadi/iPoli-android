@@ -37,10 +37,12 @@ object PlanDaySideEffectHandler : AppSideEffectHandler() {
                         yesterdayQuestsChannel!!
                     },
                     onResult = { qs ->
-                        DataLoadedAction.ReviewDayQuestsChanged(
-                            quests = qs,
-                            awesomenessScore = calculateAwesomenessScoreUseCase.execute(
-                                CalculateAwesomenessScoreUseCase.Params.WithQuests(qs)
+                        dispatch(
+                            DataLoadedAction.ReviewDayQuestsChanged(
+                                quests = qs,
+                                awesomenessScore = calculateAwesomenessScoreUseCase.execute(
+                                    CalculateAwesomenessScoreUseCase.Params.WithQuests(qs)
+                                )
                             )
                         )
                     }
