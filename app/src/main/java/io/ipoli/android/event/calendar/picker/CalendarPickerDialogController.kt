@@ -1,18 +1,18 @@
 package io.ipoli.android.event.calendar.picker
 
+import android.annotation.SuppressLint
 import android.content.res.ColorStateList
 import android.os.Bundle
+import android.support.annotation.ColorInt
 import android.support.v7.app.AlertDialog
 import android.support.v7.widget.LinearLayoutManager
-import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup
 import io.ipoli.android.R
 import io.ipoli.android.common.view.ReduxDialogController
-import io.ipoli.android.common.view.children
+import io.ipoli.android.common.view.recyclerview.BaseRecyclerViewAdapter
+import io.ipoli.android.common.view.recyclerview.RecyclerViewViewModel
 import io.ipoli.android.common.view.recyclerview.SimpleViewHolder
-import io.ipoli.android.event.Calendar
 import io.ipoli.android.pet.AndroidPetAvatar
 import io.ipoli.android.player.data.Player.Preferences.SyncCalendar
 import kotlinx.android.synthetic.main.dialog_calendar_picker.view.*
@@ -54,11 +54,12 @@ class CalendarPickerDialogController :
         headerView.dialogHeaderTitle.setText(R.string.calendar_picker_title)
     }
 
+
     override fun onCreateContentView(inflater: LayoutInflater, savedViewState: Bundle?): View {
+        @SuppressLint("InflateParams")
         val view = inflater.inflate(R.layout.dialog_calendar_picker, null)
 
         view.calendarList.layoutManager = LinearLayoutManager(activity!!)
-        view.calendarList.setHasFixedSize(true)
         view.calendarList.adapter = CalendarAdapter()
 
         return view
@@ -67,23 +68,16 @@ class CalendarPickerDialogController :
     override fun onDialogCreated(dialog: AlertDialog, contentView: View) {
         dialog.setOnShowListener {
             setPositiveButtonListener {
-                val selectedCalendars = contentView.calendarList.children.mapIndexed { index, v ->
-                    if (v.calendarCheckBox.isChecked) {
-                        index
-                    } else {
-                        null
-                    }
-                }.filterNotNull()
-                dispatch(CalendarPickerAction.SelectCalendars(selectedCalendars))
+                dispatch(CalendarPickerAction.SyncSelectedCalendars)
             }
         }
     }
 
     override fun render(state: CalendarPickerViewState, view: View) {
         when (state.type) {
-            CalendarPickerViewState.StateType.CALENDARS_LOADED -> {
+            CalendarPickerViewState.StateType.CALENDAR_DATA_CHANGED -> {
                 changeIcon(state.petHeadImage)
-                (view.calendarList.adapter as CalendarAdapter).updateAll(state.calendars)
+                (view.calendarList.adapter as CalendarAdapter).updateAll(state.calendarViewModels)
             }
 
             CalendarPickerViewState.StateType.CALENDARS_SELECTED -> {
@@ -96,38 +90,46 @@ class CalendarPickerDialogController :
         }
     }
 
-    inner class CalendarAdapter(private var viewModels: List<Calendar> = listOf()) :
-        RecyclerView.Adapter<SimpleViewHolder>() {
+    data class CalendarViewModel(
+        override val id: String,
+        val name: String,
+        @ColorInt val color: Int,
+        val isSelected: Boolean
+    ) : RecyclerViewViewModel
 
-        override fun onCreateViewHolder(parent: ViewGroup, viewType: Int) =
-            SimpleViewHolder(
-                LayoutInflater.from(parent.context).inflate(
-                    R.layout.item_calendar_picker,
-                    parent,
-                    false
-                )
-            )
+    inner class CalendarAdapter :
+        BaseRecyclerViewAdapter<CalendarViewModel>(R.layout.item_calendar_picker) {
 
-        override fun onBindViewHolder(holder: SimpleViewHolder, position: Int) {
-            val vm = viewModels[position]
-            val view = holder.itemView
+        override fun onBindViewModel(vm: CalendarViewModel, view: View, holder: SimpleViewHolder) {
 
             view.calendarName.text = vm.name
 
             view.calendarColor.backgroundTintList = ColorStateList.valueOf(vm.color)
 
+            view.calendarCheckBox.setOnCheckedChangeListener(null)
+
             view.setOnClickListener {
                 view.calendarCheckBox.toggle()
             }
+
+            view.calendarCheckBox.isChecked = vm.isSelected
+
+            view.calendarCheckBox.setOnCheckedChangeListener { _, isChecked ->
+                dispatch(CalendarPickerAction.ToggleSelectedCalendar(isChecked, vm.id, vm.name))
+            }
         }
 
-        fun updateAll(viewModels: List<Calendar>) {
-            this.viewModels = viewModels
-            notifyDataSetChanged()
-        }
-
-        override fun getItemCount() = viewModels.size
     }
+
+    private val CalendarPickerViewState.calendarViewModels
+        get() = calendars.map {
+            CalendarViewModel(
+                id = it.id,
+                name = it.name,
+                color = it.color,
+                isSelected = syncCalendars.map { it.id }.contains(it.id)
+            )
+        }
 
     private val CalendarPickerViewState.petHeadImage
         get() = AndroidPetAvatar.valueOf(petAvatar.name).headImage

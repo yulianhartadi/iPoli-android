@@ -3,7 +3,6 @@ package io.ipoli.android.event.calendar.picker
 import io.ipoli.android.common.AppState
 import io.ipoli.android.common.BaseViewStateReducer
 import io.ipoli.android.common.DataLoadedAction
-
 import io.ipoli.android.common.redux.Action
 import io.ipoli.android.common.redux.BaseViewState
 import io.ipoli.android.event.Calendar
@@ -17,12 +16,19 @@ import io.ipoli.android.player.data.Player
 
 sealed class CalendarPickerAction : Action {
     object Load : CalendarPickerAction()
-    data class SelectCalendars(val selectedCalendarPositions: List<Int>) : CalendarPickerAction() {
-        override fun toMap() = mapOf("selectedCalendarPositions" to selectedCalendarPositions)
+    object SyncSelectedCalendars : CalendarPickerAction()
+
+    data class ToggleSelectedCalendar(
+        val isSelected: Boolean,
+        val id: String,
+        val name: String
+    ) : CalendarPickerAction() {
+        override fun toMap() = mapOf("isSelected" to isSelected, "id" to id, "name" to name)
     }
 }
 
-object CalendarPickerReducer : BaseViewStateReducer<CalendarPickerViewState>() {
+object CalendarPickerReducer :
+    BaseViewStateReducer<CalendarPickerViewState>() {
 
     override val stateKey = key<CalendarPickerViewState>()
 
@@ -32,24 +38,36 @@ object CalendarPickerReducer : BaseViewStateReducer<CalendarPickerViewState>() {
         action: Action
     ) =
         when (action) {
-            is DataLoadedAction.CalendarsChanged ->
-                subState.copy(
-                    type = CalendarPickerViewState.StateType.CALENDARS_LOADED,
-                    petAvatar = state.dataState.player!!.pet.avatar,
+            is DataLoadedAction.CalendarsChanged -> {
+                val newState = subState.copy(
                     calendars = action.calendars.filter { it.isVisible }
                 )
-
-            is CalendarPickerAction.SelectCalendars -> {
-                val calendars = subState.calendars
-                val syncCalendars = action.selectedCalendarPositions.map {
-                    Player.Preferences.SyncCalendar(
-                        id = calendars[it].id,
-                        name = calendars[it].name
+                state.dataState.player?.let {
+                    newState.copy(
+                        type = CalendarPickerViewState.StateType.CALENDAR_DATA_CHANGED,
+                        petAvatar = it.pet.avatar,
+                        syncCalendars = it.preferences.syncCalendars
                     )
-                }.toSet()
+                } ?: newState.copy(type = CalendarPickerViewState.StateType.LOADING)
+            }
+
+            is CalendarPickerAction.ToggleSelectedCalendar -> {
+                val syncCalendar = Player.Preferences.SyncCalendar(action.id, action.name)
+                val newSyncCalendars = if (subState.syncCalendars.contains(syncCalendar)) {
+                    subState.syncCalendars - syncCalendar
+                } else {
+                    subState.syncCalendars + syncCalendar
+                }
+
                 subState.copy(
-                    type = CalendarPickerViewState.StateType.CALENDARS_SELECTED,
-                    syncCalendars = syncCalendars
+                    type = CalendarPickerViewState.StateType.CALENDAR_DATA_CHANGED,
+                    syncCalendars = newSyncCalendars
+                )
+            }
+
+            is CalendarPickerAction.SyncSelectedCalendars -> {
+                subState.copy(
+                    type = CalendarPickerViewState.StateType.CALENDARS_SELECTED
                 )
             }
 
@@ -72,7 +90,6 @@ data class CalendarPickerViewState(
     val calendars: List<Calendar>,
     val syncCalendars: Set<Player.Preferences.SyncCalendar>
 ) : BaseViewState() {
-
-    enum class StateType { LOADING, CALENDARS_LOADED, CALENDARS_SELECTED }
+    enum class StateType { LOADING, CALENDAR_DATA_CHANGED, CALENDARS_SELECTED}
 }
 
