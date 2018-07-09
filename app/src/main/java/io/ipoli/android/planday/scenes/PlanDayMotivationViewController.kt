@@ -102,7 +102,22 @@ class PlanDayMotivationViewController(args: Bundle? = null) :
                         renderMotivationData(state, view)
                     }, 2000)
                 })
+            }
 
+            PlanDayViewState.StateType.SHOW_MOTIVATION_DATA -> {
+                view.motivationAnimation.cancelAnimation()
+                view.motivationAnimation.gone()
+                view.motivationAnimationBackground.gone()
+                renderMotivationData(state, view)
+
+                state.imageUrl?.let {
+                    imageLoader.loadMotivationalImage(
+                        imageUrl = it,
+                        view = view.motivationalImage,
+                        onReady = {},
+                        onError = { view.motivationalImage.scaleType = ImageView.ScaleType.CENTER_CROP }
+                    )
+                }
             }
 
             PlanDayViewState.StateType.IMAGE_LOADED -> {

@@ -15,7 +15,6 @@ import io.ipoli.android.common.BaseViewStateReducer
 import io.ipoli.android.common.DataLoadedAction
 import io.ipoli.android.common.datetime.Time
 import io.ipoli.android.common.datetime.TimeOfDay
-
 import io.ipoli.android.common.redux.Action
 import io.ipoli.android.common.redux.BaseViewState
 import io.ipoli.android.common.redux.android.ReduxViewController
@@ -119,10 +118,7 @@ object PlanDayReducer : BaseViewStateReducer<PlanDayViewState>() {
                 }
 
                 subState.copy(
-                    type = if (subState.type == INITIAL)
-                        FIRST_PAGE
-                    else
-                        subState.type,
+                    type = FIRST_PAGE,
                     playerName = playerName,
                     dateText = "$weekDayText, ${DateFormatter.formatDayWithWeek(today)}",
                     petAvatar = player?.pet?.avatar ?: subState.petAvatar,
@@ -338,10 +334,16 @@ object PlanDayReducer : BaseViewStateReducer<PlanDayViewState>() {
 
     private fun createNewStateIfMotivationalDataIsLoaded(newState: PlanDayViewState) =
         if (hasMotivationalDataLoaded(newState))
-            newState.copy(
-                type = MOTIVATION_DATA_LOADED,
-                timeOfDay = Time.now().timeOfDay
-            )
+            if (newState.hasShownMotivationalData)
+                newState.copy(
+                    type = SHOW_MOTIVATION_DATA
+                )
+            else
+                newState.copy(
+                    type = MOTIVATION_DATA_LOADED,
+                    timeOfDay = Time.now().timeOfDay,
+                    hasShownMotivationalData = true
+                )
         else
             newState
 
@@ -395,6 +397,7 @@ object PlanDayReducer : BaseViewStateReducer<PlanDayViewState>() {
             quoteLoaded = false,
             imageLoaded = false,
             imageViewLoaded = false,
+            hasShownMotivationalData = false,
             risingSunAnimationDone = false,
             petAvatar = null,
             awesomenessScore = null,
@@ -426,6 +429,7 @@ data class PlanDayViewState(
     val quoteLoaded: Boolean,
     val imageLoaded: Boolean,
     val imageViewLoaded: Boolean,
+    val hasShownMotivationalData: Boolean,
     val risingSunAnimationDone: Boolean,
     val petAvatar: PetAvatar?,
     val awesomenessScore: AwesomenessGrade?,
@@ -441,6 +445,7 @@ data class PlanDayViewState(
         DATA_CHANGED,
         IMAGE_LOADED,
         MOTIVATION_DATA_LOADED,
+        SHOW_MOTIVATION_DATA,
         REVIEW_DATA_LOADED,
         TODAY_DATA_LOADED,
         MAX_DAILY_CHALLENGE_QUESTS_REACHED,
