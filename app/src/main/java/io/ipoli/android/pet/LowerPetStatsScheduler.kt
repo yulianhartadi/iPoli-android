@@ -1,15 +1,14 @@
 package io.ipoli.android.pet
 
 import com.evernote.android.job.Job
-import com.evernote.android.job.JobRequest
-import com.evernote.android.job.util.support.PersistableBundleCompat
-import io.ipoli.android.Constants
 import io.ipoli.android.common.datetime.Time
 import io.ipoli.android.common.di.Module
+import io.ipoli.android.common.job.FixedDailyJobScheduler
 import io.ipoli.android.myPoliApp
+import io.ipoli.android.pet.usecase.LowerPetStatsUseCase
+import org.threeten.bp.LocalDate
 import space.traversal.kapsule.Injects
 import space.traversal.kapsule.Kapsule
-import java.util.concurrent.TimeUnit
 
 /**
  * Created by Venelin Valkov <venelin@mypoli.fun>
@@ -21,17 +20,13 @@ class LowerPetStatsJob : Job(), Injects<Module> {
     override fun onRunJob(params: Params): Result {
         val kap = Kapsule<Module>()
         val changePetStatsUseCase by kap.required { lowerPetStatsUseCase }
-        val lowerPetStatsScheduler by kap.required { lowerPetStatsScheduler }
         val eventLogger by kap.required { eventLogger }
         kap.inject(myPoliApp.module(context))
 
-        val time = Time.of(params.extras.getInt("lowerStatsTime", 0))
+        eventLogger.logEvent("lower_pet_stats", mapOf("lowerStatsTime" to Time.now()))
 
-        eventLogger.logEvent("lower_pet_stats", mapOf("loweStatsTime" to time))
+        changePetStatsUseCase.execute(LowerPetStatsUseCase.Params(LocalDate.now().minusDays(1)))
 
-        changePetStatsUseCase.execute(time)
-
-        lowerPetStatsScheduler.schedule()
         return Result.SUCCESS
     }
 
@@ -42,24 +37,7 @@ class LowerPetStatsJob : Job(), Injects<Module> {
 
 class AndroidJobLowerPetStatsScheduler : LowerPetStatsScheduler {
     override fun schedule() {
-        val currentTime = Time.now()
-        val morning = Constants.CHANGE_PET_STATS_MORNING_TIME
-        val afternoon = Constants.CHANGE_PET_STATS_AFTERNOON_TIME
-        val evening = Constants.CHANGE_PET_STATS_EVENING_TIME
-
-        val lowerStatsTime = when {
-            currentTime.isBetween(morning - 30, afternoon - 1) -> afternoon
-            currentTime.isBetween(afternoon - 30, evening - 1) -> evening
-            else -> morning
-        }
-
-        val bundle = PersistableBundleCompat()
-        JobRequest.Builder(LowerPetStatsJob.TAG)
-            .setExtras(bundle)
-            .setUpdateCurrent(true)
-            .setExact(TimeUnit.MINUTES.toMillis(currentTime.minutesTo(lowerStatsTime).toLong()))
-            .build()
-            .schedule()
+        FixedDailyJobScheduler.schedule(LowerPetStatsJob.TAG, Time.at(0, 10))
     }
 }
 

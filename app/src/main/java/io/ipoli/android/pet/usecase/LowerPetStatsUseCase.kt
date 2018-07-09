@@ -19,11 +19,11 @@ class LowerPetStatsUseCase(
     private val questRepository: QuestRepository,
     private val playerRepository: PlayerRepository,
     private val randomSeed: Long = System.currentTimeMillis()
-) : UseCase<Time, Pet> {
+) : UseCase<LowerPetStatsUseCase.Params, Pet> {
 
     private lateinit var player: Player
 
-    override fun execute(parameters: Time): Pet {
+    override fun execute(parameters: Params): Pet {
         val p = playerRepository.find()
         requireNotNull(p)
         player = p!!
@@ -32,49 +32,41 @@ class LowerPetStatsUseCase(
             return player.pet
         }
 
-        if (parameters == Constants.CHANGE_PET_STATS_MORNING_TIME) {
-
-            val healthPenalty = MORNING_HEALTH_POINTS_PENALTIES[Random(randomSeed).nextInt(
-                MORNING_HEALTH_POINTS_PENALTIES.size
-            )]
-            val moodPenalty = MORNING_MOOD_POINTS_PENALTIES[Random(randomSeed).nextInt(
-                MORNING_MOOD_POINTS_PENALTIES.size
+        val rhp = HEALTH_POINTS_PENALTIES[Random(randomSeed).nextInt(
+            HEALTH_POINTS_PENALTIES.size
             )]
 
-            return savePlayer(healthPenalty, moodPenalty)
-        }
+        val rmp = MOOD_POINTS_PENALTIES[Random(randomSeed).nextInt(
+                MOOD_POINTS_PENALTIES.size
+            )]
 
-        val (intervalStart, intervalEnd) = if (parameters == Constants.CHANGE_PET_STATS_AFTERNOON_TIME) {
-            Pair(Constants.CHANGE_PET_STATS_MORNING_TIME, Constants.CHANGE_PET_STATS_AFTERNOON_TIME)
-        } else {
-            Pair(Constants.CHANGE_PET_STATS_AFTERNOON_TIME, Constants.CHANGE_PET_STATS_EVENING_TIME)
-        }
-
+        val intervalStart = Constants.CHANGE_PET_STATS_INTERVAL_START
+        val intervalEnd = Constants.CHANGE_PET_STATS_INTERVAL_END
         val totalDuration = findQuestsDurationInInterval(
             intervalStart,
             intervalEnd,
-            questRepository.findCompletedForDate(LocalDate.now())
+            questRepository.findCompletedForDate(parameters.date)
         )
 
         val intervalDuration = intervalStart.minutesTo(intervalEnd)
 
         if (totalDuration >= HIGH_PRODUCTIVE_TIME_COEF * intervalDuration) {
-            return player.pet
+            return savePlayer(rhp, rmp)
         }
 
         if (totalDuration >= MEDIUM_PRODUCTIVE_TIME_COEF * intervalDuration) {
-            return savePlayer(LOW_PENALTY, LOW_PENALTY)
+            return savePlayer(LOW_PENALTY + rhp, LOW_PENALTY + rmp)
         }
 
         if (totalDuration >= LOW_PRODUCTIVE_TIME_COEF * intervalDuration) {
-            return savePlayer(MEDIUM_PENALTY, MEDIUM_PENALTY)
+            return savePlayer(MEDIUM_PENALTY + rhp, MEDIUM_PENALTY + rmp)
         }
 
         if (totalDuration > 0) {
-            return savePlayer(HIGH_PENALTY, HIGH_PENALTY)
+            return savePlayer(HIGH_PENALTY + rhp, HIGH_PENALTY + rmp)
         }
 
-        return savePlayer(MAX_PENALTY, MAX_PENALTY)
+        return savePlayer(MAX_PENALTY + rhp, MAX_PENALTY + rmp)
     }
 
     private fun savePlayer(healthPenalty: Int, moodPenalty: Int) =
@@ -86,17 +78,17 @@ class LowerPetStatsUseCase(
 
 
     companion object {
-        val MORNING_HEALTH_POINTS_PENALTIES = intArrayOf(3, 4, 5, 6, 7)
-        val MORNING_MOOD_POINTS_PENALTIES = intArrayOf(3, 4, 5, 6, 7)
+        val HEALTH_POINTS_PENALTIES = intArrayOf(3, 4, 5, 6, 7)
+        val MOOD_POINTS_PENALTIES = intArrayOf(3, 4, 5, 6, 7)
 
-        val MAX_PENALTY = 15
-        val HIGH_PENALTY = 10
-        val MEDIUM_PENALTY = 5
-        val LOW_PENALTY = 2
+        const val MAX_PENALTY = 25
+        const val HIGH_PENALTY = 18
+        const val MEDIUM_PENALTY = 8
+        const val LOW_PENALTY = 4
 
-        val LOW_PRODUCTIVE_TIME_COEF = 0.3
-        val MEDIUM_PRODUCTIVE_TIME_COEF = 0.5
-        val HIGH_PRODUCTIVE_TIME_COEF = 0.7
+        const val LOW_PRODUCTIVE_TIME_COEF = 0.3
+        const val MEDIUM_PRODUCTIVE_TIME_COEF = 0.5
+        const val HIGH_PRODUCTIVE_TIME_COEF = 0.7
 
         /**
          * @param start inclusive
@@ -114,4 +106,6 @@ class LowerPetStatsUseCase(
                 endMinute - startMinute
             }.fold(0) { acc, dur -> acc + dur }
     }
+
+    data class Params(val date: LocalDate = LocalDate.now())
 }
