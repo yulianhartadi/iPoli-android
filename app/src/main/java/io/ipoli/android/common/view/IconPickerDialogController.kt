@@ -4,6 +4,7 @@ import android.animation.Animator
 import android.animation.AnimatorListenerAdapter
 import android.animation.AnimatorSet
 import android.animation.ObjectAnimator
+import android.annotation.SuppressLint
 import android.content.res.ColorStateList
 import android.os.Bundle
 import android.support.transition.TransitionManager
@@ -55,9 +56,12 @@ object IconPickerReducer : BaseViewStateReducer<IconPickerViewState>() {
     ) = when (action) {
 
         is IconPickerAction.Load ->
-            createPlayerState(subState, state.dataState.player!!).copy(
-                selectedIcon = action.selectedIcon
-            )
+            state.dataState.player?.let {
+                createPlayerState(subState, it).copy(
+                    selectedIcon = action.selectedIcon
+                )
+            } ?: subState.copy(type = LOADING)
+
 
         is DataLoadedAction.PlayerChanged ->
             createPlayerState(subState, action.player)
@@ -127,6 +131,7 @@ class IconPickerDialogController :
     }
 
     override fun onCreateContentView(inflater: LayoutInflater, savedViewState: Bundle?): View {
+        @SuppressLint("InflateParams")
         val contentView = inflater.inflate(R.layout.dialog_icon_picker, null)
         contentView.iconGrid.layoutManager = GridLayoutManager(activity!!, 4)
         contentView.iconGrid.adapter = IconAdapter()
@@ -140,9 +145,9 @@ class IconPickerDialogController :
     ): AlertDialog =
         dialogBuilder
             .setNegativeButton(R.string.cancel, null)
-            .setNeutralButton(R.string.no_icon, { _, _ ->
+            .setNeutralButton(R.string.no_icon) { _, _ ->
                 listener(null)
-            })
+            }
             .create()
 
     override fun onCreateLoadAction() =
@@ -237,16 +242,20 @@ class IconPickerDialogController :
                     .sizeDp(48)
             )
 
-            if (vm.isSelected) {
-                iconView.setBackgroundResource(R.drawable.oval_background)
-                iconView.backgroundTintList = ColorStateList.valueOf(attrData(R.attr.colorAccent))
-                view.lockedIcon.visibility = View.GONE
-            } else if (vm.isLocked) {
-                view.lockedIcon.visibility = View.VISIBLE
-                view.lockedIcon.imageTintList = ColorStateList.valueOf(attrData(R.attr.colorAccent))
-            } else {
-                iconView.background = null
-                view.lockedIcon.visibility = View.GONE
+            when {
+                vm.isSelected -> {
+                    iconView.setBackgroundResource(R.drawable.oval_background)
+                    iconView.backgroundTintList = ColorStateList.valueOf(attrData(R.attr.colorAccent))
+                    view.lockedIcon.visibility = View.GONE
+                }
+                vm.isLocked -> {
+                    view.lockedIcon.visibility = View.VISIBLE
+                    view.lockedIcon.imageTintList = ColorStateList.valueOf(attrData(R.attr.colorAccent))
+                }
+                else -> {
+                    iconView.background = null
+                    view.lockedIcon.visibility = View.GONE
+                }
             }
 
             if (!vm.isLocked) {

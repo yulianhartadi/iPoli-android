@@ -39,6 +39,7 @@ sealed class SettingsAction : Action {
     data class TimeFormatChanged(val format: Player.Preferences.TimeFormat) : SettingsAction() {
         override fun toMap() = mapOf("format" to format.name)
     }
+
     data class TemperatureUnitChanged(val unit: Player.Preferences.TemperatureUnit) :
         SettingsAction() {
         override fun toMap() = mapOf("unit" to unit.name)
@@ -59,12 +60,13 @@ object SettingsReducer : BaseViewStateReducer<SettingsViewState>() {
     ) = when (action) {
 
         SettingsAction.Load -> {
-            val selectedCalendars = state.dataState.player!!.preferences.syncCalendars.size
-            createChangedState(
-                state = subState,
-                player = state.dataState.player,
-                selectedCalendars = selectedCalendars
-            )
+            state.dataState.player?.let {
+                createChangedState(
+                    state = subState,
+                    player = it,
+                    selectedCalendars = it.preferences.syncCalendars.size
+                )
+            } ?: subState.copy(type = LOADING)
         }
 
         is SettingsAction.ToggleSyncCalendar -> {
@@ -86,15 +88,6 @@ object SettingsReducer : BaseViewStateReducer<SettingsViewState>() {
             )
         }
 
-//        is ShowBuyPowerUpAction -> {
-//            if (action.powerUp == PowerUp.Type.CALENDAR_SYNC) {
-//                subState.copy(
-//                    type = DATA_CHANGED,
-//                    isCalendarSyncEnabled = false
-//                )
-//            } else subState
-//        }
-
         else -> subState
     }
 
@@ -111,7 +104,6 @@ object SettingsReducer : BaseViewStateReducer<SettingsViewState>() {
             planTime = player.preferences.planDayTime,
             planDays = player.preferences.planDays,
             selectedCalendars = selectedCalendars,
-//            isCalendarSyncEnabled = player.isPowerUpEnabled(PowerUp.Type.CALENDAR_SYNC) && selectedCalendars > 0,
             isCalendarSyncEnabled = selectedCalendars > 0,
             isQuickDoNotificationEnabled = player.preferences.isQuickDoNotificationEnabled
         )

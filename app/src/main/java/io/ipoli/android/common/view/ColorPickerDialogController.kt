@@ -4,6 +4,7 @@ import android.animation.Animator
 import android.animation.AnimatorListenerAdapter
 import android.animation.AnimatorSet
 import android.animation.ObjectAnimator
+import android.annotation.SuppressLint
 import android.content.DialogInterface
 import android.graphics.drawable.GradientDrawable
 import android.os.Bundle
@@ -58,9 +59,12 @@ object ColorPickerReducer : BaseViewStateReducer<ColorPickerViewState>() {
     ) = when (action) {
 
         is ColorPickerAction.Load ->
-            createPlayerState(subState, state.dataState.player!!).copy(
-                selectedColor = action.selectedColor
-            )
+            state.dataState.player?.let {
+                createPlayerState(subState, it).copy(
+                    selectedColor = action.selectedColor
+                )
+            } ?: subState.copy(type = LOADING)
+
 
         is DataLoadedAction.PlayerChanged ->
             createPlayerState(subState, action.player)
@@ -131,6 +135,7 @@ class ColorPickerDialogController :
     }
 
     override fun onCreateContentView(inflater: LayoutInflater, savedViewState: Bundle?): View {
+        @SuppressLint("InflateParams")
         val contentView = inflater.inflate(R.layout.dialog_color_picker, null)
         contentView.colorGrid.layoutManager = GridLayoutManager(activity!!, 4)
         contentView.colorGrid.adapter = ColorAdapter()

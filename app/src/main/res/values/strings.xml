@@ -1496,4 +1496,5 @@
     <string name="predefined_habits_title">Preset habits</string>
     <string name="import_data_error_message">Importing your data failed. Make sure you have Internet connection :)</string>
     <string name="quest_rescheduled">Quest rescheduled</string>
+    <string name="duration_error_message">Duration should be between 10 minutes and 4 hours</string>
 </resources>

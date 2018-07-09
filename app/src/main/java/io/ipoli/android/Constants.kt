@@ -125,9 +125,8 @@ interface Constants {
             )
         }
 
-        val CHANGE_PET_STATS_MORNING_TIME by lazy { Time.atHours(9) }
-        val CHANGE_PET_STATS_AFTERNOON_TIME by lazy { Time.atHours(14) }
-        val CHANGE_PET_STATS_EVENING_TIME by lazy { Time.atHours(19) }
+        val CHANGE_PET_STATS_INTERVAL_START by lazy { Time.atHours(9) }
+        val CHANGE_PET_STATS_INTERVAL_END by lazy { Time.atHours(19) }
 
         val DURATIONS = listOf(10, 15, 20, 25, 30, 45, 60, 90, 120, 180, 240)
 

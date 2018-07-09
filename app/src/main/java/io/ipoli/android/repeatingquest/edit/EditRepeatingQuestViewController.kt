@@ -303,9 +303,8 @@ class EditRepeatingQuestViewController(args: Bundle? = null) :
         view.summaryDuration.onDebounceClick {
             navigate()
                 .toDurationPicker(
-                    state.duration.intValue,
-                    { dispatch(EditRepeatingQuestAction.ChangeDuration(it)) }
-                )
+                    state.duration
+                ) { dispatch(EditRepeatingQuestAction.ChangeDuration(it.intValue)) }
         }
     }
 

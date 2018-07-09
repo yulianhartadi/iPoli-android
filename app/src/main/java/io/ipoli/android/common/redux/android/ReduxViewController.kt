@@ -79,6 +79,8 @@ abstract class BaseViewController<A : Action, VS : ViewState> protected construc
 
     private var use24HourFormat: Boolean? = null
 
+    private val runningAnimators = mutableListOf<Animator>()
+
     @Volatile
     private var currentState: VS? = null
 
@@ -125,6 +127,24 @@ abstract class BaseViewController<A : Action, VS : ViewState> protected construc
     protected open fun colorLayoutBars() {
         activity?.window?.navigationBarColor = attrData(io.ipoli.android.R.attr.colorPrimary)
         activity?.window?.statusBarColor = attrData(io.ipoli.android.R.attr.colorPrimaryDark)
+    }
+
+    override fun onDetach(view: View) {
+        runningAnimators.forEach {
+            it.cancel()
+        }
+        runningAnimators.clear()
+        super.onDetach(view)
+    }
+
+    protected fun playAnimation(animator: Animator, onEnd: () -> Unit = {}) {
+        runningAnimators.add(animator)
+        animator.addListener(object : AnimatorListenerAdapter() {
+            override fun onAnimationEnd(animation: Animator?) {
+                onEnd()
+            }
+        })
+        animator.start()
     }
 
     private fun createEventActor() = actor<ViewAction>(UI, start = CoroutineStart.UNDISPATCHED) {

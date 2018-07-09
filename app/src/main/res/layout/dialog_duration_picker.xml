@@ -1,11 +1,113 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     style="@style/DialogContainer"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <io.ipoli.android.common.view.widget.WheelItemPickerView
-        android:id="@+id/durationPicker"
+    <ViewSwitcher
+        android:id="@+id/viewSwitcher"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
+        android:layout_height="wrap_content"
+        android:inAnimation="@anim/slide_in_right"
+        android:outAnimation="@anim/slide_out_left">
+
+        <io.ipoli.android.common.view.widget.WheelItemPickerView
+            android:id="@+id/durationPicker"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
+        <android.support.constraint.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <FrameLayout
+                android:id="@+id/hoursContainer"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toStartOf="@id/hoursLabel"
+                app:layout_constraintHorizontal_chainStyle="packed"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent">
+
+                <io.ipoli.android.common.view.widget.WheelItemPickerView
+                    android:id="@+id/hours"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    app:activeTextSize="28sp"
+                    app:itemGravity="bottom"
+                    app:itemHeight="@dimen/duration_picker_item_height"
+                    app:textSize="20sp"
+                    app:visibleItemCount="5" />
+            </FrameLayout>
+
+
+            <TextView
+                android:id="@+id/hoursLabel"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:text="h"
+                android:height="@dimen/duration_picker_item_height"
+                android:gravity="bottom"
+                android:textAppearance="@style/TextAppearance.AppCompat.Title"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toStartOf="@id/divider"
+                app:layout_constraintStart_toEndOf="@id/hoursContainer"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <TextView
+                android:id="@+id/divider"
+                android:layout_width="wrap_content"
+                android:layout_height="@dimen/duration_picker_item_height"
+                android:gravity="bottom"
+                android:layout_marginEnd="8dp"
+                android:layout_marginStart="8dp"
+                android:text=":"
+                android:textAppearance="@style/TextAppearance.AppCompat.Headline"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toStartOf="@id/minsContainer"
+                app:layout_constraintStart_toEndOf="@id/hoursLabel"
+                app:layout_constraintTop_toTopOf="parent" />
+
+
+            <FrameLayout
+                android:id="@+id/minsContainer"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toStartOf="@id/minsLabel"
+                app:layout_constraintStart_toEndOf="@id/divider"
+                app:layout_constraintTop_toTopOf="parent">
+
+                <io.ipoli.android.common.view.widget.WheelItemPickerView
+                    android:id="@+id/minutes"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    app:activeTextSize="28sp"
+                    app:textSize="20sp"
+                    app:itemGravity="bottom"
+                    app:itemHeight="@dimen/duration_picker_item_height"
+                    app:visibleItemCount="5" />
+
+            </FrameLayout>
+
+            <TextView
+                android:id="@+id/minsLabel"
+                android:layout_width="wrap_content"
+                android:layout_height="@dimen/duration_picker_item_height"
+                android:layout_marginStart="8dp"
+                android:text="min"
+                android:gravity="bottom"
+                android:textAppearance="@style/TextAppearance.AppCompat.Title"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@id/minsContainer"
+                app:layout_constraintTop_toTopOf="parent" />
+
+
+        </android.support.constraint.ConstraintLayout>
+
+    </ViewSwitcher>
 </RelativeLayout>

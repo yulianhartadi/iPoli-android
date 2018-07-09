@@ -11,6 +11,13 @@ import java.util.concurrent.TimeUnit
  * on 8/21/17.
  */
 object DurationFormatter {
+    fun formatHours(context: Context, hours: Int): String {
+        if (hours < 0) {
+            return formatEmptyDuration(context)
+        }
+        return context.getString(R.string.quest_item_hours_duration, hours)
+
+    }
 
     fun format(context: Context, duration: Int): String {
         if (duration < 0) {

@@ -455,9 +455,8 @@ class AddRepeatingQuestViewController(args: Bundle? = null) :
                     if (vm.value == EditRepeatingQuestViewState.DurationOption.MORE_OPTIONS) {
                         navigate()
                             .toDurationPicker(
-                                null,
-                                { dispatch(EditRepeatingQuestAction.DurationPicked(it)) }
-                            )
+                                null
+                            ) { dispatch(EditRepeatingQuestAction.DurationPicked(it.intValue)) }
                     } else {
                         dispatch(EditRepeatingQuestAction.PickDuration(vm.value))
                     }
@@ -698,9 +697,8 @@ class AddRepeatingQuestViewController(args: Bundle? = null) :
             view.summaryDuration.onDebounceClick {
                 navigate()
                     .toDurationPicker(
-                        state.duration.intValue,
-                        { dispatch(EditRepeatingQuestAction.ChangeDuration(it)) }
-                    )
+                        state.duration
+                    ) { dispatch(EditRepeatingQuestAction.ChangeDuration(it.intValue)) }
             }
         }
 

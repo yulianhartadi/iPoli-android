@@ -47,6 +47,7 @@ sealed class TagPickerAction : Action {
     data class Load(val selectedTags: Set<Tag>) : TagPickerAction() {
         override fun toMap() = mapOf("selectedTags" to selectedTags.joinToString(",") { it.name })
     }
+
     object Close : TagPickerAction()
 }
 
@@ -59,11 +60,24 @@ object TagPickerReducer : BaseViewStateReducer<TagPickerViewState>() {
         action: Action
     ) = when (action) {
         is TagPickerAction.Load -> {
-            subState.copy(
-                type = DATA_LOADED,
-                petAvatar = state.dataState.player!!.pet.avatar,
+            state.dataState.player?.let {
+                subState.copy(
+                    type = DATA_LOADED,
+                    petAvatar = it.pet.avatar,
+                    tags = state.dataState.tags.sortedByDescending { it.isFavorite },
+                    selectedTags = action.selectedTags
+                )
+            } ?: subState.copy(
+                type = LOADING,
                 tags = state.dataState.tags.sortedByDescending { it.isFavorite },
                 selectedTags = action.selectedTags
+            )
+        }
+
+        is DataLoadedAction.PlayerChanged -> {
+            subState.copy(
+                type = DATA_LOADED,
+                petAvatar = action.player.pet.avatar
             )
         }
 

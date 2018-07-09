@@ -15,6 +15,8 @@ import io.ipoli.android.challenge.edit.EditChallengeViewController
 import io.ipoli.android.challenge.entity.Challenge
 import io.ipoli.android.challenge.picker.ChallengePickerDialogController
 import io.ipoli.android.common.InviteFriendsDialogController
+import io.ipoli.android.common.datetime.Duration
+import io.ipoli.android.common.datetime.Minute
 import io.ipoli.android.common.home.HomeViewController
 import io.ipoli.android.common.view.*
 import io.ipoli.android.dailychallenge.DailyChallengeViewController
@@ -258,7 +260,7 @@ class Navigator(private val router: Router) {
         pushDialog { DaysPickerDialogController(selectedDays, listener) }
     }
 
-    fun toDurationPicker(selectedDuration: Int? = null, listener: (Int) -> Unit) {
+    fun toDurationPicker(selectedDuration: Duration<Minute>? = null, listener: (Duration<Minute>) -> Unit) {
         pushDialog { DurationPickerDialogController(selectedDuration, listener) }
     }
 

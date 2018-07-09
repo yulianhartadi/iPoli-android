@@ -5,6 +5,7 @@ import io.ipoli.android.common.AppState
 import io.ipoli.android.common.redux.Action
 import io.ipoli.android.common.redux.Dispatcher
 import io.ipoli.android.common.redux.MiddleWare
+import io.ipoli.android.common.view.DurationPickerDialogAction
 import io.ipoli.android.growth.GrowthAction
 import io.ipoli.android.player.data.Inventory
 import io.ipoli.android.store.powerup.PowerUp
@@ -44,6 +45,9 @@ object CheckEnabledPowerUpMiddleWare : MiddleWare<AppState> {
                     MiddleWare.Result.Continue
                 else
                     checkForAvailablePowerUp(PowerUp.Type.TAGS, inventory, dispatcher)
+
+            is DurationPickerDialogAction.ShowCustom ->
+                checkForAvailablePowerUp(PowerUp.Type.CUSTOM_DURATION, inventory, dispatcher)
 
 //            is QuestAction.AddSubQuest,
 //            is EditRepeatingQuestAction.AddSubQuest ->

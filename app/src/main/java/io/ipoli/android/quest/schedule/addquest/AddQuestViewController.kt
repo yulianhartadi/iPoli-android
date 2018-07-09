@@ -19,6 +19,7 @@ import com.mikepenz.material_design_iconic_typeface_library.MaterialDesignIconic
 import io.ipoli.android.R
 import io.ipoli.android.common.ViewUtils
 import io.ipoli.android.common.datetime.Time
+import io.ipoli.android.common.datetime.minutes
 import io.ipoli.android.common.redux.android.ReduxViewController
 import io.ipoli.android.common.view.*
 import io.ipoli.android.quest.Color
@@ -260,9 +261,8 @@ class AddQuestViewController(args: Bundle? = null) :
         view.duration.onDebounceClick {
             navigate()
                 .toDurationPicker(
-                    state.duration,
-                    { dispatch(AddQuestAction.DurationPicked(it)) }
-                )
+                    state.duration?.minutes
+                ) { dispatch(AddQuestAction.DurationPicked(it.intValue)) }
         }
     }
 
