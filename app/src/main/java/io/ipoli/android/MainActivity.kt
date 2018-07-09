@@ -61,7 +61,7 @@ class MainActivity : AppCompatActivity(), Injects<Module>, SideEffectHandler<App
     private val playerRepository by required { playerRepository }
     private val sharedPreferences by required { sharedPreferences }
     private val unlockAchievementsUseCase by required { unlockAchievementsUseCase }
-    private val updateHabitStreaksScheduler by required { updateHabitStreaksScheduler }
+    private val lowerPetStatsScheduler by required { lowerPetStatsScheduler }
 
     private val stateStore by required { stateStore }
     private val dataExporter by required { dataExporter }
@@ -204,6 +204,7 @@ class MainActivity : AppCompatActivity(), Injects<Module>, SideEffectHandler<App
             navigator.setPlanDay()
         } else if (!router.hasRootController()) {
             navigator.setHome()
+            lowerPetStatsScheduler.schedule()
 
             if (Random().nextInt(10) == 1 && player.membership == Membership.NONE) {
                 showPremiumSnackbar()
