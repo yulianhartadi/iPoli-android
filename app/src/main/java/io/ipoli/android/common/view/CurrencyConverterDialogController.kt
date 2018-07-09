@@ -4,6 +4,7 @@ import android.animation.Animator
 import android.animation.AnimatorListenerAdapter
 import android.animation.AnimatorSet
 import android.animation.ObjectAnimator
+import android.annotation.SuppressLint
 import android.os.Bundle
 import android.support.v7.app.AlertDialog
 import android.view.LayoutInflater
@@ -31,7 +32,6 @@ import io.ipoli.android.player.data.Player
 import io.ipoli.android.player.usecase.ConvertCoinsToGemsUseCase
 import io.ipoli.android.store.gem.GemPack
 import io.ipoli.android.store.gem.GemPackType
-import io.ipoli.android.store.gem.GemStoreViewController
 import kotlinx.android.synthetic.main.dialog_currency_converter.view.*
 import kotlinx.android.synthetic.main.view_currency_converter_dialog_header.view.*
 import space.traversal.kapsule.required
@@ -81,8 +81,11 @@ object CurrencyConverterReducer : BaseViewStateReducer<CurrencyConverterViewStat
     ) = when (action) {
 
         is CurrencyConverterAction.Load -> {
-            val player = state.dataState.player!!
-            createPlayerChangeState(subState, player)
+            state.dataState.player?.let {
+                createPlayerChangeState(subState, it)
+            } ?: subState.copy(
+                type = LOADING
+            )
         }
 
         is DataLoadedAction.PlayerChanged -> {
@@ -151,6 +154,7 @@ class CurrencyConverterDialogController :
 
     private lateinit var billingClient: BillingClient
 
+    @SuppressLint("InflateParams")
     override fun createHeaderView(inflater: LayoutInflater): View =
         inflater.inflate(R.layout.view_currency_converter_dialog_header, null)
 
@@ -159,6 +163,7 @@ class CurrencyConverterDialogController :
     }
 
     override fun onCreateContentView(inflater: LayoutInflater, savedViewState: Bundle?): View {
+        @SuppressLint("InflateParams")
         val view = inflater.inflate(R.layout.dialog_currency_converter, null)
         view.basicPackContainer.onDebounceClick {
             showGemStore()
@@ -276,8 +281,8 @@ class CurrencyConverterDialogController :
 
                 view.convert.onDebounceClick {
                     playConvertAnimation(
-                        view,
-                        { dispatch(CurrencyConverterAction.Convert(view.seekBar.progress)) })
+                        view
+                    ) { dispatch(CurrencyConverterAction.Convert(view.seekBar.progress)) }
                 }
 
             }
