@@ -213,7 +213,7 @@ class DurationPickerDialogController :
         dialogBuilder
             .setPositiveButton(R.string.dialog_ok, null)
             .setNegativeButton(R.string.cancel, null)
-            .setNeutralButton(R.string.custom_duration, null)
+            .setNeutralButton(R.string.custom, null)
             .create()
 
     override fun onDialogCreated(dialog: AlertDialog, contentView: View) {
@@ -287,7 +287,7 @@ class DurationPickerDialogController :
                     view.hours.setSelectedItem(state.selectedHourIndex!!)
                     view.minutes.setSelectedItem(state.selectedMinuteIndex!!)
                 }
-                changeNeutralButtonText(if (state.isCustom) R.string.back else R.string.custom_duration)
+                changeNeutralButtonText(if (state.isCustom) R.string.back else R.string.custom)
             }
 
             VALIDATION_SUCCESSFUL -> {
