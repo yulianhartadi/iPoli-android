@@ -690,19 +690,22 @@ class QuestViewController : ReduxViewController<QuestAction, QuestViewState, Que
                 .setDuration(longAnimTime)
                 .setStartDelay(3000)
                 .withEndAction {
-                    val centerY = view.timerProgressCircle.y + view.timerProgressCircle.height / 2
-                    val y = centerY - view.startStop.height / 2
-                    view.startStop
-                        .animate()
-                        .y(y)
-                        .setDuration(shortAnimTime)
-                        .start()
+                    resources?.let {
+                        val centerY =
+                            view.timerProgressCircle.y + view.timerProgressCircle.height / 2
+                        val y = centerY - view.startStop.height / 2
+                        view.startStop
+                            .animate()
+                            .y(y)
+                            .setDuration(shortAnimTime)
+                            .start()
 
-                    view.complete
-                        .animate()
-                        .y(y)
-                        .setDuration(shortAnimTime)
-                        .start()
+                        view.complete
+                            .animate()
+                            .y(y)
+                            .setDuration(shortAnimTime)
+                            .start()
+                    }
                 }
                 .start()
         }
