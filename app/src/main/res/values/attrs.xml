@@ -52,6 +52,17 @@
             <enum name="round" value="1"/>
             <enum name="square" value="2"/>
         </attr>
+    </declare-styleable>
 
+    <declare-styleable name="WheelItemPickerView">
+        <attr name="visibleItemCount" format="integer"/>
+        <attr name="textSize" format="dimension"/>
+        <attr name="activeTextSize" format="dimension"/>
+        <attr name="itemHeight" format="dimension"/>
+        <attr name="itemGravity" format="enum">
+            <enum name="top" value="1"/>
+            <enum name="center" value="0"/>
+            <enum name="bottom" value="2"/>
+        </attr>
     </declare-styleable>
 </resources>

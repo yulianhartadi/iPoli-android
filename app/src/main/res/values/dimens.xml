@@ -7,5 +7,6 @@
     <dimen name="sub_quest_item_text_size">16sp</dimen>
     <dimen name="extended_touch_width">64dp</dimen>
     <dimen name="extended_touch_height">48dp</dimen>
+    <dimen name="duration_picker_item_height">60dp</dimen>
     <!--<dimen name="store_item_height">180dp</dimen>-->
 </resources>

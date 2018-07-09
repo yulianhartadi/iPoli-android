@@ -76,7 +76,8 @@ object PowerUpStoreReducer : BaseViewStateReducer<PowerUpStoreViewState>() {
     private fun createPowerUps(player: Player): List<PowerUpItem> {
         val inventory = player.inventory
         return PowerUp.Type.values()
-            .filter { it == PowerUp.Type.GROWTH || it == PowerUp.Type.TAGS }.map {
+            .filter { it == PowerUp.Type.GROWTH || it == PowerUp.Type.TAGS || it == PowerUp.Type.CUSTOM_DURATION }
+            .map {
                 when {
                     inventory.isPowerUpEnabled(it) -> {
                         val p = inventory.getPowerUp(it)!!

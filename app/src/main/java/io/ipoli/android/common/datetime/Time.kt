@@ -58,8 +58,8 @@ data class Time constructor(private val minutesAfterMidnight: Int) {
         val TWELVE_HOUR_FORMATTER_SHORT by lazy { SimpleDateFormat("h a", Locale.getDefault()) }
         val TWENTY_FOUR_HOUR_FORMATTER by lazy { SimpleDateFormat("HH:mm", Locale.getDefault()) }
 
-        val MINUTES_IN_AN_HOUR = 60
-        val MINUTES_IN_A_DAY = 24 * MINUTES_IN_AN_HOUR
+        const val MINUTES_IN_AN_HOUR = 60
+        const val MINUTES_IN_A_DAY = 24 * MINUTES_IN_AN_HOUR
 
         fun of(minutesAfterMidnight: Int): Time {
 

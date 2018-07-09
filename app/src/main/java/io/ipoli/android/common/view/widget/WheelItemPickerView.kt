@@ -11,16 +11,29 @@ import android.view.Gravity
 import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
-import android.widget.*
+import android.widget.FrameLayout
+import android.widget.LinearLayout
+import android.widget.ScrollView
+import android.widget.TextView
 import io.ipoli.android.R
+import io.ipoli.android.common.ViewUtils
 
 
 class WheelItemPickerView : ScrollView {
+    enum class ItemGravity(val value: Int) {
+        CENTER(0),
+        TOP(1),
+        BOTTOM(2)
+    }
 
     private var itemOffset = 0
     private lateinit var itemContainer: LinearLayout
     private val items = mutableListOf<String>()
-    private val visibleItemCount = DEFAULT_SHOW_ITEM_COUNT
+    private var visibleItemCount = DEFAULT_SHOW_ITEM_COUNT
+    private var textSize: Int = DEFAULT_TEXT_SIZE_SP
+    private var activeTextSize: Int = DEFAULT_ACTIVE_TEXT_SIZE_SP
+    private var itemHeightPx: Int = dip2px(ITEM_HEIGHT.toFloat()).toInt()
+    private var itemGravity: ItemGravity = ItemGravity.CENTER
 
     private var selectedIndex = 2
     private var lastYPosition = 0
@@ -29,9 +42,13 @@ class WheelItemPickerView : ScrollView {
 
     private var measuredItemHeight = 0
 
+    private var changeItemListener: ((Int) -> Unit)? = null
+
     companion object {
         private const val SCROLL_DELAY_MILLIS = 50
         private const val DEFAULT_SHOW_ITEM_COUNT = 5
+        private const val DEFAULT_TEXT_SIZE_SP = 16
+        private const val DEFAULT_ACTIVE_TEXT_SIZE_SP = 20
         private const val ITEM_HEIGHT = 60
     }
 
@@ -40,6 +57,7 @@ class WheelItemPickerView : ScrollView {
     }
 
     constructor(context: Context, attrs: AttributeSet) : super(context, attrs) {
+        initFromAttributes(context, attrs)
         init(context)
     }
 
@@ -48,7 +66,44 @@ class WheelItemPickerView : ScrollView {
         attrs,
         defStyle
     ) {
+        initFromAttributes(context, attrs)
         init(context)
+    }
+
+    private fun initFromAttributes(context: Context, attrs: AttributeSet) {
+        val a = context.obtainStyledAttributes(attrs, R.styleable.WheelItemPickerView)
+
+        visibleItemCount =
+            a.getInt(R.styleable.WheelItemPickerView_visibleItemCount, DEFAULT_SHOW_ITEM_COUNT)
+        textSize =
+            a.getDimensionPixelSize(
+                R.styleable.WheelItemPickerView_textSize,
+                ViewUtils.spToPx(DEFAULT_TEXT_SIZE_SP, context)
+            )
+
+        activeTextSize =
+            a.getDimensionPixelSize(
+                R.styleable.WheelItemPickerView_activeTextSize,
+                ViewUtils.spToPx(DEFAULT_ACTIVE_TEXT_SIZE_SP, context)
+            )
+
+        itemHeightPx = a.getDimensionPixelSize(
+            R.styleable.WheelItemPickerView_itemHeight,
+            dip2px(ITEM_HEIGHT.toFloat()).toInt()
+        )
+
+        val itemGravityValue = a.getInteger(
+            R.styleable.WheelItemPickerView_itemGravity,
+            ItemGravity.CENTER.value
+        )
+        itemGravity = when (itemGravityValue) {
+            ItemGravity.CENTER.value -> ItemGravity.CENTER
+            ItemGravity.TOP.value -> ItemGravity.TOP
+            ItemGravity.BOTTOM.value -> ItemGravity.BOTTOM
+            else -> throw IllegalArgumentException()
+        }
+
+        a.recycle()
     }
 
     override fun onScrollChanged(l: Int, t: Int, oldl: Int, oldt: Int) {
@@ -80,6 +135,7 @@ class WheelItemPickerView : ScrollView {
                 val remainder = lastYPosition % measuredItemHeight
                 selectedIndex = getItemIndex(lastYPosition)
                 if (remainder != 0) {
+                    changeItemListener?.invoke(selectedItemIndex)
                     this@WheelItemPickerView.post {
                         if (remainder > measuredItemHeight / 2) {
                             this@WheelItemPickerView.smoothScrollTo(
@@ -130,11 +186,15 @@ class WheelItemPickerView : ScrollView {
 
     private fun createView(item: String): TextView {
         val numView = TextView(context)
-        numView.height = dip2px(ITEM_HEIGHT.toFloat()).toInt()
+        numView.height = itemHeightPx
         numView.text = item
         TextViewCompat.setTextAppearance(numView, android.R.style.TextAppearance_Material_Title)
-        numView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 20f)
-        numView.gravity = Gravity.CENTER
+        numView.setTextSize(TypedValue.COMPLEX_UNIT_PX, textSize.toFloat())
+        numView.gravity = when (itemGravity) {
+            ItemGravity.CENTER -> Gravity.CENTER
+            ItemGravity.TOP -> Gravity.TOP
+            ItemGravity.BOTTOM -> Gravity.BOTTOM
+        }
         if (measuredItemHeight == 0) {
             measuredItemHeight = getViewMeasuredHeight(numView)
             itemContainer.layoutParams = FrameLayout.LayoutParams(
@@ -142,7 +202,7 @@ class WheelItemPickerView : ScrollView {
                 measuredItemHeight * visibleItemCount
             )
             this.layoutParams =
-                RelativeLayout.LayoutParams(
+                FrameLayout.LayoutParams(
                     layoutParams.width,
                     measuredItemHeight * visibleItemCount
                 )
@@ -155,10 +215,10 @@ class WheelItemPickerView : ScrollView {
         for (i in 0 until itemContainer.childCount) {
             val itemView = itemContainer.getChildAt(i) as TextView
             if (selectedPosition == i) {
-                itemView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 20f)
+                itemView.setTextSize(TypedValue.COMPLEX_UNIT_PX, activeTextSize.toFloat())
                 itemView.setTextColor(attrData(R.attr.colorAccent))
             } else {
-                itemView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 16f)
+                itemView.setTextSize(TypedValue.COMPLEX_UNIT_PX, textSize.toFloat())
                 itemView.setTextColor(ContextCompat.getColor(context, R.color.md_dark_text_38))
             }
         }
@@ -199,4 +259,13 @@ class WheelItemPickerView : ScrollView {
         view.measure(width, expandSpec)
         return view.measuredHeight
     }
+
+    fun setChangeItemListener(listener: (Int) -> Unit) {
+        changeItemListener = listener
+    }
+
+    fun removeChangeItemListener() {
+        changeItemListener = null
+    }
+
 }

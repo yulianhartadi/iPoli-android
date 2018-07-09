@@ -14,6 +14,7 @@ import com.mikepenz.iconics.IconicsDrawable
 import com.mikepenz.material_design_iconic_typeface_library.MaterialDesignIconic
 import io.ipoli.android.R
 import io.ipoli.android.common.datetime.Time
+import io.ipoli.android.common.datetime.minutes
 import io.ipoli.android.common.redux.android.ReduxViewController
 import io.ipoli.android.common.text.DateFormatter
 import io.ipoli.android.common.text.DurationFormatter
@@ -333,8 +334,8 @@ class EditQuestViewController(args: Bundle? = null) :
         view.questDuration.onDebounceClick {
             navigate()
                 .toDurationPicker(
-                    state.duration
-                ) { dispatch(EditQuestAction.ChangeDuration(it)) }
+                    state.duration.minutes
+                ) { dispatch(EditQuestAction.ChangeDuration(it.intValue)) }
         }
     }
 
@@ -451,7 +452,7 @@ class EditQuestViewController(args: Bundle? = null) :
         get() = if (note.isBlank()) stringRes(R.string.tap_to_add_note) else note
 
     private val EditQuestViewState.startTimeText: String
-        get() = startTime?.let { "At $it" }
+        get() = startTime?.let { "At ${it.toString(shouldUse24HourFormat)}" }
             ?: stringRes(R.string.unscheduled)
 
     private val EditQuestViewState.durationText: String
