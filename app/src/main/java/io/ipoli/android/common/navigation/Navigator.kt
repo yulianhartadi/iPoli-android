@@ -18,6 +18,7 @@ import io.ipoli.android.common.InviteFriendsDialogController
 import io.ipoli.android.common.datetime.Duration
 import io.ipoli.android.common.datetime.Minute
 import io.ipoli.android.common.home.HomeViewController
+import io.ipoli.android.common.migration.MigrationViewController
 import io.ipoli.android.common.view.*
 import io.ipoli.android.dailychallenge.DailyChallengeViewController
 import io.ipoli.android.event.calendar.picker.CalendarPickerDialogController
@@ -25,6 +26,7 @@ import io.ipoli.android.habit.edit.EditHabitViewController
 import io.ipoli.android.habit.predefined.PredefinedHabitListViewController
 import io.ipoli.android.note.NotePickerDialogController
 import io.ipoli.android.onboarding.OnboardData
+import io.ipoli.android.onboarding.OnboardViewController
 import io.ipoli.android.pet.PetViewController
 import io.ipoli.android.pet.store.PetStoreViewController
 import io.ipoli.android.planday.PlanDayViewController
@@ -69,6 +71,14 @@ import org.threeten.bp.LocalDate
  */
 
 class Navigator(private val router: Router) {
+
+    fun setOnboard() {
+        setController({ OnboardViewController() })
+    }
+
+    fun setMigration(playerId: String, playerSchemaVersion: Int) {
+        setController({ MigrationViewController(playerId, playerSchemaVersion) })
+    }
 
     fun setHome() {
         setController({ HomeViewController() })
@@ -260,7 +270,10 @@ class Navigator(private val router: Router) {
         pushDialog { DaysPickerDialogController(selectedDays, listener) }
     }
 
-    fun toDurationPicker(selectedDuration: Duration<Minute>? = null, listener: (Duration<Minute>) -> Unit) {
+    fun toDurationPicker(
+        selectedDuration: Duration<Minute>? = null,
+        listener: (Duration<Minute>) -> Unit
+    ) {
         pushDialog { DurationPickerDialogController(selectedDuration, listener) }
     }
 
