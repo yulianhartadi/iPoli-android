@@ -96,9 +96,7 @@ class LowerPetStatsUseCase(
          */
         fun findQuestsDurationInInterval(start: Time, end: Time, quests: List<Quest>) =
             quests.filter {
-                val qStart = it.startTime!! + 1
-                val qEnd = it.endTime!! - 1
-                qEnd >= start && qStart <= end
+                it.startTime != null && it.endTime!! - 1 >= start && it.startTime + 1 <= end
             }.map {
                 val startMinute =
                     Math.max(start.toMinuteOfDay(), it.startTime!!.toMinuteOfDay())
