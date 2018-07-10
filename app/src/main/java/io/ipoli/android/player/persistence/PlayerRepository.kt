@@ -56,6 +56,7 @@ interface PlayerRepository {
     fun removeUsername(username: String)
     fun findSchemaVersion(): Int?
     fun saveStatistics(stats: Statistics): Statistics
+    fun delete()
 }
 
 @Dao
@@ -78,6 +79,9 @@ abstract class PlayerDao : BaseDao<RoomPlayer>() {
 
     @Query("SELECT * FROM players $FIND_SYNC_QUERY")
     abstract fun findAllForSync(lastSync: Long): List<RoomPlayer>
+
+    @Query("DELETE FROM players")
+    abstract fun delete()
 }
 
 @Entity(tableName = "players")
@@ -144,6 +148,10 @@ class AndroidPlayerRepository(
         return dao.find()?.let {
             toEntityObject(it)
         }
+    }
+
+    override fun delete() {
+        dao.delete()
     }
 
     override fun toEntityObject(dbObject: RoomPlayer): Player {

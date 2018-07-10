@@ -1,6 +1,7 @@
 package io.ipoli.android.common.migration
 
 import android.annotation.SuppressLint
+import android.arch.persistence.room.Transaction
 import android.content.Context
 import android.support.annotation.WorkerThread
 import com.google.android.gms.tasks.Tasks
@@ -14,6 +15,7 @@ import io.ipoli.android.common.persistence.BaseFirestoreRepository
 import io.ipoli.android.dailychallenge.data.persistence.FirestoreDailyChallengeRepository
 import io.ipoli.android.habit.persistence.FirestoreHabitRepository
 import io.ipoli.android.myPoliApp
+import io.ipoli.android.player.data.Player
 import io.ipoli.android.player.persistence.FirestorePlayerRepository
 import io.ipoli.android.quest.Entity
 import io.ipoli.android.quest.data.persistence.FirestoreQuestRepository
@@ -154,11 +156,33 @@ class DataExporter(private val appContext: Context) : Injects<Module> {
         return remoteDatabase.batch()
     }
 
+    @SuppressLint("ApplySharedPref")
     private fun exportPlayerData() {
         val batch = remoteDatabase.batch()
         val fp = FirestorePlayerRepository(remoteDatabase)
-        fp.addToBatch(playerRepository.find()!!, batch)
+        val localPlayer = playerRepository.find()!!
+        val remotePlayerId = FirebaseAuth.getInstance().currentUser!!.uid
+
+        val newPlayer = if (localPlayer.id != remotePlayerId) {
+            sharedPreferences
+                .edit()
+                .putString(Constants.KEY_PLAYER_ID, remotePlayerId)
+                .commit()
+            localPlayer.copy(id = remotePlayerId)
+        } else localPlayer
+
+        fp.addToBatch(newPlayer, batch)
         Tasks.await(batch.commit())
+
+        if (newPlayer.id != localPlayer.id) {
+            replacePlayer(newPlayer)
+        }
+    }
+
+    @Transaction
+    private fun replacePlayer(newPlayer: Player) {
+        playerRepository.delete()
+        playerRepository.save(newPlayer)
     }
 
     private fun exportCollections() {

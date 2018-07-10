@@ -37,7 +37,6 @@
         app:layout_constraintVertical_bias="0.0"
         app:lottie_loop="true" />
 
-
     <TextView
         android:id="@+id/storyText"
         style="@style/OnboardText"
@@ -64,7 +63,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/skip_tutorial"
-        android:textColor="@color/md_light_text_50"
+        android:textColor="@color/md_light_text_12"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
 
