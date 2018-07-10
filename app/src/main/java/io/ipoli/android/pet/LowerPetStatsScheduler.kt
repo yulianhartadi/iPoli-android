@@ -1,8 +1,8 @@
 package io.ipoli.android.pet
 
-import com.evernote.android.job.Job
 import io.ipoli.android.common.datetime.Time
 import io.ipoli.android.common.di.Module
+import io.ipoli.android.common.job.FixedDailyJob
 import io.ipoli.android.common.job.FixedDailyJobScheduler
 import io.ipoli.android.myPoliApp
 import io.ipoli.android.pet.usecase.LowerPetStatsUseCase
@@ -15,9 +15,9 @@ import space.traversal.kapsule.Kapsule
  * on 11/30/17.
  */
 
-class LowerPetStatsJob : Job(), Injects<Module> {
+class LowerPetStatsJob : FixedDailyJob(LowerPetStatsJob.TAG), Injects<Module> {
 
-    override fun onRunJob(params: Params): Result {
+    override fun doRunJob(params: Params): Result {
         val kap = Kapsule<Module>()
         val changePetStatsUseCase by kap.required { lowerPetStatsUseCase }
         val eventLogger by kap.required { eventLogger }
