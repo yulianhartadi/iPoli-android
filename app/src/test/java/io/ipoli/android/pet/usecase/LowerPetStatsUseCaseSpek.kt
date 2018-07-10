@@ -83,7 +83,7 @@ class LowerPetStatsUseCaseSpek : Spek({
                 val questRepo = mock<QuestRepository> {
                     on { findCompletedForDate(any()) } doReturn listOf(
                         quest.copy(
-                            duration = (LowerPetStatsUseCase.HIGH_PRODUCTIVE_TIME_COEF *
+                            duration = Math.ceil(LowerPetStatsUseCase.HIGH_PRODUCTIVE_TIME_COEF *
                                 wholeInterval).toInt(),
                             startTime = Constants.CHANGE_PET_STATS_INTERVAL_START
                         )

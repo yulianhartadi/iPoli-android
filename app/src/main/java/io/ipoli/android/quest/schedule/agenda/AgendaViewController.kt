@@ -254,7 +254,8 @@ class AgendaViewController(args: Bundle? = null) :
         data class EventViewModel(
             override val id: String,
             val name: String,
-            val startTime: String, @ColorInt val color: Int,
+            val startTime: String,
+            @ColorInt val color: Int,
             val icon: IIcon,
             val showDivider: Boolean
         ) :
@@ -595,6 +596,6 @@ class AgendaViewController(args: Bundle? = null) :
     private fun formatStartTime(event: Event): String {
         val start = event.startTime
         val end = start.plus(event.duration.intValue)
-        return "$start - $end"
+        return "${start.toString(shouldUse24HourFormat)} - ${end.toString(shouldUse24HourFormat)}"
     }
 }
