@@ -152,6 +152,7 @@ class AgendaWidgetViewsFactory(private val context: Context) :
                             createClickQuestIntent(q)
                         )
 
+                        setViewVisibility(R.id.widgetQuestComplete, View.VISIBLE)
                         val checkboxIcon =
                             IconicsDrawable(context)
                                 .icon(Ionicons.Icon.ion_android_checkbox_outline_blank)
@@ -181,6 +182,8 @@ class AgendaWidgetViewsFactory(private val context: Context) :
                             R.id.widgetQuestIconBackground,
                             createIconBackground(e.color)
                         )
+
+                        setViewVisibility(R.id.widgetQuestComplete, View.GONE)
                     }
                 }
 
