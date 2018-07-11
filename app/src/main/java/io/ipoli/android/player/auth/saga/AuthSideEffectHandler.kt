@@ -1,6 +1,7 @@
 package io.ipoli.android.player.auth.saga
 
 import android.annotation.SuppressLint
+import android.arch.persistence.room.Transaction
 import com.google.firebase.auth.*
 import io.ipoli.android.Constants
 import io.ipoli.android.common.AppSideEffectHandler
@@ -171,14 +172,20 @@ object AuthSideEffectHandler : AppSideEffectHandler() {
             else -> throw IllegalStateException("Unknown Auth provider")
         }
 
-        savePlayerId(user.uid)
-        val player = playerRepository.find()
-        playerRepository.save(
-            player!!.copy(
+        val player = playerRepository.find()!!
+        replacePlayer(
+            player.copy(
                 id = user.uid,
                 authProvider = auth
             )
         )
+        savePlayerId(user.uid)
+    }
+
+    @Transaction
+    private fun replacePlayer(newPlayer: Player) {
+        playerRepository.delete()
+        playerRepository.save(newPlayer)
     }
 
     private fun createGoogleAuthProvider(
