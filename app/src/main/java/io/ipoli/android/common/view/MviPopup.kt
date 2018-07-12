@@ -5,13 +5,11 @@ import android.animation.AnimatorListenerAdapter
 import android.animation.AnimatorSet
 import android.animation.ObjectAnimator
 import android.content.Context
-import android.content.Intent
 import android.graphics.PixelFormat
 import android.os.Build
 import android.os.Handler
 import android.os.Looper
 import android.support.annotation.DrawableRes
-import android.support.annotation.MainThread
 import android.util.AttributeSet
 import android.util.DisplayMetrics
 import android.view.*
@@ -28,8 +26,6 @@ import io.ipoli.android.common.redux.ViewState
 import io.ipoli.android.common.redux.ViewStateReducer
 import io.ipoli.android.myPoliApp
 import kotlinx.coroutines.experimental.android.UI
-import kotlinx.coroutines.experimental.channels.SendChannel
-import kotlinx.coroutines.experimental.launch
 import kotlinx.coroutines.experimental.withContext
 import space.traversal.kapsule.Injects
 import space.traversal.kapsule.inject
@@ -231,7 +227,10 @@ abstract class ReduxPopup<A : Action, VS : ViewState, out VSR : ViewStateReducer
     }
 
     private fun onDestroy() {
-        windowManager.removeViewImmediate(overlayView)
+        try {
+            windowManager.removeViewImmediate(overlayView)
+        } catch (_: Throwable) { }
+
         stateStore.unsubscribe(this)
         stateStore.dispatch(UiAction.Detach(reducer))
         currentState = null
@@ -453,7 +452,9 @@ abstract class Popup
     }
 
     private fun onDestroy() {
-        windowManager.removeViewImmediate(overlayView)
+        try {
+            windowManager.removeViewImmediate(overlayView)
+        } catch (_: Throwable) { }
     }
 
     private fun addViewToWindowManager(view: ViewGroup) {
