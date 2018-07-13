@@ -1,12 +1,10 @@
 package io.ipoli.android.quest.show.sideeffect
 
-import android.support.v4.app.NotificationManagerCompat
 import io.ipoli.android.Constants
 import io.ipoli.android.common.AppSideEffectHandler
 import io.ipoli.android.common.AppState
 import io.ipoli.android.common.DataLoadedAction
 import io.ipoli.android.common.redux.Action
-import io.ipoli.android.myPoliApp
 import io.ipoli.android.note.usecase.SaveQuestNoteUseCase
 import io.ipoli.android.quest.CompletedQuestAction
 import io.ipoli.android.quest.Quest
@@ -45,6 +43,7 @@ object QuestSideEffectHandler : AppSideEffectHandler() {
     private val saveQuestNoteUseCase by required { saveQuestNoteUseCase }
     private val removeQuestUseCase by required { removeQuestUseCase }
     private val undoRemoveQuestUseCase by required { undoRemoveQuestUseCase }
+    private val notificationManager by required { notificationManager }
 
     private var questChannel: Channel<Quest?>? = null
     private var completedQuestChannel: Channel<Quest?>? = null
@@ -187,8 +186,7 @@ object QuestSideEffectHandler : AppSideEffectHandler() {
     }
 
     private fun removeTimerNotification() {
-        NotificationManagerCompat.from(myPoliApp.instance)
-            .cancel(Constants.QUEST_TIMER_NOTIFICATION_ID)
+        notificationManager.removeTimerNotification()
     }
 
     private fun listenForCompletedQuest(action: CompletedQuestAction.Load) {

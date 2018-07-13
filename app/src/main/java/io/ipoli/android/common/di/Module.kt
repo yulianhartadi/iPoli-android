@@ -331,6 +331,8 @@ interface AndroidModule {
     val billingResponseHandler: BillingResponseHandler
 
     val billingRequestExecutor: BillingRequestExecutor
+
+    val notificationManager: NotificationManager
 }
 
 class MainAndroidModule(
@@ -418,6 +420,9 @@ class MainAndroidModule(
 
     override val billingRequestExecutor
         get() = BillingRequestExecutor(billingResponseHandler)
+
+    override val notificationManager: NotificationManager
+        get() = AndroidNotificationManager(context)
 }
 
 interface UseCaseModule {
