@@ -1,10 +1,12 @@
 package io.ipoli.android.quest.show.sideeffect
 
+import android.support.v4.app.NotificationManagerCompat
 import io.ipoli.android.Constants
 import io.ipoli.android.common.AppSideEffectHandler
 import io.ipoli.android.common.AppState
 import io.ipoli.android.common.DataLoadedAction
 import io.ipoli.android.common.redux.Action
+import io.ipoli.android.myPoliApp
 import io.ipoli.android.note.usecase.SaveQuestNoteUseCase
 import io.ipoli.android.quest.CompletedQuestAction
 import io.ipoli.android.quest.Quest
@@ -57,7 +59,7 @@ object QuestSideEffectHandler : AppSideEffectHandler() {
                 listenForCompletedQuest(action)
 
             QuestAction.Start -> {
-
+                removeTimerNotification()
                 val timerState = questState(state)
                 val q = timerState.quest!!
 
@@ -80,18 +82,24 @@ object QuestSideEffectHandler : AppSideEffectHandler() {
                 }
             }
 
-            QuestAction.Stop ->
+            QuestAction.Stop -> {
+                removeTimerNotification()
                 cancelTimerUseCase.execute(CancelTimerUseCase.Params(questId(state)))
+            }
 
-            QuestAction.CompletePomodoro ->
+            QuestAction.CompletePomodoro -> {
+                removeTimerNotification()
                 completeTimeRangeUseCase.execute(
                     CompleteTimeRangeUseCase.Params(
                         questId = questId(state)
                     )
                 )
+            }
 
-            QuestAction.CompleteQuest ->
+            QuestAction.CompleteQuest -> {
+                removeTimerNotification()
                 completeTimeRangeUseCase.execute(CompleteTimeRangeUseCase.Params(questId(state)))
+            }
 
             QuestAction.AddPomodoro ->
                 if (questState(state).pomodoroCount < Constants.MAX_POMODORO_COUNT) {
@@ -176,6 +184,11 @@ object QuestSideEffectHandler : AppSideEffectHandler() {
             is ScheduleSummaryAction.UndoRemoveQuest ->
                 undoRemoveQuestUseCase.execute(action.questId)
         }
+    }
+
+    private fun removeTimerNotification() {
+        NotificationManagerCompat.from(myPoliApp.instance)
+            .cancel(Constants.QUEST_TIMER_NOTIFICATION_ID)
     }
 
     private fun listenForCompletedQuest(action: CompletedQuestAction.Load) {
