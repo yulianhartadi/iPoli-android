@@ -2,7 +2,7 @@ package io.ipoli.android.quest.job
 
 import android.content.Context
 import io.ipoli.android.common.Reward
-import io.ipoli.android.common.di.Module
+import io.ipoli.android.common.di.BackgroundModule
 import io.ipoli.android.common.view.asThemedWrapper
 import io.ipoli.android.myPoliApp
 import io.ipoli.android.pet.AndroidPetAvatar
@@ -26,9 +26,9 @@ class AndroidJobRewardScheduler(private val context: Context) : RewardScheduler 
 
         val c = context.asThemedWrapper()
 
-        val kap = Kapsule<Module>()
+        val kap = Kapsule<BackgroundModule>()
         val playerRepository by kap.required { playerRepository }
-        kap.inject(myPoliApp.module(context))
+        kap.inject(myPoliApp.backgroundModule(context))
 
         val bounty = reward.bounty
 

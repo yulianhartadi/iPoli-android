@@ -1,7 +1,7 @@
 package io.ipoli.android.habit.job
 
 import io.ipoli.android.common.datetime.Time
-import io.ipoli.android.common.di.Module
+import io.ipoli.android.common.di.BackgroundModule
 import io.ipoli.android.common.job.FixedDailyJob
 import io.ipoli.android.common.job.FixedDailyJobScheduler
 import io.ipoli.android.habit.usecase.UpdateHabitStreaksUseCase
@@ -12,9 +12,9 @@ import space.traversal.kapsule.Kapsule
 class UpdateHabitStreaksJob : FixedDailyJob(UpdateHabitStreaksJob.TAG) {
 
     override fun doRunJob(params: Params): Result {
-        val kap = Kapsule<Module>()
+        val kap = Kapsule<BackgroundModule>()
         val updateHabitStreaksUseCase by kap.required { updateHabitStreaksUseCase }
-        kap.inject(myPoliApp.module(context))
+        kap.inject(myPoliApp.backgroundModule(context))
         updateHabitStreaksUseCase.execute(
             UpdateHabitStreaksUseCase.Params(
                 LocalDate.now().minusDays(

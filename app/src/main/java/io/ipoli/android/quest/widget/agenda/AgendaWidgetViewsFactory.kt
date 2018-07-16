@@ -17,7 +17,7 @@ import com.mikepenz.iconics.IconicsDrawable
 import com.mikepenz.ionicons_typeface_library.Ionicons
 import io.ipoli.android.Constants
 import io.ipoli.android.R
-import io.ipoli.android.common.di.Module
+import io.ipoli.android.common.di.BackgroundModule
 import io.ipoli.android.common.text.QuestStartTimeFormatter
 import io.ipoli.android.common.view.AndroidColor
 import io.ipoli.android.common.view.AndroidIcon
@@ -39,7 +39,7 @@ import java.util.concurrent.CopyOnWriteArrayList
  * on 02/10/2018.
  */
 class AgendaWidgetViewsFactory(private val context: Context) :
-    RemoteViewsService.RemoteViewsFactory, Injects<Module> {
+    RemoteViewsService.RemoteViewsFactory, Injects<BackgroundModule> {
 
     sealed class Item {
         data class QuestItem(val quest: Quest) : Item()
@@ -55,7 +55,7 @@ class AgendaWidgetViewsFactory(private val context: Context) :
     private var use24HourFormat = false
 
     override fun onCreate() {
-        inject(myPoliApp.module(context))
+        inject(myPoliApp.backgroundModule(context))
     }
 
     override fun getLoadingView() = null

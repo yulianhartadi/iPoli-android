@@ -27,7 +27,7 @@ import com.mikepenz.iconics.typeface.IIcon
 import io.ipoli.android.Constants
 import io.ipoli.android.common.*
 import io.ipoli.android.common.datetime.Time
-import io.ipoli.android.common.di.Module
+import io.ipoli.android.common.di.UIModule
 import io.ipoli.android.common.navigation.Navigator
 import io.ipoli.android.common.redux.Action
 import io.ipoli.android.common.redux.StateStore
@@ -62,7 +62,7 @@ import space.traversal.kapsule.required
 
 abstract class BaseViewController<A : Action, VS : ViewState> protected constructor(
     args: Bundle? = null
-) : RestoreViewOnCreateController(args), Injects<Module>,
+) : RestoreViewOnCreateController(args), Injects<UIModule>,
     StateStore.StateChangeSubscriber<AppState> {
 
     private val stateStore by required { stateStore }
@@ -116,7 +116,7 @@ abstract class BaseViewController<A : Action, VS : ViewState> protected construc
     protected open fun onSubscribedToStore() {}
 
     override fun onContextAvailable(context: Context) {
-        inject(myPoliApp.module(context))
+        inject(myPoliApp.uiModule(context))
     }
 
     override fun onAttach(view: View) {

@@ -6,7 +6,7 @@ import android.content.Context
 import android.content.Intent
 import io.ipoli.android.common.IntentUtil
 import io.ipoli.android.common.datetime.toMillis
-import io.ipoli.android.common.di.Module
+import io.ipoli.android.common.di.BackgroundModule
 import io.ipoli.android.myPoliApp
 import io.ipoli.android.quest.receiver.ReminderReceiver
 import kotlinx.coroutines.experimental.CommonPool
@@ -28,28 +28,26 @@ class AndroidJobReminderScheduler(private val context: Context) : ReminderSchedu
 
         launch(CommonPool) {
 
-            val c = this@AndroidJobReminderScheduler.context
-
-            val kap = Kapsule<Module>()
+            val kap = Kapsule<BackgroundModule>()
             val entityReminderRepository by kap.required { entityReminderRepository }
-            kap.inject(myPoliApp.module(c))
+            kap.inject(myPoliApp.backgroundModule(context))
 
             val remindAt = entityReminderRepository.findNextReminderTime()
 
-            val alarmManager = c.getSystemService(Context.ALARM_SERVICE) as AlarmManager
+            val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
 
             if (remindAt == null) {
-                alarmManager.cancel(createOperationIntent(c))
+                alarmManager.cancel(createOperationIntent(context))
                 return@launch
             }
 
-            val show = IntentUtil.getActivityPendingIntent(c, IntentUtil.startApp(c))
+            val show = IntentUtil.getActivityPendingIntent(context, IntentUtil.startApp(context))
 
             val clockInfo = AlarmManager.AlarmClockInfo(remindAt.toMillis(), show)
 
             alarmManager.setAlarmClock(
                 clockInfo,
-                createOperationIntent(c, remindAt)
+                createOperationIntent(context, remindAt)
             )
         }
 

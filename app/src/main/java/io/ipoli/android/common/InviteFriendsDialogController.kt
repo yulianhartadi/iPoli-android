@@ -21,7 +21,7 @@ import io.ipoli.android.Constants
 import io.ipoli.android.Constants.Companion.FACEBOOK_PACKAGE
 import io.ipoli.android.Constants.Companion.TWITTER_PACKAGE
 import io.ipoli.android.R
-import io.ipoli.android.common.di.Module
+import io.ipoli.android.common.di.UIModule
 import io.ipoli.android.common.view.BaseDialogController
 import io.ipoli.android.common.view.showLongToast
 import io.ipoli.android.common.view.stringRes
@@ -37,7 +37,7 @@ import space.traversal.kapsule.required
  * Created by Polina Zhelyazkova <polina@mypoli.fun>
  * on 3/26/18.
  */
-class InviteFriendsDialogController : BaseDialogController(), Injects<Module> {
+class InviteFriendsDialogController : BaseDialogController(), Injects<UIModule> {
 
     private val eventLogger by required { eventLogger }
 
@@ -46,7 +46,7 @@ class InviteFriendsDialogController : BaseDialogController(), Injects<Module> {
     }
 
     override fun onCreateContentView(inflater: LayoutInflater, savedViewState: Bundle?): View {
-        inject(myPoliApp.module(myPoliApp.instance))
+        inject(myPoliApp.uiModule(myPoliApp.instance))
         registerForActivityResult(INVITE_FRIEND_REQUEST_CODE)
         return inflater.inflate(R.layout.dialog_invite_friends, null)
     }

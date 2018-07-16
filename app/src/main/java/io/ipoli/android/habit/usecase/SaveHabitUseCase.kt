@@ -83,7 +83,7 @@ class SaveHabitUseCase(
             )
         }
 
-        if (habit.isCompletedFor(date)) {
+        if (habit.shouldBeDoneOn(date) && habit.isCompletedFor(date)) {
             val history = habit.history
             removeRewardFromPlayerUseCase.execute(
                 SimpleReward(

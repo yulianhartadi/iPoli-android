@@ -4,18 +4,16 @@ import android.preference.PreferenceManager
 import com.evernote.android.job.Job
 import com.evernote.android.job.JobRequest
 import io.ipoli.android.Constants
-import io.ipoli.android.common.di.Module
 import io.ipoli.android.common.view.asThemedWrapper
 import kotlinx.coroutines.experimental.android.UI
 import kotlinx.coroutines.experimental.launch
-import space.traversal.kapsule.Injects
 import java.util.*
 
 /**
  * Created by Venelin Valkov <venelin@mypoli.fun>
  * on 11/15/17.
  */
-class RatePopupJob : Job(), Injects<Module> {
+class RatePopupJob : Job() {
 
     override fun onRunJob(params: Params): Result {
         val pm = PreferenceManager.getDefaultSharedPreferences(context)

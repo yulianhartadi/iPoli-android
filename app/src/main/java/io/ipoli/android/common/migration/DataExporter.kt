@@ -10,7 +10,7 @@ import com.google.firebase.firestore.WriteBatch
 import io.ipoli.android.Constants
 import io.ipoli.android.challenge.persistence.FirestoreChallengeRepository
 import io.ipoli.android.common.datetime.milliseconds
-import io.ipoli.android.common.di.Module
+import io.ipoli.android.common.di.BackgroundModule
 import io.ipoli.android.common.persistence.BaseFirestoreRepository
 import io.ipoli.android.dailychallenge.data.persistence.FirestoreDailyChallengeRepository
 import io.ipoli.android.habit.persistence.FirestoreHabitRepository
@@ -25,7 +25,7 @@ import space.traversal.kapsule.Injects
 import space.traversal.kapsule.inject
 import space.traversal.kapsule.required
 
-class DataExporter(private val appContext: Context) : Injects<Module> {
+class DataExporter(private val appContext: Context) : Injects<BackgroundModule> {
 
     private val remoteDatabase by required { remoteDatabase }
     private val sharedPreferences by required { sharedPreferences }
@@ -42,7 +42,7 @@ class DataExporter(private val appContext: Context) : Injects<Module> {
     @SuppressLint("ApplySharedPref")
     @WorkerThread
     fun export() {
-        inject(myPoliApp.module(appContext))
+        inject(myPoliApp.backgroundModule(appContext))
 
         if (!internetConnectionChecker.isConnected()) return
 
@@ -62,7 +62,7 @@ class DataExporter(private val appContext: Context) : Injects<Module> {
     @SuppressLint("ApplySharedPref")
     @WorkerThread
     fun exportNewData() {
-        inject(myPoliApp.module(appContext))
+        inject(myPoliApp.backgroundModule(appContext))
 
         if (!internetConnectionChecker.isConnected()) return
 

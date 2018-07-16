@@ -26,14 +26,40 @@ import timber.log.Timber
 
 class myPoliApp : Application() {
 
-    private lateinit var module: Module
+    @Volatile
+    private var uiModule: UIModule? = null
+
+    @Volatile
+    private var backgroundModule: BackgroundModule? = null
 
     companion object {
 
         lateinit var instance: myPoliApp
 
-        fun module(context: Context) =
-            (context.applicationContext as myPoliApp).module
+        fun uiModule(context: Context): UIModule {
+            val appInstance = context.applicationContext as myPoliApp
+            return appInstance.uiModule
+                ?: synchronized(context.applicationContext) {
+                    appInstance.uiModule = UIModule(
+                        androidModule = MainAndroidModule(context),
+                        useCaseModule = MainUseCaseModule(context),
+                        stateStoreModule = AndroidStateStoreModule()
+                    ).transitive()
+                    appInstance.uiModule!!
+                }
+        }
+
+        fun backgroundModule(context: Context): BackgroundModule {
+            val appInstance = context.applicationContext as myPoliApp
+            return appInstance.backgroundModule
+                ?: synchronized(context.applicationContext) {
+                    appInstance.backgroundModule = BackgroundModule(
+                        androidModule = MainAndroidModule(context),
+                        useCaseModule = MainUseCaseModule(context)
+                    ).transitive()
+                    appInstance.backgroundModule!!
+                }
+        }
     }
 
     @SuppressLint("NewApi")
@@ -59,13 +85,6 @@ class myPoliApp : Application() {
         }
 
         JobManager.create(this).addJobCreator(myPoliJobCreator())
-
-        module = Module(
-            androidModule = MainAndroidModule(this),
-            repositoryModule = AndroidRepositoryModule(this),
-            useCaseModule = MainUseCaseModule(),
-            stateStoreModule = AndroidStateStoreModule()
-        ).transitive()
 
         instance = this
 

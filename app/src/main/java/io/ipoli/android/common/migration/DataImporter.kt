@@ -11,7 +11,7 @@ import com.google.firebase.firestore.Source
 import io.ipoli.android.BuildConfig
 import io.ipoli.android.Constants
 import io.ipoli.android.challenge.persistence.FirestoreChallengeRepository
-import io.ipoli.android.common.di.Module
+import io.ipoli.android.common.di.BackgroundModule
 import io.ipoli.android.dailychallenge.data.persistence.FirestoreDailyChallengeRepository
 import io.ipoli.android.habit.persistence.FirestoreHabitRepository
 import io.ipoli.android.myPoliApp
@@ -30,7 +30,7 @@ import timber.log.Timber
  * Created by Venelin Valkov <venelin@mypoli.fun>
  * on 06/28/2018.
  */
-class DataImporter(private val appContext: Context) : Injects<Module> {
+class DataImporter(private val appContext: Context) : Injects<BackgroundModule> {
 
     private val remoteDatabase by required { remoteDatabase }
     private val localDatabase by required { localDatabase }
@@ -48,7 +48,7 @@ class DataImporter(private val appContext: Context) : Injects<Module> {
     @SuppressLint("ApplySharedPref")
     @WorkerThread
     fun import() {
-        inject(myPoliApp.module(appContext))
+        inject(myPoliApp.backgroundModule(appContext))
 
         val authUser = FirebaseAuth.getInstance().currentUser
         requireNotNull(authUser) { "DataImporter called without FirebaseAuth user" }

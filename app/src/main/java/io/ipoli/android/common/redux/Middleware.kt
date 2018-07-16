@@ -10,6 +10,9 @@ import kotlinx.coroutines.experimental.launch
  * on 01/20/2018.
  */
 interface MiddleWare<in S : State> {
+
+    fun onCreate() {}
+
     fun execute(state: S, dispatcher: Dispatcher, action: Action): Result
 
     sealed class Result {
@@ -41,6 +44,12 @@ interface AsyncMiddleware<in S : State> : MiddleWare<S> {
 
 class CompositeMiddleware<in S : State>(private val middleware: List<MiddleWare<S>>) :
     MiddleWare<S> {
+
+    override fun onCreate() {
+        for(m in middleware) {
+            m.onCreate()
+        }
+    }
 
     override fun execute(state: S, dispatcher: Dispatcher, action: Action): MiddleWare.Result {
         for (m in middleware) {

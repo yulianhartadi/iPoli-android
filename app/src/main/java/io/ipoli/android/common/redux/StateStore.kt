@@ -21,6 +21,8 @@ interface State
 
 interface SideEffectHandler<in S : State> {
 
+    fun onCreate() {}
+
     suspend fun execute(action: Action, state: S, dispatcher: Dispatcher)
 
     fun canHandle(action: Action): Boolean
@@ -125,15 +127,19 @@ class StateStore<S : CompositeState<S>>(
 
     private val stateActor = createStateActor(coroutineContext)
 
+    private var state = initialState
+
+    @Volatile
+    private var isInit: Boolean = false
+
     fun addSideEffectHandler(handler: SideEffectHandler<S>) {
+        handler.onCreate()
         sideEffectHandlers.add(handler)
     }
 
     fun removeSideEffectHandler(handler: SideEffectHandler<S>) {
         sideEffectHandlers.remove(handler)
     }
-
-    var state = initialState
 
     private fun createStateActor(
         coroutineContext: CoroutineContext
@@ -159,6 +165,13 @@ class StateStore<S : CompositeState<S>>(
     ) = middleWare.execute(state, this, action)
 
     override fun <A : Action> dispatch(action: A) {
+        if (!isInit) {
+            for (se in sideEffectHandlers) {
+                se.onCreate()
+            }
+            middleWare.onCreate()
+            isInit = true
+        }
         stateActor.offer(action)
     }
 
@@ -191,8 +204,8 @@ class StateStore<S : CompositeState<S>>(
             if (action is UiAction.Attach<*>) {
                 val stateKey = action.reducer.stateKey
                 require(
-                    !state.keys.contains(stateKey),
-                    { "Key $stateKey is already added to the state?!" })
+                    !state.keys.contains(stateKey)
+                ) { "Key $stateKey is already added to the state?!" }
                 val reducer = action.reducer
                 @Suppress("UNCHECKED_CAST")
                 reducers.add(reducer as ViewStateReducer<S, *>)
@@ -204,11 +217,11 @@ class StateStore<S : CompositeState<S>>(
                 @Suppress("UNCHECKED_CAST")
                 val reducer = action.reducer as ViewStateReducer<S, *>
                 require(
-                    reducers.contains(reducer),
-                    { "Reducer $reducer not found in state reducers" })
+                    reducers.contains(reducer)
+                ) { "Reducer $reducer not found in state reducers" }
                 require(
-                    state.keys.contains(stateKey),
-                    { "State with key $stateKey not found in state" })
+                    state.keys.contains(stateKey)
+                ) { "State with key $stateKey not found in state" }
                 reducers.remove(reducer)
                 return state.remove(stateKey)
             }

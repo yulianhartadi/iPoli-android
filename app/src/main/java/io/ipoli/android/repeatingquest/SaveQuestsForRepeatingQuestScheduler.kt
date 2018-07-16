@@ -2,7 +2,7 @@ package io.ipoli.android.repeatingquest
 
 import com.evernote.android.job.DailyJob
 import com.evernote.android.job.JobRequest
-import io.ipoli.android.common.di.Module
+import io.ipoli.android.common.di.BackgroundModule
 import io.ipoli.android.myPoliApp
 import io.ipoli.android.repeatingquest.usecase.SaveQuestsForRepeatingQuestUseCase
 import org.threeten.bp.LocalDate
@@ -15,14 +15,13 @@ import java.util.concurrent.TimeUnit
  * Created by Venelin Valkov <venelin@mypoli.fun>
  * on 03/03/2018.
  */
-
-class SaveQuestsForRepeatingQuestJob : DailyJob(), Injects<Module> {
+class SaveQuestsForRepeatingQuestJob : DailyJob(), Injects<BackgroundModule> {
 
     override fun onRunDailyJob(params: Params): DailyJobResult {
-        val kap = Kapsule<Module>()
+        val kap = Kapsule<BackgroundModule>()
         val repeatingQuestRepository by kap.required { repeatingQuestRepository }
         val saveQuestsForRepeatingQuestUseCase by kap.required { saveQuestsForRepeatingQuestUseCase }
-        kap.inject(myPoliApp.module(context))
+        kap.inject(myPoliApp.backgroundModule(context))
 
         val rqs = repeatingQuestRepository.findAllActive()
         rqs.forEach {

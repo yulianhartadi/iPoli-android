@@ -1,7 +1,7 @@
 package io.ipoli.android.pet
 
 import io.ipoli.android.common.datetime.Time
-import io.ipoli.android.common.di.Module
+import io.ipoli.android.common.di.BackgroundModule
 import io.ipoli.android.common.job.FixedDailyJob
 import io.ipoli.android.common.job.FixedDailyJobScheduler
 import io.ipoli.android.myPoliApp
@@ -15,13 +15,13 @@ import space.traversal.kapsule.Kapsule
  * on 11/30/17.
  */
 
-class LowerPetStatsJob : FixedDailyJob(LowerPetStatsJob.TAG), Injects<Module> {
+class LowerPetStatsJob : FixedDailyJob(LowerPetStatsJob.TAG), Injects<BackgroundModule> {
 
     override fun doRunJob(params: Params): Result {
-        val kap = Kapsule<Module>()
+        val kap = Kapsule<BackgroundModule>()
         val changePetStatsUseCase by kap.required { lowerPetStatsUseCase }
         val eventLogger by kap.required { eventLogger }
-        kap.inject(myPoliApp.module(context))
+        kap.inject(myPoliApp.backgroundModule(context))
 
         eventLogger.logEvent("lower_pet_stats", mapOf("lowerStatsTime" to Time.now()))
 

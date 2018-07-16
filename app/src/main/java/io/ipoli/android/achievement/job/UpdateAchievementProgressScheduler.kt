@@ -2,7 +2,7 @@ package io.ipoli.android.achievement.job
 
 import io.ipoli.android.achievement.usecase.UpdateAchievementProgressUseCase
 import io.ipoli.android.common.datetime.Time
-import io.ipoli.android.common.di.Module
+import io.ipoli.android.common.di.BackgroundModule
 import io.ipoli.android.common.job.FixedDailyJob
 import io.ipoli.android.common.job.FixedDailyJobScheduler
 import io.ipoli.android.myPoliApp
@@ -18,9 +18,9 @@ import space.traversal.kapsule.Kapsule
 class UpdateAchievementProgressJob : FixedDailyJob(UpdateAchievementProgressJob.TAG) {
 
     override fun doRunJob(params: Params): Result {
-        val kap = Kapsule<Module>()
+        val kap = Kapsule<BackgroundModule>()
         val updateAchievementProgressUseCase by kap.required { updateAchievementProgressUseCase }
-        kap.inject(myPoliApp.module(context))
+        kap.inject(myPoliApp.backgroundModule(context))
         updateAchievementProgressUseCase.execute(UpdateAchievementProgressUseCase.Params())
         return Result.SUCCESS
     }

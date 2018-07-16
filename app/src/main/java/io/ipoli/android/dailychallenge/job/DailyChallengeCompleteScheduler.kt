@@ -6,7 +6,7 @@ import com.evernote.android.job.util.support.PersistableBundleCompat
 import io.ipoli.android.achievement.usecase.UnlockAchievementsUseCase
 import io.ipoli.android.common.SimpleReward
 import io.ipoli.android.common.datetime.seconds
-import io.ipoli.android.common.di.Module
+import io.ipoli.android.common.di.BackgroundModule
 import io.ipoli.android.common.view.asThemedWrapper
 import io.ipoli.android.dailychallenge.DailyChallengeCompletePopup
 import io.ipoli.android.myPoliApp
@@ -20,11 +20,11 @@ class DailyChallengeCompleteJob : Job() {
 
     override fun onRunJob(params: Params): Result {
 
-        val kap = Kapsule<Module>()
+        val kap = Kapsule<BackgroundModule>()
         val rewardPlayerUseCase by kap.required { rewardPlayerUseCase }
         val unlockAchievement by kap.required { unlockAchievementsUseCase }
         val playerRepository by kap.required { playerRepository }
-        kap.inject(myPoliApp.module(context))
+        kap.inject(myPoliApp.backgroundModule(context))
 
         val coins = params.extras.getInt(KEY_COINS, -1)
         val experience = params.extras.getInt(KEY_EXPERIENCE, -1)

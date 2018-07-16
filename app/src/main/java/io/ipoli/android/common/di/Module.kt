@@ -155,117 +155,14 @@ import io.ipoli.android.tag.persistence.TagRepository
 import io.ipoli.android.tag.sideeffect.TagSideEffectHandler
 import io.ipoli.android.tag.usecase.*
 import kotlinx.coroutines.experimental.CommonPool
-import kotlinx.coroutines.experimental.Job
 import space.traversal.kapsule.HasModules
 import space.traversal.kapsule.Injects
 import space.traversal.kapsule.required
-import java.util.concurrent.ExecutorService
-import java.util.concurrent.Executors
 
 /**
  * Created by Venelin Valkov <venelin@mypoli.fun>
  * on 9/10/17.
  */
-
-interface RepositoryModule {
-
-    val questRepository: QuestRepository
-    val playerRepository: PlayerRepository
-    val repeatingQuestRepository: RepeatingQuestRepository
-    val challengeRepository: ChallengeRepository
-    val eventRepository: EventRepository
-    val calendarRepository: CalendarRepository
-    val tagRepository: TagRepository
-    val weatherRepository: WeatherRepository
-    val motivationalImageRepository: MotivationalImageRepository
-    val quoteRepository: QuoteRepository
-    val dailyChallengeRepository: DailyChallengeRepository
-    val appUsageStatRepository: AppUsageStatRepository
-    val habitRepository: HabitRepository
-    val entityReminderRepository: EntityReminderRepository
-}
-
-class AndroidRepositoryModule(private val appContext: Context) :
-    RepositoryModule, Injects<Module> {
-
-    override val questRepository by required {
-        RoomQuestRepository(
-            dao = localDatabase.questDao(),
-            entityReminderDao = localDatabase.entityReminderDao(),
-            tagDao = localDatabase.tagDao()
-        )
-    }
-
-    override val playerRepository
-        by required {
-            AndroidPlayerRepository(
-                remoteDatabase,
-                localDatabase.playerDao()
-            )
-        }
-
-    override val repeatingQuestRepository
-        by required {
-            RoomRepeatingQuestRepository(
-                dao = localDatabase.repeatingQuestDao(),
-                tagDao = localDatabase.tagDao()
-            )
-        }
-
-    override val challengeRepository by required {
-        RoomChallengeRepository(
-            dao = localDatabase.challengeDao(),
-            tagDao = localDatabase.tagDao()
-        )
-    }
-
-    override val eventRepository by required {
-        AndroidCalendarEventRepository()
-    }
-
-    override val calendarRepository by required {
-        AndroidCalendarRepository()
-    }
-
-    override val tagRepository
-        by required {
-            RoomTagRepository(localDatabase)
-        }
-
-    override val weatherRepository by required { AndroidWeatherRepository(appContext) }
-
-    override val motivationalImageRepository by required {
-        FirestoreMotivationalImageRepository(
-            remoteDatabase
-        )
-    }
-
-    override val quoteRepository by required {
-        FirestoreQuoteRepository(remoteDatabase)
-    }
-
-    override val dailyChallengeRepository by required {
-        RoomDailyChallengeRepository(localDatabase.dailyChallengeDao())
-    }
-
-    override val appUsageStatRepository by required {
-        AndroidAppUsageStatRepository(appContext)
-    }
-
-    override val habitRepository
-        by required {
-            RoomHabitRepository(
-                dao = localDatabase.habitDao(),
-                tagDao = localDatabase.tagDao()
-            )
-        }
-
-    override val entityReminderRepository by required {
-        RoomEntityReminderRepository(
-            localDatabase.entityReminderDao()
-        )
-    }
-}
 
 interface AndroidModule {
     val layoutInflater: LayoutInflater
@@ -276,45 +173,7 @@ interface AndroidModule {
 
     val calendarFormatter: CalendarFormatter
 
-    val remoteDatabase: FirebaseFirestore
-
-    val localDatabase: MyPoliRoomDatabase
-
     val eventLogger: EventLogger
-
-    val reminderScheduler: ReminderScheduler
-
-    val timerCompleteScheduler: TimerCompleteScheduler
-
-    val rewardScheduler: RewardScheduler
-
-    val levelUpScheduler: LevelUpScheduler
-
-    val levelDownScheduler: LevelDownScheduler
-
-    val lowerPetStatsScheduler: LowerPetStatsScheduler
-
-    val saveQuestsForRepeatingQuestScheduler: SaveQuestsForRepeatingQuestScheduler
-
-    val removeExpiredPowerUpsScheduler: RemoveExpiredPowerUpsScheduler
-
-    val checkMembershipStatusScheduler: CheckMembershipStatusScheduler
-
-    val ratePopupScheduler: RatePopupScheduler
-
-    val planDayScheduler: PlanDayScheduler
-
-    val dailyChallengeCompleteScheduler: DailyChallengeCompleteScheduler
-
-    val updateAchievementProgressScheduler: UpdateAchievementProgressScheduler
-
-    val showUnlockedAchievementsScheduler: ShowUnlockedAchievementsScheduler
-
-    val updateHabitStreaksScheduler: UpdateHabitStreaksScheduler
-
-    val permissionChecker: PermissionChecker
-
-    val job: Job
 
     val imageLoader: ImageLoader
 
@@ -325,8 +184,6 @@ interface AndroidModule {
     val firestoreToLocalPlayerMigrator: FirestoreToLocalPlayerMigrator
 
     val internetConnectionChecker: InternetConnectionChecker
-
-    val executor: ExecutorService
 
     val billingResponseHandler: BillingResponseHandler
 
@@ -350,70 +207,20 @@ class MainAndroidModule(
 
     override val calendarFormatter get() = CalendarFormatter(context)
 
-    override val reminderScheduler get() = AndroidJobReminderScheduler(context)
+    override val dataImporter get() = DataImporter(context)
 
-    override val timerCompleteScheduler get() = AndroidJobTimerCompleteScheduler()
+    override val dataExporter get() = DataExporter(context)
 
-    override val rewardScheduler get() = AndroidJobRewardScheduler(context)
-
-    override val levelUpScheduler get() = AndroidLevelUpScheduler()
-
-    override val levelDownScheduler get() = AndroidLevelDownScheduler()
-
-    override val lowerPetStatsScheduler get() = AndroidJobLowerPetStatsScheduler()
-
-    override val saveQuestsForRepeatingQuestScheduler get() = AndroidSaveQuestsForRepeatingQuestScheduler()
-
-    override val removeExpiredPowerUpsScheduler get() = AndroidRemoveExpiredPowerUpsScheduler()
-
-    override val checkMembershipStatusScheduler
-        get() = AndroidCheckMembershipStatusScheduler()
-
-    override val ratePopupScheduler get() = AndroidRatePopupScheduler()
-
-    override val dailyChallengeCompleteScheduler
-        get() = AndroidDailyChallengeCompleteScheduler()
-
-    override val updateAchievementProgressScheduler
-        get() = AndroidUpdateAchievementProgressScheduler()
-
-    override val showUnlockedAchievementsScheduler
-        get() = AndroidShowUnlockedAchievementsScheduler(context)
-
-    override val updateHabitStreaksScheduler
-        get() = AndroidUpdateHabitStreaksScheduler()
-
-    override val remoteDatabase = FirebaseFirestore.getInstance().also {
-        it.firestoreSettings =
-            FirebaseFirestoreSettings.Builder().setPersistenceEnabled(false).build()
-    }
-
-    override val localDatabase = MyPoliRoomDatabase.getInstance(context)
-
-    override val dataImporter = DataImporter(context)
-
-    override val dataExporter = DataExporter(context)
-
-    override val firestoreToLocalPlayerMigrator = FirestoreToLocalPlayerMigrator(context)
+    override val firestoreToLocalPlayerMigrator get() = FirestoreToLocalPlayerMigrator(context)
 
     override val eventLogger
         get() = SimpleEventLogger(
             amplitude = Amplitude.getInstance()
         )
 
-    override val planDayScheduler
-        get() = AndroidPlanDayScheduler(context)
+    override val imageLoader get() = AndroidImageLoader()
 
-    override val permissionChecker
-        get() = AndroidPermissionChecker(context)
-
-    override val job get() = Job()
-
-    override val imageLoader = AndroidImageLoader()
-
-    override val internetConnectionChecker = InternetConnectionChecker(context)
-
-    override val executor: ExecutorService = Executors.newCachedThreadPool()
+    override val internetConnectionChecker get() = InternetConnectionChecker(context)
 
     override val billingResponseHandler
         get() = BillingResponseHandler(eventLogger)
@@ -426,6 +233,45 @@ class MainAndroidModule(
 }
 
 interface UseCaseModule {
+
+    val permissionChecker: PermissionChecker
+
+    val remoteDatabase: FirebaseFirestore
+
+    val localDatabase: MyPoliRoomDatabase
+
+    val questRepository: QuestRepository
+    val playerRepository: PlayerRepository
+    val repeatingQuestRepository: RepeatingQuestRepository
+    val challengeRepository: ChallengeRepository
+    val eventRepository: EventRepository
+    val calendarRepository: CalendarRepository
+    val tagRepository: TagRepository
+    val weatherRepository: WeatherRepository
+    val motivationalImageRepository: MotivationalImageRepository
+    val quoteRepository: QuoteRepository
+    val dailyChallengeRepository: DailyChallengeRepository
+    val appUsageStatRepository: AppUsageStatRepository
+    val habitRepository: HabitRepository
+    val entityReminderRepository: EntityReminderRepository
+
+
+    val reminderScheduler: ReminderScheduler
+    val timerCompleteScheduler: TimerCompleteScheduler
+    val rewardScheduler: RewardScheduler
+    val levelUpScheduler: LevelUpScheduler
+    val levelDownScheduler: LevelDownScheduler
+    val lowerPetStatsScheduler: LowerPetStatsScheduler
+    val saveQuestsForRepeatingQuestScheduler: SaveQuestsForRepeatingQuestScheduler
+    val removeExpiredPowerUpsScheduler: RemoveExpiredPowerUpsScheduler
+    val checkMembershipStatusScheduler: CheckMembershipStatusScheduler
+    val ratePopupScheduler: RatePopupScheduler
+    val planDayScheduler: PlanDayScheduler
+    val dailyChallengeCompleteScheduler: DailyChallengeCompleteScheduler
+    val updateAchievementProgressScheduler: UpdateAchievementProgressScheduler
+    val showUnlockedAchievementsScheduler: ShowUnlockedAchievementsScheduler
+    val updateHabitStreaksScheduler: UpdateHabitStreaksScheduler
+
     val loadScheduleForDateUseCase: LoadScheduleForDateUseCase
     val saveQuestUseCase: SaveQuestUseCase
     val removeQuestUseCase: RemoveQuestUseCase
@@ -531,29 +377,121 @@ interface UseCaseModule {
     val createScheduleSummaryUseCase: CreateScheduleSummaryUseCase
 }
 
-class MainUseCaseModule : UseCaseModule, Injects<Module> {
-    private val questRepository by required { questRepository }
-    private val eventRepository by required { eventRepository }
-    private val permissionChecker by required { permissionChecker }
-    private val repeatingQuestRepository by required { repeatingQuestRepository }
-    private val playerRepository by required { playerRepository }
-    private val challengeRepository by required { challengeRepository }
-    private val tagRepository by required { tagRepository }
-    private val habitRepository by required { habitRepository }
-    private val reminderScheduler by required { reminderScheduler }
-    private val rewardScheduler by required { rewardScheduler }
-    private val levelUpScheduler by required { levelUpScheduler }
-    private val levelDownScheduler by required { levelDownScheduler }
-    private val rateDialogScheduler by required { ratePopupScheduler }
-    private val timerCompleteScheduler by required { timerCompleteScheduler }
-    private val planDayScheduler by required { planDayScheduler }
-    private val dailyChallengeRepository by required { dailyChallengeRepository }
-    private val dailyChallengeCompleteScheduler by required { dailyChallengeCompleteScheduler }
-    private val showUnlockedAchievementsScheduler by required { showUnlockedAchievementsScheduler }
-    private val appUsageStatRepository by required { appUsageStatRepository }
+class MainUseCaseModule(private val context: Context) : UseCaseModule {
+
+    override val permissionChecker
+        get() = AndroidPermissionChecker(context)
+
+    override val remoteDatabase = FirebaseFirestore.getInstance().also {
+        it.firestoreSettings =
+            FirebaseFirestoreSettings.Builder().setPersistenceEnabled(false).build()
+    }
+
+    override val localDatabase get() = MyPoliRoomDatabase.getInstance(context)
+
+    override val questRepository =
+        RoomQuestRepository(
+            dao = localDatabase.questDao(),
+            entityReminderDao = localDatabase.entityReminderDao(),
+            tagDao = localDatabase.tagDao()
+        )
+
+
+    override val playerRepository =
+        AndroidPlayerRepository(
+            remoteDatabase,
+            localDatabase.playerDao()
+        )
+
+    override val repeatingQuestRepository =
+        RoomRepeatingQuestRepository(
+            dao = localDatabase.repeatingQuestDao(),
+            tagDao = localDatabase.tagDao()
+        )
+
+    override val challengeRepository =
+        RoomChallengeRepository(
+            dao = localDatabase.challengeDao(),
+            tagDao = localDatabase.tagDao()
+        )
+
+    override val eventRepository =
+        AndroidCalendarEventRepository()
+
+    override val calendarRepository =
+        AndroidCalendarRepository()
+
+    override val tagRepository =
+        RoomTagRepository(localDatabase)
+
+    override val weatherRepository =
+        AndroidWeatherRepository(context)
+
+    override val motivationalImageRepository =
+        FirestoreMotivationalImageRepository(
+            remoteDatabase
+        )
+
+    override val quoteRepository =
+        FirestoreQuoteRepository(remoteDatabase)
+
+    override val dailyChallengeRepository =
+        RoomDailyChallengeRepository(localDatabase.dailyChallengeDao())
+
+    override val appUsageStatRepository =
+        AndroidAppUsageStatRepository(context)
+
+    override val habitRepository =
+        RoomHabitRepository(
+            dao = localDatabase.habitDao(),
+            tagDao = localDatabase.tagDao()
+        )
+
+    override val entityReminderRepository =
+        RoomEntityReminderRepository(
+            localDatabase.entityReminderDao()
+        )
+
+
+    override val reminderScheduler get() = AndroidJobReminderScheduler(context)
+
+    override val timerCompleteScheduler get() = AndroidJobTimerCompleteScheduler()
+
+    override val rewardScheduler get() = AndroidJobRewardScheduler(context)
+
+    override val levelUpScheduler get() = AndroidLevelUpScheduler()
+
+    override val levelDownScheduler get() = AndroidLevelDownScheduler()
+
+    override val lowerPetStatsScheduler get() = AndroidJobLowerPetStatsScheduler()
+
+    override val saveQuestsForRepeatingQuestScheduler get() = AndroidSaveQuestsForRepeatingQuestScheduler()
+
+    override val removeExpiredPowerUpsScheduler get() = AndroidRemoveExpiredPowerUpsScheduler()
+
+    override val checkMembershipStatusScheduler
+        get() = AndroidCheckMembershipStatusScheduler()
+
+    override val ratePopupScheduler get() = AndroidRatePopupScheduler()
+
+    override val dailyChallengeCompleteScheduler
+        get() = AndroidDailyChallengeCompleteScheduler()
+
+    override val updateAchievementProgressScheduler
+        get() = AndroidUpdateAchievementProgressScheduler()
+
+    override val showUnlockedAchievementsScheduler
+        get() = AndroidShowUnlockedAchievementsScheduler(context)
+
+    override val updateHabitStreaksScheduler
+        get() = AndroidUpdateHabitStreaksScheduler()
+
+    override val planDayScheduler
+        get() = AndroidPlanDayScheduler(context)
 
     override val loadScheduleForDateUseCase
         get() = LoadScheduleForDateUseCase()
+
     override val saveQuestUseCase
         get() = SaveQuestUseCase(
             questRepository,
@@ -578,7 +516,7 @@ class MainUseCaseModule : UseCaseModule, Injects<Module> {
             playerRepository,
             reminderScheduler,
             rewardScheduler,
-            rateDialogScheduler,
+            ratePopupScheduler,
             rewardPlayerUseCase,
             checkForDailyChallengeCompletionUseCase,
             dailyChallengeCompleteScheduler
@@ -918,13 +856,13 @@ interface StateStoreModule {
     val stateStore: StateStore<AppState>
 }
 
-class AndroidStateStoreModule : StateStoreModule, Injects<Module> {
+class AndroidStateStoreModule : StateStoreModule, Injects<UIModule> {
 
     override val stateStore by required {
         StateStore(
             initialState = AppState(
                 data = mapOf(
-                    AppDataState::class.java.simpleName to AppDataReducer.defaultState()
+                    "AppDataState" to AppDataReducer.defaultState()
                 )
             ),
             reducers = setOf(
@@ -966,7 +904,7 @@ class AndroidStateStoreModule : StateStoreModule, Injects<Module> {
                 PetDialogSideEffectHandler,
                 ScheduleSummarySideEffectHandler
             ),
-            sideEffectHandlerExecutor = CoroutineSideEffectHandlerExecutor(job + CommonPool),
+            sideEffectHandlerExecutor = CoroutineSideEffectHandlerExecutor(CommonPool),
             middleware = listOf(
                 LogEventsMiddleWare,
                 CheckEnabledPowerUpMiddleWare,
@@ -976,14 +914,12 @@ class AndroidStateStoreModule : StateStoreModule, Injects<Module> {
     }
 }
 
-class Module(
+class UIModule(
     androidModule: AndroidModule,
-    repositoryModule: RepositoryModule,
     useCaseModule: UseCaseModule,
     stateStoreModule: StateStoreModule
 ) :
     AndroidModule by androidModule,
-    RepositoryModule by repositoryModule,
     UseCaseModule by useCaseModule,
     StateStoreModule by stateStoreModule,
     HasModules {
@@ -991,8 +927,22 @@ class Module(
     override val modules =
         setOf(
             androidModule,
-            repositoryModule,
             useCaseModule,
             stateStoreModule
+        )
+}
+
+class BackgroundModule(
+    androidModule: AndroidModule,
+    useCaseModule: UseCaseModule
+) :
+    AndroidModule by androidModule,
+    UseCaseModule by useCaseModule,
+    HasModules {
+
+    override val modules =
+        setOf(
+            androidModule,
+            useCaseModule
         )
 }

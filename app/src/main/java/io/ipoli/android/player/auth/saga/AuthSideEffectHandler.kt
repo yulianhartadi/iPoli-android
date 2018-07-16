@@ -36,7 +36,7 @@ object AuthSideEffectHandler : AppSideEffectHandler() {
     private val tagRepository by required { tagRepository }
     private val habitRepository by required { habitRepository }
     private val sharedPreferences by required { sharedPreferences }
-    private val petStatsChangeScheduler by required { lowerPetStatsScheduler }
+    private val lowerPetStatsScheduler by required { lowerPetStatsScheduler }
     private val saveQuestsForRepeatingQuestScheduler by required { saveQuestsForRepeatingQuestScheduler }
     private val removeExpiredPowerUpsScheduler by required { removeExpiredPowerUpsScheduler }
     private val checkMembershipStatusScheduler by required { checkMembershipStatusScheduler }
@@ -370,7 +370,7 @@ object AuthSideEffectHandler : AppSideEffectHandler() {
 
     private fun prepareAppStart() {
         dispatch(LoadDataAction.All)
-        petStatsChangeScheduler.schedule()
+        lowerPetStatsScheduler.schedule()
         saveQuestsForRepeatingQuestScheduler.schedule()
         removeExpiredPowerUpsScheduler.schedule()
         checkMembershipStatusScheduler.schedule()

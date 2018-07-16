@@ -8,8 +8,6 @@ import android.os.Bundle
 import android.provider.Settings
 import android.support.design.widget.Snackbar
 import android.support.v7.app.AppCompatActivity
-import android.util.TypedValue
-import android.view.ViewGroup
 import android.widget.Toast
 import com.bluelinelabs.conductor.Conductor
 import com.bluelinelabs.conductor.Router
@@ -20,7 +18,7 @@ import io.ipoli.android.achievement.usecase.UnlockAchievementsUseCase
 import io.ipoli.android.common.AppState
 import io.ipoli.android.common.DataLoadedAction
 import io.ipoli.android.common.LoadDataAction
-import io.ipoli.android.common.di.Module
+import io.ipoli.android.common.di.UIModule
 import io.ipoli.android.common.home.HomeAction
 import io.ipoli.android.common.navigation.Navigator
 import io.ipoli.android.common.privacy.PrivacyPolicyViewController
@@ -31,7 +29,6 @@ import io.ipoli.android.common.view.Debounce
 import io.ipoli.android.common.view.playerTheme
 import io.ipoli.android.player.auth.AuthAction
 import io.ipoli.android.player.data.Membership
-import io.ipoli.android.player.data.Player
 import io.ipoli.android.store.powerup.AndroidPowerUp
 import io.ipoli.android.store.powerup.buy.BuyPowerUpDialogController
 import io.ipoli.android.store.powerup.middleware.ShowBuyPowerUpAction
@@ -52,14 +49,13 @@ import java.util.*
  * Created by Venelin Valkov <venelin@mypoli.fun>
  * on 7/6/17.
  */
-class MainActivity : AppCompatActivity(), Injects<Module>, SideEffectHandler<AppState> {
+class MainActivity : AppCompatActivity(), Injects<UIModule>, SideEffectHandler<AppState> {
 
     lateinit var router: Router
 
     private val playerRepository by required { playerRepository }
     private val sharedPreferences by required { sharedPreferences }
     private val unlockAchievementsUseCase by required { unlockAchievementsUseCase }
-    private val lowerPetStatsScheduler by required { lowerPetStatsScheduler }
 
     private val stateStore by required { stateStore }
     private val dataExporter by required { dataExporter }
@@ -67,21 +63,12 @@ class MainActivity : AppCompatActivity(), Injects<Module>, SideEffectHandler<App
     val rootRouter get() = router
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
+        super<AppCompatActivity>.onCreate(savedInstanceState)
         if (Build.VERSION.SDK_INT != Build.VERSION_CODES.O) {
             requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
         }
         setTheme(playerTheme)
         setContentView(R.layout.activity_main)
-        if (!shouldShowQuickAdd(intent)) {
-            val backgroundColor = TypedValue().let {
-                theme.resolveAttribute(android.R.attr.colorBackground, it, true)
-                it.resourceId
-            }
-            window.setBackgroundDrawableResource(backgroundColor)
-            findViewById<ViewGroup>(R.id.activityContainer)
-                .setBackgroundResource(backgroundColor)
-        }
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && !Settings.canDrawOverlays(this)) {
             val intent =
@@ -93,8 +80,7 @@ class MainActivity : AppCompatActivity(), Injects<Module>, SideEffectHandler<App
             Toast.makeText(this, R.string.allow_overlay_request, Toast.LENGTH_LONG).show()
         }
 
-        inject(myPoliApp.module(this))
-        incrementAppRun()
+        inject(myPoliApp.uiModule(this))
 
         router =
             Conductor.attachRouter(
@@ -103,6 +89,17 @@ class MainActivity : AppCompatActivity(), Injects<Module>, SideEffectHandler<App
                 savedInstanceState
             )
         router.setPopsLastView(true)
+
+        val schemaVer =
+            sharedPreferences.getInt(Constants.KEY_SCHEMA_VERSION, Constants.SCHEMA_VERSION)
+
+        val playerId = sharedPreferences.getString(Constants.KEY_PLAYER_ID, null)
+
+        if (playerId != null && schemaVer == Constants.SCHEMA_VERSION) {
+            startApp()
+            stateStore.dispatch(LoadDataAction.All)
+            return
+        }
 
         if (sharedPreferences.getInt(
                 Constants.KEY_PRIVACY_ACCEPTED_VERSION,
@@ -113,13 +110,11 @@ class MainActivity : AppCompatActivity(), Injects<Module>, SideEffectHandler<App
             return
         }
 
-        val schemaVer =
-            sharedPreferences.getInt(Constants.KEY_SCHEMA_VERSION, Constants.SCHEMA_VERSION)
-
         if (schemaVer < 200 || !sharedPreferences.getBoolean(
                 Constants.KEY_PLAYER_DATA_IMPORTED,
                 true
-            )) {
+            )
+        ) {
             Navigator(router).setMigration(
                 sharedPreferences.getString(
                     Constants.KEY_PLAYER_ID,
@@ -129,26 +124,7 @@ class MainActivity : AppCompatActivity(), Injects<Module>, SideEffectHandler<App
             return
         }
 
-        launch(CommonPool) {
-            val p = playerRepository.find()
-            val hasPlayer = p != null
-            if (hasPlayer) {
-
-                launch(UI) {
-                    if (p!!.isLoggedIn() && p.username.isNullOrEmpty()) {
-                        Navigator(router).setAuth()
-                    } else {
-                        startApp(p)
-                        stateStore.dispatch(LoadDataAction.All)
-                    }
-                }
-                unlockAchievementsUseCase.execute(UnlockAchievementsUseCase.Params(p!!))
-            } else {
-                launch(UI) {
-                    Navigator(router).setOnboard()
-                }
-            }
-        }
+        Navigator(router).setOnboard()
     }
 
     override fun onNewIntent(intent: Intent) {
@@ -179,7 +155,7 @@ class MainActivity : AppCompatActivity(), Injects<Module>, SideEffectHandler<App
         }
     }
 
-    private fun startApp(player: Player) {
+    private fun startApp() {
         val navigator = Navigator(router)
         if (intent.action == ACTION_SHOW_TIMER) {
             val questId = intent.getStringExtra(Constants.QUEST_ID_EXTRA_KEY)
@@ -198,13 +174,20 @@ class MainActivity : AppCompatActivity(), Injects<Module>, SideEffectHandler<App
             navigator.setPlanDay()
         } else if (!router.hasRootController()) {
             navigator.setHome()
-            lowerPetStatsScheduler.schedule()
 
-            if (Random().nextInt(10) == 1 && player.membership == Membership.NONE) {
-                showPremiumSnackbar()
-            }
-            if (player.isLoggedIn()) {
-                launch(CommonPool) {
+            launch(CommonPool) {
+                val p = playerRepository.find()!!
+                launch(UI) {
+                    if (p.isLoggedIn() && p.username.isNullOrEmpty()) {
+                        Navigator(router).setAuth()
+                    }
+
+                    if (Random().nextInt(10) == 1 && p.membership == Membership.NONE) {
+                        showPremiumSnackbar()
+                    }
+                }
+                unlockAchievementsUseCase.execute(UnlockAchievementsUseCase.Params(p))
+                if (p.isLoggedIn()) {
                     try {
                         dataExporter.exportNewData()
                     } catch (e: Throwable) {
@@ -215,8 +198,11 @@ class MainActivity : AppCompatActivity(), Injects<Module>, SideEffectHandler<App
                         }
                     }
                 }
+
             }
         }
+
+        incrementAppRun()
     }
 
     private fun shouldShowQuickAdd(startIntent: Intent) =

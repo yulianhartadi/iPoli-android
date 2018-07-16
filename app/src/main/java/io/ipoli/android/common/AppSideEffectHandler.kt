@@ -2,7 +2,7 @@ package io.ipoli.android.common
 
 import io.ipoli.android.challenge.predefined.category.list.ChallengeListForCategoryAction
 import io.ipoli.android.challenge.usecase.BuyChallengeUseCase
-import io.ipoli.android.common.di.Module
+import io.ipoli.android.common.di.BackgroundModule
 import io.ipoli.android.common.redux.Action
 import io.ipoli.android.common.redux.Dispatcher
 import io.ipoli.android.common.redux.SideEffectHandler
@@ -22,12 +22,15 @@ import space.traversal.kapsule.required
  */
 
 abstract class AppSideEffectHandler : SideEffectHandler<AppState>,
-    Injects<Module> {
+    Injects<BackgroundModule> {
 
     private var dispatcher: Dispatcher? = null
 
+    override fun onCreate() {
+        inject(myPoliApp.backgroundModule(myPoliApp.instance))
+    }
+
     override suspend fun execute(action: Action, state: AppState, dispatcher: Dispatcher) {
-        inject(myPoliApp.module(myPoliApp.instance))
         this.dispatcher = dispatcher
         doExecute(action, state)
     }

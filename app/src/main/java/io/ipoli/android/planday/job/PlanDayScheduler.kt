@@ -13,7 +13,7 @@ import io.ipoli.android.common.IntentUtil
 import io.ipoli.android.common.datetime.Duration
 import io.ipoli.android.common.datetime.Minute
 import io.ipoli.android.common.datetime.minutes
-import io.ipoli.android.common.di.Module
+import io.ipoli.android.common.di.BackgroundModule
 import io.ipoli.android.common.job.FixedDailyJob
 import io.ipoli.android.common.job.FixedDailyJobScheduler
 import io.ipoli.android.common.notification.NotificationUtil
@@ -104,10 +104,10 @@ class SnoozedPlanDayJob : Job() {
 
     override fun onRunJob(params: Params): Result {
 
-        val kap = Kapsule<Module>()
+        val kap = Kapsule<BackgroundModule>()
         val playerRepository by kap.required { playerRepository }
         val planDayScheduler by kap.required { planDayScheduler }
-        kap.inject(myPoliApp.module(context))
+        kap.inject(myPoliApp.backgroundModule(context))
 
         val p = playerRepository.find()
         requireNotNull(p)
@@ -128,11 +128,11 @@ class SnoozedPlanDayJob : Job() {
 class PlanDayJob : FixedDailyJob(PlanDayJob.TAG) {
 
     override fun doRunJob(params: Params): Result {
-        val kap = Kapsule<Module>()
+        val kap = Kapsule<BackgroundModule>()
         val playerRepository by kap.required { playerRepository }
         val planDayScheduler by kap.required { planDayScheduler }
         val dailyChallengeRepository by kap.required { dailyChallengeRepository }
-        kap.inject(myPoliApp.module(context))
+        kap.inject(myPoliApp.backgroundModule(context))
 
         val p = playerRepository.find()
         requireNotNull(p)
@@ -175,9 +175,9 @@ class AndroidPlanDayScheduler(private val context: Context) : PlanDayScheduler {
     override fun schedule() {
         launch(CommonPool) {
 
-            val kap = Kapsule<Module>()
+            val kap = Kapsule<BackgroundModule>()
             val playerRepository by kap.required { playerRepository }
-            kap.inject(myPoliApp.module(this@AndroidPlanDayScheduler.context))
+            kap.inject(myPoliApp.backgroundModule(this@AndroidPlanDayScheduler.context))
 
             val p = playerRepository.find()
 

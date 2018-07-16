@@ -10,7 +10,7 @@ import io.ipoli.android.Constants
 import io.ipoli.android.common.api.Api
 import io.ipoli.android.common.billing.BillingError
 import io.ipoli.android.common.datetime.isBetween
-import io.ipoli.android.common.di.Module
+import io.ipoli.android.common.di.BackgroundModule
 import io.ipoli.android.myPoliApp
 import io.ipoli.android.store.membership.error.SubscriptionError
 import io.ipoli.android.store.membership.usecase.RemoveMembershipUseCase
@@ -29,16 +29,16 @@ import kotlin.coroutines.experimental.suspendCoroutine
  * Created by Venelin Valkov <venelin@mypoli.fun>
  * on 03/23/2018.
  */
-class CheckMembershipStatusJob : DailyJob(), Injects<Module> {
+class CheckMembershipStatusJob : DailyJob(), Injects<BackgroundModule> {
 
 
     override fun onRunDailyJob(params: Params): DailyJobResult {
-        val kap = Kapsule<Module>()
+        val kap = Kapsule<BackgroundModule>()
         val playerRepository by kap.required { playerRepository }
         val removeMembershipUseCase by kap.required { removeMembershipUseCase }
         val enableAllPowerUpsUseCase by kap.required { enableAllPowerUpsUseCase }
 
-        kap.inject(myPoliApp.module(context))
+        kap.inject(myPoliApp.backgroundModule(context))
 
         val p = playerRepository.find()
         requireNotNull(p)

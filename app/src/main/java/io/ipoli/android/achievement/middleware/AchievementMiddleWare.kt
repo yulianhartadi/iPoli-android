@@ -6,7 +6,7 @@ import io.ipoli.android.challenge.add.EditChallengeAction
 import io.ipoli.android.challenge.show.ChallengeAction
 import io.ipoli.android.common.AppState
 import io.ipoli.android.common.NamespaceAction
-import io.ipoli.android.common.di.Module
+import io.ipoli.android.common.di.BackgroundModule
 import io.ipoli.android.common.home.HomeAction
 import io.ipoli.android.common.redux.Action
 import io.ipoli.android.common.redux.Dispatcher
@@ -32,16 +32,19 @@ import space.traversal.kapsule.required
  * Created by Polina Zhelyazkova <polina@mypoli.fun>
  * on 6/7/18.
  */
-object AchievementProgressMiddleWare : MiddleWare<AppState>, Injects<Module> {
+object AchievementProgressMiddleWare : MiddleWare<AppState>, Injects<BackgroundModule> {
 
     private val unlockAchievementsUseCase by required { unlockAchievementsUseCase }
+
+    override fun onCreate() {
+        inject(myPoliApp.backgroundModule(myPoliApp.instance))
+    }
 
     override fun execute(
         state: AppState,
         dispatcher: Dispatcher,
         action: Action
     ): MiddleWare.Result {
-        inject(myPoliApp.module(myPoliApp.instance))
 
         val player = state.dataState.player
         if (player == null) {

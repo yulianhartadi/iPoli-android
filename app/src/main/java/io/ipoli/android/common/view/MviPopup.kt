@@ -19,7 +19,7 @@ import io.ipoli.android.common.AppState
 import io.ipoli.android.common.NamespaceAction
 import io.ipoli.android.common.UiAction
 import io.ipoli.android.common.ViewUtils
-import io.ipoli.android.common.di.Module
+import io.ipoli.android.common.di.UIModule
 import io.ipoli.android.common.redux.Action
 import io.ipoli.android.common.redux.StateStore
 import io.ipoli.android.common.redux.ViewState
@@ -63,7 +63,7 @@ abstract class ReduxPopup<A : Action, VS : ViewState, out VSR : ViewStateReducer
     private val position: Position = Position.CENTER,
     @DrawableRes private val overlayBackground: Int? = R.color.md_dark_text_12
 ) :
-    StateStore.StateChangeSubscriber<AppState>, Injects<Module> {
+    StateStore.StateChangeSubscriber<AppState>, Injects<UIModule> {
 
     enum class Position {
 
@@ -91,7 +91,7 @@ abstract class ReduxPopup<A : Action, VS : ViewState, out VSR : ViewStateReducer
     abstract fun createView(inflater: LayoutInflater): View
 
     fun show(context: Context) {
-        inject(myPoliApp.module(context))
+        inject(myPoliApp.uiModule(context))
 
         contentView = createView(LayoutInflater.from(context)) as ViewGroup
         contentView.visibility = View.INVISIBLE
@@ -315,7 +315,7 @@ abstract class Popup
     private val isAutoHide: Boolean = false,
     private val position: Position = Position.CENTER,
     @DrawableRes private val overlayBackground: Int? = R.color.md_dark_text_12
-) : Injects<Module> {
+) : Injects<UIModule> {
 
     enum class Position {
 
@@ -336,7 +336,7 @@ abstract class Popup
 
     fun show(context: Context) {
 
-        inject(myPoliApp.module(context))
+        inject(myPoliApp.uiModule(context))
         contentView = createView(LayoutInflater.from(context)) as ViewGroup
         contentView.visibility = View.INVISIBLE
 

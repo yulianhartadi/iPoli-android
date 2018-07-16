@@ -3,7 +3,7 @@ package io.ipoli.android.common.middleware
 import io.ipoli.android.common.AppState
 import io.ipoli.android.common.NamespaceAction
 import io.ipoli.android.common.UiAction
-import io.ipoli.android.common.di.Module
+import io.ipoli.android.common.di.BackgroundModule
 import io.ipoli.android.common.redux.Action
 import io.ipoli.android.common.redux.AsyncMiddleware
 import io.ipoli.android.common.redux.Dispatcher
@@ -18,16 +18,19 @@ import space.traversal.kapsule.required
  * Created by Venelin Valkov <venelin@mypoli.fun>
  * on 03/25/2018.
  */
-object LogEventsMiddleWare : AsyncMiddleware<AppState>, Injects<Module> {
+object LogEventsMiddleWare : AsyncMiddleware<AppState>, Injects<BackgroundModule> {
 
     private val eventLogger by required { eventLogger }
+
+    override fun onCreate() {
+        inject(myPoliApp.backgroundModule(myPoliApp.instance))
+    }
 
     override fun onExecute(
         state: AppState,
         dispatcher: Dispatcher,
         action: Action
     ) {
-        inject(myPoliApp.module(myPoliApp.instance))
 
         val a = (action as? NamespaceAction)?.source ?: action
 

@@ -16,10 +16,6 @@
         <item name="windowActionModeOverlay">true</item>
         <item name="windowActionBar">false</item>
         <item name="windowNoTitle">true</item>
-        <item name="android:windowDrawsSystemBarBackgrounds">true</item>
-        <item name="android:windowBackground">@android:color/transparent</item>
-        <item name="android:windowIsTranslucent">true</item>
-        <item name="android:statusBarColor">@android:color/transparent</item>
         <item name="actionModeStyle">@style/Theme.myPoli.Widget.ActionMode</item>
         <item name="actionBarTheme">@style/ThemeOverlay.AppCompat.Light</item>
     </style>

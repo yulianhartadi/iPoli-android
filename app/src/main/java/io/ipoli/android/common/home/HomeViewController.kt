@@ -359,7 +359,7 @@ class HomeViewController(args: Bundle? = null) :
         (drawerHeaderView.petHeadImage.background as GradientDrawable)
             .setColor(colorRes(R.color.md_white))
 
-        drawerHeaderView.petContainer.setOnClickListener {
+        drawerHeaderView.petHeadImage.setOnClickListener {
             navigateFromRoot().toPet(VerticalChangeHandler())
         }
 
