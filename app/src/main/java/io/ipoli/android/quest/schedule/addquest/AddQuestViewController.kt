@@ -73,6 +73,7 @@ class AddQuestViewController(args: Bundle? = null) :
                 ViewUtils.hideKeyboard(view)
                 closeListener()
             }
+            view.setBackgroundColor(attrData(R.attr.colorPrimary))
         }
 
         view.questName.addTextChangedListener(object : TextWatcher {
