@@ -51,7 +51,7 @@ object PlanDaySideEffectHandler : AppSideEffectHandler() {
                 if (vs.suggestedQuests == null) {
                     dispatch(
                         DataLoadedAction.SuggestionsChanged(
-                            questRepository.findRandomUnscheduled(
+                            questRepository.findRandomUnscheduledAndUncompleted(
                                 3
                             )
                         )

@@ -39,7 +39,7 @@ interface QuestRepository : CollectionRepository<Quest> {
 
     fun listenForAllUnscheduled(): Channel<List<Quest>>
 
-    fun findRandomUnscheduled(count: Int): List<Quest>
+    fun findRandomUnscheduledAndUncompleted(count: Int): List<Quest>
 
     fun findScheduledAt(date: LocalDate): List<Quest>
 
@@ -174,8 +174,8 @@ abstract class QuestDao : BaseDao<RoomQuest>() {
         maxQuests: Int
     ): List<RoomQuest>
 
-    @Query("SELECT * FROM quests WHERE removedAt IS NULL ORDER BY RANDOM() LIMIT :count")
-    abstract fun findRandomUnscheduled(count: Int): List<RoomQuest>
+    @Query("SELECT * FROM quests WHERE removedAt IS NULL AND completedAtDate IS NULL ORDER BY RANDOM() LIMIT :count")
+    abstract fun findRandomUnscheduledAndUncompleted(count: Int): List<RoomQuest>
 
     @Query("SELECT * FROM quests WHERE removedAt IS NULL AND completedAtDate = :date")
     abstract fun findCompletedForDate(date: Long): List<RoomQuest>
@@ -412,8 +412,8 @@ class RoomQuestRepository(
     override fun listenForAllUnscheduled() =
         dao.listenForAllUnscheduled().notify()
 
-    override fun findRandomUnscheduled(count: Int) =
-        dao.findRandomUnscheduled(count).map { toEntityObject(it) }
+    override fun findRandomUnscheduledAndUncompleted(count: Int) =
+        dao.findRandomUnscheduledAndUncompleted(count).map { toEntityObject(it) }
 
     override fun findScheduledAt(date: LocalDate) =
         dao.findScheduledAt(date.startOfDayUTC()).map { toEntityObject(it) }
