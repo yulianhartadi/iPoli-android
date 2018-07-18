@@ -26,7 +26,7 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
             android:adjustViewBounds="true"
-            android:maxHeight="350dp"
+            android:maxHeight="150dp"
             android:scaleType="fitCenter"
             android:src="@drawable/icon_pack" />
 
@@ -37,8 +37,8 @@
             android:layout_gravity="center_horizontal"
             android:layout_marginTop="16dp"
             android:drawablePadding="8dp"
-            android:drawableStart="@drawable/ic_gem_32dp"
-            android:textAppearance="@style/TextAppearance.AppCompat.Title" />
+            android:drawableStart="@drawable/ic_gem_24dp"
+            android:textAppearance="@style/TextAppearance.AppCompat.Subhead" />
 
         <Button
             android:id="@+id/buyIconPack"
