@@ -1,5 +1,6 @@
 package io.ipoli.android.common
 
+import android.arch.paging.PagedList
 import io.ipoli.android.achievement.usecase.CreateAchievementItemsUseCase
 import io.ipoli.android.challenge.entity.Challenge
 import io.ipoli.android.common.datetime.Duration
@@ -9,12 +10,16 @@ import io.ipoli.android.common.redux.Reducer
 import io.ipoli.android.common.redux.State
 import io.ipoli.android.event.Calendar
 import io.ipoli.android.event.Event
+import io.ipoli.android.friends.feed.PostViewModel
+import io.ipoli.android.friends.persistence.Friend
+import io.ipoli.android.friends.usecase.CreateReactionHistoryItemsUseCase
 import io.ipoli.android.growth.usecase.CalculateGrowthStatsUseCase
 import io.ipoli.android.habit.data.Habit
 import io.ipoli.android.habit.usecase.CreateHabitItemsUseCase
 import io.ipoli.android.planday.data.Weather
 import io.ipoli.android.planday.persistence.MotivationalImage
 import io.ipoli.android.planday.persistence.Quote
+import io.ipoli.android.player.data.Avatar
 import io.ipoli.android.player.data.Player
 import io.ipoli.android.quest.Quest
 import io.ipoli.android.quest.RepeatingQuest
@@ -94,6 +99,7 @@ sealed class DataLoadedAction : Action {
     ) : DataLoadedAction()
 
     data class ProfileDataChanged(
+        val player: Player,
         val unlockedAchievements: List<CreateAchievementItemsUseCase.AchievementItem>,
         val streak: Int,
         val averageProductiveDuration: Duration<Minute>
@@ -105,9 +111,26 @@ sealed class DataLoadedAction : Action {
     data class HabitItemsChanged(val habitItems: List<CreateHabitItemsUseCase.HabitItem>) :
         DataLoadedAction()
 
-    class ScheduleSummaryChanged(
+    data class ScheduleSummaryChanged(
         val currentDate: LocalDate,
         val scheduleSummaryItems: List<CreateScheduleSummaryUseCase.ScheduleSummaryItem>
+    ) : DataLoadedAction()
+
+    data class AcceptFriendshipDataChanged(
+        val avatar: Avatar,
+        val displayName: String,
+        val username: String
+    ) : DataLoadedAction()
+
+    data class PostsChanged(val posts: PagedList<PostViewModel>) : DataLoadedAction()
+
+    data class ReactionHistoryItemsChanged(val items: List<CreateReactionHistoryItemsUseCase.ReactionHistoryItem>) :
+        DataLoadedAction()
+
+    data class FriendsChanged(val friends : List<Friend>) : DataLoadedAction()
+    data class PostItemPickerItemsChanged(
+        val quests: List<Quest>?,
+        val challenges: List<Challenge>?
     ) : DataLoadedAction()
 }
 

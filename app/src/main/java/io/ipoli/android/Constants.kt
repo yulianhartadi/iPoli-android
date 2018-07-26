@@ -23,14 +23,9 @@ interface Constants {
         val SHARE_URL = "http://bit.ly/ipoli-android"
         val TWITTER_USERNAME = "@myPoliHQ"
 
-        val REMIND_DAILY_CHALLENGE_NOTIFICATION_ID = 101
         val ONGOING_NOTIFICATION_ID = 102
-        val MEMBERSHIP_EXPIRATION_NOTIFICATION_ID = 103
 
         val QUEST_TIMER_NOTIFICATION_ID = 201
-        val QUEST_COMPLETE_NOTIFICATION_ID = 202
-
-        val PET_STATE_CHANGED_NOTIFICATION_ID = 301
 
         val DEFAULT_SNOOZE_TIME_MINUTES = 10
 
@@ -71,6 +66,8 @@ interface Constants {
         val KEY_APP_RUN_COUNT = "APP_RUN_COUNT"
 
         val KEY_PRIVACY_ACCEPTED_VERSION = "PRIVACY_ACCEPTED_VERSION"
+
+        const val KEY_INVITE_PLAYER_ID = "INVITE_PLAYER_ID"
 
         val PRIVACY_POLICY_VERSION = 1
 
@@ -198,8 +195,9 @@ interface Constants {
         const val RC_CALENDAR_PERM = 102
         const val RC_LOCATION_PERM = 103
         val KEY_LAST_ANDROID_CALENDAR_SYNC_DATE = "LAST_ANDROID_CALENDAR_SYNC_DATE"
-        val FACEBOOK_PACKAGE = "com.facebook.katana"
-        val TWITTER_PACKAGE = "com.twitter.android"
+        const val FACEBOOK_PACKAGE = "com.facebook.katana"
+        const val TWITTER_PACKAGE = "com.twitter.android"
+        const val WHATSAPP_PACKAGE = "com.whatsapp"
         val SYNC_CALENDAR_JOB_ID = 1
         val PROFILES_FIRST_SCHEMA_VERSION = 7
 

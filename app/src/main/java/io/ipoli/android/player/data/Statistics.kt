@@ -11,6 +11,7 @@ data class Statistics(
     val questCompletedCountForToday: Long = 0,
     val questCompletedStreak: StreakStatistic = StreakStatistic(),
     val dailyChallengeCompleteStreak: StreakStatistic = StreakStatistic(),
+    val dailyChallengeBestStreak: Long = 0,
     val petHappyStateStreak: Long = 0,
     val awesomenessScoreStreak: Long = 0,
     val planDayStreak: StreakStatistic = StreakStatistic(),

@@ -28,6 +28,7 @@ class UnlockAchievementsUseCaseSpek : Spek({
                 TestUtil.playerRepoMock(
                     player
                 ),
+                mock(),
                 mock()
             ).execute(
                 Params(player, eventType)

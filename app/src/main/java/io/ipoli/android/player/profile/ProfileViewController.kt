@@ -1,48 +1,44 @@
-package io.ipoli.android.player
+package io.ipoli.android.player.profile
 
 import android.annotation.SuppressLint
-import android.content.res.ColorStateList
 import android.graphics.PorterDuff
 import android.graphics.drawable.GradientDrawable
+import android.os.Build
 import android.os.Bundle
-import android.support.annotation.ColorRes
-import android.support.annotation.DrawableRes
+import android.support.design.widget.TabLayout
 import android.support.v4.graphics.drawable.DrawableCompat
-import android.support.v7.widget.GridLayoutManager
+import android.support.v4.view.PagerAdapter
+import android.support.v4.view.ViewPager
 import android.text.Editable
 import android.text.TextWatcher
 import android.view.*
-import android.widget.ImageView
+import com.bluelinelabs.conductor.Controller
+import com.bluelinelabs.conductor.Router
+import com.bluelinelabs.conductor.RouterTransaction
 import com.bluelinelabs.conductor.changehandler.HorizontalChangeHandler
+import com.bluelinelabs.conductor.support.RouterPagerAdapter
 import com.bumptech.glide.Glide
 import com.bumptech.glide.request.RequestOptions
 import io.ipoli.android.Constants
 import io.ipoli.android.R
-import io.ipoli.android.achievement.androidAchievement
 import io.ipoli.android.common.datetime.startOfDayUTC
 import io.ipoli.android.common.redux.android.ReduxViewController
 import io.ipoli.android.common.text.LongFormatter
 import io.ipoli.android.common.view.*
-import io.ipoli.android.common.view.recyclerview.BaseRecyclerViewAdapter
-import io.ipoli.android.common.view.recyclerview.RecyclerViewViewModel
-import io.ipoli.android.common.view.recyclerview.SimpleViewHolder
-import io.ipoli.android.pet.AndroidPetAvatar
-import io.ipoli.android.pet.Pet
-import io.ipoli.android.player.ProfileViewState.StateType.*
 import io.ipoli.android.player.data.AndroidAvatar
+import io.ipoli.android.player.profile.ProfileViewState.StateType.*
 import kotlinx.android.synthetic.main.controller_profile.view.*
-import kotlinx.android.synthetic.main.item_achievement.view.*
 import kotlinx.android.synthetic.main.view_loader.view.*
 import org.threeten.bp.LocalDate
 import org.threeten.bp.Period
-import kotlin.math.roundToInt
 
-class ProfileViewController(args: Bundle? = null) :
-    ReduxViewController<ProfileAction, ProfileViewState, ProfileReducer>(args = args) {
+class ProfileViewController :
+    ReduxViewController<ProfileAction, ProfileViewState, ProfileReducer> {
 
-    override val reducer = ProfileReducer
+    override var reducer = ProfileReducer(ProfileReducer.PROFILE_KEY)
 
     private var isEdit: Boolean = false
+    private var friendId: String? = null
 
     private val displayNameWatcher: TextWatcher = object : TextWatcher {
 
@@ -57,17 +53,6 @@ class ProfileViewController(args: Bundle? = null) :
         override fun onTextChanged(s: CharSequence, start: Int, before: Int, count: Int) {
 
         }
-
-    }
-
-    private fun renderDisplayNameLengthHint(length: Int) {
-        @SuppressLint("SetTextI18n")
-        view!!.displayNameLengthHint.text = "$length/${Constants.DISPLAY_NAME_MAX_LENGTH}"
-    }
-
-    private fun renderBioLengthHint(length: Int) {
-        @SuppressLint("SetTextI18n")
-        view!!.bioLengthHint.text = "$length/${Constants.BIO_MAX_LENGTH}"
     }
 
     private val bioWatcher: TextWatcher = object : TextWatcher {
@@ -86,6 +71,55 @@ class ProfileViewController(args: Bundle? = null) :
 
     }
 
+    private val pageChangeListener = object : ViewPager.OnPageChangeListener {
+        override fun onPageScrollStateChanged(state: Int) {
+
+        }
+
+        override fun onPageScrolled(
+            position: Int,
+            positionOffset: Float,
+            positionOffsetPixels: Int
+        ) {
+
+        }
+
+        override fun onPageSelected(position: Int) {
+            view?.tabLayout?.getTabAt(position)?.select()
+        }
+    }
+
+    private val tabListener = object : TabLayout.OnTabSelectedListener {
+        override fun onTabReselected(tab: TabLayout.Tab?) {
+        }
+
+        override fun onTabUnselected(tab: TabLayout.Tab?) {
+        }
+
+        override fun onTabSelected(tab: TabLayout.Tab?) {
+            view?.pager?.currentItem = tab?.position ?: 0
+        }
+    }
+
+    constructor(friendId: String) : this() {
+        this.friendId = friendId
+        reducer = ProfileReducer(ProfileReducer.FRIEND_KEY)
+    }
+
+    constructor(args: Bundle? = null) : super(args = args) {
+        reducer = ProfileReducer(ProfileReducer.PROFILE_KEY)
+    }
+
+    private fun renderDisplayNameLengthHint(length: Int) {
+        @SuppressLint("SetTextI18n")
+        view!!.displayNameLengthHint.text = "$length/${Constants.DISPLAY_NAME_MAX_LENGTH}"
+    }
+
+    private fun renderBioLengthHint(length: Int) {
+        @SuppressLint("SetTextI18n")
+        view!!.bioLengthHint.text = "$length/${Constants.BIO_MAX_LENGTH}"
+    }
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup,
@@ -94,7 +128,9 @@ class ProfileViewController(args: Bundle? = null) :
         setHasOptionsMenu(true)
         val view = container.inflate(R.layout.controller_profile)
         setToolbar(view.toolbar)
-        toolbarTitle = stringRes(R.string.controller_profile_title)
+        val collapsingToolbar = view.collapsingToolbarContainer
+        collapsingToolbar.isTitleEnabled = false
+        view.toolbar.title = stringRes(R.string.controller_profile_title)
 
         var coloredBackground = view.coloredBackground.background.mutate()
         coloredBackground = DrawableCompat.wrap(coloredBackground)
@@ -104,10 +140,13 @@ class ProfileViewController(args: Bundle? = null) :
         val avatarBackground = view.playerAvatarBackground.background as GradientDrawable
         avatarBackground.setColor(attrData(android.R.attr.colorBackground))
 
-        view.achievementList.layoutManager = object : GridLayoutManager(view.context, 5) {
-            override fun canScrollVertically() = false
+        if (friendId == null) {
+            view.pager.adapter = ProfilePagerAdapter(this)
+        } else {
+            view.pager.adapter = ProfileFriendPagerAdapter(this)
+            view.tabLayout.removeTabAt(2)
         }
-        view.achievementList.adapter = AchievementAdapter()
+        view.pager.currentItem = 0
 
         view.post {
             view.requestFocus()
@@ -116,17 +155,43 @@ class ProfileViewController(args: Bundle? = null) :
         return view
     }
 
+    override fun colorLayoutBars() {
+        activity?.let {
+            it.window.statusBarColor = attrData(android.R.attr.colorBackground)
+            it.window.navigationBarColor = attrData(io.ipoli.android.R.attr.colorPrimary)
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                it.window.decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR
+            }
+        }
+    }
+
     override fun onAttach(view: View) {
         super.onAttach(view)
         showBackButton()
         view.displayNameEdit.addTextChangedListener(displayNameWatcher)
         view.bioEdit.addTextChangedListener(bioWatcher)
+        view.tabLayout.getTabAt(0)!!.select()
+        view.tabLayout.addOnTabSelectedListener(tabListener)
+        view.pager.addOnPageChangeListener(pageChangeListener)
     }
 
     override fun onDetach(view: View) {
         view.displayNameEdit.removeTextChangedListener(displayNameWatcher)
         view.bioEdit.removeTextChangedListener(bioWatcher)
+        view.tabLayout.removeOnTabSelectedListener(tabListener)
+        view.pager.removeOnPageChangeListener(pageChangeListener)
+        view.pager.adapter = object : PagerAdapter() {
+            override fun isViewFromObject(view: View, `object`: Any) = false
+            override fun getCount() = 0
+        }
+        resetDecorView()
         super.onDetach(view)
+    }
+
+    private fun resetDecorView() {
+        activity?.let {
+            it.window.decorView.systemUiVisibility = 0
+        }
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
@@ -137,7 +202,10 @@ class ProfileViewController(args: Bundle? = null) :
     override fun onPrepareOptionsMenu(menu: Menu) {
         val editAction = menu.findItem(R.id.actionEdit)
         val saveAction = menu.findItem(R.id.actionSave)
-        if (isEdit) {
+        if (friendId != null) {
+            saveAction.isVisible = false
+            editAction.isVisible = false
+        } else if (isEdit) {
             saveAction.isVisible = true
             editAction.isVisible = false
         } else {
@@ -175,7 +243,7 @@ class ProfileViewController(args: Bundle? = null) :
         return super.handleBack()
     }
 
-    override fun onCreateLoadAction() = ProfileAction.Load
+    override fun onCreateLoadAction() = ProfileAction.Load(friendId)
 
     override fun render(state: ProfileViewState, view: View) {
         when (state.type) {
@@ -198,11 +266,6 @@ class ProfileViewController(args: Bundle? = null) :
                 renderInfo(state, view)
                 renderLevelProgress(state, view)
                 renderCoinsAndGems(state, view)
-                renderPet(state, view)
-                renderPetStats(state, view)
-                renderPlayerStats(state, view)
-
-                renderAchievements(view, state)
             }
 
             EDIT -> {
@@ -218,20 +281,9 @@ class ProfileViewController(args: Bundle? = null) :
                 view.displayName.visible()
                 view.bio.visible()
             }
-        }
-    }
 
-    private fun renderAchievements(
-        view: View,
-        state: ProfileViewState
-    ) {
-        (view.achievementList.adapter as AchievementAdapter).updateAll(state.achievementViewModels)
-        if (state.unlockedAchievements.isEmpty()) {
-            view.achievementList.gone()
-            view.emptyAchievements.visible()
-        } else {
-            view.achievementList.visible()
-            view.emptyAchievements.gone()
+            else -> {
+            }
         }
     }
 
@@ -253,43 +305,6 @@ class ProfileViewController(args: Bundle? = null) :
 
         renderDisplayNameLengthHint(displayNameLength)
         renderBioLengthHint(bioLength)
-    }
-
-    private fun renderPetStats(state: ProfileViewState, view: View) {
-        view.coinBonus.text = state.coinBonus
-        view.xpBonus.text = state.xpBonus
-        view.itemDropBonus.text = state.itemDropBonus
-
-        view.healthProgress.max = state.maxPetHp
-        view.healthProgress.animateProgressFromZero(state.petHp)
-        view.moodProgress.max = state.maxPetMp
-        view.moodProgress.animateProgressFromZero(state.petMp)
-
-        view.petStateName.text = state.petStateName
-    }
-
-    private fun renderPlayerStats(state: ProfileViewState, view: View) {
-        view.playerStat1.animateToValueFromZero(state.dailyChallengeStreak)
-        view.playerStat2.animateToValueFromZero(state.last7DaysAverageProductiveDuration!!.asHours.intValue)
-    }
-
-    private fun renderPet(state: ProfileViewState, view: View) {
-        view.pet.setImageResource(state.petImage)
-        view.petState.setImageResource(state.petStateImage)
-        view.petName.text = state.pet!!.name
-
-        val setItem: (ImageView, Int?) -> Unit = { iv, image ->
-            if (image == null) iv.setImageDrawable(null)
-            else iv.setImageResource(image)
-        }
-
-        setItem(view.petHat, state.petHat)
-        setItem(view.petMask, state.petMask)
-        setItem(view.petBody, state.petBody)
-
-        view.pet.onDebounceClick {
-            navigateFromRoot().toPet(HorizontalChangeHandler())
-        }
     }
 
     private fun renderInfo(state: ProfileViewState, view: View) {
@@ -322,37 +337,6 @@ class ProfileViewController(args: Bundle? = null) :
         view.levelProgress.animateProgressFromZero(state.levelXpProgress)
         view.levelText.text = state.levelText
         view.levelProgressText.text = state.levelProgressText
-    }
-
-    data class AchievementViewModel(
-        override val id: String,
-        @DrawableRes val icon: Int,
-        @ColorRes val backgroundColor: Int,
-        val hasStars: Boolean,
-        val starsCount: Int = 0
-    ) : RecyclerViewViewModel
-
-    inner class AchievementAdapter :
-        BaseRecyclerViewAdapter<AchievementViewModel>(R.layout.item_achievement) {
-
-        override fun onBindViewModel(
-            vm: AchievementViewModel,
-            view: View,
-            holder: SimpleViewHolder
-        ) {
-            view.achievementIcon.setImageResource(vm.icon)
-            view.achievementBackground.backgroundTintList =
-                ColorStateList.valueOf(colorRes(vm.backgroundColor))
-            if (vm.hasStars) {
-                view.stars.visible()
-                view.star1.setImageResource(if (vm.starsCount >= 1) R.drawable.achievement_star else R.drawable.achievement_star_empty)
-                view.star2.setImageResource(if (vm.starsCount >= 2) R.drawable.achievement_star else R.drawable.achievement_star_empty)
-                view.star3.setImageResource(if (vm.starsCount == 3) R.drawable.achievement_star else R.drawable.achievement_star_empty)
-            } else {
-                view.stars.gone()
-            }
-        }
-
     }
 
     private val ProfileViewState.avatarImage
@@ -397,77 +381,46 @@ class ProfileViewController(args: Bundle? = null) :
     private val ProfileViewState.levelProgressText
         get() = "$levelXpProgress / $levelXpMaxProgress"
 
-    private val ProfileViewState.petMp
-        get() = pet!!.moodPoints
-
-    private val ProfileViewState.petHp
-        get() = pet!!.healthPoints
-
-    private val ProfileViewState.maxPetMp
-        get() = Pet.MAX_MP
-
-    private val ProfileViewState.maxPetHp
-        get() = Pet.MAX_HP
-
-    private val ProfileViewState.coinBonus
-        get() = "+ ${pet!!.coinBonus.roundToInt()}%"
-
-    private val ProfileViewState.xpBonus
-        get() = "+ ${pet!!.experienceBonus.roundToInt()}%"
-
-    private val ProfileViewState.itemDropBonus
-        get() = "+ ${pet!!.itemDropBonus.roundToInt()}%"
-
-    private val ProfileViewState.petImage
-        get() = AndroidPetAvatar.valueOf(pet!!.avatar.name).image
-
-    private val ProfileViewState.petStateImage
-        get() = AndroidPetAvatar.valueOf(pet!!.avatar.name).stateImage[pet.state]!!
-
-    private val ProfileViewState.petStateName
-        get() = pet!!.state.name.toLowerCase().capitalize()
-
-    private val ProfileViewState.petHat: Int?
-        get() {
-            val petItems = AndroidPetAvatar.valueOf(pet!!.avatar.name).items
-            return pet.equipment.hat?.let {
-                petItems[it]!!
-            }
-        }
-
-    private val ProfileViewState.petMask: Int?
-        get() {
-            val petItems = AndroidPetAvatar.valueOf(pet!!.avatar.name).items
-            return pet.equipment.mask?.let {
-                petItems[it]!!
-            }
-        }
-
-    private val ProfileViewState.petBody: Int?
-        get() {
-            val petItems = AndroidPetAvatar.valueOf(pet!!.avatar.name).items
-            return pet.equipment.bodyArmor?.let {
-                petItems[it]!!
-            }
-        }
-
     private val ProfileViewState.gemsText
         get() = LongFormatter.format(activity!!, gems.toLong())
 
     private val ProfileViewState.lifeCoinsText
         get() = LongFormatter.format(activity!!, coins.toLong())
 
-    private val ProfileViewState.achievementViewModels: List<AchievementViewModel>
-        get() =
-            unlockedAchievements.map {
-                val aa = it.androidAchievement
-                val starsToShow = if (!it.isMultiLevel) -1 else it.currentLevel
-                AchievementViewModel(
-                    id = stringRes(aa.title),
-                    icon = aa.icon,
-                    backgroundColor = aa.color,
-                    hasStars = starsToShow > 0,
-                    starsCount = starsToShow
-                )
+    inner class ProfilePagerAdapter(controller: Controller) :
+        RouterPagerAdapter(controller) {
+
+        override fun configureRouter(router: Router, position: Int) {
+            val page = when (position) {
+                0 -> ProfileInfoViewController(reducer.stateKey)
+                1 -> ProfilePostListViewController(reducer.stateKey, friendId)
+                2 -> ProfileFriendListViewController(reducer.stateKey)
+                3 -> ProfileChallengeListViewController(reducer.stateKey)
+                else -> throw IllegalArgumentException("Unknown controller position $position")
             }
+            router.setRoot(RouterTransaction.with(page))
+        }
+
+        override fun getItemPosition(`object`: Any): Int = PagerAdapter.POSITION_NONE
+
+        override fun getCount() = 4
+    }
+
+    inner class ProfileFriendPagerAdapter(controller: Controller) :
+        RouterPagerAdapter(controller) {
+
+        override fun configureRouter(router: Router, position: Int) {
+            val page = when (position) {
+                0 -> ProfileInfoViewController(reducer.stateKey)
+                1 -> ProfilePostListViewController(reducer.stateKey, friendId)
+                2 -> ProfileChallengeListViewController(reducer.stateKey)
+                else -> throw IllegalArgumentException("Unknown controller position $position")
+            }
+            router.setRoot(RouterTransaction.with(page))
+        }
+
+        override fun getItemPosition(`object`: Any): Int = PagerAdapter.POSITION_NONE
+
+        override fun getCount() = 3
+    }
 }

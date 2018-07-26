@@ -6,9 +6,11 @@ import android.content.Context
 import android.support.annotation.WorkerThread
 import com.google.android.gms.tasks.Tasks
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.FirebaseFirestoreException
 import com.google.firebase.firestore.WriteBatch
 import io.ipoli.android.Constants
 import io.ipoli.android.challenge.persistence.FirestoreChallengeRepository
+import io.ipoli.android.common.ErrorLogger
 import io.ipoli.android.common.datetime.milliseconds
 import io.ipoli.android.common.di.BackgroundModule
 import io.ipoli.android.common.persistence.BaseFirestoreRepository
@@ -38,6 +40,7 @@ class DataExporter(private val appContext: Context) : Injects<BackgroundModule> 
     private val challengeRepository by required { challengeRepository }
     private val repeatingQuestRepository by required { repeatingQuestRepository }
     private val questRepository by required { questRepository }
+    private val postRepository by required { postRepository }
 
     @SuppressLint("ApplySharedPref")
     @WorkerThread
@@ -129,6 +132,23 @@ class DataExporter(private val appContext: Context) : Injects<BackgroundModule> 
         sharedPreferences.edit()
             .putLong(Constants.KEY_LAST_SYNC_MILLIS, syncTime)
             .commit()
+
+        exportPosts()
+    }
+
+    private fun exportPosts() {
+        var roomPost = postRepository.findLocal(1).firstOrNull()
+        while (roomPost != null) {
+            try {
+                postRepository.saveToRemoteDatabase(roomPost)
+            } catch (e: FirebaseFirestoreException) {
+                ErrorLogger.log(e)
+                return
+            }
+            postRepository.purgeLocal(roomPost.id)
+            roomPost = postRepository.findLocal(1).firstOrNull()
+        }
+
     }
 
     private fun <E : Entity> exportEntities(

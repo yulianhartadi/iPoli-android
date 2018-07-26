@@ -35,7 +35,7 @@ import io.ipoli.android.planday.PlanDayViewState.AwesomenessGrade.*
 import io.ipoli.android.planday.PlanDayViewState.StateType.REVIEW_DATA_LOADED
 import io.ipoli.android.quest.CompletedQuestViewController
 import io.ipoli.android.quest.schedule.addquest.AddQuestAnimationHelper
-import kotlinx.android.synthetic.main.animation_empty_list.view.*
+import kotlinx.android.synthetic.main.view_empty_list.view.*
 import kotlinx.android.synthetic.main.controller_plan_day_review.view.*
 import kotlinx.android.synthetic.main.item_agenda_quest.view.*
 import kotlinx.android.synthetic.main.view_loader.view.*

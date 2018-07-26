@@ -1,7 +1,6 @@
 package io.ipoli.android.common.view
 
 import android.support.annotation.*
-import android.support.v4.content.ContextCompat
 import android.support.v7.widget.Toolbar
 import android.util.TypedValue
 import android.view.View
@@ -18,22 +17,22 @@ import io.ipoli.android.common.navigation.Navigator
  * on 10/7/17.
  */
 fun Controller.stringRes(@StringRes stringRes: Int): String =
-    resources!!.getString(stringRes)
+    activity!!.stringRes(stringRes)
 
 fun Controller.stringRes(@StringRes stringRes: Int, vararg formatArgs: Any): String =
-    resources!!.getString(stringRes, *formatArgs)
+    activity!!.stringRes(stringRes, *formatArgs)
 
 fun Controller.stringsRes(@ArrayRes stringArrayRes: Int): List<String> =
-    resources!!.getStringArray(stringArrayRes).toList()
+    activity!!.stringsRes(stringArrayRes)
 
 fun Controller.colorRes(@ColorRes colorRes: Int): Int =
-    ContextCompat.getColor(activity!!, colorRes)
+    activity!!.colorRes(colorRes)
 
 fun Controller.intRes(@IntegerRes res: Int): Int =
-    resources!!.getInteger(res)
+    activity!!.intRes(res)
 
 fun Controller.quantityString(@PluralsRes res: Int, quantity: Int) =
-    resources!!.getQuantityString(res, quantity, quantity)
+    activity!!.quantityString(res, quantity)
 
 val Controller.shortAnimTime: Long
     get() = resources!!.getInteger(android.R.integer.config_shortAnimTime).toLong()

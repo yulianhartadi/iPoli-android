@@ -32,7 +32,7 @@ import io.ipoli.android.quest.CompletedQuestViewController
 import io.ipoli.android.quest.Quest
 import io.ipoli.android.quest.bucketlist.usecase.CreateBucketListItemsUseCase
 import io.ipoli.android.quest.schedule.addquest.AddQuestAnimationHelper
-import kotlinx.android.synthetic.main.animation_empty_list.view.*
+import kotlinx.android.synthetic.main.view_empty_list.view.*
 import kotlinx.android.synthetic.main.controller_bucket_list.view.*
 import kotlinx.android.synthetic.main.item_agenda_quest.view.*
 import kotlinx.android.synthetic.main.view_loader.view.*

@@ -324,4 +324,8 @@
     <color name="achievement_pink">#E9447A</color>
     <color name="achievement_brown">#8B6F64</color>
     <color name="achievement_black">#616262</color>
+
+    <color name="invite_provider_background_email">#F9D154</color>
+    <color name="invite_provider_background_sms">#F33052</color>
+    <color name="invite_provider_background_link">#4dae43</color>
 </resources>

@@ -1,0 +1,351 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginBottom="16dp"
+    android:layout_marginEnd="8dp"
+    android:layout_marginStart="8dp"
+    android:background="@drawable/rounded_rectangle_white_background"
+    android:elevation="2dp"
+    android:focusable="true"
+    android:focusableInTouchMode="true"
+    android:paddingBottom="16dp">
+
+    <ImageView
+        android:id="@+id/playerAvatar"
+        android:layout_width="64dp"
+        android:layout_height="64dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="16dp"
+        android:background="@drawable/white_circular_background"
+        android:scaleType="fitCenter"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:src="@drawable/avatar_07" />
+
+    <TextView
+        android:id="@+id/playerName"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="8dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="16dp"
+        android:ellipsize="end"
+        android:maxLines="1"
+        android:textAppearance="@style/TextAppearance.AppCompat.Title"
+        android:textColor="?attr/colorPrimary"
+        app:layout_constraintEnd_toStartOf="@+id/postedTime"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toEndOf="@id/playerAvatar"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:text="Gorgonzola Marinatovaaaaa" />
+
+
+    <TextView
+        android:id="@+id/playerLevel"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="8dp"
+        android:gravity="end"
+        android:textAppearance="@style/TextAppearance.AppCompat.Body1"
+        android:textColor="@color/md_dark_text_87"
+        app:layout_constraintBottom_toBottomOf="@+id/playerUsername"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/playerUsername"
+        tools:text="Newbie | Lvl 3" />
+
+    <TextView
+        android:id="@+id/playerUsername"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="8dp"
+        android:layout_marginTop="4dp"
+        android:textAppearance="@style/TextAppearance.AppCompat.Caption"
+        app:layout_constraintEnd_toStartOf="@+id/playerLevel"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="@id/playerName"
+        app:layout_constraintTop_toBottomOf="@id/playerName"
+        tools:text="\@gorgonzolata" />
+
+    <TextView
+        android:id="@+id/postedTime"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="8dp"
+        android:gravity="end"
+        android:textAppearance="@style/TextAppearance.AppCompat.Caption"
+        app:layout_constraintBottom_toBottomOf="@+id/playerName"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/playerName"
+        tools:text="3 hours ago" />
+
+
+    <View
+        android:id="@+id/feedChallengeIconBackground"
+        android:layout_width="32dp"
+        android:layout_height="20dp"
+        android:layout_marginTop="24dp"
+        android:background="@drawable/rounded_rectangle_white_background"
+        app:layout_constraintStart_toStartOf="@id/playerAvatar"
+        app:layout_constraintTop_toBottomOf="@id/playerAvatar" />
+
+    <ImageView
+        android:id="@+id/feedChallengeIcon"
+        android:layout_width="16dp"
+        android:layout_height="16dp"
+        android:scaleType="fitXY"
+        android:src="@drawable/ic_sword_white_24dp"
+        app:layout_constraintBottom_toBottomOf="@id/feedChallengeIconBackground"
+        app:layout_constraintEnd_toEndOf="@id/feedChallengeIconBackground"
+        app:layout_constraintStart_toStartOf="@id/feedChallengeIconBackground"
+        app:layout_constraintTop_toTopOf="@id/feedChallengeIconBackground" />
+
+    <TextView
+        android:id="@+id/feedChallengeTitle"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="16dp"
+        android:layout_marginStart="8dp"
+        android:textAppearance="@style/TextAppearance.AppCompat.Small"
+        app:layout_constraintBottom_toBottomOf="@id/feedChallengeIconBackground"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/feedChallengeIconBackground"
+        app:layout_constraintTop_toTopOf="@id/feedChallengeIconBackground"
+        tools:text="Stress free mind" />
+
+    <ImageView
+        android:id="@+id/feedMessageIcon"
+        android:layout_width="16dp"
+        android:layout_height="16dp"
+        android:layout_marginTop="4dp"
+        android:adjustViewBounds="true"
+        android:scaleType="fitXY"
+        app:layout_constraintBottom_toBottomOf="@id/feedMessage"
+        app:layout_constraintStart_toStartOf="@id/playerAvatar"
+        app:layout_constraintTop_toTopOf="@id/feedMessage"
+        app:layout_constraintVertical_bias="0"
+        tools:src="@drawable/ic_post_failed" />
+
+    <TextView
+        android:id="@+id/feedMessage"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="16dp"
+        android:layout_marginStart="4dp"
+        android:layout_marginTop="8dp"
+        android:textAppearance="@style/TextAppearance.AppCompat.Subhead"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@id/feedMessageIcon"
+        app:layout_constraintTop_toBottomOf="@+id/feedChallengeTitle"
+        app:layout_goneMarginTop="24dp"
+        tools:text="Quest completed Run 3 km" />
+
+    <ImageView
+        android:id="@+id/feedBigPicture"
+        android:layout_width="72dp"
+        android:layout_height="72dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginTop="16dp"
+        android:scaleType="fitCenter"
+        android:visibility="gone"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/playerAvatar"
+        tools:src="@drawable/ic_achievement_badge" />
+
+    <include
+        android:id="@+id/feedAchievement"
+        layout="@layout/item_achievement"
+        android:layout_width="60dp"
+        android:layout_height="72dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginTop="16dp"
+        android:visibility="visible"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/playerAvatar" />
+
+    <TextView
+        android:id="@+id/feedComplexTitle"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="16dp"
+        android:textAppearance="@style/TextAppearance.AppCompat.Subhead"
+        android:visibility="visible"
+        app:layout_constraintBottom_toTopOf="@id/feedComplexMessage"
+        app:layout_constraintEnd_toStartOf="@id/feedBigPicture"
+        app:layout_constraintStart_toStartOf="@id/playerAvatar"
+        app:layout_constraintTop_toTopOf="@id/feedBigPicture"
+        app:layout_constraintVertical_chainStyle="packed"
+        tools:text="Achievement unlocked" />
+
+    <TextView
+        android:id="@+id/feedComplexMessage"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="16dp"
+        android:layout_marginTop="4dp"
+        android:textAppearance="@style/TextAppearance.AppCompat.Small"
+        app:layout_constraintBottom_toBottomOf="@id/feedBigPicture"
+        app:layout_constraintEnd_toStartOf="@id/feedBigPicture"
+        app:layout_constraintStart_toStartOf="@id/playerAvatar"
+        app:layout_constraintTop_toBottomOf="@id/feedComplexTitle"
+        tools:text="Keep your Pet in happy state for 5 days in a row" />
+
+    <TextView
+        android:id="@+id/playerMessage"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="16dp"
+        android:layout_marginTop="16dp"
+        android:textAppearance="@style/TextAppearance.AppCompat.Body1"
+        android:visibility="invisible"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="@id/playerAvatar"
+        app:layout_constraintTop_toBottomOf="@id/playerMessageBarrier"
+        tools:text="It was a hard day" />
+
+    <View
+        android:id="@+id/openProfile"
+        android:layout_width="0dp"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:background="?attr/selectableItemBackground"
+        app:layout_constraintBottom_toTopOf="@+id/divider"
+        android:layout_height="0dp"
+        />
+
+    <EditText
+        android:id="@+id/playerMessageEdit"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="16dp"
+        android:layout_marginTop="16dp"
+        android:background="@android:color/transparent"
+        android:hint="Describe what you did and how you feel"
+        android:textAppearance="@style/TextAppearance.AppCompat.Body1"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="@id/playerAvatar"
+        app:layout_constraintTop_toBottomOf="@id/playerMessageBarrier" />
+
+    <View
+        android:id="@+id/divider"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="16dp"
+        android:background="@color/md_dark_text_12"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/dividerBarrier" />
+
+    <TextView
+        android:id="@+id/react"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:background="?attr/selectableItemBackgroundBorderless"
+        android:drawablePadding="4dp"
+        android:drawableStart="@drawable/ic_favorite_outline_red_28dp"
+        android:gravity="center_vertical"
+        android:text="Like"
+        android:textAppearance="@style/TextAppearance.AppCompat.Small"
+        app:layout_constraintStart_toStartOf="@id/playerAvatar"
+        app:layout_constraintTop_toBottomOf="@id/divider" />
+
+    <android.support.constraint.Group
+        android:id="@+id/challengeGroup"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:visibility="gone"
+        app:constraint_referenced_ids="feedChallengeIconBackground,feedChallengeIcon,feedChallengeTitle"
+        tools:layout_editor_absoluteX="4dp"
+        tools:layout_editor_absoluteY="4dp" />
+
+    <android.support.constraint.Group
+        android:id="@+id/messageGroup"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:visibility="gone"
+        app:constraint_referenced_ids="feedMessageIcon,feedMessage"
+        tools:layout_editor_absoluteX="4dp"
+        tools:layout_editor_absoluteY="4dp" />
+
+    <android.support.constraint.Group
+        android:id="@+id/complexGroup"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:visibility="visible"
+        app:constraint_referenced_ids="feedComplexTitle,feedComplexMessage"
+        tools:layout_editor_absoluteX="4dp"
+        tools:layout_editor_absoluteY="4dp" />
+
+    <android.support.constraint.Barrier
+        android:id="@+id/playerMessageBarrier"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:barrierDirection="bottom"
+        app:constraint_referenced_ids="feedMessage,feedBigPicture,feedComplexMessage"
+        tools:layout_editor_absoluteX="4dp"
+        tools:layout_editor_absoluteY="172dp" />
+
+    <android.support.constraint.Barrier
+        android:id="@+id/dividerBarrier"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:barrierDirection="bottom"
+        app:constraint_referenced_ids="playerMessage, playerMessageEdit"
+        tools:layout_editor_absoluteX="4dp"
+        tools:layout_editor_absoluteY="207dp" />
+
+    <android.support.constraint.Group
+        android:id="@+id/reactionGroup"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:constraint_referenced_ids="react, reactionList"
+        tools:layout_editor_absoluteX="4dp"
+        tools:layout_editor_absoluteY="4dp" />
+
+    <Button
+        android:id="@+id/save"
+        style="@style/Widget.AppCompat.Button.Borderless.Colored"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="8dp"
+        android:text="@string/save"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/divider" />
+
+    <Button
+        android:id="@+id/cancel"
+        style="@style/Widget.AppCompat.Button.Borderless.Colored"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/cancel"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/save"
+        app:layout_constraintTop_toBottomOf="@+id/divider" />
+
+    <android.support.constraint.Group
+        android:id="@+id/editGroup"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:visibility="gone"
+        app:constraint_referenced_ids="cancel,save" />
+
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/reactionList"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:clickable="true"
+        android:focusable="true"
+        android:background="?attr/selectableItemBackground"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="@id/playerAvatar"
+        app:layout_constraintTop_toBottomOf="@id/react" />
+
+</android.support.constraint.ConstraintLayout>

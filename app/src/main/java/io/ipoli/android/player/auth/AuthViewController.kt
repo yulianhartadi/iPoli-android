@@ -42,6 +42,7 @@ import io.ipoli.android.player.data.AndroidAvatar
 import io.ipoli.android.player.data.Avatar
 import kotlinx.android.synthetic.main.controller_auth.view.*
 import kotlinx.android.synthetic.main.item_auth_avatar.view.*
+import space.traversal.kapsule.required
 
 
 /**
@@ -54,6 +55,8 @@ class AuthViewController(args: Bundle? = null) :
     private val RC_SIGN_IN = 123
 
     override val reducer = AuthReducer
+
+    private val sharedPreferences by required { sharedPreferences }
 
     private var loader: LoaderDialogController? = null
 
@@ -222,27 +225,32 @@ class AuthViewController(args: Bundle? = null) :
                 hideLoader()
                 if (state.isGuest) {
                     router.handleBack()
+                    sharedPreferences.edit().remove(Constants.KEY_INVITE_PLAYER_ID).apply()
                 } else {
                     showShortToast(R.string.welcome_hero)
                     startHomeViewController()
+                    maybeShowInviteDialog()
                 }
             }
 
             GUEST_CREATED -> {
                 hideLoader()
                 startHomeViewController()
+                sharedPreferences.edit().remove(Constants.KEY_INVITE_PLAYER_ID).apply()
             }
 
             EXISTING_PLAYER_LOGGED_IN -> {
                 hideLoader()
                 showShortToast(R.string.welcome_back_hero)
                 startHomeViewController()
+                maybeShowInviteDialog()
             }
 
             EXISTING_PLAYER_LOGGED_IN_FROM_GUEST -> {
                 hideLoader()
                 showShortToast(R.string.welcome_back_hero)
                 router.handleBack()
+                maybeShowInviteDialog()
             }
 
             SHOW_IMPORT_ERROR -> {
@@ -252,6 +260,13 @@ class AuthViewController(args: Bundle? = null) :
 
             else -> {
             }
+        }
+    }
+
+    private fun maybeShowInviteDialog() {
+        sharedPreferences.getString(Constants.KEY_INVITE_PLAYER_ID, null)?.let {
+            navigate().toAcceptFriendship(it)
+            sharedPreferences.edit().remove(Constants.KEY_INVITE_PLAYER_ID).apply()
         }
     }
 

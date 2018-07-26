@@ -34,7 +34,7 @@ import io.ipoli.android.planday.PlanDayReducer
 import io.ipoli.android.planday.PlanDayViewState
 import io.ipoli.android.planday.PlanDayViewState.StateType.*
 import io.ipoli.android.quest.schedule.addquest.AddQuestAnimationHelper
-import kotlinx.android.synthetic.main.animation_empty_list.view.*
+import kotlinx.android.synthetic.main.view_empty_list.view.*
 import kotlinx.android.synthetic.main.controller_plan_day_today.view.*
 import kotlinx.android.synthetic.main.item_plan_today_quest.view.*
 import kotlinx.android.synthetic.main.item_plan_today_suggestion.view.*

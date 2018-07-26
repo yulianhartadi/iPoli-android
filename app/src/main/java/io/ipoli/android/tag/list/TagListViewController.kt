@@ -15,7 +15,7 @@ import io.ipoli.android.common.redux.android.ReduxViewController
 import io.ipoli.android.common.view.*
 import io.ipoli.android.tag.Tag
 import io.ipoli.android.tag.show.TagViewController
-import kotlinx.android.synthetic.main.animation_empty_list.view.*
+import kotlinx.android.synthetic.main.view_empty_list.view.*
 import kotlinx.android.synthetic.main.controller_tag_list.view.*
 import kotlinx.android.synthetic.main.item_tag_list.view.*
 import kotlinx.android.synthetic.main.view_loader.view.*

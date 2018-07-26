@@ -36,7 +36,7 @@ class RepeatingQuestViewController(args: Bundle? = null) :
 
     override val reducer = RepeatingQuestReducer
 
-    private lateinit var repeatingQuestId: String
+    private var repeatingQuestId: String = ""
 
     private constructor(
         repeatingQuestId: String

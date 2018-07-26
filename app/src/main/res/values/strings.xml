@@ -61,7 +61,7 @@
     <string name="save">SAVE</string>
     <string name="title_fragment_repeating_quests">Repeating Quests</string>
     <string name="share">Share</string>
-    <string name="invite_friends">Invite Friends</string>
+    <string name="share_app">Share myPoli</string>
     <string name="cannot_edit_completed_quests">Completed quests cannot be edited</string>
     <string name="fragment_overview_title">Your Journey Ahead</string>
     <string name="widget_journey_name">Daily Journey</string>
@@ -134,6 +134,8 @@
     <string name="empty_challenges_text">Organize projects &amp; achieve goals with Challenges. Create one, set a deadline and get it done!</string>
     <string name="empty_habits_title">Build Habits that stick!</string>
     <string name="empty_habits_text">Build good Habits or avoid bad ones. Create your first Habit now and start building your streak!</string>
+    <string name="empty_shared_challenges_title">Complete your Challenges easier</string>
+    <string name="empty_shared_challenges_text">Players who share their Challenges with friends are up to 5x more likely to complete them</string>
     <string name="help_dialog_growth_title">What is growth all about?</string>
     <string name="help_dialog_growth_daily_progress">Monitor your daily progress</string>
     <string name="help_dialog_growth_time_spent_chart">The time spent chart shows you which quest contexts take most of your time</string>
@@ -1352,6 +1354,8 @@
     <string name="plan_my_day">Plan my day</string>
     <string name="empty_plan_today_list_title">Plan your amazing day</string>
     <string name="empty_plan_today_list_text">You\'re gonna rock today. Start by adding your first Quest now.</string>
+    <string name="empty_friend_list_title">Help your friends</string>
+    <string name="empty_friend_list_text">Invite your friends to myPoli and crush your Challenges together!</string>
     <string name="settings_plan_day">Plan my day</string>
     <string name="choose_days_of_week">Choose days of week</string>
     <string name="bucket">Bucket</string>
@@ -1497,4 +1501,47 @@
     <string name="import_data_error_message">Importing your data failed. Make sure you have Internet connection :)</string>
     <string name="quest_rescheduled">Quest rescheduled</string>
     <string name="duration_error_message">Duration should be between 10 minutes and 4 hours</string>
+    <string name="drawer_feed">Friends Feed</string>
+    <string name="invite_friends_error_no_internet">Internet connection is required to invite friends</string>
+    <string name="invite_friends_error_unknown">Some wrong happened. Check your Internet connection.</string>
+    <string name="invite_friends_message">Let\'s help each other achieve Goals and stick to good Habits with this app %s</string>
+    <string name="invite_link_copied">Invite link copied to clipboard</string>
+    <string name="invite_via">Invite via</string>
+    <string name="invite">Invite</string>
+    <string name="friend">Friend</string>
+    <string name="like">Like</string>
+    <string name="love">Love</string>
+    <string name="cool">Cool</string>
+    <string name="wow">Wow</string>
+    <string name="bad">Bad</string>
+    <string name="angry">Angry</string>
+
+    <string name="feed_empty_title">Nothing on your feed, yet</string>
+    <string name="feed_empty_text">Your friends need your help! Invite them to myPoli and help each other complete Challenges together!</string>
+
+    <string name="error_no_internet_title">Internet connection unavailable</string>
+    <string name="feed_no_internet_text">Please, enable your Internet connection to see your Feed</string>
+    <string name="posts_no_internet_text">Please, enable your Internet connection to see your Posts</string>
+    <string name="challenges_no_internet_text">Please, enable your Internet connection to see your shared Challenges</string>
+    <string name="friends_no_internet_text">Please, enable your Internet connection to see your Friends</string>
+    <string name="sign_in_to_view">Please, sign in</string>
+    <string name="add_friend">Add friend</string>
+    <string name="accept_friendship">%s wants to be friends. You can help each other complete Challenges and stick to good Habits!</string>
+    <string name="cant_friend_yourself">You will always be your friend</string>
+    <string name="sign_in_to_accept_friendship">You need to sign in before accepting friendship</string>
+    <string name="friend_accepted">You and %s are now friends</string>
+    <string name="error_already_friends">You are already friends</string>
+
+    <string name="feed_completed_habit">Completed Habit</string>
+    <string name="feed_times_in_a_row">times in a row</string>
+    <string name="feed_best_streak_habit">New best streak for Habit</string>
+    <string name="feed_failed_quest">Failed to complete Quest</string>
+    <string name="feed_completed_quest">Completed Quest</string>
+    <string name="feed_pomodoro_count">(for %d pomodoros)</string>
+    <string name="feed_timer">(in %s)</string>
+    <string name="feed_accepted_challenge">Accepted new Challenge</string>
+
+    <string name="posts_sign_in">Sign in to create posts</string>
+    <string name="friends_sign_in">Sign in to share with friends</string>
+    <string name="challenges_sign_in">Sign in to share your Challenges</string>
 </resources>

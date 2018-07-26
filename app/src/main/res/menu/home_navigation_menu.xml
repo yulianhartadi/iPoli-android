@@ -12,18 +12,25 @@
             android:title="@string/calendar" />
 
         <item
-            android:id="@+id/bucketList"
-            android:checked="false"
-            android:icon="@drawable/ic_bucket_white_24dp"
-            android:orderInCategory="0"
-            android:title="@string/title_bucket_list" />
-
-        <item
             android:id="@+id/habits"
             android:checked="false"
             android:icon="@drawable/ic_favorite_white_24dp"
             android:orderInCategory="0"
             android:title="@string/drawer_habits" />
+
+        <item
+            android:id="@+id/feed"
+            android:checked="false"
+            android:icon="@drawable/ic_friends_white_24dp"
+            android:orderInCategory="0"
+            android:title="@string/drawer_feed" />
+
+        <item
+            android:id="@+id/bucketList"
+            android:checked="false"
+            android:icon="@drawable/ic_bucket_white_24dp"
+            android:orderInCategory="0"
+            android:title="@string/title_bucket_list" />
 
         <item
             android:id="@+id/repeatingQuests"
@@ -45,7 +52,7 @@
             android:icon="@drawable/ic_growth_white_24dp"
             android:orderInCategory="0"
             android:title="@string/growth" />
-        
+
         <item
             android:id="@+id/tags"
             android:checked="false"
@@ -55,17 +62,6 @@
             app:actionLayout="@layout/menu_item_tags_view" />
 
     </group>
-
-    <!--<group>-->
-
-
-    <!--<item-->
-    <!--android:id="@+id/feed"-->
-    <!--android:checked="false"-->
-    <!--android:icon="@drawable/ic_summit_black_24dp"-->
-    <!--android:title="@string/achievement_feed"-->
-    <!--android:visible="false" />-->
-    <!--</group>-->
 
     <group
         android:id="@+id/third_group"
@@ -79,12 +75,12 @@
             android:title="@string/drawer_store" />
 
         <item
-            android:id="@+id/inviteFriends"
+            android:id="@+id/shareApp"
             android:checkable="false"
             android:checked="false"
-            android:icon="@drawable/ic_person_add_white_24dp"
+            android:icon="@drawable/ic_share_white_24dp"
             android:orderInCategory="1"
-            android:title="@string/invite_friends" />
+            android:title="@string/share_app" />
 
         <item
             android:id="@+id/community"

@@ -8,7 +8,7 @@ import io.ipoli.android.R
 import io.ipoli.android.challenge.QuestPickerViewState.StateType.*
 import io.ipoli.android.common.redux.android.ReduxViewController
 import io.ipoli.android.common.view.*
-import kotlinx.android.synthetic.main.animation_empty_list.view.*
+import kotlinx.android.synthetic.main.view_empty_list.view.*
 import kotlinx.android.synthetic.main.list_quest_picker.view.*
 import kotlinx.android.synthetic.main.view_default_toolbar.view.*
 import kotlinx.android.synthetic.main.view_loader.view.*
@@ -41,9 +41,9 @@ class QuestPickerViewController(args: Bundle? = null) :
         toolbarTitle = "Choose quests"
         view.questList.layoutManager =
             LinearLayoutManager(activity!!, LinearLayoutManager.VERTICAL, false)
-        view.questList.adapter = QuestAdapter(listOf(), { id, isChecked ->
+        view.questList.adapter = QuestAdapter(listOf()) { id, isChecked ->
             dispatch(QuestPickerAction.Check(id, isChecked))
-        })
+        }
         view.emptyAnimation.setAnimation("empty_quest_picker.json")
         return view
     }

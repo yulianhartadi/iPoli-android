@@ -34,6 +34,8 @@ import io.ipoli.android.common.redux.StateStore
 import io.ipoli.android.common.redux.ViewState
 import io.ipoli.android.common.redux.ViewStateReducer
 import io.ipoli.android.common.view.*
+import io.ipoli.android.friends.feed.data.AndroidReactionType
+import io.ipoli.android.friends.feed.data.Post
 import io.ipoli.android.myPoliApp
 import io.ipoli.android.player.data.Player
 import io.ipoli.android.quest.Color
@@ -125,8 +127,8 @@ abstract class BaseViewController<A : Action, VS : ViewState> protected construc
     }
 
     protected open fun colorLayoutBars() {
-        activity?.window?.navigationBarColor = attrData(io.ipoli.android.R.attr.colorPrimary)
         activity?.window?.statusBarColor = attrData(io.ipoli.android.R.attr.colorPrimaryDark)
+        activity?.window?.navigationBarColor = attrData(io.ipoli.android.R.attr.colorPrimary)
     }
 
     override fun onDetach(view: View) {
@@ -137,9 +139,17 @@ abstract class BaseViewController<A : Action, VS : ViewState> protected construc
         super.onDetach(view)
     }
 
-    protected fun playAnimation(animator: Animator, onEnd: () -> Unit = {}) {
+    protected fun playAnimation(
+        animator: Animator,
+        onStart: () -> Unit = {},
+        onEnd: () -> Unit = {}
+    ) {
         runningAnimators.add(animator)
         animator.addListener(object : AnimatorListenerAdapter() {
+            override fun onAnimationStart(animation: Animator?) {
+                onStart()
+            }
+
             override fun onAnimationEnd(animation: Animator?) {
                 onEnd()
             }
@@ -445,6 +455,9 @@ abstract class BaseViewController<A : Action, VS : ViewState> protected construc
 
     fun smallListItemIcon(icon: IIcon): IconicsDrawable =
         IconicsDrawable(activity!!).smallListItemIcon(icon)
+
+    protected val Post.ReactionType.androidType: AndroidReactionType
+        get() = AndroidReactionType.valueOf(this.name)
 
     fun TextView.setMarkdown(markdown: String) {
         val parser = Markwon.createParser()

@@ -19,7 +19,7 @@ import io.ipoli.android.common.view.recyclerview.MultiViewRecyclerViewAdapter
 import io.ipoli.android.common.view.recyclerview.RecyclerViewViewModel
 import io.ipoli.android.habit.list.HabitListViewState.StateType.DATA_CHANGED
 import io.ipoli.android.habit.usecase.CreateHabitItemsUseCase
-import kotlinx.android.synthetic.main.animation_empty_list.view.*
+import kotlinx.android.synthetic.main.view_empty_list.view.*
 import kotlinx.android.synthetic.main.controller_habit_list.view.*
 import kotlinx.android.synthetic.main.item_habit_list.view.*
 import kotlinx.android.synthetic.main.view_loader.view.*

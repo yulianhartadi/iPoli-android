@@ -30,7 +30,7 @@ import io.ipoli.android.common.view.recyclerview.RecyclerViewViewModel
 import io.ipoli.android.common.view.recyclerview.SimpleSwipeCallback
 import io.ipoli.android.quest.CompletedQuestViewController
 import io.ipoli.android.tag.usecase.CreateTagItemsUseCase
-import kotlinx.android.synthetic.main.animation_empty_list.view.*
+import kotlinx.android.synthetic.main.view_empty_list.view.*
 import kotlinx.android.synthetic.main.controller_tag.view.*
 import kotlinx.android.synthetic.main.item_agenda_quest.view.*
 

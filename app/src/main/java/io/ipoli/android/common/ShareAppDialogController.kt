@@ -1,5 +1,6 @@
 package io.ipoli.android.common
 
+import android.annotation.SuppressLint
 import android.app.Activity.RESULT_OK
 import android.content.Context
 import android.content.Intent
@@ -37,22 +38,24 @@ import space.traversal.kapsule.required
  * Created by Polina Zhelyazkova <polina@mypoli.fun>
  * on 3/26/18.
  */
-class InviteFriendsDialogController : BaseDialogController(), Injects<UIModule> {
+class ShareAppDialogController(args: Bundle? = null) : BaseDialogController(args),
+    Injects<UIModule> {
 
     private val eventLogger by required { eventLogger }
 
     companion object {
-        const val INVITE_FRIEND_REQUEST_CODE = 876
+        const val SHARE_APP_REQUEST_CODE = 876
     }
 
+    @SuppressLint("InflateParams")
     override fun onCreateContentView(inflater: LayoutInflater, savedViewState: Bundle?): View {
         inject(myPoliApp.uiModule(myPoliApp.instance))
-        registerForActivityResult(INVITE_FRIEND_REQUEST_CODE)
-        return inflater.inflate(R.layout.dialog_invite_friends, null)
+        registerForActivityResult(SHARE_APP_REQUEST_CODE)
+        return inflater.inflate(R.layout.dialog_share_app, null)
     }
 
     override fun onHeaderViewCreated(headerView: View?) {
-        headerView!!.dialogHeaderTitle.setText(R.string.invite_friends)
+        headerView!!.dialogHeaderTitle.setText(R.string.share_app)
         val v = ViewUtils.dpToPx(8f, headerView.context).toInt()
         headerView.dialogHeaderIcon.setPadding(v, v, v, v)
         headerView.dialogHeaderIcon.setImageResource(R.drawable.ic_person_add_white_24dp)
@@ -64,34 +67,34 @@ class InviteFriendsDialogController : BaseDialogController(), Injects<UIModule> 
         savedViewState: Bundle?
     ): AlertDialog {
 
-        val inviteIntent = Intent(Intent.ACTION_SEND);
-        inviteIntent.type = "text/plain";
-        inviteIntent.putExtra(Intent.EXTRA_TEXT, "");
+        val inviteIntent = Intent(Intent.ACTION_SEND)
+        inviteIntent.type = "text/plain"
+        inviteIntent.putExtra(Intent.EXTRA_TEXT, "")
 
         val adapter =
             ShareDialogAdapter(
                 contentView.context,
                 filterInviteProviders(contentView.context, inviteIntent)
             )
-        dialogBuilder.setAdapter(adapter, { _, item ->
+        dialogBuilder.setAdapter(adapter) { _, item ->
             val message = stringRes(R.string.invite_message)
             val packageName = adapter.getItem(item).packageName
 
-            if (packageName == null) {
-                onInviteWithFirebase(message)
-            } else if (isFacebook(packageName)) {
-                onInviteWithFacebook()
-            } else {
-                var text = message + " " + Constants.SHARE_URL
-                if (isTwitter(packageName)) {
-                    text += " via " + Constants.TWITTER_USERNAME
-                }
+            when {
+                packageName == null -> onInviteWithFirebase(message)
+                isFacebook(packageName) -> onInviteWithFacebook()
+                else -> {
+                    var text = message + " " + Constants.SHARE_URL
+                    if (isTwitter(packageName)) {
+                        text += " via " + Constants.TWITTER_USERNAME
+                    }
 
-                inviteIntent.putExtra(Intent.EXTRA_TEXT, text)
-                inviteIntent.`package` = packageName
-                activity!!.startActivity(inviteIntent)
+                    inviteIntent.putExtra(Intent.EXTRA_TEXT, text)
+                    inviteIntent.`package` = packageName
+                    activity!!.startActivity(inviteIntent)
+                }
             }
-        })
+        }
         return dialogBuilder.create()
     }
 
@@ -101,19 +104,25 @@ class InviteFriendsDialogController : BaseDialogController(), Injects<UIModule> 
             .setCustomImage(Uri.parse(Constants.INVITE_IMAGE_URL))
             .setCallToActionText(stringRes(R.string.invite_call_to_action))
             .build()
-        activity!!.startActivityForResult(intent, INVITE_FRIEND_REQUEST_CODE)
+        activity!!.startActivityForResult(intent, SHARE_APP_REQUEST_CODE)
     }
 
     private fun onInviteWithFacebook() {
         val linkContent = ShareLinkContent.Builder()
             .setContentUrl(Uri.parse("https://play.google.com/store/apps/details?id=io.ipoli.android"))
             .build()
-        if (MessageDialog.canShow(ShareLinkContent::class.java)) {
-            MessageDialog.show(activity!!, linkContent)
-        } else if (ShareDialog.canShow(ShareLinkContent::class.java)) {
-            ShareDialog.show(activity!!, linkContent)
-        } else {
-            showLongToast(R.string.invite_request_update_facebook)
+        when {
+            MessageDialog.canShow(ShareLinkContent::class.java) ->
+                MessageDialog.show(
+                    activity!!,
+                    linkContent
+                )
+            ShareDialog.canShow(ShareLinkContent::class.java) ->
+                ShareDialog.show(
+                    activity!!,
+                    linkContent
+                )
+            else -> showLongToast(R.string.invite_request_update_facebook)
         }
     }
 
@@ -193,7 +202,7 @@ class InviteFriendsDialogController : BaseDialogController(), Injects<UIModule> 
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
-        if (requestCode == INVITE_FRIEND_REQUEST_CODE) {
+        if (requestCode == SHARE_APP_REQUEST_CODE) {
             if (resultCode == RESULT_OK) {
                 val inviteIds = AppInviteInvitation.getInvitationIds(resultCode, data!!)
 

@@ -1,13 +1,10 @@
 package io.ipoli.android.common.persistence
 
-import com.crashlytics.android.Crashlytics
-import com.google.android.gms.tasks.Tasks
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.*
 import io.ipoli.android.common.datetime.Duration
 import io.ipoli.android.common.datetime.Millisecond
 import io.ipoli.android.quest.Entity
-import timber.log.Timber
 
 /**
  * Created by Venelin Valkov <venelin@mypoli.fun>
@@ -22,19 +19,6 @@ abstract class BaseFirestoreRepository<E, out T>(
 
     protected val playerId: String
         get() = FirebaseAuth.getInstance().currentUser!!.uid
-
-    protected fun Query.execute() =
-        Tasks.await(get(Source.SERVER))
-
-    protected val Query.documents: List<DocumentSnapshot> get() = execute().documents
-
-    protected fun DocumentReference.getSync() =
-        Tasks.await(get(Source.SERVER))
-
-    protected fun logError(error: FirebaseFirestoreException) {
-        Timber.e(error)
-        Crashlytics.logException(error)
-    }
 
     override fun save(entity: E): E {
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.

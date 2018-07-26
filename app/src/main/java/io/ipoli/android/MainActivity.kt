@@ -13,10 +13,11 @@ import com.bluelinelabs.conductor.Conductor
 import com.bluelinelabs.conductor.Router
 import com.bluelinelabs.conductor.RouterTransaction
 import com.bluelinelabs.conductor.changehandler.FadeChangeHandler
-import com.crashlytics.android.Crashlytics
+import com.google.firebase.auth.FirebaseAuth
 import io.ipoli.android.achievement.usecase.UnlockAchievementsUseCase
 import io.ipoli.android.common.AppState
 import io.ipoli.android.common.DataLoadedAction
+import io.ipoli.android.common.ErrorLogger
 import io.ipoli.android.common.LoadDataAction
 import io.ipoli.android.common.di.UIModule
 import io.ipoli.android.common.home.HomeAction
@@ -41,7 +42,6 @@ import org.threeten.bp.LocalDate
 import space.traversal.kapsule.Injects
 import space.traversal.kapsule.inject
 import space.traversal.kapsule.required
-import timber.log.Timber
 import java.util.*
 
 
@@ -59,6 +59,7 @@ class MainActivity : AppCompatActivity(), Injects<UIModule>, SideEffectHandler<A
 
     private val stateStore by required { stateStore }
     private val dataExporter by required { dataExporter }
+    private val eventLogger by required { eventLogger }
 
     val rootRouter get() = router
 
@@ -69,6 +70,7 @@ class MainActivity : AppCompatActivity(), Injects<UIModule>, SideEffectHandler<A
         }
         setTheme(playerTheme)
         setContentView(R.layout.activity_main)
+
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && !Settings.canDrawOverlays(this)) {
             val intent =
@@ -98,6 +100,7 @@ class MainActivity : AppCompatActivity(), Injects<UIModule>, SideEffectHandler<A
         if (playerId != null && schemaVer == Constants.SCHEMA_VERSION) {
             startApp()
             stateStore.dispatch(LoadDataAction.All)
+            checkForFriendInvite(intent)
             return
         }
 
@@ -106,6 +109,11 @@ class MainActivity : AppCompatActivity(), Injects<UIModule>, SideEffectHandler<A
                 -1
             ) != Constants.PRIVACY_POLICY_VERSION
         ) {
+
+            getInvitePlayerId(intent)?.let {
+                sharedPreferences.edit().putString(Constants.KEY_INVITE_PLAYER_ID, it).apply()
+            }
+
             router.setRoot(RouterTransaction.with(PrivacyPolicyViewController()))
             return
         }
@@ -153,6 +161,33 @@ class MainActivity : AppCompatActivity(), Injects<UIModule>, SideEffectHandler<A
 
             else -> navigator.setHome()
         }
+
+        checkForFriendInvite(intent)
+    }
+
+    private fun getInvitePlayerId(intent: Intent) =
+        intent.data?.getQueryParameter("playerId")
+
+    private fun checkForFriendInvite(intent: Intent) {
+        getInvitePlayerId(intent)?.let {
+            val firestorePlayerId = FirebaseAuth.getInstance().currentUser?.uid
+            if (firestorePlayerId == null) {
+                eventLogger.logEvent("invite_request_login", mapOf("invitePlayerId" to it))
+                sharedPreferences.edit().putString(Constants.KEY_INVITE_PLAYER_ID, it).apply()
+                Toast.makeText(
+                    this,
+                    getString(R.string.sign_in_to_accept_friendship),
+                    Toast.LENGTH_LONG
+                ).show()
+                return
+            }
+            if (it == firestorePlayerId) {
+                Toast.makeText(this, getString(R.string.cant_friend_yourself), Toast.LENGTH_LONG)
+                    .show()
+                return
+            }
+            Navigator(router).toAcceptFriendship(it)
+        }
     }
 
     private fun startApp() {
@@ -180,9 +215,7 @@ class MainActivity : AppCompatActivity(), Injects<UIModule>, SideEffectHandler<A
                 launch(UI) {
                     if (p.isLoggedIn() && p.username.isNullOrEmpty()) {
                         Navigator(router).setAuth()
-                    }
-
-                    if (Random().nextInt(10) == 1 && p.membership == Membership.NONE) {
+                    } else if (Random().nextInt(10) == 1 && p.membership == Membership.NONE) {
                         showPremiumSnackbar()
                     }
                 }
@@ -191,11 +224,7 @@ class MainActivity : AppCompatActivity(), Injects<UIModule>, SideEffectHandler<A
                     try {
                         dataExporter.exportNewData()
                     } catch (e: Throwable) {
-                        if (BuildConfig.DEBUG) {
-                            Timber.e(e)
-                        } else {
-                            Crashlytics.logException(e)
-                        }
+                        ErrorLogger.log(e)
                     }
                 }
 

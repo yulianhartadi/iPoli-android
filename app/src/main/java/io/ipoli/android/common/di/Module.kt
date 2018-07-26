@@ -60,6 +60,19 @@ import io.ipoli.android.event.persistence.EventRepository
 import io.ipoli.android.event.sideeffect.CalendarSideEffectHandler
 import io.ipoli.android.event.usecase.FindEventsBetweenDatesUseCase
 import io.ipoli.android.event.usecase.SaveSyncCalendarsUseCase
+import io.ipoli.android.friends.feed.persistence.AndroidPostRepository
+import io.ipoli.android.friends.feed.persistence.PostRepository
+import io.ipoli.android.friends.feed.sideeffect.FeedSideEffectHandler
+import io.ipoli.android.friends.invite.FirebaseInviteLinkBuilder
+import io.ipoli.android.friends.invite.InviteLinkBuilder
+import io.ipoli.android.friends.invite.sideeffect.AcceptFriendshipSideEffectHandler
+import io.ipoli.android.friends.invite.sideeffect.InviteFriendsSideEffectHandler
+import io.ipoli.android.friends.middleware.CreatePostsMiddleware
+import io.ipoli.android.friends.persistence.FirestoreFriendRepository
+import io.ipoli.android.friends.persistence.FriendRepository
+import io.ipoli.android.friends.usecase.CreateReactionHistoryItemsUseCase
+import io.ipoli.android.friends.usecase.SavePostReactionUseCase
+import io.ipoli.android.friends.usecase.SavePostsUseCase
 import io.ipoli.android.growth.persistence.AndroidAppUsageStatRepository
 import io.ipoli.android.growth.persistence.AppUsageStatRepository
 import io.ipoli.android.growth.sideeffect.GrowthSideEffectHandler
@@ -158,6 +171,8 @@ import kotlinx.coroutines.experimental.CommonPool
 import space.traversal.kapsule.HasModules
 import space.traversal.kapsule.Injects
 import space.traversal.kapsule.required
+import java.util.concurrent.ExecutorService
+import java.util.concurrent.Executors
 
 /**
  * Created by Venelin Valkov <venelin@mypoli.fun>
@@ -188,6 +203,8 @@ interface AndroidModule {
     val billingResponseHandler: BillingResponseHandler
 
     val billingRequestExecutor: BillingRequestExecutor
+
+    val inviteLinkBuilder: InviteLinkBuilder
 
     val notificationManager: NotificationManager
 }
@@ -228,11 +245,17 @@ class MainAndroidModule(
     override val billingRequestExecutor
         get() = BillingRequestExecutor(billingResponseHandler)
 
+    override val inviteLinkBuilder
+        get() = FirebaseInviteLinkBuilder()
+
+
     override val notificationManager: NotificationManager
         get() = AndroidNotificationManager(context)
 }
 
 interface UseCaseModule {
+
+    val executorService: ExecutorService
 
     val permissionChecker: PermissionChecker
 
@@ -254,7 +277,8 @@ interface UseCaseModule {
     val appUsageStatRepository: AppUsageStatRepository
     val habitRepository: HabitRepository
     val entityReminderRepository: EntityReminderRepository
-
+    val postRepository: PostRepository
+    val friendRepository: FriendRepository
 
     val reminderScheduler: ReminderScheduler
     val timerCompleteScheduler: TimerCompleteScheduler
@@ -361,7 +385,6 @@ interface UseCaseModule {
     val loadDailyChallengeUseCase: LoadDailyChallengeUseCase
     val saveDailyChallengeQuestIdsUseCase: SaveDailyChallengeQuestIdsUseCase
     val calculateGrowthStatsUseCase: CalculateGrowthStatsUseCase
-    val findDailyChallengeStreakUseCase: FindDailyChallengeStreakUseCase
     val findAverageFocusedDurationForPeriodUseCase: FindAverageFocusedDurationForPeriodUseCase
     val saveQuickDoNotificationSettingUseCase: SaveQuickDoNotificationSettingUseCase
     val saveProfileUseCase: SaveProfileUseCase
@@ -375,9 +398,14 @@ interface UseCaseModule {
     val updateHabitStreaksUseCase: UpdateHabitStreaksUseCase
     val createHabitItemsUseCase: CreateHabitItemsUseCase
     val createScheduleSummaryUseCase: CreateScheduleSummaryUseCase
+    val savePostsUseCase: SavePostsUseCase
+    val savePostReactionUseCase: SavePostReactionUseCase
+    val createReactionHistoryItemsUseCase: CreateReactionHistoryItemsUseCase
 }
 
 class MainUseCaseModule(private val context: Context) : UseCaseModule {
+
+    override val executorService: ExecutorService = Executors.newCachedThreadPool()
 
     override val permissionChecker
         get() = AndroidPermissionChecker(context)
@@ -393,9 +421,9 @@ class MainUseCaseModule(private val context: Context) : UseCaseModule {
         RoomQuestRepository(
             dao = localDatabase.questDao(),
             entityReminderDao = localDatabase.entityReminderDao(),
-            tagDao = localDatabase.tagDao()
+            tagDao = localDatabase.tagDao(),
+            remoteDatabase = remoteDatabase
         )
-
 
     override val playerRepository =
         AndroidPlayerRepository(
@@ -452,6 +480,10 @@ class MainUseCaseModule(private val context: Context) : UseCaseModule {
             localDatabase.entityReminderDao()
         )
 
+    override val postRepository =
+        AndroidPostRepository(remoteDatabase, localDatabase.postDao(), executorService)
+
+    override val friendRepository = FirestoreFriendRepository(remoteDatabase)
 
     override val reminderScheduler get() = AndroidJobReminderScheduler(context)
 
@@ -794,9 +826,6 @@ class MainUseCaseModule(private val context: Context) : UseCaseModule {
             appUsageStatRepository
         )
 
-    override val findDailyChallengeStreakUseCase
-        get() = FindDailyChallengeStreakUseCase(dailyChallengeRepository)
-
     override val findAverageFocusedDurationForPeriodUseCase
         get() = FindAverageFocusedDurationForPeriodUseCase(questRepository)
 
@@ -807,7 +836,11 @@ class MainUseCaseModule(private val context: Context) : UseCaseModule {
         get() = SaveProfileUseCase(playerRepository)
 
     override val unlockAchievementsUseCase
-        get() = UnlockAchievementsUseCase(playerRepository, showUnlockedAchievementsScheduler)
+        get() = UnlockAchievementsUseCase(
+            playerRepository,
+            showUnlockedAchievementsScheduler,
+            savePostsUseCase
+        )
 
     override val updateAchievementProgressUseCase
         get() = UpdateAchievementProgressUseCase(
@@ -850,6 +883,15 @@ class MainUseCaseModule(private val context: Context) : UseCaseModule {
 
     override val createScheduleSummaryUseCase
         get() = CreateScheduleSummaryUseCase(eventRepository, playerRepository, permissionChecker)
+
+    override val savePostsUseCase
+        get() = SavePostsUseCase(postRepository, playerRepository, challengeRepository)
+
+    override val savePostReactionUseCase
+        get() = SavePostReactionUseCase(postRepository)
+
+    override val createReactionHistoryItemsUseCase
+        get() = CreateReactionHistoryItemsUseCase(friendRepository)
 }
 
 interface StateStoreModule {
@@ -902,13 +944,17 @@ class AndroidStateStoreModule : StateStoreModule, Injects<UIModule> {
                 LevelUpSideEffectHandler,
                 PetMessageSideEffectHandler,
                 PetDialogSideEffectHandler,
-                ScheduleSummarySideEffectHandler
+                ScheduleSummarySideEffectHandler,
+                InviteFriendsSideEffectHandler,
+                AcceptFriendshipSideEffectHandler,
+                FeedSideEffectHandler
             ),
             sideEffectHandlerExecutor = CoroutineSideEffectHandlerExecutor(CommonPool),
             middleware = listOf(
                 LogEventsMiddleWare,
                 CheckEnabledPowerUpMiddleWare,
-                AchievementProgressMiddleWare
+                AchievementProgressMiddleWare,
+                CreatePostsMiddleware
             )
         )
     }

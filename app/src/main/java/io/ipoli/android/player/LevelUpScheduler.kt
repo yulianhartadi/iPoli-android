@@ -17,7 +17,6 @@ interface LevelUpScheduler {
 class AndroidLevelUpScheduler : LevelUpScheduler {
 
     override fun schedule(newLevel: Int) {
-
         val c = myPoliApp.instance.asThemedWrapper()
         launch(UI) {
             LevelUpPopup(newLevel).show(c)

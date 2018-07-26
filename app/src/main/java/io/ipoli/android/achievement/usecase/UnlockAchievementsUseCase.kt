@@ -5,6 +5,7 @@ import io.ipoli.android.achievement.job.ShowUnlockedAchievementsScheduler
 import io.ipoli.android.achievement.usecase.UnlockAchievementsUseCase.Params.EventType.*
 import io.ipoli.android.common.UseCase
 import io.ipoli.android.common.datetime.Time
+import io.ipoli.android.friends.usecase.SavePostsUseCase
 import io.ipoli.android.pet.Food
 import io.ipoli.android.player.data.Player
 import io.ipoli.android.player.data.Statistics
@@ -17,7 +18,8 @@ import org.threeten.bp.LocalDate
  */
 class UnlockAchievementsUseCase(
     private val playerRepository: PlayerRepository,
-    private val showUnlockedAchievementsScheduler: ShowUnlockedAchievementsScheduler
+    private val showUnlockedAchievementsScheduler: ShowUnlockedAchievementsScheduler,
+    private val savePostsUseCase: SavePostsUseCase
 ) : UseCase<UnlockAchievementsUseCase.Params, List<Achievement>> {
 
     override fun execute(parameters: Params): List<Achievement> {
@@ -52,15 +54,19 @@ class UnlockAchievementsUseCase(
 
             DailyChallengeCompleted -> {
                 val dcCompleteStreak = stats.dailyChallengeCompleteStreak
+                val currentDcStreak = if (currentDate != dcCompleteStreak.lastDate)
+                    dcCompleteStreak.copy(
+                        count = dcCompleteStreak.count + 1,
+                        lastDate = currentDate
+                    )
+                else dcCompleteStreak
+
                 stats.copy(
-                    dailyChallengeCompleteStreak = if (currentDate != dcCompleteStreak.lastDate) {
-                        dcCompleteStreak.copy(
-                            count = dcCompleteStreak.count + 1,
-                            lastDate = currentDate
-                        )
-                    } else {
-                        dcCompleteStreak
-                    }
+                    dailyChallengeCompleteStreak = currentDcStreak,
+                    dailyChallengeBestStreak =
+                    if (stats.dailyChallengeBestStreak < dcCompleteStreak.count)
+                        dcCompleteStreak.count
+                    else stats.dailyChallengeBestStreak
                 )
             }
 
@@ -166,7 +172,7 @@ class UnlockAchievementsUseCase(
             }
 
         if (newAchievements.isNotEmpty()) {
-            playerRepository.save(
+            val p = playerRepository.save(
                 player.copy(
                     achievements = player.achievements + newAchievements.map {
                         Player.UnlockedAchievement(
@@ -177,6 +183,9 @@ class UnlockAchievementsUseCase(
                 )
             )
             showUnlockedAchievementsScheduler.schedule(newAchievements)
+            newAchievements.forEach {
+                savePostsUseCase.execute(SavePostsUseCase.Params.AchievementUnlocked(it, p))
+            }
         } else if (newStats != stats) {
             playerRepository.saveStatistics(newStats)
         }

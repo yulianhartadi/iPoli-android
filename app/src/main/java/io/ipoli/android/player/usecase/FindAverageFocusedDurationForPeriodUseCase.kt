@@ -12,10 +12,13 @@ class FindAverageFocusedDurationForPeriodUseCase(private val questRepository: Qu
 
     override fun execute(parameters: Params): Duration<Minute> {
 
-        val qs = questRepository.findCompletedInPeriod(
-            parameters.currentDate.minusDays(parameters.dayPeriod.toLong() - 1),
-            parameters.currentDate
-        )
+        val startDate = parameters.currentDate.minusDays(parameters.dayPeriod.toLong() - 1)
+        val endDate = parameters.currentDate
+
+        val qs = if (parameters.friendId != null)
+            questRepository.findCompletedInPeriodOfFriend(parameters.friendId, startDate, endDate)
+        else
+            questRepository.findCompletedInPeriod(startDate, endDate)
 
         val productiveMinutes = qs
             .filter { it.hasTimer }
@@ -24,5 +27,9 @@ class FindAverageFocusedDurationForPeriodUseCase(private val questRepository: Qu
         return (productiveMinutes / parameters.dayPeriod).minutes
     }
 
-    data class Params(val dayPeriod: Int = 7, val currentDate: LocalDate = LocalDate.now())
+    data class Params(
+        val dayPeriod: Int = 7,
+        val currentDate: LocalDate = LocalDate.now(),
+        val friendId: String? = null
+    )
 }

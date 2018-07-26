@@ -15,6 +15,7 @@ import com.google.firebase.firestore.ListenerRegistration
 import com.google.firebase.firestore.MetadataChanges
 import io.ipoli.android.achievement.Achievement
 import io.ipoli.android.challenge.predefined.entity.PredefinedChallenge
+import io.ipoli.android.common.ErrorLogger
 import io.ipoli.android.common.datetime.*
 import io.ipoli.android.common.distinct
 import io.ipoli.android.common.persistence.BaseDao
@@ -47,6 +48,8 @@ interface PlayerRepository {
     fun hasPlayer(): Boolean
 
     fun findAllForSync(lastSync: Duration<Millisecond>): List<Player>
+
+    fun findFriend(friendId: String): Player
 
     fun isUsernameAvailable(username: String): Boolean
     fun addUsername(
@@ -121,6 +124,9 @@ class AndroidPlayerRepository(
 
     override fun findAllForSync(lastSync: Duration<Millisecond>) =
         dao.findAllForSync(lastSync.millisValue).map { toEntityObject(it) }
+
+    override fun findFriend(friendId: String) =
+        FirestorePlayerRepository(database).findFriend(friendId)
 
     override fun save(entity: Player): Player {
         val rp = toDatabaseObject(entity)
@@ -279,17 +285,23 @@ class AndroidPlayerRepository(
         return PetEquipment(toPetItem(e.hat), toPetItem(e.mask), toPetItem(e.bodyArmor))
     }
 
-    private fun createStatistics(stats: Map<String, Any?>) =
-        Statistics(
+    private fun createStatistics(stats: Map<String, Any?>): Statistics {
+        val dailyChallengeCompleteStreak = createStreakStatistic(
+            "dailyChallengeCompleteStreak",
+            stats
+        )
+        return Statistics(
             questCompletedCount = createCountStatistic("questCompletedCount", stats),
             questCompletedCountForToday = createCountStatistic(
                 "questCompletedCountForToday",
                 stats
             ),
             questCompletedStreak = createStreakStatistic("questCompletedStreak", stats),
-            dailyChallengeCompleteStreak = createStreakStatistic(
-                "dailyChallengeCompleteStreak",
-                stats
+            dailyChallengeCompleteStreak = dailyChallengeCompleteStreak,
+            dailyChallengeBestStreak = createCountStatistic(
+                statisticKey = "dailyChallengeBestStreak",
+                stats = stats,
+                defaultValue = dailyChallengeCompleteStreak.count
             ),
             petHappyStateStreak = createCountStatistic("petHappyStateStreak", stats),
             awesomenessScoreStreak = createCountStatistic("awesomenessScoreStreak", stats),
@@ -312,9 +324,14 @@ class AndroidPlayerRepository(
             petRevivedCount = createCountStatistic("petRevivedCount", stats),
             petDiedCount = createCountStatistic("petDiedCount", stats)
         )
+    }
 
-    private fun createCountStatistic(statisticKey: String, stats: Map<String, Any?>) =
-        stats[statisticKey]?.let { it as Long } ?: 0
+    private fun createCountStatistic(
+        statisticKey: String,
+        stats: Map<String, Any?>,
+        defaultValue: Long = 0
+    ) =
+        stats[statisticKey]?.let { it as Long } ?: defaultValue
 
     private fun createStreakStatistic(
         statisticKey: String,
@@ -462,6 +479,7 @@ class AndroidPlayerRepository(
             "questCompletedCountForToday" to stats.questCompletedCountForToday,
             "questCompletedStreak" to stats.questCompletedStreak.db,
             "dailyChallengeCompleteStreak" to stats.dailyChallengeCompleteStreak.db,
+            "dailyChallengeBestStreak" to stats.dailyChallengeBestStreak,
             "petHappyStateStreak" to stats.petHappyStateStreak,
             "awesomenessScoreStreak" to stats.awesomenessScoreStreak,
             "planDayStreak" to stats.planDayStreak.db,
@@ -504,7 +522,7 @@ class AndroidPlayerRepository(
             ) { snapshot, error ->
 
                 if (error != null) {
-//                    logError(error)
+                    ErrorLogger.log(error)
                     registration?.remove()
                     return@addSnapshotListener
                 }
@@ -673,17 +691,23 @@ class FirestorePlayerRepository(
         return PetEquipment(toPetItem(e.hat), toPetItem(e.mask), toPetItem(e.bodyArmor))
     }
 
-    private fun createStatistics(stats: Map<String, Any?>) =
-        Statistics(
+    private fun createStatistics(stats: Map<String, Any?>): Statistics {
+        val dailyChallengeCompleteStreak = createStreakStatistic(
+            "dailyChallengeCompleteStreak",
+            stats
+        )
+        return Statistics(
             questCompletedCount = createCountStatistic("questCompletedCount", stats),
             questCompletedCountForToday = createCountStatistic(
                 "questCompletedCountForToday",
                 stats
             ),
             questCompletedStreak = createStreakStatistic("questCompletedStreak", stats),
-            dailyChallengeCompleteStreak = createStreakStatistic(
-                "dailyChallengeCompleteStreak",
-                stats
+            dailyChallengeCompleteStreak = dailyChallengeCompleteStreak,
+            dailyChallengeBestStreak = createCountStatistic(
+                statisticKey = "dailyChallengeBestStreak",
+                stats = stats,
+                defaultValue = dailyChallengeCompleteStreak.count
             ),
             petHappyStateStreak = createCountStatistic("petHappyStateStreak", stats),
             awesomenessScoreStreak = createCountStatistic("awesomenessScoreStreak", stats),
@@ -706,9 +730,14 @@ class FirestorePlayerRepository(
             petRevivedCount = createCountStatistic("petRevivedCount", stats),
             petDiedCount = createCountStatistic("petDiedCount", stats)
         )
+    }
 
-    private fun createCountStatistic(statisticKey: String, stats: Map<String, Any?>) =
-        stats[statisticKey]?.let { it as Long } ?: 0
+    private fun createCountStatistic(
+        statisticKey: String,
+        stats: Map<String, Any?>,
+        defaultValue: Long = 0
+    ) =
+        stats[statisticKey]?.let { it as Long } ?: defaultValue
 
     private fun createStreakStatistic(
         statisticKey: String,
@@ -856,6 +885,7 @@ class FirestorePlayerRepository(
             "questCompletedCountForToday" to stats.questCompletedCountForToday,
             "questCompletedStreak" to stats.questCompletedStreak.db,
             "dailyChallengeCompleteStreak" to stats.dailyChallengeCompleteStreak.db,
+            "dailyChallengeBestStreak" to stats.dailyChallengeBestStreak,
             "petHappyStateStreak" to stats.petHappyStateStreak,
             "awesomenessScoreStreak" to stats.awesomenessScoreStreak,
             "planDayStreak" to stats.planDayStreak.db,
@@ -883,6 +913,9 @@ class FirestorePlayerRepository(
             "count" to stat.count,
             "lastDate" to stat.lastDate?.startOfDayUTC()
         )
+
+    fun findFriend(friendId: String): Player =
+        extractDocument(collectionReference.document(friendId))!!
 
     private val Statistics.StreakStatistic.db
         get() = createDbStreakStatistic(this)

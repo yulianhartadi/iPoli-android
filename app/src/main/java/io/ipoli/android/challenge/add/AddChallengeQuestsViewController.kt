@@ -9,7 +9,7 @@ import io.ipoli.android.challenge.*
 import io.ipoli.android.common.redux.android.ReduxViewController
 import io.ipoli.android.common.view.invisible
 import io.ipoli.android.common.view.visible
-import kotlinx.android.synthetic.main.animation_empty_list.view.*
+import kotlinx.android.synthetic.main.view_empty_list.view.*
 import kotlinx.android.synthetic.main.list_quest_picker.view.*
 import kotlinx.android.synthetic.main.view_loader.view.*
 

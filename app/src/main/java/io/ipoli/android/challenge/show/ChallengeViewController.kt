@@ -54,7 +54,7 @@ class ChallengeViewController(args: Bundle? = null) :
     private var showEdit = true
     private var showComplete = true
 
-    private constructor(
+    constructor(
         challengeId: String
     ) : this() {
         this.challengeId = challengeId
@@ -466,11 +466,4 @@ class ChallengeViewController(args: Bundle? = null) :
             }
 
         }
-
-    companion object {
-        fun routerTransaction(challengeId: String) =
-            RouterTransaction.with(ChallengeViewController(challengeId))
-                .pushChangeHandler(VerticalChangeHandler())
-                .popChangeHandler(VerticalChangeHandler())
-    }
 }

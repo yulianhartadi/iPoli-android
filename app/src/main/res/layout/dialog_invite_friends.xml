@@ -1,7 +1,177 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:orientation="vertical">
+    android:layout_height="wrap_content">
 
-</LinearLayout>
+    <View
+        android:id="@+id/inviteBackground"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:background="@drawable/rounded_rectangle_white_background"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/inviteHalfLogoGuide" />
+
+    <View
+        android:id="@+id/inviteHalfLogoGuide"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        app:layout_constraintBottom_toBottomOf="@+id/inviteLogo"
+        app:layout_constraintTop_toTopOf="@+id/inviteLogo"
+        app:layout_constraintVertical_bias=".5" />
+
+    <ImageView
+        android:id="@+id/inviteLogo"
+        android:layout_width="84dp"
+        android:layout_height="84dp"
+        android:background="@drawable/oval_background"
+        android:padding="6dp"
+        android:scaleType="fitCenter"
+        android:src="@drawable/logo"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <ImageView
+        android:id="@+id/inviteClose"
+        android:layout_width="32dp"
+        android:layout_height="32dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginTop="8dp"
+        android:background="@drawable/dark_oval_outline_background"
+        android:padding="8dp"
+        android:scaleType="fitCenter"
+        android:src="@drawable/ic_close_black_24dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="@id/inviteBackground" />
+
+    <TextView
+        android:id="@+id/inviteTitle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:text="Invite your friends"
+        android:textAlignment="center"
+        android:textAppearance="@style/TextAppearance.AppCompat.Title"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/inviteLogo" />
+
+    <TextView
+        android:id="@+id/inviteMessage"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="16dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="8dp"
+        android:text="Help each other and keep yourselves accountable! Players that invite 2 or more friends are up to 5x more likely to complete their Challenges!"
+        android:textAppearance="@style/TextAppearance.AppCompat.Body1"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/inviteTitle" />
+
+    <ImageView
+        android:id="@+id/inviteProviderSms"
+        android:layout_width="52dp"
+        android:layout_height="52dp"
+        android:layout_marginBottom="16dp"
+        android:layout_marginTop="24dp"
+        android:background="@drawable/rounded_rectangle_white_background"
+        android:elevation="2dp"
+        android:padding="8dp"
+        android:scaleType="fitCenter"
+        android:src="@drawable/invite_provider_sms"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/inviteProviderEmail"
+        app:layout_constraintHorizontal_chainStyle="packed"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/inviteMessage" />
+
+    <ImageView
+        android:id="@+id/inviteProviderEmail"
+        android:layout_width="52dp"
+        android:layout_height="52dp"
+        android:layout_marginBottom="16dp"
+        android:layout_marginStart="12dp"
+        android:layout_marginTop="16dp"
+        android:background="@drawable/rounded_rectangle_white_background"
+        android:elevation="2dp"
+        android:padding="8dp"
+        android:scaleType="fitCenter"
+        android:src="@drawable/ic_email_white_24dp"
+        app:layout_constraintBottom_toBottomOf="@+id/inviteProviderSms"
+        app:layout_constraintEnd_toStartOf="@+id/inviteProviderWhatsapp"
+        app:layout_constraintStart_toEndOf="@+id/inviteProviderSms"
+        app:layout_constraintTop_toTopOf="@+id/inviteProviderSms" />
+
+    <ImageView
+        android:id="@+id/inviteProviderWhatsapp"
+        android:layout_width="52dp"
+        android:layout_height="52dp"
+        android:layout_marginStart="12dp"
+        android:background="@drawable/rounded_rectangle_white_background"
+        android:elevation="2dp"
+        android:scaleType="fitCenter"
+        android:visibility="gone"
+        android:src="@drawable/invite_provider_whatsapp"
+        app:layout_constraintBottom_toBottomOf="@+id/inviteProviderSms"
+        app:layout_constraintEnd_toStartOf="@+id/inviteProviderFacebook"
+        app:layout_constraintStart_toEndOf="@+id/inviteProviderEmail"
+        app:layout_constraintTop_toTopOf="@+id/inviteProviderSms" />
+
+    <ImageView
+        android:id="@+id/inviteProviderFacebook"
+        android:layout_width="52dp"
+        android:layout_height="52dp"
+        android:layout_marginStart="12dp"
+        android:background="@drawable/rounded_rectangle_white_background"
+        android:elevation="2dp"
+        android:paddingBottom="8dp"
+        android:paddingEnd="4dp"
+        android:paddingStart="16dp"
+        android:paddingTop="8dp"
+        android:scaleType="fitCenter"
+        android:src="@drawable/invite_provider_facebook"
+        app:layout_constraintBottom_toBottomOf="@+id/inviteProviderSms"
+        app:layout_constraintEnd_toStartOf="@+id/inviteProviderLink"
+        app:layout_constraintStart_toEndOf="@+id/inviteProviderWhatsapp"
+        app:layout_constraintTop_toTopOf="@+id/inviteProviderSms" />
+
+
+    <ImageView
+        android:id="@+id/inviteProviderLink"
+        android:layout_width="52dp"
+        android:layout_height="52dp"
+        android:layout_marginStart="12dp"
+        android:background="@drawable/rounded_rectangle_white_background"
+        android:elevation="2dp"
+        android:padding="10dp"
+        android:scaleType="fitCenter"
+        android:src="@drawable/invite_provider_link"
+        app:layout_constraintBottom_toBottomOf="@+id/inviteProviderSms"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/inviteProviderFacebook"
+        app:layout_constraintTop_toTopOf="@+id/inviteProviderSms" />
+
+    <include
+        layout="@layout/view_loader"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="16dp"
+        android:layout_marginTop="24dp"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/inviteMessage" />
+
+    <android.support.constraint.Group
+        android:id="@+id/inviteProviderGroup"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:constraint_referenced_ids="inviteProviderSms, inviteProviderEmail, inviteProviderFacebook, inviteProviderLink" />
+
+</android.support.constraint.ConstraintLayout>

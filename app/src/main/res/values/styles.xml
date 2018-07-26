@@ -259,6 +259,21 @@
         <item name="android:theme">@style/WhiteEditTextThemeBody</item>
     </style>
 
+    <style name="FeedEditTextThemeBody" parent="Base.TextAppearance.AppCompat.Body1">
+        <item name="android:singleLine">true</item>
+        <item name="android:textColor">@color/md_dark_text_87</item>
+        <item name="colorControlNormal">@color/md_dark_text_87</item>
+        <item name="android:textColorHint">@color/md_dark_text_54</item>
+        <item name="colorControlActivated">@color/md_dark_text_87</item>
+        <item name="android:textColorPrimary">@color/md_dark_text_87</item>
+        <item name="android:textColorHighlight">@color/md_red_500</item>
+        <item name="android:textColorLink">@color/md_red_500</item>
+    </style>
+
+    <style name="FeedEditTextBody">
+        <item name="android:theme">@style/WhiteEditTextThemeBody</item>
+    </style>
+
     <style name="WhiteEditTextThemeSubhead" parent="Base.TextAppearance.AppCompat.Subhead">
         <item name="android:singleLine">true</item>
         <item name="android:textColor">@color/md_white</item>

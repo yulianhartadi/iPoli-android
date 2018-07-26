@@ -1,11 +1,9 @@
 package io.ipoli.android.challenge.list
 
 import io.ipoli.android.challenge.entity.Challenge
-import io.ipoli.android.challenge.list.ChallengeListViewState.ChallengeItem.*
 import io.ipoli.android.common.AppState
 import io.ipoli.android.common.BaseViewStateReducer
 import io.ipoli.android.common.DataLoadedAction
-
 import io.ipoli.android.common.redux.Action
 import io.ipoli.android.common.redux.BaseViewState
 
@@ -51,17 +49,7 @@ object ChallengeListReducer : BaseViewStateReducer<ChallengeListViewState>() {
             )
         }
 
-    private fun createChallengeItems(challenges: List<Challenge>): List<ChallengeListViewState.ChallengeItem> {
-        val (incomplete, complete) = challenges.partition { it.completedAtDate == null }
 
-        val incompleteItems = incomplete.map { Incomplete(it) }
-        return when {
-            complete.isEmpty() -> incompleteItems
-            else -> incompleteItems +
-                CompleteLabel +
-                complete.sortedByDescending { it.completedAtDate!! }.map { Complete(it) }
-        }
-    }
 
     override fun defaultState() = ChallengeListViewState(
         type = ChallengeListViewState.StateType.LOADING,
@@ -77,13 +65,4 @@ data class ChallengeListViewState(val type: StateType, val challenges: List<Chal
     enum class StateType {
         LOADING, EMPTY, SHOW_ADD, DATA_CHANGED
     }
-
-    sealed class ChallengeItem {
-
-        data class Incomplete(val challenge: Challenge) : ChallengeItem()
-
-        object CompleteLabel : ChallengeItem()
-        data class Complete(val challenge: Challenge) : ChallengeItem()
-    }
-
 }

@@ -1,11 +1,16 @@
 package io.ipoli.android.common.persistence
 
+import android.arch.persistence.db.SupportSQLiteDatabase
 import android.arch.persistence.room.*
+import android.arch.persistence.room.migration.Migration
 import android.content.Context
+import io.ipoli.android.challenge.entity.SharingPreference
 import io.ipoli.android.challenge.persistence.ChallengeDao
 import io.ipoli.android.challenge.persistence.RoomChallenge
 import io.ipoli.android.dailychallenge.data.persistence.DailyChallengeDao
 import io.ipoli.android.dailychallenge.data.persistence.RoomDailyChallenge
+import io.ipoli.android.friends.feed.persistence.PostDao
+import io.ipoli.android.friends.feed.persistence.RoomPost
 import io.ipoli.android.habit.persistence.HabitDao
 import io.ipoli.android.habit.persistence.RoomHabit
 import io.ipoli.android.player.persistence.PlayerDao
@@ -149,6 +154,16 @@ class Converters {
     }
 }
 
+object Migration1To2 : Migration(1, 2) {
+    override fun migrate(database: SupportSQLiteDatabase) {
+        database.execSQL(
+            "CREATE TABLE IF NOT EXISTS posts(`id` TEXT NOT NULL, `type` TEXT NOT NULL, `playerLevel` INTEGER NOT NULL, `description` TEXT, `questId` TEXT, `questName` TEXT, `habitId` TEXT, `habitName` TEXT, `challengeId` TEXT, `challengeName` TEXT, `streak` INTEGER, `bestStreak` INTEGER, `level` INTEGER, `isGood` INTEGER, `duration` INTEGER, `pomodoroCount` INTEGER, `achievement` TEXT, `reactions` TEXT NOT NULL, `createdAt` INTEGER NOT NULL, PRIMARY KEY(`id`))"
+        )
+        database.execSQL("CREATE INDEX index_posts_questId ON posts (questId)")
+        database.execSQL("ALTER TABLE challenges ADD COLUMN `sharingPreference` TEXT NOT NULL DEFAULT '${SharingPreference.PRIVATE.name}'")
+    }
+}
+
 @Database(
     entities = [
         RoomPlayer::class,
@@ -162,9 +177,10 @@ class Converters {
         RoomHabit::class,
         RoomDailyChallenge::class,
         RoomHabit.Companion.RoomTagJoin::class,
-        RoomEntityReminder::class
+        RoomEntityReminder::class,
+        RoomPost::class
     ],
-    version = 1,
+    version = 2,
     exportSchema = false
 )
 @TypeConverters(Converters::class)
@@ -186,6 +202,8 @@ abstract class MyPoliRoomDatabase : RoomDatabase() {
 
     abstract fun entityReminderDao(): EntityReminderDao
 
+    abstract fun postDao(): PostDao
+
     companion object {
 
         @Volatile
@@ -200,7 +218,7 @@ abstract class MyPoliRoomDatabase : RoomDatabase() {
             Room.databaseBuilder(
                 context.applicationContext,
                 MyPoliRoomDatabase::class.java, "myPoli.db"
-            )
+            ).addMigrations(Migration1To2)
                 .build()
     }
 }

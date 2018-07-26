@@ -9,6 +9,7 @@ import io.ipoli.android.common.datetime.seconds
 import io.ipoli.android.common.di.BackgroundModule
 import io.ipoli.android.common.view.asThemedWrapper
 import io.ipoli.android.dailychallenge.DailyChallengeCompletePopup
+import io.ipoli.android.friends.usecase.SavePostsUseCase
 import io.ipoli.android.myPoliApp
 import io.ipoli.android.quest.Quest
 import kotlinx.coroutines.experimental.CommonPool
@@ -24,6 +25,7 @@ class DailyChallengeCompleteJob : Job() {
         val rewardPlayerUseCase by kap.required { rewardPlayerUseCase }
         val unlockAchievement by kap.required { unlockAchievementsUseCase }
         val playerRepository by kap.required { playerRepository }
+        val savePostsUseCase by kap.required { savePostsUseCase }
         kap.inject(myPoliApp.backgroundModule(context))
 
         val coins = params.extras.getInt(KEY_COINS, -1)
@@ -52,6 +54,8 @@ class DailyChallengeCompleteJob : Job() {
             )
         )
 
+        savePostsUseCase.execute(SavePostsUseCase.Params.DailyChallengeComplete())
+
         return Result.SUCCESS
     }
 
@@ -79,7 +83,7 @@ class AndroidDailyChallengeCompleteScheduler : DailyChallengeCompleteScheduler {
         JobRequest.Builder(DailyChallengeCompleteJob.TAG)
             .setExtras(params)
             .setUpdateCurrent(true)
-            .setExact(3.seconds.millisValue)
+            .setExact(1.seconds.millisValue)
             .build()
             .schedule()
     }

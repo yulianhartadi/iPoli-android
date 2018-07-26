@@ -36,6 +36,7 @@ import io.ipoli.android.common.home.HomeViewState.StateType.*
 import io.ipoli.android.common.redux.android.ReduxViewController
 import io.ipoli.android.common.text.LongFormatter
 import io.ipoli.android.common.view.*
+import io.ipoli.android.friends.feed.FeedViewController
 import io.ipoli.android.growth.GrowthViewController
 import io.ipoli.android.habit.list.HabitListViewController
 import io.ipoli.android.pet.AndroidPetAvatar
@@ -122,6 +123,9 @@ class HomeViewController(args: Bundle? = null) :
             R.id.challenges ->
                 changeChildController(ChallengeListViewController())
 
+            R.id.feed ->
+                changeChildController(FeedViewController())
+
             R.id.tags ->
                 changeChildController(TagListViewController())
 
@@ -136,8 +140,8 @@ class HomeViewController(args: Bundle? = null) :
             R.id.community ->
                 openCommunity()
 
-            R.id.inviteFriends ->
-                showInviteFriends()
+            R.id.shareApp ->
+                showShareApp()
 
             R.id.settings ->
                 pushWithRootRouter(
@@ -159,8 +163,8 @@ class HomeViewController(args: Bundle? = null) :
         view!!.navigationView.setCheckedItem(item.itemId)
     }
 
-    private fun showInviteFriends() {
-        navigate().toInviteFriends()
+    private fun showShareApp() {
+        navigate().toShareApp()
     }
 
     private fun showFeedback() {

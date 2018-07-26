@@ -119,6 +119,12 @@ interface QuestRepository : CollectionRepository<Quest> {
     fun remove(questIds: List<String>)
 
     fun removeFromRepeatingQuest(questId: String, newRepeatingQuestId: String)
+
+    fun findCompletedInPeriodOfFriend(
+        friendId: String,
+        startDate: LocalDate,
+        endDate: LocalDate
+    ): List<Quest>
 }
 
 @Dao
@@ -251,7 +257,7 @@ abstract class QuestDao : BaseDao<RoomQuest>() {
         endDate: Long
     ): List<RoomQuest>
 
-    @Query("SELECT * FROM quests WHERE removedAt IS NULL and repeatingQuestId IS NULL and completedAtDate IS NULL AND scheduledDate >= :startDate AND challengeId != :challengeId")
+    @Query("SELECT * FROM quests WHERE removedAt IS NULL and repeatingQuestId IS NULL and completedAtDate IS NULL AND scheduledDate >= :startDate AND (challengeId IS NULL OR challengeId != :challengeId)")
     abstract fun findNotCompletedNotForChallengeNotRepeating(
         challengeId: String,
         startDate: Long
@@ -372,7 +378,8 @@ abstract class QuestDao : BaseDao<RoomQuest>() {
 class RoomQuestRepository(
     dao: QuestDao,
     private val entityReminderDao: EntityReminderDao,
-    private val tagDao: TagDao
+    private val tagDao: TagDao,
+    private val remoteDatabase: FirebaseFirestore
 ) :
     BaseRoomRepositoryWithTags<Quest, RoomQuest, QuestDao, RoomQuest.Companion.RoomTagJoin>(dao),
     QuestRepository {
@@ -591,6 +598,13 @@ class RoomQuestRepository(
             startDate.startOfDayUTC(),
             endDate.startOfDayUTC()
         ).map { toEntityObject(it) }
+
+    override fun findCompletedInPeriodOfFriend(
+        friendId: String,
+        startDate: LocalDate,
+        endDate: LocalDate
+    ) =
+        FirestoreQuestRepository(remoteDatabase).findCompletedInPeriod(friendId, startDate, endDate)
 
     override fun remove(questIds: List<String>) {
         dao.remove(questIds)
@@ -1060,6 +1074,19 @@ class FirestoreQuestRepository(
         get() {
             return database.collection("players").document(playerId).collection("quests")
         }
+
+    fun findCompletedInPeriod(
+        playerId: String,
+        startDate: LocalDate,
+        endDate: LocalDate
+    ): List<Quest> =
+        database
+            .collection("players")
+            .document(playerId)
+            .collection("quests")
+            .whereGreaterThanOrEqualTo("completedAtDate", startDate.startOfDayUTC())
+            .whereLessThanOrEqualTo("completedAtDate", endDate.startOfDayUTC())
+            .notRemovedEntities
 
     override fun toEntityObject(dataMap: MutableMap<String, Any?>): Quest {
         val cq = DbQuest(dataMap.withDefault {

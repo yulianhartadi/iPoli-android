@@ -8,13 +8,15 @@ import com.bluelinelabs.conductor.changehandler.FadeChangeHandler
 import com.bluelinelabs.conductor.changehandler.HorizontalChangeHandler
 import com.bluelinelabs.conductor.changehandler.SimpleSwapChangeHandler
 import com.bluelinelabs.conductor.changehandler.VerticalChangeHandler
+import com.google.firebase.auth.FirebaseAuth
 import io.ipoli.android.achievement.list.AchievementListViewController
 import io.ipoli.android.challenge.add.AddChallengeViewController
 import io.ipoli.android.challenge.edit.ChallengeMotivationsDialogController
 import io.ipoli.android.challenge.edit.EditChallengeViewController
 import io.ipoli.android.challenge.entity.Challenge
 import io.ipoli.android.challenge.picker.ChallengePickerDialogController
-import io.ipoli.android.common.InviteFriendsDialogController
+import io.ipoli.android.challenge.show.ChallengeViewController
+import io.ipoli.android.common.ShareAppDialogController
 import io.ipoli.android.common.datetime.Duration
 import io.ipoli.android.common.datetime.Minute
 import io.ipoli.android.common.home.HomeViewController
@@ -22,6 +24,11 @@ import io.ipoli.android.common.migration.MigrationViewController
 import io.ipoli.android.common.view.*
 import io.ipoli.android.dailychallenge.DailyChallengeViewController
 import io.ipoli.android.event.calendar.picker.CalendarPickerDialogController
+import io.ipoli.android.friends.ReactionHistoryDialogViewController
+import io.ipoli.android.friends.feed.data.Post
+import io.ipoli.android.friends.feed.picker.PostItemPickerViewController
+import io.ipoli.android.friends.invite.AcceptFriendshipDialogController
+import io.ipoli.android.friends.invite.InviteFriendsDialogController
 import io.ipoli.android.habit.edit.EditHabitViewController
 import io.ipoli.android.habit.predefined.PredefinedHabitListViewController
 import io.ipoli.android.note.NotePickerDialogController
@@ -31,9 +38,9 @@ import io.ipoli.android.pet.PetViewController
 import io.ipoli.android.pet.store.PetStoreViewController
 import io.ipoli.android.planday.PlanDayViewController
 import io.ipoli.android.planday.RescheduleDialogController
-import io.ipoli.android.player.ProfileViewController
 import io.ipoli.android.player.auth.AuthViewController
 import io.ipoli.android.player.data.Player
+import io.ipoli.android.player.profile.ProfileViewController
 import io.ipoli.android.quest.Color
 import io.ipoli.android.quest.CompletedQuestViewController
 import io.ipoli.android.quest.Icon
@@ -84,12 +91,23 @@ class Navigator(private val router: Router) {
         setController({ HomeViewController() })
     }
 
-    fun toHome() {
-        pushController({ HomeViewController() }, null)
-    }
-
     fun toProfile() {
         pushController({ ProfileViewController() }, VerticalChangeHandler())
+    }
+
+    fun toProfile(friendId: String) {
+        val profileViewController =
+            if (FirebaseAuth.getInstance().currentUser?.uid == friendId)
+                ProfileViewController()
+            else ProfileViewController(friendId)
+
+        val changeHandler = HorizontalChangeHandler()
+        router.pushController(
+            RouterTransaction
+                .with(profileViewController)
+                .pushChangeHandler(changeHandler)
+                .popChangeHandler(changeHandler)
+        )
     }
 
     fun setPlanDay() {
@@ -175,6 +193,10 @@ class Navigator(private val router: Router) {
         pushController({ AddChallengeViewController() }, VerticalChangeHandler())
     }
 
+    fun toPostItemPicker() {
+        pushController({ PostItemPickerViewController() }, VerticalChangeHandler())
+    }
+
     fun toPredefinedHabits() {
         pushController({ PredefinedHabitListViewController() }, VerticalChangeHandler())
     }
@@ -185,6 +207,10 @@ class Navigator(private val router: Router) {
 
     fun toEditChallenge(challengeId: String) {
         pushController({ EditChallengeViewController(challengeId) }, FadeChangeHandler())
+    }
+
+    fun toChallenge(challengeId: String) {
+        pushController({ ChallengeViewController(challengeId) }, VerticalChangeHandler())
     }
 
     fun setQuest(questId: String) {
@@ -243,6 +269,10 @@ class Navigator(private val router: Router) {
         pushDialog { CalendarPickerDialogController(listener) }
     }
 
+    fun toReactionHistory(reactions: List<Post.Reaction>) {
+        pushDialog { ReactionHistoryDialogViewController(reactions) }
+    }
+
     fun toChallengeMotivations(
         motivation1: String,
         motivation2: String,
@@ -281,8 +311,16 @@ class Navigator(private val router: Router) {
         pushDialog { FeedbackDialogController(listener) }
     }
 
+    fun toShareApp() {
+        pushDialog { ShareAppDialogController() }
+    }
+
     fun toInviteFriends() {
         pushDialog { InviteFriendsDialogController() }
+    }
+
+    fun toAcceptFriendship(invitePlayerId: String) {
+        pushDialog { AcceptFriendshipDialogController(invitePlayerId) }
     }
 
     fun toReminderPicker(

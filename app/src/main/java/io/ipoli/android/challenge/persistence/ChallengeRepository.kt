@@ -6,6 +6,7 @@ import android.arch.persistence.room.ForeignKey.CASCADE
 import com.google.firebase.firestore.CollectionReference
 import com.google.firebase.firestore.FirebaseFirestore
 import io.ipoli.android.challenge.entity.Challenge
+import io.ipoli.android.challenge.entity.SharingPreference
 import io.ipoli.android.common.datetime.*
 import io.ipoli.android.common.persistence.*
 import io.ipoli.android.quest.Color
@@ -124,6 +125,7 @@ class RoomChallengeRepository(dao: ChallengeDao, private val tagDao: TagDao) : C
                 Time.of(it.toInt())
             },
             note = dbObject.note,
+            sharingPreference = SharingPreference.valueOf(dbObject.sharingPreference),
             createdAt = dbObject.createdAt.instant,
             updatedAt = dbObject.updatedAt.instant,
             removedAt = dbObject.removedAt?.instant
@@ -144,6 +146,7 @@ class RoomChallengeRepository(dao: ChallengeDao, private val tagDao: TagDao) : C
             completedAtDate = entity.completedAtDate?.startOfDayUTC(),
             completedAtMinute = entity.completedAtTime?.toMinuteOfDay()?.toLong(),
             note = entity.note,
+            sharingPreference = entity.sharingPreference.name,
             updatedAt = System.currentTimeMillis(),
             createdAt = entity.createdAt.toEpochMilli(),
             removedAt = entity.removedAt?.toEpochMilli()
@@ -173,6 +176,7 @@ data class RoomChallenge(
     val completedAtDate: Long?,
     val completedAtMinute: Long?,
     val note: String,
+    val sharingPreference: String,
     val createdAt: Long,
     val updatedAt: Long,
     val removedAt: Long?
@@ -215,6 +219,9 @@ class FirestoreChallengeRepository(
         }
 
     override fun toEntityObject(dataMap: MutableMap<String, Any?>): Challenge {
+        if(!dataMap.containsKey("sharingPreference")) {
+            dataMap["sharingPreference"] = SharingPreference.PRIVATE.name
+        }
         val c = DbChallenge(dataMap.withDefault {
             null
         })
@@ -240,6 +247,7 @@ class FirestoreChallengeRepository(
                 Time.of(it.toInt())
             },
             note = c.note,
+            sharingPreference = SharingPreference.valueOf(c.sharingPreference),
             createdAt = c.createdAt.instant,
             updatedAt = c.updatedAt.instant,
             removedAt = c.removedAt?.instant
@@ -262,6 +270,7 @@ class FirestoreChallengeRepository(
         c.completedAtDate = entity.completedAtDate?.startOfDayUTC()
         c.completedAtMinute = entity.completedAtTime?.toMinuteOfDay()?.toLong()
         c.note = entity.note
+        c.sharingPreference = entity.sharingPreference.name
         c.updatedAt = entity.updatedAt.toEpochMilli()
         c.createdAt = entity.createdAt.toEpochMilli()
         c.removedAt = entity.removedAt?.toEpochMilli()
@@ -312,6 +321,7 @@ data class DbChallenge(override val map: MutableMap<String, Any?> = mutableMapOf
     var completedAtDate: Long? by map
     var completedAtMinute: Long? by map
     var note: String by map
+    var sharingPreference: String by map
     override var createdAt: Long by map
     override var updatedAt: Long by map
     override var removedAt: Long? by map

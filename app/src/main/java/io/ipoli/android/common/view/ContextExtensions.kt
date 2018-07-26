@@ -1,8 +1,10 @@
 package io.ipoli.android.common.view
 
 import android.content.Context
+import android.content.pm.PackageManager
 import android.preference.PreferenceManager
-import android.support.annotation.AttrRes
+import android.support.annotation.*
+import android.support.v4.content.ContextCompat
 import android.support.v7.view.ContextThemeWrapper
 import android.util.TypedValue
 import io.ipoli.android.Constants
@@ -32,3 +34,29 @@ fun Context.attrData(@AttrRes attributeRes: Int) =
         theme.resolveAttribute(attributeRes, it, true)
         it.data
     }
+
+fun Context.isAppInstalled(packageName: String) =
+    try {
+        packageManager.getPackageInfo(packageName, 0)
+        true
+    } catch (e: PackageManager.NameNotFoundException) {
+        false
+    }
+
+fun Context.stringRes(@StringRes stringRes: Int): String =
+    resources!!.getString(stringRes)
+
+fun Context.stringRes(@StringRes stringRes: Int, vararg formatArgs: Any): String =
+    resources!!.getString(stringRes, *formatArgs)
+
+fun Context.stringsRes(@ArrayRes stringArrayRes: Int): List<String> =
+    resources!!.getStringArray(stringArrayRes).toList()
+
+fun Context.colorRes(@ColorRes colorRes: Int): Int =
+    ContextCompat.getColor(this, colorRes)
+
+fun Context.intRes(@IntegerRes res: Int): Int =
+    resources!!.getInteger(res)
+
+fun Context.quantityString(@PluralsRes res: Int, quantity: Int) =
+    resources!!.getQuantityString(res, quantity, quantity)

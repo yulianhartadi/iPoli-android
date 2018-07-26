@@ -156,9 +156,8 @@ class ScheduleSummaryViewController(args: Bundle? = null) :
 
     override fun onCreateLoadAction() = ScheduleSummaryAction.Load(currentDate)
 
-    override fun onAttach(view: View) {
-        super.onAttach(view)
-        showBackButton()
+
+    override fun colorLayoutBars() {
         activity?.let {
             it.window.statusBarColor = colorRes(R.color.md_grey_50)
             it.window.navigationBarColor = colorRes(R.color.md_grey_50)
@@ -169,6 +168,11 @@ class ScheduleSummaryViewController(args: Bundle? = null) :
                 it.window.decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR
             }
         }
+    }
+
+    override fun onAttach(view: View) {
+        super.onAttach(view)
+        showBackButton()
 
         view.toolbar.onDebounceMenuClick({ item ->
             if (item.itemId == R.id.actionGoToToday) {
@@ -180,11 +184,15 @@ class ScheduleSummaryViewController(args: Bundle? = null) :
     }
 
     override fun onDetach(view: View) {
+        resetDecorView()
+        view.toolbar.clearDebounceListeners()
+        super.onDetach(view)
+    }
+
+    private fun resetDecorView() {
         activity?.let {
             it.window.decorView.systemUiVisibility = 0
         }
-        view.toolbar.clearDebounceListeners()
-        super.onDetach(view)
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {

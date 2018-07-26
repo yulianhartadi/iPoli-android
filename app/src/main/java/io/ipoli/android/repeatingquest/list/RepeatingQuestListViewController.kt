@@ -24,7 +24,7 @@ import io.ipoli.android.common.view.recyclerview.SimpleViewHolder
 import io.ipoli.android.repeatingquest.entity.repeatType
 import io.ipoli.android.repeatingquest.list.RepeatingQuestListViewState.StateType.CHANGED
 import io.ipoli.android.repeatingquest.show.RepeatingQuestViewController
-import kotlinx.android.synthetic.main.animation_empty_list.view.*
+import kotlinx.android.synthetic.main.view_empty_list.view.*
 import kotlinx.android.synthetic.main.controller_repeating_quest_list.view.*
 import kotlinx.android.synthetic.main.item_repeating_quest.view.*
 import kotlinx.android.synthetic.main.view_loader.view.*

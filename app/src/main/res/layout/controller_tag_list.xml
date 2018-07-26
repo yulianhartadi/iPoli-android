@@ -25,7 +25,7 @@
 
         <include layout="@layout/view_loader" />
 
-        <include layout="@layout/animation_empty_list" />
+        <include layout="@layout/view_empty_list" />
 
     </FrameLayout>
 

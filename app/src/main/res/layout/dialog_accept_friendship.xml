@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <View
+        android:id="@+id/acceptBackground"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:background="@drawable/rounded_rectangle_white_background"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/acceptHalfLogoGuide" />
+
+    <View
+        android:id="@+id/acceptHalfLogoGuide"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        app:layout_constraintBottom_toBottomOf="@+id/acceptPlayerAvatar"
+        app:layout_constraintTop_toTopOf="@+id/acceptPlayerAvatar"
+        app:layout_constraintVertical_bias=".5" />
+
+    <ImageView
+        android:id="@+id/acceptClose"
+        android:layout_width="32dp"
+        android:layout_height="32dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginTop="8dp"
+        android:background="@drawable/dark_oval_outline_background"
+        android:padding="8dp"
+        android:scaleType="fitCenter"
+        android:src="@drawable/ic_close_black_24dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/acceptBackground" />
+
+    <ImageView
+        android:id="@+id/acceptPlayerAvatar"
+        android:layout_width="84dp"
+        android:layout_height="84dp"
+        android:background="@drawable/white_circular_background"
+        android:scaleType="fitCenter"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/acceptPlayerName"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="4dp"
+        android:textAlignment="center"
+        android:textAppearance="@style/TextAppearance.AppCompat.Subhead"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/acceptPlayerAvatar" />
+
+    <TextView
+        android:id="@+id/acceptPlayerUsername"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:textAlignment="center"
+        android:textAppearance="@style/TextAppearance.AppCompat.Caption"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/acceptPlayerName" />
+
+    <TextView
+        android:id="@+id/acceptFriendshipInfo"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_margin="16dp"
+        android:textAppearance="@style/TextAppearance.AppCompat.Body1"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/acceptPlayerUsername" />
+
+    <Button
+        android:id="@+id/accentFriendship"
+        style="@style/Widget.AppCompat.Button.Colored"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="16dp"
+        android:layout_marginTop="16dp"
+        android:paddingEnd="32dp"
+        android:paddingStart="32dp"
+        android:text="@string/accept"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/acceptFriendshipInfo" />
+
+    <android.support.constraint.Group
+        android:id="@+id/acceptDataGroup"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:constraint_referenced_ids="accentFriendship, acceptFriendshipInfo, acceptPlayerUsername, acceptPlayerName, acceptPlayerAvatar, acceptClose" />
+
+    <include
+        layout="@layout/view_loader"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="16dp"
+        android:layout_marginTop="16dp"
+        app:layout_constraintBottom_toBottomOf="@+id/acceptBackground"
+        app:layout_constraintEnd_toEndOf="@+id/acceptBackground"
+        app:layout_constraintStart_toStartOf="@+id/acceptBackground"
+        app:layout_constraintTop_toTopOf="@+id/acceptBackground" />
+
+</android.support.constraint.ConstraintLayout>

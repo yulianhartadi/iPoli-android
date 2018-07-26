@@ -33,6 +33,7 @@ data class Challenge(
     val repeatingQuests: List<RepeatingQuest> = listOf(),
     val progress: Progress = Progress(),
     val note: String = "",
+    val sharingPreference: SharingPreference = SharingPreference.PRIVATE,
     override val createdAt: Instant = Instant.now(),
     override val updatedAt: Instant = Instant.now(),
     val removedAt: Instant? = null
@@ -63,4 +64,8 @@ data class Challenge(
 
     val isCompleted: Boolean
         get() = completedAtDate != null
+}
+
+enum class SharingPreference {
+    PRIVATE, FRIENDS
 }
