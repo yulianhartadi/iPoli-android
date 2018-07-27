@@ -137,6 +137,10 @@ class ProfileViewController :
         DrawableCompat.setTint(coloredBackground, attrData(R.attr.colorPrimary))
         DrawableCompat.setTintMode(coloredBackground, PorterDuff.Mode.SRC_IN)
 
+        if(friendId != null) {
+            view.tabLayout.removeTabAt(2)
+        }
+
         val avatarBackground = view.playerAvatarBackground.background as GradientDrawable
         avatarBackground.setColor(attrData(android.R.attr.colorBackground))
 
@@ -164,7 +168,6 @@ class ProfileViewController :
             view.pager.adapter = ProfilePagerAdapter(this)
         } else {
             view.pager.adapter = ProfileFriendPagerAdapter(this)
-            view.tabLayout.removeTabAt(2)
         }
         view.displayNameEdit.addTextChangedListener(displayNameWatcher)
         view.bioEdit.addTextChangedListener(bioWatcher)
