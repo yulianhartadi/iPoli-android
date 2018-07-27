@@ -108,7 +108,6 @@ class HistoryChart @JvmOverloads constructor(
                     result.add(RowData.CellRow(createCellsForWeek(currentWeekStart)))
                 }
 
-//                if (currentWeekStart.weekOfMonth != currentWeekEnd.weekOfMonth) {
                 if (currentWeekStart.weekOfMonth != startMonthLastDay.weekOfMonth) {
                     result.add(
                         RowData.CellRow(
