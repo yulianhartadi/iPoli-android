@@ -19,6 +19,7 @@ import io.ipoli.android.challenge.show.ChallengeViewController
 import io.ipoli.android.common.ShareAppDialogController
 import io.ipoli.android.common.datetime.Duration
 import io.ipoli.android.common.datetime.Minute
+import io.ipoli.android.common.feedback.FeedbackViewController
 import io.ipoli.android.common.home.HomeViewController
 import io.ipoli.android.common.migration.MigrationViewController
 import io.ipoli.android.common.view.*
@@ -305,6 +306,10 @@ class Navigator(private val router: Router) {
         listener: (Duration<Minute>) -> Unit
     ) {
         pushDialog { DurationPickerDialogController(selectedDuration, listener) }
+    }
+
+    fun toFeedback() {
+        pushController({ FeedbackViewController() }, VerticalChangeHandler())
     }
 
     fun toFeedback(listener: FeedbackDialogController.FeedbackListener) {

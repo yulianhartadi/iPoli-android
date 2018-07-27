@@ -168,25 +168,7 @@ class HomeViewController(args: Bundle? = null) :
     }
 
     private fun showFeedback() {
-        navigate()
-            .toFeedback(
-                object : FeedbackDialogController.FeedbackListener {
-                    override fun onSendFeedback(feedback: String) {
-                        if (feedback.isNotEmpty()) {
-                            eventLogger.logEvent(
-                                "feedback",
-                                mapOf("feedback" to feedback)
-                            )
-                            showShortToast(R.string.feedback_response)
-                            dispatch(HomeAction.FeedbackSent)
-                        }
-                    }
-
-                    override fun onChatWithUs() {
-                        eventLogger.logEvent("feedback_chat")
-                        openCommunity()
-                    }
-                })
+        navigateFromRoot().toFeedback()
     }
 
     private fun openCommunity() {
