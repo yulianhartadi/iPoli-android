@@ -1,13 +1,14 @@
 package io.ipoli.android.common.redux
 
 import io.ipoli.android.common.UiAction
-
 import kotlinx.coroutines.experimental.Unconfined
-import kotlinx.coroutines.experimental.runBlocking
+import kotlinx.coroutines.experimental.asCoroutineDispatcher
+import kotlinx.coroutines.experimental.launch
 import org.amshove.kluent.`should be equal to`
 import org.jetbrains.spek.api.Spek
 import org.jetbrains.spek.api.dsl.describe
 import org.jetbrains.spek.api.dsl.it
+import java.util.concurrent.Executor
 
 /**
  * Created by Venelin Valkov <venelin@io.ipoli.io>
@@ -34,12 +35,22 @@ object StateStoreSpek : Spek({
                 state: TestState,
                 dispatcher: Dispatcher
             ) {
-                runBlocking {
+                class CurrentThreadExecutor : Executor {
+
+                    override fun execute(command: Runnable) {
+                        command.run()
+                    }
+                }
+
+
+                launch(CurrentThreadExecutor().asCoroutineDispatcher()) {
                     sideEffectHandler.execute(action, state, dispatcher)
                 }
 
             }
         }
+
+
 
         class StopMiddleware : MiddleWare<TestState> {
             override fun execute(
