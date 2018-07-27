@@ -18,6 +18,7 @@ import io.ipoli.android.common.datetime.weekOfMonth
 import io.ipoli.android.repeatingquest.usecase.CreateRepeatingQuestHistoryUseCase
 import io.ipoli.android.repeatingquest.usecase.CreateRepeatingQuestHistoryUseCase.DateHistory.*
 import org.threeten.bp.LocalDate
+import org.threeten.bp.Month
 import org.threeten.bp.YearMonth
 import org.threeten.bp.format.DateTimeFormatter
 import org.threeten.bp.format.TextStyle
@@ -64,7 +65,8 @@ class HistoryChart @JvmOverloads constructor(
         fun create(): List<RowData> {
             val result = mutableListOf<RowData>()
 
-            val shouldSplit = start.monthValue != end.monthValue
+            val shouldSplit =
+                start.monthValue != end.with(TemporalAdjusters.previousOrSame(DateUtils.firstDayOfWeek)).monthValue
 
             val lastTopDay = start.plusWeeks(3).minusDays(1)
 
@@ -116,7 +118,7 @@ class HistoryChart @JvmOverloads constructor(
 
                 val nextMonthFirst = previousMonthLastDay.plusDays(1)
 
-                result.addAll(createMonthWithWeekDaysRows())
+                result.addAll(createMonthWithWeekDaysRows(end.month))
 
                 if (nextMonthFirst <= currentDate) {
                     result.addAll(
@@ -143,7 +145,7 @@ class HistoryChart @JvmOverloads constructor(
                 )
                 val nextMonthFirst = previousMonthLastDay.plusDays(1)
 
-                result.addAll(createMonthWithWeekDaysRows())
+                result.addAll(createMonthWithWeekDaysRows(end.month))
 
                 result.add(
                     RowData.CellRow(
@@ -198,7 +200,7 @@ class HistoryChart @JvmOverloads constructor(
                 }
             }
 
-            result.addAll(createMonthWithWeekDaysRows())
+            result.addAll(createMonthWithWeekDaysRows(end.month))
 
             if (firstOfMonth.dayOfWeek != DateUtils.firstDayOfWeek) {
                 result.add(
@@ -240,7 +242,7 @@ class HistoryChart @JvmOverloads constructor(
         private fun createWithNoSplit(): List<RowData> {
             val result = mutableListOf<RowData>()
             val firstOfMonth = currentDate.with(TemporalAdjusters.firstDayOfMonth())
-            result.addAll(createMonthWithWeekDaysRows())
+            result.addAll(createMonthWithWeekDaysRows(currentDate.month))
 
             result.add(
                 RowData.CellRow(
@@ -261,15 +263,15 @@ class HistoryChart @JvmOverloads constructor(
                 )
             )
 
-            val lastOfMonth = end.with(TemporalAdjusters.lastDayOfMonth())
+            val lastOfMonth = currentDate.with(TemporalAdjusters.lastDayOfMonth())
             result.add(RowData.CellRow(createWeekWithNoneCellsAtEnd(lastOfMonth)))
 
             return result
         }
 
-        private fun createMonthWithWeekDaysRows() =
+        private fun createMonthWithWeekDaysRows(month : Month = currentDate.month, year : Int = currentDate.year) =
             listOf(
-                RowData.MonthRow(YearMonth.of(currentDate.year, currentDate.month)),
+                RowData.MonthRow(YearMonth.of(year, month)),
                 RowData.WeekDaysRow
             )
 
