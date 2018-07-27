@@ -140,14 +140,6 @@ class ProfileViewController :
         val avatarBackground = view.playerAvatarBackground.background as GradientDrawable
         avatarBackground.setColor(attrData(android.R.attr.colorBackground))
 
-        if (friendId == null) {
-            view.pager.adapter = ProfilePagerAdapter(this)
-        } else {
-            view.pager.adapter = ProfileFriendPagerAdapter(this)
-            view.tabLayout.removeTabAt(2)
-        }
-        view.pager.currentItem = 0
-
         view.post {
             view.requestFocus()
         }
@@ -168,6 +160,12 @@ class ProfileViewController :
     override fun onAttach(view: View) {
         super.onAttach(view)
         showBackButton()
+        if (friendId == null) {
+            view.pager.adapter = ProfilePagerAdapter(this)
+        } else {
+            view.pager.adapter = ProfileFriendPagerAdapter(this)
+            view.tabLayout.removeTabAt(2)
+        }
         view.displayNameEdit.addTextChangedListener(displayNameWatcher)
         view.bioEdit.addTextChangedListener(bioWatcher)
         view.tabLayout.getTabAt(0)!!.select()
