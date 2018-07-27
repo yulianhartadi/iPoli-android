@@ -325,8 +325,10 @@ class ProfileViewController :
         val background = view.playerAvatar.background as GradientDrawable
         background.setColor(colorRes(AndroidAvatar.valueOf(state.avatar.name).backgroundColor))
 
-        view.playerAvatar.onDebounceClick {
-            navigateFromRoot().toAvatarStore(HorizontalChangeHandler())
+        if(friendId == null) {
+            view.playerAvatar.onDebounceClick {
+                navigateFromRoot().toAvatarStore(HorizontalChangeHandler())
+            }
         }
     }
 
