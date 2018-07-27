@@ -1,6 +1,7 @@
 package io.ipoli.android.friends.feed.persistence
 
 import android.arch.persistence.room.*
+import com.google.android.gms.tasks.Tasks
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.EventListener
 import com.google.firebase.firestore.FirebaseFirestore
@@ -482,13 +483,13 @@ class AndroidPostRepository(
             batch.set(refPost, toDatabaseReferencePost(playerId, newEntity).map)
             cnt++
             if (cnt == 500) {
-                batch.commit()
+                Tasks.await(batch.commit())
                 batch = remoteDatabase.batch()
                 cnt = 0
             }
         }
 
-        batch.commit()
+        Tasks.await(batch.commit())
     }
 
     override fun react(postPlayerId: String, postId: String, reactionType: Post.ReactionType) {
@@ -524,13 +525,13 @@ class AndroidPostRepository(
 
             cnt++
             if (cnt == 500) {
-                batch.commit()
+                Tasks.await(batch.commit())
                 batch = remoteDatabase.batch()
                 cnt = 0
             }
         }
 
-        batch.commit()
+        Tasks.await(batch.commit())
     }
 
     override fun saveDescription(postId: String, description: String?) {
@@ -566,13 +567,13 @@ class AndroidPostRepository(
 
             cnt++
             if (cnt == 500) {
-                batch.commit()
+                Tasks.await(batch.commit())
                 batch = remoteDatabase.batch()
                 cnt = 0
             }
         }
 
-        batch.commit()
+        Tasks.await(batch.commit())
     }
 
     override fun findLocal(limit: Int): List<Post> {

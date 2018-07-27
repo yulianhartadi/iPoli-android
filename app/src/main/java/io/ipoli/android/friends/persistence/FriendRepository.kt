@@ -1,5 +1,6 @@
 package io.ipoli.android.friends.persistence
 
+import com.google.android.gms.tasks.Tasks
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.FirebaseFirestore
@@ -105,13 +106,6 @@ class FirestoreFriendRepository(private val remoteDatabase: FirebaseFirestore) :
             mapOf("id" to playerId)
         )
 
-        remoteDatabase
-            .collection("players")
-            .document(friendId)
-            .collection("friends")
-            .document(playerId)
-            .set(mapOf("id" to playerId))
-
         var cnt = 2
 
         val playerPosts = remoteDatabase
@@ -144,7 +138,7 @@ class FirestoreFriendRepository(private val remoteDatabase: FirebaseFirestore) :
             cnt++
 
             if (cnt == 500) {
-                batch.commit()
+                Tasks.await(batch.commit())
                 batch = remoteDatabase.batch()
                 cnt = 0
             }
@@ -166,13 +160,14 @@ class FirestoreFriendRepository(private val remoteDatabase: FirebaseFirestore) :
             cnt++
 
             if (cnt == 500) {
-                batch.commit()
+                Tasks.await(batch.commit())
                 batch = remoteDatabase.batch()
                 cnt = 0
             }
         }
 
-        batch.commit()
+        Tasks.await(batch.commit())
+
     }
 
     override fun unfriend(friendId: String) {
@@ -195,7 +190,7 @@ class FirestoreFriendRepository(private val remoteDatabase: FirebaseFirestore) :
                 batch.delete(it.reference)
                 cnt++
                 if (cnt == 500) {
-                    batch.commit()
+                    Tasks.await(batch.commit())
                     batch = remoteDatabase.batch()
                     cnt = 0
                 }
@@ -211,13 +206,13 @@ class FirestoreFriendRepository(private val remoteDatabase: FirebaseFirestore) :
                 batch.delete(it.reference)
                 cnt++
                 if (cnt == 500) {
-                    batch.commit()
+                    Tasks.await(batch.commit())
                     batch = remoteDatabase.batch()
                     cnt = 0
                 }
             }
 
-        batch.commit()
+        Tasks.await(batch.commit())
     }
 
     private fun friendReference(
