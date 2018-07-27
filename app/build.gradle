@@ -83,14 +83,14 @@ dependencies {
     implementation 'com.google.android.gms:play-services-awareness:15.0.1'
     implementation 'com.google.firebase:firebase-core:16.0.1'
     implementation 'com.google.firebase:firebase-auth:16.0.2'
-    implementation 'com.google.firebase:firebase-firestore:17.0.2'
+    implementation 'com.google.firebase:firebase-firestore:17.0.4'
     implementation 'com.google.firebase:firebase-invites:16.0.1'
 
     implementation "android.arch.persistence.room:runtime:$room_version"
     kapt "android.arch.persistence.room:compiler:$room_version"
     implementation "android.arch.paging:runtime:1.0.1"
 
-    implementation 'com.amplitude:android-sdk:2.18.1'
+    implementation 'com.amplitude:android-sdk:2.19.0'
     implementation 'com.firebaseui:firebase-ui-auth:4.1.0'
     implementation 'com.facebook.android:facebook-login:4.34.0'
     implementation 'com.facebook.android:facebook-share:4.34.0'
@@ -113,7 +113,7 @@ dependencies {
     implementation 'com.haibin:calendarview:3.3.4'
     implementation "space.traversal.kapsule:kapsule-core:0.3"
 
-    implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-android:0.23.4'
+    implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-android:0.24.0'
 
     implementation 'com.evernote:android-job:1.2.6'
     implementation 'com.github.PhilJay:MPAndroidChart:b65ba08324'
