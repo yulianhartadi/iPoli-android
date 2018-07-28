@@ -96,6 +96,7 @@ interface QuestRepository : CollectionRepository<Quest> {
     fun findAllForChallengeNotRepeating(challengeId: String): List<Quest>
 
     fun findAllForChallenge(challengeId: String): List<Quest>
+    fun findNotRemovedForChallenge(challengeId: String): List<Quest>
     fun findAllForRepeatingQuestAfterDate(
         repeatingQuestId: String,
         includeRemoved: Boolean,
@@ -137,6 +138,9 @@ abstract class QuestDao : BaseDao<RoomQuest>() {
 
     @Query("SELECT * FROM quests WHERE challengeId = :challengeId")
     abstract fun findAllForChallenge(challengeId: String): List<RoomQuest>
+
+    @Query("SELECT * FROM quests WHERE challengeId = :challengeId AND removedAt IS NULL")
+    abstract fun findNotRemovedForChallenge(challengeId: String): List<RoomQuest>
 
     @Query("SELECT * FROM quests WHERE removedAt IS NULL")
     abstract fun listenForNotRemoved(): LiveData<List<RoomQuest>>
@@ -555,6 +559,9 @@ class RoomQuestRepository(
 
     override fun findAllForChallenge(challengeId: String) =
         dao.findAllForChallenge(challengeId).map { toEntityObject(it) }
+
+    override fun findNotRemovedForChallenge(challengeId: String) =
+        dao.findNotRemovedForChallenge(challengeId).map { toEntityObject(it) }
 
     override fun findAllForRepeatingQuestAfterDate(
         repeatingQuestId: String,

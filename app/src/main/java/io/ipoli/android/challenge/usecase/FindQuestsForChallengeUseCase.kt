@@ -21,7 +21,7 @@ class FindQuestsForChallengeUseCase(
         return challenge.copy(
             baseQuests = (rqs + quests),
             repeatingQuests = rqs,
-            quests = questRepository.findAllForChallenge(challenge.id)
+            quests = questRepository.findNotRemovedForChallenge(challenge.id)
         )
     }
 
