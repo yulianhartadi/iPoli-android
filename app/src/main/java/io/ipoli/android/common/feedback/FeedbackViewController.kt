@@ -13,7 +13,7 @@ import io.ipoli.android.Constants
 import io.ipoli.android.R
 import io.ipoli.android.common.di.UIModule
 import io.ipoli.android.common.view.inflate
-import io.ipoli.android.myPoliApp
+import io.ipoli.android.MyPoliApp
 import space.traversal.kapsule.Injects
 import space.traversal.kapsule.inject
 import space.traversal.kapsule.required
@@ -26,7 +26,7 @@ class FeedbackViewController(args: Bundle? = null) :
     private val eventLogger by required { eventLogger }
 
     override fun onContextAvailable(context: Context) {
-        inject(myPoliApp.uiModule(context))
+        inject(MyPoliApp.uiModule(context))
     }
 
     override fun onCreateView(

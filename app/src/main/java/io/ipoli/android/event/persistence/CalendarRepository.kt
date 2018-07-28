@@ -5,7 +5,7 @@ import android.provider.CalendarContract
 import io.ipoli.android.common.persistence.CollectionRepository
 import io.ipoli.android.common.view.ColorUtil
 import io.ipoli.android.event.Calendar
-import io.ipoli.android.myPoliApp
+import io.ipoli.android.MyPoliApp
 import kotlinx.coroutines.experimental.channels.Channel
 
 /**
@@ -35,7 +35,7 @@ class AndroidCalendarRepository : CalendarRepository {
 
         val calendars = mutableListOf<Calendar>()
 
-        myPoliApp.instance.contentResolver.query(
+        MyPoliApp.instance.contentResolver.query(
             CalendarContract.Calendars.CONTENT_URI.buildUpon().build(),
             CALENDAR_PROJECTION,
             null,

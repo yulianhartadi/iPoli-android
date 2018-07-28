@@ -26,7 +26,7 @@ import io.ipoli.android.common.di.UIModule
 import io.ipoli.android.common.view.BaseDialogController
 import io.ipoli.android.common.view.showLongToast
 import io.ipoli.android.common.view.stringRes
-import io.ipoli.android.myPoliApp
+import io.ipoli.android.MyPoliApp
 import kotlinx.android.synthetic.main.item_share.view.*
 import kotlinx.android.synthetic.main.view_dialog_header.view.*
 import space.traversal.kapsule.Injects
@@ -49,7 +49,7 @@ class ShareAppDialogController(args: Bundle? = null) : BaseDialogController(args
 
     @SuppressLint("InflateParams")
     override fun onCreateContentView(inflater: LayoutInflater, savedViewState: Bundle?): View {
-        inject(myPoliApp.uiModule(myPoliApp.instance))
+        inject(MyPoliApp.uiModule(MyPoliApp.instance))
         registerForActivityResult(SHARE_APP_REQUEST_CODE)
         return inflater.inflate(R.layout.dialog_share_app, null)
     }

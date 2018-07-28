@@ -16,7 +16,7 @@ import io.ipoli.android.common.IntentUtil
 import io.ipoli.android.common.datetime.Duration
 import io.ipoli.android.common.datetime.Second
 import io.ipoli.android.common.di.BackgroundModule
-import io.ipoli.android.myPoliApp
+import io.ipoli.android.MyPoliApp
 import io.ipoli.android.pet.AndroidPetAvatar
 import io.ipoli.android.quest.TimeRange
 import io.ipoli.android.quest.receiver.CompleteQuestReceiver
@@ -39,7 +39,7 @@ class TimerCompleteNotificationJob : Job(), Injects<BackgroundModule> {
         val kap = Kapsule<BackgroundModule>()
         val questRepository by kap.required { questRepository }
         val findPetUseCase by kap.required { findPetUseCase }
-        kap.inject(myPoliApp.backgroundModule(context))
+        kap.inject(MyPoliApp.backgroundModule(context))
 
         val questId = params.extras.getString("questId", "")
         require(questId.isNotEmpty())

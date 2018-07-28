@@ -24,7 +24,7 @@ import io.ipoli.android.common.redux.Action
 import io.ipoli.android.common.redux.StateStore
 import io.ipoli.android.common.redux.ViewState
 import io.ipoli.android.common.redux.ViewStateReducer
-import io.ipoli.android.myPoliApp
+import io.ipoli.android.MyPoliApp
 import kotlinx.coroutines.experimental.android.UI
 import kotlinx.coroutines.experimental.withContext
 import space.traversal.kapsule.Injects
@@ -91,7 +91,7 @@ abstract class ReduxPopup<A : Action, VS : ViewState, out VSR : ViewStateReducer
     abstract fun createView(inflater: LayoutInflater): View
 
     fun show(context: Context) {
-        inject(myPoliApp.uiModule(context))
+        inject(MyPoliApp.uiModule(context))
 
         contentView = createView(LayoutInflater.from(context)) as ViewGroup
         contentView.visibility = View.INVISIBLE
@@ -336,7 +336,7 @@ abstract class Popup
 
     fun show(context: Context) {
 
-        inject(myPoliApp.uiModule(context))
+        inject(MyPoliApp.uiModule(context))
         contentView = createView(LayoutInflater.from(context)) as ViewGroup
         contentView.visibility = View.INVISIBLE
 

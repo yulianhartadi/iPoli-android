@@ -20,7 +20,7 @@ import io.ipoli.android.common.notification.NotificationUtil
 import io.ipoli.android.common.notification.ScreenUtil
 import io.ipoli.android.common.view.asThemedWrapper
 import io.ipoli.android.dailychallenge.data.DailyChallenge
-import io.ipoli.android.myPoliApp
+import io.ipoli.android.MyPoliApp
 import io.ipoli.android.pet.AndroidPetAvatar
 import io.ipoli.android.pet.Pet
 import io.ipoli.android.quest.reminder.PetNotificationPopup
@@ -107,7 +107,7 @@ class SnoozedPlanDayJob : Job() {
         val kap = Kapsule<BackgroundModule>()
         val playerRepository by kap.required { playerRepository }
         val planDayScheduler by kap.required { planDayScheduler }
-        kap.inject(myPoliApp.backgroundModule(context))
+        kap.inject(MyPoliApp.backgroundModule(context))
 
         val p = playerRepository.find()
         requireNotNull(p)
@@ -132,7 +132,7 @@ class PlanDayJob : FixedDailyJob(PlanDayJob.TAG) {
         val playerRepository by kap.required { playerRepository }
         val planDayScheduler by kap.required { planDayScheduler }
         val dailyChallengeRepository by kap.required { dailyChallengeRepository }
-        kap.inject(myPoliApp.backgroundModule(context))
+        kap.inject(MyPoliApp.backgroundModule(context))
 
         val p = playerRepository.find()
         requireNotNull(p)
@@ -177,7 +177,7 @@ class AndroidPlanDayScheduler(private val context: Context) : PlanDayScheduler {
 
             val kap = Kapsule<BackgroundModule>()
             val playerRepository by kap.required { playerRepository }
-            kap.inject(myPoliApp.backgroundModule(this@AndroidPlanDayScheduler.context))
+            kap.inject(MyPoliApp.backgroundModule(this@AndroidPlanDayScheduler.context))
 
             val p = playerRepository.find()
 

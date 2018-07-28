@@ -5,7 +5,7 @@ import io.ipoli.android.common.AppSideEffectHandler
 import io.ipoli.android.common.AppState
 import io.ipoli.android.common.notification.QuickDoNotificationUtil
 import io.ipoli.android.common.redux.Action
-import io.ipoli.android.myPoliApp
+import io.ipoli.android.MyPoliApp
 import io.ipoli.android.settings.SettingsAction
 import io.ipoli.android.settings.usecase.*
 import space.traversal.kapsule.required
@@ -48,13 +48,13 @@ object SettingsSideEffectHandler : AppSideEffectHandler() {
                     sharedPreferences.edit()
                         .putBoolean(Constants.KEY_QUICK_DO_NOTIFICATION_ENABLED, true).apply()
                     state.dataState.todayQuests?.let {
-                        QuickDoNotificationUtil.update(myPoliApp.instance, it)
+                        QuickDoNotificationUtil.update(MyPoliApp.instance, it)
                     }
 
                 } else {
                     sharedPreferences.edit()
                         .putBoolean(Constants.KEY_QUICK_DO_NOTIFICATION_ENABLED, false).apply()
-                    QuickDoNotificationUtil.disable(myPoliApp.instance)
+                    QuickDoNotificationUtil.disable(MyPoliApp.instance)
                 }
 
             }

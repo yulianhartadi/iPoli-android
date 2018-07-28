@@ -14,7 +14,7 @@ import io.ipoli.android.challenge.persistence.FirestoreChallengeRepository
 import io.ipoli.android.common.di.BackgroundModule
 import io.ipoli.android.dailychallenge.data.persistence.FirestoreDailyChallengeRepository
 import io.ipoli.android.habit.persistence.FirestoreHabitRepository
-import io.ipoli.android.myPoliApp
+import io.ipoli.android.MyPoliApp
 import io.ipoli.android.player.data.Player
 import io.ipoli.android.player.persistence.FirestorePlayerRepository
 import io.ipoli.android.quest.data.persistence.FirestoreQuestRepository
@@ -48,7 +48,7 @@ class DataImporter(private val appContext: Context) : Injects<BackgroundModule> 
     @SuppressLint("ApplySharedPref")
     @WorkerThread
     fun import() {
-        inject(myPoliApp.backgroundModule(appContext))
+        inject(MyPoliApp.backgroundModule(appContext))
 
         val authUser = FirebaseAuth.getInstance().currentUser
         requireNotNull(authUser) { "DataImporter called without FirebaseAuth user" }

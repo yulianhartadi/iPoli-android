@@ -5,7 +5,7 @@ import com.google.android.gms.tasks.Tasks
 import com.google.firebase.auth.FirebaseAuth
 import io.ipoli.android.Constants
 import io.ipoli.android.common.di.BackgroundModule
-import io.ipoli.android.myPoliApp
+import io.ipoli.android.MyPoliApp
 import space.traversal.kapsule.Injects
 import space.traversal.kapsule.inject
 import space.traversal.kapsule.required
@@ -17,7 +17,7 @@ class FirestoreToLocalPlayerMigrator(private val context: Context) :
     private val remoteDatabase by required { remoteDatabase }
 
     fun migrate(playerId: String, @Suppress("UNUSED_PARAMETER") playerSchemaVersion: Int) {
-        inject(myPoliApp.backgroundModule(context))
+        inject(MyPoliApp.backgroundModule(context))
 
         try {
             val playerRef = remoteDatabase

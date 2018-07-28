@@ -7,7 +7,7 @@ import android.content.Intent
 import io.ipoli.android.common.IntentUtil
 import io.ipoli.android.common.datetime.toMillis
 import io.ipoli.android.common.di.BackgroundModule
-import io.ipoli.android.myPoliApp
+import io.ipoli.android.MyPoliApp
 import io.ipoli.android.quest.receiver.ReminderReceiver
 import kotlinx.coroutines.experimental.CommonPool
 import kotlinx.coroutines.experimental.launch
@@ -30,7 +30,7 @@ class AndroidJobReminderScheduler(private val context: Context) : ReminderSchedu
 
             val kap = Kapsule<BackgroundModule>()
             val entityReminderRepository by kap.required { entityReminderRepository }
-            kap.inject(myPoliApp.backgroundModule(context))
+            kap.inject(MyPoliApp.backgroundModule(context))
 
             val remindAt = entityReminderRepository.findNextReminderTime()
 

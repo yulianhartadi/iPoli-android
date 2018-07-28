@@ -10,7 +10,7 @@ import io.ipoli.android.Constants
 import io.ipoli.android.R
 import io.ipoli.android.common.IntentUtil
 import io.ipoli.android.common.text.CalendarFormatter
-import io.ipoli.android.myPoliApp
+import io.ipoli.android.MyPoliApp
 import io.ipoli.android.quest.receiver.CompleteQuestReceiver
 import org.threeten.bp.LocalDate
 import org.threeten.bp.format.TextStyle
@@ -64,7 +64,7 @@ class AgendaWidgetProvider : AppWidgetProvider() {
         appWidgetIds: IntArray
     ) {
 
-        val calendarFormatter = CalendarFormatter(myPoliApp.instance)
+        val calendarFormatter = CalendarFormatter(MyPoliApp.instance)
 
         val today = LocalDate.now()
         val dayOfWeek = today.dayOfWeek.getDisplayName(

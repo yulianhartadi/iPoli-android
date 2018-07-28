@@ -16,7 +16,7 @@ import io.ipoli.android.common.di.BackgroundModule
 import io.ipoli.android.common.persistence.BaseFirestoreRepository
 import io.ipoli.android.dailychallenge.data.persistence.FirestoreDailyChallengeRepository
 import io.ipoli.android.habit.persistence.FirestoreHabitRepository
-import io.ipoli.android.myPoliApp
+import io.ipoli.android.MyPoliApp
 import io.ipoli.android.player.data.Player
 import io.ipoli.android.player.persistence.FirestorePlayerRepository
 import io.ipoli.android.quest.Entity
@@ -45,7 +45,7 @@ class DataExporter(private val appContext: Context) : Injects<BackgroundModule> 
     @SuppressLint("ApplySharedPref")
     @WorkerThread
     fun export() {
-        inject(myPoliApp.backgroundModule(appContext))
+        inject(MyPoliApp.backgroundModule(appContext))
 
         if (!internetConnectionChecker.isConnected()) return
 
@@ -65,7 +65,7 @@ class DataExporter(private val appContext: Context) : Injects<BackgroundModule> 
     @SuppressLint("ApplySharedPref")
     @WorkerThread
     fun exportNewData() {
-        inject(myPoliApp.backgroundModule(appContext))
+        inject(MyPoliApp.backgroundModule(appContext))
 
         if (!internetConnectionChecker.isConnected()) return
 

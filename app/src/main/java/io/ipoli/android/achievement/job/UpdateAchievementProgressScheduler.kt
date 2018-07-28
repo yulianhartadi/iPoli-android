@@ -6,7 +6,7 @@ import io.ipoli.android.common.di.BackgroundModule
 import io.ipoli.android.common.job.FixedDailyJob
 import io.ipoli.android.common.job.FixedDailyJobScheduler
 import io.ipoli.android.friends.usecase.SavePostsUseCase
-import io.ipoli.android.myPoliApp
+import io.ipoli.android.MyPoliApp
 import kotlinx.coroutines.experimental.CommonPool
 import kotlinx.coroutines.experimental.launch
 import space.traversal.kapsule.Kapsule
@@ -23,7 +23,7 @@ class UpdateAchievementProgressJob : FixedDailyJob(UpdateAchievementProgressJob.
         val playerRepository by kap.required { playerRepository }
         val updateAchievementProgressUseCase by kap.required { updateAchievementProgressUseCase }
         val savePostsUseCase by kap.required { savePostsUseCase }
-        kap.inject(myPoliApp.backgroundModule(context))
+        kap.inject(MyPoliApp.backgroundModule(context))
 
         val stats = playerRepository.find()!!.statistics
         val newStats =

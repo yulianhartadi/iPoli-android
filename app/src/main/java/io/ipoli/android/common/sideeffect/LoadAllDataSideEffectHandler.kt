@@ -13,7 +13,7 @@ import io.ipoli.android.common.notification.QuickDoNotificationUtil
 import io.ipoli.android.common.redux.Action
 import io.ipoli.android.common.view.AppWidgetUtil
 import io.ipoli.android.habit.data.Habit
-import io.ipoli.android.myPoliApp
+import io.ipoli.android.MyPoliApp
 import io.ipoli.android.player.data.Player
 import io.ipoli.android.quest.Quest
 import io.ipoli.android.quest.RepeatingQuest
@@ -63,7 +63,7 @@ object LoadAllDataSideEffectHandler : AppSideEffectHandler() {
                     Constants.DEFAULT_QUICK_DO_NOTIFICATION_ENABLED
                 )) {
                 QuickDoNotificationUtil.update(
-                    myPoliApp.instance,
+                    MyPoliApp.instance,
                     action.quests
                 )
             }
@@ -216,7 +216,7 @@ object LoadAllDataSideEffectHandler : AppSideEffectHandler() {
     }
 
     private fun updateWidgets() {
-        AppWidgetUtil.updateAgendaWidget(myPoliApp.instance)
+        AppWidgetUtil.updateAgendaWidget(MyPoliApp.instance)
     }
 
     override fun canHandle(action: Action) =

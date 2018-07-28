@@ -12,7 +12,7 @@ import io.ipoli.android.common.redux.Action
 import io.ipoli.android.common.redux.Dispatcher
 import io.ipoli.android.common.redux.MiddleWare
 import io.ipoli.android.common.view.CurrencyConverterAction
-import io.ipoli.android.myPoliApp
+import io.ipoli.android.MyPoliApp
 import io.ipoli.android.pet.PetAction
 import io.ipoli.android.pet.store.PetStoreAction
 import io.ipoli.android.planday.PlanDayAction
@@ -37,7 +37,7 @@ object AchievementProgressMiddleWare : MiddleWare<AppState>, Injects<BackgroundM
     private val unlockAchievementsUseCase by required { unlockAchievementsUseCase }
 
     override fun onCreate() {
-        inject(myPoliApp.backgroundModule(myPoliApp.instance))
+        inject(MyPoliApp.backgroundModule(MyPoliApp.instance))
     }
 
     override fun execute(

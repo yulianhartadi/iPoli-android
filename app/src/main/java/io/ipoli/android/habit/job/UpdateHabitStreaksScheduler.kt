@@ -5,7 +5,7 @@ import io.ipoli.android.common.di.BackgroundModule
 import io.ipoli.android.common.job.FixedDailyJob
 import io.ipoli.android.common.job.FixedDailyJobScheduler
 import io.ipoli.android.habit.usecase.UpdateHabitStreaksUseCase
-import io.ipoli.android.myPoliApp
+import io.ipoli.android.MyPoliApp
 import org.threeten.bp.LocalDate
 import space.traversal.kapsule.Kapsule
 
@@ -14,7 +14,7 @@ class UpdateHabitStreaksJob : FixedDailyJob(UpdateHabitStreaksJob.TAG) {
     override fun doRunJob(params: Params): Result {
         val kap = Kapsule<BackgroundModule>()
         val updateHabitStreaksUseCase by kap.required { updateHabitStreaksUseCase }
-        kap.inject(myPoliApp.backgroundModule(context))
+        kap.inject(MyPoliApp.backgroundModule(context))
         updateHabitStreaksUseCase.execute(
             UpdateHabitStreaksUseCase.Params(
                 LocalDate.now().minusDays(

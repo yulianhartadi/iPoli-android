@@ -36,7 +36,7 @@ import io.ipoli.android.common.redux.ViewStateReducer
 import io.ipoli.android.common.view.*
 import io.ipoli.android.friends.feed.data.AndroidReactionType
 import io.ipoli.android.friends.feed.data.Post
-import io.ipoli.android.myPoliApp
+import io.ipoli.android.MyPoliApp
 import io.ipoli.android.player.data.Player
 import io.ipoli.android.quest.Color
 import io.ipoli.android.quest.Icon
@@ -118,7 +118,7 @@ abstract class BaseViewController<A : Action, VS : ViewState> protected construc
     protected open fun onSubscribedToStore() {}
 
     override fun onContextAvailable(context: Context) {
-        inject(myPoliApp.uiModule(context))
+        inject(MyPoliApp.uiModule(context))
     }
 
     override fun onAttach(view: View) {

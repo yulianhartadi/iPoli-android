@@ -4,7 +4,7 @@ import io.ipoli.android.common.datetime.Time
 import io.ipoli.android.common.di.BackgroundModule
 import io.ipoli.android.common.job.FixedDailyJob
 import io.ipoli.android.common.job.FixedDailyJobScheduler
-import io.ipoli.android.myPoliApp
+import io.ipoli.android.MyPoliApp
 import io.ipoli.android.pet.usecase.LowerPetStatsUseCase
 import org.threeten.bp.LocalDate
 import space.traversal.kapsule.Injects
@@ -21,7 +21,7 @@ class LowerPetStatsJob : FixedDailyJob(LowerPetStatsJob.TAG), Injects<Background
         val kap = Kapsule<BackgroundModule>()
         val changePetStatsUseCase by kap.required { lowerPetStatsUseCase }
         val eventLogger by kap.required { eventLogger }
-        kap.inject(myPoliApp.backgroundModule(context))
+        kap.inject(MyPoliApp.backgroundModule(context))
 
         eventLogger.logEvent("lower_pet_stats", mapOf("lowerStatsTime" to Time.now()))
 

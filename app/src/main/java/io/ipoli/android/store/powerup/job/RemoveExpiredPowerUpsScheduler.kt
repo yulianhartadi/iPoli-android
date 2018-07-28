@@ -3,7 +3,7 @@ package io.ipoli.android.store.powerup.job
 import com.evernote.android.job.DailyJob
 import com.evernote.android.job.JobRequest
 import io.ipoli.android.common.di.BackgroundModule
-import io.ipoli.android.myPoliApp
+import io.ipoli.android.MyPoliApp
 import io.ipoli.android.player.data.Membership
 import io.ipoli.android.store.powerup.usecase.RemoveExpiredPowerUpsUseCase
 import org.threeten.bp.LocalDate
@@ -21,7 +21,7 @@ class RemoveExpiredPowerUpsJob : DailyJob(), Injects<BackgroundModule> {
         val kap = Kapsule<BackgroundModule>()
         val removeExpiredPowerUpsUseCase by kap.required { removeExpiredPowerUpsUseCase }
         val playerRepository by kap.required { playerRepository }
-        kap.inject(myPoliApp.backgroundModule(context))
+        kap.inject(MyPoliApp.backgroundModule(context))
 
         val p = playerRepository.find()
         requireNotNull(p)
