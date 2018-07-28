@@ -228,13 +228,22 @@ abstract class MyPoliRoomDatabase : RoomDatabase() {
             override fun onOpen(db: SupportSQLiteDatabase) {
                 super.onOpen(db)
 
-                db.execSQL("DROP TRIGGER updateRepeatingQuest")
+                db.execSQL("DROP TRIGGER IF EXISTS update_repeating_quest_insert")
+                db.execSQL("DROP TRIGGER IF EXISTS update_repeating_quest_update")
 
                 db.execSQL("""
-                    CREATE TRIGGER updateRepeatingQuest
+                    CREATE TRIGGER update_repeating_quest_insert
                     AFTER INSERT ON quests WHEN new.repeatingQuestId IS NOT NULL
                     BEGIN
                         UPDATE repeating_quests SET updatedAt = strftime('%s', 'now') * 1000 WHERE id = new.repeatingQuestId;
+                    END
+                    """)
+
+                db.execSQL("""
+                    CREATE TRIGGER update_repeating_quest_update
+                    AFTER UPDATE ON quests WHEN new.repeatingQuestId IS NOT NULL OR old.repeatingQuestId IS NOT NULL
+                    BEGIN
+                        UPDATE repeating_quests SET updatedAt = strftime('%s', 'now') * 1000 WHERE id IN (new.repeatingQuestId, old.repeatingQuestId);
                     END
                     """)
             }

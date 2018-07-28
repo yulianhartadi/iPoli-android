@@ -14,6 +14,7 @@ import kotlinx.coroutines.experimental.android.UI
 import kotlinx.coroutines.experimental.channels.Channel
 import kotlinx.coroutines.experimental.channels.ConflatedChannel
 import kotlinx.coroutines.experimental.launch
+import timber.log.Timber
 
 @Dao
 abstract class BaseDao<T> {
@@ -97,6 +98,7 @@ abstract class BaseRoomRepository<E : io.ipoli.android.quest.Entity, RE, D : Bas
         val obs = Observer<List<RE>> {
             launch(CommonPool) {
                 it?.let {
+                    Timber.d("AAA changed $it")
                     channel!!.offer(it.map { toEntityObject(it) })
                 }
             }

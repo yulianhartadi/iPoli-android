@@ -209,7 +209,7 @@ abstract class QuestDao : BaseDao<RoomQuest>() {
         """
         SELECT *
         FROM quests
-        WHERE removedAt is NULL AND repeatingQuestId = :repeatingQuestId AND scheduledDate >= :date AND completedAtDate IS NULL
+        WHERE removedAt IS NULL AND repeatingQuestId = :repeatingQuestId AND scheduledDate >= :date AND completedAtDate IS NULL
         ORDER BY scheduledDate ASC
         LIMIT 1
         """
