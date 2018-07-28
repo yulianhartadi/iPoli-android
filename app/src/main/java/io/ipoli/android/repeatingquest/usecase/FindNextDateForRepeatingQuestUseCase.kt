@@ -1,10 +1,10 @@
 package io.ipoli.android.repeatingquest.usecase
 
 import io.ipoli.android.common.UseCase
+import io.ipoli.android.common.datetime.isBeforeOrEqual
 import io.ipoli.android.quest.RepeatingQuest
 import io.ipoli.android.quest.data.persistence.QuestRepository
 import org.threeten.bp.LocalDate
-import timber.log.Timber
 
 /**
  * Created by Polina Zhelyazkova <polina@mypoli.fun>
@@ -20,9 +20,14 @@ class FindNextDateForRepeatingQuestUseCase(
         val nextScheduled =
             questRepository.findNextScheduledNotCompletedForRepeatingQuest(rq.id, fromDate)
 
-        Timber.d("AAA $nextScheduled")
-
         if (nextScheduled != null) {
+
+            if (fromDate.isBeforeOrEqual(nextScheduled.scheduledDate!!)) {
+                return rq.copy(
+                    nextDate = nextScheduled.scheduledDate
+                )
+            }
+
             val patternNext = rq.repeatPattern.nextDate(fromDate)
             if (patternNext == null) {
                 return rq.copy(
@@ -32,7 +37,8 @@ class FindNextDateForRepeatingQuestUseCase(
 
             if (patternNext.isAfter(nextScheduled.scheduledDate) || patternNext.isEqual(
                     nextScheduled.scheduledDate
-                )) {
+                )
+            ) {
                 return rq.copy(
                     nextDate = nextScheduled.scheduledDate
                 )

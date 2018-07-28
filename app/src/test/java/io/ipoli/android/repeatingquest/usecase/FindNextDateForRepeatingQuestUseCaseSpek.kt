@@ -110,7 +110,7 @@ class FindNextDateForRepeatingQuestUseCaseSpek : Spek({
         }
 
 
-        it("should find Friday for weekly pattern MON, WED, FRI when today is TUE and WED is scheduled for SAT & FRI is not scheduled") {
+        it("should find Saturday for weekly pattern MON, WED, FRI when today is TUE and WED is scheduled for SAT & FRI is not scheduled") {
             val today = LocalDate.now().with(TemporalAdjusters.previousOrSame(DayOfWeek.TUESDAY))
 
             val quest = TestUtil.quest.copy(
@@ -142,7 +142,7 @@ class FindNextDateForRepeatingQuestUseCaseSpek : Spek({
                 ),
                 fromDate = today
             )
-            shouldHaveNextDate(rq, today.with(DayOfWeek.FRIDAY))
+            shouldHaveNextDate(rq, today.with(DayOfWeek.SATURDAY))
         }
 
     }
