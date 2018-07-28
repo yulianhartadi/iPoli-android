@@ -215,10 +215,29 @@ abstract class MyPoliRoomDatabase : RoomDatabase() {
             }
 
         private fun buildDatabase(context: Context) =
-            Room.databaseBuilder(
-                context.applicationContext,
-                MyPoliRoomDatabase::class.java, "myPoli.db"
-            ).addMigrations(Migration1To2)
+            Room
+                .databaseBuilder(
+                    context.applicationContext,
+                    MyPoliRoomDatabase::class.java, "myPoli.db"
+                )
+                .addMigrations(Migration1To2)
+                .addCallback(CALLBACK)
                 .build()
+
+        private val CALLBACK = object : RoomDatabase.Callback() {
+            override fun onOpen(db: SupportSQLiteDatabase) {
+                super.onOpen(db)
+
+                db.execSQL("DROP TRIGGER updateRepeatingQuest")
+
+                db.execSQL("""
+                    CREATE TRIGGER updateRepeatingQuest
+                    AFTER INSERT ON quests WHEN new.repeatingQuestId IS NOT NULL
+                    BEGIN
+                        UPDATE repeating_quests SET updatedAt = strftime('%s', 'now') * 1000 WHERE id = new.repeatingQuestId;
+                    END
+                    """)
+            }
+        }
     }
 }

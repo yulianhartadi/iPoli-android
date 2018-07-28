@@ -1,6 +1,7 @@
 package io.ipoli.android.common.sideeffect
 
 import io.ipoli.android.Constants
+import io.ipoli.android.MyPoliApp
 import io.ipoli.android.challenge.entity.Challenge
 import io.ipoli.android.challenge.usecase.FindChallengeProgressUseCase
 import io.ipoli.android.challenge.usecase.FindNextDateForChallengeUseCase
@@ -13,7 +14,6 @@ import io.ipoli.android.common.notification.QuickDoNotificationUtil
 import io.ipoli.android.common.redux.Action
 import io.ipoli.android.common.view.AppWidgetUtil
 import io.ipoli.android.habit.data.Habit
-import io.ipoli.android.MyPoliApp
 import io.ipoli.android.player.data.Player
 import io.ipoli.android.quest.Quest
 import io.ipoli.android.quest.RepeatingQuest
