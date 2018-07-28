@@ -232,6 +232,8 @@ abstract class MyPoliRoomDatabase : RoomDatabase() {
                 db.execSQL("DROP TRIGGER IF EXISTS refresh_repeating_quest_update")
                 db.execSQL("DROP TRIGGER IF EXISTS refresh_challenge_insert")
                 db.execSQL("DROP TRIGGER IF EXISTS refresh_challenge_update")
+                db.execSQL("DROP TRIGGER IF EXISTS refresh_challenge_habit_insert")
+                db.execSQL("DROP TRIGGER IF EXISTS refresh_challenge_habit_update")
 
                 db.execSQL("""
                     CREATE TRIGGER refresh_repeating_quest_insert
@@ -260,6 +262,22 @@ abstract class MyPoliRoomDatabase : RoomDatabase() {
                 db.execSQL("""
                     CREATE TRIGGER refresh_challenge_update
                     AFTER UPDATE ON quests WHEN new.challengeId IS NOT NULL OR old.challengeId IS NOT NULL
+                    BEGIN
+                        UPDATE challenges SET updatedAt = strftime('%s', 'now') * 1000 WHERE id IN (new.challengeId, old.challengeId);
+                    END
+                    """)
+
+                db.execSQL("""
+                    CREATE TRIGGER refresh_challenge_habit_insert
+                    AFTER INSERT ON habits WHEN new.challengeId IS NOT NULL
+                    BEGIN
+                        UPDATE challenges SET updatedAt = strftime('%s', 'now') * 1000 WHERE id = new.challengeId;
+                    END
+                    """)
+
+                db.execSQL("""
+                    CREATE TRIGGER refresh_challenge_habit_update
+                    AFTER UPDATE ON habits WHEN new.challengeId IS NOT NULL OR old.challengeId IS NOT NULL
                     BEGIN
                         UPDATE challenges SET updatedAt = strftime('%s', 'now') * 1000 WHERE id IN (new.challengeId, old.challengeId);
                     END
