@@ -75,8 +75,11 @@ class ChallengeViewController(args: Bundle? = null) :
         setupHistoryChart(view.progressChart)
 
         view.questList.layoutManager =
-            LinearLayoutManager(container.context, LinearLayoutManager.VERTICAL, false)
+            LinearLayoutManager(container.context)
         view.questList.adapter = QuestAdapter()
+
+        view.habitList.layoutManager = LinearLayoutManager(container.context)
+        view.habitList.adapter = HabitAdapter()
 
         val swipeHandler = object : SimpleSwipeCallback(
             view.context,
@@ -151,7 +154,6 @@ class ChallengeViewController(args: Bundle? = null) :
             xAxis.textColor = colorRes(R.color.md_dark_text_87)
 
             legend.isEnabled = false
-
         }
 
     }
@@ -291,7 +293,7 @@ class ChallengeViewController(args: Bundle? = null) :
         state: ChallengeViewState,
         view: View
     ) {
-        if (state.note != null) {
+        if (state.note != null && state.note.isNotBlank()) {
             view.note.setMarkdown(state.note)
         } else {
             view.note.setText(R.string.tap_to_add_note)
@@ -401,6 +403,20 @@ class ChallengeViewController(args: Bundle? = null) :
                 }
             }
         }
+    }
+
+    data class HabitViewModel(
+        override val id: String,
+        val name: String,
+        @ColorRes val color: Int,
+        val icon: IIcon
+    ) : RecyclerViewViewModel
+
+    inner class HabitAdapter: BaseRecyclerViewAdapter<HabitViewModel>(R.layout.item_challenge_quest) {
+        override fun onBindViewModel(vm: HabitViewModel, view: View, holder: SimpleViewHolder) {
+            TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        }
+
     }
 
     private val ChallengeViewState.xAxisLabels

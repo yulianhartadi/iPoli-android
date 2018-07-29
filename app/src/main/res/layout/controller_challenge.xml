@@ -253,6 +253,24 @@
 
             <TextView
                 style="@style/SectionTitle"
+                android:text="@string/quests" />
+
+            <android.support.v7.widget.RecyclerView
+                android:id="@+id/questList"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+
+            <TextView
+                style="@style/SectionTitle"
+                android:text="@string/habits" />
+
+            <android.support.v7.widget.RecyclerView
+                android:id="@+id/habitList"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+
+            <TextView
+                style="@style/SectionTitle"
                 android:text="@string/note" />
 
             <TextView
@@ -264,16 +282,6 @@
                 android:background="?attr/selectableItemBackground"
                 android:gravity="center_vertical"
                 android:textAppearance="@style/TextAppearance.AppCompat.Body1" />
-
-
-            <TextView
-                style="@style/SectionTitle"
-                android:text="@string/quests" />
-
-            <android.support.v7.widget.RecyclerView
-                android:id="@+id/questList"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content" />
 
         </LinearLayout>
 

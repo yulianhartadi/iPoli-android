@@ -418,7 +418,7 @@
                 <TextView
                     android:id="@+id/questNoteLabel"
                     style="@style/SectionTitle"
-                    android:text="Note"
+                    android:text="@string/note"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@+id/newSubQuestName" />
 
