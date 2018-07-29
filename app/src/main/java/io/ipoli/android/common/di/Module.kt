@@ -344,6 +344,7 @@ interface UseCaseModule {
     val saveChallengeUseCase: SaveChallengeUseCase
     val saveQuestsForChallengeUseCase: SaveQuestsForChallengeUseCase
     val removeQuestFromChallengeUseCase: RemoveQuestFromChallengeUseCase
+    val removeHabitFromChallengeUseCase: RemoveHabitFromChallengeUseCase
     val removeChallengeUseCase: RemoveChallengeUseCase
     val loadQuestPickerQuestsUseCase: LoadQuestPickerQuestsUseCase
     val findQuestsForChallengeUseCase: FindQuestsForChallengeUseCase
@@ -677,6 +678,9 @@ class MainUseCaseModule(private val context: Context) : UseCaseModule {
 
     override val removeQuestFromChallengeUseCase
         get() = RemoveQuestFromChallengeUseCase(questRepository, repeatingQuestRepository)
+
+    override val removeHabitFromChallengeUseCase
+        get() = RemoveHabitFromChallengeUseCase(habitRepository)
 
     override val saveChallengeUseCase
         get() = SaveChallengeUseCase(challengeRepository, saveQuestsForChallengeUseCase)

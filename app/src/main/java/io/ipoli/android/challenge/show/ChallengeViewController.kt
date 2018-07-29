@@ -81,7 +81,7 @@ class ChallengeViewController(args: Bundle? = null) :
         view.habitList.layoutManager = LinearLayoutManager(container.context)
         view.habitList.adapter = HabitAdapter()
 
-        val swipeHandler = object : SimpleSwipeCallback(
+        val questSwipeHandler = object : SimpleSwipeCallback(
             view.context,
             R.drawable.ic_done_white_24dp,
             R.color.md_green_500,
@@ -99,8 +99,35 @@ class ChallengeViewController(args: Bundle? = null) :
                 viewHolder: RecyclerView.ViewHolder
             ) = ItemTouchHelper.START
         }
-        val itemTouchHelper = ItemTouchHelper(swipeHandler)
-        itemTouchHelper.attachToRecyclerView(view.questList)
+        val questTouchHelper = ItemTouchHelper(questSwipeHandler)
+        questTouchHelper.attachToRecyclerView(view.questList)
+
+        val habitSwipeHandler = object : SimpleSwipeCallback(
+            view.context,
+            R.drawable.ic_done_white_24dp,
+            R.color.md_green_500,
+            R.drawable.ic_delete_white_24dp,
+            R.color.md_red_500
+        ) {
+            override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
+                if (direction == ItemTouchHelper.START) {
+                    dispatch(ChallengeAction.RemoveHabitFromChallenge(habitId(viewHolder)))
+                }
+            }
+
+            private fun habitId(holder: RecyclerView.ViewHolder): String {
+                val adapter = view.habitList.adapter as HabitAdapter
+                return adapter.getItemAt(holder.adapterPosition).id
+            }
+
+            override fun getSwipeDirs(
+                recyclerView: RecyclerView,
+                viewHolder: RecyclerView.ViewHolder
+            ) = ItemTouchHelper.START
+        }
+
+        val habitTouchHelper = ItemTouchHelper(habitSwipeHandler)
+        habitTouchHelper.attachToRecyclerView(view.habitList)
 
         view.addQuests.onDebounceClick {
             navigateFromRoot().toQuestPicker(challengeId)

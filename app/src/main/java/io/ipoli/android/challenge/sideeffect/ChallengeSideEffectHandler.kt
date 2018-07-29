@@ -1,5 +1,6 @@
 package io.ipoli.android.challenge.sideeffect
 
+import io.ipoli.android.MyPoliApp
 import io.ipoli.android.challenge.QuestPickerAction
 import io.ipoli.android.challenge.QuestPickerViewState
 import io.ipoli.android.challenge.add.EditChallengeAction
@@ -16,7 +17,6 @@ import io.ipoli.android.common.AppSideEffectHandler
 import io.ipoli.android.common.AppState
 import io.ipoli.android.common.redux.Action
 import io.ipoli.android.common.view.asThemedWrapper
-import io.ipoli.android.MyPoliApp
 import io.ipoli.android.quest.Quest
 import io.ipoli.android.quest.RepeatingQuest
 import kotlinx.coroutines.experimental.android.UI
@@ -34,6 +34,7 @@ object ChallengeSideEffectHandler : AppSideEffectHandler() {
     private val saveChallengeUseCase by required { saveChallengeUseCase }
     private val removeChallengeUseCase by required { removeChallengeUseCase }
     private val removeQuestFromChallengeUseCase by required { removeQuestFromChallengeUseCase }
+    private val removeHabitFromChallengeUseCase by required { removeHabitFromChallengeUseCase }
     private val loadQuestPickerQuestsUseCase by required { loadQuestPickerQuestsUseCase }
     private val completeChallengeUseCase by required { completeChallengeUseCase }
     private val schedulePredefinedChallengeUseCase by required { schedulePredefinedChallengeUseCase }
@@ -123,6 +124,14 @@ object ChallengeSideEffectHandler : AppSideEffectHandler() {
                 }
 
                 removeQuestFromChallengeUseCase.execute(params)
+            }
+
+            is ChallengeAction.RemoveHabitFromChallenge -> {
+                removeHabitFromChallengeUseCase.execute(
+                    RemoveHabitFromChallengeUseCase.Params(
+                        action.habitId
+                    )
+                )
             }
 
             is ChallengeAction.Complete -> {

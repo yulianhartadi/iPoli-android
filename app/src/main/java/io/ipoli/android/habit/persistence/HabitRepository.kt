@@ -29,6 +29,7 @@ interface HabitRepository : CollectionRepository<Habit> {
 
     fun findAllForChallenge(challengeId: String): List<Habit>
     fun findNotRemovedForChallenge(challengeId: String): List<Habit>
+    fun removeFromChallenge(habitId: String)
 }
 
 data class DbHabit(override val map: MutableMap<String, Any?> = mutableMapOf()) :
@@ -95,6 +96,12 @@ abstract class HabitDao : BaseDao<RoomHabit>() {
 
     @Query("SELECT * FROM habits $FIND_SYNC_QUERY")
     abstract fun findAllForSync(lastSync: Long): List<RoomHabit>
+
+    @Query("UPDATE habits SET updatedAt = :currentTimeMillis, challengeId = NULL WHERE id = :id")
+    abstract fun removeFromChallenge(
+        id: String,
+        currentTimeMillis: Long = System.currentTimeMillis()
+    )
 }
 
 class RoomHabitRepository(dao: HabitDao, tagDao: TagDao) : HabitRepository,
@@ -133,6 +140,11 @@ class RoomHabitRepository(dao: HabitDao, tagDao: TagDao) : HabitRepository,
 
     override fun listenForAll() =
         dao.listenForNotRemoved().notify()
+
+    override fun removeFromChallenge(habitId: String) {
+        val currentTime = System.currentTimeMillis()
+        dao.removeFromChallenge(habitId, currentTime)
+    }
 
     override fun remove(entity: Habit) {
         remove(entity.id)

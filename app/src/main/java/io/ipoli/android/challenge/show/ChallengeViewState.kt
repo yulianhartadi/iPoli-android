@@ -33,6 +33,10 @@ sealed class ChallengeAction : Action {
         override fun toMap() = mapOf("questIndex" to questIndex)
     }
 
+    data class RemoveHabitFromChallenge(val habitId: String) : ChallengeAction() {
+        override fun toMap() = mapOf("habitId" to habitId)
+    }
+
     data class Complete(val challengeId: String) : ChallengeAction() {
         override fun toMap() = mapOf("challengeId" to challengeId)
     }
