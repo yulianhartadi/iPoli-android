@@ -256,9 +256,9 @@ class ChallengeViewController(args: Bundle? = null) :
 
                 renderChart(state, view)
                 renderMotivations(state, view)
-                renderQuests(state, view)
-
                 renderNote(state, view)
+                renderQuests(state, view)
+                renderHabits(state, view)
             }
 
             ChallengeViewState.StateType.REMOVED ->
@@ -327,6 +327,10 @@ class ChallengeViewController(args: Bundle? = null) :
 
     private fun renderQuests(state: ChallengeViewState, view: View) {
         (view.questList.adapter as QuestAdapter).updateAll(state.questViewModels)
+    }
+
+    private fun renderHabits(state: ChallengeViewState, view: View) {
+        (view.habitList.adapter as HabitAdapter).updateAll(state.habitViewModels)
     }
 
     private fun createLineData(entries: List<Entry>): LineData {
@@ -412,9 +416,23 @@ class ChallengeViewController(args: Bundle? = null) :
         val icon: IIcon
     ) : RecyclerViewViewModel
 
-    inner class HabitAdapter: BaseRecyclerViewAdapter<HabitViewModel>(R.layout.item_challenge_quest) {
+    inner class HabitAdapter :
+        BaseRecyclerViewAdapter<HabitViewModel>(R.layout.item_challenge_quest) {
         override fun onBindViewModel(vm: HabitViewModel, view: View, holder: SimpleViewHolder) {
-            TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+            view.questName.text = vm.name
+
+            view.questIcon.backgroundTintList =
+                ColorStateList.valueOf(colorRes(vm.color))
+            view.questIcon.setImageDrawable(
+                IconicsDrawable(view.context)
+                    .icon(vm.icon)
+                    .colorRes(R.color.md_white)
+                    .sizeDp(22)
+            )
+
+            view.onDebounceClick {
+                navigateFromRoot().toEditHabit(vm.id, HorizontalChangeHandler())
+            }
         }
 
     }
@@ -467,6 +485,15 @@ class ChallengeViewController(args: Bundle? = null) :
                     isCompleted = it.isCompleted
                 )
             }
+        }
 
+    private val ChallengeViewState.habitViewModels
+        get() = habits.map {
+            HabitViewModel(
+                id = it.id,
+                name = it.name,
+                color = it.color.androidColor.color500,
+                icon = it.icon.androidIcon.icon
+            )
         }
 }

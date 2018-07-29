@@ -28,6 +28,7 @@ import java.util.*
 interface HabitRepository : CollectionRepository<Habit> {
 
     fun findAllForChallenge(challengeId: String): List<Habit>
+    fun findNotRemovedForChallenge(challengeId: String): List<Habit>
 }
 
 data class DbHabit(override val map: MutableMap<String, Any?> = mutableMapOf()) :
@@ -67,6 +68,9 @@ abstract class HabitDao : BaseDao<RoomHabit>() {
 
     @Query("SELECT * FROM habits WHERE challengeId = :challengeId")
     abstract fun findAllForChallenge(challengeId: String): List<RoomHabit>
+
+    @Query("SELECT * FROM habits WHERE challengeId = :challengeId AND removedAt IS NULL")
+    abstract fun findNotRemovedForChallenge(challengeId: String): List<RoomHabit>
 
     @Query("SELECT * FROM habits WHERE removedAt IS NULL")
     abstract fun listenForNotRemoved(): LiveData<List<RoomHabit>>
@@ -114,6 +118,9 @@ class RoomHabitRepository(dao: HabitDao, tagDao: TagDao) : HabitRepository,
 
     override fun findAllForChallenge(challengeId: String) =
         dao.findAllForChallenge(challengeId).map { toEntityObject(it) }
+
+    override fun findNotRemovedForChallenge(challengeId: String) =
+        dao.findNotRemovedForChallenge(challengeId).map { toEntityObject(it) }
 
     override fun findById(id: String) =
         toEntityObject(dao.findById(id))

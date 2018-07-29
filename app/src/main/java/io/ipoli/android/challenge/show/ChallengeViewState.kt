@@ -8,6 +8,7 @@ import io.ipoli.android.common.datetime.datesBetween
 
 import io.ipoli.android.common.redux.Action
 import io.ipoli.android.common.redux.BaseViewState
+import io.ipoli.android.habit.data.Habit
 import io.ipoli.android.quest.BaseQuest
 import io.ipoli.android.quest.Color
 import io.ipoli.android.tag.Tag
@@ -116,6 +117,7 @@ object ChallengeReducer : BaseViewStateReducer<ChallengeViewState>() {
         yAxisMax = -1,
         chartData = sortedMapOf(),
         quests = emptyList(),
+        habits = emptyList(),
         canEdit = false,
         canComplete = false,
         motivations = emptyList(),
@@ -141,6 +143,7 @@ data class ChallengeViewState(
     val yAxisMax: Int,
     val chartData: SortedMap<LocalDate, Float>,
     val quests: List<BaseQuest>,
+    val habits: List<Habit>,
     val canEdit: Boolean,
     val canComplete: Boolean,
     val motivations: List<String>,

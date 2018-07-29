@@ -9,6 +9,7 @@ import android.support.v7.widget.GridLayoutManager
 import android.view.*
 import android.view.animation.AccelerateDecelerateInterpolator
 import android.widget.TextView
+import com.bluelinelabs.conductor.changehandler.VerticalChangeHandler
 import com.mikepenz.google_material_typeface_library.GoogleMaterial
 import com.mikepenz.iconics.IconicsDrawable
 import com.mikepenz.iconics.typeface.IIcon
@@ -190,7 +191,7 @@ class HabitListViewController(args: Bundle? = null) :
                     view.habitProgress.invisible()
                     habitCompleteBackground.visible()
                     view.habitCompletedBackground.setOnLongClickListener {
-                        navigateFromRoot().toEditHabit(vm.id)
+                        navigateFromRoot().toEditHabit(vm.id, VerticalChangeHandler())
                         return@setOnLongClickListener true
                     }
                     view.habitProgress.setOnLongClickListener(null)
@@ -198,7 +199,7 @@ class HabitListViewController(args: Bundle? = null) :
                     view.habitProgress.visible()
                     habitCompleteBackground.invisible()
                     view.habitProgress.setOnLongClickListener {
-                        navigateFromRoot().toEditHabit(vm.id)
+                        navigateFromRoot().toEditHabit(vm.id, VerticalChangeHandler())
                         return@setOnLongClickListener true
                     }
                     view.habitCompletedBackground.setOnLongClickListener(null)
@@ -232,7 +233,7 @@ class HabitListViewController(args: Bundle? = null) :
                 renderCompletedBackground(view, vm.color)
 
                 view.habitCompletedBackground.setOnLongClickListener {
-                    navigateFromRoot().toEditHabit(vm.id)
+                    navigateFromRoot().toEditHabit(vm.id, VerticalChangeHandler())
                     return@setOnLongClickListener true
                 }
             }

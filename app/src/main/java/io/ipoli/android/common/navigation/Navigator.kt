@@ -192,8 +192,8 @@ class Navigator(private val router: Router) {
         pushController({ EditHabitViewController("", params) }, VerticalChangeHandler())
     }
 
-    fun toEditHabit(habitId: String) {
-        pushController({ EditHabitViewController(habitId) }, VerticalChangeHandler())
+    fun toEditHabit(habitId: String, changeHandler: ControllerChangeHandler? = null) {
+        pushController({ EditHabitViewController(habitId) }, changeHandler)
     }
 
     fun toAddChallenge() {
