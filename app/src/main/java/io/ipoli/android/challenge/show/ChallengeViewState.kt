@@ -47,8 +47,8 @@ object ChallengeReducer : BaseViewStateReducer<ChallengeViewState>() {
         state: AppState,
         subState: ChallengeViewState,
         action: Action
-    ): ChallengeViewState {
-        return when (action) {
+    ) =
+        when (action) {
             is ChallengeAction.Load -> {
                 val dataState = state.dataState
                 val c =
@@ -68,7 +68,6 @@ object ChallengeReducer : BaseViewStateReducer<ChallengeViewState>() {
             }
             else -> subState
         }
-    }
 
     private fun createChangedState(
         challenge: Challenge,
@@ -98,6 +97,7 @@ object ChallengeReducer : BaseViewStateReducer<ChallengeViewState>() {
             chartData = chartData,
             yAxisMax = Math.min(progressSum.toInt() + 10, 100),
             quests = challenge.baseQuests,
+            habits = challenge.habits,
             canComplete = !challenge.isCompleted,
             canEdit = !challenge.isCompleted,
             motivations = challenge.motivations,
