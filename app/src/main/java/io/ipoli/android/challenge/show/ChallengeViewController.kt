@@ -1,5 +1,6 @@
 package io.ipoli.android.challenge.show
 
+import android.annotation.SuppressLint
 import android.content.res.ColorStateList
 import android.graphics.drawable.GradientDrawable
 import android.os.Bundle
@@ -9,9 +10,7 @@ import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
 import android.support.v7.widget.helper.ItemTouchHelper
 import android.view.*
-import com.bluelinelabs.conductor.RouterTransaction
-import com.bluelinelabs.conductor.changehandler.FadeChangeHandler
-import com.bluelinelabs.conductor.changehandler.VerticalChangeHandler
+import com.bluelinelabs.conductor.changehandler.HorizontalChangeHandler
 import com.github.mikephil.charting.charts.LineChart
 import com.github.mikephil.charting.components.AxisBase
 import com.github.mikephil.charting.components.YAxis
@@ -25,12 +24,13 @@ import com.mikepenz.iconics.typeface.IIcon
 import com.mikepenz.material_design_iconic_typeface_library.MaterialDesignIconic
 import io.ipoli.android.MainActivity
 import io.ipoli.android.R
-import io.ipoli.android.challenge.QuestPickerViewController
 import io.ipoli.android.common.ViewUtils
 import io.ipoli.android.common.redux.android.ReduxViewController
 import io.ipoli.android.common.text.DateFormatter
 import io.ipoli.android.common.view.*
 import io.ipoli.android.common.view.anim.AccelerateDecelerateEasingFunction
+import io.ipoli.android.common.view.recyclerview.BaseRecyclerViewAdapter
+import io.ipoli.android.common.view.recyclerview.RecyclerViewViewModel
 import io.ipoli.android.common.view.recyclerview.SimpleSwipeCallback
 import io.ipoli.android.common.view.recyclerview.SimpleViewHolder
 import io.ipoli.android.quest.Quest
@@ -50,7 +50,7 @@ class ChallengeViewController(args: Bundle? = null) :
 
     override val reducer = ChallengeReducer
 
-    private lateinit var challengeId: String
+    private var challengeId = ""
     private var showEdit = true
     private var showComplete = true
 
@@ -99,13 +99,8 @@ class ChallengeViewController(args: Bundle? = null) :
         val itemTouchHelper = ItemTouchHelper(swipeHandler)
         itemTouchHelper.attachToRecyclerView(view.questList)
 
-        view.addQuests.setOnClickListener {
-            val changeHandler = FadeChangeHandler()
-            rootRouter.pushController(
-                RouterTransaction.with(QuestPickerViewController(challengeId))
-                    .pushChangeHandler(changeHandler)
-                    .popChangeHandler(changeHandler)
-            )
+        view.addQuests.onDebounceClick {
+            navigateFromRoot().toQuestPicker(challengeId)
         }
 
         return view
@@ -323,6 +318,7 @@ class ChallengeViewController(args: Bundle? = null) :
         state.motivations.forEachIndexed { index, text ->
             val mView = motivationsViews[index]
             mView.visible()
+            @SuppressLint("SetTextI18n")
             mView.text = "${index + 1}. $text"
         }
     }
@@ -371,22 +367,19 @@ class ChallengeViewController(args: Bundle? = null) :
     }
 
     data class QuestViewModel(
-        val id: String,
+        override val id: String,
         val name: String,
         @ColorRes val color: Int,
         @ColorRes val textColor: Int,
         val icon: IIcon,
         val isRepeating: Boolean,
         val isCompleted: Boolean
-    )
+    ) : RecyclerViewViewModel
 
-    inner class QuestAdapter(private var viewModels: List<QuestViewModel> = listOf()) :
-        RecyclerView.Adapter<SimpleViewHolder>() {
-        override fun getItemCount() = viewModels.size
+    inner class QuestAdapter :
+        BaseRecyclerViewAdapter<QuestViewModel>(R.layout.item_challenge_quest) {
 
-        override fun onBindViewHolder(holder: SimpleViewHolder, position: Int) {
-            val vm = viewModels[position]
-            val view = holder.itemView
+        override fun onBindViewModel(vm: QuestViewModel, view: View, holder: SimpleViewHolder) {
             view.questName.text = vm.name
             view.questName.setTextColor(colorRes(vm.textColor))
 
@@ -399,21 +392,15 @@ class ChallengeViewController(args: Bundle? = null) :
                     .sizeDp(22)
             )
             view.questRepeatIndicator.visible = vm.isRepeating
-        }
 
-        fun updateAll(viewModels: List<QuestViewModel>) {
-            this.viewModels = viewModels
-            notifyDataSetChanged()
+            view.onDebounceClick {
+                if (vm.isRepeating) {
+                    navigateFromRoot().toRepeatingQuest(vm.id, HorizontalChangeHandler())
+                } else {
+                    navigateFromRoot().toQuest(vm.id, HorizontalChangeHandler())
+                }
+            }
         }
-
-        override fun onCreateViewHolder(parent: ViewGroup, viewType: Int) =
-            SimpleViewHolder(
-                LayoutInflater.from(parent.context).inflate(
-                    R.layout.item_challenge_quest,
-                    parent,
-                    false
-                )
-            )
     }
 
     private val ChallengeViewState.xAxisLabels

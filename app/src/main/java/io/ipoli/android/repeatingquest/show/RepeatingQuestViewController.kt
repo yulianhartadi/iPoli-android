@@ -8,8 +8,6 @@ import android.support.annotation.LayoutRes
 import android.support.design.widget.AppBarLayout
 import android.support.v7.widget.LinearLayoutManager
 import android.view.*
-import com.bluelinelabs.conductor.RouterTransaction
-import com.bluelinelabs.conductor.changehandler.VerticalChangeHandler
 import io.ipoli.android.MainActivity
 import io.ipoli.android.R
 import io.ipoli.android.common.ViewUtils
@@ -38,7 +36,7 @@ class RepeatingQuestViewController(args: Bundle? = null) :
 
     private var repeatingQuestId: String = ""
 
-    private constructor(
+    public constructor(
         repeatingQuestId: String
     ) : this() {
         this.repeatingQuestId = repeatingQuestId
@@ -339,12 +337,4 @@ class RepeatingQuestViewController(args: Bundle? = null) :
         }
 
     data class ProgressViewModel(@LayoutRes val layout: Int, @ColorInt val color: Int)
-
-    companion object {
-
-        fun routerTransaction(repeatingQuestId: String) =
-            RouterTransaction.with(RepeatingQuestViewController(repeatingQuestId))
-                .pushChangeHandler(VerticalChangeHandler())
-                .popChangeHandler(VerticalChangeHandler())
-    }
 }
