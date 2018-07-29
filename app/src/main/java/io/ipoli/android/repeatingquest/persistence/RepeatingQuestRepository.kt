@@ -39,36 +39,37 @@ interface RepeatingQuestRepository : CollectionRepository<RepeatingQuest> {
     fun findAllForChallenge(challengeId: String): List<RepeatingQuest>
     fun generateId(): String
     fun remove(ids: List<String>)
+    fun removeFromChallenge(repeatingQuest: RepeatingQuest): RepeatingQuest
 }
 
 @Dao
 abstract class RepeatingQuestDao : BaseDao<RoomRepeatingQuest>() {
 
-    @android.arch.persistence.room.Query("SELECT * FROM repeating_quests")
+    @Query("SELECT * FROM repeating_quests")
     abstract fun findAll(): List<RoomRepeatingQuest>
 
-    @android.arch.persistence.room.Query("SELECT * FROM repeating_quests WHERE id = :id")
+    @Query("SELECT * FROM repeating_quests WHERE id = :id")
     abstract fun findById(id: String): RoomRepeatingQuest
 
-    @android.arch.persistence.room.Query("SELECT * FROM repeating_quests WHERE removedAt IS NULL")
+    @Query("SELECT * FROM repeating_quests WHERE removedAt IS NULL")
     abstract fun listenForNotRemoved(): LiveData<List<RoomRepeatingQuest>>
 
-    @android.arch.persistence.room.Query("SELECT * FROM repeating_quests WHERE id = :id")
+    @Query("SELECT * FROM repeating_quests WHERE id = :id")
     abstract fun listenById(id: String): LiveData<RoomRepeatingQuest>
 
-    @android.arch.persistence.room.Query("UPDATE repeating_quests $REMOVE_QUERY")
+    @Query("UPDATE repeating_quests $REMOVE_QUERY")
     abstract fun remove(id: String, currentTimeMillis: Long = System.currentTimeMillis())
 
-    @android.arch.persistence.room.Query("UPDATE repeating_quests $UNDO_REMOVE_QUERY")
+    @Query("UPDATE repeating_quests $UNDO_REMOVE_QUERY")
     abstract fun undoRemove(id: String, currentTimeMillis: Long = System.currentTimeMillis())
 
-    @android.arch.persistence.room.Query("SELECT * FROM repeating_quests WHERE removedAt IS NULL AND challengeId = :challengeId")
+    @Query("SELECT * FROM repeating_quests WHERE removedAt IS NULL AND challengeId = :challengeId")
     abstract fun findAllForChallenge(challengeId: String): List<RoomRepeatingQuest>
 
-    @android.arch.persistence.room.Query("SELECT * FROM repeating_quests WHERE removedAt IS NULL AND (repeatPattern_endDate IS NULL OR repeatPattern_endDate >= :date)")
+    @Query("SELECT * FROM repeating_quests WHERE removedAt IS NULL AND (repeatPattern_endDate IS NULL OR repeatPattern_endDate >= :date)")
     abstract fun findAllActive(date: Long): List<RoomRepeatingQuest>
 
-    @android.arch.persistence.room.Query("SELECT * FROM repeating_quests WHERE removedAt IS NULL AND (repeatPattern_endDate IS NULL OR repeatPattern_endDate >= :date) AND challengeId != :challengeId")
+    @Query("SELECT * FROM repeating_quests WHERE removedAt IS NULL AND (repeatPattern_endDate IS NULL OR repeatPattern_endDate >= :date) AND challengeId != :challengeId")
     abstract fun findActiveNotForChallenge(
         challengeId: String,
         date: Long
@@ -77,10 +78,10 @@ abstract class RepeatingQuestDao : BaseDao<RoomRepeatingQuest>() {
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     abstract fun saveTags(joins: List<RoomRepeatingQuest.Companion.RoomTagJoin>)
 
-    @android.arch.persistence.room.Query("DELETE FROM repeating_quest_tag_join WHERE repeatingQuestId = :repeatingQuestId")
+    @Query("DELETE FROM repeating_quest_tag_join WHERE repeatingQuestId = :repeatingQuestId")
     abstract fun deleteAllTags(repeatingQuestId: String)
 
-    @android.arch.persistence.room.Query("DELETE FROM repeating_quest_tag_join WHERE repeatingQuestId IN (:repeatingQuestIds)")
+    @Query("DELETE FROM repeating_quest_tag_join WHERE repeatingQuestId IN (:repeatingQuestIds)")
     abstract fun deleteAllTags(repeatingQuestIds: List<String>)
 
     @Query("SELECT * FROM repeating_quests $FIND_SYNC_QUERY")
@@ -88,6 +89,12 @@ abstract class RepeatingQuestDao : BaseDao<RoomRepeatingQuest>() {
 
     @Query("UPDATE repeating_quests SET removedAt = :currentTimeMillis, updatedAt = :currentTimeMillis WHERE id IN (:ids)")
     abstract fun remove(ids: List<String>, currentTimeMillis: Long = System.currentTimeMillis())
+
+    @Query("UPDATE repeating_quests SET updatedAt = :currentTimeMillis, challengeId = NULL WHERE id = :id")
+    abstract fun removeFromChallenge(
+        id: String,
+        currentTimeMillis: Long = System.currentTimeMillis()
+    )
 }
 
 class RoomRepeatingQuestRepository(dao: RepeatingQuestDao, private val tagDao: TagDao) :
@@ -156,6 +163,15 @@ class RoomRepeatingQuestRepository(dao: RepeatingQuestDao, private val tagDao: T
 
     override fun undoRemove(id: String) {
         dao.undoRemove(id)
+    }
+
+    override fun removeFromChallenge(repeatingQuest: RepeatingQuest): RepeatingQuest {
+        val currentTime = System.currentTimeMillis()
+        dao.removeFromChallenge(repeatingQuest.id, currentTime)
+        return repeatingQuest.copy(
+            challengeId = null,
+            updatedAt = currentTime.instant
+        )
     }
 
     private val tagMapper = RoomTagMapper()

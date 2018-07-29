@@ -121,6 +121,10 @@ interface QuestRepository : CollectionRepository<Quest> {
 
     fun removeFromRepeatingQuest(questId: String, newRepeatingQuestId: String)
 
+    fun removeFromChallenge(quest: Quest): Quest
+
+    fun removeFromChallenge(quests: List<Quest>): List<Quest>
+
     fun findCompletedInPeriodOfFriend(
         friendId: String,
         startDate: LocalDate,
@@ -303,6 +307,18 @@ abstract class QuestDao : BaseDao<RoomQuest>() {
 
     @Query("UPDATE quests SET removedAt = :currentTimeMillis, updatedAt = :currentTimeMillis, repeatingQuestId = NULL WHERE id IN (:ids)")
     abstract fun removeAndClearRepeatingQuestId(
+        ids: List<String>,
+        currentTimeMillis: Long = System.currentTimeMillis()
+    )
+
+    @Query("UPDATE quests SET updatedAt = :currentTimeMillis, challengeId = NULL WHERE id = :id")
+    abstract fun removeFromChallenge(
+        id: String,
+        currentTimeMillis: Long = System.currentTimeMillis()
+    )
+
+    @Query("UPDATE quests SET updatedAt = :currentTimeMillis, challengeId = NULL WHERE id IN (:ids)")
+    abstract fun removeFromChallenge(
         ids: List<String>,
         currentTimeMillis: Long = System.currentTimeMillis()
     )
@@ -544,6 +560,26 @@ class RoomQuestRepository(
 
     override fun removeFromRepeatingQuest(questId: String, newRepeatingQuestId: String) {
         dao.removeFromRepeatingQuest(questId, newRepeatingQuestId)
+    }
+
+    override fun removeFromChallenge(quest: Quest): Quest {
+        val currentTime = System.currentTimeMillis()
+        dao.removeFromChallenge(quest.id, currentTime)
+        return quest.copy(
+            challengeId = null,
+            updatedAt = currentTime.instant
+        )
+    }
+
+    override fun removeFromChallenge(quests: List<Quest>): List<Quest> {
+        val currentTime = System.currentTimeMillis()
+        dao.removeFromChallenge(quests.map { it.id })
+        return quests.map {
+            it.copy(
+                challengeId = null,
+                updatedAt = currentTime.instant
+            )
+        }
     }
 
     override fun findNotCompletedNotForChallengeNotRepeating(
