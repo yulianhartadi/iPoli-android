@@ -57,6 +57,7 @@ class EditRepeatingQuestViewController(args: Bundle? = null) :
         savedViewState: Bundle?
     ): View {
         setHasOptionsMenu(true)
+        applyStatusBarColors = false
         val view = inflater.inflate(
             R.layout.controller_edit_repeating_quest, container, false
         )

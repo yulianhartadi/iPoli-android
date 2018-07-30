@@ -35,7 +35,8 @@ class SaveHabitUseCase(
                 tags = parameters.tags ?: emptyList(),
                 days = parameters.days,
                 timesADay = parameters.timesADay,
-                isGood = parameters.isGood
+                isGood = parameters.isGood,
+                challengeId = parameters.challengeId
             )
         } else {
             var h = habitRepository.findById(parameters.id)!!
@@ -51,7 +52,8 @@ class SaveHabitUseCase(
                 tags = parameters.tags ?: emptyList(),
                 days = parameters.days,
                 timesADay = parameters.timesADay,
-                isGood = parameters.isGood
+                isGood = parameters.isGood,
+                challengeId = parameters.challengeId
             )
         }
 
@@ -105,6 +107,7 @@ class SaveHabitUseCase(
         val tags: List<Tag>? = null,
         val days: Set<DayOfWeek>,
         val timesADay: Int,
-        val isGood: Boolean
+        val isGood: Boolean,
+        val challengeId: String? = null
     )
 }

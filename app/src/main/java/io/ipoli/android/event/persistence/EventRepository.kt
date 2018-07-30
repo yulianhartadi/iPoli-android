@@ -8,7 +8,7 @@ import io.ipoli.android.common.datetime.Time
 import io.ipoli.android.common.persistence.CollectionRepository
 import io.ipoli.android.common.view.ColorUtil
 import io.ipoli.android.event.Event
-import io.ipoli.android.myPoliApp
+import io.ipoli.android.MyPoliApp
 import kotlinx.coroutines.experimental.channels.Channel
 import org.threeten.bp.LocalDate
 import org.threeten.bp.temporal.JulianFields
@@ -87,7 +87,7 @@ class AndroidCalendarEventRepository : EventRepository {
 
         calendarIds.forEach {
             val selectionArgs = listOf(it.toString()).toTypedArray()
-            myPoliApp.instance.contentResolver.query(
+            MyPoliApp.instance.contentResolver.query(
                 builder.build(),
                 INSTANCE_PROJECTION,
                 selection,

@@ -248,6 +248,10 @@ object EditHabitReducer : BaseViewStateReducer<EditHabitViewState>() {
                 type = REMOVED
             )
         } else {
+
+            val challenge = if (habit.challengeId != null) {
+                state.dataState.challenges?.first { it.id == habit.challengeId }
+            } else null
             subState.copy(
                 type = HABIT_DATA_CHANGED,
                 habit = habit,
@@ -257,6 +261,7 @@ object EditHabitReducer : BaseViewStateReducer<EditHabitViewState>() {
                 icon = habit.icon,
                 habitTags = habit.tags,
                 tags = state.dataState.tags - habit.tags,
+                challenge = challenge,
                 note = habit.note,
                 maxTagsReached = habit.tags.size >= Constants.MAX_TAGS_PER_ITEM,
                 isGood = habit.isGood,

@@ -24,7 +24,7 @@ import timber.log.Timber
  * on 7/7/17.
  */
 
-class myPoliApp : Application() {
+class MyPoliApp : Application() {
 
     @Volatile
     private var uiModule: UIModule? = null
@@ -34,10 +34,10 @@ class myPoliApp : Application() {
 
     companion object {
 
-        lateinit var instance: myPoliApp
+        lateinit var instance: MyPoliApp
 
         fun uiModule(context: Context): UIModule {
-            val appInstance = context.applicationContext as myPoliApp
+            val appInstance = context.applicationContext as MyPoliApp
             return appInstance.uiModule
                 ?: synchronized(context.applicationContext) {
                     appInstance.uiModule = UIModule(
@@ -50,7 +50,7 @@ class myPoliApp : Application() {
         }
 
         fun backgroundModule(context: Context): BackgroundModule {
-            val appInstance = context.applicationContext as myPoliApp
+            val appInstance = context.applicationContext as MyPoliApp
             return appInstance.backgroundModule
                 ?: synchronized(context.applicationContext) {
                     appInstance.backgroundModule = BackgroundModule(

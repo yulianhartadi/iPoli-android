@@ -3,7 +3,7 @@ package io.ipoli.android.repeatingquest
 import com.evernote.android.job.DailyJob
 import com.evernote.android.job.JobRequest
 import io.ipoli.android.common.di.BackgroundModule
-import io.ipoli.android.myPoliApp
+import io.ipoli.android.MyPoliApp
 import io.ipoli.android.repeatingquest.usecase.SaveQuestsForRepeatingQuestUseCase
 import org.threeten.bp.LocalDate
 import space.traversal.kapsule.Injects
@@ -21,7 +21,7 @@ class SaveQuestsForRepeatingQuestJob : DailyJob(), Injects<BackgroundModule> {
         val kap = Kapsule<BackgroundModule>()
         val repeatingQuestRepository by kap.required { repeatingQuestRepository }
         val saveQuestsForRepeatingQuestUseCase by kap.required { saveQuestsForRepeatingQuestUseCase }
-        kap.inject(myPoliApp.backgroundModule(context))
+        kap.inject(MyPoliApp.backgroundModule(context))
 
         val rqs = repeatingQuestRepository.findAllActive()
         val newRqs = rqs.map {

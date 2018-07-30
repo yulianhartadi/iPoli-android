@@ -10,7 +10,7 @@ import io.ipoli.android.common.di.BackgroundModule
 import io.ipoli.android.common.view.asThemedWrapper
 import io.ipoli.android.dailychallenge.DailyChallengeCompletePopup
 import io.ipoli.android.friends.usecase.SavePostsUseCase
-import io.ipoli.android.myPoliApp
+import io.ipoli.android.MyPoliApp
 import io.ipoli.android.quest.Quest
 import kotlinx.coroutines.experimental.CommonPool
 import kotlinx.coroutines.experimental.android.UI
@@ -26,7 +26,7 @@ class DailyChallengeCompleteJob : Job() {
         val unlockAchievement by kap.required { unlockAchievementsUseCase }
         val playerRepository by kap.required { playerRepository }
         val savePostsUseCase by kap.required { savePostsUseCase }
-        kap.inject(myPoliApp.backgroundModule(context))
+        kap.inject(MyPoliApp.backgroundModule(context))
 
         val coins = params.extras.getInt(KEY_COINS, -1)
         val experience = params.extras.getInt(KEY_EXPERIENCE, -1)

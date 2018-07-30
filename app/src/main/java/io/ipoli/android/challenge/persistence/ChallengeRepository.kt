@@ -65,6 +65,8 @@ class RoomChallengeRepository(dao: ChallengeDao, private val tagDao: TagDao) : C
         dao
     ) {
 
+    private val tagMapper = RoomTagMapper()
+
     override fun findAllForSync(lastSync: Duration<Millisecond>) =
         dao.findAllForSync(lastSync.millisValue).map { toEntityObject(it) }
 
@@ -102,8 +104,6 @@ class RoomChallengeRepository(dao: ChallengeDao, private val tagDao: TagDao) : C
     override fun undoRemove(id: String) {
         dao.undoRemove(id)
     }
-
-    private val tagMapper = RoomTagMapper()
 
     override fun toEntityObject(dbObject: RoomChallenge) =
         Challenge(

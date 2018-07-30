@@ -178,7 +178,7 @@ object QuestReducer : BaseViewStateReducer<QuestViewState>() {
             else -> subState
         }
 
-    override fun defaultState() = QuestViewState(type = LOADING, tags = listOf())
+    override fun defaultState() = QuestViewState(type = LOADING, tags = listOf(), note = null)
 
     private fun formatDuration(duration: Duration<Second>): String {
         return if (duration >= 0.seconds) {
@@ -379,7 +379,7 @@ data class QuestViewState(
     val showCompleteButton: Boolean = false,
     val isInBreak: Boolean = false,
     val tags: List<Tag>,
-    val note: String = ""
+    val note: String?
 ) : BaseViewState() {
 
     enum class StateType {

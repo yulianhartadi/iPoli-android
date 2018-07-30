@@ -56,7 +56,7 @@ class NoteViewController(args: Bundle? = null) :
     override fun onCreateLoadAction() =
         NoteAction.Load(note, startInEditMode, closeListener != null)
 
-    override fun colorLayoutBars() {
+    override fun colorStatusBars() {
 
     }
 

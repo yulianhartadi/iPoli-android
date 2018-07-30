@@ -78,6 +78,7 @@ class QuestViewController : ReduxViewController<QuestAction, QuestViewState, Que
         savedViewState: Bundle?
     ): View {
         setHasOptionsMenu(true)
+        applyStatusBarColors = false
         val view = container.inflate(R.layout.controller_quest)
 
         setToolbar(view.toolbar)
@@ -391,7 +392,8 @@ class QuestViewController : ReduxViewController<QuestAction, QuestViewState, Que
     private fun renderNote(state: QuestViewState, view: View) {
         view.questNote.setMarkdown(state.noteText)
         view.questNote.onDebounceClick {
-            navigateFromRoot().toNotePicker(state.note) { newNote ->
+            val noteText = if(state.note == null || state.note.isBlank()) "" else state.note
+            navigateFromRoot().toNotePicker(noteText) { newNote ->
                 dispatch(QuestAction.SaveNote(newNote))
             }
         }
@@ -906,7 +908,7 @@ class QuestViewController : ReduxViewController<QuestAction, QuestViewState, Que
         }
 
     private val QuestViewState.noteText: String
-        get() = if (note.isBlank()) stringRes(R.string.tap_to_add_note) else note
+        get() = if (note == null || note.isBlank()) stringRes(R.string.tap_to_add_note) else note
 
     private val QuestViewState.pomodoroTimerText: String
         get() = if (completePomodorCount > 0) "$completePomodorCount/$pomodoroCount Pomodoros done" else "For $pomodoroCount Pomodoros"

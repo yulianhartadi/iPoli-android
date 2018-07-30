@@ -6,7 +6,7 @@ import io.ipoli.android.common.redux.Action
 import io.ipoli.android.common.redux.AsyncMiddleware
 import io.ipoli.android.common.redux.Dispatcher
 import io.ipoli.android.friends.usecase.SavePostsUseCase
-import io.ipoli.android.myPoliApp
+import io.ipoli.android.MyPoliApp
 import io.ipoli.android.player.view.LevelUpAction
 import space.traversal.kapsule.Injects
 import space.traversal.kapsule.inject
@@ -21,7 +21,7 @@ object CreatePostsMiddleware : AsyncMiddleware<AppState>, Injects<BackgroundModu
     private val savePostsUseCase by required { savePostsUseCase }
 
     override fun onCreate() {
-        inject(myPoliApp.backgroundModule(myPoliApp.instance))
+        inject(MyPoliApp.backgroundModule(MyPoliApp.instance))
     }
 
     override fun onExecute(state: AppState, dispatcher: Dispatcher, action: Action) {

@@ -61,6 +61,11 @@ interface QuestRepository : CollectionRepository<Quest> {
         currentDate: LocalDate
     ): Quest?
 
+    fun findNextScheduledNotCompletedForChallenge(
+        challengeId: String,
+        currentDate: LocalDate
+    ): Quest?
+
     fun findAllForRepeatingQuest(
         repeatingQuestId: String,
         includeRemoved: Boolean = true
@@ -96,6 +101,7 @@ interface QuestRepository : CollectionRepository<Quest> {
     fun findAllForChallengeNotRepeating(challengeId: String): List<Quest>
 
     fun findAllForChallenge(challengeId: String): List<Quest>
+    fun findNotRemovedForChallenge(challengeId: String): List<Quest>
     fun findAllForRepeatingQuestAfterDate(
         repeatingQuestId: String,
         includeRemoved: Boolean,
@@ -120,6 +126,10 @@ interface QuestRepository : CollectionRepository<Quest> {
 
     fun removeFromRepeatingQuest(questId: String, newRepeatingQuestId: String)
 
+    fun removeFromChallenge(quest: Quest): Quest
+
+    fun removeFromChallenge(quests: List<Quest>): List<Quest>
+
     fun findCompletedInPeriodOfFriend(
         friendId: String,
         startDate: LocalDate,
@@ -137,6 +147,9 @@ abstract class QuestDao : BaseDao<RoomQuest>() {
 
     @Query("SELECT * FROM quests WHERE challengeId = :challengeId")
     abstract fun findAllForChallenge(challengeId: String): List<RoomQuest>
+
+    @Query("SELECT * FROM quests WHERE challengeId = :challengeId AND removedAt IS NULL")
+    abstract fun findNotRemovedForChallenge(challengeId: String): List<RoomQuest>
 
     @Query("SELECT * FROM quests WHERE removedAt IS NULL")
     abstract fun listenForNotRemoved(): LiveData<List<RoomQuest>>
@@ -209,13 +222,27 @@ abstract class QuestDao : BaseDao<RoomQuest>() {
         """
         SELECT *
         FROM quests
-        WHERE removedAt is NULL AND repeatingQuestId = :repeatingQuestId AND scheduledDate >= :date AND completedAtDate IS NULL
+        WHERE removedAt IS NULL AND repeatingQuestId = :repeatingQuestId AND scheduledDate >= :date AND completedAtDate IS NULL
         ORDER BY scheduledDate ASC
         LIMIT 1
         """
     )
     abstract fun findNextScheduledNotCompletedForRepeatingQuest(
         repeatingQuestId: String,
+        date: Long
+    ): List<RoomQuest>
+
+    @Query(
+        """
+        SELECT *
+        FROM quests
+        WHERE removedAt IS NULL AND challengeId = :challengeId AND scheduledDate >= :date AND completedAtDate IS NULL
+        ORDER BY scheduledDate ASC
+        LIMIT 1
+        """
+    )
+    abstract fun findNextScheduledNotCompletedForChallenge(
+        challengeId: String,
         date: Long
     ): List<RoomQuest>
 
@@ -299,6 +326,18 @@ abstract class QuestDao : BaseDao<RoomQuest>() {
 
     @Query("UPDATE quests SET removedAt = :currentTimeMillis, updatedAt = :currentTimeMillis, repeatingQuestId = NULL WHERE id IN (:ids)")
     abstract fun removeAndClearRepeatingQuestId(
+        ids: List<String>,
+        currentTimeMillis: Long = System.currentTimeMillis()
+    )
+
+    @Query("UPDATE quests SET updatedAt = :currentTimeMillis, challengeId = NULL WHERE id = :id")
+    abstract fun removeFromChallenge(
+        id: String,
+        currentTimeMillis: Long = System.currentTimeMillis()
+    )
+
+    @Query("UPDATE quests SET updatedAt = :currentTimeMillis, challengeId = NULL WHERE id IN (:ids)")
+    abstract fun removeFromChallenge(
         ids: List<String>,
         currentTimeMillis: Long = System.currentTimeMillis()
     )
@@ -476,6 +515,15 @@ class RoomQuestRepository(
             currentDate.startOfDayUTC()
         ).firstOrNull()?.let { toEntityObject(it) }
 
+    override fun findNextScheduledNotCompletedForChallenge(
+        challengeId: String,
+        currentDate: LocalDate
+    ) =
+        dao.findNextScheduledNotCompletedForChallenge(
+            challengeId,
+            currentDate.startOfDayUTC()
+        ).firstOrNull()?.let { toEntityObject(it) }
+
     override fun findAllForRepeatingQuest(
         repeatingQuestId: String,
         includeRemoved: Boolean
@@ -542,6 +590,26 @@ class RoomQuestRepository(
         dao.removeFromRepeatingQuest(questId, newRepeatingQuestId)
     }
 
+    override fun removeFromChallenge(quest: Quest): Quest {
+        val currentTime = System.currentTimeMillis()
+        dao.removeFromChallenge(quest.id, currentTime)
+        return quest.copy(
+            challengeId = null,
+            updatedAt = currentTime.instant
+        )
+    }
+
+    override fun removeFromChallenge(quests: List<Quest>): List<Quest> {
+        val currentTime = System.currentTimeMillis()
+        dao.removeFromChallenge(quests.map { it.id })
+        return quests.map {
+            it.copy(
+                challengeId = null,
+                updatedAt = currentTime.instant
+            )
+        }
+    }
+
     override fun findNotCompletedNotForChallengeNotRepeating(
         challengeId: String,
         start: LocalDate
@@ -555,6 +623,9 @@ class RoomQuestRepository(
 
     override fun findAllForChallenge(challengeId: String) =
         dao.findAllForChallenge(challengeId).map { toEntityObject(it) }
+
+    override fun findNotRemovedForChallenge(challengeId: String) =
+        dao.findNotRemovedForChallenge(challengeId).map { toEntityObject(it) }
 
     override fun findAllForRepeatingQuestAfterDate(
         repeatingQuestId: String,

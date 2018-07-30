@@ -11,7 +11,7 @@ import io.ipoli.android.common.api.Api
 import io.ipoli.android.common.billing.BillingError
 import io.ipoli.android.common.datetime.isBetween
 import io.ipoli.android.common.di.BackgroundModule
-import io.ipoli.android.myPoliApp
+import io.ipoli.android.MyPoliApp
 import io.ipoli.android.store.membership.error.SubscriptionError
 import io.ipoli.android.store.membership.usecase.RemoveMembershipUseCase
 import io.ipoli.android.store.powerup.usecase.EnableAllPowerUpsUseCase
@@ -38,7 +38,7 @@ class CheckMembershipStatusJob : DailyJob(), Injects<BackgroundModule> {
         val removeMembershipUseCase by kap.required { removeMembershipUseCase }
         val enableAllPowerUpsUseCase by kap.required { enableAllPowerUpsUseCase }
 
-        kap.inject(myPoliApp.backgroundModule(context))
+        kap.inject(MyPoliApp.backgroundModule(context))
 
         val p = playerRepository.find()
         requireNotNull(p)

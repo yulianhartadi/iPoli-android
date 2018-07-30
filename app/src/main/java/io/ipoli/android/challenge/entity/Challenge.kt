@@ -2,6 +2,7 @@ package io.ipoli.android.challenge.entity
 
 import io.ipoli.android.common.datetime.Time
 import io.ipoli.android.common.persistence.EntityWithTags
+import io.ipoli.android.habit.data.Habit
 import io.ipoli.android.quest.*
 import io.ipoli.android.tag.Tag
 import org.threeten.bp.Instant
@@ -17,7 +18,7 @@ data class Challenge(
     val color: Color,
     val icon: Icon? = null,
     val difficulty: Difficulty,
-    override val tags: List<Tag> = listOf(),
+    override val tags: List<Tag> = emptyList(),
     val startDate: LocalDate,
     val endDate: LocalDate,
     val motivations: List<String>,
@@ -28,9 +29,10 @@ data class Challenge(
     val nextDate: LocalDate? = null,
     val nextStartTime: Time? = null,
     val nextDuration: Int? = null,
-    val baseQuests: List<BaseQuest> = listOf(),
-    val quests: List<Quest> = listOf(),
-    val repeatingQuests: List<RepeatingQuest> = listOf(),
+    val baseQuests: List<BaseQuest> = emptyList(),
+    val quests: List<Quest> = emptyList(),
+    val repeatingQuests: List<RepeatingQuest> = emptyList(),
+    val habits: List<Habit> = emptyList(),
     val progress: Progress = Progress(),
     val note: String = "",
     val sharingPreference: SharingPreference = SharingPreference.PRIVATE,

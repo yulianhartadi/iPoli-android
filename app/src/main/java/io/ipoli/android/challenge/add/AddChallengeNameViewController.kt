@@ -107,7 +107,7 @@ class AddChallengeNameViewController(args: Bundle? = null) :
         }
     }
 
-    override fun colorLayoutBars() {}
+    override fun colorStatusBars() {}
 
     private fun renderTags(
         view: View,

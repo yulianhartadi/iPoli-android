@@ -55,7 +55,7 @@ class ProfileChallengeListViewController(args: Bundle? = null) :
 
     override fun onCreateLoadAction() = ProfileAction.LoadChallenges
 
-    override fun colorLayoutBars() {
+    override fun colorStatusBars() {
 
     }
 

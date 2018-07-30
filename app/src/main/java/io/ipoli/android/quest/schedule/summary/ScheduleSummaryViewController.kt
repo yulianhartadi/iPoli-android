@@ -157,7 +157,7 @@ class ScheduleSummaryViewController(args: Bundle? = null) :
     override fun onCreateLoadAction() = ScheduleSummaryAction.Load(currentDate)
 
 
-    override fun colorLayoutBars() {
+    override fun colorStatusBars() {
         activity?.let {
             it.window.statusBarColor = colorRes(R.color.md_grey_50)
             it.window.navigationBarColor = colorRes(R.color.md_grey_50)

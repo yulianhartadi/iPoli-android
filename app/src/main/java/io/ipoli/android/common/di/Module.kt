@@ -344,9 +344,11 @@ interface UseCaseModule {
     val saveChallengeUseCase: SaveChallengeUseCase
     val saveQuestsForChallengeUseCase: SaveQuestsForChallengeUseCase
     val removeQuestFromChallengeUseCase: RemoveQuestFromChallengeUseCase
+    val removeHabitFromChallengeUseCase: RemoveHabitFromChallengeUseCase
     val removeChallengeUseCase: RemoveChallengeUseCase
     val loadQuestPickerQuestsUseCase: LoadQuestPickerQuestsUseCase
     val findQuestsForChallengeUseCase: FindQuestsForChallengeUseCase
+    val findHabitsForChallengeUseCase: FindHabitsForChallengeUseCase
     val findNextDateForChallengeUseCase: FindNextDateForChallengeUseCase
     val findChallengeProgressUseCase: FindChallengeProgressUseCase
     val completeChallengeUseCase: CompleteChallengeUseCase
@@ -677,6 +679,9 @@ class MainUseCaseModule(private val context: Context) : UseCaseModule {
     override val removeQuestFromChallengeUseCase
         get() = RemoveQuestFromChallengeUseCase(questRepository, repeatingQuestRepository)
 
+    override val removeHabitFromChallengeUseCase
+        get() = RemoveHabitFromChallengeUseCase(habitRepository)
+
     override val saveChallengeUseCase
         get() = SaveChallengeUseCase(challengeRepository, saveQuestsForChallengeUseCase)
 
@@ -701,8 +706,11 @@ class MainUseCaseModule(private val context: Context) : UseCaseModule {
             repeatingQuestRepository
         )
 
+    override val findHabitsForChallengeUseCase
+        get() = FindHabitsForChallengeUseCase(habitRepository)
+
     override val findNextDateForChallengeUseCase
-        get() = FindNextDateForChallengeUseCase()
+        get() = FindNextDateForChallengeUseCase(questRepository)
 
     override val findChallengeProgressUseCase
         get() = FindChallengeProgressUseCase()

@@ -20,7 +20,7 @@
         tools:ignore="ProtectedPermissions" />
 
     <application
-        android:name="io.ipoli.android.myPoliApp"
+        android:name="io.ipoli.android.MyPoliApp"
         android:allowBackup="false"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"

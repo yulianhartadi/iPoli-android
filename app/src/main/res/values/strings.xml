@@ -331,11 +331,16 @@
     <string name="title_fragment_wizard_challenge_end_date">Achieve it in</string>
     <string name="one_month">1 month</string>
     <string name="one_week">1 week</string>
-    <string name="ten_days">10 days</string>
     <string name="two_weeks">2 weeks</string>
     <string name="three_months">3 months</string>
     <string name="fifteen_days">15 days</string>
-    <string name="exact_date">Exact date…</string>
+    <string name="seven_days">7 days</string>
+    <string name="ten_days">10 days</string>
+    <string name="fourteen_days">14 days</string>
+    <string name="thirty_days">30 days</string>
+    <string name="end_of_week">End of this week</string>
+    <string name="end_of_month">End of this month</string>
+    <string name="exact_date">Choose date…</string>
     <string name="select_quests">Choose quests</string>
     <string name="title_edit_repeating_quest">Edit repeating quest</string>
     <string name="use_24_hour_format">Use 24-hour format</string>
@@ -1544,4 +1549,6 @@
     <string name="posts_sign_in">Sign in to create posts</string>
     <string name="friends_sign_in">Sign in to share with friends</string>
     <string name="challenges_sign_in">Sign in to share your Challenges</string>
+    <string name="challenge_empty_habit_list">You haven\'t added any Habits to this Challenge</string>
+    <string name="challenge_empty_quest_list">You haven\'t added any Quests to this Challenge</string>
 </resources>

@@ -65,6 +65,7 @@ sealed class EditChallengeAction : Action {
     data class ChangeEndDate(val date: LocalDate) : EditChallengeAction() {
         override fun toMap() = mapOf("date" to date)
     }
+
     data class ChangeMotivations(
         val motivation1: String,
         val motivation2: String,

@@ -6,7 +6,7 @@ import io.ipoli.android.common.di.BackgroundModule
 import io.ipoli.android.common.redux.Action
 import io.ipoli.android.common.redux.Dispatcher
 import io.ipoli.android.common.redux.SideEffectHandler
-import io.ipoli.android.myPoliApp
+import io.ipoli.android.MyPoliApp
 import io.ipoli.android.pet.store.PetStoreAction
 import io.ipoli.android.pet.usecase.BuyPetUseCase
 import kotlinx.coroutines.experimental.CommonPool
@@ -27,7 +27,7 @@ abstract class AppSideEffectHandler : SideEffectHandler<AppState>,
     private var dispatcher: Dispatcher? = null
 
     override fun onCreate() {
-        inject(myPoliApp.backgroundModule(myPoliApp.instance))
+        inject(MyPoliApp.backgroundModule(MyPoliApp.instance))
     }
 
     override suspend fun execute(action: Action, state: AppState, dispatcher: Dispatcher) {

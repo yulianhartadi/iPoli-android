@@ -10,6 +10,7 @@ import com.bluelinelabs.conductor.changehandler.SimpleSwapChangeHandler
 import com.bluelinelabs.conductor.changehandler.VerticalChangeHandler
 import com.google.firebase.auth.FirebaseAuth
 import io.ipoli.android.achievement.list.AchievementListViewController
+import io.ipoli.android.challenge.QuestPickerViewController
 import io.ipoli.android.challenge.add.AddChallengeViewController
 import io.ipoli.android.challenge.edit.ChallengeMotivationsDialogController
 import io.ipoli.android.challenge.edit.EditChallengeViewController
@@ -57,6 +58,7 @@ import io.ipoli.android.repeatingquest.add.AddRepeatingQuestViewController
 import io.ipoli.android.repeatingquest.edit.EditRepeatingQuestViewController
 import io.ipoli.android.repeatingquest.edit.picker.RepeatPatternPickerDialogController
 import io.ipoli.android.repeatingquest.entity.RepeatPattern
+import io.ipoli.android.repeatingquest.show.RepeatingQuestViewController
 import io.ipoli.android.settings.view.DaysPickerDialogController
 import io.ipoli.android.settings.view.TemperatureUnitPickerDialogController
 import io.ipoli.android.settings.view.TimeFormatPickerDialogController
@@ -171,6 +173,10 @@ class Navigator(private val router: Router) {
         pushController({ CompletedQuestViewController(questId) }, changeHandler)
     }
 
+    fun toRepeatingQuest(repeatingQuestId: String, changeHandler: ControllerChangeHandler? = null) {
+        pushController({ RepeatingQuestViewController(repeatingQuestId) }, changeHandler)
+    }
+
     fun toAddRepeatingQuest() {
         pushController({ AddRepeatingQuestViewController() }, VerticalChangeHandler())
     }
@@ -186,12 +192,16 @@ class Navigator(private val router: Router) {
         pushController({ EditHabitViewController("", params) }, VerticalChangeHandler())
     }
 
-    fun toEditHabit(habitId: String) {
-        pushController({ EditHabitViewController(habitId) }, VerticalChangeHandler())
+    fun toEditHabit(habitId: String, changeHandler: ControllerChangeHandler? = null) {
+        pushController({ EditHabitViewController(habitId) }, changeHandler)
     }
 
     fun toAddChallenge() {
         pushController({ AddChallengeViewController() }, VerticalChangeHandler())
+    }
+
+    fun toQuestPicker(challengeId: String) {
+        pushController({ QuestPickerViewController(challengeId) }, HorizontalChangeHandler())
     }
 
     fun toPostItemPicker() {
@@ -207,7 +217,7 @@ class Navigator(private val router: Router) {
     }
 
     fun toEditChallenge(challengeId: String) {
-        pushController({ EditChallengeViewController(challengeId) }, FadeChangeHandler())
+        pushController({ EditChallengeViewController(challengeId) }, HorizontalChangeHandler())
     }
 
     fun toChallenge(challengeId: String) {

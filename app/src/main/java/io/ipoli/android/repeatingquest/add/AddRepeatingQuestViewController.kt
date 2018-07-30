@@ -102,7 +102,7 @@ class AddRepeatingQuestViewController(args: Bundle? = null) :
         return true
     }
 
-    override fun colorLayoutBars() {
+    override fun colorStatusBars() {
 
     }
 
@@ -216,7 +216,7 @@ class AddRepeatingQuestViewController(args: Bundle? = null) :
             inflater.inflate(R.menu.next_wizard_menu, menu)
         }
 
-        override fun colorLayoutBars() {
+        override fun colorStatusBars() {
 
         }
 
@@ -354,7 +354,7 @@ class AddRepeatingQuestViewController(args: Bundle? = null) :
             return super.onOptionsItemSelected(item)
         }
 
-        override fun colorLayoutBars() {
+        override fun colorStatusBars() {
 
         }
 
@@ -433,7 +433,7 @@ class AddRepeatingQuestViewController(args: Bundle? = null) :
             return super.onOptionsItemSelected(item)
         }
 
-        override fun colorLayoutBars() {
+        override fun colorStatusBars() {
 
         }
 
@@ -560,7 +560,7 @@ class AddRepeatingQuestViewController(args: Bundle? = null) :
 
         override fun onCreateLoadAction() = EditRepeatingQuestAction.LoadSummary
 
-        override fun colorLayoutBars() {
+        override fun colorStatusBars() {
 
         }
 

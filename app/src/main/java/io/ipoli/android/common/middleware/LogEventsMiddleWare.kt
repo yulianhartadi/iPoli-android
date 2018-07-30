@@ -8,7 +8,7 @@ import io.ipoli.android.common.redux.Action
 import io.ipoli.android.common.redux.AsyncMiddleware
 import io.ipoli.android.common.redux.Dispatcher
 import io.ipoli.android.common.text.toSnakeCase
-import io.ipoli.android.myPoliApp
+import io.ipoli.android.MyPoliApp
 import io.ipoli.android.quest.show.QuestAction
 import space.traversal.kapsule.Injects
 import space.traversal.kapsule.inject
@@ -23,7 +23,7 @@ object LogEventsMiddleWare : AsyncMiddleware<AppState>, Injects<BackgroundModule
     private val eventLogger by required { eventLogger }
 
     override fun onCreate() {
-        inject(myPoliApp.backgroundModule(myPoliApp.instance))
+        inject(MyPoliApp.backgroundModule(MyPoliApp.instance))
     }
 
     override fun onExecute(

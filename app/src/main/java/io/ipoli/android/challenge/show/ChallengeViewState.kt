@@ -8,6 +8,7 @@ import io.ipoli.android.common.datetime.datesBetween
 
 import io.ipoli.android.common.redux.Action
 import io.ipoli.android.common.redux.BaseViewState
+import io.ipoli.android.habit.data.Habit
 import io.ipoli.android.quest.BaseQuest
 import io.ipoli.android.quest.Color
 import io.ipoli.android.tag.Tag
@@ -32,6 +33,10 @@ sealed class ChallengeAction : Action {
         override fun toMap() = mapOf("questIndex" to questIndex)
     }
 
+    data class RemoveHabitFromChallenge(val habitId: String) : ChallengeAction() {
+        override fun toMap() = mapOf("habitId" to habitId)
+    }
+
     data class Complete(val challengeId: String) : ChallengeAction() {
         override fun toMap() = mapOf("challengeId" to challengeId)
     }
@@ -42,8 +47,8 @@ object ChallengeReducer : BaseViewStateReducer<ChallengeViewState>() {
         state: AppState,
         subState: ChallengeViewState,
         action: Action
-    ): ChallengeViewState {
-        return when (action) {
+    ) =
+        when (action) {
             is ChallengeAction.Load -> {
                 val dataState = state.dataState
                 val c =
@@ -63,7 +68,6 @@ object ChallengeReducer : BaseViewStateReducer<ChallengeViewState>() {
             }
             else -> subState
         }
-    }
 
     private fun createChangedState(
         challenge: Challenge,
@@ -93,6 +97,7 @@ object ChallengeReducer : BaseViewStateReducer<ChallengeViewState>() {
             chartData = chartData,
             yAxisMax = Math.min(progressSum.toInt() + 10, 100),
             quests = challenge.baseQuests,
+            habits = challenge.habits,
             canComplete = !challenge.isCompleted,
             canEdit = !challenge.isCompleted,
             motivations = challenge.motivations,
@@ -116,6 +121,7 @@ object ChallengeReducer : BaseViewStateReducer<ChallengeViewState>() {
         yAxisMax = -1,
         chartData = sortedMapOf(),
         quests = emptyList(),
+        habits = emptyList(),
         canEdit = false,
         canComplete = false,
         motivations = emptyList(),
@@ -141,6 +147,7 @@ data class ChallengeViewState(
     val yAxisMax: Int,
     val chartData: SortedMap<LocalDate, Float>,
     val quests: List<BaseQuest>,
+    val habits: List<Habit>,
     val canEdit: Boolean,
     val canComplete: Boolean,
     val motivations: List<String>,

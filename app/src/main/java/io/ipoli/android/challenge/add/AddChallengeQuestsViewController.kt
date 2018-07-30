@@ -39,7 +39,7 @@ class AddChallengeQuestsViewController(args: Bundle? = null) :
 
     override fun onCreateLoadAction() = QuestPickerAction.Load()
 
-    override fun colorLayoutBars() {}
+    override fun colorStatusBars() {}
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         super.onCreateOptionsMenu(menu, inflater)

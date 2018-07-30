@@ -58,7 +58,7 @@ class ProfileFriendListViewController(args: Bundle? = null) :
     override fun onCreateLoadAction() =
         ProfileAction.LoadFriends
 
-    override fun colorLayoutBars() {
+    override fun colorStatusBars() {
 
     }
 

@@ -1,5 +1,6 @@
 package io.ipoli.android.challenge.show
 
+import android.annotation.SuppressLint
 import android.content.res.ColorStateList
 import android.graphics.drawable.GradientDrawable
 import android.os.Bundle
@@ -9,9 +10,7 @@ import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
 import android.support.v7.widget.helper.ItemTouchHelper
 import android.view.*
-import com.bluelinelabs.conductor.RouterTransaction
-import com.bluelinelabs.conductor.changehandler.FadeChangeHandler
-import com.bluelinelabs.conductor.changehandler.VerticalChangeHandler
+import com.bluelinelabs.conductor.changehandler.HorizontalChangeHandler
 import com.github.mikephil.charting.charts.LineChart
 import com.github.mikephil.charting.components.AxisBase
 import com.github.mikephil.charting.components.YAxis
@@ -22,15 +21,15 @@ import com.github.mikephil.charting.formatter.IAxisValueFormatter
 import com.mikepenz.google_material_typeface_library.GoogleMaterial
 import com.mikepenz.iconics.IconicsDrawable
 import com.mikepenz.iconics.typeface.IIcon
-import com.mikepenz.material_design_iconic_typeface_library.MaterialDesignIconic
 import io.ipoli.android.MainActivity
 import io.ipoli.android.R
-import io.ipoli.android.challenge.QuestPickerViewController
 import io.ipoli.android.common.ViewUtils
 import io.ipoli.android.common.redux.android.ReduxViewController
 import io.ipoli.android.common.text.DateFormatter
 import io.ipoli.android.common.view.*
 import io.ipoli.android.common.view.anim.AccelerateDecelerateEasingFunction
+import io.ipoli.android.common.view.recyclerview.BaseRecyclerViewAdapter
+import io.ipoli.android.common.view.recyclerview.RecyclerViewViewModel
 import io.ipoli.android.common.view.recyclerview.SimpleSwipeCallback
 import io.ipoli.android.common.view.recyclerview.SimpleViewHolder
 import io.ipoli.android.quest.Quest
@@ -50,7 +49,7 @@ class ChallengeViewController(args: Bundle? = null) :
 
     override val reducer = ChallengeReducer
 
-    private lateinit var challengeId: String
+    private var challengeId = ""
     private var showEdit = true
     private var showComplete = true
 
@@ -66,6 +65,7 @@ class ChallengeViewController(args: Bundle? = null) :
         savedViewState: Bundle?
     ): View {
         setHasOptionsMenu(true)
+        applyStatusBarColors = false
         val view = inflater.inflate(R.layout.controller_challenge, container, false)
         setToolbar(view.toolbar)
         view.collapsingToolbarContainer.isTitleEnabled = false
@@ -74,11 +74,13 @@ class ChallengeViewController(args: Bundle? = null) :
 
         setupHistoryChart(view.progressChart)
 
-        view.questList.layoutManager =
-            LinearLayoutManager(container.context, LinearLayoutManager.VERTICAL, false)
+        view.questList.layoutManager = LinearLayoutManager(container.context)
         view.questList.adapter = QuestAdapter()
 
-        val swipeHandler = object : SimpleSwipeCallback(
+        view.habitList.layoutManager = LinearLayoutManager(container.context)
+        view.habitList.adapter = HabitAdapter()
+
+        val questSwipeHandler = object : SimpleSwipeCallback(
             view.context,
             R.drawable.ic_done_white_24dp,
             R.color.md_green_500,
@@ -96,16 +98,38 @@ class ChallengeViewController(args: Bundle? = null) :
                 viewHolder: RecyclerView.ViewHolder
             ) = ItemTouchHelper.START
         }
-        val itemTouchHelper = ItemTouchHelper(swipeHandler)
-        itemTouchHelper.attachToRecyclerView(view.questList)
+        val questTouchHelper = ItemTouchHelper(questSwipeHandler)
+        questTouchHelper.attachToRecyclerView(view.questList)
 
-        view.addQuests.setOnClickListener {
-            val changeHandler = FadeChangeHandler()
-            rootRouter.pushController(
-                RouterTransaction.with(QuestPickerViewController(challengeId))
-                    .pushChangeHandler(changeHandler)
-                    .popChangeHandler(changeHandler)
-            )
+        val habitSwipeHandler = object : SimpleSwipeCallback(
+            view.context,
+            R.drawable.ic_done_white_24dp,
+            R.color.md_green_500,
+            R.drawable.ic_delete_white_24dp,
+            R.color.md_red_500
+        ) {
+            override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
+                if (direction == ItemTouchHelper.START) {
+                    dispatch(ChallengeAction.RemoveHabitFromChallenge(habitId(viewHolder)))
+                }
+            }
+
+            private fun habitId(holder: RecyclerView.ViewHolder): String {
+                val adapter = view.habitList.adapter as HabitAdapter
+                return adapter.getItemAt(holder.adapterPosition).id
+            }
+
+            override fun getSwipeDirs(
+                recyclerView: RecyclerView,
+                viewHolder: RecyclerView.ViewHolder
+            ) = ItemTouchHelper.START
+        }
+
+        val habitTouchHelper = ItemTouchHelper(habitSwipeHandler)
+        habitTouchHelper.attachToRecyclerView(view.habitList)
+
+        view.addQuests.onDebounceClick {
+            navigateFromRoot().toQuestPicker(challengeId)
         }
 
         return view
@@ -156,7 +180,6 @@ class ChallengeViewController(args: Bundle? = null) :
             xAxis.textColor = colorRes(R.color.md_dark_text_87)
 
             legend.isEnabled = false
-
         }
 
     }
@@ -236,36 +259,18 @@ class ChallengeViewController(args: Bundle? = null) :
 
                 view.progressText.text = state.progressText
 
-                view.difficulty.setCompoundDrawablesWithIntrinsicBounds(
-                    IconicsDrawable(view.context)
-                        .icon(GoogleMaterial.Icon.gmd_fitness_center)
-                        .colorRes(R.color.md_white)
-                        .sizeDp(24),
-                    null, null, null
-                )
-
                 view.difficulty.text = state.difficulty
 
-                view.endDate.setCompoundDrawablesWithIntrinsicBounds(
-                    IconicsDrawable(view.context)
-                        .icon(MaterialDesignIconic.Icon.gmi_hourglass_outline)
-                        .colorRes(R.color.md_white)
-                        .sizeDp(24),
-                    null, null, null
-                )
-
                 view.endDate.text = state.endText
+
                 view.nextDate.text = state.nextText
 
                 renderChart(state, view)
                 renderMotivations(state, view)
-                renderQuests(state, view)
-
                 renderNote(state, view)
+                renderQuests(state, view)
+                renderHabits(state, view)
             }
-
-            ChallengeViewState.StateType.REMOVED ->
-                router.handleBack()
 
             else -> {
             }
@@ -296,7 +301,7 @@ class ChallengeViewController(args: Bundle? = null) :
         state: ChallengeViewState,
         view: View
     ) {
-        if (state.note != null) {
+        if (state.note != null && state.note.isNotBlank()) {
             view.note.setMarkdown(state.note)
         } else {
             view.note.setText(R.string.tap_to_add_note)
@@ -323,12 +328,31 @@ class ChallengeViewController(args: Bundle? = null) :
         state.motivations.forEachIndexed { index, text ->
             val mView = motivationsViews[index]
             mView.visible()
+            @SuppressLint("SetTextI18n")
             mView.text = "${index + 1}. $text"
         }
     }
 
     private fun renderQuests(state: ChallengeViewState, view: View) {
-        (view.questList.adapter as QuestAdapter).updateAll(state.questViewModels)
+        if (state.questViewModels.isEmpty()) {
+            view.emptyQuestList.visible()
+            view.questList.gone()
+        } else {
+            (view.questList.adapter as QuestAdapter).updateAll(state.questViewModels)
+            view.emptyQuestList.gone()
+            view.questList.visible()
+        }
+    }
+
+    private fun renderHabits(state: ChallengeViewState, view: View) {
+        if (state.habitViewModels.isEmpty()) {
+            view.emptyHabitList.visible()
+            view.habitList.gone()
+        } else {
+            (view.habitList.adapter as HabitAdapter).updateAll(state.habitViewModels)
+            view.emptyHabitList.gone()
+            view.habitList.visible()
+        }
     }
 
     private fun createLineData(entries: List<Entry>): LineData {
@@ -371,22 +395,19 @@ class ChallengeViewController(args: Bundle? = null) :
     }
 
     data class QuestViewModel(
-        val id: String,
+        override val id: String,
         val name: String,
         @ColorRes val color: Int,
         @ColorRes val textColor: Int,
         val icon: IIcon,
         val isRepeating: Boolean,
         val isCompleted: Boolean
-    )
+    ) : RecyclerViewViewModel
 
-    inner class QuestAdapter(private var viewModels: List<QuestViewModel> = listOf()) :
-        RecyclerView.Adapter<SimpleViewHolder>() {
-        override fun getItemCount() = viewModels.size
+    inner class QuestAdapter :
+        BaseRecyclerViewAdapter<QuestViewModel>(R.layout.item_challenge_quest) {
 
-        override fun onBindViewHolder(holder: SimpleViewHolder, position: Int) {
-            val vm = viewModels[position]
-            val view = holder.itemView
+        override fun onBindViewModel(vm: QuestViewModel, view: View, holder: SimpleViewHolder) {
             view.questName.text = vm.name
             view.questName.setTextColor(colorRes(vm.textColor))
 
@@ -399,21 +420,45 @@ class ChallengeViewController(args: Bundle? = null) :
                     .sizeDp(22)
             )
             view.questRepeatIndicator.visible = vm.isRepeating
-        }
 
-        fun updateAll(viewModels: List<QuestViewModel>) {
-            this.viewModels = viewModels
-            notifyDataSetChanged()
+            view.onDebounceClick {
+                if (vm.isRepeating) {
+                    navigateFromRoot().toRepeatingQuest(vm.id, HorizontalChangeHandler())
+                } else {
+                    navigateFromRoot().toQuest(vm.id, HorizontalChangeHandler())
+                }
+            }
         }
+    }
 
-        override fun onCreateViewHolder(parent: ViewGroup, viewType: Int) =
-            SimpleViewHolder(
-                LayoutInflater.from(parent.context).inflate(
-                    R.layout.item_challenge_quest,
-                    parent,
-                    false
-                )
+    data class HabitViewModel(
+        override val id: String,
+        val name: String,
+        @ColorRes val color: Int,
+        val icon: IIcon
+    ) : RecyclerViewViewModel
+
+    inner class HabitAdapter :
+        BaseRecyclerViewAdapter<HabitViewModel>(R.layout.item_challenge_quest) {
+        override fun onBindViewModel(vm: HabitViewModel, view: View, holder: SimpleViewHolder) {
+            view.questName.text = vm.name
+
+            view.questIcon.backgroundTintList =
+                ColorStateList.valueOf(colorRes(vm.color))
+            view.questIcon.setImageDrawable(
+                IconicsDrawable(view.context)
+                    .icon(vm.icon)
+                    .colorRes(R.color.md_white)
+                    .sizeDp(22)
             )
+
+            view.questRepeatIndicator.gone()
+
+            view.onDebounceClick {
+                navigateFromRoot().toEditHabit(vm.id, HorizontalChangeHandler())
+            }
+        }
+
     }
 
     private val ChallengeViewState.xAxisLabels
@@ -464,6 +509,15 @@ class ChallengeViewController(args: Bundle? = null) :
                     isCompleted = it.isCompleted
                 )
             }
+        }
 
+    private val ChallengeViewState.habitViewModels
+        get() = habits.map {
+            HabitViewModel(
+                id = it.id,
+                name = it.name,
+                color = it.color.androidColor.color500,
+                icon = it.icon.androidIcon.icon
+            )
         }
 }

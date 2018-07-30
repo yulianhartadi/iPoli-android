@@ -1,8 +1,10 @@
 package io.ipoli.android.common.sideeffect
 
 import io.ipoli.android.Constants
+import io.ipoli.android.MyPoliApp
 import io.ipoli.android.challenge.entity.Challenge
 import io.ipoli.android.challenge.usecase.FindChallengeProgressUseCase
+import io.ipoli.android.challenge.usecase.FindHabitsForChallengeUseCase
 import io.ipoli.android.challenge.usecase.FindNextDateForChallengeUseCase
 import io.ipoli.android.challenge.usecase.FindQuestsForChallengeUseCase
 import io.ipoli.android.common.AppSideEffectHandler
@@ -13,7 +15,6 @@ import io.ipoli.android.common.notification.QuickDoNotificationUtil
 import io.ipoli.android.common.redux.Action
 import io.ipoli.android.common.view.AppWidgetUtil
 import io.ipoli.android.habit.data.Habit
-import io.ipoli.android.myPoliApp
 import io.ipoli.android.player.data.Player
 import io.ipoli.android.quest.Quest
 import io.ipoli.android.quest.RepeatingQuest
@@ -38,6 +39,7 @@ object LoadAllDataSideEffectHandler : AppSideEffectHandler() {
     private val findNextDateForRepeatingQuestUseCase by required { findNextDateForRepeatingQuestUseCase }
     private val findPeriodProgressForRepeatingQuestUseCase by required { findPeriodProgressForRepeatingQuestUseCase }
     private val findQuestsForChallengeUseCase by required { findQuestsForChallengeUseCase }
+    private val findHabitsForChallengeUseCase by required { findHabitsForChallengeUseCase }
     private val findNextDateForChallengeUseCase by required { findNextDateForChallengeUseCase }
     private val findChallengeProgressUseCase by required { findChallengeProgressUseCase }
     private val addQuestCountToTagUseCase by required { addQuestCountToTagUseCase }
@@ -63,7 +65,7 @@ object LoadAllDataSideEffectHandler : AppSideEffectHandler() {
                     Constants.DEFAULT_QUICK_DO_NOTIFICATION_ENABLED
                 )) {
                 QuickDoNotificationUtil.update(
-                    myPoliApp.instance,
+                    MyPoliApp.instance,
                     action.quests
                 )
             }
@@ -85,7 +87,6 @@ object LoadAllDataSideEffectHandler : AppSideEffectHandler() {
         listenForUnscheduledQuests()
 
         reminderScheduler.schedule()
-        // @TODO reschedule jobs
     }
 
     private fun listenForUnscheduledQuests() {
@@ -121,6 +122,8 @@ object LoadAllDataSideEffectHandler : AppSideEffectHandler() {
                     findChallengeProgressUseCase.execute(
                         FindChallengeProgressUseCase.Params(it)
                     )
+                }.map {
+                    findHabitsForChallengeUseCase.execute(FindHabitsForChallengeUseCase.Params(it))
                 }
                 dispatch(DataLoadedAction.ChallengesChanged(challenges))
             }
@@ -216,7 +219,7 @@ object LoadAllDataSideEffectHandler : AppSideEffectHandler() {
     }
 
     private fun updateWidgets() {
-        AppWidgetUtil.updateAgendaWidget(myPoliApp.instance)
+        AppWidgetUtil.updateAgendaWidget(MyPoliApp.instance)
     }
 
     override fun canHandle(action: Action) =

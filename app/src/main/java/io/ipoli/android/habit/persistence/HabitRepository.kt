@@ -28,6 +28,8 @@ import java.util.*
 interface HabitRepository : CollectionRepository<Habit> {
 
     fun findAllForChallenge(challengeId: String): List<Habit>
+    fun findNotRemovedForChallenge(challengeId: String): List<Habit>
+    fun removeFromChallenge(habitId: String)
 }
 
 data class DbHabit(override val map: MutableMap<String, Any?> = mutableMapOf()) :
@@ -68,6 +70,9 @@ abstract class HabitDao : BaseDao<RoomHabit>() {
     @Query("SELECT * FROM habits WHERE challengeId = :challengeId")
     abstract fun findAllForChallenge(challengeId: String): List<RoomHabit>
 
+    @Query("SELECT * FROM habits WHERE challengeId = :challengeId AND removedAt IS NULL")
+    abstract fun findNotRemovedForChallenge(challengeId: String): List<RoomHabit>
+
     @Query("SELECT * FROM habits WHERE removedAt IS NULL")
     abstract fun listenForNotRemoved(): LiveData<List<RoomHabit>>
 
@@ -91,6 +96,12 @@ abstract class HabitDao : BaseDao<RoomHabit>() {
 
     @Query("SELECT * FROM habits $FIND_SYNC_QUERY")
     abstract fun findAllForSync(lastSync: Long): List<RoomHabit>
+
+    @Query("UPDATE habits SET updatedAt = :currentTimeMillis, challengeId = NULL WHERE id = :id")
+    abstract fun removeFromChallenge(
+        id: String,
+        currentTimeMillis: Long = System.currentTimeMillis()
+    )
 }
 
 class RoomHabitRepository(dao: HabitDao, tagDao: TagDao) : HabitRepository,
@@ -115,6 +126,9 @@ class RoomHabitRepository(dao: HabitDao, tagDao: TagDao) : HabitRepository,
     override fun findAllForChallenge(challengeId: String) =
         dao.findAllForChallenge(challengeId).map { toEntityObject(it) }
 
+    override fun findNotRemovedForChallenge(challengeId: String) =
+        dao.findNotRemovedForChallenge(challengeId).map { toEntityObject(it) }
+
     override fun findById(id: String) =
         toEntityObject(dao.findById(id))
 
@@ -126,6 +140,11 @@ class RoomHabitRepository(dao: HabitDao, tagDao: TagDao) : HabitRepository,
 
     override fun listenForAll() =
         dao.listenForNotRemoved().notify()
+
+    override fun removeFromChallenge(habitId: String) {
+        val currentTime = System.currentTimeMillis()
+        dao.removeFromChallenge(habitId, currentTime)
+    }
 
     override fun remove(entity: Habit) {
         remove(entity.id)

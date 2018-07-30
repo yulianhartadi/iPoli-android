@@ -82,7 +82,7 @@ class MainActivity : AppCompatActivity(), Injects<UIModule>, SideEffectHandler<A
             Toast.makeText(this, R.string.allow_overlay_request, Toast.LENGTH_LONG).show()
         }
 
-        inject(myPoliApp.uiModule(this))
+        inject(MyPoliApp.uiModule(this))
 
         router =
             Conductor.attachRouter(

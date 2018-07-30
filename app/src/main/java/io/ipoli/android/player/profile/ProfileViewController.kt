@@ -151,7 +151,7 @@ class ProfileViewController :
         return view
     }
 
-    override fun colorLayoutBars() {
+    override fun colorStatusBars() {
         activity?.let {
             it.window.statusBarColor = attrData(android.R.attr.colorBackground)
             it.window.navigationBarColor = attrData(io.ipoli.android.R.attr.colorPrimary)

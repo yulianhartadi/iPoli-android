@@ -52,6 +52,7 @@ open class EditChallengeViewController(args: Bundle? = null) :
         savedViewState: Bundle?
     ): View {
         setHasOptionsMenu(true)
+        applyStatusBarColors = false
         val view = inflater.inflate(R.layout.controller_edit_challenge, container, false)
         setToolbar(view.toolbar)
         toolbarTitle = stringRes(R.string.title_edit_challenge)
@@ -67,24 +68,6 @@ open class EditChallengeViewController(args: Bundle? = null) :
         view.challengeTagList.adapter = EditItemTagAdapter(removeTagCallback = {
             dispatch(EditChallengeAction.RemoveTag(it))
         })
-
-
-        view.challengeDifficulty.onItemSelectedListener =
-            object : AdapterView.OnItemSelectedListener {
-                override fun onNothingSelected(parent: AdapterView<*>?) {
-                }
-
-                override fun onItemSelected(
-                    parent: AdapterView<*>?,
-                    view: View?,
-                    position: Int,
-                    id: Long
-                ) {
-                    dispatch(EditChallengeAction.ChangeDifficulty(position))
-                }
-
-            }
-
 
         return view
     }
@@ -115,7 +98,7 @@ open class EditChallengeViewController(args: Bundle? = null) :
             else -> super.onOptionsItemSelected(item)
         }
 
-    override fun colorLayoutBars() {
+    override fun colorStatusBars() {
 
     }
 
@@ -254,6 +237,7 @@ open class EditChallengeViewController(args: Bundle? = null) :
                     position: Int,
                     id: Long
                 ) {
+                    dispatch(EditChallengeAction.ChangeDifficulty(position))
                     styleSelectedDifficulty(view)
                 }
             }

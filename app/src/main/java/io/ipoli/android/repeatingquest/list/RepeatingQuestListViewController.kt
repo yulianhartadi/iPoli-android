@@ -1,5 +1,6 @@
 package io.ipoli.android.repeatingquest.list
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.content.res.ColorStateList
 import android.graphics.drawable.GradientDrawable
@@ -10,6 +11,7 @@ import android.support.v7.widget.LinearLayoutManager
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import com.bluelinelabs.conductor.changehandler.VerticalChangeHandler
 import com.mikepenz.iconics.typeface.IIcon
 import com.mikepenz.ionicons_typeface_library.Ionicons
 import io.ipoli.android.R
@@ -23,10 +25,9 @@ import io.ipoli.android.common.view.recyclerview.RecyclerViewViewModel
 import io.ipoli.android.common.view.recyclerview.SimpleViewHolder
 import io.ipoli.android.repeatingquest.entity.repeatType
 import io.ipoli.android.repeatingquest.list.RepeatingQuestListViewState.StateType.CHANGED
-import io.ipoli.android.repeatingquest.show.RepeatingQuestViewController
-import kotlinx.android.synthetic.main.view_empty_list.view.*
 import kotlinx.android.synthetic.main.controller_repeating_quest_list.view.*
 import kotlinx.android.synthetic.main.item_repeating_quest.view.*
+import kotlinx.android.synthetic.main.view_empty_list.view.*
 import kotlinx.android.synthetic.main.view_loader.view.*
 
 /**
@@ -142,13 +143,12 @@ class RepeatingQuestListViewController(args: Bundle? = null) :
                 progressBar.max = vm.allCount
                 progressBar.progress = vm.completedCount
                 progressBar.progressTintList = ColorStateList.valueOf(colorRes(vm.color))
+                @SuppressLint("SetTextI18n")
                 progress.text = "${vm.completedCount}/${vm.allCount}"
             }
 
             view.onDebounceClick {
-                rootRouter.pushController(
-                    RepeatingQuestViewController.routerTransaction(vm.id)
-                )
+                navigateFromRoot().toRepeatingQuest(vm.id, VerticalChangeHandler())
             }
         }
 
