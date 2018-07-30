@@ -21,7 +21,6 @@ import com.github.mikephil.charting.formatter.IAxisValueFormatter
 import com.mikepenz.google_material_typeface_library.GoogleMaterial
 import com.mikepenz.iconics.IconicsDrawable
 import com.mikepenz.iconics.typeface.IIcon
-import com.mikepenz.material_design_iconic_typeface_library.MaterialDesignIconic
 import io.ipoli.android.MainActivity
 import io.ipoli.android.R
 import io.ipoli.android.common.ViewUtils
@@ -74,8 +73,7 @@ class ChallengeViewController(args: Bundle? = null) :
 
         setupHistoryChart(view.progressChart)
 
-        view.questList.layoutManager =
-            LinearLayoutManager(container.context)
+        view.questList.layoutManager = LinearLayoutManager(container.context)
         view.questList.adapter = QuestAdapter()
 
         view.habitList.layoutManager = LinearLayoutManager(container.context)
@@ -260,25 +258,10 @@ class ChallengeViewController(args: Bundle? = null) :
 
                 view.progressText.text = state.progressText
 
-                view.difficulty.setCompoundDrawablesWithIntrinsicBounds(
-                    IconicsDrawable(view.context)
-                        .icon(GoogleMaterial.Icon.gmd_fitness_center)
-                        .colorRes(R.color.md_white)
-                        .sizeDp(24),
-                    null, null, null
-                )
-
                 view.difficulty.text = state.difficulty
 
-                view.endDate.setCompoundDrawablesWithIntrinsicBounds(
-                    IconicsDrawable(view.context)
-                        .icon(MaterialDesignIconic.Icon.gmi_hourglass_outline)
-                        .colorRes(R.color.md_white)
-                        .sizeDp(24),
-                    null, null, null
-                )
-
                 view.endDate.text = state.endText
+
                 view.nextDate.text = state.nextText
 
                 renderChart(state, view)

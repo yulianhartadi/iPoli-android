@@ -104,18 +104,20 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_gravity="center_horizontal"
-                            android:drawablePadding="8dp"
-                            android:gravity="center_vertical"
-                            android:includeFontPadding="false"
-                            android:textAppearance="@style/TextAppearance.AppCompat.Body2" />
+                            android:paddingBottom="4dp"
+                            android:textAppearance="@style/TextAppearance.AppCompat.Subhead" />
 
                         <TextView
+                            android:id="@+id/difficultyHint"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_gravity="center_horizontal"
                             android:layout_marginTop="8dp"
                             android:text="Difficulty"
-                            android:textAppearance="@style/TextAppearance.AppCompat.Caption"
+                            android:drawablePadding="8dp"
+                            android:gravity="center_vertical"
+                            android:includeFontPadding="false"
+                            android:textAppearance="@style/TextAppearance.AppCompat.Body1"
                             android:textColor="@color/md_light_text_70" />
                     </LinearLayout>
 
@@ -130,18 +132,20 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_gravity="center_horizontal"
-                            android:drawablePadding="8dp"
-                            android:gravity="center_vertical"
-                            android:includeFontPadding="false"
-                            android:textAppearance="@style/TextAppearance.AppCompat.Body2" />
+                            android:paddingBottom="4dp"
+                            android:textAppearance="@style/TextAppearance.AppCompat.Subhead" />
 
                         <TextView
+                            android:id="@+id/endDateHint"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_gravity="center_horizontal"
                             android:layout_marginTop="8dp"
-                            android:text="End date"
-                            android:textAppearance="@style/TextAppearance.AppCompat.Caption"
+                            android:text="Ends date"
+                            android:drawablePadding="8dp"
+                            android:gravity="center_vertical"
+                            android:includeFontPadding="false"
+                            android:textAppearance="@style/TextAppearance.AppCompat.Body1"
                             android:textColor="@color/md_light_text_70" />
                     </LinearLayout>
 
@@ -156,19 +160,20 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_gravity="center_horizontal"
-                            android:drawablePadding="8dp"
-                            android:drawableStart="@drawable/ic_event_white_24dp"
-                            android:gravity="center_vertical"
-                            android:includeFontPadding="false"
-                            android:textAppearance="@style/TextAppearance.AppCompat.Body2" />
+                            android:paddingBottom="4dp"
+                            android:textAppearance="@style/TextAppearance.AppCompat.Subhead" />
 
                         <TextView
+                            android:id="@+id/nextDateHint"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_gravity="center_horizontal"
                             android:layout_marginTop="8dp"
+                            android:drawablePadding="8dp"
+                            android:gravity="center_vertical"
+                            android:includeFontPadding="false"
                             android:text="Next date"
-                            android:textAppearance="@style/TextAppearance.AppCompat.Caption"
+                            android:textAppearance="@style/TextAppearance.AppCompat.Body1"
                             android:textColor="@color/md_light_text_70" />
                     </LinearLayout>
 
