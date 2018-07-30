@@ -288,9 +288,6 @@ class ChallengeViewController(args: Bundle? = null) :
                 renderHabits(state, view)
             }
 
-            ChallengeViewState.StateType.REMOVED ->
-                router.handleBack()
-
             else -> {
             }
         }
