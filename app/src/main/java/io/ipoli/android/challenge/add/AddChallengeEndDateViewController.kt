@@ -16,6 +16,7 @@ import io.ipoli.android.common.view.stringRes
 import kotlinx.android.synthetic.main.controller_add_challenge_end_date.view.*
 import kotlinx.android.synthetic.main.item_add_challenge_end_date.view.*
 import org.threeten.bp.LocalDate
+import org.threeten.bp.temporal.TemporalAdjusters
 
 /**
  * Created by Polina Zhelyazkova <polina@mypoli.fun>
@@ -86,14 +87,24 @@ class AddChallengeEndDateViewController(args: Bundle? = null) :
 
     private val viewModels: List<DateViewModel>
         get() {
-            val today = LocalDate.now().minusDays(1)
+            val today = LocalDate.now()
             val viewModels = mutableListOf<DateViewModel>()
-            viewModels.add(DateViewModel(stringRes(R.string.one_month), today.plusMonths(1)))
-            viewModels.add(DateViewModel(stringRes(R.string.one_week), today.plusWeeks(1)))
+            viewModels.add(DateViewModel(stringRes(R.string.seven_days), today.plusDays(7)))
             viewModels.add(DateViewModel(stringRes(R.string.ten_days), today.plusDays(10)))
-            viewModels.add(DateViewModel(stringRes(R.string.two_weeks), today.plusWeeks(2)))
-            viewModels.add(DateViewModel(stringRes(R.string.three_months), today.plusMonths(3)))
-            viewModels.add(DateViewModel(stringRes(R.string.fifteen_days), today.plusDays(15)))
+            viewModels.add(DateViewModel(stringRes(R.string.fourteen_days), today.plusDays(14)))
+            viewModels.add(DateViewModel(stringRes(R.string.thirty_days), today.plusDays(30)))
+            viewModels.add(
+                DateViewModel(
+                    stringRes(R.string.end_of_week),
+                    today.with(DateUtils.lastDayOfWeek)
+                )
+            )
+            viewModels.add(
+                DateViewModel(
+                    stringRes(R.string.end_of_month),
+                    today.with(TemporalAdjusters.lastDayOfMonth())
+                )
+            )
             viewModels.add(DateViewModel(stringRes(R.string.exact_date), null))
             return viewModels
         }

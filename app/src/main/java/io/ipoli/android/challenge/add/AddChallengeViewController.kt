@@ -7,6 +7,7 @@ import com.bluelinelabs.conductor.RouterTransaction
 import com.bluelinelabs.conductor.changehandler.HorizontalChangeHandler
 import io.ipoli.android.R
 import io.ipoli.android.challenge.add.EditChallengeViewState.StateType.*
+import io.ipoli.android.common.ViewUtils
 import io.ipoli.android.common.redux.android.ReduxViewController
 import io.ipoli.android.common.view.*
 import kotlinx.android.synthetic.main.controller_add_challenge.view.*
@@ -112,6 +113,7 @@ class AddChallengeViewController(args: Bundle? = null) :
         adapterPosition: Int,
         animate: Boolean = true
     ) {
+        ViewUtils.hideKeyboard(view)
         val childRouter = getChildRouter(view.pager)
 
         val changeHandler = if (animate) HorizontalChangeHandler() else null
