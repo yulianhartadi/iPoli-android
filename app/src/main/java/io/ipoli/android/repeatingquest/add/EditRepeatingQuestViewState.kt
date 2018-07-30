@@ -39,6 +39,7 @@ sealed class EditRepeatingQuestAction : Action {
     data class ShowRepeatPatternPicker(val name: String) : EditRepeatingQuestAction() {
         override fun toMap() = mapOf("name" to name)
     }
+
     data class PickRepeatPattern(val repeatPatternOption: EditRepeatingQuestViewState.RepeatPatternOption) :
         EditRepeatingQuestAction() {
         override fun toMap() = mapOf("repeatPatternOption" to repeatPatternOption)
@@ -229,6 +230,10 @@ object EditRepeatingQuestReducer : BaseViewStateReducer<EditRepeatingQuestViewSt
                 val dataState = state.dataState
                 val rq = dataState.repeatingQuests!!.first { it.id == action.repeatingQuestId }
 
+                val challenge = rq.challengeId?.let { challengeId ->
+                    state.dataState.challenges?.first { it.id == challengeId }
+                }
+
                 subState.copy(
                     type = SUMMARY_DATA_LOADED,
                     id = rq.id,
@@ -243,12 +248,13 @@ object EditRepeatingQuestReducer : BaseViewStateReducer<EditRepeatingQuestViewSt
                         if (it is Reminder.Relative) {
                             ReminderViewModel(
                                 it.message,
-                                it.minutesFromStart.toLong()
+                                it.minutesFromStart
                             )
                         } else null
                     },
                     icon = rq.icon,
                     color = rq.color,
+                    challenge = challenge,
                     note = rq.note,
                     maxTagsReached = rq.tags.size >= Constants.MAX_TAGS_PER_ITEM
                 )
