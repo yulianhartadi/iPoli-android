@@ -36,22 +36,22 @@ interface DailyChallengeRepository {
 @Dao
 abstract class DailyChallengeDao : BaseDao<RoomDailyChallenge>() {
 
-    @android.arch.persistence.room.Query("SELECT * FROM dailyChallenges")
+    @android.arch.persistence.room.Query("SELECT * FROM daily_challenges")
     abstract fun findAll(): List<RoomDailyChallenge>
 
-    @android.arch.persistence.room.Query("SELECT * FROM dailyChallenges WHERE date = :date")
+    @android.arch.persistence.room.Query("SELECT * FROM daily_challenges WHERE date = :date")
     abstract fun findForDate(date: Long): RoomDailyChallenge?
 
-    @android.arch.persistence.room.Query("SELECT * FROM dailyChallenges WHERE date < :date AND isCompleted = 0 ORDER BY date DESC LIMIT 1")
+    @android.arch.persistence.room.Query("SELECT * FROM daily_challenges WHERE date < :date AND isCompleted = 0 ORDER BY date DESC LIMIT 1")
     abstract fun findLastIncomplete(date: Long): RoomDailyChallenge?
 
-    @android.arch.persistence.room.Query("SELECT COUNT(*) FROM dailyChallenges WHERE isCompleted = 1 AND date < :date")
+    @android.arch.persistence.room.Query("SELECT COUNT(*) FROM daily_challenges WHERE isCompleted = 1 AND date < :date")
     abstract fun countCompletedBefore(date: Long): Int
 
-    @android.arch.persistence.room.Query("SELECT COUNT(*) FROM dailyChallenges WHERE date > :startDate AND date <= :endDate AND isCompleted = 1")
+    @android.arch.persistence.room.Query("SELECT COUNT(*) FROM daily_challenges WHERE date > :startDate AND date <= :endDate AND isCompleted = 1")
     abstract fun countInRange(startDate: Long, endDate: Long): Int
 
-    @Query("SELECT * FROM dailyChallenges $FIND_SYNC_QUERY")
+    @Query("SELECT * FROM daily_challenges $FIND_SYNC_QUERY")
     abstract fun findAllForSync(lastSync: Long): List<RoomDailyChallenge>
 }
 
@@ -114,7 +114,7 @@ class RoomDailyChallengeRepository(dao: DailyChallengeDao) : DailyChallengeRepos
 
 
 @Entity(
-    tableName = "dailyChallenges",
+    tableName = "daily_challenges",
     indices = [
         Index("date"),
         Index("isCompleted"),

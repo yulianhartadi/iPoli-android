@@ -154,6 +154,175 @@ class Converters {
     }
 }
 
+object TriggerCreator {
+
+    fun createTriggers(db: SupportSQLiteDatabase) {
+        db.execSQL(
+            """
+                    CREATE TRIGGER IF NOT EXISTS refresh_repeating_quest_quest_insert
+                    AFTER INSERT ON quests WHEN new.repeatingQuestId IS NOT NULL
+                    BEGIN
+                        UPDATE repeating_quests SET updatedAt = strftime('%s', 'now') * 1000 WHERE id = new.repeatingQuestId;
+                    END
+                    """
+        )
+
+        db.execSQL(
+            """
+                    CREATE TRIGGER IF NOT EXISTS refresh_repeating_quest_quest_update
+                    AFTER UPDATE ON quests WHEN new.repeatingQuestId IS NOT NULL OR old.repeatingQuestId IS NOT NULL
+                    BEGIN
+                        UPDATE repeating_quests SET updatedAt = strftime('%s', 'now') * 1000 WHERE id IN (new.repeatingQuestId, old.repeatingQuestId);
+                    END
+                    """
+        )
+
+        db.execSQL(
+            """
+                    CREATE TRIGGER IF NOT EXISTS refresh_challenge_quest_insert
+                    AFTER INSERT ON quests WHEN new.challengeId IS NOT NULL
+                    BEGIN
+                        UPDATE challenges SET updatedAt = strftime('%s', 'now') * 1000 WHERE id = new.challengeId;
+                    END
+                    """
+        )
+
+        db.execSQL(
+            """
+                    CREATE TRIGGER IF NOT EXISTS refresh_challenge_quest_update
+                    AFTER UPDATE ON quests WHEN new.challengeId IS NOT NULL OR old.challengeId IS NOT NULL
+                    BEGIN
+                        UPDATE challenges SET updatedAt = strftime('%s', 'now') * 1000 WHERE id IN (new.challengeId, old.challengeId);
+                    END
+                    """
+        )
+
+        db.execSQL(
+            """
+                    CREATE TRIGGER IF NOT EXISTS refresh_challenge_quest_delete
+                    AFTER DELETE ON quests WHEN old.challengeId IS NOT NULL
+                    BEGIN
+                        UPDATE challenges SET updatedAt = strftime('%s', 'now') * 1000 WHERE id = old.challengeId;
+                    END
+                    """
+        )
+
+        db.execSQL(
+            """
+                    CREATE TRIGGER IF NOT EXISTS refresh_challenge_habit_insert
+                    AFTER INSERT ON habits WHEN new.challengeId IS NOT NULL
+                    BEGIN
+                        UPDATE challenges SET updatedAt = strftime('%s', 'now') * 1000 WHERE id = new.challengeId;
+                    END
+                    """
+        )
+
+        db.execSQL(
+            """
+                    CREATE TRIGGER IF NOT EXISTS refresh_challenge_habit_update
+                    AFTER UPDATE ON habits WHEN new.challengeId IS NOT NULL OR old.challengeId IS NOT NULL
+                    BEGIN
+                        UPDATE challenges SET updatedAt = strftime('%s', 'now') * 1000 WHERE id IN (new.challengeId, old.challengeId);
+                    END
+                    """
+        )
+
+        db.execSQL(
+            """
+                    CREATE TRIGGER IF NOT EXISTS refresh_challenge_habit_delete
+                    AFTER DELETE ON habits WHEN old.challengeId IS NOT NULL
+                    BEGIN
+                        UPDATE challenges SET updatedAt = strftime('%s', 'now') * 1000 WHERE id = old.challengeId;
+                    END
+                    """
+        )
+
+        db.execSQL(
+            """
+                    CREATE TRIGGER IF NOT EXISTS refresh_tag_quest_insert
+                    AFTER INSERT ON quest_tag_join
+                    BEGIN
+                        UPDATE tags SET updatedAt = strftime('%s', 'now') * 1000 WHERE id = new.tagId;
+                    END
+                    """
+        )
+
+        db.execSQL(
+            """
+                    CREATE TRIGGER IF NOT EXISTS refresh_tag_quest_delete
+                    AFTER DELETE ON quest_tag_join
+                    BEGIN
+                        UPDATE tags SET updatedAt = strftime('%s', 'now') * 1000 WHERE id = old.tagId;
+                        UPDATE quests SET updatedAt = strftime('%s', 'now') * 1000 WHERE id = old.questId;
+                    END
+                    """
+        )
+
+        db.execSQL(
+            """
+                    CREATE TRIGGER IF NOT EXISTS refresh_tag_repeating_quest_insert
+                    AFTER INSERT ON repeating_quest_tag_join
+                    BEGIN
+                        UPDATE tags SET updatedAt = strftime('%s', 'now') * 1000 WHERE id = new.tagId;
+                    END
+                    """
+        )
+
+        db.execSQL(
+            """
+                    CREATE TRIGGER IF NOT EXISTS refresh_tag_repeating_quest_delete
+                    AFTER DELETE ON repeating_quest_tag_join
+                    BEGIN
+                        UPDATE tags SET updatedAt = strftime('%s', 'now') * 1000 WHERE id = old.tagId;
+                        UPDATE repeating_quests SET updatedAt = strftime('%s', 'now') * 1000 WHERE id = old.repeatingQuestId;
+                    END
+                    """
+        )
+
+        db.execSQL(
+            """
+                    CREATE TRIGGER IF NOT EXISTS refresh_tag_challenge_insert
+                    AFTER INSERT ON challenge_tag_join
+                    BEGIN
+                        UPDATE tags SET updatedAt = strftime('%s', 'now') * 1000 WHERE id = new.tagId;
+                    END
+                    """
+        )
+
+        db.execSQL(
+            """
+                    CREATE TRIGGER IF NOT EXISTS refresh_tag_challenge_delete
+                    AFTER DELETE ON challenge_tag_join
+                    BEGIN
+                        UPDATE tags SET updatedAt = strftime('%s', 'now') * 1000 WHERE id = old.tagId;
+                        UPDATE challenges SET updatedAt = strftime('%s', 'now') * 1000 WHERE id = old.challengeId;
+                    END
+                    """
+        )
+
+        db.execSQL(
+            """
+                    CREATE TRIGGER IF NOT EXISTS refresh_tag_habit_insert
+                    AFTER INSERT ON habit_tag_join
+                    BEGIN
+                        UPDATE tags SET updatedAt = strftime('%s', 'now') * 1000 WHERE id = new.tagId;
+                    END
+                    """
+        )
+
+        db.execSQL(
+            """
+                    CREATE TRIGGER IF NOT EXISTS refresh_tag_habit_delete
+                    AFTER DELETE ON habit_tag_join
+                    BEGIN
+                        UPDATE tags SET updatedAt = strftime('%s', 'now') * 1000 WHERE id = old.tagId;
+                        UPDATE habits SET updatedAt = strftime('%s', 'now') * 1000 WHERE id = old.habitId;
+                    END
+                    """
+        )
+    }
+}
+
 object Migration1To2 : Migration(1, 2) {
     override fun migrate(database: SupportSQLiteDatabase) {
         database.execSQL(
@@ -161,6 +330,14 @@ object Migration1To2 : Migration(1, 2) {
         )
         database.execSQL("CREATE INDEX index_posts_questId ON posts (questId)")
         database.execSQL("ALTER TABLE challenges ADD COLUMN `sharingPreference` TEXT NOT NULL DEFAULT '${SharingPreference.PRIVATE.name}'")
+    }
+}
+
+object Migration2To3 : Migration(2, 3) {
+
+    override fun migrate(database: SupportSQLiteDatabase) {
+        database.execSQL("ALTER TABLE dailyChallenges RENAME TO daily_challenges;")
+        TriggerCreator.createTriggers(database)
     }
 }
 
@@ -180,7 +357,7 @@ object Migration1To2 : Migration(1, 2) {
         RoomEntityReminder::class,
         RoomPost::class
     ],
-    version = 2,
+    version = 3,
     exportSchema = false
 )
 @TypeConverters(Converters::class)
@@ -220,177 +397,15 @@ abstract class MyPoliRoomDatabase : RoomDatabase() {
                     context.applicationContext,
                     MyPoliRoomDatabase::class.java, "myPoli.db"
                 )
-                .addMigrations(Migration1To2)
+                .addMigrations(Migration1To2, Migration2To3)
                 .addCallback(CALLBACK)
                 .build()
 
         private val CALLBACK = object : RoomDatabase.Callback() {
-            override fun onOpen(db: SupportSQLiteDatabase) {
-                super.onOpen(db)
 
-                db.execSQL(
-                    """
-                    CREATE TRIGGER IF NOT EXISTS refresh_repeating_quest_quest_insert
-                    AFTER INSERT ON quests WHEN new.repeatingQuestId IS NOT NULL
-                    BEGIN
-                        UPDATE repeating_quests SET updatedAt = strftime('%s', 'now') * 1000 WHERE id = new.repeatingQuestId;
-                    END
-                    """
-                )
-
-                db.execSQL(
-                    """
-                    CREATE TRIGGER IF NOT EXISTS refresh_repeating_quest_quest_update
-                    AFTER UPDATE ON quests WHEN new.repeatingQuestId IS NOT NULL OR old.repeatingQuestId IS NOT NULL
-                    BEGIN
-                        UPDATE repeating_quests SET updatedAt = strftime('%s', 'now') * 1000 WHERE id IN (new.repeatingQuestId, old.repeatingQuestId);
-                    END
-                    """
-                )
-
-                db.execSQL(
-                    """
-                    CREATE TRIGGER IF NOT EXISTS refresh_challenge_quest_insert
-                    AFTER INSERT ON quests WHEN new.challengeId IS NOT NULL
-                    BEGIN
-                        UPDATE challenges SET updatedAt = strftime('%s', 'now') * 1000 WHERE id = new.challengeId;
-                    END
-                    """
-                )
-
-                db.execSQL(
-                    """
-                    CREATE TRIGGER IF NOT EXISTS refresh_challenge_quest_update
-                    AFTER UPDATE ON quests WHEN new.challengeId IS NOT NULL OR old.challengeId IS NOT NULL
-                    BEGIN
-                        UPDATE challenges SET updatedAt = strftime('%s', 'now') * 1000 WHERE id IN (new.challengeId, old.challengeId);
-                    END
-                    """
-                )
-
-                db.execSQL(
-                    """
-                    CREATE TRIGGER IF NOT EXISTS refresh_challenge_quest_delete
-                    AFTER DELETE ON quests WHEN old.challengeId IS NOT NULL
-                    BEGIN
-                        UPDATE challenges SET updatedAt = strftime('%s', 'now') * 1000 WHERE id = old.challengeId;
-                    END
-                    """
-                )
-
-                db.execSQL(
-                    """
-                    CREATE TRIGGER IF NOT EXISTS refresh_challenge_habit_insert
-                    AFTER INSERT ON habits WHEN new.challengeId IS NOT NULL
-                    BEGIN
-                        UPDATE challenges SET updatedAt = strftime('%s', 'now') * 1000 WHERE id = new.challengeId;
-                    END
-                    """
-                )
-
-                db.execSQL(
-                    """
-                    CREATE TRIGGER IF NOT EXISTS refresh_challenge_habit_update
-                    AFTER UPDATE ON habits WHEN new.challengeId IS NOT NULL OR old.challengeId IS NOT NULL
-                    BEGIN
-                        UPDATE challenges SET updatedAt = strftime('%s', 'now') * 1000 WHERE id IN (new.challengeId, old.challengeId);
-                    END
-                    """
-                )
-
-                db.execSQL(
-                    """
-                    CREATE TRIGGER IF NOT EXISTS refresh_challenge_habit_delete
-                    AFTER DELETE ON habits WHEN old.challengeId IS NOT NULL
-                    BEGIN
-                        UPDATE challenges SET updatedAt = strftime('%s', 'now') * 1000 WHERE id = old.challengeId;
-                    END
-                    """
-                )
-
-                db.execSQL(
-                    """
-                    CREATE TRIGGER IF NOT EXISTS refresh_tag_quest_insert
-                    AFTER INSERT ON quest_tag_join
-                    BEGIN
-                        UPDATE tags SET updatedAt = strftime('%s', 'now') * 1000 WHERE id = new.tagId;
-                    END
-                    """
-                )
-
-                db.execSQL(
-                    """
-                    CREATE TRIGGER IF NOT EXISTS refresh_tag_quest_delete
-                    AFTER DELETE ON quest_tag_join
-                    BEGIN
-                        UPDATE tags SET updatedAt = strftime('%s', 'now') * 1000 WHERE id = old.tagId;
-                        UPDATE quests SET updatedAt = strftime('%s', 'now') * 1000 WHERE id = old.questId;
-                    END
-                    """
-                )
-
-                db.execSQL(
-                    """
-                    CREATE TRIGGER IF NOT EXISTS refresh_tag_repeating_quest_insert
-                    AFTER INSERT ON repeating_quest_tag_join
-                    BEGIN
-                        UPDATE tags SET updatedAt = strftime('%s', 'now') * 1000 WHERE id = new.tagId;
-                    END
-                    """
-                )
-
-                db.execSQL(
-                    """
-                    CREATE TRIGGER IF NOT EXISTS refresh_tag_repeating_quest_delete
-                    AFTER DELETE ON repeating_quest_tag_join
-                    BEGIN
-                        UPDATE tags SET updatedAt = strftime('%s', 'now') * 1000 WHERE id = old.tagId;
-                        UPDATE repeating_quests SET updatedAt = strftime('%s', 'now') * 1000 WHERE id = old.repeatingQuestId;
-                    END
-                    """
-                )
-
-                db.execSQL(
-                    """
-                    CREATE TRIGGER IF NOT EXISTS refresh_tag_challenge_insert
-                    AFTER INSERT ON challenge_tag_join
-                    BEGIN
-                        UPDATE tags SET updatedAt = strftime('%s', 'now') * 1000 WHERE id = new.tagId;
-                    END
-                    """
-                )
-
-                db.execSQL(
-                    """
-                    CREATE TRIGGER IF NOT EXISTS refresh_tag_challenge_delete
-                    AFTER DELETE ON challenge_tag_join
-                    BEGIN
-                        UPDATE tags SET updatedAt = strftime('%s', 'now') * 1000 WHERE id = old.tagId;
-                        UPDATE challenges SET updatedAt = strftime('%s', 'now') * 1000 WHERE id = old.challengeId;
-                    END
-                    """
-                )
-
-                db.execSQL(
-                    """
-                    CREATE TRIGGER IF NOT EXISTS refresh_tag_habit_insert
-                    AFTER INSERT ON habit_tag_join
-                    BEGIN
-                        UPDATE tags SET updatedAt = strftime('%s', 'now') * 1000 WHERE id = new.tagId;
-                    END
-                    """
-                )
-
-                db.execSQL(
-                    """
-                    CREATE TRIGGER IF NOT EXISTS refresh_tag_habit_delete
-                    AFTER DELETE ON habit_tag_join
-                    BEGIN
-                        UPDATE tags SET updatedAt = strftime('%s', 'now') * 1000 WHERE id = old.tagId;
-                        UPDATE habits SET updatedAt = strftime('%s', 'now') * 1000 WHERE id = old.habitId;
-                    END
-                    """
-                )
+            override fun onCreate(db: SupportSQLiteDatabase) {
+                super.onCreate(db)
+                TriggerCreator.createTriggers(db)
             }
         }
     }
