@@ -33,7 +33,7 @@
     <string name="dialog_delete_challenge_title">Delete challenge</string>
     <string name="dialog_delete_challenge_message">Would you like to remove all quests for the challenge as well?</string>
     <string name="inbox">Inbox</string>
-    <string name="send_feedback">Send Feedback</string>
+    <string name="send_feedback">Give Feedback</string>
     <string name="contact_us">Contact Us</string>
     <string name="yesterday_calendar_format">\'Yesterday - \'d MMM</string>
     <string name="today_calendar_format">\'Today - \'EEE, d MMM</string>
