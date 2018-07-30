@@ -61,6 +61,11 @@ interface QuestRepository : CollectionRepository<Quest> {
         currentDate: LocalDate
     ): Quest?
 
+    fun findNextScheduledNotCompletedForChallenge(
+        challengeId: String,
+        currentDate: LocalDate
+    ): Quest?
+
     fun findAllForRepeatingQuest(
         repeatingQuestId: String,
         includeRemoved: Boolean = true
@@ -224,6 +229,20 @@ abstract class QuestDao : BaseDao<RoomQuest>() {
     )
     abstract fun findNextScheduledNotCompletedForRepeatingQuest(
         repeatingQuestId: String,
+        date: Long
+    ): List<RoomQuest>
+
+    @Query(
+        """
+        SELECT *
+        FROM quests
+        WHERE removedAt IS NULL AND challengeId = :challengeId AND scheduledDate >= :date AND completedAtDate IS NULL
+        ORDER BY scheduledDate ASC
+        LIMIT 1
+        """
+    )
+    abstract fun findNextScheduledNotCompletedForChallenge(
+        challengeId: String,
         date: Long
     ): List<RoomQuest>
 
@@ -493,6 +512,15 @@ class RoomQuestRepository(
     ) =
         dao.findNextScheduledNotCompletedForRepeatingQuest(
             repeatingQuestId,
+            currentDate.startOfDayUTC()
+        ).firstOrNull()?.let { toEntityObject(it) }
+
+    override fun findNextScheduledNotCompletedForChallenge(
+        challengeId: String,
+        currentDate: LocalDate
+    ) =
+        dao.findNextScheduledNotCompletedForChallenge(
+            challengeId,
             currentDate.startOfDayUTC()
         ).firstOrNull()?.let { toEntityObject(it) }
 

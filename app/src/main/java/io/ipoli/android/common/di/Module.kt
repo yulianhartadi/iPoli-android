@@ -710,7 +710,7 @@ class MainUseCaseModule(private val context: Context) : UseCaseModule {
         get() = FindHabitsForChallengeUseCase(habitRepository)
 
     override val findNextDateForChallengeUseCase
-        get() = FindNextDateForChallengeUseCase()
+        get() = FindNextDateForChallengeUseCase(questRepository)
 
     override val findChallengeProgressUseCase
         get() = FindChallengeProgressUseCase()

@@ -2,41 +2,28 @@ package io.ipoli.android.challenge.usecase
 
 import io.ipoli.android.challenge.entity.Challenge
 import io.ipoli.android.common.UseCase
-import io.ipoli.android.common.datetime.isAfterOrEqual
+import io.ipoli.android.quest.data.persistence.QuestRepository
 import org.threeten.bp.LocalDate
 
 /**
  * Created by Polina Zhelyazkova <polina@mypoli.fun>
  * on 3/13/18.
  */
-class FindNextDateForChallengeUseCase : UseCase<FindNextDateForChallengeUseCase.Params, Challenge> {
+class FindNextDateForChallengeUseCase(private val questRepository: QuestRepository) :
+    UseCase<FindNextDateForChallengeUseCase.Params, Challenge> {
 
     override fun execute(parameters: Params): Challenge {
         val challenge = parameters.challenge
         val currentDate = parameters.currentDate
 
-        val nextDate =
-            challenge.quests.filter { it.scheduledDate != null }.sortedBy { it.scheduledDate }
-                .firstOrNull {
-                    it.scheduledDate!!.isAfterOrEqual(currentDate) && !it.isCompleted
-                }?.scheduledDate
-
-        if (nextDate == null) {
-            return challenge
-        }
-
-        val nextQuest = challenge.quests
-            .filter { it.scheduledDate == nextDate }
-            .sortedWith(Comparator { q1, q2 ->
-                val t1 = q1.startTime?.toMillisOfDay() ?: Long.MAX_VALUE
-                val t2 = q2.startTime?.toMillisOfDay() ?: Long.MAX_VALUE
-                t1.compareTo(t2)
-            }).first()
+        val nextScheduled =
+            questRepository.findNextScheduledNotCompletedForChallenge(challenge.id, currentDate)
+                ?: return challenge
 
         return challenge.copy(
-            nextDate = nextQuest.scheduledDate,
-            nextStartTime = nextQuest.startTime,
-            nextDuration = nextQuest.duration
+            nextDate = nextScheduled.scheduledDate!!,
+            nextStartTime = nextScheduled.startTime,
+            nextDuration = nextScheduled.duration
         )
     }
 
