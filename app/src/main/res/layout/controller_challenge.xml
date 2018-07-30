@@ -261,6 +261,17 @@
                 android:layout_height="wrap_content" />
 
             <TextView
+                android:id="@+id/emptyQuestList"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:paddingBottom="8dp"
+                android:paddingTop="8dp"
+                android:text="@string/challenge_empty_quest_list"
+                android:textAlignment="center"
+                android:textAppearance="@style/TextAppearance.AppCompat.Caption" />
+
+            <TextView
                 style="@style/SectionTitle"
                 android:text="@string/habits" />
 
@@ -268,6 +279,17 @@
                 android:id="@+id/habitList"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content" />
+
+            <TextView
+                android:id="@+id/emptyHabitList"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:paddingBottom="8dp"
+                android:paddingTop="8dp"
+                android:text="@string/challenge_empty_habit_list"
+                android:textAlignment="center"
+                android:textAppearance="@style/TextAppearance.AppCompat.Caption" />
 
             <TextView
                 style="@style/SectionTitle"

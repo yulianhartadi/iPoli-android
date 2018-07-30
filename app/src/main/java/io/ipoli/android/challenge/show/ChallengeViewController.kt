@@ -353,11 +353,25 @@ class ChallengeViewController(args: Bundle? = null) :
     }
 
     private fun renderQuests(state: ChallengeViewState, view: View) {
-        (view.questList.adapter as QuestAdapter).updateAll(state.questViewModels)
+        if (state.questViewModels.isEmpty()) {
+            view.emptyQuestList.visible()
+            view.questList.gone()
+        } else {
+            (view.questList.adapter as QuestAdapter).updateAll(state.questViewModels)
+            view.emptyQuestList.gone()
+            view.questList.visible()
+        }
     }
 
     private fun renderHabits(state: ChallengeViewState, view: View) {
-        (view.habitList.adapter as HabitAdapter).updateAll(state.habitViewModels)
+        if (state.habitViewModels.isEmpty()) {
+            view.emptyHabitList.visible()
+            view.habitList.gone()
+        } else {
+            (view.habitList.adapter as HabitAdapter).updateAll(state.habitViewModels)
+            view.emptyHabitList.gone()
+            view.habitList.visible()
+        }
     }
 
     private fun createLineData(entries: List<Entry>): LineData {
