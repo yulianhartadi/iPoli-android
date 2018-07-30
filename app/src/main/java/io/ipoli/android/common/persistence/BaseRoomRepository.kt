@@ -14,7 +14,6 @@ import kotlinx.coroutines.experimental.android.UI
 import kotlinx.coroutines.experimental.channels.Channel
 import kotlinx.coroutines.experimental.channels.ConflatedChannel
 import kotlinx.coroutines.experimental.launch
-import timber.log.Timber
 
 @Dao
 abstract class BaseDao<T> {
