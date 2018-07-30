@@ -36,7 +36,7 @@ class RepeatingQuestViewController(args: Bundle? = null) :
 
     private var repeatingQuestId: String = ""
 
-    public constructor(
+    constructor(
         repeatingQuestId: String
     ) : this() {
         this.repeatingQuestId = repeatingQuestId
@@ -100,7 +100,7 @@ class RepeatingQuestViewController(args: Bundle? = null) :
             }
             R.id.actionDelete -> {
                 dispatch(RepeatingQuestAction.Remove(repeatingQuestId))
-                true
+                router.handleBack()
             }
             else -> super.onOptionsItemSelected(item)
         }
@@ -130,9 +130,6 @@ class RepeatingQuestViewController(args: Bundle? = null) :
                 renderSummaryStats(state, view)
                 renderNote(state, view)
             }
-
-            RepeatingQuestViewState.StateType.REMOVED ->
-                router.handleBack()
 
             RepeatingQuestViewState.StateType.HISTORY_CHANGED ->
                 view.historyChart.updateData(state.history!!)
