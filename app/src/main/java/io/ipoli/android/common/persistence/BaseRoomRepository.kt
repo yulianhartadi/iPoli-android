@@ -98,7 +98,6 @@ abstract class BaseRoomRepository<E : io.ipoli.android.quest.Entity, RE, D : Bas
         val obs = Observer<List<RE>> {
             launch(CommonPool) {
                 it?.let {
-                    Timber.d("AAA changed $it")
                     channel!!.offer(it.map { toEntityObject(it) })
                 }
             }
