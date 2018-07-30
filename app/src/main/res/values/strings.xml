@@ -1549,6 +1549,7 @@
     <string name="posts_sign_in">Sign in to create posts</string>
     <string name="friends_sign_in">Sign in to share with friends</string>
     <string name="challenges_sign_in">Sign in to share your Challenges</string>
-    <string name="challenge_empty_habit_list">You haven\'t added any Habits to this Challenge</string>
-    <string name="challenge_empty_quest_list">You haven\'t added any Quests to this Challenge</string>
+    <string name="repeating_quest_empty_sub_quest_list">You haven\'t added any Sub Quests yet</string>
+    <string name="challenge_empty_habit_list">You haven\'t added any Habits yet</string>
+    <string name="challenge_empty_quest_list">You haven\'t added any Quests yet</string>
 </resources>

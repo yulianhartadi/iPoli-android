@@ -163,7 +163,7 @@ class RepeatingQuestViewController(args: Bundle? = null) :
         state: RepeatingQuestViewState,
         view: View
     ) {
-        if (state.note != null) {
+        if (state.note != null && state.note.isNotBlank()) {
             view.note.setMarkdown(state.note)
         } else {
             view.note.setText(R.string.tap_to_add_note)
@@ -173,11 +173,18 @@ class RepeatingQuestViewController(args: Bundle? = null) :
     }
 
     private fun renderSubQuests(state: RepeatingQuestViewState, view: View) {
-        (view.subQuestList.adapter as SubQuestsAdapter).updateAll(state.subQuestNames.map {
-            SimpleRecyclerViewViewModel(
-                it
-            )
-        })
+        if (state.subQuestNames.isEmpty()) {
+            view.emptySubQuestList.visible()
+            view.subQuestList.gone()
+        } else {
+            view.emptySubQuestList.gone()
+            (view.subQuestList.adapter as SubQuestsAdapter).updateAll(state.subQuestNames.map {
+                SimpleRecyclerViewViewModel(
+                    it
+                )
+            })
+            view.subQuestList.visible()
+        }
     }
 
     private fun renderSummaryStats(

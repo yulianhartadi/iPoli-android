@@ -197,9 +197,9 @@
                 android:id="@+id/tagList"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="16dp"
-                android:layout_marginEnd="16dp"
                 android:layout_marginBottom="8dp"
+                android:layout_marginEnd="16dp"
+                android:layout_marginStart="16dp"
                 android:gravity="center_horizontal" />
 
             <TextView
@@ -220,6 +220,17 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="16dp" />
+
+            <TextView
+                android:id="@+id/emptySubQuestList"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:paddingBottom="8dp"
+                android:paddingTop="8dp"
+                android:text="@string/repeating_quest_empty_sub_quest_list"
+                android:textAlignment="center"
+                android:textAppearance="@style/TextAppearance.AppCompat.Caption" />
 
             <TextView
                 style="@style/SectionTitle"
