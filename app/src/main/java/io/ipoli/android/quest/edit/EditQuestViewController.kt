@@ -75,6 +75,7 @@ class EditQuestViewController(args: Bundle? = null) :
         savedViewState: Bundle?
     ): View {
         setHasOptionsMenu(true)
+        applyStatusBarColors = false
         val view = inflater.inflate(R.layout.controller_edit_quest, container, false)
         setToolbar(view.toolbar)
 

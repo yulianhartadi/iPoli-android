@@ -156,7 +156,7 @@ class MembershipViewController(args: Bundle? = null) :
         }
     }
 
-    override fun colorLayoutBars() {
+    override fun colorStatusBars() {
         activity?.window?.statusBarColor = colorRes(R.color.md_blue_900)
         activity?.window?.navigationBarColor = colorRes(R.color.md_blue_500)
         view!!.toolbar.setBackgroundColor(colorRes(R.color.md_blue_800))

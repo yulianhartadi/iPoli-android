@@ -33,6 +33,7 @@ class EditTagViewController(args: Bundle? = null) :
         savedViewState: Bundle?
     ): View {
         setHasOptionsMenu(true)
+        applyStatusBarColors = false
         val view = inflater.inflate(R.layout.controller_edit_tag, container, false)
         setToolbar(view.toolbar)
         return view

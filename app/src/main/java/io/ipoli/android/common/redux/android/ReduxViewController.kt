@@ -25,6 +25,7 @@ import com.github.florent37.tutoshowcase.TutoShowcase
 import com.mikepenz.iconics.IconicsDrawable
 import com.mikepenz.iconics.typeface.IIcon
 import io.ipoli.android.Constants
+import io.ipoli.android.MyPoliApp
 import io.ipoli.android.common.*
 import io.ipoli.android.common.datetime.Time
 import io.ipoli.android.common.di.UIModule
@@ -36,7 +37,6 @@ import io.ipoli.android.common.redux.ViewStateReducer
 import io.ipoli.android.common.view.*
 import io.ipoli.android.friends.feed.data.AndroidReactionType
 import io.ipoli.android.friends.feed.data.Post
-import io.ipoli.android.MyPoliApp
 import io.ipoli.android.player.data.Player
 import io.ipoli.android.quest.Color
 import io.ipoli.android.quest.Icon
@@ -86,6 +86,8 @@ abstract class BaseViewController<A : Action, VS : ViewState> protected construc
     @Volatile
     private var currentState: VS? = null
 
+    protected var applyStatusBarColors = true
+
     init {
         val lifecycleListener = object : LifecycleListener() {
 
@@ -122,13 +124,15 @@ abstract class BaseViewController<A : Action, VS : ViewState> protected construc
     }
 
     override fun onAttach(view: View) {
-        colorLayoutBars()
+        colorStatusBars()
         super.onAttach(view)
     }
 
-    protected open fun colorLayoutBars() {
-        activity?.window?.statusBarColor = attrData(io.ipoli.android.R.attr.colorPrimaryDark)
-        activity?.window?.navigationBarColor = attrData(io.ipoli.android.R.attr.colorPrimary)
+    protected open fun colorStatusBars() {
+        if(applyStatusBarColors) {
+            activity?.window?.statusBarColor = attrData(io.ipoli.android.R.attr.colorPrimaryDark)
+            activity?.window?.navigationBarColor = attrData(io.ipoli.android.R.attr.colorPrimary)
+        }
     }
 
     override fun onDetach(view: View) {

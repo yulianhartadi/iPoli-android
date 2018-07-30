@@ -110,7 +110,7 @@ class AddQuestViewController(args: Bundle? = null) :
         return view
     }
 
-    override fun colorLayoutBars() {
+    override fun colorStatusBars() {
         if (isFullscreen) {
             activity?.window?.statusBarColor = attrData(R.attr.colorPrimary)
         }

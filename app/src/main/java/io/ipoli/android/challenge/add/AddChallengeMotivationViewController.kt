@@ -73,5 +73,5 @@ class AddChallengeMotivationViewController(args: Bundle? = null) :
 
     }
 
-    override fun colorLayoutBars() {}
+    override fun colorStatusBars() {}
 }

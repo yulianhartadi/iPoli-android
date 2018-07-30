@@ -57,7 +57,7 @@ class ProfileInfoViewController(args: Bundle? = null) :
 
     override fun onCreateLoadAction() = ProfileAction.LoadInfo
 
-    override fun colorLayoutBars() {
+    override fun colorStatusBars() {
 
     }
 

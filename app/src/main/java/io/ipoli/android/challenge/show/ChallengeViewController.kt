@@ -65,6 +65,7 @@ class ChallengeViewController(args: Bundle? = null) :
         savedViewState: Bundle?
     ): View {
         setHasOptionsMenu(true)
+        applyStatusBarColors = false
         val view = inflater.inflate(R.layout.controller_challenge, container, false)
         setToolbar(view.toolbar)
         view.collapsingToolbarContainer.isTitleEnabled = false

@@ -251,7 +251,7 @@ abstract class ReduxDialogController<A : Action, VS : ViewState, out R : ViewSta
         dialog.dismiss()
     }
 
-    override fun colorLayoutBars() {
+    override fun colorStatusBars() {
 
     }
 

@@ -52,6 +52,7 @@ open class EditChallengeViewController(args: Bundle? = null) :
         savedViewState: Bundle?
     ): View {
         setHasOptionsMenu(true)
+        applyStatusBarColors = false
         val view = inflater.inflate(R.layout.controller_edit_challenge, container, false)
         setToolbar(view.toolbar)
         toolbarTitle = stringRes(R.string.title_edit_challenge)
@@ -97,7 +98,7 @@ open class EditChallengeViewController(args: Bundle? = null) :
             else -> super.onOptionsItemSelected(item)
         }
 
-    override fun colorLayoutBars() {
+    override fun colorStatusBars() {
 
     }
 

@@ -78,6 +78,7 @@ class QuestViewController : ReduxViewController<QuestAction, QuestViewState, Que
         savedViewState: Bundle?
     ): View {
         setHasOptionsMenu(true)
+        applyStatusBarColors = false
         val view = container.inflate(R.layout.controller_quest)
 
         setToolbar(view.toolbar)

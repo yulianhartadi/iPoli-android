@@ -107,7 +107,7 @@ class ProfilePostListViewController(args: Bundle? = null) :
             friendId = friendId
         )
 
-    override fun colorLayoutBars() {
+    override fun colorStatusBars() {
 
     }
 

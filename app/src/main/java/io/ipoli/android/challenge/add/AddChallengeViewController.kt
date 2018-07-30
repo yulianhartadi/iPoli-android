@@ -34,6 +34,7 @@ class AddChallengeViewController(args: Bundle? = null) :
         container: ViewGroup,
         savedViewState: Bundle?
     ): View {
+        applyStatusBarColors = false
         setHasOptionsMenu(true)
         val view = inflater.inflate(R.layout.controller_add_challenge, container, false)
         setToolbar(view.toolbar)
@@ -64,7 +65,7 @@ class AddChallengeViewController(args: Bundle? = null) :
         return true
     }
 
-    override fun colorLayoutBars() {
+    override fun colorStatusBars() {
 
     }
 

@@ -401,7 +401,7 @@ class EditHabitViewController(args: Bundle? = null) :
         activity?.window?.statusBarColor = color700
     }
 
-    override fun colorLayoutBars() {
+    override fun colorStatusBars() {
 
     }
 

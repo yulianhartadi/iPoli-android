@@ -217,7 +217,7 @@ class Navigator(private val router: Router) {
     }
 
     fun toEditChallenge(challengeId: String) {
-        pushController({ EditChallengeViewController(challengeId) }, FadeChangeHandler())
+        pushController({ EditChallengeViewController(challengeId) }, HorizontalChangeHandler())
     }
 
     fun toChallenge(challengeId: String) {

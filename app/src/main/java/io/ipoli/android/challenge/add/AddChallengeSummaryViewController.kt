@@ -59,7 +59,7 @@ class AddChallengeSummaryViewController(args: Bundle? = null) :
         return view
     }
 
-    override fun colorLayoutBars() {}
+    override fun colorStatusBars() {}
 
     override fun onCreateLoadAction() = EditChallengeAction.LoadSummary
 

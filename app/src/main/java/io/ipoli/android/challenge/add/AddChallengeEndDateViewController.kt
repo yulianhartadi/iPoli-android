@@ -41,7 +41,7 @@ class AddChallengeEndDateViewController(args: Bundle? = null) :
         return view
     }
 
-    override fun colorLayoutBars() {}
+    override fun colorStatusBars() {}
 
     override fun render(state: EditChallengeViewState, view: View) {
     }
