@@ -53,7 +53,7 @@ data class RepeatingQuestViewState(
 ) : BaseViewState() {
 
     enum class StateType {
-        LOADING, REMOVED, HISTORY_CHANGED, REPEATING_QUEST_CHANGED
+        LOADING, HISTORY_CHANGED, REPEATING_QUEST_CHANGED
     }
 
     enum class ProgressModel {
@@ -90,19 +90,13 @@ object RepeatingQuestReducer : BaseViewStateReducer<RepeatingQuestViewState>() {
                 val rq = action.repeatingQuests.firstOrNull { it.id == subState.id }
                 rq?.let {
                     createChangedState(it, subState)
-                } ?: subState.copy(type = RepeatingQuestViewState.StateType.REMOVED)
+                } ?: subState
             }
 
             is DataLoadedAction.RepeatingQuestHistoryChanged -> {
                 subState.copy(
                     type = RepeatingQuestViewState.StateType.HISTORY_CHANGED,
                     history = action.history
-                )
-            }
-
-            is RepeatingQuestAction.Remove -> {
-                subState.copy(
-                    type = RepeatingQuestViewState.StateType.REMOVED
                 )
             }
 

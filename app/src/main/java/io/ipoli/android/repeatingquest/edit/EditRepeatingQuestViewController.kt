@@ -148,18 +148,6 @@ class EditRepeatingQuestViewController(args: Bundle? = null) :
         inflater.inflate(R.menu.edit_repeating_quest_menu, menu)
     }
 
-//    override fun onOptionsItemSelected(item: MenuItem) =
-//        when (item.itemId) {
-//            android.R.id.home ->
-//                router.handleBack()
-//
-//            R.id.actionSave -> {
-//                dispatch(EditRepeatingQuestAction.ValidateName(view!!.summaryName.text.toString()))
-//                true
-//            }
-//            else -> super.onOptionsItemSelected(item)
-//        }
-
 
     override fun render(state: EditRepeatingQuestViewState, view: View) {
 
