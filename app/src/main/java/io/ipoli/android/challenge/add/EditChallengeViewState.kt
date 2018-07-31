@@ -240,15 +240,19 @@ object EditChallengeReducer : BaseViewStateReducer<EditChallengeViewState>() {
             }
 
             is QuestPickerAction.Next -> {
-                val s = state.stateFor(QuestPickerViewState::class.java)
-                subState.copy(
-                    type = NEXT_PAGE,
-                    adapterPosition = subState.adapterPosition + 1,
-                    allQuests = s.allQuests.map {
-                        it.baseQuest
-                    },
-                    selectedQuestIds = s.selectedQuests
-                )
+                if (subState.adapterPosition + 1 > AddChallengeViewController.SUMMARY_INDEX) {
+                    subState
+                } else {
+                    val s = state.stateFor(QuestPickerViewState::class.java)
+                    subState.copy(
+                        type = NEXT_PAGE,
+                        adapterPosition = subState.adapterPosition + 1,
+                        allQuests = s.allQuests.map {
+                            it.baseQuest
+                        },
+                        selectedQuestIds = s.selectedQuests
+                    )
+                }
             }
 
             EditChallengeAction.Back -> {
