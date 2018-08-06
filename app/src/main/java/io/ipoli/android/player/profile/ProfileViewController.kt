@@ -414,7 +414,7 @@ class ProfileViewController :
 
         override fun configureRouter(router: Router, position: Int) {
             val page = when (position) {
-                0 -> ProfileInfoViewController(reducer.stateKey)
+                0 -> ProfileInfoViewController(reducer.stateKey, friendId)
                 1 -> ProfilePostListViewController(reducer.stateKey, friendId)
                 2 -> ProfileChallengeListViewController(reducer.stateKey)
                 else -> throw IllegalArgumentException("Unknown controller position $position")

@@ -36,10 +36,11 @@ class ProfileInfoViewController(args: Bundle? = null) :
 
     override var stateKey = ""
 
+    private var friendId: String? = null
 
-
-    constructor(reducerKey: String) : this() {
+    constructor(reducerKey: String, friendId: String? = null) : this() {
         this.stateKey = reducerKey
+        this.friendId = friendId
     }
 
     override fun onCreateView(
@@ -155,6 +156,14 @@ class ProfileInfoViewController(args: Bundle? = null) :
                 view.star3.setImageResource(if (vm.starsCount == 3) R.drawable.achievement_star else R.drawable.achievement_star_empty)
             } else {
                 view.stars.gone()
+            }
+
+            if(friendId == null) {
+                view.onDebounceClick {
+                    navigateFromRoot().toAchievementList()
+                }
+            } else {
+                view.setOnClickListener(null)
             }
         }
 
