@@ -1552,4 +1552,10 @@
     <string name="repeating_quest_empty_sub_quest_list">You haven\'t added any Sub Quests yet</string>
     <string name="challenge_empty_habit_list">You haven\'t added any Habits yet</string>
     <string name="challenge_empty_quest_list">You haven\'t added any Quests yet</string>
+
+    <string name="dialog_confirmation_title">Are you sure?</string>
+    <string name="dialog_remove_repeating_quest_message">Do you really want to remove this repeating quest?</string>
+    <string name="dialog_remove_challenge_message">Do you really want to remove this challenge?</string>
+    <string name="dialog_remove_habit_message">Do you really want to remove this habit?</string>
+    <string name="dialog_complete_challenge_message">Do you really want to complete this challenge?</string>
 </resources>

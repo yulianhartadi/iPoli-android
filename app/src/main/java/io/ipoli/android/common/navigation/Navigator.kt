@@ -17,6 +17,7 @@ import io.ipoli.android.challenge.edit.EditChallengeViewController
 import io.ipoli.android.challenge.entity.Challenge
 import io.ipoli.android.challenge.picker.ChallengePickerDialogController
 import io.ipoli.android.challenge.show.ChallengeViewController
+import io.ipoli.android.common.ConfirmationDialogViewController
 import io.ipoli.android.common.ShareAppDialogController
 import io.ipoli.android.common.datetime.Duration
 import io.ipoli.android.common.datetime.Minute
@@ -282,6 +283,10 @@ class Navigator(private val router: Router) {
 
     fun toReactionHistory(reactions: List<Post.Reaction>) {
         pushDialog { ReactionHistoryDialogViewController(reactions) }
+    }
+
+    fun toConfirmation(title: String, message: String, listener: () -> Unit) {
+        pushDialog { ConfirmationDialogViewController(title, message, listener) }
     }
 
     fun toChallengeMotivations(

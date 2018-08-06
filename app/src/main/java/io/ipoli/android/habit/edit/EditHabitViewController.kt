@@ -118,9 +118,15 @@ class EditHabitViewController(args: Bundle? = null) :
             }
 
             R.id.actionRemove -> {
-                showShortToast(R.string.habit_removed)
-                dispatch(EditHabitAction.Remove(habitId))
-                router.handleBack()
+                navigate().toConfirmation(
+                    stringRes(R.string.dialog_confirmation_title),
+                    stringRes(R.string.dialog_remove_habit_message)
+                ) {
+                    showShortToast(R.string.habit_removed)
+                    dispatch(EditHabitAction.Remove(habitId))
+                    router.handleBack()
+                }
+                true
             }
 
             else -> super.onOptionsItemSelected(item)
