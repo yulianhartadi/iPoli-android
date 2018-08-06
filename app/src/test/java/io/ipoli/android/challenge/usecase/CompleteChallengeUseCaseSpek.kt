@@ -28,7 +28,8 @@ class CompleteChallengeUseCaseSpek : Spek({
         fun executeUseCase(challengeId : String) =
             CompleteChallengeUseCase(
                 createChallengeRepository(),
-                TestUtil.playerRepoMock(TestUtil.player())
+                TestUtil.playerRepoMock(TestUtil.player()),
+                mock()
             ).execute(
                 CompleteChallengeUseCase.Params(
                     challengeId
