@@ -930,7 +930,7 @@ class FirestorePlayerRepository(
             .map {
                 async {
                     collectionReference
-                        .document(playerId)
+                        .document(it)
                         .getSync()
                 }
             }
