@@ -69,7 +69,7 @@ abstract class RepeatingQuestDao : BaseDao<RoomRepeatingQuest>() {
     @Query("SELECT * FROM repeating_quests WHERE removedAt IS NULL AND (repeatPattern_endDate IS NULL OR repeatPattern_endDate >= :date)")
     abstract fun findAllActive(date: Long): List<RoomRepeatingQuest>
 
-    @Query("SELECT * FROM repeating_quests WHERE removedAt IS NULL AND (repeatPattern_endDate IS NULL OR repeatPattern_endDate >= :date) AND challengeId != :challengeId")
+    @Query("SELECT * FROM repeating_quests WHERE removedAt IS NULL AND (repeatPattern_endDate IS NULL OR repeatPattern_endDate >= :date) AND (challengeId IS NULL OR challengeId != :challengeId)")
     abstract fun findActiveNotForChallenge(
         challengeId: String,
         date: Long
