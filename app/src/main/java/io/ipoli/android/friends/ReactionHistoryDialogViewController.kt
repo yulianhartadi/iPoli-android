@@ -160,7 +160,8 @@ class ReactionHistoryDialogViewController(args: Bundle? = null) :
         val username: String,
         val time: String,
         @DrawableRes val reactionImage: Int,
-        val isCurrentPlayer: Boolean
+        val isCurrentPlayer: Boolean,
+        val isFriend: Boolean
     ) : RecyclerViewViewModel
 
     inner class ReactionHistoryAdapter :
@@ -184,7 +185,7 @@ class ReactionHistoryDialogViewController(args: Bundle? = null) :
             view.playerUsername.text = vm.username
             view.reactionTime.text = vm.time
 
-            if (vm.isCurrentPlayer) {
+            if (vm.isCurrentPlayer || !vm.isFriend) {
                 view.isClickable = false
                 view.background = null
                 view.setOnClickListener(null)
@@ -201,10 +202,10 @@ class ReactionHistoryDialogViewController(args: Bundle? = null) :
     private val ReactionHistoryDialogViewState.viewModels: List<ReactionViewModel>
         get() = reactions!!.map {
             ReactionViewModel(
-                id = it.friend.id,
-                avatar = AndroidAvatar.valueOf(it.friend.avatar.name),
-                name = it.friend.displayName,
-                username = "@${it.friend.username}",
+                id = it.player.id,
+                avatar = AndroidAvatar.valueOf(it.player.avatar.name),
+                name = it.player.displayName!!,
+                username = "@${it.player.username}",
                 time = DateUtils.getRelativeTimeSpanString(
                     it.reaction.createdAt.toEpochMilli(),
                     System.currentTimeMillis(),
@@ -212,7 +213,8 @@ class ReactionHistoryDialogViewController(args: Bundle? = null) :
                     DateUtils.FORMAT_ABBREV_ALL
                 ).toString(),
                 reactionImage = it.reaction.reactionType.androidType.image,
-                isCurrentPlayer = it.friend.id == playerId
+                isCurrentPlayer = it.player.id == playerId,
+                isFriend = it.isFriend
             )
         }
 }

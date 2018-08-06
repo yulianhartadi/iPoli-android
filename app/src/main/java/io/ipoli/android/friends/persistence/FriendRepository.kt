@@ -32,8 +32,6 @@ interface FriendRepository {
 
     fun unfriend(friendId: String)
 
-    fun findAll(friendIds: List<String>): List<Friend>
-
     fun findAll(): List<Friend>
 
     fun find(friendId: String): Friend
@@ -62,10 +60,6 @@ class FirestoreFriendRepository(private val remoteDatabase: FirebaseFirestore) :
             .map { async { getPlayerDocument(it) } }
             .let { executeAndCreateEntities(it) }
 
-    override fun findAll(friendIds: List<String>) =
-        friendIds
-            .map { async { getPlayerDocument(it) } }
-            .let { executeAndCreateEntities(it) }
 
     private fun getPlayerDocument(playerId: String) =
         remoteDatabase

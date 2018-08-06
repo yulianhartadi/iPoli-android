@@ -21,6 +21,7 @@ import io.ipoli.android.common.distinct
 import io.ipoli.android.common.persistence.BaseDao
 import io.ipoli.android.common.persistence.BaseEntityFirestoreRepository
 import io.ipoli.android.common.persistence.BaseRoomRepository
+import io.ipoli.android.common.persistence.getSync
 import io.ipoli.android.pet.*
 import io.ipoli.android.player.Theme
 import io.ipoli.android.player.data.*
@@ -28,6 +29,7 @@ import io.ipoli.android.player.persistence.model.*
 import io.ipoli.android.quest.ColorPack
 import io.ipoli.android.quest.IconPack
 import io.ipoli.android.store.powerup.PowerUp
+import kotlinx.coroutines.experimental.async
 import kotlinx.coroutines.experimental.channels.Channel
 import kotlinx.coroutines.experimental.runBlocking
 import org.jetbrains.annotations.NotNull
@@ -50,6 +52,8 @@ interface PlayerRepository {
     fun findAllForSync(lastSync: Duration<Millisecond>): List<Player>
 
     fun findFriend(friendId: String): Player
+
+    fun findAll(playerIds: List<String>): List<Player>
 
     fun isUsernameAvailable(username: String): Boolean
     fun addUsername(
@@ -127,6 +131,10 @@ class AndroidPlayerRepository(
 
     override fun findFriend(friendId: String) =
         FirestorePlayerRepository(database).findFriend(friendId)
+
+    override fun findAll(playerIds: List<String>) =
+        FirestorePlayerRepository(database).findAll(playerIds)
+
 
     override fun save(entity: Player): Player {
         val rp = toDatabaseObject(entity)
@@ -916,6 +924,24 @@ class FirestorePlayerRepository(
 
     fun findFriend(friendId: String): Player =
         extractDocument(collectionReference.document(friendId))!!
+
+    fun findAll(playerIds: List<String>): List<Player> {
+        val playerJobs = playerIds
+            .map {
+                async {
+                    collectionReference
+                        .document(playerId)
+                        .getSync()
+                }
+            }
+
+        return runBlocking {
+            playerJobs.map {
+                val doc = it.await()
+                toEntityObject(doc.data!!)
+            }
+        }
+    }
 
     private val Statistics.StreakStatistic.db
         get() = createDbStreakStatistic(this)

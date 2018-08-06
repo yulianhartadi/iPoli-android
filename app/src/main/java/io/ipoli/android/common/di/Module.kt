@@ -899,7 +899,7 @@ class MainUseCaseModule(private val context: Context) : UseCaseModule {
         get() = SavePostReactionUseCase(postRepository)
 
     override val createReactionHistoryItemsUseCase
-        get() = CreateReactionHistoryItemsUseCase(friendRepository)
+        get() = CreateReactionHistoryItemsUseCase(playerRepository, friendRepository)
 }
 
 interface StateStoreModule {
