@@ -1,9 +1,11 @@
 package io.ipoli.android.challenge.usecase
 
 import io.ipoli.android.challenge.entity.Challenge
+import io.ipoli.android.challenge.entity.SharingPreference
 import io.ipoli.android.challenge.persistence.ChallengeRepository
 import io.ipoli.android.common.UseCase
 import io.ipoli.android.common.datetime.Time
+import io.ipoli.android.friends.usecase.SavePostsUseCase
 import io.ipoli.android.player.persistence.PlayerRepository
 import org.threeten.bp.LocalDate
 import java.util.*
@@ -14,7 +16,8 @@ import java.util.*
  */
 class CompleteChallengeUseCase(
     private val challengeRepository: ChallengeRepository,
-    private val playerRepository: PlayerRepository
+    private val playerRepository: PlayerRepository,
+    private val savePostsUseCase: SavePostsUseCase
 ) :
     UseCase<CompleteChallengeUseCase.Params, Challenge> {
 
@@ -23,7 +26,8 @@ class CompleteChallengeUseCase(
         require(challengeId.isNotEmpty())
         val challenge = challengeRepository.findById(challengeId)!!
 
-        val pet = playerRepository.find()!!.pet
+        val player = playerRepository.find()!!
+        val pet = player.pet
 
         val experience = experience(pet.experienceBonus)
         val coins = coins(pet.coinBonus)
@@ -35,6 +39,10 @@ class CompleteChallengeUseCase(
         )
 
         challengeRepository.save(newChallenge)
+
+        if(newChallenge.sharingPreference == SharingPreference.FRIENDS) {
+            savePostsUseCase.execute(SavePostsUseCase.Params.ChallengeComplete(newChallenge, player))
+        }
 
         return newChallenge
     }

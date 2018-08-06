@@ -718,7 +718,8 @@ class MainUseCaseModule(private val context: Context) : UseCaseModule {
     override val completeChallengeUseCase
         get() = CompleteChallengeUseCase(
             challengeRepository,
-            playerRepository
+            playerRepository,
+            savePostsUseCase
         )
 
     override val buyPowerUpUseCase
