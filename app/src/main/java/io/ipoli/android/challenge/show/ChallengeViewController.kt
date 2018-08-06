@@ -204,8 +204,14 @@ class ChallengeViewController(args: Bundle? = null) :
                 router.handleBack()
 
             R.id.actionComplete -> {
-                dispatch(ChallengeAction.Complete(challengeId))
-                router.handleBack()
+                navigate().toConfirmation(
+                    stringRes(R.string.dialog_confirmation_title),
+                    stringRes(R.string.dialog_complete_challenge_message)
+                ) {
+                    dispatch(ChallengeAction.Complete(challengeId))
+                    router.handleBack()
+                }
+                true
             }
 
             R.id.actionEdit -> {
@@ -213,8 +219,14 @@ class ChallengeViewController(args: Bundle? = null) :
                 true
             }
             R.id.actionDelete -> {
-                dispatch(ChallengeAction.Remove(challengeId))
-                router.handleBack()
+                navigate().toConfirmation(
+                    stringRes(R.string.dialog_confirmation_title),
+                    stringRes(R.string.dialog_remove_challenge_message)
+                ) {
+                    dispatch(ChallengeAction.Remove(challengeId))
+                    router.handleBack()
+                }
+                true
             }
             else -> super.onOptionsItemSelected(item)
         }

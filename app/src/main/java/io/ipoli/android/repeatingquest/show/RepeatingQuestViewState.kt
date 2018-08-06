@@ -14,6 +14,7 @@ import io.ipoli.android.quest.Color
 import io.ipoli.android.quest.RepeatingQuest
 import io.ipoli.android.repeatingquest.entity.PeriodProgress
 import io.ipoli.android.repeatingquest.entity.RepeatPattern
+import io.ipoli.android.repeatingquest.show.RepeatingQuestViewState.StateType.*
 import io.ipoli.android.repeatingquest.usecase.CreateRepeatingQuestHistoryUseCase
 import io.ipoli.android.tag.Tag
 import org.threeten.bp.LocalDate
@@ -82,7 +83,7 @@ object RepeatingQuestReducer : BaseViewStateReducer<RepeatingQuestViewState>() {
 
                 rq?.let {
                     createChangedState(it, subState)
-                } ?: subState.copy(type = RepeatingQuestViewState.StateType.LOADING)
+                } ?: subState.copy(type = LOADING)
             }
 
             is DataLoadedAction.RepeatingQuestsChanged -> {
@@ -95,7 +96,7 @@ object RepeatingQuestReducer : BaseViewStateReducer<RepeatingQuestViewState>() {
 
             is DataLoadedAction.RepeatingQuestHistoryChanged -> {
                 subState.copy(
-                    type = RepeatingQuestViewState.StateType.HISTORY_CHANGED,
+                    type = HISTORY_CHANGED,
                     history = action.history
                 )
             }
@@ -108,7 +109,7 @@ object RepeatingQuestReducer : BaseViewStateReducer<RepeatingQuestViewState>() {
         state: RepeatingQuestViewState
     ) =
         state.copy(
-            type = RepeatingQuestViewState.StateType.REPEATING_QUEST_CHANGED,
+            type = REPEATING_QUEST_CHANGED,
             id = rq.id,
             name = rq.name,
             tags = rq.tags,
@@ -153,7 +154,7 @@ object RepeatingQuestReducer : BaseViewStateReducer<RepeatingQuestViewState>() {
 
     override fun defaultState() =
         RepeatingQuestViewState(
-            type = RepeatingQuestViewState.StateType.LOADING,
+            type = LOADING,
             id = "",
             name = "",
             tags = emptyList(),

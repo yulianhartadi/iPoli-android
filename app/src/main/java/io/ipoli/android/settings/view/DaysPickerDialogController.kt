@@ -39,9 +39,8 @@ class DaysPickerDialogController(args: Bundle? = null) :
         this.selectedDays = selectedDays.toMutableSet()
     }
 
-    override fun onCreateContentView(inflater: LayoutInflater, savedViewState: Bundle?): View {
-        return inflater.inflate(R.layout.dialog_days_picker, null)
-    }
+    override fun onCreateContentView(inflater: LayoutInflater, savedViewState: Bundle?): View =
+        inflater.inflate(R.layout.dialog_days_picker, null)
 
     override fun onHeaderViewCreated(headerView: View) {
         headerView.dialogHeaderTitle.setText(R.string.choose_days_of_week)
@@ -58,14 +57,14 @@ class DaysPickerDialogController(args: Bundle? = null) :
         return dialogBuilder
             .setMultiChoiceItems(
                 daysOfWeekNames.toTypedArray(),
-                checked.toBooleanArray(),
-                { _, which, isChecked ->
-                    if (isChecked) {
-                        selectedDays.add(days[which])
-                    } else {
-                        selectedDays.remove(days[which])
-                    }
-                })
+                checked.toBooleanArray()
+            ) { _, which, isChecked ->
+                if (isChecked) {
+                    selectedDays.add(days[which])
+                } else {
+                    selectedDays.remove(days[which])
+                }
+            }
             .setPositiveButton(R.string.dialog_ok, null)
             .setNegativeButton(R.string.cancel, null)
             .create()

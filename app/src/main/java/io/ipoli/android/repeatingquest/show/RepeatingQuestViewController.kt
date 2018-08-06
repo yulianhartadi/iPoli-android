@@ -99,8 +99,15 @@ class RepeatingQuestViewController(args: Bundle? = null) :
                 true
             }
             R.id.actionDelete -> {
-                dispatch(RepeatingQuestAction.Remove(repeatingQuestId))
-                router.handleBack()
+                navigate().toConfirmation(
+                    stringRes(R.string.dialog_confirmation_title),
+                    stringRes(R.string.dialog_remove_repeating_quest_message)
+                ) {
+                    dispatch(RepeatingQuestAction.Remove(repeatingQuestId))
+                    router.handleBack()
+                }
+                true
+
             }
             else -> super.onOptionsItemSelected(item)
         }
