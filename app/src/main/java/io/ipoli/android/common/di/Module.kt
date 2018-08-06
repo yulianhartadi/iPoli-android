@@ -548,12 +548,14 @@ class MainUseCaseModule(private val context: Context) : UseCaseModule {
         get() = CompleteQuestUseCase(
             questRepository,
             playerRepository,
+            challengeRepository,
             reminderScheduler,
             rewardScheduler,
             ratePopupScheduler,
             rewardPlayerUseCase,
             checkForDailyChallengeCompletionUseCase,
-            dailyChallengeCompleteScheduler
+            dailyChallengeCompleteScheduler,
+            savePostsUseCase
         )
     override val undoCompletedQuestUseCase
         get() = UndoCompletedQuestUseCase(

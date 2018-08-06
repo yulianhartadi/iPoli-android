@@ -1,12 +1,15 @@
 package io.ipoli.android.quest.usecase
 
 import io.ipoli.android.Constants
+import io.ipoli.android.challenge.entity.SharingPreference
+import io.ipoli.android.challenge.persistence.ChallengeRepository
 import io.ipoli.android.common.SimpleReward
 import io.ipoli.android.common.UseCase
 import io.ipoli.android.common.datetime.Time
 import io.ipoli.android.common.rate.RatePopupScheduler
 import io.ipoli.android.dailychallenge.job.DailyChallengeCompleteScheduler
 import io.ipoli.android.dailychallenge.usecase.CheckForDailyChallengeCompletionUseCase
+import io.ipoli.android.friends.usecase.SavePostsUseCase
 import io.ipoli.android.pet.Food
 import io.ipoli.android.player.persistence.PlayerRepository
 import io.ipoli.android.player.usecase.RewardPlayerUseCase
@@ -24,12 +27,14 @@ import java.util.*
 open class CompleteQuestUseCase(
     private val questRepository: QuestRepository,
     private val playerRepository: PlayerRepository,
+    private val challengeRepository: ChallengeRepository,
     private val reminderScheduler: ReminderScheduler,
     private val rewardScheduler: RewardScheduler,
     private val ratePopupScheduler: RatePopupScheduler,
     private val rewardPlayerUseCase: RewardPlayerUseCase,
     private val checkForDailyChallengeCompletionUseCase: CheckForDailyChallengeCompletionUseCase,
     private val dailyChallengeCompleteScheduler: DailyChallengeCompleteScheduler,
+    private val savePostsUseCase: SavePostsUseCase,
     private val randomSeed: Long? = null
 ) : UseCase<CompleteQuestUseCase.Params, Quest> {
     override fun execute(parameters: Params): Quest {
@@ -43,7 +48,8 @@ open class CompleteQuestUseCase(
             }
         }
 
-        val pet = playerRepository.find()!!.pet
+        val player = playerRepository.find()!!
+        val pet = player.pet
 
         val experience = quest.experience ?: experience(pet.experienceBonus)
         val coins = quest.coins ?: coins(pet.coinBonus)
@@ -76,6 +82,18 @@ open class CompleteQuestUseCase(
                 experience(100f),
                 coins(100f)
             )
+        }
+
+        if (newQuest.isFromChallenge) {
+            val challenge = challengeRepository.findById(newQuest.challengeId!!)!!
+            if (!challenge.isCompleted && challenge.sharingPreference == SharingPreference.FRIENDS) {
+                savePostsUseCase.execute(
+                    SavePostsUseCase.Params.QuestsComplete(
+                        listOf(newQuest),
+                        player
+                    )
+                )
+            }
         }
 
         return newQuest
