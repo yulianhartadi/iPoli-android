@@ -62,8 +62,8 @@ class ConfirmationDialogViewController :
     override fun onDialogCreated(dialog: AlertDialog, contentView: View) {
         dialog.setOnShowListener { _ ->
             setPositiveButtonListener {
-                listener()
                 dismiss()
+                listener()
             }
         }
     }
