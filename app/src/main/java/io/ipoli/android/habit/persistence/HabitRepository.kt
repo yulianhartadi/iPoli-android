@@ -121,8 +121,6 @@ class RoomHabitRepository(dao: HabitDao, tagDao: TagDao) : HabitRepository,
 
     override fun deleteAllTags(entityId: String) = dao.deleteAllTags(entityId)
 
-    override fun deleteAllTags(entityIds: List<String>) = dao.deleteAllTags(entityIds)
-
     override fun findAllForChallenge(challengeId: String) =
         dao.findAllForChallenge(challengeId).map { toEntityObject(it) }
 

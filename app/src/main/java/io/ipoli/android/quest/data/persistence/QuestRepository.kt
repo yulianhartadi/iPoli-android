@@ -435,8 +435,6 @@ class RoomQuestRepository(
 
     override fun deleteAllTags(entityId: String) = dao.deleteAllTags(entityId)
 
-    override fun deleteAllTags(entityIds: List<String>) = dao.deleteAllTags(entityIds)
-
     override fun listenForScheduledBetween(
         startDate: LocalDate,
         endDate: LocalDate
@@ -693,8 +691,6 @@ class RoomQuestRepository(
         roomQs: List<RoomQuest>,
         entities: List<Quest>
     ): List<Quest> {
-        val ids = entities.filter { it.id.isNotBlank() }.map { it.id }
-        deleteAllTags(ids)
 
         dao.saveAll(roomQs)
 

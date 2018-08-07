@@ -118,8 +118,6 @@ class RoomRepeatingQuestRepository(dao: RepeatingQuestDao, private val tagDao: T
 
     override fun deleteAllTags(entityId: String) = dao.deleteAllTags(entityId)
 
-    override fun deleteAllTags(entityIds: List<String>) = dao.deleteAllTags(entityIds)
-
     override fun findAllActive(currentDate: LocalDate) =
         dao.findAllActive(currentDate.startOfDayUTC()).map { toEntityObject(it) }
 

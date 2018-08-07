@@ -4,17 +4,18 @@ import android.annotation.SuppressLint
 import android.arch.persistence.room.Transaction
 import android.content.Context
 import android.support.annotation.WorkerThread
+import android.util.Log
 import com.crashlytics.android.Crashlytics
 import com.google.android.gms.tasks.Tasks
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.Source
 import io.ipoli.android.BuildConfig
 import io.ipoli.android.Constants
+import io.ipoli.android.MyPoliApp
 import io.ipoli.android.challenge.persistence.FirestoreChallengeRepository
 import io.ipoli.android.common.di.BackgroundModule
 import io.ipoli.android.dailychallenge.data.persistence.FirestoreDailyChallengeRepository
 import io.ipoli.android.habit.persistence.FirestoreHabitRepository
-import io.ipoli.android.MyPoliApp
 import io.ipoli.android.player.data.Player
 import io.ipoli.android.player.persistence.FirestorePlayerRepository
 import io.ipoli.android.quest.data.persistence.FirestoreQuestRepository
@@ -78,6 +79,7 @@ class DataImporter(private val appContext: Context) : Injects<BackgroundModule> 
         val pref = try {
             importData().preferences
         } catch (e: Throwable) {
+            Log.e("AAAAAA", e.message, e)
             if (BuildConfig.DEBUG) {
                 Timber.e(e)
             } else {

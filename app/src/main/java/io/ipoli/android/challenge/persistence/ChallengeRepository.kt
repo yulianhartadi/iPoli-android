@@ -81,8 +81,6 @@ class RoomChallengeRepository(dao: ChallengeDao, private val tagDao: TagDao) : C
 
     override fun deleteAllTags(entityId: String) = dao.deleteAllTags(entityId)
 
-    override fun deleteAllTags(entityIds: List<String>) = dao.deleteAllTags(entityIds)
-
     override fun findById(id: String) = toEntityObject(dao.findById(id))
 
     override fun findAll() = dao.findAll().map { toEntityObject(it) }

@@ -127,8 +127,6 @@ abstract class BaseRoomRepositoryWithTags<E : EntityWithTags, RE : RoomEntity, D
 
     abstract fun deleteAllTags(entityId: String)
 
-    abstract fun deleteAllTags(entityIds: List<String>)
-
     override fun save(entity: E): E {
         val hr = saveWithTags(entity)
         return newIdForEntity(hr.id, entity)
@@ -158,9 +156,6 @@ abstract class BaseRoomRepositoryWithTags<E : EntityWithTags, RE : RoomEntity, D
 
     @Transaction
     private fun saveWithTags(entities: List<E>): List<RE> {
-        val ids = entities.filter { it.id.isNotBlank() }.map { it.id }
-        deleteAllTags(ids)
-
         val res = entities.map { toDatabaseObject(it) }
         dao.saveAll(res)
 
