@@ -753,7 +753,17 @@ class RoomQuestRepository(
     private fun purgeReminders(
         questIds: List<String>
     ) {
-        entityReminderDao.purgeForEntities(questIds)
+        val limit = 999
+        if (questIds.size > limit) {
+            val rangeCount = questIds.size / limit
+            for (i in 0..rangeCount) {
+                val fromIndex = i * limit
+                val toIndex = Math.min(fromIndex + limit, questIds.lastIndex + 1)
+                entityReminderDao.purgeForEntities(questIds.subList(fromIndex, toIndex))
+            }
+        } else {
+            entityReminderDao.purgeForEntities(questIds)
+        }
     }
 
     private fun saveReminders(quest: Quest, reminders: List<Reminder>) {

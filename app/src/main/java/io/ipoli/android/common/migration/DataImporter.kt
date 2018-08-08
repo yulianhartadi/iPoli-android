@@ -79,7 +79,6 @@ class DataImporter(private val appContext: Context) : Injects<BackgroundModule> 
         val pref = try {
             importData().preferences
         } catch (e: Throwable) {
-            Log.e("AAAAAA", e.message, e)
             if (BuildConfig.DEBUG) {
                 Timber.e(e)
             } else {
