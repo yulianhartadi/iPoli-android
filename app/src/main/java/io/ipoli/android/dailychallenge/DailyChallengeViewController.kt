@@ -44,6 +44,13 @@ class DailyChallengeViewController(args: Bundle? = null) :
 
     private var isComplete = false
 
+    override var helpConfig: HelpConfig? =
+        HelpConfig(
+            R.string.help_dialog_dc_title,
+            R.string.help_dialog_dc_message
+        )
+
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup,

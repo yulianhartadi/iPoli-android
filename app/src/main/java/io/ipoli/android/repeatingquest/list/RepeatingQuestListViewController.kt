@@ -41,11 +41,18 @@ class RepeatingQuestListViewController(args: Bundle? = null) :
 
     override val reducer = RepeatingQuestListReducer
 
+    override var helpConfig: HelpConfig? =
+        HelpConfig(
+            R.string.help_dialog_repeating_quest_list_title,
+            R.string.help_dialog_repeating_quest_list_message
+        )
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup,
         savedViewState: Bundle?
     ): View {
+        setHasOptionsMenu(true)
         val view = inflater.inflate(
             R.layout.controller_repeating_quest_list, container, false
         )

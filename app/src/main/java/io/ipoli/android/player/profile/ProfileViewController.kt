@@ -37,6 +37,12 @@ class ProfileViewController :
 
     override var reducer = ProfileReducer(ProfileReducer.PROFILE_KEY)
 
+    override var helpConfig: HelpConfig? =
+        HelpConfig(
+            R.string.help_dialog_profile_title,
+            R.string.help_dialog_profile_message
+        )
+
     private var isEdit: Boolean = false
     private var friendId: String? = null
 

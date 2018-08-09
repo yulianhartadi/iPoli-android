@@ -7,8 +7,8 @@ import io.ipoli.android.R
 import io.ipoli.android.challenge.predefined.category.ChallengeCategoryListViewController
 import io.ipoli.android.common.redux.android.ReduxViewController
 import io.ipoli.android.common.view.*
-import kotlinx.android.synthetic.main.view_empty_list.view.*
 import kotlinx.android.synthetic.main.controller_challenge_list.view.*
+import kotlinx.android.synthetic.main.view_empty_list.view.*
 import kotlinx.android.synthetic.main.view_loader.view.*
 
 /**
@@ -21,6 +21,12 @@ class ChallengeListViewController(args: Bundle? = null) :
     ) {
 
     override val reducer = ChallengeListReducer
+
+    override var helpConfig: HelpConfig? =
+        HelpConfig(
+            R.string.help_dialog_challenge_list_title,
+            R.string.help_dialog_challenge_list_message
+        )
 
     override fun onCreateView(
         inflater: LayoutInflater,

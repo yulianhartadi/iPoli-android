@@ -30,6 +30,14 @@ class FeedViewController(args: Bundle? = null) :
 
     private var isGuest = false
 
+    init {
+        helpConfig = HelpConfig(
+            R.string.help_dialog_friends_feed_title,
+            R.string.help_dialog_friends_feed_message
+        )
+
+    }
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup,
@@ -45,7 +53,7 @@ class FeedViewController(args: Bundle? = null) :
         view.reactionPopup.layoutManager = GridLayoutManager(view.context, 3)
         view.reactionPopup.adapter = ReactionPopupAdapter(this)
         (view.reactionPopup.adapter as ReactionPopupAdapter).updateAll(
-            AndroidReactionType.values().map {
+            AndroidReactionType.values().map { it ->
                 val title = stringRes(it.title)
                 ReactionPopupViewModel(
                     title,
@@ -131,7 +139,7 @@ class FeedViewController(args: Bundle? = null) :
         } else false
 
     override fun render(state: FeedViewState, view: View) {
-        
+
         when (state.type) {
 
             LOADING -> {

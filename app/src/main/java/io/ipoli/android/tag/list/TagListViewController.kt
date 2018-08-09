@@ -15,9 +15,9 @@ import io.ipoli.android.common.redux.android.ReduxViewController
 import io.ipoli.android.common.view.*
 import io.ipoli.android.tag.Tag
 import io.ipoli.android.tag.show.TagViewController
-import kotlinx.android.synthetic.main.view_empty_list.view.*
 import kotlinx.android.synthetic.main.controller_tag_list.view.*
 import kotlinx.android.synthetic.main.item_tag_list.view.*
+import kotlinx.android.synthetic.main.view_empty_list.view.*
 import kotlinx.android.synthetic.main.view_loader.view.*
 
 /**
@@ -30,11 +30,18 @@ class TagListViewController(args: Bundle? = null) :
     ) {
     override val reducer = TagListReducer
 
+    override var helpConfig: HelpConfig? =
+        HelpConfig(
+            R.string.help_dialog_tag_list_title,
+            R.string.help_dialog_tag_list_message
+        )
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup,
         savedViewState: Bundle?
     ): View {
+        setHasOptionsMenu(true)
         val view = inflater.inflate(R.layout.controller_tag_list, container, false)
 
         view.tagAdd.dispatchOnClick { TagListAction.AddTag }

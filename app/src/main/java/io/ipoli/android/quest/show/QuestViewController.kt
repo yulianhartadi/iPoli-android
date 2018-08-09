@@ -41,6 +41,9 @@ class QuestViewController : ReduxViewController<QuestAction, QuestViewState, Que
 
     override val reducer = QuestReducer
 
+    override var helpConfig: HelpConfig? =
+        HelpConfig(R.string.help_dialog_quest_title, R.string.help_dialog_quest_message)
+
     private var questId = ""
     private var isTimerStopped = true
 

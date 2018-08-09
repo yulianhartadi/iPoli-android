@@ -20,9 +20,9 @@ import io.ipoli.android.common.view.recyclerview.MultiViewRecyclerViewAdapter
 import io.ipoli.android.common.view.recyclerview.RecyclerViewViewModel
 import io.ipoli.android.habit.list.HabitListViewState.StateType.DATA_CHANGED
 import io.ipoli.android.habit.usecase.CreateHabitItemsUseCase
-import kotlinx.android.synthetic.main.view_empty_list.view.*
 import kotlinx.android.synthetic.main.controller_habit_list.view.*
 import kotlinx.android.synthetic.main.item_habit_list.view.*
+import kotlinx.android.synthetic.main.view_empty_list.view.*
 import kotlinx.android.synthetic.main.view_loader.view.*
 import org.threeten.bp.LocalDate
 
@@ -35,6 +35,12 @@ class HabitListViewController(args: Bundle? = null) :
     ReduxViewController<HabitListAction, HabitListViewState, HabitListReducer>(args) {
 
     override val reducer = HabitListReducer
+
+    override var helpConfig: HelpConfig? =
+        HelpConfig(
+            R.string.help_dialog_habit_list_title,
+            R.string.help_dialog_habit_list_message
+        )
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -74,12 +80,13 @@ class HabitListViewController(args: Bundle? = null) :
         inflater.inflate(R.menu.habit_list_menu, menu)
     }
 
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        if (item.itemId == R.id.actionPredefinedHabits) {
-            navigateFromRoot().toPredefinedHabits()
-            return true
-        }
-        return super.onOptionsItemSelected(item)
+    override fun onOptionsItemSelected(item: MenuItem) =
+        when (item.itemId) {
+            R.id.actionPredefinedHabits -> {
+                navigateFromRoot().toPredefinedHabits()
+                true
+            }
+            else -> super.onOptionsItemSelected(item)
     }
 
     override fun render(state: HabitListViewState, view: View) {

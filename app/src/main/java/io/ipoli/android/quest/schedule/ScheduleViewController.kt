@@ -69,7 +69,6 @@ class ScheduleViewController(args: Bundle? = null) :
             view.contentContainer,
             CalendarViewController(currentDate)
         )
-
         return view
     }
 
@@ -127,7 +126,6 @@ class ScheduleViewController(args: Bundle? = null) :
         getChildRouter(view.addContainer, "add-quest")
 
     override fun render(state: ScheduleViewState, view: View) {
-
         view.addQuest.setOnClickListener {
             addQuestAnimationHelper.openAddContainer(state.currentDate)
         }

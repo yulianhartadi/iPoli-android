@@ -57,6 +57,12 @@ class GrowthViewController(args: Bundle? = null) :
 
     override val reducer = GrowthReducer
 
+    override var helpConfig: HelpConfig? =
+        HelpConfig(
+            R.string.help_dialog_growth_title,
+            R.string.help_dialog_growth_message
+        )
+
     private val pieFormatter =
         IValueFormatter { value, _, _, _ -> "${value.roundToInt()}%" }
 
@@ -79,6 +85,7 @@ class GrowthViewController(args: Bundle? = null) :
         container: ViewGroup,
         savedViewState: Bundle?
     ): View {
+        setHasOptionsMenu(true)
         val view = container.inflate(R.layout.controller_growth)
 
         view.focusTimeChart.marker = FocusHoursMarker(view.context)

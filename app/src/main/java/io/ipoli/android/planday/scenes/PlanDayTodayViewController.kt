@@ -34,10 +34,10 @@ import io.ipoli.android.planday.PlanDayReducer
 import io.ipoli.android.planday.PlanDayViewState
 import io.ipoli.android.planday.PlanDayViewState.StateType.*
 import io.ipoli.android.quest.schedule.addquest.AddQuestAnimationHelper
-import kotlinx.android.synthetic.main.view_empty_list.view.*
 import kotlinx.android.synthetic.main.controller_plan_day_today.view.*
 import kotlinx.android.synthetic.main.item_plan_today_quest.view.*
 import kotlinx.android.synthetic.main.item_plan_today_suggestion.view.*
+import kotlinx.android.synthetic.main.view_empty_list.view.*
 import kotlinx.android.synthetic.main.view_loader.view.*
 import org.threeten.bp.LocalDate
 
@@ -47,6 +47,12 @@ class PlanDayTodayViewController(args: Bundle? = null) :
     override val stateKey = PlanDayReducer.stateKey
 
     private lateinit var addQuestAnimationHelper: AddQuestAnimationHelper
+
+    override var helpConfig: HelpConfig? =
+        HelpConfig(
+            R.string.help_dialog_plan_day_today_title,
+            R.string.help_dialog_plan_day_today_message
+        )
 
     override fun onCreateView(
         inflater: LayoutInflater,

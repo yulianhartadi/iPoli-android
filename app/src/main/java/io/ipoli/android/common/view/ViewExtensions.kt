@@ -2,14 +2,26 @@ package io.ipoli.android.common.view
 
 import android.animation.Animator
 import android.animation.AnimatorListenerAdapter
+import android.content.Context
 import android.support.annotation.LayoutRes
 import android.support.constraint.Group
+import android.text.method.LinkMovementMethod
+import android.text.style.ForegroundColorSpan
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.TextView
+import io.ipoli.android.R
+import io.ipoli.android.common.ViewUtils
 import kotlinx.coroutines.experimental.android.UI
 import kotlinx.coroutines.experimental.channels.actor
 import kotlinx.coroutines.experimental.delay
+import org.commonmark.node.Heading
+import ru.noties.markwon.Markwon
+import ru.noties.markwon.SpannableBuilder
+import ru.noties.markwon.SpannableConfiguration
+import ru.noties.markwon.renderer.SpannableMarkdownVisitor
+import ru.noties.markwon.spans.SpannableTheme
 
 /**
  * Created by Venelin Valkov <venelin@mypoli.fun>
@@ -99,6 +111,64 @@ fun View.fadeOut(animationDuration: Long, onComplete: () -> Unit = {}) {
                 onComplete()
             }
         })
+    }
+}
+
+fun TextView.setMarkdown(markdown: String) {
+    val parser = Markwon.createParser()
+
+    val theme = SpannableTheme.builderWithDefaults(context)
+        .headingBreakHeight(0)
+        .thematicBreakColor(context.attrData(io.ipoli.android.R.attr.colorAccent))
+        .listItemColor(context.attrData(io.ipoli.android.R.attr.colorAccent))
+        .linkColor(context.attrData(io.ipoli.android.R.attr.colorAccent))
+        .blockQuoteColor(context.attrData(io.ipoli.android.R.attr.colorAccent))
+        .codeBackgroundColor(context.colorRes(io.ipoli.android.R.color.sourceCodeBackground))
+        .codeTextColor(context.colorRes(io.ipoli.android.R.color.sourceCodeText))
+        .codeTextSize(ViewUtils.spToPx(14, context))
+        .build()
+    val configuration = SpannableConfiguration.builder(context)
+        .theme(theme)
+        .build()
+
+    val builder = SpannableBuilder()
+
+    val node = parser.parse(markdown)
+
+    val headlineVisitor = HeadlineColorVisitor(context, configuration, builder)
+
+    node.accept(headlineVisitor)
+
+    val text = builder.text()
+
+    movementMethod = LinkMovementMethod.getInstance()
+
+    Markwon.unscheduleDrawables(this)
+    Markwon.unscheduleTableRows(this)
+
+    setText(text)
+
+    Markwon.scheduleDrawables(this)
+    Markwon.scheduleTableRows(this)
+}
+
+class HeadlineColorVisitor(
+    private val context: Context,
+    config: SpannableConfiguration,
+    private val builder: SpannableBuilder
+) : SpannableMarkdownVisitor(config, builder) {
+
+    override fun visit(heading: Heading) {
+
+        val startLength = builder.length()
+
+        super.visit(heading)
+
+        builder.setSpan(
+            ForegroundColorSpan(context.attrData(R.attr.colorAccent)),
+            startLength,
+            builder.length()
+        )
     }
 }
 

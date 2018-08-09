@@ -35,9 +35,9 @@ import io.ipoli.android.planday.PlanDayViewState.AwesomenessGrade.*
 import io.ipoli.android.planday.PlanDayViewState.StateType.REVIEW_DATA_LOADED
 import io.ipoli.android.quest.CompletedQuestViewController
 import io.ipoli.android.quest.schedule.addquest.AddQuestAnimationHelper
-import kotlinx.android.synthetic.main.view_empty_list.view.*
 import kotlinx.android.synthetic.main.controller_plan_day_review.view.*
 import kotlinx.android.synthetic.main.item_agenda_quest.view.*
+import kotlinx.android.synthetic.main.view_empty_list.view.*
 import kotlinx.android.synthetic.main.view_loader.view.*
 import org.threeten.bp.LocalDate
 
@@ -52,6 +52,12 @@ class PlanDayReviewViewController(args: Bundle? = null) :
     override val stateKey = PlanDayReducer.stateKey
 
     private lateinit var addQuestAnimationHelper: AddQuestAnimationHelper
+
+    override var helpConfig: HelpConfig? =
+        HelpConfig(
+            R.string.help_dialog_plan_day_review_title,
+            R.string.help_dialog_plan_day_review_message
+        )
 
     override fun onCreateView(
         inflater: LayoutInflater,

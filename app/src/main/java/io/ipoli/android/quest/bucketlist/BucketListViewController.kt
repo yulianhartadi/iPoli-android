@@ -32,9 +32,9 @@ import io.ipoli.android.quest.CompletedQuestViewController
 import io.ipoli.android.quest.Quest
 import io.ipoli.android.quest.bucketlist.usecase.CreateBucketListItemsUseCase
 import io.ipoli.android.quest.schedule.addquest.AddQuestAnimationHelper
-import kotlinx.android.synthetic.main.view_empty_list.view.*
 import kotlinx.android.synthetic.main.controller_bucket_list.view.*
 import kotlinx.android.synthetic.main.item_agenda_quest.view.*
+import kotlinx.android.synthetic.main.view_empty_list.view.*
 import kotlinx.android.synthetic.main.view_loader.view.*
 import org.threeten.bp.LocalDate
 
@@ -45,11 +45,15 @@ class BucketListViewController(args: Bundle? = null) :
 
     private lateinit var addQuestAnimationHelper: AddQuestAnimationHelper
 
+    override var helpConfig: HelpConfig? =
+        HelpConfig(R.string.help_dialog_bucket_list_title, R.string.help_dialog_bucket_list_message)
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup,
         savedViewState: Bundle?
     ): View {
+        setHasOptionsMenu(true)
         val view = container.inflate(R.layout.controller_bucket_list)
 
         view.questList.layoutManager = LinearLayoutManager(activity!!)

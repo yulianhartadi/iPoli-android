@@ -12,5 +12,5 @@
         android:id="@+id/actionRenamePet"
         android:icon="@drawable/ic_edit_white_24dp"
         android:title="@string/rename_your_pet"
-        app:showAsAction="always" />
+        app:showAsAction="ifRoom" />
 </menu>

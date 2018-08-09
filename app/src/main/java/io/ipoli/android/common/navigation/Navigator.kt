@@ -18,6 +18,7 @@ import io.ipoli.android.challenge.entity.Challenge
 import io.ipoli.android.challenge.picker.ChallengePickerDialogController
 import io.ipoli.android.challenge.show.ChallengeViewController
 import io.ipoli.android.common.ConfirmationDialogViewController
+import io.ipoli.android.common.HelpDialogViewController
 import io.ipoli.android.common.ShareAppDialogController
 import io.ipoli.android.common.datetime.Duration
 import io.ipoli.android.common.datetime.Minute
@@ -287,6 +288,10 @@ class Navigator(private val router: Router) {
 
     fun toConfirmation(title: String, message: String, listener: () -> Unit) {
         pushDialog { ConfirmationDialogViewController(title, message, listener) }
+    }
+
+    fun toHelp(title: String, message: String) {
+        pushDialog { HelpDialogViewController(title, message) }
     }
 
     fun toChallengeMotivations(

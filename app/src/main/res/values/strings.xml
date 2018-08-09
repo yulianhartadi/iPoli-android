@@ -99,9 +99,6 @@
     <string name="help_dialog_inbox_text1">This is the place with all your unscheduled quests.</string>
     <string name="help_dialog_inbox_text2">If you don\'t complete a quest during the day it will automatically move to your Inbox.</string>
     <string name="help_dialog_overview_text1">Use the overview to manage your uncompleted quests for the next 7 days.</string>
-    <string name="help_dialog_challenges_text1">Challenges are your short and long-term goals.</string>
-    <string name="help_dialog_challenges_text2">Use them to clearly define what you want, why you want it and by what date you will achieve it.</string>
-    <string name="help_dialog_challenges_text3">Divide your epic challenges into smaller tasks by assigning (repeating) quests to a challenge. Gain additional XP and coins when you complete a quest from a challenge!</string>
     <string name="help_dialog_rewards_title">Earn your rewards</string>
     <string name="help_dialog_rewards_text2">Reward can be anything. For example: \'Eat a chocolate\' or \'Go on a vacation\'.</string>
     <string name="help_dialog_rewards_text3">You choose how much it costs depending on your efforts.</string>
@@ -136,10 +133,6 @@
     <string name="empty_habits_text">Build good Habits or avoid bad ones. Create your first Habit now and start building your streak!</string>
     <string name="empty_shared_challenges_title">Complete your Challenges easier</string>
     <string name="empty_shared_challenges_text">Players who share their Challenges with friends are up to 5x more likely to complete them</string>
-    <string name="help_dialog_growth_title">What is growth all about?</string>
-    <string name="help_dialog_growth_daily_progress">Monitor your daily progress</string>
-    <string name="help_dialog_growth_time_spent_chart">The time spent chart shows you which quest contexts take most of your time</string>
-    <string name="help_dialog_growth_experience_chart">The experience chart shows you how much XP you gain per day</string>
     <string name="title_activity_add_challenge">Challenge Yourself</string>
     <string name="reward_name_validation">You must add name for your reward</string>
     <string name="end_of_time">End of time</string>
@@ -168,11 +161,6 @@
     <string name="daily_challenge_complete_dialog_title">Daily challenge complete</string>
     <string name="experience_gained">Experience gained</string>
     <string name="coins_won">Coins won</string>
-    <string name="help_dialog_daily_challenge_text1">Ready for a challenge?</string>
-    <string name="every_morning_choose_your_3_help_dialog_daily_challenge_text2">Every morning, choose your 3 most important quests for the day.</string>
-    <string name="help_dialog_daily_challenge_text3">By defining and prioritising your tasks you are much more likely to complete them.</string>
-    <string name="help_dialog_daily_challenge_star">Most important quests will be marked with star in your calendar and journey</string>
-    <string name="help_dialog_daily_challenge_settings">You can adjust challenge days and reminder time in Settings</string>
     <string name="add_challenge_name_hint">Name (e.g. Run a 5k marathon)</string>
     <string name="add_repeating_quest_name_hint">Brush my teeth</string>
     <string name="challenge_difficulty_question">How difficult is it?</string>
@@ -196,10 +184,6 @@
     <string name="recurrence_picker_title">Pick repeating pattern</string>
     <string name="pick_flexible_count_title">How often?</string>
     <string name="preferred_days">Preferred days</string>
-    <string name="help_dialog_quest_title">Manage your quest</string>
-    <string name="help_dialog_quest_text1">From this screen you can:</string>
-    <string name="help_dialog_quest_track_time">Use the timer to track how you spend your time</string>
-    <string name="help_dialog_quest_sub_quests">Create and manage checklist for your quest</string>
     <string name="history">History</string>
     <string name="help_dialog_repeating_quest_title">Track your progress</string>
     <string name="help_dialog_repeating_quest_text1">Check how you are doing with your repeating quest</string>
@@ -239,10 +223,7 @@
     <string name="quest_sub_quests_question">Do you have a checklist?</string>
     <string name="rename_your_pet">Rename your pet</string>
     <string name="not_enough_coins_to_buy_pet">Not enough coins to buy this pet</string>
-    <string name="help_dialog_pet_title">Enjoy faithful friend</string>
-    <string name="help_dialog_pet_text1">This is your personal pet who will help you in your journey!</string>
-    <string name="help_dialog_pet_text2">Keep him healthy by adding and completing quests and challenges. Healthier the pet, the bigger bonuses you get.</string>
-    <string name="help_dialog_pet_shop">Go to the pet shop if you want to buy and replace this pet. You can have only one at a time.</string>
+
     <string name="edit_menu">Edit</string>
 
     <string name="title_activity_pick_challenge">Pick a Challenge</string>
@@ -1558,4 +1539,154 @@
     <string name="dialog_remove_challenge_message">Do you really want to remove this challenge?</string>
     <string name="dialog_remove_habit_message">Do you really want to remove this habit?</string>
     <string name="dialog_complete_challenge_message">Do you really want to complete this challenge?</string>
+    <string name="got_it">Got it</string>
+    <string name="not_helpful">Not helpful</string>
+    <string name="send">Send</string>
+    <string name="help">Help</string>
+    <string name="help_dialog_feedback_hint">What do you think...</string>
+
+    <string name="help_dialog_bucket_list_title">Bucket List</string>
+    <string name="help_dialog_bucket_list_message">
+        These are all your **unscheduled quests** (no date).\n\n
+        When you use **Plan Day**, your not completed quests are transferred here. \n\n
+        You can also use this list for ideas and things you do not want to forget but don\'t know when exactly you want to do them.
+    </string>
+
+    <string name="help_dialog_habit_list_title">Habit List</string>
+    <string name="help_dialog_habit_list_message">
+        You can add your repeating tasks as **Repeating Quests** if they have a longer duration or as **Habits**.
+        Separate you habits as: \n\n
+        * **Good habits** - you can do them more times a day and complete them to get a reward - **Life coins** and **XP**\n\n
+
+        * **Bad habits** - uncheck them if you fail to resist the temptation. MyPoli will punish you by taking **Life coins** and **xp** from your inventory\n\n
+        You see your current streak and if it is your best there is a star.
+    </string>
+
+    <string name="help_dialog_pet_title">Enjoy faithful friend</string>
+    <string name="help_dialog_pet_message">
+         This is your personal **pet** who will help you in your journey! \n\n
+        Your pet gives you 3 types of bonuses - more **Life coins**, **XP** and **rewards**.\n\n
+        The happier your pet is, the bigger bonuses you get. If you let your pet to **die**, you will
+        not get a lot of Life coins. You can always revive it with gems. If you want even bigger bonuses, equip your pet
+        with different **items**.\n\n
+	    Feed your pet to keep it **healthy**. A healthy pet is a happy pet. There are three types of pets -
+        **carnivorous**, **herbivorous** and **omnivorous**, so be careful with the type of the food.\n\n
+
+        Every midnight your pet **loses** some **healthy points** depending on your completed quests during the day -
+        busier schedule means less lost points.
+    </string>
+
+    <string name="help_dialog_quest_title">Manage your quest</string>
+    <string name="help_dialog_quest_message">
+        From this screen you can:\n\n
+        * Use the timer to track how you spend your time. There are 2 timer types -
+        **Pomodoro** (25 min work + 5 min break) and simple **Countdown**\n\n
+        * Create and manage checklist for your quest (**sub-quests**)
+    </string>
+
+    <string name="help_dialog_repeating_quest_list_title">Repeating Quests</string>
+    <string name="help_dialog_repeating_quest_list_message">
+       Repeating quests are your **repeating tasks**. \n\n
+        They can repeat **daily**, **weekly**, **monthly** and **yearly**.\n\n
+        They are also:\n\n
+         * **Fixed** - repeat exactly on the days you\'ve selected\n\n
+         * **Flexible** - myPoli scheduled it for you\n\n
+
+        If the duration of your task is too small, make it a **habit** instead of repeating quest.
+
+    </string>
+
+    <string name="help_dialog_challenge_list_title">Challenges</string>
+    <string name="help_dialog_challenge_list_message">
+       Challenges are your short and long-term **goals**. \n\n
+        Use them to clearly define what you want, why you want it and by what date you will achieve it.\n\n
+        Divide your epic challenges into smaller tasks - **quests**, **repeating quests** and **habits**
+        or accept one of myPoli **Preset challenges**.\n\n
+        Complete your challenges to win more **Life coins** and **XP**.
+    </string>
+
+    <string name="help_dialog_growth_title">Growth</string>
+    <string name="help_dialog_growth_message">
+       Monitor your **daily**, **weekly** and **monthly** progress.\n\n
+        With the help of **statistics**, you can keep track of how you handle your quests.
+        You can see which quests take longer and whether there is a **balance** in your everyday life. Do you spend too much
+working time and not enough for your family? \n\n
+
+       Find out how you spend your time in other apps. **Do you waste your time?**\n\n\
+
+    </string>
+
+    <string name="help_dialog_tag_list_title">Tags</string>
+    <string name="help_dialog_tag_list_message">
+        **Organize** your quests easily with tags. Define your own tags with **colors** and **icons**.
+        The **number** in the top right corner means how many quests you have with this tag. A quest can have more than one tag.\n\n
+        Your **favorite** tags appear in your drawer. \n\n
+        If you need more than 5 tags, you can always use a **power up**.
+
+    </string>
+
+    <string name="help_dialog_store_title">Store</string>
+    <string name="help_dialog_store_message">
+        * **Power-ups** - they help you organize and complete your tasks easier. You can buy them **only with Life coins**.\n\n
+        * **Membership** - unlock all features with a subscription.\n\n
+        * **Pets**, **Avatars**, **Colors**, **Icons** and **Themes** are all bought with **Gems**.
+        You can convert **Life Coins** to **Gems** or just buy them.
+
+    </string>
+
+    <string name="help_dialog_dc_title">Daily Challenge</string>
+    <string name="help_dialog_dc_message">
+        Every morning, choose your **3 most important quests** for the day.\n\n
+        By defining and **prioritising** your tasks you are much more likely to complete them.\n\n
+        You can choose your quests from here or when you are planning your day with **Plan Day**.\n\n
+        You can adjust challenge days in **Settings -> Days to plan**.\n\n
+        By completing your Daily Challenge myPoli will reward you with **Life coins** and **XP**.
+    </string>
+
+    <string name="help_dialog_plan_day_review_title">Review Yesterday</string>
+    <string name="help_dialog_plan_day_review_message">
+        This is an overview of your previous day.
+You can:\n\n
+* **Swipe** not completed quest **right** to **complete** it\n\n
+* **Swipe** not completed quest **left** to **reschedule** it\n\n
+* **Swipe** completed quest right to mark it as **not completed**\n\n
+* **Log** more quest for yesterday with the **Add** button. Add more things you do in myPoli so you can **track your time** better and use the **Growth** section.\n\n
+
+ Your **Awesomeness Grade** depends on your quests count, duration and if they are completed.
+        Try to be **more productive** to get a higher grade.\n\n
+
+        Tap **Plan Day** to start planing your current schedule.
+    </string>
+
+
+    <string name="help_dialog_plan_day_today_title">Plan Today</string>
+    <string name="help_dialog_plan_day_today_message">
+        This is an overview of your schedule for today.\n\n
+**Suggestions** section - myPoli offers you some quests from your **Bucket List** (quests you forgot to do or don\'t know when to do). Add them to your schedule with the **+** button.\n\n
+**My Day** section. You can: \n\n
+	* Mark quest as part of your **Daily Challenge** with the star (choose only 3 quests)\n\n
+	* **Swipe** quest **right** to **reschedule** it \n\n
+	* **Swipe** quest **left** to **delete** it\n\n
+	* **Add** more quests to your schedule with the big add button\n\n
+
+Tap **Start My Day** to complete planning your day. In **Settings** you can adjust the days and time you want to plan your day.
+    </string>
+
+    <string name="help_dialog_profile_title">Profile</string>
+    <string name="help_dialog_profile_message">
+You can change your **avatar** or edit your **display dame** and **short bio**. This is how your friends will see your profile. \n\n
+You can also manage your **shared posts**, **friends** and **shared challenges**.\n\n
+**Average focus hours per day** is formed by how much time  you\'ve tracked with the **timer** (both pomodoro and countdown).
+    </string>
+
+    <string name="help_dialog_friends_feed_title">Friends Feed</string>
+    <string name="help_dialog_friends_feed_message">
+        Let your friends help you with your challenges and quests.\n\n
+        **Share** your **challenges** and let them **track your progress** and **motivate** you to complete your goal.\n\n
+        Make your challenge shared or post a completed quest from the big **Add button**(bottom right)\n\n
+        **Invite** your friends by sending them a **link** from the top **Add friend** button.\n\n
+        When they open the link and **accept** your invitation, you\'ll become friends in myPoli. \n\n
+        You can also track their progress, react to their posts and encourage them in their quests.
+    </string>
+
 </resources>

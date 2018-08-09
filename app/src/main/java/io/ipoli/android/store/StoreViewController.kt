@@ -7,10 +7,7 @@ import android.os.Bundle
 import android.support.annotation.ColorRes
 import android.support.annotation.DrawableRes
 import android.support.annotation.StringRes
-import android.view.LayoutInflater
-import android.view.MenuItem
-import android.view.View
-import android.view.ViewGroup
+import android.view.*
 import com.bluelinelabs.conductor.RestoreViewOnCreateController
 import com.bluelinelabs.conductor.RouterTransaction
 import com.bluelinelabs.conductor.changehandler.FadeChangeHandler
@@ -84,9 +81,21 @@ class StoreViewController(args: Bundle? = null) : RestoreViewOnCreateController(
         activity?.window?.statusBarColor = attrData(io.ipoli.android.R.attr.colorPrimaryDark)
     }
 
+    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+        inflater.inflate(R.menu.help_menu, menu)
+        super.onCreateOptionsMenu(menu, inflater)
+    }
+
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         if (item.itemId == android.R.id.home) {
             return router.handleBack()
+        }
+        if (item.itemId == R.id.actionHelp) {
+            navigate().toHelp(
+                stringRes(R.string.help_dialog_store_title),
+                stringRes(R.string.help_dialog_store_message)
+            )
+            return true
         }
         return super.onOptionsItemSelected(item)
     }

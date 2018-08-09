@@ -51,6 +51,9 @@ class PetViewController(args: Bundle? = null) :
         this.showBackButton = showBackButton
     }
 
+    override var helpConfig: HelpConfig? =
+        HelpConfig(R.string.help_dialog_pet_title, R.string.help_dialog_pet_message)
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup,

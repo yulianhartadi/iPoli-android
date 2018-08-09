@@ -10,10 +10,11 @@ import android.os.Build
 import android.os.Bundle
 import android.support.annotation.IdRes
 import android.support.annotation.LayoutRes
+import android.support.annotation.StringRes
 import android.support.v7.widget.Toolbar
 import android.text.format.DateFormat
-import android.text.method.LinkMovementMethod
-import android.text.style.ForegroundColorSpan
+import android.view.Menu
+import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
 import android.view.animation.AccelerateDecelerateInterpolator
@@ -26,6 +27,7 @@ import com.mikepenz.iconics.IconicsDrawable
 import com.mikepenz.iconics.typeface.IIcon
 import io.ipoli.android.Constants
 import io.ipoli.android.MyPoliApp
+import io.ipoli.android.R
 import io.ipoli.android.common.*
 import io.ipoli.android.common.datetime.Time
 import io.ipoli.android.common.di.UIModule
@@ -46,12 +48,6 @@ import kotlinx.coroutines.experimental.channels.SendChannel
 import kotlinx.coroutines.experimental.channels.actor
 import kotlinx.coroutines.experimental.delay
 import kotlinx.coroutines.experimental.withContext
-import org.commonmark.node.Heading
-import ru.noties.markwon.Markwon
-import ru.noties.markwon.SpannableBuilder
-import ru.noties.markwon.SpannableConfiguration
-import ru.noties.markwon.renderer.SpannableMarkdownVisitor
-import ru.noties.markwon.spans.SpannableTheme
 import space.traversal.kapsule.Injects
 import space.traversal.kapsule.inject
 import space.traversal.kapsule.required
@@ -88,6 +84,8 @@ abstract class BaseViewController<A : Action, VS : ViewState> protected construc
 
     protected var applyStatusBarColors = true
 
+    protected open var helpConfig: HelpConfig? = null
+
     init {
         val lifecycleListener = object : LifecycleListener() {
 
@@ -115,6 +113,7 @@ abstract class BaseViewController<A : Action, VS : ViewState> protected construc
             }
         }
         addLifecycleListener(lifecycleListener)
+        setHasOptionsMenu(false)
     }
 
     protected open fun onSubscribedToStore() {}
@@ -252,6 +251,23 @@ abstract class BaseViewController<A : Action, VS : ViewState> protected construc
             dispatch(block())
         }
     }
+
+    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+        super.onCreateOptionsMenu(menu, inflater)
+        if (helpConfig != null) {
+            inflater.inflate(R.menu.help_menu, menu)
+        }
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        if (item.itemId == R.id.actionHelp && helpConfig != null) {
+            navigate().toHelp(stringRes(helpConfig!!.title), stringRes(helpConfig!!.message))
+            return true
+        }
+        return super.onOptionsItemSelected(item)
+    }
+
+    data class HelpConfig(@StringRes val title: Int, @StringRes val message: Int)
 
     protected fun navigateFromRoot() = Navigator(rootRouter)
 
@@ -462,63 +478,6 @@ abstract class BaseViewController<A : Action, VS : ViewState> protected construc
 
     protected val Post.ReactionType.androidType: AndroidReactionType
         get() = AndroidReactionType.valueOf(this.name)
-
-    fun TextView.setMarkdown(markdown: String) {
-        val parser = Markwon.createParser()
-
-        val theme = SpannableTheme.builderWithDefaults(activity!!)
-            .headingBreakHeight(0)
-            .thematicBreakColor(attrData(io.ipoli.android.R.attr.colorAccent))
-            .listItemColor(attrData(io.ipoli.android.R.attr.colorAccent))
-            .linkColor(attrData(io.ipoli.android.R.attr.colorAccent))
-            .blockQuoteColor(attrData(io.ipoli.android.R.attr.colorAccent))
-            .codeBackgroundColor(colorRes(io.ipoli.android.R.color.sourceCodeBackground))
-            .codeTextColor(colorRes(io.ipoli.android.R.color.sourceCodeText))
-            .codeTextSize(ViewUtils.spToPx(14, activity!!))
-            .build()
-        val configuration = SpannableConfiguration.builder(activity!!)
-            .theme(theme)
-            .build()
-
-        val builder = SpannableBuilder()
-
-        val node = parser.parse(markdown)
-
-        val headlineVisitor = HeadlineColorVisitor(configuration, builder)
-
-        node.accept(headlineVisitor)
-
-        val text = builder.text()
-
-        movementMethod = LinkMovementMethod.getInstance()
-
-        Markwon.unscheduleDrawables(this)
-        Markwon.unscheduleTableRows(this)
-
-        setText(text)
-
-        Markwon.scheduleDrawables(this)
-        Markwon.scheduleTableRows(this)
-    }
-
-    inner class HeadlineColorVisitor(
-        config: SpannableConfiguration,
-        private val builder: SpannableBuilder
-    ) : SpannableMarkdownVisitor(config, builder) {
-
-        override fun visit(heading: Heading) {
-
-            val startLength = builder.length()
-
-            super.visit(heading)
-
-            builder.setSpan(
-                ForegroundColorSpan(attrData(io.ipoli.android.R.attr.colorAccent)),
-                startLength,
-                builder.length()
-            )
-        }
-    }
 }
 
 abstract class ReduxViewController<A : Action, VS : ViewState, out R : ViewStateReducer<AppState, VS>>
