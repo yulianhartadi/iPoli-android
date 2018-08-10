@@ -11,6 +11,7 @@ import android.support.v7.widget.LinearLayoutManager
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.TextView
 import com.bluelinelabs.conductor.changehandler.VerticalChangeHandler
 import com.mikepenz.iconics.typeface.IIcon
 import com.mikepenz.ionicons_typeface_library.Ionicons
@@ -20,9 +21,8 @@ import io.ipoli.android.common.redux.android.ReduxViewController
 import io.ipoli.android.common.text.DateFormatter
 import io.ipoli.android.common.text.DurationFormatter
 import io.ipoli.android.common.view.*
-import io.ipoli.android.common.view.recyclerview.BaseRecyclerViewAdapter
+import io.ipoli.android.common.view.recyclerview.MultiViewRecyclerViewAdapter
 import io.ipoli.android.common.view.recyclerview.RecyclerViewViewModel
-import io.ipoli.android.common.view.recyclerview.SimpleViewHolder
 import io.ipoli.android.repeatingquest.entity.repeatType
 import io.ipoli.android.repeatingquest.list.RepeatingQuestListViewState.StateType.CHANGED
 import kotlinx.android.synthetic.main.controller_repeating_quest_list.view.*
@@ -105,57 +105,115 @@ class RepeatingQuestListViewController(args: Bundle? = null) :
 
     data class TagViewModel(val name: String, @ColorRes val color: Int)
 
-    data class RepeatingQuestViewModel(
-        override val id: String,
-        val name: String,
-        val tags: List<TagViewModel>,
-        val icon: IIcon,
-        @ColorRes val color: Int,
-        val next: String,
-        val completedCount: Int,
-        val allCount: Int,
-        val isCompleted: Boolean,
-        val frequency: String
-    ) : RecyclerViewViewModel
+    enum class ItemType {
+        REPEATING_QUEST,
+        LABEL,
+        COMPLETED_REPEATING_QUEST
+    }
+
+    sealed class RepeatingQuestItemViewModel(override val id: String) : RecyclerViewViewModel {
+        data class RepeatingQuestViewModel(
+            override val id: String,
+            val name: String,
+            val tags: List<TagViewModel>,
+            val icon: IIcon,
+            @ColorRes val color: Int,
+            val next: String,
+            val completedCount: Int,
+            val allCount: Int,
+            val frequency: String
+        ) : RepeatingQuestItemViewModel(id)
+
+        data class CompletedLabel(
+            val label: String
+        ) : RepeatingQuestItemViewModel(label)
+
+        data class CompletedRepeatingQuestViewModel(
+            override val id: String,
+            val name: String,
+            val tags: List<TagViewModel>,
+            val icon: IIcon,
+            @ColorRes val color: Int,
+            val frequency: String
+        ) : RepeatingQuestItemViewModel(id)
+    }
+
 
     inner class RepeatingQuestAdapter :
-        BaseRecyclerViewAdapter<RepeatingQuestViewModel>(R.layout.item_repeating_quest) {
+        MultiViewRecyclerViewAdapter<RepeatingQuestItemViewModel>() {
+        override fun onRegisterItemBinders() {
+            registerBinder<RepeatingQuestItemViewModel.RepeatingQuestViewModel>(
+                ItemType.REPEATING_QUEST.ordinal,
+                R.layout.item_repeating_quest
+            )
+            { vm, view, _ ->
 
-        override fun onBindViewModel(
-            vm: RepeatingQuestViewModel,
-            view: View,
-            holder: SimpleViewHolder
-        ) {
-            view.rqName.text = vm.name
+                view.rqName.text = vm.name
 
-            if (vm.tags.isNotEmpty()) {
-                view.rqTagName.visible()
-                renderTag(view, vm.tags.first())
-            } else {
-                view.rqTagName.gone()
-            }
+                if (vm.tags.isNotEmpty()) {
+                    view.rqTagName.visible()
+                    renderTag(view, vm.tags.first())
+                } else {
+                    view.rqTagName.gone()
+                }
 
-            view.rqIcon.backgroundTintList =
-                ColorStateList.valueOf(colorRes(vm.color))
-            view.rqIcon.setImageDrawable(listItemIcon(vm.icon))
-            view.rqNext.text = vm.next
-            view.rqFrequency.text = vm.frequency
+                view.rqIcon.backgroundTintList =
+                    ColorStateList.valueOf(colorRes(vm.color))
+                view.rqIcon.setImageDrawable(listItemIcon(vm.icon))
 
-            val progressBar = view.rqProgressBar
-            val progress = view.rqProgress
-            if (vm.isCompleted) {
-                ViewUtils.hideViews(progressBar, progress)
-            } else {
+                view.rqNext.text = vm.next
+                view.rqFrequency.text = vm.frequency
+
+                val progressBar = view.rqProgressBar
+                val progress = view.rqProgress
                 ViewUtils.showViews(progressBar, progress)
                 progressBar.max = vm.allCount
                 progressBar.progress = vm.completedCount
                 progressBar.progressTintList = ColorStateList.valueOf(colorRes(vm.color))
                 @SuppressLint("SetTextI18n")
                 progress.text = "${vm.completedCount}/${vm.allCount}"
+
+                view.onDebounceClick {
+                    navigateFromRoot().toRepeatingQuest(vm.id, VerticalChangeHandler())
+                }
+
             }
 
-            view.onDebounceClick {
-                navigateFromRoot().toRepeatingQuest(vm.id, VerticalChangeHandler())
+            registerBinder<RepeatingQuestItemViewModel.CompletedLabel>(
+                ItemType.LABEL.ordinal,
+                R.layout.item_list_section
+            )
+            { vm, view, _ ->
+                (view as TextView).text = vm.label
+            }
+
+            registerBinder<RepeatingQuestItemViewModel.CompletedRepeatingQuestViewModel>(
+                ItemType.COMPLETED_REPEATING_QUEST.ordinal,
+                R.layout.item_repeating_quest
+            )
+            { vm, view, _ ->
+
+                view.rqName.text = vm.name
+
+                if (vm.tags.isNotEmpty()) {
+                    view.rqTagName.visible()
+                    renderTag(view, vm.tags.first())
+                } else {
+                    view.rqTagName.gone()
+                }
+
+                view.rqIcon.backgroundTintList =
+                    ColorStateList.valueOf(colorRes(vm.color))
+                view.rqIcon.setImageDrawable(listItemIcon(vm.icon))
+                ViewUtils.hideViews(view.rqProgressBar, view.rqProgress)
+
+                view.rqNext.setText(R.string.completed)
+                view.rqFrequency.text = vm.frequency
+
+                view.onDebounceClick {
+                    navigateFromRoot().toRepeatingQuest(vm.id, VerticalChangeHandler())
+                }
+
             }
         }
 
@@ -180,46 +238,68 @@ class RepeatingQuestListViewController(args: Bundle? = null) :
         }
     }
 
-    private fun RepeatingQuestListViewState.toViewModels(context: Context): List<RepeatingQuestViewModel> {
+    private fun RepeatingQuestListViewState.toViewModels(context: Context): List<RepeatingQuestItemViewModel> {
+        val (notCompleted, completed) = repeatingQuests!!.partition { !it.isCompleted }
+        val vms = mutableListOf<RepeatingQuestItemViewModel>()
         val frequencies = stringsRes(R.array.repeating_quest_frequencies)
-        return repeatingQuests!!.map {
-            val next = when {
-                it.isCompleted -> stringRes(R.string.completed)
-                it.nextDate != null -> {
-                    var res = stringRes(
-                        R.string.repeating_quest_next,
-                        DateFormatter.formatWithoutYear(context, it.nextDate)
-                    )
-                    res += if (it.startTime != null) {
-                        " ${it.startTime.toString(shouldUse24HourFormat)} - ${it.endTime!!.toString(
-                            shouldUse24HourFormat
-                        )}"
-                    } else {
-                        " " + stringRes(
-                            R.string.for_time,
-                            DurationFormatter.formatShort(view!!.context, it.duration)
+        vms.addAll(
+            notCompleted.map {
+                val next = when {
+                    it.nextDate != null -> {
+                        var res = stringRes(
+                            R.string.repeating_quest_next,
+                            DateFormatter.formatWithoutYear(context, it.nextDate)
                         )
+                        res += if (it.startTime != null) {
+                            " ${it.startTime.toString(shouldUse24HourFormat)} - ${it.endTime!!.toString(
+                                shouldUse24HourFormat
+                            )}"
+                        } else {
+                            " " + stringRes(
+                                R.string.for_time,
+                                DurationFormatter.formatShort(view!!.context, it.duration)
+                            )
+                        }
+                        res
                     }
-                    res
+                    else -> stringRes(
+                        R.string.repeating_quest_next,
+                        stringRes(R.string.unscheduled)
+                    )
                 }
-                else -> stringRes(
-                    R.string.repeating_quest_next,
-                    stringRes(R.string.unscheduled)
+
+                RepeatingQuestItemViewModel.RepeatingQuestViewModel(
+                    id = it.id,
+                    name = it.name,
+                    tags = it.tags.map { TagViewModel(it.name, it.color.androidColor.color500) },
+                    icon = it.icon?.let { AndroidIcon.valueOf(it.name).icon }
+                        ?: Ionicons.Icon.ion_android_clipboard,
+                    color = AndroidColor.valueOf(it.color.name).color500,
+                    next = next,
+                    completedCount = it.periodProgress!!.completedCount,
+                    allCount = it.periodProgress.allCount,
+                    frequency = frequencies[it.repeatPattern.repeatType.ordinal]
                 )
             }
-            RepeatingQuestListViewController.RepeatingQuestViewModel(
-                id = it.id,
-                name = it.name,
-                tags = it.tags.map { TagViewModel(it.name, it.color.androidColor.color500) },
-                icon = it.icon?.let { AndroidIcon.valueOf(it.name).icon }
-                    ?: Ionicons.Icon.ion_android_clipboard,
-                color = AndroidColor.valueOf(it.color.name).color500,
-                next = next,
-                completedCount = it.periodProgress!!.completedCount,
-                allCount = it.periodProgress.allCount,
-                isCompleted = it.isCompleted,
-                frequency = frequencies[it.repeatPattern.repeatType.ordinal]
-            )
+        )
+        if (completed.isNotEmpty()) {
+            vms.add(RepeatingQuestItemViewModel.CompletedLabel(stringRes(R.string.completed)))
         }
+
+        vms.addAll(
+            completed.map {
+                RepeatingQuestItemViewModel.CompletedRepeatingQuestViewModel(
+                    id = it.id,
+                    name = it.name,
+                    tags = it.tags.map { TagViewModel(it.name, it.color.androidColor.color500) },
+                    icon = it.icon?.let { AndroidIcon.valueOf(it.name).icon }
+                        ?: Ionicons.Icon.ion_android_clipboard,
+                    color = AndroidColor.valueOf(it.color.name).color500,
+                    frequency = frequencies[it.repeatPattern.repeatType.ordinal]
+                )
+            }
+        )
+
+        return vms
     }
 }
