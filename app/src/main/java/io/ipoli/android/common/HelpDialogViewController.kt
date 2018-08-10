@@ -63,34 +63,49 @@ class HelpDialogViewController : BaseDialogController, Injects<BackgroundModule>
             .setNeutralButton(R.string.not_helpful, null)
             .create()
         dialog.setOnShowListener { _ ->
-            val neutral = dialog.getButton(DialogInterface.BUTTON_NEUTRAL)
+            val notHelpful = dialog.getButton(DialogInterface.BUTTON_NEUTRAL)
             val positive = dialog.getButton(DialogInterface.BUTTON_POSITIVE)
             val negative = dialog.getButton(DialogInterface.BUTTON_NEGATIVE)
             negative.gone()
-            neutral.setOnClickListener { _ ->
-                contentView.helpSwitcher.showNext()
-                setupFeedback(positive, negative, neutral, contentView)
-            }
+            setNotHelpfulClickListener(positive, negative, notHelpful, contentView)
         }
 
         return dialog
     }
 
-    private fun setupFeedback(
+    private fun setNotHelpfulClickListener(
         positive: Button,
         negative: Button,
         neutral: Button,
         contentView: View
     ) {
-        positive.setText(R.string.send)
-        neutral.setText(R.string.back)
-        neutral.setOnClickListener {
+        neutral.setOnClickListener(Debounce.clickListener {
             contentView.helpSwitcher.showNext()
-            setupFeedback(positive, negative, neutral, contentView)
-        }
-        negative.visible()
+            positive.setText(R.string.send)
+            neutral.setText(R.string.back)
+            negative.visible()
 
-        positive.setOnClickListener { _ ->
+
+            setupFeedback(positive, negative, neutral, contentView)
+        })
+    }
+
+    private fun setupFeedback(
+        positive: Button,
+        negative: Button,
+        back: Button,
+        contentView: View
+    ) {
+        back.setOnClickListener(Debounce.clickListener {
+            contentView.helpSwitcher.showNext()
+            back.setText(R.string.not_helpful)
+            positive.setText(R.string.got_it)
+            negative.gone()
+            setNotHelpfulClickListener(positive, negative, back, contentView)
+        })
+
+
+        positive.setOnClickListener(Debounce.clickListener { _ ->
             eventLogger.logEvent(
                 "help_section_feedback", mapOf(
                     "screen" to title,
@@ -98,6 +113,6 @@ class HelpDialogViewController : BaseDialogController, Injects<BackgroundModule>
                 )
             )
             dismiss()
-        }
+        })
     }
 }
