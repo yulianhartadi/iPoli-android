@@ -28,7 +28,7 @@ interface Constants {
 
         val QUEST_TIMER_NOTIFICATION_ID = 201
 
-        val DEFAULT_SNOOZE_TIME_MINUTES = 10
+        val DEFAULT_SNOOZE_TIME_MINUTES = 15
 
         val QUEST_WITH_NO_DURATION_TIMER_MINUTES = 30
         val MAX_QUEST_DURATION_HOURS = 4
