@@ -1,0 +1,132 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/dialogContainer"
+    style="@style/DialogContainer"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:clickable="true"
+    android:focusable="true"
+    android:focusableInTouchMode="true">
+
+    <TextView
+        android:id="@+id/valueNameHint"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:text="I want to track\n(e.g. calories)"
+        android:textAppearance="@style/TextAppearance.AppCompat.Body1"
+        app:layout_constraintBottom_toBottomOf="@+id/valueNameLayout"
+        app:layout_constraintEnd_toStartOf="@+id/valueNameLayout"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/valueNameLayout" />
+
+    <android.support.design.widget.TextInputLayout
+        android:id="@+id/valueNameLayout"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:hint="name"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/valueNameHint"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <android.support.design.widget.TextInputEditText
+            android:id="@+id/valueName"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:inputType="text"
+            android:maxLines="1" />
+    </android.support.design.widget.TextInputLayout>
+
+    <TextView
+        android:id="@+id/valueMaintainHint"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:text="and maintain\n(e.g. 2200 kcal)"
+        android:textAppearance="@style/TextAppearance.AppCompat.Body1"
+        app:layout_constraintBottom_toBottomOf="@+id/valueReachLayout"
+        app:layout_constraintEnd_toStartOf="@+id/valueNameLayout"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/valueReachLayout" />
+
+    <android.support.design.widget.TextInputLayout
+        android:id="@+id/valueReachLayout"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:hint="value"
+        app:layout_constraintEnd_toStartOf="@+id/valueUnitLayout"
+        app:layout_constraintStart_toEndOf="@+id/valueMaintainHint"
+        app:layout_constraintTop_toBottomOf="@+id/valueNameLayout">
+
+        <android.support.design.widget.TextInputEditText
+            android:id="@+id/valueReach"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:inputType="numberDecimal"
+            android:maxLines="1" />
+    </android.support.design.widget.TextInputLayout>
+
+    <android.support.design.widget.TextInputLayout
+        android:id="@+id/valueUnitLayout"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:hint="unit"
+        app:layout_constraintBottom_toBottomOf="@+id/valueReachLayout"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/valueReachLayout"
+        app:layout_constraintTop_toTopOf="@+id/valueReachLayout">
+
+        <android.support.design.widget.TextInputEditText
+            android:id="@+id/valueUnit"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:inputType="text"
+            android:maxLines="1" />
+    </android.support.design.widget.TextInputLayout>
+
+    <TextView
+        android:id="@+id/valueBoundHint"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:text="keep between\n(e.g. 2000 - 2400)"
+        android:textAppearance="@style/TextAppearance.AppCompat.Body1"
+        app:layout_constraintBottom_toBottomOf="@+id/valueLowLayout"
+        app:layout_constraintEnd_toStartOf="@+id/valueLowLayout"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/valueLowLayout" />
+
+    <android.support.design.widget.TextInputLayout
+        android:id="@+id/valueLowLayout"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:hint="low"
+        app:layout_constraintEnd_toStartOf="@+id/valueUnitLayout"
+        app:layout_constraintStart_toEndOf="@+id/valueMaintainHint"
+        app:layout_constraintTop_toBottomOf="@+id/valueReachLayout">
+
+        <android.support.design.widget.TextInputEditText
+            android:id="@+id/valueLow"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:inputType="numberDecimal"
+            android:maxLines="1" />
+    </android.support.design.widget.TextInputLayout>
+
+    <android.support.design.widget.TextInputLayout
+        android:id="@+id/valueHighLayout"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:hint="high"
+        app:layout_constraintBottom_toBottomOf="@+id/valueLowLayout"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/valueLowLayout"
+        app:layout_constraintTop_toTopOf="@+id/valueLowLayout">
+
+        <android.support.design.widget.TextInputEditText
+            android:id="@+id/valueHigh"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:inputType="numberDecimal"
+            android:maxLines="1" />
+    </android.support.design.widget.TextInputLayout>
+
+</android.support.constraint.ConstraintLayout>

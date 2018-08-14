@@ -1,6 +1,8 @@
 package io.ipoli.android.store.powerup.middleware
 
 import io.ipoli.android.Constants
+import io.ipoli.android.challenge.add.EditChallengeAction
+import io.ipoli.android.challenge.entity.Challenge
 import io.ipoli.android.common.AppState
 import io.ipoli.android.common.redux.Action
 import io.ipoli.android.common.redux.Dispatcher
@@ -59,9 +61,33 @@ object CheckEnabledPowerUpMiddleWare : MiddleWare<AppState> {
 //            is SettingsAction.ToggleSyncCalendar ->
 //                checkForAvailablePowerUp(PowerUp.Type.CALENDAR_SYNC, inventory, dispatcher)
 
+            is EditChallengeAction.ShowTargetTrackedValuePicker -> {
+                checkForAddChallengeValue(action.trackedValues, inventory, dispatcher)
+            }
+
+            is EditChallengeAction.ShowAverageTrackedValuePicker -> {
+                checkForAddChallengeValue(action.trackedValues, inventory, dispatcher)
+            }
+
             else -> MiddleWare.Result.Continue
         }
     }
+
+    private fun checkForAddChallengeValue(
+        trackedValues: List<Challenge.TrackedValue>,
+        inventory: Inventory,
+        dispatcher: Dispatcher
+    ) =
+        if (trackedValues.any { it !is Challenge.TrackedValue.Progress }) {
+            checkForAvailablePowerUp(
+                PowerUp.Type.TRACK_CHALLENGE_VALUES,
+                inventory,
+                dispatcher
+            )
+        } else {
+            MiddleWare.Result.Continue
+        }
+
 
     private fun checkForAvailablePowerUp(
         powerUp: PowerUp.Type,

@@ -183,7 +183,6 @@ class DurationPickerDialogController :
 
     constructor(args: Bundle? = null) : super(args)
 
-
     override fun onCreateContentView(inflater: LayoutInflater, savedViewState: Bundle?): View {
         val contentView = inflater.inflate(R.layout.dialog_duration_picker, null)
         val durationPicker = contentView.durationPicker
@@ -248,7 +247,9 @@ class DurationPickerDialogController :
                     changeNeutralButtonText(R.string.back)
                 }
 
-                changeIcon(AndroidPetAvatar.valueOf(state.petAvatar!!.name).headImage)
+                state.petAvatar?.let {
+                    changeIcon(AndroidPetAvatar.valueOf(it.name).headImage)
+                }
 
                 val durationPicker = view.durationPicker
                 durationPicker.setItems(state.durations

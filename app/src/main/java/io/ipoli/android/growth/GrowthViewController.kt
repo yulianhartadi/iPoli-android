@@ -496,7 +496,6 @@ class GrowthViewController(args: Bundle? = null) :
 
             axisLeft.isEnabled = false
 
-            xAxis.yOffset = ViewUtils.dpToPx(6f, activity!!)
             xAxis.isGranularityEnabled = true
             xAxis.granularity = 1f
             xAxis.textSize = ViewUtils.spToPx(4.5f, activity!!).toFloat()
@@ -504,6 +503,7 @@ class GrowthViewController(args: Bundle? = null) :
             xAxis.setDrawGridLines(false)
             xAxis.position = XAxis.XAxisPosition.BOTTOM
             xAxis.setAvoidFirstLastClipping(true)
+            xAxis.setDrawAxisLine(false)
 
             xAxis.labelRotationAngle = 335f
 

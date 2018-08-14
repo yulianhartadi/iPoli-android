@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/dialogContainer"
+    style="@style/DialogContainer"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:clickable="true"
+    android:focusable="true"
+    android:focusableInTouchMode="true">
+
+    <TextView
+        android:id="@+id/valueNameHint"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:text="I want to track\n(e.g. weight)"
+        android:textAppearance="@style/TextAppearance.AppCompat.Body1"
+        app:layout_constraintBottom_toBottomOf="@+id/valueNameLayout"
+        app:layout_constraintEnd_toStartOf="@+id/valueNameLayout"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/valueNameLayout" />
+
+    <android.support.design.widget.TextInputLayout
+        android:id="@+id/valueNameLayout"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:hint="name"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/valueNameHint"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <android.support.design.widget.TextInputEditText
+            android:id="@+id/valueName"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:inputType="text"
+            android:maxLines="1" />
+    </android.support.design.widget.TextInputLayout>
+
+    <TextView
+        android:id="@+id/valueReachHint"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:text="and reach\n(e.g. 80 kgs)"
+        android:textAppearance="@style/TextAppearance.AppCompat.Body1"
+        app:layout_constraintBottom_toBottomOf="@+id/valueReachLayout"
+        app:layout_constraintEnd_toStartOf="@+id/valueNameLayout"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/valueReachLayout" />
+
+    <android.support.design.widget.TextInputLayout
+        android:id="@+id/valueReachLayout"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:hint="value"
+        app:layout_constraintEnd_toStartOf="@+id/valueUnitLayout"
+        app:layout_constraintStart_toEndOf="@+id/valueReachHint"
+        app:layout_constraintTop_toBottomOf="@+id/valueNameLayout">
+
+        <android.support.design.widget.TextInputEditText
+            android:id="@+id/valueReach"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:inputType="numberDecimal"
+            android:maxLines="1" />
+    </android.support.design.widget.TextInputLayout>
+
+    <android.support.design.widget.TextInputLayout
+        android:id="@+id/valueUnitLayout"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:hint="units"
+        app:layout_constraintBottom_toBottomOf="@+id/valueReachLayout"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/valueReachLayout"
+        app:layout_constraintTop_toTopOf="@+id/valueReachLayout">
+
+        <android.support.design.widget.TextInputEditText
+            android:id="@+id/valueUnit"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:inputType="text"
+            android:maxLines="1" />
+    </android.support.design.widget.TextInputLayout>
+
+    <TextView
+        android:id="@+id/valueStartHint"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:text="starting from\n(e.g. 90)"
+        android:textAppearance="@style/TextAppearance.AppCompat.Body1"
+        app:layout_constraintBottom_toBottomOf="@+id/valueStartLayout"
+        app:layout_constraintEnd_toStartOf="@+id/valueStartLayout"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/valueStartLayout" />
+
+    <android.support.design.widget.TextInputLayout
+        android:id="@+id/valueStartLayout"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:hint="value"
+        app:layout_constraintEnd_toEndOf="@+id/valueReachLayout"
+        app:layout_constraintStart_toStartOf="@+id/valueReachLayout"
+        app:layout_constraintTop_toBottomOf="@+id/valueReachLayout">
+
+        <android.support.design.widget.TextInputEditText
+            android:id="@+id/valueStart"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:inputType="numberDecimal"
+            android:maxLines="1" />
+    </android.support.design.widget.TextInputLayout>
+
+    <Switch
+        android:id="@+id/valueCumulativeSwitch"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:text="Accumulate logged values (Useful for reaching number of pages read or blog posts written)"
+        android:textAppearance="@style/TextAppearance.AppCompat.Body1"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/valueStartLayout" />
+
+</android.support.constraint.ConstraintLayout>

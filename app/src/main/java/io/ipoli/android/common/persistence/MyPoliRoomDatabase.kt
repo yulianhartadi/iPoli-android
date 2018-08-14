@@ -6,6 +6,7 @@ import android.arch.persistence.room.migration.Migration
 import android.content.Context
 import io.ipoli.android.challenge.entity.SharingPreference
 import io.ipoli.android.challenge.persistence.ChallengeDao
+import io.ipoli.android.challenge.persistence.DbTrackedValue
 import io.ipoli.android.challenge.persistence.RoomChallenge
 import io.ipoli.android.dailychallenge.data.persistence.DailyChallengeDao
 import io.ipoli.android.dailychallenge.data.persistence.RoomDailyChallenge
@@ -23,6 +24,7 @@ import io.ipoli.android.tag.persistence.RoomTag
 import io.ipoli.android.tag.persistence.TagDao
 import org.json.JSONArray
 import org.json.JSONObject
+import java.util.*
 
 
 class Converters {
@@ -341,6 +343,18 @@ object Migration2To3 : Migration(2, 3) {
     }
 }
 
+object Migration3To4 : Migration(3, 4) {
+
+    override fun migrate(database: SupportSQLiteDatabase) {
+        val trackedValue = DbTrackedValue()
+        trackedValue.id = UUID.randomUUID().toString()
+        trackedValue.type = DbTrackedValue.Type.PROGRESS.name
+        val default = Converters().fromListOfObjectMap(listOf(trackedValue.map))
+
+        database.execSQL("ALTER TABLE challenges ADD COLUMN `trackedValues` TEXT NOT NULL DEFAULT '$default'")
+    }
+}
+
 @Database(
     entities = [
         RoomPlayer::class,
@@ -357,7 +371,7 @@ object Migration2To3 : Migration(2, 3) {
         RoomEntityReminder::class,
         RoomPost::class
     ],
-    version = 3,
+    version = 4,
     exportSchema = false
 )
 @TypeConverters(Converters::class)
@@ -397,7 +411,11 @@ abstract class MyPoliRoomDatabase : RoomDatabase() {
                     context.applicationContext,
                     MyPoliRoomDatabase::class.java, "myPoli.db"
                 )
-                .addMigrations(Migration1To2, Migration2To3)
+                .addMigrations(
+                    Migration1To2,
+                    Migration2To3,
+                    Migration3To4
+                )
                 .addCallback(CALLBACK)
                 .build()
 

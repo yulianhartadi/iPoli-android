@@ -6,6 +6,7 @@ import io.ipoli.android.challenge.QuestPickerViewState
 import io.ipoli.android.challenge.add.EditChallengeAction
 import io.ipoli.android.challenge.add.EditChallengeViewState
 import io.ipoli.android.challenge.complete.CompleteChallengePopup
+import io.ipoli.android.challenge.entity.Challenge
 import io.ipoli.android.challenge.predefined.PersonalizeChallengeAction
 import io.ipoli.android.challenge.predefined.PersonalizeChallengeViewState
 import io.ipoli.android.challenge.predefined.entity.PredefinedChallengeData
@@ -23,6 +24,7 @@ import kotlinx.coroutines.experimental.android.UI
 import kotlinx.coroutines.experimental.launch
 import org.threeten.bp.LocalDate
 import space.traversal.kapsule.required
+import java.util.*
 
 /**
  * Created by Polina Zhelyazkova <polina@mypoli.fun>
@@ -35,6 +37,7 @@ object ChallengeSideEffectHandler : AppSideEffectHandler() {
     private val removeChallengeUseCase by required { removeChallengeUseCase }
     private val removeQuestFromChallengeUseCase by required { removeQuestFromChallengeUseCase }
     private val removeHabitFromChallengeUseCase by required { removeHabitFromChallengeUseCase }
+    private val logDataUseCase by required { logDataUseCase }
     private val loadQuestPickerQuestsUseCase by required { loadQuestPickerQuestsUseCase }
     private val completeChallengeUseCase by required { completeChallengeUseCase }
     private val schedulePredefinedChallengeUseCase by required { schedulePredefinedChallengeUseCase }
@@ -76,6 +79,7 @@ object ChallengeSideEffectHandler : AppSideEffectHandler() {
                     icon = s.icon,
                     difficulty = s.difficulty,
                     end = s.end,
+                    trackedValues = s.trackedValues,
                     motivations = listOf(s.motivation1, s.motivation2, s.motivation3),
                     allQuests = s.allQuests,
                     selectedQuestIds = s.selectedQuestIds,
@@ -97,6 +101,7 @@ object ChallengeSideEffectHandler : AppSideEffectHandler() {
                         icon = s.icon,
                         difficulty = s.difficulty,
                         end = s.end,
+                        trackedValues = s.trackedValues,
                         motivations = listOf(s.motivation1, s.motivation2, s.motivation3),
                         note = s.note
                     )
@@ -134,6 +139,16 @@ object ChallengeSideEffectHandler : AppSideEffectHandler() {
                 )
             }
 
+            is ChallengeAction.LogValue ->
+                logDataUseCase.execute(
+                    LogDataUseCase.Params(
+                        action.challengeId,
+                        action.trackValueId,
+                        action.log
+                    )
+                )
+
+
             is ChallengeAction.Complete -> {
                 val c =
                     completeChallengeUseCase.execute(CompleteChallengeUseCase.Params(action.challengeId))
@@ -163,13 +178,18 @@ object ChallengeSideEffectHandler : AppSideEffectHandler() {
                         color = predefinedChallenge.color,
                         icon = predefinedChallenge.icon,
                         difficulty = predefinedChallenge.difficulty,
+                        trackedValues = listOf(
+                            Challenge.TrackedValue.Progress(
+                                id = UUID.randomUUID().toString(),
+                                history = emptyMap<LocalDate, Challenge.TrackedValue.Log>().toSortedMap()
+                            )
+                        ),
                         motivations = predefinedChallenge.motivations,
                         end = LocalDate.now().plusDays((predefinedChallenge.durationDays - 1).toLong()),
                         quests = baseQuests
                     )
                 )
             }
-
         }
 
     }

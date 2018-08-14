@@ -113,12 +113,18 @@ abstract class BaseDialogController : RestoreViewOnCreateController {
         dialog.window.clearFlags(
             WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE
         )
+        onShow(dialog.window.decorView)
     }
 
+    protected open fun onShow(contentView: View) {}
+
     override fun onDetach(view: View) {
-        super.onDetach(view)
+        onHide(dialog.window.decorView)
         dialog.hide()
+        super.onDetach(view)
     }
+
+    protected open fun onHide(contentView: View) {}
 
     override fun onDestroyView(view: View) {
         super.onDestroyView(view)
@@ -238,12 +244,18 @@ abstract class ReduxDialogController<A : Action, VS : ViewState, out R : ViewSta
         dialog.window.clearFlags(
             WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE
         )
+        onShow(dialog.window.decorView)
     }
 
+    protected open fun onShow(contentView: View) {}
+
     override fun onDetach(view: View) {
-        super.onDetach(view)
+        onHide(dialog.window.decorView)
         dialog.hide()
+        super.onDetach(view)
     }
+
+    protected open fun onHide(contentView: View) {}
 
     override fun onDestroyView(view: View) {
         super.onDestroyView(view)
@@ -315,21 +327,21 @@ abstract class ReduxDialogController<A : Action, VS : ViewState, out R : ViewSta
     }
 
     protected fun setNeutralButtonListener(listener: (() -> Unit)?) {
-        dialog.getButton(DialogInterface.BUTTON_NEUTRAL).setOnClickListener {
+        dialog.getButton(DialogInterface.BUTTON_NEUTRAL).onDebounceClick {
             if (listener != null) listener()
             else dismiss()
         }
     }
 
     protected fun setPositiveButtonListener(listener: (() -> Unit)?) {
-        dialog.getButton(DialogInterface.BUTTON_POSITIVE).setOnClickListener {
+        dialog.getButton(DialogInterface.BUTTON_POSITIVE).onDebounceClick {
             if (listener != null) listener()
             else dismiss()
         }
     }
 
     protected fun setNegativeButtonListener(listener: (() -> Unit)?) {
-        dialog.getButton(DialogInterface.BUTTON_NEGATIVE).setOnClickListener {
+        dialog.getButton(DialogInterface.BUTTON_NEGATIVE).onDebounceClick {
             if (listener != null) listener()
             else dismiss()
         }

@@ -46,21 +46,21 @@
 
             <TextView
                 style="@style/EditSimpleTextViewRow"
-                android:clickable="false"
-                android:focusable="false"
-                android:layout_height="match_parent"
                 android:layout_width="0dp"
+                android:layout_height="match_parent"
                 android:layout_weight="1"
+                android:clickable="false"
                 android:drawableStart="@drawable/ic_tags_white_24dp"
+                android:focusable="false"
                 android:text="@string/tags" />
 
             <TextView
                 android:id="@+id/maxTagsMessage"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textAppearance="@style/TextAppearance.AppCompat.Caption"
                 android:text="@string/max_tags_message"
-                android:textColor="@color/md_light_text_70"/>
+                android:textAppearance="@style/TextAppearance.AppCompat.Caption"
+                android:textColor="@color/md_light_text_70" />
 
         </LinearLayout>
 
@@ -86,43 +86,6 @@
                 android:background="@null"
                 android:hint="@string/add_tag"
                 android:maxLines="1" />
-
-        </LinearLayout>
-
-        <View style="@style/EditSimpleDivider" />
-
-        <View
-            style="@style/EditSimpleDivider"
-            android:layout_marginTop="60dp" />
-
-        <TextView
-            android:id="@+id/challengeEndDate"
-            style="@style/EditSimpleTextViewRow"
-            android:layout_marginTop="32dp"
-            android:drawableStart="@drawable/ic_due_date_white_24dp" />
-
-        <View style="@style/EditSimpleDivider" />
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="60dp"
-            android:gravity="center_vertical"
-            android:paddingEnd="16dp"
-            android:paddingStart="16dp">
-
-            <ImageView
-                android:layout_width="24dp"
-                android:layout_height="24dp"
-                android:src="@drawable/ic_dumbbell_white_24dp" />
-
-            <Spinner
-                android:id="@+id/challengeDifficulty"
-                style="@style/Widget.AppCompat.Spinner.DropDown"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="16dp"
-                android:backgroundTint="@color/md_white"
-                android:entries="@array/difficulties" />
 
         </LinearLayout>
 
@@ -179,6 +142,116 @@
 
         <View style="@style/EditSimpleDivider" />
 
+        <LinearLayout
+            android:id="@+id/challengeTrackedValues"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="16dp"
+            android:orientation="vertical">
+
+            <TextView
+                style="@style/EditSimpleTextViewRow"
+                android:layout_height="48dp"
+                android:drawableStart="@drawable/ic_trending_up_white_24dp"
+                android:text="@string/tracked_values" />
+
+            <include
+                android:id="@+id/resultCompletionItem"
+                layout="@layout/item_challenge_summary_tracked_value"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="56dp" />
+
+            <TextView
+                android:id="@+id/addChallengeCompleteAll"
+                android:layout_width="match_parent"
+                android:layout_height="42dp"
+                android:layout_marginStart="56dp"
+                android:ellipsize="end"
+                android:gravity="center_vertical"
+                android:maxLines="1"
+                android:text="Track Complete All"
+                android:textAppearance="@style/TextAppearance.AppCompat.Body1"
+                android:textColor="@color/md_light_text_70" />
+
+            <android.support.v7.widget.RecyclerView
+                android:id="@+id/challengeTargetValueList"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="56dp" />
+
+            <TextView
+                android:id="@+id/addChallengeTargetValue"
+                android:layout_width="match_parent"
+                android:layout_height="42dp"
+                android:layout_marginStart="56dp"
+                android:ellipsize="end"
+                android:gravity="center_vertical"
+                android:maxLines="1"
+                android:text="+ Target value"
+                android:textAppearance="@style/TextAppearance.AppCompat.Body1"
+                android:textColor="@color/md_light_text_70" />
+
+            <android.support.v7.widget.RecyclerView
+                android:id="@+id/challengeAverageValueList"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="56dp" />
+
+            <TextView
+                android:id="@+id/addChallengeAverageValue"
+                android:layout_width="match_parent"
+                android:layout_height="42dp"
+                android:layout_marginStart="56dp"
+                android:ellipsize="end"
+                android:gravity="center_vertical"
+                android:maxLines="1"
+                android:text="+ Average value"
+                android:textAppearance="@style/TextAppearance.AppCompat.Body1"
+                android:textColor="@color/md_light_text_70" />
+
+        </LinearLayout>
+
+        <View style="@style/EditSimpleDivider" />
+
+        <View
+            style="@style/EditSimpleDivider"
+            android:layout_marginTop="60dp" />
+
+        <TextView
+            android:id="@+id/challengeEndDate"
+            style="@style/EditSimpleTextViewRow"
+            android:layout_marginTop="32dp"
+            android:drawableStart="@drawable/ic_due_date_white_24dp" />
+
+        <View style="@style/EditSimpleDivider" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="60dp"
+            android:gravity="center_vertical"
+            android:paddingEnd="16dp"
+            android:paddingStart="16dp">
+
+            <ImageView
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:src="@drawable/ic_dumbbell_white_24dp" />
+
+            <Spinner
+                android:id="@+id/challengeDifficulty"
+                style="@style/Widget.AppCompat.Spinner.DropDown"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:backgroundTint="@color/md_white"
+                android:entries="@array/difficulties" />
+
+        </LinearLayout>
+
+
+        <View style="@style/EditSimpleDivider" />
+
         <TextView
             android:id="@+id/challengeColor"
             style="@style/EditSimpleTextViewRow"
@@ -193,13 +266,12 @@
             android:drawableStart="@drawable/ic_icon_white_24dp"
             android:text="@string/icon" />
 
-        <View style="@style/EditSimpleDivider"/>
+        <View style="@style/EditSimpleDivider" />
 
         <View
             android:id="@+id/questsTopDivider"
             style="@style/EditSimpleDivider"
-            android:layout_marginTop="60dp"
-            />
+            android:layout_marginTop="60dp" />
 
         <TextView
             android:id="@+id/questsTitle"
@@ -232,7 +304,9 @@
 
         </LinearLayout>
 
-        <View style="@style/EditSimpleDivider" android:id="@+id/questsBottomDivider"/>
+        <View
+            android:id="@+id/questsBottomDivider"
+            style="@style/EditSimpleDivider" />
 
         <TextView
             android:id="@+id/challengeNote"

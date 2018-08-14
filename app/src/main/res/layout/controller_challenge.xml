@@ -36,61 +36,17 @@
                     android:layout_gravity="center_horizontal"
                     android:layout_marginEnd="16dp"
                     android:layout_marginStart="16dp"
+                    android:layout_marginTop="16dp"
                     android:ellipsize="marquee"
                     android:gravity="center_horizontal"
                     android:maxLines="3"
                     android:paddingTop="?attr/actionBarSize" />
 
-                <RelativeLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginBottom="32dp"
-                    android:layout_marginTop="32dp">
-
-                    <TextView
-                        android:id="@+id/progressLabel"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_above="@+id/progress"
-                        android:layout_alignParentStart="true"
-                        android:layout_alignParentTop="true"
-                        android:layout_marginBottom="8dp"
-                        android:layout_marginStart="32dp"
-                        android:text="Progress"
-                        android:textAppearance="@style/TextAppearance.AppCompat.Body2"
-                        android:textColor="@color/md_light_text_70"
-                        android:textSize="16sp" />
-
-                    <TextView
-                        android:id="@+id/progressText"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_alignParentEnd="true"
-                        android:layout_alignParentTop="true"
-                        android:layout_marginBottom="8dp"
-                        android:layout_marginEnd="32dp"
-                        android:textAppearance="@style/TextAppearance.AppCompat.Body1"
-                        android:textColor="@color/md_light_text_70" />
-
-                    <ProgressBar
-                        android:id="@+id/progress"
-                        style="?android:attr/progressBarStyleHorizontal"
-                        android:layout_width="match_parent"
-                        android:layout_height="8dp"
-                        android:layout_below="@+id/progressText"
-                        android:layout_marginEnd="32dp"
-                        android:layout_marginStart="32dp"
-                        android:clickable="false"
-                        android:max="100"
-                        android:progressDrawable="@drawable/repeating_quest_item_progress" />
-
-                </RelativeLayout>
-
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="24dp"
-                    android:layout_marginTop="8dp"
+                    android:layout_marginTop="24dp"
                     android:weightSum="3">
 
                     <LinearLayout
@@ -100,6 +56,19 @@
                         android:orientation="vertical">
 
                         <TextView
+                            android:id="@+id/difficultyHint"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center_horizontal"
+                            android:layout_marginTop="8dp"
+                            android:drawablePadding="8dp"
+                            android:gravity="center_vertical"
+                            android:includeFontPadding="false"
+                            android:text="Difficulty"
+                            android:textAppearance="@style/TextAppearance.AppCompat.Body1"
+                            android:textColor="@color/md_light_text_70" />
+
+                        <TextView
                             android:id="@+id/difficulty"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
@@ -107,18 +76,6 @@
                             android:paddingBottom="4dp"
                             android:textAppearance="@style/TextAppearance.AppCompat.Subhead" />
 
-                        <TextView
-                            android:id="@+id/difficultyHint"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_gravity="center_horizontal"
-                            android:layout_marginTop="8dp"
-                            android:text="Difficulty"
-                            android:drawablePadding="8dp"
-                            android:gravity="center_vertical"
-                            android:includeFontPadding="false"
-                            android:textAppearance="@style/TextAppearance.AppCompat.Body1"
-                            android:textColor="@color/md_light_text_70" />
                     </LinearLayout>
 
                     <LinearLayout
@@ -126,6 +83,19 @@
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
                         android:orientation="vertical">
+
+                        <TextView
+                            android:id="@+id/endDateHint"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center_horizontal"
+                            android:layout_marginTop="8dp"
+                            android:drawablePadding="8dp"
+                            android:gravity="center_vertical"
+                            android:includeFontPadding="false"
+                            android:text="Deadline"
+                            android:textAppearance="@style/TextAppearance.AppCompat.Body1"
+                            android:textColor="@color/md_light_text_70" />
 
                         <TextView
                             android:id="@+id/endDate"
@@ -135,18 +105,6 @@
                             android:paddingBottom="4dp"
                             android:textAppearance="@style/TextAppearance.AppCompat.Subhead" />
 
-                        <TextView
-                            android:id="@+id/endDateHint"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_gravity="center_horizontal"
-                            android:layout_marginTop="8dp"
-                            android:text="Ends date"
-                            android:drawablePadding="8dp"
-                            android:gravity="center_vertical"
-                            android:includeFontPadding="false"
-                            android:textAppearance="@style/TextAppearance.AppCompat.Body1"
-                            android:textColor="@color/md_light_text_70" />
                     </LinearLayout>
 
                     <LinearLayout
@@ -154,14 +112,6 @@
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
                         android:orientation="vertical">
-
-                        <TextView
-                            android:id="@+id/nextDate"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_gravity="center_horizontal"
-                            android:paddingBottom="4dp"
-                            android:textAppearance="@style/TextAppearance.AppCompat.Subhead" />
 
                         <TextView
                             android:id="@+id/nextDateHint"
@@ -175,6 +125,14 @@
                             android:text="Next date"
                             android:textAppearance="@style/TextAppearance.AppCompat.Body1"
                             android:textColor="@color/md_light_text_70" />
+
+                        <TextView
+                            android:id="@+id/nextDate"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center_horizontal"
+                            android:paddingBottom="4dp"
+                            android:textAppearance="@style/TextAppearance.AppCompat.Subhead" />
                     </LinearLayout>
 
 
@@ -195,120 +153,130 @@
     <android.support.v4.widget.NestedScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:background="?android:colorBackground"
         app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
         <LinearLayout
+            android:id="@+id/contentContainer"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:paddingBottom="60dp"
             android:paddingTop="16dp">
 
             <org.apmem.tools.layouts.FlowLayout
                 android:id="@+id/tagList"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="8dp"
                 android:layout_marginEnd="16dp"
                 android:layout_marginStart="16dp"
                 android:gravity="center_horizontal" />
 
-            <TextView
-                style="@style/SectionTitle"
-                android:text="Progress over the last 30 days" />
-
-            <com.github.mikephil.charting.charts.LineChart
-                android:id="@+id/progressChart"
+            <android.support.v7.widget.RecyclerView
+                android:id="@+id/trackedValueList"
                 android:layout_width="match_parent"
-                android:layout_height="320dp" />
-
-            <TextView
-                style="@style/SectionTitle"
-                android:text="Why will I do it?" />
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp" />
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="32dp"
-                android:orientation="vertical">
+                android:layout_marginEnd="8dp"
+                android:layout_marginStart="8dp"
+                android:layout_marginTop="8dp"
+                android:layout_marginBottom="16dp"
+                android:background="@drawable/rounded_rectangle_white_background"
+                android:orientation="vertical"
+                android:paddingBottom="40dp">
 
                 <TextView
-                    android:id="@+id/motivation1"
+                    style="@style/SectionTitle"
+                    android:text="Why will I do it?" />
+
+                <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:layout_marginStart="32dp"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:id="@+id/motivation1"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:gravity="center_vertical"
+                        android:textAppearance="@style/TextAppearance.AppCompat.Body1" />
+
+                    <TextView
+                        android:id="@+id/motivation2"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="16dp"
+                        android:gravity="center_vertical"
+                        android:textAppearance="@style/TextAppearance.AppCompat.Body1" />
+
+                    <TextView
+                        android:id="@+id/motivation3"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="16dp"
+                        android:gravity="center_vertical"
+                        android:textAppearance="@style/TextAppearance.AppCompat.Body1" />
+                </LinearLayout>
+
+                <TextView
+                    style="@style/SectionTitle"
+                    android:text="@string/quests" />
+
+                <android.support.v7.widget.RecyclerView
+                    android:id="@+id/questList"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" />
+
+                <TextView
+                    android:id="@+id/emptyQuestList"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:paddingBottom="8dp"
+                    android:paddingTop="8dp"
+                    android:text="@string/challenge_empty_quest_list"
+                    android:textAlignment="center"
+                    android:textAppearance="@style/TextAppearance.AppCompat.Caption" />
+
+                <TextView
+                    style="@style/SectionTitle"
+                    android:text="@string/habits" />
+
+                <android.support.v7.widget.RecyclerView
+                    android:id="@+id/habitList"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" />
+
+                <TextView
+                    android:id="@+id/emptyHabitList"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:paddingBottom="8dp"
+                    android:paddingTop="8dp"
+                    android:text="@string/challenge_empty_habit_list"
+                    android:textAlignment="center"
+                    android:textAppearance="@style/TextAppearance.AppCompat.Caption" />
+
+                <TextView
+                    style="@style/SectionTitle"
+                    android:text="@string/note" />
+
+                <TextView
+                    android:id="@+id/note"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="16dp"
+                    android:layout_marginStart="16dp"
+                    android:background="?attr/selectableItemBackground"
                     android:gravity="center_vertical"
                     android:textAppearance="@style/TextAppearance.AppCompat.Body1" />
 
-                <TextView
-                    android:id="@+id/motivation2"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="16dp"
-                    android:gravity="center_vertical"
-                    android:textAppearance="@style/TextAppearance.AppCompat.Body1" />
-
-                <TextView
-                    android:id="@+id/motivation3"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="16dp"
-                    android:gravity="center_vertical"
-                    android:textAppearance="@style/TextAppearance.AppCompat.Body1" />
             </LinearLayout>
-
-            <TextView
-                style="@style/SectionTitle"
-                android:text="@string/quests" />
-
-            <android.support.v7.widget.RecyclerView
-                android:id="@+id/questList"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content" />
-
-            <TextView
-                android:id="@+id/emptyQuestList"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:gravity="center"
-                android:paddingBottom="8dp"
-                android:paddingTop="8dp"
-                android:text="@string/challenge_empty_quest_list"
-                android:textAlignment="center"
-                android:textAppearance="@style/TextAppearance.AppCompat.Caption" />
-
-            <TextView
-                style="@style/SectionTitle"
-                android:text="@string/habits" />
-
-            <android.support.v7.widget.RecyclerView
-                android:id="@+id/habitList"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content" />
-
-            <TextView
-                android:id="@+id/emptyHabitList"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:gravity="center"
-                android:paddingBottom="8dp"
-                android:paddingTop="8dp"
-                android:text="@string/challenge_empty_habit_list"
-                android:textAlignment="center"
-                android:textAppearance="@style/TextAppearance.AppCompat.Caption" />
-
-            <TextView
-                style="@style/SectionTitle"
-                android:text="@string/note" />
-
-            <TextView
-                android:id="@+id/note"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginEnd="16dp"
-                android:layout_marginStart="16dp"
-                android:background="?attr/selectableItemBackground"
-                android:gravity="center_vertical"
-                android:textAppearance="@style/TextAppearance.AppCompat.Body1" />
 
         </LinearLayout>
 

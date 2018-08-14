@@ -35,7 +35,8 @@ class SaveChallengeUseCaseSpek : Spek({
                             end = LocalDate.now(),
                             allQuests = listOf(),
                             selectedQuestIds = setOf(),
-                            motivations = listOf()
+                            motivations = listOf(),
+                            trackedValues = emptyList()
                         )
                     )
                 }
