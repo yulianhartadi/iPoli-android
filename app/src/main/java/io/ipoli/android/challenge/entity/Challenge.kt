@@ -7,6 +7,7 @@ import io.ipoli.android.quest.*
 import io.ipoli.android.tag.Tag
 import org.threeten.bp.Instant
 import org.threeten.bp.LocalDate
+import java.util.*
 
 /**
  * Created by Venelin Valkov <venelin@mypoli.fun>
@@ -34,12 +35,56 @@ data class Challenge(
     val repeatingQuests: List<RepeatingQuest> = emptyList(),
     val habits: List<Habit> = emptyList(),
     val progress: Progress = Progress(),
+    val trackedValues: List<TrackedValue> = emptyList(),
     val note: String = "",
     val sharingPreference: SharingPreference = SharingPreference.PRIVATE,
     override val createdAt: Instant = Instant.now(),
     override val updatedAt: Instant = Instant.now(),
     val removedAt: Instant? = null
 ) : EntityWithTags {
+
+    data class Progress(
+        val completedCount: Int = 0,
+        val allCount: Int = 0
+    )
+
+    sealed class TrackedValue {
+
+        abstract val id: String
+        abstract val history: SortedMap<LocalDate, Log>
+
+        data class Progress(
+            override val id: String,
+            val completedCount: Int = 0,
+            val allCount: Int = 0,
+            override val history: SortedMap<LocalDate, Log>
+        ) : TrackedValue()
+
+        data class Target(
+            override val id: String,
+            val name: String,
+            val units: String,
+            val startValue: Double,
+            val targetValue: Double,
+            val currentValue: Double,
+            val remainingValue: Double,
+            val isCumulative: Boolean = false,
+            override val history: SortedMap<LocalDate, Log>,
+            val cumulativeHistory: SortedMap<LocalDate, Log>? = null
+        ) : TrackedValue()
+
+        data class Average(
+            override val id: String,
+            val name: String,
+            val units: String,
+            val targetValue: Double,
+            val lowerBound: Double,
+            val upperBound: Double,
+            override val history: SortedMap<LocalDate, Log>
+        ) : TrackedValue()
+
+        data class Log(val value: Double, val time: Time, val date: LocalDate)
+    }
 
     enum class Difficulty {
         EASY, NORMAL, HARD, HELL
@@ -56,13 +101,6 @@ data class Challenge(
 
     val motivation3: String
         get() = if (motivations.size > 2) motivations[2] else ""
-
-
-    data class Progress(
-        val completedCount: Int = 0,
-        val allCount: Int = 0,
-        val history: Map<LocalDate, Float> = mapOf()
-    )
 
     val isCompleted: Boolean
         get() = completedAtDate != null

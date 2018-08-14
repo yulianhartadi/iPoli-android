@@ -403,6 +403,7 @@ interface UseCaseModule {
     val savePostsUseCase: SavePostsUseCase
     val savePostReactionUseCase: SavePostReactionUseCase
     val createReactionHistoryItemsUseCase: CreateReactionHistoryItemsUseCase
+    val logDataUseCase: LogDataUseCase
 }
 
 class MainUseCaseModule(private val context: Context) : UseCaseModule {
@@ -903,6 +904,9 @@ class MainUseCaseModule(private val context: Context) : UseCaseModule {
 
     override val createReactionHistoryItemsUseCase
         get() = CreateReactionHistoryItemsUseCase(playerRepository, friendRepository)
+
+    override val logDataUseCase
+        get() = LogDataUseCase(challengeRepository)
 }
 
 interface StateStoreModule {

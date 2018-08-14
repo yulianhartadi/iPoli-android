@@ -64,7 +64,14 @@ class UndoCompleteHabitUseCaseSpek : Spek({
             val habit = executeUseCase(
                 TestUtil.habit.copy(
                     timesADay = 2,
-                    history = mapOf(today to completedEntry.copy(completedAtTimes = listOf(now, now.plus(30))))
+                    history = mapOf(
+                        today to completedEntry.copy(
+                            completedAtTimes = listOf(
+                                now,
+                                now.plus(30)
+                            )
+                        )
+                    )
                 ),
                 today
             )
@@ -182,7 +189,7 @@ class UndoCompleteHabitUseCaseSpek : Spek({
 
             val removeRewardFromPlayerUseCaseMock = mock<RemoveRewardFromPlayerUseCase>()
             val today = LocalDate.now()
-            val habit = executeUseCase(
+            executeUseCase(
                 TestUtil.habit.copy(
                     history = mapOf(
                         today to completedEntry
@@ -191,7 +198,8 @@ class UndoCompleteHabitUseCaseSpek : Spek({
                 today,
                 removeRewardFromPlayerUseCaseMock
             )
-            val expectedReward = SimpleReward(completedEntry.experience!!, completedEntry.coins!!, Quest.Bounty.None)
+            val expectedReward =
+                SimpleReward(completedEntry.experience!!, completedEntry.coins!!, Quest.Bounty.None)
             Verify on removeRewardFromPlayerUseCaseMock that removeRewardFromPlayerUseCaseMock.execute(
                 expectedReward
             ) was called
@@ -201,7 +209,7 @@ class UndoCompleteHabitUseCaseSpek : Spek({
 
             val removeRewardFromPlayerUseCaseMock = mock<RemoveRewardFromPlayerUseCase>()
             val today = LocalDate.now()
-            val habit = executeUseCase(
+            executeUseCase(
                 TestUtil.habit.copy(
                     history = mapOf(
                         today to completedEntry
@@ -211,7 +219,8 @@ class UndoCompleteHabitUseCaseSpek : Spek({
                 today,
                 removeRewardFromPlayerUseCaseMock
             )
-            val expectedReward = SimpleReward(completedEntry.experience!!, completedEntry.coins!!, Quest.Bounty.None)
+            val expectedReward =
+                SimpleReward(completedEntry.experience!!, completedEntry.coins!!, Quest.Bounty.None)
             `Verify not called` on removeRewardFromPlayerUseCaseMock that removeRewardFromPlayerUseCaseMock.execute(
                 expectedReward
             )
@@ -221,7 +230,7 @@ class UndoCompleteHabitUseCaseSpek : Spek({
 
             val removeRewardFromPlayerUseCaseMock = mock<RemoveRewardFromPlayerUseCase>()
             val today = LocalDate.now()
-            val habit = executeUseCase(
+            executeUseCase(
                 TestUtil.habit.copy(
                     history = mapOf(
                         today to completedEntry
@@ -231,7 +240,8 @@ class UndoCompleteHabitUseCaseSpek : Spek({
                 today,
                 removeRewardFromPlayerUseCaseMock
             )
-            val expectedReward = SimpleReward(completedEntry.experience!!, completedEntry.coins!!, Quest.Bounty.None)
+            val expectedReward =
+                SimpleReward(completedEntry.experience!!, completedEntry.coins!!, Quest.Bounty.None)
             `Verify not called` on removeRewardFromPlayerUseCaseMock that removeRewardFromPlayerUseCaseMock.execute(
                 expectedReward
             )

@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginEnd="8dp"
+    android:layout_marginStart="8dp"
+    android:background="@drawable/rounded_rectangle_white_background">
+
+    <TextView
+        android:id="@+id/progressCompleteSectionTitle"
+        style="@style/SectionTitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:text="Progress"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <ProgressBar
+        android:id="@+id/progressCompleteProgress"
+        style="?android:attr/progressBarStyleHorizontal"
+        android:layout_width="110dp"
+        android:layout_height="110dp"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="8dp"
+        android:background="@drawable/target_value_progress_background"
+        android:clickable="false"
+        android:max="100"
+        android:progressDrawable="@drawable/target_value_progress"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/progressCompleteSectionTitle" />
+
+    <TextView
+        android:id="@+id/progressCompleteLabel"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Complete"
+        android:textAppearance="@style/TextAppearance.AppCompat.Caption"
+        app:layout_constraintBottom_toTopOf="@+id/progressCompleteCurrent"
+        app:layout_constraintEnd_toEndOf="@+id/progressCompleteProgress"
+        app:layout_constraintStart_toStartOf="@+id/progressCompleteProgress"
+        app:layout_constraintTop_toTopOf="@+id/progressCompleteProgress"
+        app:layout_constraintVertical_chainStyle="packed" />
+
+    <TextView
+        android:id="@+id/progressCompleteCurrent"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="4dp"
+        android:textAppearance="@style/TextAppearance.AppCompat.Title"
+        android:textColor="?attr/colorPrimary"
+        app:layout_constraintBottom_toBottomOf="@+id/progressCompleteProgress"
+        app:layout_constraintEnd_toEndOf="@+id/progressCompleteProgress"
+        app:layout_constraintStart_toStartOf="@+id/progressCompleteProgress"
+        app:layout_constraintTop_toBottomOf="@+id/progressCompleteLabel" />
+
+    <TextView
+        android:id="@+id/progressCompleteRemaining"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="16dp"
+        android:layout_marginTop="8dp"
+        android:textAppearance="@style/TextAppearance.AppCompat.Body1"
+        android:textColor="@color/md_dark_text_54"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/progressCompleteProgress" />
+
+</android.support.constraint.ConstraintLayout>

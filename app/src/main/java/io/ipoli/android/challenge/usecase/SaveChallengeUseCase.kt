@@ -42,6 +42,7 @@ class SaveChallengeUseCase(
                 icon = parameters.icon,
                 difficulty = parameters.difficulty,
                 endDate = parameters.end,
+                trackedValues = parameters.trackedValues,
                 motivations = transformMotivations(parameters.motivations),
                 note = parameters.note
             )
@@ -58,6 +59,7 @@ class SaveChallengeUseCase(
                 difficulty = parameters.difficulty,
                 startDate = LocalDate.now(),
                 endDate = parameters.end,
+                trackedValues = parameters.trackedValues,
                 motivations = transformMotivations(parameters.motivations),
                 note = parameters.note
             )
@@ -90,6 +92,7 @@ class SaveChallengeUseCase(
         open val color: Color,
         open val icon: Icon?,
         open val difficulty: Challenge.Difficulty,
+        open val trackedValues: List<Challenge.TrackedValue>,
         open val motivations: List<String>,
         open val end: LocalDate,
         open val note: String
@@ -102,11 +105,12 @@ class SaveChallengeUseCase(
             override val color: Color,
             override val icon: Icon?,
             override val difficulty: Challenge.Difficulty,
+            override val trackedValues: List<Challenge.TrackedValue>,
             override val motivations: List<String>,
             override val end: LocalDate,
             override val note: String = ""
 
-        ) : Params(id, name, tags, color, icon, difficulty, motivations, end, note)
+        ) : Params(id, name, tags, color, icon, difficulty, trackedValues, motivations, end, note)
 
         data class WithExistingQuests(
             val allQuests: List<BaseQuest> = listOf(),
@@ -117,11 +121,12 @@ class SaveChallengeUseCase(
             override val color: Color,
             override val icon: Icon?,
             override val difficulty: Challenge.Difficulty,
+            override val trackedValues: List<Challenge.TrackedValue>,
             override val motivations: List<String>,
             override val end: LocalDate,
             override val note: String = ""
 
-        ) : Params(id, name, tags, color, icon, difficulty, motivations, end, note)
+        ) : Params(id, name, tags, color, icon, difficulty, trackedValues, motivations, end, note)
     }
 
     private fun transformMotivations(motivations: List<String>) =

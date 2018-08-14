@@ -17,6 +17,7 @@ import io.ipoli.android.tag.persistence.RoomTag
 import io.ipoli.android.tag.persistence.RoomTagMapper
 import io.ipoli.android.tag.persistence.TagDao
 import org.jetbrains.annotations.NotNull
+import org.threeten.bp.LocalDate
 import java.util.*
 
 /**
@@ -122,6 +123,65 @@ class RoomChallengeRepository(dao: ChallengeDao, private val tagDao: TagDao) : C
             completedAtTime = dbObject.completedAtMinute?.let {
                 Time.of(it.toInt())
             },
+            trackedValues = dbObject.trackedValues.map { data ->
+                val valueData = data.toMutableMap()
+
+                // Due to JSON parsing bug/issue parsing 0.0f to 0
+                valueData["startValue"] = valueData["startValue"]?.toString()?.toFloat()
+                valueData["targetValue"] = valueData["targetValue"]?.toString()?.toFloat()
+                valueData["lowerBound"] = valueData["lowerBound"]?.toString()?.toFloat()
+                valueData["upperBound"] = valueData["upperBound"]?.toString()?.toFloat()
+
+                DbTrackedValue(valueData).let {
+                    when (DbTrackedValue.Type.valueOf(it.type)) {
+                        DbTrackedValue.Type.PROGRESS ->
+                            Challenge.TrackedValue.Progress(
+                                id = it.id,
+                                history = emptyMap<LocalDate, Challenge.TrackedValue.Log>().toSortedMap()
+                            )
+
+                        DbTrackedValue.Type.TARGET ->
+                            Challenge.TrackedValue.Target(
+                                id = it.id,
+                                name = it.name!!,
+                                units = it.units!!,
+                                startValue = it.startValue!!.toDouble(),
+                                targetValue = it.targetValue!!.toDouble(),
+                                currentValue = 0.0,
+                                remainingValue = 0.0,
+                                isCumulative = it.isCumulative!!,
+                                history = it.logs!!.map { logData ->
+                                    DbLog(logData.toMutableMap()).let { dbLog ->
+                                        dbLog.date.startOfDayUTC to Challenge.TrackedValue.Log(
+                                            dbLog.value.toDouble(),
+                                            Time.of(dbLog.minuteOfDay.toInt()),
+                                            dbLog.date.startOfDayUTC
+                                        )
+                                    }
+                                }.toMap().toSortedMap()
+                            )
+
+                        DbTrackedValue.Type.AVERAGE ->
+                            Challenge.TrackedValue.Average(
+                                id = it.id,
+                                name = it.name!!,
+                                units = it.units!!,
+                                targetValue = it.targetValue!!.toDouble(),
+                                lowerBound = it.lowerBound!!.toDouble(),
+                                upperBound = it.upperBound!!.toDouble(),
+                                history = it.logs!!.map { logData ->
+                                    DbLog(logData.toMutableMap()).let { dbLog ->
+                                        dbLog.date.startOfDayUTC to Challenge.TrackedValue.Log(
+                                            dbLog.value.toDouble(),
+                                            Time.of(dbLog.minuteOfDay.toInt()),
+                                            dbLog.date.startOfDayUTC
+                                        )
+                                    }
+                                }.toMap().toSortedMap()
+                            )
+                    }
+                }
+            },
             note = dbObject.note,
             sharingPreference = SharingPreference.valueOf(dbObject.sharingPreference),
             createdAt = dbObject.createdAt.instant,
@@ -143,12 +203,77 @@ class RoomChallengeRepository(dao: ChallengeDao, private val tagDao: TagDao) : C
             coins = entity.coins?.toLong(),
             completedAtDate = entity.completedAtDate?.startOfDayUTC(),
             completedAtMinute = entity.completedAtTime?.toMinuteOfDay()?.toLong(),
+            trackedValues = entity.trackedValues.map {
+                val dbVal = DbTrackedValue()
+                dbVal.id = it.id
+
+                when (it) {
+                    is Challenge.TrackedValue.Progress ->
+                        dbVal.type = DbTrackedValue.Type.PROGRESS.name
+
+                    is Challenge.TrackedValue.Target -> {
+                        dbVal.type = DbTrackedValue.Type.TARGET.name
+                        dbVal.name = it.name
+                        dbVal.units = it.units
+                        dbVal.targetValue = it.targetValue.toFloat()
+                        dbVal.isCumulative = it.isCumulative
+                        dbVal.startValue = it.startValue.toFloat()
+                        dbVal.logs = it.history.values.map { log ->
+                            val dbLog = DbLog()
+                            dbLog.value = log.value.toFloat()
+                            dbLog.minuteOfDay = log.time.toMinuteOfDay().toLong()
+                            dbLog.date = log.date.startOfDayUTC()
+                            dbLog.map
+                        }
+                    }
+
+                    is Challenge.TrackedValue.Average -> {
+                        dbVal.type = DbTrackedValue.Type.AVERAGE.name
+                        dbVal.name = it.name
+                        dbVal.units = it.units
+                        dbVal.targetValue = it.targetValue.toFloat()
+                        dbVal.lowerBound = it.lowerBound.toFloat()
+                        dbVal.upperBound = it.upperBound.toFloat()
+                        dbVal.logs = it.history.values.map { log ->
+                            val dbLog = DbLog()
+                            dbLog.value = log.value.toFloat()
+                            dbLog.minuteOfDay = log.time.toMinuteOfDay().toLong()
+                            dbLog.date = log.date.startOfDayUTC()
+                            dbLog.map
+                        }
+                    }
+                }
+                dbVal.map
+            },
             note = entity.note,
             sharingPreference = entity.sharingPreference.name,
             updatedAt = System.currentTimeMillis(),
             createdAt = entity.createdAt.toEpochMilli(),
             removedAt = entity.removedAt?.toEpochMilli()
         )
+}
+
+data class DbTrackedValue(val map: MutableMap<String, Any?> = mutableMapOf()) {
+    var id: String by map
+    var type: String by map
+    var name: String? by map
+    var units: String? by map
+    var targetValue: Float? by map
+    var startValue: Float? by map
+    var isCumulative: Boolean? by map
+    var lowerBound: Float? by map
+    var upperBound: Float? by map
+    var logs: List<Map<String, Any?>>? by map
+
+    enum class Type {
+        PROGRESS, TARGET, AVERAGE
+    }
+}
+
+data class DbLog(val map: MutableMap<String, Any?> = mutableMapOf()) {
+    var value: Float by map
+    var minuteOfDay: Long by map
+    var date: Long by map
 }
 
 @Entity(
@@ -173,6 +298,7 @@ data class RoomChallenge(
     val coins: Long?,
     val completedAtDate: Long?,
     val completedAtMinute: Long?,
+    val trackedValues: List<Map<String, Any?>>,
     val note: String,
     val sharingPreference: String,
     val createdAt: Long,
@@ -206,7 +332,7 @@ data class RoomChallenge(
 
 class FirestoreChallengeRepository(
     database: FirebaseFirestore
-) : BaseCollectionFirestoreRepository<Challenge, DbChallenge>(
+) : BaseCollectionFirestoreRepository<Challenge, FirestoreChallenge>(
     database
 ) {
 
@@ -217,10 +343,17 @@ class FirestoreChallengeRepository(
         }
 
     override fun toEntityObject(dataMap: MutableMap<String, Any?>): Challenge {
-        if(!dataMap.containsKey("sharingPreference")) {
+        if (!dataMap.containsKey("sharingPreference")) {
             dataMap["sharingPreference"] = SharingPreference.PRIVATE.name
         }
-        val c = DbChallenge(dataMap.withDefault {
+        if (!dataMap.containsKey("trackedValues")) {
+            val dbVal = DbTrackedValue()
+            dbVal.id = UUID.randomUUID().toString()
+            dbVal.type = DbTrackedValue.Type.PROGRESS.name
+            dataMap["trackedValues"] = listOf(dbVal.map)
+        }
+
+        val c = FirestoreChallenge(dataMap.withDefault {
             null
         })
 
@@ -246,14 +379,65 @@ class FirestoreChallengeRepository(
             },
             note = c.note,
             sharingPreference = SharingPreference.valueOf(c.sharingPreference),
+            trackedValues = c.trackedValues.map { data ->
+                val valueData = data.toMutableMap()
+
+                // Due to JSON parsing bug/issue parsing 0.0f to 0
+                valueData["startValue"] = valueData["startValue"]?.toString()?.toFloat()
+                valueData["targetValue"] = valueData["targetValue"]?.toString()?.toFloat()
+                valueData["lowerBound"] = valueData["lowerBound"]?.toString()?.toFloat()
+                valueData["upperBound"] = valueData["upperBound"]?.toString()?.toFloat()
+
+                DbTrackedValue(valueData).let {
+                    when (DbTrackedValue.Type.valueOf(it.type)) {
+                        DbTrackedValue.Type.PROGRESS ->
+                            Challenge.TrackedValue.Progress(
+                                id = it.id,
+                                history = emptyMap<LocalDate, Challenge.TrackedValue.Log>().toSortedMap()
+                            )
+
+                        DbTrackedValue.Type.TARGET ->
+                            Challenge.TrackedValue.Target(
+                                id = it.id,
+                                name = it.name!!,
+                                units = it.units!!,
+                                startValue = it.startValue!!.toDouble(),
+                                targetValue = it.targetValue!!.toDouble(),
+                                currentValue = 0.0,
+                                remainingValue = 0.0,
+                                isCumulative = it.isCumulative!!,
+                                history = it.logs!!.map { logData ->
+                                    DbLog(logData.toMutableMap()).let { dbLog ->
+                                        dbLog.date.startOfDayUTC to Challenge.TrackedValue.Log(
+                                            dbLog.value.toDouble(),
+                                            Time.of(dbLog.minuteOfDay.toInt()),
+                                            dbLog.date.startOfDayUTC
+                                        )
+                                    }
+                                }.toMap().toSortedMap()
+                            )
+
+                        DbTrackedValue.Type.AVERAGE ->
+                            Challenge.TrackedValue.Average(
+                                id = it.id,
+                                name = it.name!!,
+                                units = it.units!!,
+                                targetValue = it.targetValue!!.toDouble(),
+                                lowerBound = it.lowerBound!!.toDouble(),
+                                upperBound = it.upperBound!!.toDouble(),
+                                history = emptyMap<LocalDate, Challenge.TrackedValue.Log>().toSortedMap()
+                            )
+                    }
+                }
+            },
             createdAt = c.createdAt.instant,
             updatedAt = c.updatedAt.instant,
             removedAt = c.removedAt?.instant
         )
     }
 
-    override fun toDatabaseObject(entity: Challenge): DbChallenge {
-        val c = DbChallenge()
+    override fun toDatabaseObject(entity: Challenge): FirestoreChallenge {
+        val c = FirestoreChallenge()
         c.id = entity.id
         c.name = entity.name
         c.color = entity.color.name
@@ -269,6 +453,48 @@ class FirestoreChallengeRepository(
         c.completedAtMinute = entity.completedAtTime?.toMinuteOfDay()?.toLong()
         c.note = entity.note
         c.sharingPreference = entity.sharingPreference.name
+        c.trackedValues = entity.trackedValues.map {
+            val dbVal = DbTrackedValue()
+            dbVal.id = it.id
+
+            when (it) {
+                is Challenge.TrackedValue.Progress ->
+                    dbVal.type = DbTrackedValue.Type.PROGRESS.name
+
+                is Challenge.TrackedValue.Target -> {
+                    dbVal.type = DbTrackedValue.Type.TARGET.name
+                    dbVal.name = it.name
+                    dbVal.units = it.units
+                    dbVal.targetValue = it.targetValue.toFloat()
+                    dbVal.isCumulative = it.isCumulative
+                    dbVal.startValue = it.startValue.toFloat()
+                    dbVal.logs = it.history.values.map { log ->
+                        val dbLog = DbLog()
+                        dbLog.value = log.value.toFloat()
+                        dbLog.minuteOfDay = log.time.toMinuteOfDay().toLong()
+                        dbLog.date = log.date.startOfDayUTC()
+                        dbLog.map
+                    }
+                }
+
+                is Challenge.TrackedValue.Average -> {
+                    dbVal.type = DbTrackedValue.Type.AVERAGE.name
+                    dbVal.name = it.name
+                    dbVal.units = it.units
+                    dbVal.targetValue = it.targetValue.toFloat()
+                    dbVal.lowerBound = it.lowerBound.toFloat()
+                    dbVal.upperBound = it.upperBound.toFloat()
+                    dbVal.logs = it.history.values.map { log ->
+                        val dbLog = DbLog()
+                        dbLog.value = log.value.toFloat()
+                        dbLog.minuteOfDay = log.time.toMinuteOfDay().toLong()
+                        dbLog.date = log.date.startOfDayUTC()
+                        dbLog.map
+                    }
+                }
+            }
+            dbVal.map
+        }
         c.updatedAt = entity.updatedAt.toEpochMilli()
         c.createdAt = entity.createdAt.toEpochMilli()
         c.removedAt = entity.removedAt?.toEpochMilli()
@@ -303,7 +529,7 @@ class FirestoreChallengeRepository(
 }
 
 
-data class DbChallenge(override val map: MutableMap<String, Any?> = mutableMapOf()) :
+data class FirestoreChallenge(override val map: MutableMap<String, Any?> = mutableMapOf()) :
     FirestoreModel {
     override var id: String by map
     var name: String by map
@@ -320,6 +546,7 @@ data class DbChallenge(override val map: MutableMap<String, Any?> = mutableMapOf
     var completedAtMinute: Long? by map
     var note: String by map
     var sharingPreference: String by map
+    var trackedValues: List<MutableMap<String, Any?>> by map
     override var createdAt: Long by map
     override var updatedAt: Long by map
     override var removedAt: Long? by map

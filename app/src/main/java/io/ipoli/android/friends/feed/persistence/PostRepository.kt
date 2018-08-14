@@ -815,7 +815,7 @@ class AndroidPostRepository(
             id = dbPost.id,
             playerId = dbPlayer.id,
             playerAvatar = Avatar.valueOf(dbPlayer.avatar),
-            playerDisplayName = dbPlayer.displayName!!,
+            playerDisplayName = dbPlayer.displayName ?: "Unknown Hero",
             playerUsername = dbPlayer.username!!,
             playerLevel = dbPost.playerLevel.toInt(),
             data = createData(dbPost),

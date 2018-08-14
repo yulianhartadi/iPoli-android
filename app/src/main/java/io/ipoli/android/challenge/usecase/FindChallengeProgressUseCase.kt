@@ -3,6 +3,7 @@ package io.ipoli.android.challenge.usecase
 import io.ipoli.android.challenge.entity.Challenge
 import io.ipoli.android.common.UseCase
 import io.ipoli.android.common.datetime.DateUtils
+import io.ipoli.android.common.datetime.Time
 import io.ipoli.android.common.datetime.datesBetween
 import io.ipoli.android.common.datetime.daysUntil
 import io.ipoli.android.quest.Quest
@@ -79,25 +80,69 @@ class FindChallengeProgressUseCase : UseCase<FindChallengeProgressUseCase.Params
         val completedCount = challenge.quests.filter { it.isCompleted && !it.isRemoved }.size
         val allCount = repeatingCount + challenge.baseQuests.filter { it is Quest }.size
 
-        val increasePerQuest = (1f / allCount) * 100f
+        val newTrackedValues = challenge.trackedValues.map {
+            if (it is Challenge.TrackedValue.Progress) {
 
-        val historyData = challenge.startDate.datesBetween(parameters.currentDate).map {
-            it to 0f
-        }.toMap().toMutableMap()
+                val increasePerQuest = (1f / allCount) * 100f
 
-        challenge.quests
-            .filter { it.isCompleted }
-            .forEach {
-                historyData[it.completedAtDate!!] = historyData[it.completedAtDate]!! +
-                    increasePerQuest
-            }
+                val historyData =
+                    challenge.startDate.datesBetween(parameters.currentDate).map { d ->
+                        d to 0f
+                    }.toMap().toMutableMap()
+
+                challenge.quests
+                    .filter { q -> q.isCompleted }
+                    .forEach { q ->
+                        historyData[q.completedAtDate!!] = historyData[q.completedAtDate]!! +
+                            increasePerQuest
+                    }
+
+                val history = historyData.map { h ->
+                    h.key to Challenge.TrackedValue.Log(h.value.toDouble(), Time.now(), h.key)
+                }.toMap().toSortedMap()
+
+                it.copy(
+                    completedCount = completedCount,
+                    allCount = allCount,
+                    history = history
+                )
+            } else if (it is Challenge.TrackedValue.Target) {
+
+                var currentValue =
+                    if (it.history.isNotEmpty())
+                        it.history[it.history.lastKey()]!!.value
+                    else
+                        it.startValue
+
+                val cumulativeHistory = if (it.isCumulative) {
+                    currentValue = it.startValue + it.history.values.map { l ->
+                        l.value
+                    }.sum()
+
+                    var cumVal = it.startValue
+
+                    it.history.values.map { l ->
+                        cumVal += l.value
+                        l.date to l.copy(value = cumVal)
+                    }.toMap().toSortedMap()
+                } else
+                    null
+
+                it.copy(
+                    currentValue = currentValue,
+                    remainingValue = Math.abs(it.targetValue - currentValue),
+                    cumulativeHistory = cumulativeHistory
+                )
+
+            } else it
+        }
 
         return challenge.copy(
             progress = Challenge.Progress(
                 completedCount = completedCount,
-                allCount = allCount,
-                history = historyData
-            )
+                allCount = allCount
+            ),
+            trackedValues = newTrackedValues
         )
     }
 

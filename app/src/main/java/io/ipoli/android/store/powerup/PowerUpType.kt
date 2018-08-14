@@ -27,6 +27,7 @@ data class PowerUp(
         NOTES(90),
         CALENDAR_SYNC(450),
         SUB_QUESTS(180),
-        CUSTOM_DURATION(130)
+        CUSTOM_DURATION(130),
+        TRACK_CHALLENGE_VALUES(400)
     }
 }

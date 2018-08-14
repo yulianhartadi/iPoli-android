@@ -13,8 +13,11 @@ import com.mikepenz.google_material_typeface_library.GoogleMaterial
 import com.mikepenz.iconics.IconicsDrawable
 import com.mikepenz.iconics.typeface.IIcon
 import com.mikepenz.material_design_iconic_typeface_library.MaterialDesignIconic
+import io.ipoli.android.Constants.Companion.DECIMAL_FORMATTER
 import io.ipoli.android.R
+import io.ipoli.android.challenge.add.AddChallengeTrackedValueViewController.TrackedValueViewModel
 import io.ipoli.android.challenge.add.EditChallengeViewState.StateType.*
+import io.ipoli.android.challenge.entity.Challenge
 import io.ipoli.android.common.redux.android.BaseViewController
 import io.ipoli.android.common.text.DateFormatter
 import io.ipoli.android.common.view.*
@@ -27,6 +30,7 @@ import io.ipoli.android.tag.widget.EditItemAutocompleteTagAdapter
 import io.ipoli.android.tag.widget.EditItemTagAdapter
 import kotlinx.android.synthetic.main.controller_add_challenge_summary.view.*
 import kotlinx.android.synthetic.main.item_challenge_summary_quest.view.*
+import kotlinx.android.synthetic.main.item_challenge_summary_tracked_value.view.*
 import org.threeten.bp.LocalDate
 
 /**
@@ -45,16 +49,53 @@ class AddChallengeSummaryViewController(args: Bundle? = null) :
         savedViewState: Bundle?
     ): View {
         setHasOptionsMenu(true)
-        val view = inflater.inflate(R.layout.controller_add_challenge_summary, container, false)
+        val view = container.inflate(R.layout.controller_add_challenge_summary)
+
+        view.challengeTargetValueList.layoutManager = LinearLayoutManager(view.context)
+        view.challengeTargetValueList.adapter = TrackedValueAdapter()
+
+        view.challengeAverageValueList.layoutManager = LinearLayoutManager(view.context)
+        view.challengeAverageValueList.adapter = TrackedValueAdapter()
 
         view.challengeQuestList.layoutManager =
-            LinearLayoutManager(activity!!, LinearLayoutManager.VERTICAL, false)
+            LinearLayoutManager(view.context)
         view.challengeQuestList.adapter = QuestAdapter()
 
-        view.challengeTagList.layoutManager = LinearLayoutManager(activity!!)
+        view.challengeTagList.layoutManager = LinearLayoutManager(view.context)
         view.challengeTagList.adapter = EditItemTagAdapter(removeTagCallback = {
             dispatch(EditChallengeAction.RemoveTag(it))
         })
+
+        view.resultCompletionItem.gone()
+        view.expectedResultText.text = "Complete all Quests"
+
+        view.expectedResultRemove.setImageDrawable(
+            IconicsDrawable(view.context).normalIcon(
+                GoogleMaterial.Icon.gmd_close,
+                R.color.md_light_text_70
+            ).respectFontBounds(true)
+        )
+        view.expectedResultRemove.dispatchOnClick { EditChallengeAction.RemoveCompleteAll }
+
+        view.addChallengeCompleteAll.dispatchOnClick {
+            EditChallengeAction.AddCompleteAllTrackedValue
+        }
+
+        view.addChallengeTargetValue.onDebounceClick {
+            navigate().toTargetValuePicker(targetValueSelectedListener = { t ->
+                dispatch(
+                    EditChallengeAction.AddTargetTrackedValue(t)
+                )
+            })
+        }
+
+        view.addChallengeAverageValue.onDebounceClick {
+            navigate().toMaintainAverageValuePicker(trackedValueSelectedListener = { t ->
+                dispatch(
+                    EditChallengeAction.AddAverageTrackedValue(t)
+                )
+            })
+        }
 
         return view
     }
@@ -87,6 +128,7 @@ class AddChallengeSummaryViewController(args: Bundle? = null) :
                 view.challengeName.setText(state.name)
                 renderTags(view, state)
                 renderMotivations(view, state)
+                renderTrackedValues(view, state)
                 renderEndDate(view, state)
                 renderDifficulty(view, state)
                 renderIcon(view, state)
@@ -127,6 +169,11 @@ class AddChallengeSummaryViewController(args: Bundle? = null) :
                 dispatch(EditChallengeAction.SaveNew)
                 router.popCurrentController()
             }
+
+            TRACKED_VALUES_CHANGED -> {
+                renderTrackedValues(view, state)
+            }
+
             else -> {
             }
         }
@@ -164,9 +211,9 @@ class AddChallengeSummaryViewController(args: Bundle? = null) :
         view.challengeNote.text = state.noteText
         view.challengeNote.onDebounceClick {
             navigate()
-                .toNotePicker(state.note, { note ->
+                .toNotePicker(state.note) { note ->
                     dispatch(EditChallengeAction.ChangeNote(note))
-                })
+                }
         }
     }
 
@@ -174,7 +221,7 @@ class AddChallengeSummaryViewController(args: Bundle? = null) :
         view: View,
         state: EditChallengeViewState
     ) {
-        view.challengeColor.onDebounceClick {
+        view.challengeColor.onDebounceClick { _ ->
             navigate()
                 .toColorPicker(
                     {
@@ -282,6 +329,21 @@ class AddChallengeSummaryViewController(args: Bundle? = null) :
         }
     }
 
+    private fun renderTrackedValues(
+        view: View,
+        state: EditChallengeViewState
+    ) {
+        if (state.shouldTrackCompleteAll) {
+            view.resultCompletionItem.visible()
+            view.addChallengeCompleteAll.gone()
+        } else {
+            view.resultCompletionItem.gone()
+            view.addChallengeCompleteAll.visible()
+        }
+        (view.challengeTargetValueList.adapter as TrackedValueAdapter).updateAll(state.trackTargetViewModels)
+        (view.challengeAverageValueList.adapter as TrackedValueAdapter).updateAll(state.trackAverageViewModels)
+    }
+
     private fun renderQuests(
         view: View,
         state: EditChallengeViewState
@@ -305,6 +367,7 @@ class AddChallengeSummaryViewController(args: Bundle? = null) :
 
     inner class QuestAdapter :
         BaseRecyclerViewAdapter<QuestViewModel>(R.layout.item_challenge_summary_quest) {
+
         override fun onBindViewModel(vm: QuestViewModel, view: View, holder: SimpleViewHolder) {
             view.questIcon.setImageDrawable(
                 IconicsDrawable(view.context)
@@ -315,8 +378,74 @@ class AddChallengeSummaryViewController(args: Bundle? = null) :
             view.questName.text = vm.name
             view.repeatingIndicator.visible = vm.isRepeating
         }
-
     }
+
+    inner class TrackedValueAdapter :
+        BaseRecyclerViewAdapter<TrackedValueViewModel>(R.layout.item_challenge_summary_tracked_value) {
+
+        override fun onBindViewModel(
+            vm: TrackedValueViewModel,
+            view: View,
+            holder: SimpleViewHolder
+        ) {
+            view.expectedResultRemove.setImageDrawable(
+                IconicsDrawable(view.context).normalIcon(
+                    GoogleMaterial.Icon.gmd_close,
+                    R.color.md_light_text_70
+                ).respectFontBounds(true)
+            )
+            view.expectedResultRemove.dispatchOnClick { EditChallengeAction.RemoveTrackedValue(vm.id) }
+            view.expectedResultText.text = vm.text
+
+            when (vm.trackedValue) {
+
+                is Challenge.TrackedValue.Target ->
+                    view.onDebounceClick {
+                        navigate().toTargetValuePicker(
+                            targetValueSelectedListener = { t ->
+                                dispatch(EditChallengeAction.UpdateTrackedValue(t))
+                            },
+                            trackedValue = vm.trackedValue
+                        )
+                    }
+
+                is Challenge.TrackedValue.Average ->
+                    view.onDebounceClick {
+                        navigate().toMaintainAverageValuePicker(
+                            trackedValueSelectedListener = { t ->
+                                dispatch(EditChallengeAction.UpdateTrackedValue(t))
+                            },
+                            trackedValue = vm.trackedValue
+                        )
+                    }
+
+                else -> view.setOnClickListener(null)
+            }
+        }
+    }
+
+
+    private val EditChallengeViewState.trackTargetViewModels: List<TrackedValueViewModel>
+        get() = trackedValues
+            .filterIsInstance(Challenge.TrackedValue.Target::class.java)
+            .map {
+                TrackedValueViewModel(
+                    id = it.id,
+                    text = "Reach ${DECIMAL_FORMATTER.format(it.targetValue)} ${it.units} ${it.name}",
+                    trackedValue = it
+                )
+            }
+
+    private val EditChallengeViewState.trackAverageViewModels: List<TrackedValueViewModel>
+        get() = trackedValues
+            .filterIsInstance(Challenge.TrackedValue.Average::class.java)
+            .map {
+                TrackedValueViewModel(
+                    id = it.id,
+                    text = "Maintain ${DECIMAL_FORMATTER.format(it.targetValue)} ${it.units} ${it.name}",
+                    trackedValue = it
+                )
+            }
 
     private val EditChallengeViewState.questViewModels: List<QuestViewModel>
         get() = quests.map {

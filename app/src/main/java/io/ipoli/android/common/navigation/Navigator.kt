@@ -12,8 +12,11 @@ import com.google.firebase.auth.FirebaseAuth
 import io.ipoli.android.achievement.list.AchievementListViewController
 import io.ipoli.android.challenge.QuestPickerViewController
 import io.ipoli.android.challenge.add.AddChallengeViewController
+import io.ipoli.android.challenge.add.MaintainAverageValuePickerDialogController
+import io.ipoli.android.challenge.add.TargetValuePickerDialogController
 import io.ipoli.android.challenge.edit.ChallengeMotivationsDialogController
 import io.ipoli.android.challenge.edit.EditChallengeViewController
+import io.ipoli.android.challenge.edit.LogValueDialogController
 import io.ipoli.android.challenge.entity.Challenge
 import io.ipoli.android.challenge.picker.ChallengePickerDialogController
 import io.ipoli.android.challenge.show.ChallengeViewController
@@ -220,6 +223,52 @@ class Navigator(private val router: Router) {
 
     fun toEditChallenge(challengeId: String) {
         pushController({ EditChallengeViewController(challengeId) }, HorizontalChangeHandler())
+    }
+
+    fun toTargetValuePicker(
+        targetValueSelectedListener: (Challenge.TrackedValue.Target) -> Unit,
+        cancelListener: () -> Unit = {},
+        trackedValue: Challenge.TrackedValue.Target? = null
+    ) {
+        pushDialog {
+            TargetValuePickerDialogController(
+                targetValueSelectedListener,
+                cancelListener,
+                trackedValue
+            )
+        }
+    }
+
+    fun toMaintainAverageValuePicker(
+        trackedValueSelectedListener: (Challenge.TrackedValue.Average) -> Unit,
+        cancelListener: () -> Unit = {},
+        trackedValue: Challenge.TrackedValue.Average? = null
+    ) {
+        pushDialog {
+            MaintainAverageValuePickerDialogController(
+                trackedValueSelectedListener,
+                cancelListener,
+                trackedValue
+            )
+        }
+    }
+
+    fun toLogValue(
+        valueName: String,
+        valueUnits: String,
+        showAccumulateValueHint: Boolean,
+        logValueListener: (Challenge.TrackedValue.Log) -> Unit,
+        cancelListener: () -> Unit = {}
+    ) {
+        pushDialog {
+            LogValueDialogController(
+                valueName,
+                valueUnits,
+                showAccumulateValueHint,
+                logValueListener,
+                cancelListener
+            )
+        }
     }
 
     fun toChallenge(challengeId: String) {

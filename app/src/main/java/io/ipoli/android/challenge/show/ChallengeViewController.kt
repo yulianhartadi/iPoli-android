@@ -11,33 +11,39 @@ import android.support.v7.widget.RecyclerView
 import android.support.v7.widget.helper.ItemTouchHelper
 import android.view.*
 import com.bluelinelabs.conductor.changehandler.HorizontalChangeHandler
+import com.github.mikephil.charting.charts.CombinedChart
 import com.github.mikephil.charting.charts.LineChart
-import com.github.mikephil.charting.components.AxisBase
+import com.github.mikephil.charting.components.Legend
+import com.github.mikephil.charting.components.XAxis
 import com.github.mikephil.charting.components.YAxis
-import com.github.mikephil.charting.data.Entry
-import com.github.mikephil.charting.data.LineData
-import com.github.mikephil.charting.data.LineDataSet
-import com.github.mikephil.charting.formatter.IAxisValueFormatter
+import com.github.mikephil.charting.data.*
+import com.github.mikephil.charting.formatter.IndexAxisValueFormatter
 import com.mikepenz.google_material_typeface_library.GoogleMaterial
 import com.mikepenz.iconics.IconicsDrawable
 import com.mikepenz.iconics.typeface.IIcon
+import io.ipoli.android.Constants
+import io.ipoli.android.Constants.Companion.DECIMAL_FORMATTER
 import io.ipoli.android.MainActivity
 import io.ipoli.android.R
+import io.ipoli.android.challenge.entity.Challenge
 import io.ipoli.android.common.ViewUtils
+import io.ipoli.android.common.chart.AwesomenessScoreMarker
+import io.ipoli.android.common.datetime.datesBetween
 import io.ipoli.android.common.redux.android.ReduxViewController
 import io.ipoli.android.common.text.DateFormatter
 import io.ipoli.android.common.view.*
 import io.ipoli.android.common.view.anim.AccelerateDecelerateEasingFunction
-import io.ipoli.android.common.view.recyclerview.BaseRecyclerViewAdapter
-import io.ipoli.android.common.view.recyclerview.RecyclerViewViewModel
-import io.ipoli.android.common.view.recyclerview.SimpleSwipeCallback
-import io.ipoli.android.common.view.recyclerview.SimpleViewHolder
+import io.ipoli.android.common.view.recyclerview.*
 import io.ipoli.android.quest.Quest
 import io.ipoli.android.quest.RepeatingQuest
 import io.ipoli.android.tag.Tag
 import kotlinx.android.synthetic.main.controller_challenge.view.*
+import kotlinx.android.synthetic.main.item_challenge_average_value.view.*
+import kotlinx.android.synthetic.main.item_challenge_progress.view.*
 import kotlinx.android.synthetic.main.item_challenge_quest.view.*
+import kotlinx.android.synthetic.main.item_challenge_target_value.view.*
 import kotlinx.android.synthetic.main.item_quest_tag_list.view.*
+import org.threeten.bp.LocalDate
 
 
 /**
@@ -71,8 +77,6 @@ class ChallengeViewController(args: Bundle? = null) :
         view.collapsingToolbarContainer.isTitleEnabled = false
 
         setupAppBar(view)
-
-        setupHistoryChart(view.progressChart)
 
         view.questList.layoutManager = LinearLayoutManager(container.context)
         view.questList.adapter = QuestAdapter()
@@ -132,7 +136,102 @@ class ChallengeViewController(args: Bundle? = null) :
             navigateFromRoot().toQuestPicker(challengeId)
         }
 
+        view.trackedValueList.layoutManager = LinearLayoutManager(view.context)
+        view.trackedValueList.isNestedScrollingEnabled = false
+        view.trackedValueList.addItemDecoration(TopMarginDecoration(8))
+        view.trackedValueList.adapter = TrackedValueAdapter()
+
         return view
+    }
+
+    private fun setupLineChart(chart: LineChart) {
+        with(chart) {
+
+            description = null
+            setExtraOffsets(0f, 0f, 0f, 0f)
+            isDoubleTapToZoomEnabled = false
+
+            setTouchEnabled(true)
+            setPinchZoom(false)
+            extraTopOffset = 16f
+            extraBottomOffset = 16f
+
+            setDrawGridBackground(false)
+
+            axisRight.axisMinimum = 0f
+            axisRight.spaceTop = 0f
+            axisRight.granularity = 1f
+            axisRight.setDrawAxisLine(false)
+            axisRight.textSize = ViewUtils.spToPx(4, activity!!).toFloat()
+            axisRight.textColor = colorRes(R.color.md_dark_text_54)
+            axisRight.setValueFormatter { value, _ -> "    ${value.toInt()}" }
+
+            axisLeft.isEnabled = false
+
+            xAxis.yOffset = ViewUtils.dpToPx(2f, activity!!)
+            xAxis.isGranularityEnabled = true
+            xAxis.granularity = 1f
+            xAxis.textSize = ViewUtils.spToPx(4, activity!!).toFloat()
+            xAxis.textColor = colorRes(R.color.md_dark_text_54)
+            xAxis.setDrawGridLines(false)
+            xAxis.position = XAxis.XAxisPosition.BOTTOM
+            xAxis.setAvoidFirstLastClipping(true)
+            xAxis.setDrawAxisLine(false)
+
+            xAxis.labelRotationAngle = 335f
+
+            legend.textColor = colorRes(R.color.md_dark_text_54)
+            legend.textSize = ViewUtils.spToPx(5, activity!!).toFloat()
+            legend.form = Legend.LegendForm.CIRCLE
+            legend.xEntrySpace = ViewUtils.dpToPx(4f, activity!!)
+
+            setDrawBorders(false)
+        }
+    }
+
+    private fun setupBarChart(chart: CombinedChart) {
+        with(chart) {
+
+            description = null
+            setExtraOffsets(0f, 0f, 0f, 0f)
+            isDoubleTapToZoomEnabled = false
+            setDrawValueAboveBar(true)
+
+            setTouchEnabled(true)
+            setPinchZoom(false)
+            extraTopOffset = 16f
+            extraBottomOffset = 16f
+
+            setDrawGridBackground(false)
+
+            axisRight.spaceTop = 0f
+            axisRight.granularity = 1f
+            axisRight.setDrawAxisLine(false)
+            axisRight.textSize = ViewUtils.spToPx(4, activity!!).toFloat()
+            axisRight.textColor = colorRes(R.color.md_dark_text_54)
+            axisRight.setValueFormatter { value, _ -> "    ${value.toInt()}" }
+
+            axisLeft.isEnabled = false
+
+//            xAxis.yOffset = ViewUtils.dpToPx(-2f, activity!!)
+            xAxis.isGranularityEnabled = true
+            xAxis.granularity = 1f
+            xAxis.textSize = ViewUtils.spToPx(4f, activity!!).toFloat()
+            xAxis.textColor = colorRes(R.color.md_dark_text_54)
+            xAxis.setDrawGridLines(false)
+            xAxis.position = XAxis.XAxisPosition.BOTTOM
+            xAxis.setAvoidFirstLastClipping(true)
+            xAxis.setDrawAxisLine(false)
+
+            xAxis.labelRotationAngle = 335f
+
+            legend.textColor = colorRes(R.color.md_dark_text_54)
+            legend.textSize = ViewUtils.spToPx(5, activity!!).toFloat()
+            legend.form = Legend.LegendForm.CIRCLE
+            legend.xEntrySpace = ViewUtils.dpToPx(4f, activity!!)
+
+            setDrawBorders(false)
+        }
     }
 
     private fun setupAppBar(view: View) {
@@ -151,37 +250,6 @@ class ChallengeViewController(args: Bundle? = null) :
                 }
             }
         })
-    }
-
-    private fun setupHistoryChart(chart: LineChart) {
-        with(chart) {
-            description = null
-            setTouchEnabled(false)
-            setPinchZoom(false)
-            extraTopOffset = 16f
-            extraBottomOffset = 16f
-            extraLeftOffset = 28f
-
-            setDrawGridBackground(false)
-
-            axisRight.axisMinimum = 0f
-            axisRight.axisMaximum = 100f
-            axisRight.spaceTop = 0f
-            axisRight.textSize = ViewUtils.spToPx(5, activity!!).toFloat()
-            axisRight.textColor = colorRes(R.color.md_dark_text_87)
-            axisRight.setValueFormatter { value, _ -> "${value.toInt()}%" }
-
-            axisLeft.isEnabled = false
-
-            xAxis.yOffset = ViewUtils.dpToPx(4f, activity!!)
-            xAxis.isGranularityEnabled = true
-            xAxis.granularity = 1f
-            xAxis.textSize = ViewUtils.spToPx(5, activity!!).toFloat()
-            xAxis.textColor = colorRes(R.color.md_dark_text_87)
-
-            legend.isEnabled = false
-        }
-
     }
 
     override fun onCreateLoadAction() = ChallengeAction.Load(challengeId)
@@ -245,16 +313,6 @@ class ChallengeViewController(args: Bundle? = null) :
         super.onDetach(view)
     }
 
-    class XAxisValueFormatter(private val labels: List<String>) : IAxisValueFormatter {
-
-        override fun getFormattedValue(value: Float, axis: AxisBase): String {
-            val idx = value.toInt()
-            return if (idx < 0 || idx >= labels.size) {
-                ""
-            } else labels[idx]
-        }
-    }
-
     override fun render(state: ChallengeViewState, view: View) {
         when (state.type) {
             ChallengeViewState.StateType.DATA_CHANGED -> {
@@ -265,11 +323,6 @@ class ChallengeViewController(args: Bundle? = null) :
                 colorLayout(state, view)
 
                 renderName(state.name, view)
-                renderTags(state.tags, view)
-
-                view.progress.animateProgressFromZero(state.progressPercent)
-
-                view.progressText.text = state.progressText
 
                 view.difficulty.text = state.difficulty
 
@@ -277,7 +330,8 @@ class ChallengeViewController(args: Bundle? = null) :
 
                 view.nextDate.text = state.nextText
 
-                renderChart(state, view)
+                renderTags(state.tags, view)
+                renderTrackedValues(state.trackedValueViewModels, view)
                 renderMotivations(state, view)
                 renderNote(state, view)
                 renderQuests(state, view)
@@ -287,6 +341,10 @@ class ChallengeViewController(args: Bundle? = null) :
             else -> {
             }
         }
+    }
+
+    private fun renderTrackedValues(progress: List<TrackedValueViewModel>, view: View) {
+        (view.trackedValueList.adapter as TrackedValueAdapter).updateAll(progress)
     }
 
     private fun renderTags(
@@ -322,18 +380,6 @@ class ChallengeViewController(args: Bundle? = null) :
         view.note.onDebounceClick { showEdit() }
     }
 
-    private fun renderChart(state: ChallengeViewState, view: View) {
-        view.progressChart.xAxis.setLabelCount(state.xAxisLabelCount, true)
-
-        view.progressChart.xAxis.valueFormatter = XAxisValueFormatter(state.xAxisLabels)
-
-        view.progressChart.axisRight.axisMaximum = state.yAxisMax.toFloat()
-
-        view.progressChart.data = createLineData(state.chartEntries)
-        view.progressChart.invalidate()
-        view.progressChart.animateX(1400, AccelerateDecelerateEasingFunction)
-    }
-
     private fun renderMotivations(state: ChallengeViewState, view: View) {
         val motivationsViews = listOf(view.motivation1, view.motivation2, view.motivation3)
         motivationsViews.forEach { it.gone() }
@@ -367,26 +413,6 @@ class ChallengeViewController(args: Bundle? = null) :
         }
     }
 
-    private fun createLineData(entries: List<Entry>): LineData {
-
-        val set = LineDataSet(entries, "")
-        set.color = attrData(R.attr.colorAccent)
-        set.lineWidth = ViewUtils.dpToPx(1f, activity!!)
-        set.setDrawCircles(false)
-        set.setDrawFilled(true)
-        set.fillColor = attrData(R.attr.colorAccent)
-        set.fillAlpha = 160
-        set.mode = LineDataSet.Mode.HORIZONTAL_BEZIER
-        set.setDrawValues(false)
-
-        set.axisDependency = YAxis.AxisDependency.RIGHT
-
-        val d = LineData()
-        d.addDataSet(set)
-
-        return d
-    }
-
     private fun colorLayout(
         state: ChallengeViewState,
         view: View
@@ -404,6 +430,241 @@ class ChallengeViewController(args: Bundle? = null) :
     ) {
         toolbarTitle = name
         view.name.text = name
+    }
+
+    sealed class TrackedValueViewModel(
+        override val id: String
+    ) : RecyclerViewViewModel {
+
+        data class Progress(
+            override val id: String,
+            val progressPercent: Int,
+            val progressText: String
+        ) : TrackedValueViewModel(id)
+
+        data class Target(
+            override val id: String,
+            val name: String,
+            val units: String,
+            val isCumulative: Boolean,
+            val currentValue: String,
+            val targetValue: Double,
+            val progressPercent: Int,
+            val remainingText: String,
+            val chartMin: Double,
+            val chartMax: Double,
+            val chartDates: List<LocalDate>,
+            val chartEntries: List<Entry>
+        ) : TrackedValueViewModel(id)
+
+        data class Average(
+            override val id: String,
+            val name: String,
+            val units: String,
+            val averageValue: Double,
+            val targetValue: Double,
+            val deviationText: String,
+            val chartMax: Double,
+            val chartDates: List<LocalDate>,
+            val chartEntries: List<BarEntry>,
+            val chartEntryColors: List<Int>
+        ) : TrackedValueViewModel(id)
+    }
+
+    enum class ViewType {
+        TARGET, AVERAGE, PROGRESS
+    }
+
+    inner class TrackedValueAdapter : MultiViewRecyclerViewAdapter<TrackedValueViewModel>() {
+        override fun onRegisterItemBinders() {
+
+            registerBinder<TrackedValueViewModel.Progress>(
+                ViewType.PROGRESS.ordinal,
+                R.layout.item_challenge_progress
+            ) { vm, view, _ ->
+                @SuppressLint("SetTextI18n")
+                view.progressCompleteCurrent.text = "${vm.progressPercent}%"
+                view.progressCompleteProgress.progress = vm.progressPercent
+                view.progressCompleteRemaining.text = vm.progressText
+            }
+
+            registerBinder<TrackedValueViewModel.Target>(
+                ViewType.TARGET.ordinal,
+                R.layout.item_challenge_target_value
+            ) { vm, view, _ ->
+                @SuppressLint("SetTextI18n")
+                view.targetTrackedValueLabel.text = "${vm.name} (${vm.units})"
+                view.targetTrackedValueProgress.progress = vm.progressPercent
+                view.targetTrackedValueCurrent.text = vm.currentValue
+                view.targetTrackedValueRemaining.text = vm.remainingText
+                view.targetTrackedValueLog.onDebounceClick {
+                    navigate().toLogValue(
+                        valueName = vm.name,
+                        valueUnits = vm.units,
+                        showAccumulateValueHint = vm.isCumulative,
+                        logValueListener = { log ->
+                            dispatch(
+                                ChallengeAction.LogValue(
+                                    challengeId = challengeId,
+                                    trackValueId = vm.id,
+                                    log = log
+                                )
+                            )
+                        })
+                }
+                setupLineChart(view.targetTrackedValueChart)
+                renderTargetValueChart(vm, view.targetTrackedValueChart)
+            }
+
+            registerBinder<TrackedValueViewModel.Average>(
+                ViewType.AVERAGE.ordinal,
+                R.layout.item_challenge_average_value
+            ) { vm, view, _ ->
+                @SuppressLint("SetTextI18n")
+                view.averageValueLabel.text = "${vm.name} (${vm.units})"
+                view.logAverageValue.onDebounceClick {
+                    navigate().toLogValue(
+                        valueName = vm.name,
+                        valueUnits = vm.units,
+                        showAccumulateValueHint = false,
+                        logValueListener = { log ->
+                            dispatch(
+                                ChallengeAction.LogValue(
+                                    challengeId = challengeId,
+                                    trackValueId = vm.id,
+                                    log = log
+                                )
+                            )
+                        })
+                }
+                view.averageValue.text = DECIMAL_FORMATTER.format(vm.averageValue)
+                view.averageValueDeviation.text = vm.deviationText
+                setupBarChart(view.averageValueChart)
+                renderAverageValueChart(vm, view.averageValueChart)
+            }
+        }
+    }
+
+    private fun renderAverageValueChart(
+        trackedValue: TrackedValueViewModel.Average,
+        chart: CombinedChart
+    ) {
+
+        val barDataSet = BarDataSet(
+            trackedValue.chartEntries,
+            trackedValue.name
+        )
+        barDataSet.colors = trackedValue.chartEntryColors
+        barDataSet.axisDependency = YAxis.AxisDependency.RIGHT
+        val data = BarData(barDataSet)
+        data.setValueTextSize(ViewUtils.spToPx(4f, activity!!).toFloat())
+        data.setValueTextColor(colorRes(R.color.md_dark_text_87))
+        data.setValueFormatter { value, _, _, _ ->
+            DECIMAL_FORMATTER.format(value)
+        }
+
+        data.barWidth = 0.5f
+        data.isHighlightEnabled = false
+
+        chart.xAxis.valueFormatter = IndexAxisValueFormatter(
+            trackedValue.chartDates.map { DateFormatter.formatWithoutYear(chart.context, it) }
+        )
+
+        val goalSet = LineDataSet(
+            listOf(
+                Entry(
+                    -1f,
+                    trackedValue.targetValue.toFloat()
+                )
+            ) + trackedValue.chartDates.mapIndexed { index, _ ->
+                Entry(index.toFloat(), trackedValue.targetValue.toFloat())
+            } + listOf(
+                Entry(
+                    trackedValue.chartDates.size.toFloat(),
+                    trackedValue.targetValue.toFloat()
+                )
+            ), "goal"
+        )
+
+        goalSet.isHighlightEnabled = false
+        goalSet.color = attrData(R.attr.colorAccent)
+        goalSet.lineWidth = ViewUtils.dpToPx(0.5f, chart.context)
+        goalSet.setDrawCircles(false)
+
+        goalSet.mode = LineDataSet.Mode.LINEAR
+        goalSet.setDrawValues(false)
+        goalSet.axisDependency = YAxis.AxisDependency.RIGHT
+
+        val combinedData = CombinedData()
+        combinedData.setData(LineData(goalSet))
+        combinedData.setData(data)
+
+        chart.data = combinedData
+
+        chart.xAxis.axisMinimum = -0.5f
+        chart.xAxis.axisMaximum = trackedValue.chartDates.size.toFloat() - 0.5f
+
+        chart.axisRight.axisMinimum = 0f
+        chart.axisRight.axisMaximum = trackedValue.chartMax.toFloat()
+        chart.setVisibleYRange(0f, trackedValue.chartMax.toFloat(), YAxis.AxisDependency.RIGHT)
+
+        chart.invalidate()
+        chart.animateY(longAnimTime.toInt(), AccelerateDecelerateEasingFunction)
+    }
+
+    private fun renderTargetValueChart(
+        trackedValue: TrackedValueViewModel.Target,
+        chart: LineChart
+    ) {
+        chart.marker = AwesomenessScoreMarker(chart.context)
+
+        val logDataSet = LineDataSet(trackedValue.chartEntries, trackedValue.name)
+
+        logDataSet.color = attrData(R.attr.colorPrimary)
+        logDataSet.lineWidth = ViewUtils.dpToPx(1f, activity!!)
+        logDataSet.setDrawCircles(true)
+
+        logDataSet.circleRadius = 6f
+        logDataSet.setCircleColor(attrData(R.attr.colorPrimary))
+        logDataSet.setDrawCircleHole(false)
+        logDataSet.highLightColor = attrData(R.attr.colorAccent)
+
+        logDataSet.mode = LineDataSet.Mode.LINEAR
+        logDataSet.setDrawValues(false)
+        logDataSet.axisDependency = YAxis.AxisDependency.RIGHT
+
+        val goalSet = LineDataSet(
+            trackedValue.chartDates.mapIndexed { index, _ ->
+                Entry(index.toFloat(), trackedValue.targetValue.toFloat())
+            }, "goal"
+        )
+
+        goalSet.isHighlightEnabled = false
+        goalSet.color = attrData(R.attr.colorAccent)
+        goalSet.lineWidth = ViewUtils.dpToPx(0.5f, chart.context)
+        goalSet.setDrawCircles(false)
+
+        goalSet.mode = LineDataSet.Mode.LINEAR
+        goalSet.setDrawValues(false)
+        goalSet.axisDependency = YAxis.AxisDependency.RIGHT
+
+        chart.xAxis.valueFormatter = IndexAxisValueFormatter(
+            trackedValue.chartDates.map { DateFormatter.formatWithoutYear(chart.context, it) }
+        )
+
+        chart.data = LineData(goalSet, logDataSet)
+
+        chart.setVisibleYRange(
+            trackedValue.chartMin.toFloat(),
+            trackedValue.chartMax.toFloat(),
+            YAxis.AxisDependency.RIGHT
+        )
+
+        chart.axisRight.axisMinimum = trackedValue.chartMin.toFloat()
+        chart.axisRight.axisMaximum = trackedValue.chartMax.toFloat()
+
+        chart.invalidate()
+        chart.animateX(longAnimTime.toInt(), AccelerateDecelerateEasingFunction)
     }
 
     data class QuestViewModel(
@@ -473,24 +734,11 @@ class ChallengeViewController(args: Bundle? = null) :
 
     }
 
-    private val ChallengeViewState.xAxisLabels
-        get() = chartData.keys.map {
-            DateFormatter.formatWithoutYear(activity!!, it)
-        }
-
-    private val ChallengeViewState.chartEntries
-        get() = chartData.values.mapIndexed { i, value ->
-            Entry(i.toFloat(), value)
-        }
-
     private val ChallengeViewState.color500
         get() = color.androidColor.color500
 
     private val ChallengeViewState.color700
         get() = color.androidColor.color700
-
-    private val ChallengeViewState.progressText
-        get() = "$completedCount of $totalCount ($progressPercent%) done"
 
     private val ChallengeViewState.endText
         get() = DateFormatter.formatWithoutYear(activity!!, endDate)
@@ -498,6 +746,141 @@ class ChallengeViewController(args: Bundle? = null) :
     private val ChallengeViewState.nextText
         get() = nextDate?.let { DateFormatter.formatWithoutYear(activity!!, it) }
             ?: stringRes(R.string.unscheduled)
+
+    private val ChallengeViewState.trackedValueViewModels
+        get() = trackedValues.sortedWith(Comparator { t1, t2 ->
+            when {
+                t1 is Challenge.TrackedValue.Progress -> -1
+                t2 is Challenge.TrackedValue.Progress -> 1
+                else -> 0
+            }
+        }).map {
+            when (it) {
+                is Challenge.TrackedValue.Progress ->
+                    TrackedValueViewModel.Progress(
+                        it.id,
+                        ((it.completedCount.toFloat() / it.allCount.toFloat()) * 100).toInt(),
+                        if (it.allCount == 0)
+                            "No Quests added"
+                        else
+                            "${it.completedCount}/${it.allCount} Quests done"
+                    )
+
+                is Challenge.TrackedValue.Target -> {
+
+                    val dates = LocalDate.now().minusDays(9).datesBetween(LocalDate.now())
+
+                    val valueHistory = if(it.isCumulative) it.cumulativeHistory!! else it.history
+
+                    val values = dates.map { d -> valueHistory[d]?.value }
+
+                    val minVal =
+                        if (it.isCumulative)
+                            0.0
+                        else
+                            values.filterNotNull().min() ?: Math.min(
+                                it.startValue,
+                                it.targetValue
+                            )
+
+                    val maxVal =
+                        if (it.isCumulative)
+                            Math.max(it.targetValue, values.filterNotNull().max() ?: 0.0)
+                        else
+                            values.filterNotNull().max() ?: Math.max(
+                                it.startValue,
+                                it.targetValue
+                            )
+
+                    val chartEntries = dates.mapIndexed { index, localDate ->
+                        valueHistory[localDate]?.let { log ->
+                            Entry(
+                                index.toFloat(),
+                                log.value.toFloat(),
+                                log.value.toFloat()
+                            )
+                        }
+                    }.filterNotNull()
+
+                    val total = Math.abs(it.targetValue - it.startValue)
+                    val complete = Math.abs(it.currentValue - it.startValue)
+                    val progressPercent = ((complete / total) * 100.0).toInt()
+
+                    TrackedValueViewModel.Target(
+                        id = it.id,
+                        name = it.name,
+                        units = it.units,
+                        isCumulative = it.isCumulative,
+                        currentValue = Constants.DECIMAL_FORMATTER.format(it.currentValue),
+                        targetValue = it.targetValue,
+                        progressPercent = progressPercent,
+                        remainingText = "${DECIMAL_FORMATTER.format(it.remainingValue)} ${it.units} remaining",
+                        chartMin = Math.max(Math.floor((minVal - minVal * 0.1) / 10) * 10, 0.0),
+                        chartMax = Math.ceil((maxVal + maxVal * 0.1) / 10) * 10,
+                        chartDates = dates,
+                        chartEntries = if (chartEntries.isEmpty()) {
+                            listOf(
+                                Entry(
+                                    (dates.size - 1).toFloat(),
+                                    it.currentValue.toFloat(),
+                                    it.currentValue.toFloat()
+                                )
+                            )
+                        } else {
+                            chartEntries
+                        }
+                    )
+                }
+
+                is Challenge.TrackedValue.Average -> {
+                    val dates = LocalDate.now().minusDays(6).datesBetween(LocalDate.now())
+
+                    val values = dates.map { d -> it.history[d]?.value }
+
+                    val nonNullValues = values.filterNotNull()
+
+                    val valueSum = nonNullValues.sum()
+                    val average =
+                        if (nonNullValues.isEmpty()) it.targetValue else valueSum / nonNullValues.size
+                    val deviation = Math.abs(it.targetValue - average)
+                    val deviationText = if (average >= it.lowerBound && average <= it.upperBound) {
+                        "You're doing great!"
+                    } else if (average <= it.lowerBound) {
+                        "${DECIMAL_FORMATTER.format(deviation)} below target"
+                    } else {
+                        "${DECIMAL_FORMATTER.format(deviation)} above target"
+                    }
+
+                    val maxVal = Math.max(nonNullValues.max() ?: 0.0, it.upperBound)
+
+                    val chartEntries = values.mapIndexed { index, v ->
+                        if (v != null) {
+                            BarEntry(index.toFloat(), v.toFloat())
+                        } else null
+                    }.filterNotNull().toMutableList()
+
+                    val chartColors = nonNullValues.map { v ->
+                        if (v >= it.lowerBound && v <= it.upperBound) {
+                            colorRes(R.color.md_green_500)
+                        } else
+                            colorRes(R.color.md_red_500)
+                    }
+
+                    TrackedValueViewModel.Average(
+                        id = it.id,
+                        name = it.name,
+                        units = it.units,
+                        averageValue = average,
+                        targetValue = it.targetValue,
+                        deviationText = deviationText,
+                        chartMax = Math.ceil((maxVal + maxVal * 0.1) / 10) * 10,
+                        chartDates = dates,
+                        chartEntries = chartEntries,
+                        chartEntryColors = chartColors
+                    )
+                }
+            }
+        }
 
     private val ChallengeViewState.questViewModels
         get() = quests.map {

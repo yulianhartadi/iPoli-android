@@ -815,13 +815,16 @@
         focus on the current task and myPoli will notify you when the next one comes.
     </string>
 
-    <string name="custom_duration">Custom duration</string>
-    <string name="power_up_custom_duration_sub_title">Choose the best duration for your quests</string>
+    <string name="custom_duration">Custom Duration</string>
+    <string name="power_up_custom_duration_sub_title">Choose duration precisely</string>
     <string name="power_up_custom_duration_short_desc">Not satisfied with provided options for quests duration? You can now define your own duration spans.</string>
     <string name="power_up_custom_duration_long_desc">
         Choose your own time intervals for quests. The minimum value is 10 minutes.
         The maximum is still 4 hours. If you need longer value, then try to divide your quest into shorter quests.
     </string>
+
+    <string name="power_up_tracked_value_sub_title">Stay on track</string>
+    <string name="power_up_tracked_value_long_desc">Allows to add more than one value to track for your Challenges which allows you to track progress towards what matters most</string>
 
     <string name="power_up_dialog_name">You\'ve discovered %s!</string>
     <string name="power_up_dialog_price_message">%1$d for %2$d days</string>
@@ -844,7 +847,7 @@
     <string name="welcome_hero">Welcome, Hero!</string>
     <string name="embrace_journey">Are you ready to embrace your destiny of studying many hours, working late, doing sports and eating yucky food?</string>
     <string name="you_the_one">So, we\'ve established the fact that you might be the ONE. Would you like some tips?</string>
-    <string name="daemon_intro">Many millennia ago, a daemon from another dimension came to conquer us. Yes, he used backdoor that was left intentionally open!</string>
+    <string name="daemon_intro">Many millenniums ago, a daemon from another dimension came to conquer us. Yes, he used backdoor that was left intentionally open!</string>
     <string name="daemon_objective">His objective? Eat all the ice-cream on Earth! And kill the ONE!</string>
     <string name="daemon_backstory">Counterintuitively enough, only the ONE can stop him! Let\'s hope that\'s you! That daemon I was telling you about is pretty evil! He is so evil that his name is EVIL Snail! Yes, that name was given to him by his mother</string>
     <string name="journey_start">Your greatest journey is starting today!</string>
@@ -1238,6 +1241,7 @@
     <string name="preview">preview</string>
     <string name="quests">Quests</string>
     <string name="motivation">Motivation</string>
+    <string name="tracked_values">Tracked values</string>
     <string name="empty_sub_quests">Divide your Quest into smaller ones</string>
     <string name="empty_note_hint"># My awesome note\n Markdown notes are really amazing! Create yours now!</string>
     <string name="note_hint">Something important</string>
@@ -1533,12 +1537,17 @@
     <string name="repeating_quest_empty_sub_quest_list">You haven\'t added any Sub Quests yet</string>
     <string name="challenge_empty_habit_list">You haven\'t added any Habits yet</string>
     <string name="challenge_empty_quest_list">You haven\'t added any Quests yet</string>
-
+    <string name="track_value">Track value</string>
+    <string name="record_value">Record value</string>
+    <string name="dialog_target_value_picker_title">Choose target</string>
+    <string name="dialog_average_value_picker_title">Choose value</string>
+    <string name="dialog_log_value_title">Record value</string>
     <string name="dialog_confirmation_title">Are you sure?</string>
     <string name="dialog_remove_repeating_quest_message">Do you really want to remove this repeating quest?</string>
     <string name="dialog_remove_challenge_message">Do you really want to remove this challenge?</string>
     <string name="dialog_remove_habit_message">Do you really want to remove this habit?</string>
     <string name="dialog_complete_challenge_message">Do you really want to complete this challenge?</string>
+    <string name="dialog_remove_tracked_value_message">Removing the tracked value will remove all data logs. Do you want to continue?</string>
     <string name="got_it">Got it</string>
     <string name="not_helpful">Not helpful</string>
     <string name="send">Send</string>
@@ -1688,5 +1697,6 @@ You can also manage your **shared posts**, **friends** and **shared challenges**
         When they open the link and **accept** your invitation, you\'ll become friends in myPoli. \n\n
         You can also track their progress, react to their posts and encourage them in their quests.
     </string>
+    <string name="track_challenge_values">More Track Values</string>
 
 </resources>

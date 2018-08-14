@@ -112,6 +112,14 @@ enum class AndroidPowerUp(
         CommunityMaterial.Icon.cmd_chart_areaspline,
         R.color.md_light_green_700,
         R.color.md_light_green_800
+    ),
+    TRACK_CHALLENGE_VALUES(
+        R.string.track_challenge_values,
+        R.string.power_up_tracked_value_sub_title,
+        R.string.power_up_tracked_value_long_desc,
+        Ionicons.Icon.ion_ios_analytics,
+        R.color.md_blue_600,
+        R.color.md_blue_800
     )
 }
 

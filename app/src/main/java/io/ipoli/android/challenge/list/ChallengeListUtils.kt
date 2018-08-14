@@ -243,9 +243,14 @@ fun toChallengeViewModels(
                 ChallengeItemViewModel.Incomplete(
                     id = c.id,
                     name = c.name,
-                    tags = c.tags.map { TagViewModel(it.name, AndroidColor.valueOf(it.color.name).color500) },
+                    tags = c.tags.map { t ->
+                        TagViewModel(
+                            t.name,
+                            AndroidColor.valueOf(t.color.name).color500
+                        )
+                    },
                     color = AndroidColor.valueOf(c.color.name).color500,
-                    icon = c.icon?.let { AndroidIcon.valueOf(it.name).icon }
+                    icon = c.icon?.let { i -> AndroidIcon.valueOf(i.name).icon }
                         ?: Ionicons.Icon.ion_android_clipboard,
                     next = next,
                     end = end,
@@ -265,14 +270,14 @@ fun toChallengeViewModels(
                     ChallengeItemViewModel.Complete(
                         id = id,
                         name = name,
-                        tags = tags.map {
+                        tags = tags.map {t ->
                             TagViewModel(
-                                it.name,
-                                AndroidColor.valueOf(it.color.name).color500
+                                t.name,
+                                AndroidColor.valueOf(t.color.name).color500
                             )
                         },
                         color = AndroidColor.valueOf(color.name).color500,
-                        icon = icon?.let { AndroidIcon.valueOf(it.name).icon }
+                        icon = icon?.let { ic -> AndroidIcon.valueOf(ic.name).icon }
                             ?: Ionicons.Icon.ion_android_clipboard,
                         start = context.stringRes(
                             R.string.started_at_date,

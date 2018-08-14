@@ -4,8 +4,6 @@ import io.ipoli.android.challenge.entity.Challenge
 import io.ipoli.android.common.AppState
 import io.ipoli.android.common.BaseViewStateReducer
 import io.ipoli.android.common.DataLoadedAction
-import io.ipoli.android.common.datetime.datesBetween
-
 import io.ipoli.android.common.redux.Action
 import io.ipoli.android.common.redux.BaseViewState
 import io.ipoli.android.habit.data.Habit
@@ -40,6 +38,9 @@ sealed class ChallengeAction : Action {
     data class Complete(val challengeId: String) : ChallengeAction() {
         override fun toMap() = mapOf("challengeId" to challengeId)
     }
+
+    class LogValue(val challengeId: String, val trackValueId: String, val log: Challenge.TrackedValue.Log) :
+        ChallengeAction()
 }
 
 object ChallengeReducer : BaseViewStateReducer<ChallengeViewState>() {
@@ -73,14 +74,6 @@ object ChallengeReducer : BaseViewStateReducer<ChallengeViewState>() {
         challenge: Challenge,
         state: ChallengeViewState
     ): ChallengeViewState {
-        val progress = challenge.progress
-        val today = LocalDate.now()
-        val history = progress.history.withDefault { 0f }
-        var progressSum = 0f
-        val chartData = today.minusDays(30).datesBetween(today).map {
-            progressSum += history.getValue(it)
-            it to Math.min(progressSum, 100f)
-        }.toMap().toSortedMap()
         return state.copy(
             id = challenge.id,
             type = ChallengeViewState.StateType.DATA_CHANGED,
@@ -90,12 +83,8 @@ object ChallengeReducer : BaseViewStateReducer<ChallengeViewState>() {
             difficulty = challenge.difficulty.name.toLowerCase().capitalize(),
             endDate = challenge.endDate,
             nextDate = challenge.nextDate,
-            completedCount = progress.completedCount,
-            totalCount = progress.allCount,
-            progressPercent = ((progress.completedCount.toFloat() / progress.allCount) * 100).toInt(),
+            trackedValues = challenge.trackedValues,
             xAxisLabelCount = 5,
-            chartData = chartData,
-            yAxisMax = Math.min(progressSum.toInt() + 10, 100),
             quests = challenge.baseQuests,
             habits = challenge.habits,
             canComplete = !challenge.isCompleted,
@@ -114,6 +103,7 @@ object ChallengeReducer : BaseViewStateReducer<ChallengeViewState>() {
         difficulty = "",
         endDate = LocalDate.now(),
         nextDate = null,
+        trackedValues = emptyList(),
         completedCount = -1,
         totalCount = -1,
         progressPercent = -1,
@@ -140,6 +130,7 @@ data class ChallengeViewState(
     val difficulty: String,
     val endDate: LocalDate,
     val nextDate: LocalDate?,
+    val trackedValues: List<Challenge.TrackedValue>,
     val completedCount: Int,
     val totalCount: Int,
     val progressPercent: Int,

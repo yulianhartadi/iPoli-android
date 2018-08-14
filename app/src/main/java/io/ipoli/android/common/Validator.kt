@@ -19,13 +19,12 @@ class Validator<in Value, out Error>(private val rules: Map<String, PropertyVali
         }
     }
 
-    fun validate(value: Value): List<Error> {
-        return rules.map {
-            it.value.validations
+    fun validate(value: Value) =
+        rules.map { entry ->
+            entry.value.validations
                 .filter { it.first.invoke(value) }
                 .map { it.second }
         }.flatten()
-    }
 
     class Builder<Value, Error> {
         private val propertyValidators: MutableMap<String, PropertyValidator<Value, Error>> =

@@ -1,0 +1,237 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <android.support.constraint.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <View
+            android:id="@+id/resultCompletionBackground"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_marginEnd="16dp"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="16dp"
+            android:background="@drawable/rounded_rectangle_white_background"
+            android:clickable="true"
+            android:focusable="true"
+            android:foreground="?android:attr/selectableItemBackground"
+            app:layout_constraintBottom_toBottomOf="@+id/resultCompletionItem"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <ImageView
+            android:id="@+id/resultCompletionIcon"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="16dp"
+            android:background="@drawable/challenge_circle_completion"
+            android:scaleType="fitCenter"
+            app:layout_constraintStart_toStartOf="@+id/resultCompletionBackground"
+            app:layout_constraintTop_toTopOf="@+id/resultCompletionBackground" />
+
+        <TextView
+            android:id="@+id/resultCompletionName"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:text="Complete all"
+            android:textAppearance="@style/TextAppearance.AppCompat.Title"
+            android:textColor="@color/md_dark_text_87"
+            app:layout_constraintBottom_toBottomOf="@+id/resultCompletionIcon"
+            app:layout_constraintStart_toEndOf="@+id/resultCompletionIcon"
+            app:layout_constraintTop_toTopOf="@+id/resultCompletionIcon" />
+
+        <TextView
+            android:id="@+id/resultCompletionHint"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="16dp"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="8dp"
+            android:paddingBottom="16dp"
+            android:text="Complete all Quests and Habits from this Challenge. Good for college/online courses, work-related projects, learning a new language or writing a book!"
+            android:textAppearance="@style/TextAppearance.AppCompat.Caption"
+            android:textColor="@color/md_dark_text_54"
+            app:layout_constraintBottom_toTopOf="@+id/resultCompletionDivider"
+            app:layout_constraintEnd_toEndOf="@+id/resultCompletionBackground"
+            app:layout_constraintStart_toStartOf="@+id/resultCompletionBackground"
+            app:layout_constraintTop_toBottomOf="@+id/resultCompletionIcon" />
+
+        <View
+            android:id="@+id/resultCompletionDivider"
+            android:layout_width="0dp"
+            android:layout_height="1dp"
+            android:background="@color/md_dark_text_12"
+            app:layout_constraintBottom_toTopOf="@+id/resultCompletionItem"
+            app:layout_constraintEnd_toEndOf="@+id/resultCompletionBackground"
+            app:layout_constraintStart_toStartOf="@+id/resultCompletionBackground"
+            app:layout_constraintTop_toBottomOf="@+id/resultCompletionHint" />
+
+        <include
+            android:id="@+id/resultCompletionItem"
+            layout="@layout/item_challenge_summary_tracked_value"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:textColor="@color/md_dark_text_87"
+            app:layout_constraintBottom_toBottomOf="@+id/resultCompletionBackground"
+            app:layout_constraintEnd_toEndOf="@+id/resultCompletionBackground"
+            app:layout_constraintStart_toStartOf="@+id/resultCompletionBackground"
+            app:layout_constraintTop_toBottomOf="@+id/resultCompletionDivider" />
+
+        <View
+            android:id="@+id/resultReachValueBackground"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_marginEnd="16dp"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="16dp"
+            android:background="@drawable/rounded_rectangle_white_background"
+            android:clickable="true"
+            android:focusable="true"
+            android:foreground="?android:attr/selectableItemBackground"
+            app:layout_constraintBottom_toBottomOf="@+id/resultReachItems"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/resultCompletionBackground" />
+
+        <ImageView
+            android:id="@+id/resultReachValueIcon"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="16dp"
+            android:background="@drawable/challenge_circle_reach_value"
+            android:padding="12dp"
+            android:scaleType="fitCenter"
+            android:src="@drawable/ic_achievement_green_24dp"
+            app:layout_constraintStart_toStartOf="@+id/resultReachValueBackground"
+            app:layout_constraintTop_toTopOf="@+id/resultReachValueBackground" />
+
+        <TextView
+            android:id="@+id/resultReachValueName"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:text="Reach target"
+            android:textAppearance="@style/TextAppearance.AppCompat.Title"
+            android:textColor="@color/md_dark_text_87"
+            app:layout_constraintBottom_toBottomOf="@+id/resultReachValueIcon"
+            app:layout_constraintEnd_toEndOf="@+id/resultReachValueBackground"
+            app:layout_constraintStart_toEndOf="@+id/resultReachValueIcon"
+            app:layout_constraintTop_toTopOf="@+id/resultReachValueIcon" />
+
+        <TextView
+            android:id="@+id/resultReachValueHint"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="16dp"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="8dp"
+            android:paddingBottom="16dp"
+            android:text="Reach a target number that you set. Ideal for hitting target weight, savings in your account or number of blog posts that you write!"
+            android:textAppearance="@style/TextAppearance.AppCompat.Caption"
+            android:textColor="@color/md_dark_text_54"
+            app:layout_constraintBottom_toTopOf="@+id/resultReachItems"
+            app:layout_constraintEnd_toEndOf="@+id/resultReachValueBackground"
+            app:layout_constraintStart_toStartOf="@+id/resultReachValueBackground"
+            app:layout_constraintTop_toBottomOf="@+id/resultReachValueIcon" />
+
+        <View
+            android:id="@+id/resultReachDivider"
+            android:layout_width="0dp"
+            android:layout_height="1dp"
+            android:background="@color/md_dark_text_12"
+            app:layout_constraintBottom_toTopOf="@+id/resultReachItems"
+            app:layout_constraintEnd_toEndOf="@+id/resultReachValueBackground"
+            app:layout_constraintStart_toStartOf="@+id/resultReachValueBackground"
+            app:layout_constraintTop_toBottomOf="@+id/resultReachValueHint" />
+
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/resultReachItems"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            app:layout_constraintEnd_toEndOf="@+id/resultReachValueBackground"
+            app:layout_constraintStart_toStartOf="@+id/resultReachValueBackground"
+            app:layout_constraintTop_toBottomOf="@+id/resultReachDivider" />
+
+        <View
+            android:id="@+id/resultAverageBackground"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_marginEnd="16dp"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="16dp"
+            android:background="@drawable/rounded_rectangle_white_background"
+            android:clickable="true"
+            android:focusable="true"
+            android:foreground="?android:attr/selectableItemBackground"
+            app:layout_constraintBottom_toBottomOf="@+id/resultAverageItems"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/resultReachValueBackground" />
+
+        <ImageView
+            android:id="@+id/resultAverageValueIcon"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="16dp"
+            android:background="@drawable/challenge_circle_average"
+            android:scaleType="fitCenter"
+            app:layout_constraintStart_toStartOf="@+id/resultAverageBackground"
+            app:layout_constraintTop_toTopOf="@+id/resultAverageBackground" />
+
+        <TextView
+            android:id="@+id/resultAverageValueName"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:text="Maintain average"
+            android:textAppearance="@style/TextAppearance.AppCompat.Title"
+            android:textColor="@color/md_dark_text_87"
+            app:layout_constraintBottom_toBottomOf="@+id/resultAverageValueIcon"
+            app:layout_constraintEnd_toEndOf="@+id/resultAverageBackground"
+            app:layout_constraintStart_toEndOf="@+id/resultAverageValueIcon"
+            app:layout_constraintTop_toTopOf="@+id/resultAverageValueIcon" />
+
+        <TextView
+            android:id="@+id/resultAverageValueHint"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="16dp"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="8dp"
+            android:paddingBottom="16dp"
+            android:text="Try to stay as close as possible to a target number that you set. Useful for tracking hours of sleep, macros, calories or number of pages you want to read daily!"
+            android:textAppearance="@style/TextAppearance.AppCompat.Caption"
+            android:textColor="@color/md_dark_text_54"
+            app:layout_constraintBottom_toTopOf="@+id/resultAverageDivider"
+            app:layout_constraintEnd_toEndOf="@+id/resultAverageBackground"
+            app:layout_constraintStart_toStartOf="@+id/resultAverageBackground"
+            app:layout_constraintTop_toBottomOf="@+id/resultAverageValueIcon" />
+
+        <View
+            android:id="@+id/resultAverageDivider"
+            android:layout_width="0dp"
+            android:layout_height="1dp"
+            android:background="@color/md_dark_text_12"
+            app:layout_constraintBottom_toTopOf="@+id/resultAverageItems"
+            app:layout_constraintEnd_toEndOf="@+id/resultAverageBackground"
+            app:layout_constraintStart_toStartOf="@+id/resultAverageBackground"
+            app:layout_constraintTop_toBottomOf="@+id/resultAverageValueHint" />
+
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/resultAverageItems"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            app:layout_constraintEnd_toEndOf="@+id/resultAverageBackground"
+            app:layout_constraintStart_toStartOf="@+id/resultAverageBackground"
+            app:layout_constraintTop_toBottomOf="@+id/resultAverageValueHint" />
+    </android.support.constraint.ConstraintLayout>
+</ScrollView>

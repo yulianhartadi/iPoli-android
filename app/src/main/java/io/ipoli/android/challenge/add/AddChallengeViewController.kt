@@ -25,9 +25,10 @@ class AddChallengeViewController(args: Bundle? = null) :
     companion object {
         const val NAME_INDEX = 0
         const val MOTIVATION_INDEX = 1
-        const val END_DATE_INDEX = 2
-        const val QUEST_PICKER_INDEX = 3
-        const val SUMMARY_INDEX = 4
+        const val TRACKED_VALUE_INDEX = 2
+        const val END_DATE_INDEX = 3
+        const val QUEST_PICKER_INDEX = 4
+        const val SUMMARY_INDEX = 5
     }
 
     override fun onCreateView(
@@ -130,6 +131,7 @@ class AddChallengeViewController(args: Bundle? = null) :
         when (position) {
             NAME_INDEX -> AddChallengeNameViewController()
             MOTIVATION_INDEX -> AddChallengeMotivationViewController()
+            TRACKED_VALUE_INDEX -> AddChallengeTrackedValueViewController()
             END_DATE_INDEX -> AddChallengeEndDateViewController()
             QUEST_PICKER_INDEX -> AddChallengeQuestsViewController()
             SUMMARY_INDEX -> AddChallengeSummaryViewController()
@@ -153,6 +155,7 @@ class AddChallengeViewController(args: Bundle? = null) :
         get() = when (adapterPosition) {
             NAME_INDEX -> "New Challenge"
             MOTIVATION_INDEX -> "Motivations to do it"
+            TRACKED_VALUE_INDEX -> "Measure your success"
             END_DATE_INDEX -> "Achieve it in"
             QUEST_PICKER_INDEX -> "Add some quests"
             SUMMARY_INDEX -> "Summary"

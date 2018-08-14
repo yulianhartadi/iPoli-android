@@ -16,6 +16,7 @@ import io.ipoli.android.quest.Color
 import io.ipoli.android.quest.Icon
 import io.ipoli.android.tag.Tag
 import org.threeten.bp.LocalDate
+import java.util.*
 
 /**
  * Created by Polina Zhelyazkova <polina@mypoli.fun>
@@ -80,6 +81,53 @@ sealed class EditChallengeAction : Action {
 
     }
 
+    data class AddAverageTrackedValue(val trackedValue: Challenge.TrackedValue.Average) :
+        EditChallengeAction() {
+
+        override fun toMap() = mapOf(
+            "name" to trackedValue.name,
+            "targetValue" to trackedValue.targetValue
+        )
+    }
+
+    data class AddTargetTrackedValue(val trackedValue: Challenge.TrackedValue.Target) :
+        EditChallengeAction() {
+
+        override fun toMap() = mapOf(
+            "name" to trackedValue.name,
+            "targetValue" to trackedValue.targetValue,
+            "isCumulative" to trackedValue.isCumulative
+        )
+    }
+
+    data class RemoveTrackedValue(val trackedValueId: String) : EditChallengeAction()
+
+    data class UpdateTrackedValue(val trackedValue: Challenge.TrackedValue) :
+        EditChallengeAction() {
+
+        override fun toMap() =
+            when (trackedValue) {
+                is Challenge.TrackedValue.Target ->
+                    mapOf(
+                        "type" to "Target",
+                        "name" to trackedValue.name,
+                        "targetValue" to trackedValue.targetValue,
+                        "isCumulative" to trackedValue.isCumulative
+                    )
+
+                is Challenge.TrackedValue.Average ->
+                    mapOf(
+                        "type" to "Average",
+                        "name" to trackedValue.name,
+                        "targetValue" to trackedValue.targetValue
+                    )
+
+                else -> mapOf(
+                    "type" to "Progress"
+                )
+            }
+    }
+
     object ShowNext : EditChallengeAction()
     object UpdateSummary : EditChallengeAction()
     object LoadSummary : EditChallengeAction()
@@ -89,6 +137,13 @@ sealed class EditChallengeAction : Action {
     object Save : EditChallengeAction()
     object LoadFirstPage : EditChallengeAction()
     object SaveNew : EditChallengeAction()
+    object AddCompleteAllTrackedValue : EditChallengeAction()
+    object RemoveCompleteAll : EditChallengeAction()
+    data class ShowTargetTrackedValuePicker(val trackedValues: List<Challenge.TrackedValue>) :
+        EditChallengeAction()
+
+    data class ShowAverageTrackedValuePicker(val trackedValues: List<Challenge.TrackedValue>) :
+        EditChallengeAction()
 }
 
 object EditChallengeReducer : BaseViewStateReducer<EditChallengeViewState>() {
@@ -126,7 +181,8 @@ object EditChallengeReducer : BaseViewStateReducer<EditChallengeViewState>() {
                     motivation3 = c.motivation3,
                     note = c.note,
                     quests = c.baseQuests,
-                    maxTagsReached = c.tags.size >= Constants.MAX_TAGS_PER_ITEM
+                    maxTagsReached = c.tags.size >= Constants.MAX_TAGS_PER_ITEM,
+                    trackedValues = c.trackedValues
                 )
             }
 
@@ -302,6 +358,64 @@ object EditChallengeReducer : BaseViewStateReducer<EditChallengeViewState>() {
                 }
             }
 
+            is EditChallengeAction.ShowTargetTrackedValuePicker ->
+                subState.copy(
+                    type = SHOW_TARGET_TRACKED_VALUE_PICKER
+                )
+
+            is EditChallengeAction.ShowAverageTrackedValuePicker ->
+                subState.copy(
+                    type = SHOW_AVERAGE_TRACKED_VALUE_PICKER
+                )
+
+            is EditChallengeAction.AddCompleteAllTrackedValue ->
+                subState.copy(
+                    type = TRACKED_VALUES_CHANGED,
+                    trackedValues = subState.trackedValues + Challenge.TrackedValue.Progress(
+                        id = UUID.randomUUID().toString(),
+                        history = emptyMap<LocalDate, Challenge.TrackedValue.Log>().toSortedMap()
+                    ),
+                    shouldTrackCompleteAll = true
+                )
+
+            is EditChallengeAction.AddTargetTrackedValue ->
+                subState.copy(
+                    type = TRACKED_VALUES_CHANGED,
+                    trackedValues = subState.trackedValues + action.trackedValue
+                )
+
+            is EditChallengeAction.AddAverageTrackedValue ->
+                subState.copy(
+                    type = TRACKED_VALUES_CHANGED,
+                    trackedValues = subState.trackedValues + action.trackedValue
+                )
+
+            is EditChallengeAction.RemoveCompleteAll ->
+                subState.copy(
+                    type = TRACKED_VALUES_CHANGED,
+                    trackedValues = subState.trackedValues
+                        .filter { it !is Challenge.TrackedValue.Progress },
+                    shouldTrackCompleteAll = false
+                )
+
+            is EditChallengeAction.RemoveTrackedValue ->
+                subState.copy(
+                    type = TRACKED_VALUES_CHANGED,
+                    trackedValues = subState.trackedValues
+                        .filter { it.id != action.trackedValueId }
+                )
+
+            is EditChallengeAction.UpdateTrackedValue ->
+                subState.copy(
+                    type = TRACKED_VALUES_CHANGED,
+                    trackedValues = subState.trackedValues.map {
+                        if (it.id == action.trackedValue.id)
+                            action.trackedValue
+                        else
+                            it
+                    }
+                )
+
             EditChallengeAction.SaveNew,
             EditChallengeAction.Save ->
                 subState.copy(
@@ -328,10 +442,12 @@ object EditChallengeReducer : BaseViewStateReducer<EditChallengeViewState>() {
             motivation2 = "",
             motivation3 = "",
             allQuests = emptyList(),
+            trackedValues = emptyList(),
             quests = emptyList(),
             selectedQuestIds = emptySet(),
             note = "",
-            maxTagsReached = false
+            maxTagsReached = false,
+            shouldTrackCompleteAll = false
         )
 
     enum class ValidationError {
@@ -355,10 +471,12 @@ data class EditChallengeViewState(
     val motivation2: String,
     val motivation3: String,
     val allQuests: List<BaseQuest>,
+    val trackedValues: List<Challenge.TrackedValue>,
     val quests: List<BaseQuest>,
     val selectedQuestIds: Set<String>,
     val note: String,
-    val maxTagsReached: Boolean
+    val maxTagsReached: Boolean,
+    val shouldTrackCompleteAll: Boolean
 ) : BaseViewState() {
     enum class StateType {
         INITIAL,
@@ -378,6 +496,9 @@ data class EditChallengeViewState(
         SUMMARY_DATA_LOADED,
         TAGS_CHANGED,
         END_DATE_CHANGED,
-        MOTIVATIONS_CHANGED
+        MOTIVATIONS_CHANGED,
+        TRACKED_VALUES_CHANGED,
+        SHOW_TARGET_TRACKED_VALUE_PICKER,
+        SHOW_AVERAGE_TRACKED_VALUE_PICKER
     }
 }

@@ -204,7 +204,7 @@ class ReactionHistoryDialogViewController(args: Bundle? = null) :
             ReactionViewModel(
                 id = it.player.id,
                 avatar = AndroidAvatar.valueOf(it.player.avatar.name),
-                name = it.player.displayName!!,
+                name = it.player.displayName ?: "Unknown Hero",
                 username = "@${it.player.username}",
                 time = DateUtils.getRelativeTimeSpanString(
                     it.reaction.createdAt.toEpochMilli(),

@@ -7,6 +7,8 @@ import io.ipoli.android.player.Theme
 import io.ipoli.android.player.data.Player
 import io.ipoli.android.store.gem.GemPackType
 import org.threeten.bp.DayOfWeek
+import java.math.RoundingMode
+import java.text.DecimalFormat
 
 /**
  * Created by Venelin Valkov <venelin@mypoli.fun>
@@ -16,7 +18,8 @@ interface Constants {
     companion object {
 
         val DISCORD_CHAT_LINK = "https://discord.gg/7AMKs28"
-        const val FEEDBACK_LINK = "https://feedback.userreport.com/15ae66d9-82d9-475f-84c9-b60411e23537/"
+        const val FEEDBACK_LINK =
+            "https://feedback.userreport.com/15ae66d9-82d9-475f-84c9-b60411e23537/"
 
         val FACEBOOK_APP_LINK = "https://fb.me/1609677589354576"
         val IPOLI_LOGO_URL = "https://i.imgur.com/Gz3rUi1.png"
@@ -288,5 +291,11 @@ interface Constants {
         val MORNING_TIME_START by lazy { Time.atHours(4) }
         val AFTERNOON_TIME_START by lazy { Time.atHours(12) }
         val EVENING_TIME_START by lazy { Time.atHours(18) }
+
+        val DECIMAL_FORMATTER by lazy {
+            DecimalFormat("#.#").apply {
+                roundingMode = RoundingMode.UP
+            }
+        }
     }
 }

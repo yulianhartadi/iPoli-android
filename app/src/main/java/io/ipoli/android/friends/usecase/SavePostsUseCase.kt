@@ -38,7 +38,7 @@ open class SavePostsUseCase(
                         Post(
                             playerId = player.id,
                             playerAvatar = player.avatar,
-                            playerDisplayName = player.displayName!!,
+                            playerDisplayName = player.displayName ?: "Unknown Hero",
                             playerUsername = player.username!!,
                             playerLevel = parameters.newLevel,
                             data = Post.Data.LevelUp(parameters.newLevel),
@@ -122,7 +122,7 @@ open class SavePostsUseCase(
             Post(
                 playerId = player.id,
                 playerAvatar = player.avatar,
-                playerDisplayName = player.displayName!!,
+                playerDisplayName = player.displayName ?: "Unknown Hero",
                 playerUsername = player.username!!,
                 playerLevel = player.level,
                 data = data,
