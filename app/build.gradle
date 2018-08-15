@@ -90,8 +90,11 @@ dependencies {
     kapt "android.arch.persistence.room:compiler:$room_version"
     implementation "android.arch.paging:runtime:1.0.1"
 
-    implementation 'com.amplitude:android-sdk:2.19.0'
-    implementation 'com.firebaseui:firebase-ui-auth:4.1.0'
+    implementation 'com.amplitude:android-sdk:2.19.1'
+    implementation('com.firebaseui:firebase-ui-auth:4.1.0', {
+        exclude module: 'retrofit'
+        exclude module: 'converter-gson'
+    })
     implementation 'com.facebook.android:facebook-login:4.35.0'
     implementation 'com.facebook.android:facebook-share:4.35.0'
     implementation 'com.bluelinelabs:conductor:2.1.5'
