@@ -1,11 +1,11 @@
 package io.ipoli.android.settings.sideeffect
 
 import io.ipoli.android.Constants
+import io.ipoli.android.MyPoliApp
 import io.ipoli.android.common.AppSideEffectHandler
 import io.ipoli.android.common.AppState
 import io.ipoli.android.common.notification.QuickDoNotificationUtil
 import io.ipoli.android.common.redux.Action
-import io.ipoli.android.MyPoliApp
 import io.ipoli.android.settings.SettingsAction
 import io.ipoli.android.settings.usecase.*
 import space.traversal.kapsule.required
@@ -57,6 +57,10 @@ object SettingsSideEffectHandler : AppSideEffectHandler() {
                     QuickDoNotificationUtil.disable(MyPoliApp.instance)
                 }
 
+            }
+
+            is SettingsAction.ResetDayTimeChanged -> {
+                
             }
         }
     }

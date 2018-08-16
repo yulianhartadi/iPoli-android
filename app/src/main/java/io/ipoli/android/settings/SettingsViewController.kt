@@ -87,6 +87,7 @@ class SettingsViewController(args: Bundle? = null) :
     ) {
         renderTimeFormat(state, view)
         renderTemperatureUnit(state, view)
+        renderResetDay(state, view)
 
         view.enableOngoingNotification.setOnCheckedChangeListener(null)
         view.enableOngoingNotification.isChecked = state.isQuickDoNotificationEnabled
@@ -96,6 +97,21 @@ class SettingsViewController(args: Bundle? = null) :
         view.enableOngoingNotification.setOnCheckedChangeListener { _, isChecked ->
             dispatch(SettingsAction.ToggleQuickDoNotification(isChecked))
         }
+    }
+
+    private fun renderResetDay(state: SettingsViewState, view: View) {
+        view.resetDayTime.text = state.resetDayTime.toString(shouldUse24HourFormat)
+        view.resetDayTimeContainer.onDebounceClick {
+
+            createTimePickerDialog(
+                startTime = state.resetDayTime,
+                onTimePicked = {
+                    dispatch(SettingsAction.ResetDayTimeChanged(it!!))
+                },
+                showNeutral = false
+            ).show(router)
+        }
+
     }
 
     private fun renderTemperatureUnit(state: SettingsViewState, view: View) {

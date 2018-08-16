@@ -1699,5 +1699,6 @@ You can also manage your **shared posts**, **friends** and **shared challenges**
     </string>
     <string name="track_challenge_values">More Track Values</string>
     <string name="faq">FAQ</string>
+    <string name="reset_my_day_at">Reset my day at</string>
 
 </resources>

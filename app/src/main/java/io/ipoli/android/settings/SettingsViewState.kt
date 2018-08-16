@@ -49,6 +49,8 @@ sealed class SettingsAction : Action {
         override fun toMap() = mapOf("isEnabled" to isEnabled)
     }
 
+    data class ResetDayTimeChanged(val time: Time) : SettingsAction()
+
     object Load : SettingsAction()
 }
 
@@ -113,6 +115,7 @@ object SettingsReducer : BaseViewStateReducer<SettingsViewState>() {
         playerId = "",
         timeFormat = TWELVE_HOURS,
         temperatureUnit = FAHRENHEIT,
+        resetDayTime = Constants.RESET_DAY_TIME,
         planDays = Constants.DEFAULT_PLAN_DAYS,
         planTime = Time.of(Constants.DEFAULT_PLAN_DAY_REMINDER_START_MINUTE),
         isCalendarSyncEnabled = false,
@@ -129,6 +132,7 @@ data class SettingsViewState(
     val playerId: String,
     val timeFormat: Player.Preferences.TimeFormat,
     val temperatureUnit: Player.Preferences.TemperatureUnit,
+    val resetDayTime: Time,
     val planTime: Time,
     val planDays: Set<DayOfWeek>,
     val isCalendarSyncEnabled: Boolean,

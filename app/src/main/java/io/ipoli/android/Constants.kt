@@ -300,5 +300,7 @@ interface Constants {
                 roundingMode = RoundingMode.UP
             }
         }
+
+        val RESET_DAY_TIME = Time.of(0)
     }
 }
