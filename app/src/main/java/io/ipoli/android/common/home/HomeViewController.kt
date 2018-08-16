@@ -140,6 +140,9 @@ class HomeViewController(args: Bundle? = null) :
             R.id.shareApp ->
                 showShareApp()
 
+            R.id.help ->
+                openHelp()
+
             R.id.settings ->
                 pushWithRootRouter(
                     SettingsViewController.routerTransaction()
@@ -170,6 +173,11 @@ class HomeViewController(args: Bundle? = null) :
 
     private fun openCommunity() {
         val myIntent = Intent(ACTION_VIEW, Uri.parse(Constants.DISCORD_CHAT_LINK))
+        startActivity(myIntent)
+    }
+
+    private fun openHelp() {
+        val myIntent = Intent(ACTION_VIEW, Uri.parse(Constants.WEBSITE_HELP_LINK))
         startActivity(myIntent)
     }
 
