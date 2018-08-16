@@ -1698,5 +1698,6 @@ You can also manage your **shared posts**, **friends** and **shared challenges**
         You can also track their progress, react to their posts and encourage them in their quests.
     </string>
     <string name="track_challenge_values">More Track Values</string>
+    <string name="faq">FAQ</string>
 
 </resources>

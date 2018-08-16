@@ -22,6 +22,7 @@ interface Constants {
             "https://feedback.userreport.com/15ae66d9-82d9-475f-84c9-b60411e23537/"
 
         val WEBSITE_HELP_LINK = "https://www.mypoli.fun/getting-started"
+        val WEBSITE_FAQ_LINK = "https://www.mypoli.fun/faq"
 
         val FACEBOOK_APP_LINK = "https://fb.me/1609677589354576"
         val IPOLI_LOGO_URL = "https://i.imgur.com/Gz3rUi1.png"

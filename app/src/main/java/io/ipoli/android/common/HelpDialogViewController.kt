@@ -1,12 +1,15 @@
 package io.ipoli.android.common
 
 import android.content.DialogInterface
+import android.content.Intent
 import android.graphics.drawable.GradientDrawable
+import android.net.Uri
 import android.os.Bundle
 import android.support.v7.app.AlertDialog
 import android.view.LayoutInflater
 import android.view.View
 import android.widget.Button
+import io.ipoli.android.Constants
 import io.ipoli.android.MyPoliApp
 import io.ipoli.android.R
 import io.ipoli.android.common.di.BackgroundModule
@@ -82,37 +85,23 @@ class HelpDialogViewController : BaseDialogController, Injects<BackgroundModule>
         neutral.setOnClickListener(Debounce.clickListener {
             contentView.helpSwitcher.showNext()
             positive.setText(R.string.send)
-            neutral.setText(R.string.back)
+            neutral.setText(R.string.faq)
             negative.visible()
 
+            neutral.setOnClickListener(Debounce.clickListener { _ ->
+                val myIntent = Intent(Intent.ACTION_VIEW, Uri.parse(Constants.WEBSITE_FAQ_LINK))
+                startActivity(myIntent)
+            })
 
-            setupFeedback(positive, negative, neutral, contentView)
-        })
-    }
-
-    private fun setupFeedback(
-        positive: Button,
-        negative: Button,
-        back: Button,
-        contentView: View
-    ) {
-        back.setOnClickListener(Debounce.clickListener {
-            contentView.helpSwitcher.showNext()
-            back.setText(R.string.not_helpful)
-            positive.setText(R.string.got_it)
-            negative.gone()
-            setNotHelpfulClickListener(positive, negative, back, contentView)
-        })
-
-
-        positive.setOnClickListener(Debounce.clickListener { _ ->
-            eventLogger.logEvent(
-                "help_section_feedback", mapOf(
-                    "screen" to title,
-                    "feedback" to contentView.helpFeedback.text.toString()
+            positive.setOnClickListener(Debounce.clickListener { _ ->
+                eventLogger.logEvent(
+                    "help_section_feedback", mapOf(
+                        "screen" to title,
+                        "feedback" to contentView.helpFeedback.text.toString()
+                    )
                 )
-            )
-            dismiss()
+                dismiss()
+            })
         })
     }
 }
