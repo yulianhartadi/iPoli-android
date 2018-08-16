@@ -23,6 +23,7 @@ class RewardPopup(
     private val earnedXP: Int,
     private val earnedCoins: Int,
     private val bounty: Food? = null,
+    private val undoListener: () -> Unit = {},
     private val isPositive: Boolean = true
 ) : ToastOverlay() {
 
@@ -36,6 +37,11 @@ class RewardPopup(
             contentView.bounty.setImageResource(it.image)
         }
         startTypingAnimation(contentView)
+
+        contentView.petAction.setOnClickListener {
+            undoListener()
+            hide()
+        }
     }
 
     private fun startTypingAnimation(contentView: View) {
@@ -59,6 +65,8 @@ class RewardPopup(
     }
 
     private fun startEarnedRewardAnimation(contentView: View) {
+        val messageAnim = ObjectAnimator.ofFloat(contentView.message, "alpha", 1f, 0f)
+
         val earnedXP = contentView.earnedXP
         val earnedCoins = contentView.earnedCoins
 
@@ -85,10 +93,12 @@ class RewardPopup(
         }
 
         val anim = AnimatorSet()
+        anim.startDelay = 500
         anim.duration = 300
-        anim.playSequentially(xpAnim, coinsAnim)
+        anim.playSequentially(messageAnim, xpAnim, coinsAnim)
 
         anim.addListener(object : AnimatorListenerAdapter() {
+
             override fun onAnimationEnd(animation: Animator) {
 
                 if (bounty != null) playRewardAnimation(contentView)
@@ -104,8 +114,7 @@ class RewardPopup(
         val alphaSet = AnimatorSet()
         alphaSet.playTogether(
             ObjectAnimator.ofFloat(contentView.earnedCoins, "alpha", 1f, 0f),
-            ObjectAnimator.ofFloat(contentView.earnedXP, "alpha", 1f, 0f),
-            ObjectAnimator.ofFloat(contentView.message, "alpha", 1f, 0f)
+            ObjectAnimator.ofFloat(contentView.earnedXP, "alpha", 1f, 0f)
         )
         alphaSet.startDelay = 500
 
@@ -227,7 +236,9 @@ abstract class ToastOverlay {
     }
 
     private fun onDestroy() {
-        windowManager.removeViewImmediate(contentView)
+        if(contentView.windowToken != null) {
+            windowManager.removeViewImmediate(contentView)
+        }
     }
 
     private fun addViewToWindowManager(view: ViewGroup) {

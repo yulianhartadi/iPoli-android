@@ -73,7 +73,11 @@ open class CompleteQuestUseCase(
         )
         rewardPlayerUseCase.execute(reward)
 
-        rewardScheduler.schedule(reward)
+        rewardScheduler.schedule(
+            reward = reward,
+            type = RewardScheduler.Type.QUEST,
+            entityId = quest.id
+        )
         ratePopupScheduler.schedule()
 
         val r = checkForDailyChallengeCompletionUseCase.execute(Unit)

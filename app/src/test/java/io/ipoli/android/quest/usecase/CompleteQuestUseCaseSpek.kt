@@ -88,7 +88,7 @@ class CompleteQuestUseCaseSpek : Spek({
 
         it("should schedule show quest complete message") {
             useCase.execute(WithQuestId(questId))
-            Verify on rewardScheduler that rewardScheduler.schedule(any(), any()) was called
+            Verify on rewardScheduler that rewardScheduler.schedule(any(), any(), any(), any()) was called
         }
 
         it("should have XP") {

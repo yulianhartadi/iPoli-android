@@ -82,16 +82,20 @@ class CompleteHabitUseCase(
             if (habit.isGood) {
                 rewardPlayerUseCase.execute(reward)
                 rewardScheduler.schedule(
-                    reward
+                    reward = reward,
+                    type = RewardScheduler.Type.HABIT,
+                    entityId = habit.id
                 )
             } else {
                 removeRewardFromPlayerUseCase.execute(reward)
                 rewardScheduler.schedule(
-                    reward.copy(
+                    reward = reward.copy(
                         coins = -reward.coins,
                         experience = -reward.experience
                     ),
-                    false
+                    isPositive = false,
+                    type = RewardScheduler.Type.HABIT,
+                    entityId = habit.id
                 )
             }
         }
