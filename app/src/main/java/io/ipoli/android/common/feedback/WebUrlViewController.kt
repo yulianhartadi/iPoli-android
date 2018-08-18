@@ -9,21 +9,30 @@ import android.view.ViewGroup
 import android.webkit.WebChromeClient
 import android.webkit.WebView
 import com.bluelinelabs.conductor.RestoreViewOnCreateController
-import io.ipoli.android.Constants
+import io.ipoli.android.MyPoliApp
 import io.ipoli.android.R
 import io.ipoli.android.common.di.UIModule
 import io.ipoli.android.common.view.inflate
-import io.ipoli.android.MyPoliApp
 import space.traversal.kapsule.Injects
 import space.traversal.kapsule.inject
 import space.traversal.kapsule.required
 
-class FeedbackViewController(args: Bundle? = null) :
+class WebUrlViewController(args: Bundle? = null) :
     RestoreViewOnCreateController(
         args
     ), Injects<UIModule> {
 
     private val eventLogger by required { eventLogger }
+    private var url = ""
+    private var screenName = ""
+
+    constructor(
+        url: String,
+        screenName: String
+    ) : this() {
+        this.url = url
+        this.screenName = screenName
+    }
 
     override fun onContextAvailable(context: Context) {
         inject(MyPoliApp.uiModule(context))
@@ -39,7 +48,7 @@ class FeedbackViewController(args: Bundle? = null) :
         @SuppressLint("SetJavaScriptEnabled")
         view.settings.javaScriptEnabled = true
         view.settings.domStorageEnabled = true
-        view.loadUrl(Constants.FEEDBACK_LINK)
+        view.loadUrl(url)
         return view
     }
 
@@ -47,8 +56,7 @@ class FeedbackViewController(args: Bundle? = null) :
         super.onAttach(view)
         eventLogger.logCurrentScreen(
             activity!!,
-            "Feedback"
+            screenName
         )
     }
-
 }

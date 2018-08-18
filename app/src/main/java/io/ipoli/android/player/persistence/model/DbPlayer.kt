@@ -86,6 +86,7 @@ data class DbPreferences(val map: MutableMap<String, Any?> = mutableMapOf()) {
     var temperatureUnit: String by map
     var planDays: List<String> by map
     var planDayStartMinute: Long by map
+    var resetDayStartMinute: Long by map
     var isQuickDoNotificationEnabled: Boolean by map
 }
 

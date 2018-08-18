@@ -141,7 +141,7 @@ class HomeViewController(args: Bundle? = null) :
                 showShareApp()
 
             R.id.help ->
-                openHelp()
+                navigateFromRoot().toHelpPage()
 
             R.id.settings ->
                 pushWithRootRouter(
@@ -149,7 +149,10 @@ class HomeViewController(args: Bundle? = null) :
                 )
 
             R.id.feedback ->
-                showFeedback()
+                navigateFromRoot().toFeedback()
+
+            R.id.reportBug ->
+                navigateFromRoot().toBugReport()
 
             else -> {
                 if (TAG_IDS.contains(item.itemId)) {
@@ -167,17 +170,8 @@ class HomeViewController(args: Bundle? = null) :
         navigate().toShareApp()
     }
 
-    private fun showFeedback() {
-        navigateFromRoot().toFeedback()
-    }
-
     private fun openCommunity() {
         val myIntent = Intent(ACTION_VIEW, Uri.parse(Constants.DISCORD_CHAT_LINK))
-        startActivity(myIntent)
-    }
-
-    private fun openHelp() {
-        val myIntent = Intent(ACTION_VIEW, Uri.parse(Constants.WEBSITE_HELP_LINK))
         startActivity(myIntent)
     }
 

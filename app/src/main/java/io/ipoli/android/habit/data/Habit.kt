@@ -2,12 +2,14 @@ package io.ipoli.android.habit.data
 
 import io.ipoli.android.common.datetime.Time
 import io.ipoli.android.common.persistence.EntityWithTags
+import io.ipoli.android.player.data.Player
 import io.ipoli.android.quest.Color
 import io.ipoli.android.quest.Icon
 import io.ipoli.android.tag.Tag
 import org.threeten.bp.DayOfWeek
 import org.threeten.bp.Instant
 import org.threeten.bp.LocalDate
+import org.threeten.bp.LocalDateTime
 
 /**
  * Created by Polina Zhelyazkova <polina@mypoli.fun>
@@ -34,22 +36,36 @@ data class Habit(
     val removedAt: Instant? = null
 ) : EntityWithTags {
 
-    fun isCompletedFor(date: LocalDate = LocalDate.now()): Boolean {
-        if (!shouldBeDoneOn(date)) return true
-
-        if (!history.containsKey(date)) return false
-
-        if (history[date]!!.completedCount >= timesADay) return true
-
-        return false
+    fun isCompletedFor(date: LocalDateTime = LocalDateTime.now(), resetDayTime: Time): Boolean {
+        if (!shouldBeDoneOn(date, resetDayTime)) return true
+        return completedCountForDate(date, resetDayTime) >= timesADay
     }
 
-    fun completedForDateCount(date: LocalDate = LocalDate.now()): Int {
-        if (!history.containsKey(date)) return 0
-        return history[date]!!.completedCount
+    fun completedCountForDate(date: LocalDateTime = LocalDateTime.now(), resetDayTime: Time): Int {
+
+        val (startDate, endDate) = Player.datesSpan(date, resetDayTime)
+
+        var completedCount = 0
+
+        history[startDate]?.let {
+            completedCount = it.completedAtTimes.count { t -> t >= resetDayTime }
+        }
+
+        endDate?.let {
+            history[it]?.let { ce ->
+                completedCount = ce.completedAtTimes.count { t -> t <= resetDayTime }
+            }
+        }
+
+
+        return completedCount
     }
 
-    fun shouldBeDoneOn(date: LocalDate = LocalDate.now()) = days.contains(date.dayOfWeek)
+    fun shouldBeDoneOn(date: LocalDateTime = LocalDateTime.now(), resetDayTime: Time): Boolean {
+        val currentDate = Player.currentDate(date, resetDayTime)
+        return days.contains(currentDate.dayOfWeek)
+    }
+
 }
 
 data class CompletedEntry(

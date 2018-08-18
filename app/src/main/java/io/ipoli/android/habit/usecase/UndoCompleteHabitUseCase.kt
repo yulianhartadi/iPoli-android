@@ -4,9 +4,10 @@ import io.ipoli.android.common.SimpleReward
 import io.ipoli.android.common.UseCase
 import io.ipoli.android.habit.data.Habit
 import io.ipoli.android.habit.persistence.HabitRepository
+import io.ipoli.android.player.persistence.PlayerRepository
 import io.ipoli.android.player.usecase.RemoveRewardFromPlayerUseCase
 import io.ipoli.android.quest.Quest
-import org.threeten.bp.LocalDate
+import org.threeten.bp.LocalDateTime
 
 /**
  * Created by Polina Zhelyazkova <polina@mypoli.fun>
@@ -14,6 +15,7 @@ import org.threeten.bp.LocalDate
  */
 class UndoCompleteHabitUseCase(
     private val habitRepository: HabitRepository,
+    private val playerRepository: PlayerRepository,
     private val removeRewardFromPlayerUseCase: RemoveRewardFromPlayerUseCase
 ) : UseCase<UndoCompleteHabitUseCase.Params, Habit> {
 
@@ -21,17 +23,23 @@ class UndoCompleteHabitUseCase(
         val habit = habitRepository.findById(parameters.habitId)
         requireNotNull(habit)
 
+        val player = playerRepository.find()!!
+
+        val dateTime = parameters.dateTime
+        val resetDayTime = player.preferences.resetDayTime
+
         val history = habit!!.history.toMutableMap()
-        val date = parameters.date
 
-        if (!history.containsKey(date) || history[date]!!.completedCount == 0) {
-            return habit
-        }
+        require(habit.completedCountForDate(dateTime, resetDayTime) > 0)
 
-        val wasCompleted = habit.isCompletedFor(date)
+        val wasCompleted = habit.isCompletedFor(dateTime, resetDayTime)
 
-        val ce = history[date]!!
-        history[date] = ce.undoLastComplete()
+        val (startDate, endDate) = player.datesSpan(dateTime)
+
+        val ced = if (endDate != null && history[endDate] != null) endDate else startDate
+
+        val ce = history[ced]!!.undoLastComplete()
+        history[ced] = ce
 
         if (wasCompleted && habit.isGood) {
             removeRewardFromPlayerUseCase.execute(
@@ -59,7 +67,10 @@ class UndoCompleteHabitUseCase(
                 currentStreak = newStreak,
                 prevStreak = if (newStreak != currentStreak && currentStreak != 0) currentStreak else habit.prevStreak,
                 bestStreak = if (habit.isGood) {
-                    if (wasCompleted && bestStreak == currentStreak) Math.max(bestStreak - 1, 0) else bestStreak
+                    if (wasCompleted && bestStreak == currentStreak) Math.max(
+                        bestStreak - 1,
+                        0
+                    ) else bestStreak
                 } else {
                     if (habit.prevStreak > bestStreak) {
                         habit.prevStreak
@@ -72,5 +83,5 @@ class UndoCompleteHabitUseCase(
         )
     }
 
-    data class Params(val habitId: String, val date: LocalDate = LocalDate.now())
+    data class Params(val habitId: String, val dateTime: LocalDateTime = LocalDateTime.now())
 }

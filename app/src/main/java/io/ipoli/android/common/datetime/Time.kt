@@ -1,5 +1,6 @@
 package io.ipoli.android.common.datetime
 
+import org.threeten.bp.LocalTime
 import java.text.SimpleDateFormat
 import java.util.*
 import java.util.concurrent.TimeUnit
@@ -51,6 +52,8 @@ data class Time constructor(private val minutesAfterMidnight: Int) {
 
         return formatter.format(c.time)
     }
+
+    fun toLocalTime(): LocalTime = LocalTime.of(hours, getMinutes())
 
     companion object {
 

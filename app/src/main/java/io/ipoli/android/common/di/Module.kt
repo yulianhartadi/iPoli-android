@@ -28,6 +28,8 @@ import io.ipoli.android.common.billing.BillingRequestExecutor
 import io.ipoli.android.common.billing.BillingResponseHandler
 import io.ipoli.android.common.image.AndroidImageLoader
 import io.ipoli.android.common.image.ImageLoader
+import io.ipoli.android.common.job.AndroidResetDayScheduler
+import io.ipoli.android.common.job.ResetDayScheduler
 import io.ipoli.android.common.middleware.LogEventsMiddleWare
 import io.ipoli.android.common.migration.DataExporter
 import io.ipoli.android.common.migration.DataImporter
@@ -77,16 +79,12 @@ import io.ipoli.android.growth.persistence.AndroidAppUsageStatRepository
 import io.ipoli.android.growth.persistence.AppUsageStatRepository
 import io.ipoli.android.growth.sideeffect.GrowthSideEffectHandler
 import io.ipoli.android.growth.usecase.CalculateGrowthStatsUseCase
-import io.ipoli.android.habit.job.AndroidUpdateHabitStreaksScheduler
-import io.ipoli.android.habit.job.UpdateHabitStreaksScheduler
 import io.ipoli.android.habit.persistence.HabitRepository
 import io.ipoli.android.habit.persistence.RoomHabitRepository
 import io.ipoli.android.habit.sideeffect.HabitSideEffectHandler
 import io.ipoli.android.habit.usecase.*
 import io.ipoli.android.note.usecase.SaveQuestNoteUseCase
 import io.ipoli.android.onboarding.sideeffecthandler.OnboardingSideEffectHandler
-import io.ipoli.android.pet.AndroidJobLowerPetStatsScheduler
-import io.ipoli.android.pet.LowerPetStatsScheduler
 import io.ipoli.android.pet.PetDialogSideEffectHandler
 import io.ipoli.android.pet.sideeffect.PetSideEffectHandler
 import io.ipoli.android.pet.usecase.*
@@ -285,7 +283,6 @@ interface UseCaseModule {
     val rewardScheduler: RewardScheduler
     val levelUpScheduler: LevelUpScheduler
     val levelDownScheduler: LevelDownScheduler
-    val lowerPetStatsScheduler: LowerPetStatsScheduler
     val saveQuestsForRepeatingQuestScheduler: SaveQuestsForRepeatingQuestScheduler
     val removeExpiredPowerUpsScheduler: RemoveExpiredPowerUpsScheduler
     val checkMembershipStatusScheduler: CheckMembershipStatusScheduler
@@ -294,7 +291,7 @@ interface UseCaseModule {
     val dailyChallengeCompleteScheduler: DailyChallengeCompleteScheduler
     val updateAchievementProgressScheduler: UpdateAchievementProgressScheduler
     val showUnlockedAchievementsScheduler: ShowUnlockedAchievementsScheduler
-    val updateHabitStreaksScheduler: UpdateHabitStreaksScheduler
+    val resetDayScheduler: ResetDayScheduler
 
     val loadScheduleForDateUseCase: LoadScheduleForDateUseCase
     val saveQuestUseCase: SaveQuestUseCase
@@ -404,6 +401,7 @@ interface UseCaseModule {
     val savePostReactionUseCase: SavePostReactionUseCase
     val createReactionHistoryItemsUseCase: CreateReactionHistoryItemsUseCase
     val logDataUseCase: LogDataUseCase
+    val saveResetDayTimeUseCase: SaveResetDayTimeUseCase
 }
 
 class MainUseCaseModule(private val context: Context) : UseCaseModule {
@@ -498,8 +496,6 @@ class MainUseCaseModule(private val context: Context) : UseCaseModule {
 
     override val levelDownScheduler get() = AndroidLevelDownScheduler()
 
-    override val lowerPetStatsScheduler get() = AndroidJobLowerPetStatsScheduler()
-
     override val saveQuestsForRepeatingQuestScheduler get() = AndroidSaveQuestsForRepeatingQuestScheduler()
 
     override val removeExpiredPowerUpsScheduler get() = AndroidRemoveExpiredPowerUpsScheduler()
@@ -518,14 +514,14 @@ class MainUseCaseModule(private val context: Context) : UseCaseModule {
     override val showUnlockedAchievementsScheduler
         get() = AndroidShowUnlockedAchievementsScheduler(context)
 
-    override val updateHabitStreaksScheduler
-        get() = AndroidUpdateHabitStreaksScheduler()
-
     override val planDayScheduler
         get() = AndroidPlanDayScheduler(context)
 
     override val loadScheduleForDateUseCase
         get() = LoadScheduleForDateUseCase()
+
+    override val resetDayScheduler
+        get() = AndroidResetDayScheduler(context)
 
     override val saveQuestUseCase
         get() = SaveQuestUseCase(
@@ -882,7 +878,11 @@ class MainUseCaseModule(private val context: Context) : UseCaseModule {
         )
 
     override val undoCompleteHabitUseCase
-        get() = UndoCompleteHabitUseCase(habitRepository, removeRewardFromPlayerUseCase)
+        get() = UndoCompleteHabitUseCase(
+            habitRepository,
+            playerRepository,
+            removeRewardFromPlayerUseCase
+        )
 
     override val removeHabitUseCase
         get() = RemoveHabitUseCase(habitRepository)
@@ -891,7 +891,7 @@ class MainUseCaseModule(private val context: Context) : UseCaseModule {
         get() = UpdateHabitStreaksUseCase(habitRepository)
 
     override val createHabitItemsUseCase
-        get() = CreateHabitItemsUseCase()
+        get() = CreateHabitItemsUseCase(playerRepository)
 
     override val createScheduleSummaryUseCase
         get() = CreateScheduleSummaryUseCase(eventRepository, playerRepository, permissionChecker)
@@ -907,6 +907,9 @@ class MainUseCaseModule(private val context: Context) : UseCaseModule {
 
     override val logDataUseCase
         get() = LogDataUseCase(challengeRepository)
+
+    override val saveResetDayTimeUseCase
+        get() = SaveResetDayTimeUseCase(playerRepository, resetDayScheduler)
 }
 
 interface StateStoreModule {

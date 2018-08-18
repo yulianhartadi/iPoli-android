@@ -36,13 +36,12 @@ object AuthSideEffectHandler : AppSideEffectHandler() {
     private val tagRepository by required { tagRepository }
     private val habitRepository by required { habitRepository }
     private val sharedPreferences by required { sharedPreferences }
-    private val lowerPetStatsScheduler by required { lowerPetStatsScheduler }
     private val saveQuestsForRepeatingQuestScheduler by required { saveQuestsForRepeatingQuestScheduler }
     private val removeExpiredPowerUpsScheduler by required { removeExpiredPowerUpsScheduler }
     private val checkMembershipStatusScheduler by required { checkMembershipStatusScheduler }
     private val planDayScheduler by required { planDayScheduler }
     private val updateAchievementProgressScheduler by required { updateAchievementProgressScheduler }
-    private val updateHabitStreaksScheduler by required { updateHabitStreaksScheduler }
+    private val resetDayScheduler by required { resetDayScheduler }
     private val saveRepeatingQuestUseCase by required { saveRepeatingQuestUseCase }
     private val dataImporter by required { dataImporter }
     private val dataExporter by required { dataExporter }
@@ -285,12 +284,12 @@ object AuthSideEffectHandler : AppSideEffectHandler() {
         repeatingQuests.forEach {
             val rq = it.first
             val ts = it.second?.let { onboardTag ->
-                listOf(tags.first { it.name.toUpperCase() == onboardTag.name })
+                listOf(tags.first { t -> t.name.toUpperCase() == onboardTag.name })
             } ?: listOf()
             saveRepeatingQuestUseCase.execute(
                 SaveRepeatingQuestUseCase.Params(
                     name = rq.name,
-                    subQuestNames = rq.subQuests.map { it.name },
+                    subQuestNames = rq.subQuests.map { sq -> sq.name },
                     color = rq.color,
                     icon = rq.icon,
                     tags = ts,
@@ -310,7 +309,7 @@ object AuthSideEffectHandler : AppSideEffectHandler() {
         habits.forEach {
             val h = it.first
             val ts = it.second?.let { onboardTag ->
-                listOf(tags.first { it.name.toUpperCase() == onboardTag.name })
+                listOf(tags.first { t -> t.name.toUpperCase() == onboardTag.name })
             } ?: listOf()
 
             habitRepository.save(
@@ -370,12 +369,11 @@ object AuthSideEffectHandler : AppSideEffectHandler() {
 
     private fun prepareAppStart() {
         dispatch(LoadDataAction.All)
-        lowerPetStatsScheduler.schedule()
         saveQuestsForRepeatingQuestScheduler.schedule()
         removeExpiredPowerUpsScheduler.schedule()
         checkMembershipStatusScheduler.schedule()
         planDayScheduler.schedule()
         updateAchievementProgressScheduler.schedule()
-        updateHabitStreaksScheduler.schedule()
+        resetDayScheduler.schedule()
     }
 }

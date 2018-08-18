@@ -13,6 +13,7 @@ import org.jetbrains.spek.api.Spek
 import org.jetbrains.spek.api.dsl.describe
 import org.jetbrains.spek.api.dsl.it
 import org.threeten.bp.LocalDate
+import org.threeten.bp.LocalDateTime
 
 /**
  * Created by Polina Zhelyazkova <polina@mypoli.fun>
@@ -27,23 +28,24 @@ class UndoCompleteHabitUseCaseSpek : Spek({
 
         fun executeUseCase(
             habit: Habit,
-            date: LocalDate = LocalDate.now(),
+            dateTime: LocalDateTime = LocalDateTime.now(),
             removeRewardFromPlayerUseCase: RemoveRewardFromPlayerUseCase = mock()
         ) =
             UndoCompleteHabitUseCase(
                 TestUtil.habitRepoMock(
                     habit
                 ),
+                TestUtil.playerRepoMock(TestUtil.player()),
                 removeRewardFromPlayerUseCase
             ).execute(
-                UndoCompleteHabitUseCase.Params(habit.id, date)
+                UndoCompleteHabitUseCase.Params(habit.id, dateTime)
             )
 
         it("should not remove from empty history") {
-            val habit = executeUseCase(
+            val exec = { executeUseCase(
                 TestUtil.habit
-            )
-            habit.history.`should be empty`()
+            )}
+            exec shouldThrow IllegalArgumentException::class
         }
 
         it("should remove time") {
@@ -52,7 +54,7 @@ class UndoCompleteHabitUseCaseSpek : Spek({
                 TestUtil.habit.copy(
                     history = mapOf(today to completedEntry)
                 ),
-                today
+                LocalDateTime.now()
             )
             habit.history[today]!!.completedAtTimes.`should be empty`()
         }
@@ -73,7 +75,7 @@ class UndoCompleteHabitUseCaseSpek : Spek({
                         )
                     )
                 ),
-                today
+                LocalDateTime.now()
             )
             val completedAtTimes = habit.history[today]!!.completedAtTimes
             completedAtTimes.size.`should be equal to`(1)
@@ -88,7 +90,7 @@ class UndoCompleteHabitUseCaseSpek : Spek({
                     prevStreak = 0,
                     currentStreak = 1
                 ),
-                today
+                LocalDateTime.now()
             )
             habit.currentStreak.`should be equal to`(0)
             habit.prevStreak.`should be equal to`(1)
@@ -103,7 +105,7 @@ class UndoCompleteHabitUseCaseSpek : Spek({
                     history = mapOf(today to completedEntry),
                     currentStreak = 3
                 ),
-                today
+                LocalDateTime.now()
             )
             habit.currentStreak.`should be equal to`(3)
         }
@@ -116,7 +118,7 @@ class UndoCompleteHabitUseCaseSpek : Spek({
                     currentStreak = 2,
                     bestStreak = 2
                 ),
-                today
+                LocalDateTime.now()
             )
             habit.bestStreak.`should be equal to`(1)
         }
@@ -129,7 +131,7 @@ class UndoCompleteHabitUseCaseSpek : Spek({
                     currentStreak = 2,
                     bestStreak = 3
                 ),
-                today
+                LocalDateTime.now()
             )
             habit.bestStreak.`should be equal to`(3)
         }
@@ -144,7 +146,7 @@ class UndoCompleteHabitUseCaseSpek : Spek({
                     bestStreak = 3,
                     isGood = false
                 ),
-                today
+                LocalDateTime.now()
             )
             habit.bestStreak.`should be equal to`(4)
         }
@@ -158,7 +160,7 @@ class UndoCompleteHabitUseCaseSpek : Spek({
                     prevStreak = 4,
                     isGood = false
                 ),
-                today
+                LocalDateTime.now()
             )
             habit.currentStreak.`should be equal to`(4)
             habit.prevStreak.`should be equal to`(4)
@@ -167,11 +169,11 @@ class UndoCompleteHabitUseCaseSpek : Spek({
 
         describe("Rewards") {
             it("should not remove rewards") {
-                val today = LocalDate.now()
+                val today = LocalDateTime.now()
                 val habit = executeUseCase(
                     TestUtil.habit.copy(
                         history = mapOf(
-                            today to CompletedEntry(
+                            today.toLocalDate() to CompletedEntry(
                                 completedAtTimes = listOf(Time.now()),
                                 coins = 1,
                                 experience = 1
@@ -180,19 +182,19 @@ class UndoCompleteHabitUseCaseSpek : Spek({
                     ),
                     today
                 )
-                habit.history[today]!!.coins.`should not be null`()
-                habit.history[today]!!.experience.`should not be null`()
+                habit.history[today.toLocalDate()]!!.coins.`should not be null`()
+                habit.history[today.toLocalDate()]!!.experience.`should not be null`()
             }
         }
 
         it("should remove bounty when was already completed") {
 
             val removeRewardFromPlayerUseCaseMock = mock<RemoveRewardFromPlayerUseCase>()
-            val today = LocalDate.now()
+            val today = LocalDateTime.now()
             executeUseCase(
                 TestUtil.habit.copy(
                     history = mapOf(
-                        today to completedEntry
+                        today.toLocalDate() to completedEntry
                     )
                 ),
                 today,
@@ -208,11 +210,11 @@ class UndoCompleteHabitUseCaseSpek : Spek({
         it("should not remove bounty when was not already completed") {
 
             val removeRewardFromPlayerUseCaseMock = mock<RemoveRewardFromPlayerUseCase>()
-            val today = LocalDate.now()
+            val today = LocalDateTime.now()
             executeUseCase(
                 TestUtil.habit.copy(
                     history = mapOf(
-                        today to completedEntry
+                        today.toLocalDate() to completedEntry
                     ),
                     timesADay = 2
                 ),
@@ -229,11 +231,11 @@ class UndoCompleteHabitUseCaseSpek : Spek({
         it("should not remove bounty on negative habit") {
 
             val removeRewardFromPlayerUseCaseMock = mock<RemoveRewardFromPlayerUseCase>()
-            val today = LocalDate.now()
+            val today = LocalDateTime.now()
             executeUseCase(
                 TestUtil.habit.copy(
                     history = mapOf(
-                        today to completedEntry
+                        today.toLocalDate() to completedEntry
                     ),
                     isGood = false
                 ),

@@ -9,6 +9,7 @@ import com.bluelinelabs.conductor.changehandler.HorizontalChangeHandler
 import com.bluelinelabs.conductor.changehandler.SimpleSwapChangeHandler
 import com.bluelinelabs.conductor.changehandler.VerticalChangeHandler
 import com.google.firebase.auth.FirebaseAuth
+import io.ipoli.android.Constants
 import io.ipoli.android.achievement.list.AchievementListViewController
 import io.ipoli.android.challenge.QuestPickerViewController
 import io.ipoli.android.challenge.add.AddChallengeViewController
@@ -25,7 +26,7 @@ import io.ipoli.android.common.HelpDialogViewController
 import io.ipoli.android.common.ShareAppDialogController
 import io.ipoli.android.common.datetime.Duration
 import io.ipoli.android.common.datetime.Minute
-import io.ipoli.android.common.feedback.FeedbackViewController
+import io.ipoli.android.common.feedback.WebUrlViewController
 import io.ipoli.android.common.home.HomeViewController
 import io.ipoli.android.common.migration.MigrationViewController
 import io.ipoli.android.common.view.*
@@ -378,7 +379,31 @@ class Navigator(private val router: Router) {
     }
 
     fun toFeedback() {
-        pushController({ FeedbackViewController() }, VerticalChangeHandler())
+        pushController(
+            { WebUrlViewController(Constants.FEEDBACK_LINK, "Feedback") },
+            VerticalChangeHandler()
+        )
+    }
+
+    fun toBugReport() {
+        pushController(
+            { WebUrlViewController(Constants.BUG_REPORT_LINK, "ReportBug") },
+            VerticalChangeHandler()
+        )
+    }
+
+    fun toHelpPage() {
+        pushController(
+            { WebUrlViewController(Constants.HELP_LINK, "HelpPage") },
+            VerticalChangeHandler()
+        )
+    }
+
+    fun toFAQ() {
+        pushController(
+            { WebUrlViewController(Constants.FAQ_LINK, "FAQPage") },
+            VerticalChangeHandler()
+        )
     }
 
     fun toFeedback(listener: FeedbackDialogController.FeedbackListener) {

@@ -56,6 +56,7 @@ class MainActivity : AppCompatActivity(), Injects<UIModule>, SideEffectHandler<A
     private val playerRepository by required { playerRepository }
     private val sharedPreferences by required { sharedPreferences }
     private val unlockAchievementsUseCase by required { unlockAchievementsUseCase }
+    private val resetDayScheduler by required { resetDayScheduler }
 
     private val stateStore by required { stateStore }
     private val dataExporter by required { dataExporter }
@@ -220,6 +221,7 @@ class MainActivity : AppCompatActivity(), Injects<UIModule>, SideEffectHandler<A
                     }
                 }
                 unlockAchievementsUseCase.execute(UnlockAchievementsUseCase.Params(p))
+                resetDayScheduler.schedule()
                 if (p.isLoggedIn()) {
                     try {
                         dataExporter.exportNewData()

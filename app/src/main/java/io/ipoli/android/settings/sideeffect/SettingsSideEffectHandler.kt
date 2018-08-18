@@ -20,6 +20,7 @@ object SettingsSideEffectHandler : AppSideEffectHandler() {
     private val savePlanDaysUseCase by required { savePlanDaysUseCase }
     private val saveTimeFormatUseCase by required { saveTimeFormatUseCase }
     private val saveTemperatureUnitUseCase by required { saveTemperatureUnitUseCase }
+    private val saveResetDayTimeUseCase by required { saveResetDayTimeUseCase }
     private val saveQuickDoNotificationSettingUseCase by required { saveQuickDoNotificationSettingUseCase }
     private val sharedPreferences by required { sharedPreferences }
 
@@ -59,9 +60,8 @@ object SettingsSideEffectHandler : AppSideEffectHandler() {
 
             }
 
-            is SettingsAction.ResetDayTimeChanged -> {
-                
-            }
+            is SettingsAction.ResetDayTimeChanged ->
+                saveResetDayTimeUseCase.execute(SaveResetDayTimeUseCase.Params(action.time))
         }
     }
 

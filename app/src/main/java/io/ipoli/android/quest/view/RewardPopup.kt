@@ -1,6 +1,7 @@
 package io.ipoli.android.quest.view
 
 import android.animation.*
+import android.annotation.SuppressLint
 import android.content.Context
 import android.graphics.PixelFormat
 import android.os.Build
@@ -28,6 +29,7 @@ class RewardPopup(
 ) : ToastOverlay() {
 
 
+    @SuppressLint("InflateParams")
     override fun createView(inflater: LayoutInflater): View =
         inflater.inflate(R.layout.popup_reward, null)
 

@@ -21,8 +21,11 @@ interface Constants {
         const val FEEDBACK_LINK =
             "https://feedback.userreport.com/15ae66d9-82d9-475f-84c9-b60411e23537/"
 
-        val WEBSITE_HELP_LINK = "https://www.mypoli.fun/getting-started"
-        val WEBSITE_FAQ_LINK = "https://www.mypoli.fun/faq"
+        const val BUG_REPORT_LINK =
+            "https://feedback.userreport.com/15ae66d9-82d9-475f-84c9-b60411e23537/#submit/bug"
+
+        val HELP_LINK = "https://www.mypoli.fun/getting-started"
+        val FAQ_LINK = "https://www.mypoli.fun/faq"
 
         val FACEBOOK_APP_LINK = "https://fb.me/1609677589354576"
         val IPOLI_LOGO_URL = "https://i.imgur.com/Gz3rUi1.png"
@@ -128,9 +131,6 @@ interface Constants {
                 DayOfWeek.FRIDAY
             )
         }
-
-        val CHANGE_PET_STATS_INTERVAL_START by lazy { Time.atHours(9) }
-        val CHANGE_PET_STATS_INTERVAL_END by lazy { Time.atHours(21) }
 
         val DURATIONS = listOf(10, 15, 20, 25, 30, 45, 60, 90, 120, 180, 240)
 
@@ -301,6 +301,7 @@ interface Constants {
             }
         }
 
-        val RESET_DAY_TIME = Time.of(0)
+        const val RESET_DAY_MINUTE = 0
+        val RESET_DAY_TIME = Time.of(RESET_DAY_MINUTE)
     }
 }

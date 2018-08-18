@@ -5,7 +5,6 @@ import io.ipoli.android.common.AppState
 import io.ipoli.android.common.BaseViewStateReducer
 import io.ipoli.android.common.DataLoadedAction
 import io.ipoli.android.common.datetime.Time
-
 import io.ipoli.android.common.redux.Action
 import io.ipoli.android.common.redux.BaseViewState
 import io.ipoli.android.player.data.Player
@@ -105,6 +104,7 @@ object SettingsReducer : BaseViewStateReducer<SettingsViewState>() {
             temperatureUnit = player.preferences.temperatureUnit,
             planTime = player.preferences.planDayTime,
             planDays = player.preferences.planDays,
+            resetDayTime = player.preferences.resetDayTime,
             selectedCalendars = selectedCalendars,
             isCalendarSyncEnabled = selectedCalendars > 0,
             isQuickDoNotificationEnabled = player.preferences.isQuickDoNotificationEnabled
@@ -115,9 +115,9 @@ object SettingsReducer : BaseViewStateReducer<SettingsViewState>() {
         playerId = "",
         timeFormat = TWELVE_HOURS,
         temperatureUnit = FAHRENHEIT,
-        resetDayTime = Constants.RESET_DAY_TIME,
         planDays = Constants.DEFAULT_PLAN_DAYS,
         planTime = Time.of(Constants.DEFAULT_PLAN_DAY_REMINDER_START_MINUTE),
+        resetDayTime = Constants.RESET_DAY_TIME,
         isCalendarSyncEnabled = false,
         isQuickDoNotificationEnabled = true,
         selectedCalendars = 0

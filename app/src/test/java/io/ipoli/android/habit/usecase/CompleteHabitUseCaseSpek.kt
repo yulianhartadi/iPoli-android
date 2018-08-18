@@ -15,6 +15,7 @@ import org.jetbrains.spek.api.dsl.describe
 import org.jetbrains.spek.api.dsl.it
 import org.threeten.bp.DayOfWeek
 import org.threeten.bp.LocalDate
+import org.threeten.bp.LocalDateTime
 
 /**
  * Created by Polina Zhelyazkova <polina@mypoli.fun>
@@ -28,7 +29,7 @@ class CompleteHabitUseCaseSpek : Spek({
 
         fun executeUseCase(
             habit: Habit,
-            date: LocalDate = LocalDate.now(),
+            date: LocalDateTime = LocalDateTime.now(),
             rewardPlayerUseCase: RewardPlayerUseCase = mock(),
             removeRewardFromPlayerUseCase: RemoveRewardFromPlayerUseCase = mock()
         ) =
@@ -52,15 +53,32 @@ class CompleteHabitUseCaseSpek : Spek({
             habit.history.keys.`should contain`(LocalDate.now())
         }
 
-        it("should not add entry if not for today") {
-            val date = LocalDate.now().with(DayOfWeek.MONDAY)
-            val habit = executeUseCase(
-                TestUtil.habit.copy(
-                    days = setOf(DayOfWeek.SUNDAY)
-                ),
-                date
-            )
-            habit.history.`should be empty`()
+        it("should check if should be done today") {
+            val exec = {
+                executeUseCase(
+                    TestUtil.habit.copy(
+                        days = setOf(DayOfWeek.SUNDAY)
+                    ),
+                    LocalDateTime.now().with(DayOfWeek.MONDAY)
+                )
+            }
+            exec shouldThrow IllegalArgumentException::class
+        }
+
+        it("should check if already complete today") {
+            val exec = {
+                executeUseCase(
+                    TestUtil.habit.copy(
+                        days = setOf(DayOfWeek.SUNDAY),
+                        history = mapOf(
+                            LocalDate.now() to
+                                completedEntry.copy(completedAtTimes = listOf(Time.now()))
+                        )
+                    ),
+                    LocalDateTime.now()
+                )
+            }
+            exec shouldThrow IllegalArgumentException::class
         }
 
         it("should add entry in existing history") {
@@ -71,7 +89,7 @@ class CompleteHabitUseCaseSpek : Spek({
                         today.minusDays(1) to completedEntry
                     )
                 ),
-                today
+                LocalDateTime.now()
             )
             habit.history.size.`should be`(2)
             habit.history.keys.`should contain all`(listOf(today.minusDays(1), today))
@@ -87,7 +105,7 @@ class CompleteHabitUseCaseSpek : Spek({
                         today to completedEntry.copy(completedAtTimes = listOf(Time.now()))
                     )
                 ),
-                today
+                LocalDateTime.now()
             )
             habit.history[today]!!.completedCount.`should be`(2)
         }
@@ -101,7 +119,7 @@ class CompleteHabitUseCaseSpek : Spek({
                         today to completedEntry
                     )
                 ),
-                today
+                LocalDateTime.now()
             )
             habit.history[today]!!.completedCount.`should be`(1)
         }
@@ -148,7 +166,7 @@ class CompleteHabitUseCaseSpek : Spek({
                     prevStreak = 1,
                     currentStreak = 2
                 ),
-                today
+                LocalDateTime.now()
             )
             habit.currentStreak.`should be`(3)
             habit.prevStreak.`should be`(2)
@@ -183,7 +201,7 @@ class CompleteHabitUseCaseSpek : Spek({
                     TestUtil.habit.copy(
                         isGood = true
                     ),
-                    today,
+                    LocalDateTime.now(),
                     rewardPlayerPlayerUseCaseMock
                 )
                 val ce = habit.history[today]!!
@@ -203,7 +221,7 @@ class CompleteHabitUseCaseSpek : Spek({
                         isGood = true,
                         timesADay = 2
                     ),
-                    today,
+                    LocalDateTime.now(),
                     rewardPlayerPlayerUseCaseMock
                 )
                 val ce = habit.history[today]!!
@@ -219,7 +237,7 @@ class CompleteHabitUseCaseSpek : Spek({
                     TestUtil.habit.copy(
                         isGood = false
                     ),
-                    today,
+                    LocalDateTime.now(),
                     rewardPlayerPlayerUseCaseMock,
                     removeRewardFromPlayerUseCaseMock
                 )
@@ -234,7 +252,7 @@ class CompleteHabitUseCaseSpek : Spek({
                 )
 
                 Verify on removeRewardFromPlayerUseCaseMock that removeRewardFromPlayerUseCaseMock.execute(
-                   reward
+                    reward
                 ) was called
             }
         }

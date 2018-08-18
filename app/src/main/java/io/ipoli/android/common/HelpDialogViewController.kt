@@ -1,15 +1,12 @@
 package io.ipoli.android.common
 
 import android.content.DialogInterface
-import android.content.Intent
 import android.graphics.drawable.GradientDrawable
-import android.net.Uri
 import android.os.Bundle
 import android.support.v7.app.AlertDialog
 import android.view.LayoutInflater
 import android.view.View
 import android.widget.Button
-import io.ipoli.android.Constants
 import io.ipoli.android.MyPoliApp
 import io.ipoli.android.R
 import io.ipoli.android.common.di.BackgroundModule
@@ -62,15 +59,14 @@ class HelpDialogViewController : BaseDialogController, Injects<BackgroundModule>
     ): AlertDialog {
         val dialog = dialogBuilder
             .setPositiveButton(R.string.got_it, null)
-            .setNegativeButton(R.string.cancel, null)
-            .setNeutralButton(R.string.not_helpful, null)
+            .setNegativeButton(R.string.not_helpful, null)
+            .setNeutralButton(R.string.faq, null)
             .create()
         dialog.setOnShowListener { _ ->
-            val notHelpful = dialog.getButton(DialogInterface.BUTTON_NEUTRAL)
+            val neutral = dialog.getButton(DialogInterface.BUTTON_NEUTRAL)
             val positive = dialog.getButton(DialogInterface.BUTTON_POSITIVE)
             val negative = dialog.getButton(DialogInterface.BUTTON_NEGATIVE)
-            negative.gone()
-            setNotHelpfulClickListener(positive, negative, notHelpful, contentView)
+            setNotHelpfulClickListener(positive, negative, neutral, contentView)
         }
 
         return dialog
@@ -82,26 +78,54 @@ class HelpDialogViewController : BaseDialogController, Injects<BackgroundModule>
         neutral: Button,
         contentView: View
     ) {
+
         neutral.setOnClickListener(Debounce.clickListener {
+            navigate().toFAQ()
+        })
+
+        positive.setOnClickListener(Debounce.clickListener {
+            dismiss()
+        })
+
+        negative.setOnClickListener(Debounce.clickListener {
             contentView.helpSwitcher.showNext()
             positive.setText(R.string.send)
-            neutral.setText(R.string.faq)
+            negative.setText(R.string.cancel)
+            neutral.setText(R.string.back)
             negative.visible()
 
-            neutral.setOnClickListener(Debounce.clickListener { _ ->
-                val myIntent = Intent(Intent.ACTION_VIEW, Uri.parse(Constants.WEBSITE_FAQ_LINK))
-                startActivity(myIntent)
-            })
 
-            positive.setOnClickListener(Debounce.clickListener { _ ->
-                eventLogger.logEvent(
-                    "help_section_feedback", mapOf(
-                        "screen" to title,
-                        "feedback" to contentView.helpFeedback.text.toString()
-                    )
+            setupFeedback(positive, negative, neutral, contentView)
+        })
+    }
+
+    private fun setupFeedback(
+        positive: Button,
+        negative: Button,
+        neutral: Button,
+        contentView: View
+    ) {
+        neutral.setOnClickListener(Debounce.clickListener {
+            contentView.helpSwitcher.showNext()
+            neutral.setText(R.string.faq)
+            positive.setText(R.string.got_it)
+            negative.setText(R.string.not_helpful)
+            setNotHelpfulClickListener(positive, negative, neutral, contentView)
+        })
+
+        negative.setOnClickListener(Debounce.clickListener {
+            dismiss()
+        })
+
+
+        positive.setOnClickListener(Debounce.clickListener { _ ->
+            eventLogger.logEvent(
+                "help_section_feedback", mapOf(
+                    "screen" to title,
+                    "feedback" to contentView.helpFeedback.text.toString()
                 )
-                dismiss()
-            })
+            )
+            dismiss()
         })
     }
 }

@@ -1,9 +1,10 @@
 package io.ipoli.android.habit.usecase
 
 import io.ipoli.android.common.UseCase
+import io.ipoli.android.common.datetime.Time
 import io.ipoli.android.habit.data.Habit
 import io.ipoli.android.habit.persistence.HabitRepository
-import org.threeten.bp.LocalDate
+import org.threeten.bp.LocalDateTime
 
 /**
  * Created by Polina Zhelyazkova <polina@mypoli.fun>
@@ -16,9 +17,11 @@ class UpdateHabitStreaksUseCase(
     override fun execute(parameters: Params): List<Habit> {
         val habits = habitRepository.findAll()
 
+        val date = parameters.today.minusDays(1)
+
         return habitRepository.save(habits.mapNotNull {
             when {
-                it.isCompletedFor(parameters.yesterday) -> null
+                it.isCompletedFor(date, parameters.resetDayTime) -> null
                 it.isGood ->
                     it.copy(
                         currentStreak = 0
@@ -32,6 +35,8 @@ class UpdateHabitStreaksUseCase(
         })
     }
 
-
-    data class Params(val yesterday: LocalDate)
+    data class Params(
+        val today: LocalDateTime,
+        val resetDayTime: Time
+    )
 }

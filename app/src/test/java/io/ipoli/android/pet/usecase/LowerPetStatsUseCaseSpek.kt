@@ -2,19 +2,20 @@ package io.ipoli.android.pet.usecase
 
 import com.nhaarman.mockito_kotlin.doReturn
 import com.nhaarman.mockito_kotlin.mock
-import io.ipoli.android.Constants
 import io.ipoli.android.TestUtil
+import io.ipoli.android.common.datetime.Time
 import io.ipoli.android.pet.Pet
 import io.ipoli.android.quest.Color
 import io.ipoli.android.quest.Quest
 import io.ipoli.android.quest.data.persistence.QuestRepository
 import org.amshove.kluent.`should be equal to`
-import org.amshove.kluent.`should be greater than`
 import org.amshove.kluent.any
 import org.jetbrains.spek.api.Spek
 import org.jetbrains.spek.api.dsl.describe
 import org.jetbrains.spek.api.dsl.it
+import org.threeten.bp.DayOfWeek
 import org.threeten.bp.LocalDate
+import org.threeten.bp.LocalDateTime
 
 /**
  * Created by Venelin Valkov <venelin@io.ipoli.io>
@@ -39,19 +40,17 @@ class LowerPetStatsUseCaseSpek : Spek({
                 )
             )
 
-            val pet = player.pet
-
             val playerRepo = TestUtil.playerRepoMock(player)
 
-            fun executeUseCase(questRepository: QuestRepository, date: LocalDate = LocalDate.now()) =
+            val now = LocalDateTime.now().with(DayOfWeek.TUESDAY)
+            val yesterday = now.minusDays(1).toLocalDate()
+
+            fun executeUseCase(questRepository: QuestRepository, date: LocalDateTime = now) =
                 LowerPetStatsUseCase(questRepository, playerRepo, randomSeed = 42).execute(
                     LowerPetStatsUseCase.Params(date)
                 )
 
-            val wholeInterval =
-                Constants.CHANGE_PET_STATS_INTERVAL_START.minutesTo(Constants.CHANGE_PET_STATS_INTERVAL_END)
-
-            it("should lower HP & MP when no quests are done in the morning") {
+            it("should lower HP & MP when no quests are done") {
 
                 val questRepo = mock<QuestRepository> {
                     on { findCompletedForDate(any()) } doReturn listOf<Quest>()
@@ -67,8 +66,9 @@ class LowerPetStatsUseCaseSpek : Spek({
                 val questRepo = mock<QuestRepository> {
                     on { findCompletedForDate(any()) } doReturn listOf(
                         quest.copy(
-                            duration = Constants.CHANGE_PET_STATS_INTERVAL_START.minutesTo(Constants.CHANGE_PET_STATS_INTERVAL_END),
-                            startTime = Constants.CHANGE_PET_STATS_INTERVAL_START
+                            duration = LowerPetStatsUseCase.PLAN_DAY_HIGH_PRODUCTIVE_HOURS * Time.MINUTES_IN_AN_HOUR,
+                            startTime = player.preferences.resetDayTime,
+                            completedAtDate = yesterday
                         )
                     )
                 }
@@ -78,94 +78,55 @@ class LowerPetStatsUseCaseSpek : Spek({
                 newPet.moodPoints.`should be equal to`(86)
             }
 
-            it("should lower only random HP & MP when 70% of the time is scheduled & quest(s) is complete") {
+            it("should lower stats with low penalty when medium < duration < high productive hours") {
 
                 val questRepo = mock<QuestRepository> {
                     on { findCompletedForDate(any()) } doReturn listOf(
                         quest.copy(
-                            duration = Math.ceil(LowerPetStatsUseCase.HIGH_PRODUCTIVE_TIME_COEF *
-                                wholeInterval).toInt(),
-                            startTime = Constants.CHANGE_PET_STATS_INTERVAL_START
+                            duration = LowerPetStatsUseCase.PLAN_DAY_MEDIUM_PRODUCTIVE_HOURS * Time.MINUTES_IN_AN_HOUR,
+                            startTime = player.preferences.resetDayTime,
+                            completedAtDate = yesterday
                         )
                     )
                 }
 
                 val newPet = executeUseCase(questRepo)
-                newPet.healthPoints.`should be equal to`(37)
-                newPet.moodPoints.`should be equal to`(86)
+                newPet.healthPoints.`should be equal to`(33)
+                newPet.moodPoints.`should be equal to`(82)
             }
 
-            it("should lower HP & MP when 69% of the time is scheduled & quest(s) is complete") {
+            it("should lower stats with medium penalty when low < duration < medium productive hours") {
 
                 val questRepo = mock<QuestRepository> {
                     on { findCompletedForDate(any()) } doReturn listOf(
                         quest.copy(
-                            duration = ((LowerPetStatsUseCase.HIGH_PRODUCTIVE_TIME_COEF - 0.01) *
-                                wholeInterval).toInt(),
-                            startTime = Constants.CHANGE_PET_STATS_INTERVAL_START
+                            duration = LowerPetStatsUseCase.PLAN_DAY_LOW_PRODUCTIVE_HOURS * Time.MINUTES_IN_AN_HOUR,
+                            startTime = player.preferences.resetDayTime,
+                            completedAtDate = yesterday
                         )
                     )
                 }
 
                 val newPet = executeUseCase(questRepo)
-                pet.healthPoints.`should be greater than`(newPet.healthPoints)
-                pet.moodPoints.`should be greater than`(newPet.moodPoints)
+                newPet.healthPoints.`should be equal to`(29)
+                newPet.moodPoints.`should be equal to`(78)
             }
 
-            it("should lower HP & MP when productivity is high with low penalty") {
+            it("should lower stats with high penalty when duration < low productive hours") {
 
                 val questRepo = mock<QuestRepository> {
                     on { findCompletedForDate(any()) } doReturn listOf(
                         quest.copy(
-                            duration = (LowerPetStatsUseCase.MEDIUM_PRODUCTIVE_TIME_COEF *
-                                wholeInterval).toInt(),
-                            startTime = Constants.CHANGE_PET_STATS_INTERVAL_START
+                            duration = (LowerPetStatsUseCase.PLAN_DAY_LOW_PRODUCTIVE_HOURS * Time.MINUTES_IN_AN_HOUR) - 1,
+                            startTime = player.preferences.resetDayTime,
+                            completedAtDate = yesterday
                         )
                     )
                 }
 
                 val newPet = executeUseCase(questRepo)
-                val expectedHealthPoints = pet.healthPoints - LowerPetStatsUseCase.LOW_PENALTY - 3
-                val expectedMoodPoints = pet.moodPoints - LowerPetStatsUseCase.LOW_PENALTY - 3
-                expectedHealthPoints.`should be equal to`(newPet.healthPoints)
-                expectedMoodPoints.`should be equal to`(newPet.moodPoints)
-            }
-
-            it("should lower HP & MP when productivity is medium with medium penalty") {
-
-                val questRepo = mock<QuestRepository> {
-                    on { findCompletedForDate(any()) } doReturn listOf(
-                        quest.copy(
-                            duration = (LowerPetStatsUseCase.LOW_PRODUCTIVE_TIME_COEF *
-                                wholeInterval).toInt(),
-                            startTime = Constants.CHANGE_PET_STATS_INTERVAL_START
-                        )
-                    )
-                }
-
-                val newPet = executeUseCase(questRepo)
-                val expectedHealthPoints = pet.healthPoints - LowerPetStatsUseCase.MEDIUM_PENALTY - 3
-                val expectedMoodPoints = pet.moodPoints - LowerPetStatsUseCase.MEDIUM_PENALTY - 3
-                expectedHealthPoints.`should be equal to`(newPet.healthPoints)
-                expectedMoodPoints.`should be equal to`(newPet.moodPoints)
-            }
-
-            it("should lower HP & MP when productivity is low with high penalty") {
-
-                val questRepo = mock<QuestRepository> {
-                    on { findCompletedForDate(any()) } doReturn listOf(
-                        quest.copy(
-                            duration = (LowerPetStatsUseCase.LOW_PRODUCTIVE_TIME_COEF * wholeInterval).toInt() - 1,
-                            startTime = Constants.CHANGE_PET_STATS_INTERVAL_START
-                        )
-                    )
-                }
-
-                val newPet = executeUseCase(questRepo)
-                val expectedHealthPoints = pet.healthPoints - LowerPetStatsUseCase.HIGH_PENALTY - 3
-                val expectedMoodPoints = 34
-                expectedHealthPoints.`should be equal to`(newPet.healthPoints)
-                expectedMoodPoints.`should be equal to`(newPet.moodPoints)
+                newPet.healthPoints.`should be equal to`(19)
+                newPet.moodPoints.`should be equal to`(34)
             }
         }
 
@@ -175,12 +136,14 @@ class LowerPetStatsUseCaseSpek : Spek({
             it("should not include quest before startDate") {
 
                 val duration = LowerPetStatsUseCase.findQuestsDurationInInterval(
-                    Constants.CHANGE_PET_STATS_INTERVAL_START,
-                    Constants.CHANGE_PET_STATS_INTERVAL_END,
+                    LocalDate.now(),
+                    null,
+                    Time.atHours(10),
                     listOf(
                         quest.copy(
-                            startTime = Constants.CHANGE_PET_STATS_INTERVAL_START - 60,
-                            duration = 60
+                            startTime = Time.atHours(9),
+                            duration = 60,
+                            completedAtDate = LocalDate.now()
                         )
                     )
                 )
@@ -190,12 +153,14 @@ class LowerPetStatsUseCaseSpek : Spek({
             it("should not include quest after end") {
 
                 val duration = LowerPetStatsUseCase.findQuestsDurationInInterval(
-                    Constants.CHANGE_PET_STATS_INTERVAL_START,
-                    Constants.CHANGE_PET_STATS_INTERVAL_END,
+                    LocalDate.now().minusDays(1),
+                    LocalDate.now(),
+                    Time.atHours(10),
                     listOf(
                         quest.copy(
-                            startTime = Constants.CHANGE_PET_STATS_INTERVAL_END,
-                            duration = 60
+                            startTime = Time.atHours(10),
+                            duration = 60,
+                            completedAtDate = LocalDate.now()
                         )
                     )
                 )
@@ -205,12 +170,14 @@ class LowerPetStatsUseCaseSpek : Spek({
             it("should include quest at interval startDate") {
 
                 val duration = LowerPetStatsUseCase.findQuestsDurationInInterval(
-                    Constants.CHANGE_PET_STATS_INTERVAL_START,
-                    Constants.CHANGE_PET_STATS_INTERVAL_END,
+                    LocalDate.now(),
+                    null,
+                    Time.atHours(10),
                     listOf(
                         quest.copy(
-                            startTime = Constants.CHANGE_PET_STATS_INTERVAL_START,
-                            duration = 60
+                            startTime = Time.atHours(10),
+                            duration = 60,
+                            completedAtDate = LocalDate.now()
                         )
                     )
                 )
@@ -220,12 +187,14 @@ class LowerPetStatsUseCaseSpek : Spek({
             it("should include quest at interval end") {
 
                 val duration = LowerPetStatsUseCase.findQuestsDurationInInterval(
-                    Constants.CHANGE_PET_STATS_INTERVAL_START,
-                    Constants.CHANGE_PET_STATS_INTERVAL_END,
+                    LocalDate.now().minusDays(1),
+                    LocalDate.now(),
+                    Time.atHours(10),
                     listOf(
                         quest.copy(
-                            startTime = Constants.CHANGE_PET_STATS_INTERVAL_END - 60,
-                            duration = 60
+                            startTime = Time.at(8, 59),
+                            duration = 60,
+                            completedAtDate = LocalDate.now()
                         )
                     )
                 )
@@ -235,12 +204,14 @@ class LowerPetStatsUseCaseSpek : Spek({
             it("should include quest starting before interval") {
 
                 val duration = LowerPetStatsUseCase.findQuestsDurationInInterval(
-                    Constants.CHANGE_PET_STATS_INTERVAL_START,
-                    Constants.CHANGE_PET_STATS_INTERVAL_END,
+                    LocalDate.now(),
+                    null,
+                    Time.atHours(10),
                     listOf(
                         quest.copy(
-                            startTime = Constants.CHANGE_PET_STATS_INTERVAL_START - 1,
-                            duration = 61
+                            startTime = Time.at(9, 59),
+                            duration = 61,
+                            completedAtDate = LocalDate.now()
                         )
                     )
                 )
@@ -250,12 +221,14 @@ class LowerPetStatsUseCaseSpek : Spek({
             it("should include quest ending after interval") {
 
                 val duration = LowerPetStatsUseCase.findQuestsDurationInInterval(
-                    Constants.CHANGE_PET_STATS_INTERVAL_START,
-                    Constants.CHANGE_PET_STATS_INTERVAL_END,
+                    LocalDate.now().minusDays(1),
+                    LocalDate.now(),
+                    Time.atHours(10),
                     listOf(
                         quest.copy(
-                            startTime = Constants.CHANGE_PET_STATS_INTERVAL_END - 60,
-                            duration = 61
+                            startTime = Time.atHours(9),
+                            duration = 61,
+                            completedAtDate = LocalDate.now()
                         )
                     )
                 )

@@ -13,6 +13,7 @@ import com.google.firebase.auth.GoogleAuthProvider
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.ListenerRegistration
 import com.google.firebase.firestore.MetadataChanges
+import io.ipoli.android.Constants
 import io.ipoli.android.achievement.Achievement
 import io.ipoli.android.challenge.predefined.entity.PredefinedChallenge
 import io.ipoli.android.common.ErrorLogger
@@ -232,6 +233,10 @@ class AndroidPlayerRepository(
             challenges = ci.challenges.map { PredefinedChallenge.valueOf(it) }.toSet()
         )
 
+        if (!dbObject.preferences.containsKey("resetDayStartMinute")) {
+            dbObject.preferences["resetDayStartMinute"] = Constants.RESET_DAY_MINUTE
+        }
+
         val cPref = DbPreferences(dbObject.preferences)
         val pref = Player.Preferences(
             theme = Theme.valueOf(cPref.theme),
@@ -249,7 +254,8 @@ class AndroidPlayerRepository(
             temperatureUnit = Player.Preferences.TemperatureUnit.valueOf(cPref.temperatureUnit),
             planDayTime = Time.of(cPref.planDayStartMinute.toInt()),
             planDays = cPref.planDays.map { DayOfWeek.valueOf(it) }.toSet(),
-            isQuickDoNotificationEnabled = cPref.isQuickDoNotificationEnabled
+            isQuickDoNotificationEnabled = cPref.isQuickDoNotificationEnabled,
+            resetDayTime = Time.of(cPref.resetDayStartMinute.toInt())
         )
 
         val ca = dbObject.achievements.map { DbUnlockedAchievement(it) }
@@ -470,6 +476,7 @@ class AndroidPlayerRepository(
             it.planDayStartMinute = preferences.planDayTime.toMinuteOfDay().toLong()
             it.planDays = preferences.planDays.map { it.name }
             it.isQuickDoNotificationEnabled = preferences.isQuickDoNotificationEnabled
+            it.resetDayStartMinute = preferences.resetDayTime.toMinuteOfDay().toLong()
         }
 
     private fun createDbAchievements(achievements: List<Player.UnlockedAchievement>) =
@@ -640,6 +647,9 @@ class FirestorePlayerRepository(
             challenges = ci.challenges.map { PredefinedChallenge.valueOf(it) }.toSet()
         )
 
+        if (!cp.preferences.containsKey("resetDayStartMinute")) {
+            cp.preferences["resetDayStartMinute"] = Constants.RESET_DAY_MINUTE
+        }
         val cPref = DbPreferences(cp.preferences)
         val pref = Player.Preferences(
             theme = Theme.valueOf(cPref.theme),
@@ -657,7 +667,8 @@ class FirestorePlayerRepository(
             temperatureUnit = Player.Preferences.TemperatureUnit.valueOf(cPref.temperatureUnit),
             planDayTime = Time.of(cPref.planDayStartMinute.toInt()),
             planDays = cPref.planDays.map { DayOfWeek.valueOf(it) }.toSet(),
-            isQuickDoNotificationEnabled = cPref.isQuickDoNotificationEnabled
+            isQuickDoNotificationEnabled = cPref.isQuickDoNotificationEnabled,
+            resetDayTime = Time.of(cPref.resetDayStartMinute.toInt())
         )
 
         val ca = cp.achievements.map { DbUnlockedAchievement(it) }
@@ -876,6 +887,7 @@ class FirestorePlayerRepository(
             it.planDayStartMinute = preferences.planDayTime.toMinuteOfDay().toLong()
             it.planDays = preferences.planDays.map { it.name }
             it.isQuickDoNotificationEnabled = preferences.isQuickDoNotificationEnabled
+            it.resetDayStartMinute = preferences.resetDayTime.toMinuteOfDay().toLong()
         }
 
     private fun createDbAchievements(achievements: List<Player.UnlockedAchievement>) =

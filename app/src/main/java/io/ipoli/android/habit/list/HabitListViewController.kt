@@ -24,7 +24,6 @@ import kotlinx.android.synthetic.main.controller_habit_list.view.*
 import kotlinx.android.synthetic.main.item_habit_list.view.*
 import kotlinx.android.synthetic.main.view_empty_list.view.*
 import kotlinx.android.synthetic.main.view_loader.view.*
-import org.threeten.bp.LocalDate
 
 
 /**
@@ -87,7 +86,7 @@ class HabitListViewController(args: Bundle? = null) :
                 true
             }
             else -> super.onOptionsItemSelected(item)
-    }
+        }
 
     override fun render(state: HabitListViewState, view: View) {
 
@@ -387,9 +386,8 @@ class HabitListViewController(args: Bundle? = null) :
     }
 
     private val HabitListViewState.viewModels: List<ItemViewModel>
-        get() {
-            val today = LocalDate.now()
-            return habitItems!!.map {
+        get() =
+            habitItems!!.map {
                 when (it) {
                     is CreateHabitItemsUseCase.HabitItem.TodaySection ->
                         ItemViewModel.SectionItem(stringRes(R.string.today))
@@ -399,7 +397,6 @@ class HabitListViewController(args: Bundle? = null) :
 
                     is CreateHabitItemsUseCase.HabitItem.Today -> {
                         val habit = it.habit
-                        val isCompleted = habit.isCompletedFor(today)
                         ItemViewModel.TodayItem(
                             id = habit.id,
                             name = habit.name,
@@ -407,11 +404,11 @@ class HabitListViewController(args: Bundle? = null) :
                             secondaryColor = habit.color.androidColor.color100,
                             icon = habit.icon.androidIcon.icon,
                             timesADay = habit.timesADay,
-                            isCompleted = if (habit.isGood) isCompleted else !isCompleted,
+                            isCompleted = it.isCompleted,
                             isGood = habit.isGood,
                             streak = habit.currentStreak,
-                            isBestStreak = habit.bestStreak != 0 && habit.bestStreak == habit.currentStreak,
-                            progress = habit.completedForDateCount(today),
+                            isBestStreak = it.isBestStreak,
+                            progress = it.completedCount,
                             maxProgress = habit.timesADay
                         )
                     }
@@ -425,10 +422,9 @@ class HabitListViewController(args: Bundle? = null) :
                             icon = habit.icon.androidIcon.icon,
                             isGood = habit.isGood,
                             streak = habit.currentStreak,
-                            isBestStreak = habit.bestStreak != 0 && habit.bestStreak == habit.currentStreak
+                            isBestStreak = it.isBestStreak
                         )
                     }
                 }
             }
-        }
 }

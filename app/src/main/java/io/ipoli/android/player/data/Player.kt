@@ -19,6 +19,7 @@ import io.ipoli.android.store.powerup.PowerUp
 import org.threeten.bp.DayOfWeek
 import org.threeten.bp.Instant
 import org.threeten.bp.LocalDate
+import org.threeten.bp.LocalDateTime
 
 data class Player(
     override val id: String = "",
@@ -74,7 +75,8 @@ data class Player(
         val temperatureUnit: TemperatureUnit = Constants.DEFAULT_TEMPERATURE_UNIT,
         val planDays: Set<DayOfWeek> = Constants.DEFAULT_PLAN_DAYS,
         val planDayTime: Time = Time.of(Constants.DEFAULT_PLAN_DAY_REMINDER_START_MINUTE),
-        val isQuickDoNotificationEnabled: Boolean = Constants.DEFAULT_QUICK_DO_NOTIFICATION_ENABLED
+        val isQuickDoNotificationEnabled: Boolean = Constants.DEFAULT_QUICK_DO_NOTIFICATION_ENABLED,
+        val resetDayTime: Time = Constants.RESET_DAY_TIME
     ) {
         val nonWorkDays: Set<DayOfWeek>
             get() = DayOfWeek.values().toSet() - workDays
@@ -168,6 +170,51 @@ data class Player(
 
     fun isLoggedIn() =
         authProvider is AuthProvider.Google || authProvider is AuthProvider.Facebook
+
+    fun currentDate(dateTime: LocalDateTime = LocalDateTime.now()) =
+        currentDate(dateTime, preferences.resetDayTime)
+
+    fun datesSpan(dateTime: LocalDateTime = LocalDateTime.now()) =
+        datesSpan(dateTime, preferences.resetDayTime)
+
+    companion object {
+        fun currentDate(
+            dateTime: LocalDateTime = LocalDateTime.now(),
+            resetDayTime: Time
+        ): LocalDate {
+
+            val currentTime = Time.at(dateTime.toLocalTime().hour, dateTime.toLocalTime().minute)
+
+            return when {
+                resetDayTime.isBetween(
+                    Time.atHours(0),
+                    Time.at(11, 59)
+                ) && currentTime < resetDayTime -> dateTime.minusDays(1).toLocalDate()
+
+                resetDayTime.isBetween(
+                    Time.atHours(12),
+                    Time.at(23, 59)
+                ) && currentTime >= resetDayTime -> dateTime.plusDays(1).toLocalDate()
+
+                else -> dateTime.toLocalDate()
+            }
+        }
+
+        fun datesSpan(
+            dateTime: LocalDateTime = LocalDateTime.now(),
+            resetDayTime: Time
+        ) =
+            when {
+                resetDayTime == Time.atHours(0) -> Pair(dateTime.toLocalDate(), null)
+
+                resetDayTime.isBetween(
+                    Time.atHours(0),
+                    Time.at(11, 59)
+                ) -> Pair(dateTime.toLocalDate(), dateTime.plusDays(1).toLocalDate())
+
+                else -> Pair(dateTime.minusDays(1).toLocalDate(), dateTime.toLocalDate())
+            }
+    }
 }
 
 data class InventoryPet(
