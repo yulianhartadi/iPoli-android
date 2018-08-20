@@ -30,7 +30,9 @@ class UndoCompleteHabitUseCase(
 
         val history = habit!!.history.toMutableMap()
 
-        require(habit.completedCountForDate(dateTime, resetDayTime) > 0)
+        if(habit.completedCountForDate(dateTime, resetDayTime) == 0) {
+            return habit
+        }
 
         val wasCompleted = habit.isCompletedFor(dateTime, resetDayTime)
 

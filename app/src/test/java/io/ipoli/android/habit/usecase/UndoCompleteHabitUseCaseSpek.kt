@@ -42,10 +42,10 @@ class UndoCompleteHabitUseCaseSpek : Spek({
             )
 
         it("should not remove from empty history") {
-            val exec = { executeUseCase(
+            val habit =  executeUseCase(
                 TestUtil.habit
-            )}
-            exec shouldThrow IllegalArgumentException::class
+            )
+            habit.history.`should be empty`()
         }
 
         it("should remove time") {

@@ -2,10 +2,7 @@ package io.ipoli.android.challenge.usecase
 
 import io.ipoli.android.challenge.entity.Challenge
 import io.ipoli.android.common.UseCase
-import io.ipoli.android.common.datetime.DateUtils
-import io.ipoli.android.common.datetime.Time
-import io.ipoli.android.common.datetime.datesBetween
-import io.ipoli.android.common.datetime.daysUntil
+import io.ipoli.android.common.datetime.*
 import io.ipoli.android.quest.Quest
 import io.ipoli.android.repeatingquest.entity.RepeatPattern
 import io.ipoli.android.repeatingquest.entity.RepeatPattern.Companion.findMonthlyPeriods
@@ -91,7 +88,12 @@ class FindChallengeProgressUseCase : UseCase<FindChallengeProgressUseCase.Params
                     }.toMap().toMutableMap()
 
                 challenge.quests
-                    .filter { q -> q.isCompleted }
+                    .filter { q ->
+                        q.isCompleted && q.completedAtDate!!.isBetween(
+                            challenge.startDate,
+                            parameters.currentDate
+                        )
+                    }
                     .forEach { q ->
                         historyData[q.completedAtDate!!] = historyData[q.completedAtDate]!! +
                             increasePerQuest

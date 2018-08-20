@@ -53,7 +53,7 @@ data class Habit(
 
         endDate?.let {
             history[it]?.let { ce ->
-                completedCount = ce.completedAtTimes.count { t -> t <= resetDayTime }
+                completedCount = ce.completedAtTimes.count { t -> t < resetDayTime }
             }
         }
 
