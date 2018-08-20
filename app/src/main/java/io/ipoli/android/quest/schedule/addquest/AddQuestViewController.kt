@@ -201,9 +201,9 @@ class AddQuestViewController(args: Bundle? = null) :
         setIcon(MaterialDesignIconic.Icon.gmi_label, view.tags, state.tags.isNotEmpty())
         view.tags.onDebounceClick {
             navigate()
-                .toTagPicker(state.tags.toSet(), { tags ->
+                .toTagPicker(state.tags.toSet()) { tags ->
                     dispatch(AddQuestAction.TagsPicked(tags))
-                })
+                }
         }
     }
 
@@ -211,23 +211,27 @@ class AddQuestViewController(args: Bundle? = null) :
         view: View,
         state: AddQuestViewState
     ) {
-        view.fullAdd.onDebounceClick {
-            closeListener()
-            ViewUtils.hideKeyboard(view)
-            navigateFromRoot()
-                .toEditQuest(
-                    questId = null,
-                    params = EditQuestViewController.Params(
-                        name = view.questName.text.toString(),
-                        scheduleDate = state.date,
-                        startTime = state.time,
-                        duration = state.duration,
-                        color = state.color,
-                        icon = state.icon,
-                        reminderViewModel = null
+        if (isFullscreen) {
+            view.fullAdd.invisible()
+        } else {
+            view.fullAdd.onDebounceClick {
+                closeListener()
+                ViewUtils.hideKeyboard(view)
+                navigateFromRoot()
+                    .toEditQuest(
+                        questId = null,
+                        params = EditQuestViewController.Params(
+                            name = view.questName.text.toString(),
+                            scheduleDate = state.date,
+                            startTime = state.time,
+                            duration = state.duration,
+                            color = state.color,
+                            icon = state.icon,
+                            reminderViewModel = null
+                        )
+                        , changeHandler = FadeChangeHandler()
                     )
-                    , changeHandler = FadeChangeHandler()
-                )
+            }
         }
     }
 
@@ -246,10 +250,10 @@ class AddQuestViewController(args: Bundle? = null) :
             )
             datePickerDialog.setButton(
                 Dialog.BUTTON_NEUTRAL,
-                view.context.getString(R.string.do_not_know),
-                { _, _ ->
-                    dispatch(AddQuestAction.DatePicked(null))
-                })
+                view.context.getString(R.string.do_not_know)
+            ) { _, _ ->
+                dispatch(AddQuestAction.DatePicked(null))
+            }
             datePickerDialog.setOnCancelListener {
                 dispatch(AddQuestAction.DatePickerCanceled)
             }
