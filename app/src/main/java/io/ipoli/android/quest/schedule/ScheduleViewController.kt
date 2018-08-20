@@ -59,8 +59,10 @@ class ScheduleViewController(args: Bundle? = null) :
             addToolbarView(R.layout.view_calendar_toolbar)?.let {
                 val ct = it as ViewGroup
                 calendarToolbar = ct
-                ct.onDebounceClick {
-                    navigateFromRoot().toScheduleSummary(currentDate)
+                ct.onDebounceClick { _ ->
+                    closeAddIfShown {
+                        navigateFromRoot().toScheduleSummary(currentDate)
+                    }
                 }
             }
         }
@@ -99,12 +101,17 @@ class ScheduleViewController(args: Bundle? = null) :
         when (item.itemId) {
 
             R.id.actionViewMode -> {
-                dispatch(ScheduleAction.ToggleViewMode)
+                closeAddIfShown {
+                    dispatch(ScheduleAction.ToggleViewMode)
+                }
+
                 true
             }
 
             R.id.actionDailyChallenge -> {
-                navigateFromRoot().toDailyChallenge()
+                closeAddIfShown {
+                    navigateFromRoot().toDailyChallenge()
+                }
                 true
             }
             else -> super.onOptionsItemSelected(item)
@@ -113,12 +120,19 @@ class ScheduleViewController(args: Bundle? = null) :
 
     private fun initAddQuest(view: View) {
         view.addContainerBackground.setOnClickListener {
-            val containerRouter = addContainerRouter(view)
-            if (containerRouter.hasRootController()) {
-                containerRouter.popCurrentController()
-            }
-            ViewUtils.hideKeyboard(view)
-            addQuestAnimationHelper.closeAddContainer()
+            closeAddIfShown()
+        }
+    }
+
+    private fun closeAddIfShown(endListener: (() -> Unit)? = null) {
+        if (view == null) return
+        val containerRouter = addContainerRouter(view!!)
+        if (containerRouter.hasRootController()) {
+            containerRouter.popCurrentController()
+            ViewUtils.hideKeyboard(view!!)
+            addQuestAnimationHelper.closeAddContainer(endListener)
+        } else {
+            endListener?.invoke()
         }
     }
 

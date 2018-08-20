@@ -61,7 +61,7 @@ class AddQuestAnimationHelper(
         })
     }
 
-    fun closeAddContainer() {
+    fun closeAddContainer(endListener: (() -> Unit)? = null) {
         background.gone()
         val duration =
             background.resources.getInteger(android.R.integer.config_shortAnimTime).toLong()
@@ -92,6 +92,7 @@ class AddQuestAnimationHelper(
                 fabSet.addListener(object : AnimatorListenerAdapter() {
                     override fun onAnimationEnd(animation: Animator?) {
                         fab.isClickable = true
+                        endListener?.invoke()
                     }
                 })
                 fabSet.start()
