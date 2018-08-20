@@ -32,22 +32,22 @@ class CreateScheduleSummaryUseCase(
 
         val questsByDate = quests.groupBy { it.scheduledDate!! }
 
-        return startDate.datesBetween(endDate).map {
-            val dailyQuests = questsByDate[it] ?: emptyList()
-            val dailyEvents = eventsByDate[it] ?: emptyList()
+        return startDate.datesBetween(endDate).map { d ->
+            val dailyQuests = questsByDate[d] ?: emptyList()
+            val dailyEvents = eventsByDate[d] ?: emptyList()
 
             val tagColors =
                 dailyQuests
                     .filter { it.tags.isNotEmpty() }
                     .groupBy { it.tags.first().color }
-                    .map { Pair(it.key, it.value.sumBy { it.duration }) }
+                    .map { Pair(it.key, it.value.sumBy { q -> q.duration }) }
                     .sortedByDescending { it.second }
                     .map { it.first }
 
             val scheduledQuests = dailyQuests.filter { it.isScheduled }
 
             ScheduleSummaryItem(
-                it,
+                d,
                 createMorningFullness(scheduledQuests, dailyEvents),
                 createAfternoonFullness(scheduledQuests, dailyEvents),
                 createEveningFullness(scheduledQuests, dailyEvents),

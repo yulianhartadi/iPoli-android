@@ -13,6 +13,7 @@ import io.ipoli.android.common.redux.BaseViewState
 import io.ipoli.android.common.view.AndroidColor
 import io.ipoli.android.common.view.AndroidIcon
 import io.ipoli.android.pet.Food
+import io.ipoli.android.quest.CompletedQuestViewState.StateType.*
 import io.ipoli.android.tag.Tag
 import org.threeten.bp.LocalDate
 
@@ -41,74 +42,81 @@ object CompletedQuestReducer : BaseViewStateReducer<CompletedQuestViewState>() {
 
             val quest = action.quest
 
-            val timer = if (!quest.hasTimer) {
-                CompletedQuestViewState.Timer.Untracked
-            } else if (quest.hasPomodoroTimer) {
-                val timeRanges = quest.timeRanges
-
-                val completedCnt = timeRanges.filter { it.end != null }.size / 2
-
-                val work = timeRanges.filter { it.type == TimeRange.Type.POMODORO_WORK }
-                val workDuration = work.map { it.duration }.sum()
-                val workActualDuration =
-                    work.map { it.actualDuration() }.sumBy { it.asMinutes.intValue }
-
-                val breaks =
-                    timeRanges.filter { it.type == TimeRange.Type.POMODORO_LONG_BREAK || it.type == TimeRange.Type.POMODORO_SHORT_BREAK }
-
-                val breakDuration = breaks.map { it.duration }.sum()
-
-                val breakActualDuration =
-                    breaks.map { it.actualDuration() }.sumBy { it.asMinutes.intValue }
-
-                CompletedQuestViewState.Timer.Pomodoro(
-                    completedPomodoros = completedCnt,
-                    totalPomodoros = quest.totalPomodoros!!,
-                    workDuration = workActualDuration.minutes,
-                    overdueWorkDuration = workActualDuration.minutes - workDuration.minutes,
-                    breakDuration = breakActualDuration.minutes,
-                    overdueBreakDuration = breakActualDuration.minutes - breakDuration.minutes
+            if (!quest.isCompleted) {
+                subState.copy(
+                    type = QUEST_UNDO_COMPLETED
                 )
             } else {
-                CompletedQuestViewState.Timer.Countdown(
-                    quest.duration.minutes,
-                    quest.actualDuration.asMinutes - quest.duration.minutes
+
+                val timer = if (!quest.hasTimer) {
+                    CompletedQuestViewState.Timer.Untracked
+                } else if (quest.hasPomodoroTimer) {
+                    val timeRanges = quest.timeRanges
+
+                    val completedCnt = timeRanges.filter { it.end != null }.size / 2
+
+                    val work = timeRanges.filter { it.type == TimeRange.Type.POMODORO_WORK }
+                    val workDuration = work.map { it.duration }.sum()
+                    val workActualDuration =
+                        work.map { it.actualDuration() }.sumBy { it.asMinutes.intValue }
+
+                    val breaks =
+                        timeRanges.filter { it.type == TimeRange.Type.POMODORO_LONG_BREAK || it.type == TimeRange.Type.POMODORO_SHORT_BREAK }
+
+                    val breakDuration = breaks.map { it.duration }.sum()
+
+                    val breakActualDuration =
+                        breaks.map { it.actualDuration() }.sumBy { it.asMinutes.intValue }
+
+                    CompletedQuestViewState.Timer.Pomodoro(
+                        completedPomodoros = completedCnt,
+                        totalPomodoros = quest.totalPomodoros!!,
+                        workDuration = workActualDuration.minutes,
+                        overdueWorkDuration = workActualDuration.minutes - workDuration.minutes,
+                        breakDuration = breakActualDuration.minutes,
+                        overdueBreakDuration = breakActualDuration.minutes - breakDuration.minutes
+                    )
+                } else {
+                    CompletedQuestViewState.Timer.Countdown(
+                        quest.duration.minutes,
+                        quest.actualDuration.asMinutes - quest.duration.minutes
+                    )
+                }
+
+                val player = state.dataState.player!!
+
+                subState.copy(
+                    type = DATA_LOADED,
+                    name = quest.name,
+                    tags = quest.tags,
+                    icon = quest.icon?.let {
+                        AndroidIcon.valueOf(it.name)
+                    },
+                    color = AndroidColor.valueOf(quest.color.name),
+                    totalDuration = quest.actualDuration.asMinutes,
+                    completeAt = quest.completedAtDate!!,
+                    startedAt = quest.actualStartTime,
+                    finishedAt = quest.completedAtTime,
+                    timer = timer,
+                    experience = quest.experience,
+                    coins = quest.coins,
+                    bounty = quest.bounty.let {
+                        if (it is Quest.Bounty.Food) {
+                            it.food
+                        } else {
+                            null
+                        }
+                    },
+                    playerLevel = player.level,
+                    playerLevelProgress = player.experienceProgressForLevel,
+                    playerLevelMaxProgress = player.experienceForNextLevel
                 )
             }
-
-            val player = state.dataState.player!!
-
-            subState.copy(
-                type = CompletedQuestViewState.StateType.DATA_LOADED,
-                name = quest.name,
-                tags = quest.tags,
-                icon = quest.icon?.let {
-                    AndroidIcon.valueOf(it.name)
-                },
-                color = AndroidColor.valueOf(quest.color.name),
-                totalDuration = quest.actualDuration.asMinutes,
-                completeAt = quest.completedAtDate!!,
-                startedAt = quest.actualStartTime,
-                finishedAt = quest.completedAtTime,
-                timer = timer,
-                experience = quest.experience,
-                coins = quest.coins,
-                bounty = quest.bounty.let {
-                    if (it is Quest.Bounty.Food) {
-                        it.food
-                    } else {
-                        null
-                    }
-                },
-                playerLevel = player.level,
-                playerLevelProgress = player.experienceProgressForLevel,
-                playerLevelMaxProgress = player.experienceForNextLevel
-            )
         }
         else -> subState
     }
 
-    override fun defaultState() = CompletedQuestViewState(CompletedQuestViewState.StateType.LOADING)
+    override fun defaultState() = CompletedQuestViewState(LOADING)
 
 }
 
@@ -133,7 +141,8 @@ data class CompletedQuestViewState(
 
     enum class StateType {
         LOADING,
-        DATA_LOADED
+        DATA_LOADED,
+        QUEST_UNDO_COMPLETED
     }
 
     sealed class Timer {

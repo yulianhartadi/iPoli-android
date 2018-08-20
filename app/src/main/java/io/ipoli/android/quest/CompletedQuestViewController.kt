@@ -18,6 +18,7 @@ import io.ipoli.android.common.text.DateFormatter
 import io.ipoli.android.common.text.DurationFormatter
 import io.ipoli.android.common.view.*
 import io.ipoli.android.quest.CompletedQuestViewState.StateType.DATA_LOADED
+import io.ipoli.android.quest.CompletedQuestViewState.StateType.QUEST_UNDO_COMPLETED
 import io.ipoli.android.quest.CompletedQuestViewState.Timer
 import io.ipoli.android.tag.Tag
 import kotlinx.android.synthetic.main.controller_completed_quest.view.*
@@ -131,6 +132,9 @@ class CompletedQuestViewController :
 
                 view.levelProgress.animateProgressFromZero(state.playerLevelProgress!!)
             }
+
+            QUEST_UNDO_COMPLETED ->
+                navigateFromRoot().setHome()
 
             else -> {
             }
