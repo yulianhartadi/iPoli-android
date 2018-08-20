@@ -378,6 +378,13 @@ class Navigator(private val router: Router) {
         pushDialog { DurationPickerDialogController(selectedDuration, listener) }
     }
 
+    fun toCommunity() {
+        pushController(
+            { WebUrlViewController(Constants.COMMUNITY_LINK, "Community") },
+            VerticalChangeHandler()
+        )
+    }
+
     fun toFeedback() {
         pushController(
             { WebUrlViewController(Constants.FEEDBACK_LINK, "Feedback") },

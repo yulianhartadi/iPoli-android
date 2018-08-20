@@ -1,12 +1,9 @@
 package io.ipoli.android.common.home
 
-import android.content.Intent
-import android.content.Intent.ACTION_VIEW
 import android.content.res.Resources
 import android.graphics.Color
 import android.graphics.PorterDuff
 import android.graphics.drawable.GradientDrawable
-import android.net.Uri
 import android.os.Bundle
 import android.support.annotation.ColorRes
 import android.support.annotation.IdRes
@@ -28,7 +25,6 @@ import com.bumptech.glide.request.RequestOptions
 import com.mikepenz.iconics.IconicsDrawable
 import com.mikepenz.iconics.typeface.IIcon
 import com.mikepenz.material_design_iconic_typeface_library.MaterialDesignIconic
-import io.ipoli.android.Constants
 import io.ipoli.android.MainActivity
 import io.ipoli.android.R
 import io.ipoli.android.challenge.list.ChallengeListViewController
@@ -135,7 +131,7 @@ class HomeViewController(args: Bundle? = null) :
                 )
 
             R.id.community ->
-                openCommunity()
+                navigateFromRoot().toCommunity()
 
             R.id.shareApp ->
                 showShareApp()
@@ -168,11 +164,6 @@ class HomeViewController(args: Bundle? = null) :
 
     private fun showShareApp() {
         navigate().toShareApp()
-    }
-
-    private fun openCommunity() {
-        val myIntent = Intent(ACTION_VIEW, Uri.parse(Constants.DISCORD_CHAT_LINK))
-        startActivity(myIntent)
     }
 
     override fun onNavigationItemSelected(item: MenuItem): Boolean {
