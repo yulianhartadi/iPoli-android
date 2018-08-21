@@ -14,6 +14,7 @@ import org.jetbrains.spek.api.dsl.describe
 import org.jetbrains.spek.api.dsl.it
 import org.threeten.bp.LocalDate
 import org.threeten.bp.LocalDateTime
+import org.threeten.bp.LocalTime
 
 /**
  * Created by Polina Zhelyazkova <polina@mypoli.fun>
@@ -42,7 +43,7 @@ class UndoCompleteHabitUseCaseSpek : Spek({
             )
 
         it("should not remove from empty history") {
-            val habit =  executeUseCase(
+            val habit = executeUseCase(
                 TestUtil.habit
             )
             habit.history.`should be empty`()
@@ -246,6 +247,24 @@ class UndoCompleteHabitUseCaseSpek : Spek({
                 SimpleReward(completedEntry.experience!!, completedEntry.coins!!, Quest.Bounty.None)
             `Verify not called` on removeRewardFromPlayerUseCaseMock that removeRewardFromPlayerUseCaseMock.execute(
                 expectedReward
+            )
+        }
+
+        it("should undo") {
+            val now = LocalDateTime.of(LocalDate.now(), LocalTime.of(14, 0))
+            val resetTime = Time.at(12, 55)
+            val habit = TestUtil.habit.copy(
+                timesADay = 2,
+                isGood = true,
+                history = mapOf(
+                    LocalDate.now() to CompletedEntry(
+                        completedAtTimes = listOf(
+                            Time.at(12, 50),
+                            Time.at(13, 0),
+                            Time.at(13, 10)
+                        ), experience = null, coins = null
+                    )
+                )
             )
         }
 
