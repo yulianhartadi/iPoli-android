@@ -6,6 +6,7 @@ import io.ipoli.android.common.SimpleReward
 import io.ipoli.android.common.datetime.Time
 import io.ipoli.android.habit.data.CompletedEntry
 import io.ipoli.android.habit.data.Habit
+import io.ipoli.android.player.data.Player
 import io.ipoli.android.player.usecase.RemoveRewardFromPlayerUseCase
 import io.ipoli.android.player.usecase.RewardPlayerUseCase
 import io.ipoli.android.quest.Quest
@@ -31,13 +32,15 @@ class CompleteHabitUseCaseSpek : Spek({
             habit: Habit,
             date: LocalDateTime = LocalDateTime.now(),
             rewardPlayerUseCase: RewardPlayerUseCase = mock(),
-            removeRewardFromPlayerUseCase: RemoveRewardFromPlayerUseCase = mock()
+            removeRewardFromPlayerUseCase: RemoveRewardFromPlayerUseCase = mock(),
+            player : Player = TestUtil.player()
+
         ) =
             CompleteHabitUseCase(
                 TestUtil.habitRepoMock(
                     habit
                 ),
-                TestUtil.playerRepoMock(TestUtil.player()),
+                TestUtil.playerRepoMock(player),
                 mock(),
                 rewardPlayerUseCase,
                 removeRewardFromPlayerUseCase
