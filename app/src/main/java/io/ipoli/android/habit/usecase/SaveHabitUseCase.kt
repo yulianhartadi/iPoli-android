@@ -37,7 +37,8 @@ class SaveHabitUseCase(
                 days = parameters.days,
                 timesADay = parameters.timesADay,
                 isGood = parameters.isGood,
-                challengeId = parameters.challengeId
+                challengeId = parameters.challengeId,
+                note = parameters.note
             )
         } else {
             var h = habitRepository.findById(parameters.id)!!
@@ -52,7 +53,8 @@ class SaveHabitUseCase(
                 days = parameters.days,
                 timesADay = parameters.timesADay,
                 isGood = parameters.isGood,
-                challengeId = parameters.challengeId
+                challengeId = parameters.challengeId,
+                note = parameters.note
             )
 
             if (shouldUpdateTimesADay) {
@@ -129,6 +131,7 @@ class SaveHabitUseCase(
         val timesADay: Int,
         val isGood: Boolean,
         val challengeId: String? = null,
+        val note: String = "",
         val player: Player? = null
     )
 }
