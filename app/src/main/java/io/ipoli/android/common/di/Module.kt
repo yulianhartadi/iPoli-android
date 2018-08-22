@@ -16,6 +16,7 @@ import io.ipoli.android.achievement.sideeffect.AchievementListSideEffectHandler
 import io.ipoli.android.achievement.usecase.CreateAchievementItemsUseCase
 import io.ipoli.android.achievement.usecase.UnlockAchievementsUseCase
 import io.ipoli.android.achievement.usecase.UpdateAchievementProgressUseCase
+import io.ipoli.android.achievement.usecase.UpdatePlayerStatsUseCase
 import io.ipoli.android.challenge.persistence.ChallengeRepository
 import io.ipoli.android.challenge.persistence.RoomChallengeRepository
 import io.ipoli.android.challenge.predefined.usecase.SchedulePredefinedChallengeUseCase
@@ -402,6 +403,7 @@ interface UseCaseModule {
     val createReactionHistoryItemsUseCase: CreateReactionHistoryItemsUseCase
     val logDataUseCase: LogDataUseCase
     val saveResetDayTimeUseCase: SaveResetDayTimeUseCase
+    val updatePlayerStatsUseCase: UpdatePlayerStatsUseCase
 }
 
 class MainUseCaseModule(private val context: Context) : UseCaseModule {
@@ -844,10 +846,14 @@ class MainUseCaseModule(private val context: Context) : UseCaseModule {
     override val saveProfileUseCase
         get() = SaveProfileUseCase(playerRepository)
 
+    override val updatePlayerStatsUseCase
+        get() = UpdatePlayerStatsUseCase(playerRepository)
+
     override val unlockAchievementsUseCase
         get() = UnlockAchievementsUseCase(
             playerRepository,
             showUnlockedAchievementsScheduler,
+            updatePlayerStatsUseCase,
             savePostsUseCase
         )
 

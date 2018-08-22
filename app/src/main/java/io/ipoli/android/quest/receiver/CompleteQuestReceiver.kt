@@ -5,6 +5,7 @@ import android.content.Context
 import android.content.Intent
 import io.ipoli.android.Constants
 import io.ipoli.android.achievement.usecase.UnlockAchievementsUseCase
+import io.ipoli.android.achievement.usecase.UpdatePlayerStatsUseCase
 import io.ipoli.android.common.AsyncBroadcastReceiver
 import io.ipoli.android.common.notification.QuickDoNotificationUtil
 import io.ipoli.android.common.view.AppWidgetUtil
@@ -34,7 +35,7 @@ class CompleteQuestReceiver : AsyncBroadcastReceiver() {
             unlockAchievementsUseCase.execute(
                 UnlockAchievementsUseCase.Params(
                     player = playerRepository.find()!!,
-                    eventType = UnlockAchievementsUseCase.Params.EventType.QuestCompleted
+                    eventType = UpdatePlayerStatsUseCase.Params.EventType.QuestCompleted
                 )
             )
         }

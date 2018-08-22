@@ -2,7 +2,7 @@ package io.ipoli.android.achievement.middleware
 
 import io.ipoli.android.MyPoliApp
 import io.ipoli.android.achievement.usecase.UnlockAchievementsUseCase
-import io.ipoli.android.achievement.usecase.UnlockAchievementsUseCase.Params.EventType.*
+import io.ipoli.android.achievement.usecase.UpdatePlayerStatsUseCase.Params.EventType.*
 import io.ipoli.android.challenge.add.EditChallengeAction
 import io.ipoli.android.challenge.show.ChallengeAction
 import io.ipoli.android.common.AppState

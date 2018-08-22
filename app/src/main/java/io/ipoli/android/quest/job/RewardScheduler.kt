@@ -3,6 +3,7 @@ package io.ipoli.android.quest.job
 import android.content.Context
 import io.ipoli.android.MyPoliApp
 import io.ipoli.android.achievement.usecase.UnlockAchievementsUseCase
+import io.ipoli.android.achievement.usecase.UpdatePlayerStatsUseCase
 import io.ipoli.android.common.Reward
 import io.ipoli.android.common.di.BackgroundModule
 import io.ipoli.android.common.view.asThemedWrapper
@@ -65,7 +66,7 @@ class AndroidJobRewardScheduler(private val context: Context) : RewardScheduler 
                                 unlockAchievementsUseCase.execute(
                                     UnlockAchievementsUseCase.Params(
                                         player = playerRepository.find()!!,
-                                        eventType = UnlockAchievementsUseCase.Params.EventType.QuestUncompleted
+                                        eventType = UpdatePlayerStatsUseCase.Params.EventType.QuestUncompleted
                                     )
                                 )
                             }
