@@ -563,11 +563,17 @@ class MainUseCaseModule(private val context: Context) : UseCaseModule {
             reminderScheduler,
             removeRewardFromPlayerUseCase
         )
-    override val rewardPlayerUseCase get() = RewardPlayerUseCase(playerRepository, levelUpScheduler)
+    override val rewardPlayerUseCase
+        get() = RewardPlayerUseCase(
+            playerRepository,
+            levelUpScheduler,
+            unlockAchievementsUseCase
+        )
     override val removeRewardFromPlayerUseCase
         get() = RemoveRewardFromPlayerUseCase(
             playerRepository,
-            levelDownScheduler
+            levelDownScheduler,
+            unlockAchievementsUseCase
         )
     override val feedPetUseCase get() = FeedPetUseCase(playerRepository)
     override val revivePetUseCase get() = RevivePetUseCase(playerRepository)

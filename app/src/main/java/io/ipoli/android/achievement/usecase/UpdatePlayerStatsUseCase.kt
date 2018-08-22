@@ -103,6 +103,14 @@ class UpdatePlayerStatsUseCase(
                     experienceForToday = stats.experienceForToday + parameters.eventType.value
                 )
 
+            is ExperienceDecreased ->
+                stats.copy(
+                    experienceForToday = Math.max(
+                        stats.experienceForToday - parameters.eventType.value,
+                        0L
+                    )
+                )
+
             PetItemEquipped ->
                 stats.copy(
                     petItemEquippedCount = stats.petItemEquippedCount + 1
@@ -175,10 +183,9 @@ class UpdatePlayerStatsUseCase(
             object ChallengeCreated : EventType()
             object DayPlanned : EventType()
             data class GemsConverted(val gems: Int) : EventType(gems)
-            object PlayerLeveledUp : EventType()
-            object LifeCoinsIncreased : EventType()
             object FriendInvited : EventType()
             data class ExperienceIncreased(val value: Long) : EventType()
+            data class ExperienceDecreased(val value: Long) : EventType()
             object PetItemEquipped : EventType()
             object AvatarChanged : EventType()
             object PetChanged : EventType()
