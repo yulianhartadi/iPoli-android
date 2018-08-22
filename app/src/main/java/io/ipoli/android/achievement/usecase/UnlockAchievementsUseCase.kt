@@ -49,7 +49,8 @@ class UnlockAchievementsUseCase(
 
             QuestUncompleted ->
                 stats.copy(
-                    questCompletedCountForToday = stats.questCompletedCountForToday - 1
+                    questCompletedCountForToday = stats.questCompletedCountForToday - 1,
+                    questCompletedCount = stats.questCompletedCount - 1
                 )
 
             DailyChallengeCompleted -> {
