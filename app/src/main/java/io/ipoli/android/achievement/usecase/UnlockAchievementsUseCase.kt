@@ -14,7 +14,7 @@ import org.threeten.bp.LocalDate
  * Created by Polina Zhelyazkova <polina@mypoli.fun>
  * on 6/7/18.
  */
-class UnlockAchievementsUseCase(
+open class UnlockAchievementsUseCase(
     private val playerRepository: PlayerRepository,
     private val showUnlockedAchievementsScheduler: ShowUnlockedAchievementsScheduler,
     private val updatePlayerStatsUseCase: UpdatePlayerStatsUseCase,
