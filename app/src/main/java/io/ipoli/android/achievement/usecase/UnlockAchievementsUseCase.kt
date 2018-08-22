@@ -158,6 +158,11 @@ class UnlockAchievementsUseCase(
                     petRevivedCount = stats.petRevivedCount + 1
                 )
 
+            PetDied ->
+                stats.copy(
+                    petDiedCount = stats.petDiedCount + 1
+                )
+
             else -> stats
         }
 
@@ -363,6 +368,7 @@ class UnlockAchievementsUseCase(
             object BecomeMember : EventType()
             object PowerUpActivated : EventType()
             object PetRevived : EventType()
+            object PetDied : EventType()
         }
     }
 

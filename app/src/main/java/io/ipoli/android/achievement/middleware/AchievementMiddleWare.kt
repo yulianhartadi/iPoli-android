@@ -35,6 +35,7 @@ import space.traversal.kapsule.required
 object AchievementProgressMiddleWare : MiddleWare<AppState>, Injects<BackgroundModule> {
 
     private val unlockAchievementsUseCase by required { unlockAchievementsUseCase }
+    private val playerRepository by required { playerRepository }
 
     override fun onCreate() {
         inject(MyPoliApp.backgroundModule(MyPoliApp.instance))
@@ -46,8 +47,7 @@ object AchievementProgressMiddleWare : MiddleWare<AppState>, Injects<BackgroundM
         action: Action
     ): MiddleWare.Result {
 
-        val player = state.dataState.player
-        if (player == null) {
+        if (state.dataState.player == null) {
             return MiddleWare.Result.Continue
         }
 
@@ -95,6 +95,9 @@ object AchievementProgressMiddleWare : MiddleWare<AppState>, Injects<BackgroundM
             is PetAction.Feed ->
                 PetFed(a.food)
 
+            is PetAction.PetDied ->
+                PetDied
+
             HomeAction.FeedbackSent ->
                 FeedbackSent
 
@@ -113,7 +116,7 @@ object AchievementProgressMiddleWare : MiddleWare<AppState>, Injects<BackgroundM
         eventType?.let {
             unlockAchievementsUseCase.execute(
                 UnlockAchievementsUseCase.Params(
-                    player = player,
+                    player = playerRepository.find()!!,
                     eventType = eventType
                 )
             )
