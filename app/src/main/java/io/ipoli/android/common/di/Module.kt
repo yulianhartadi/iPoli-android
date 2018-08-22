@@ -441,7 +441,8 @@ class MainUseCaseModule(private val context: Context) : UseCaseModule {
     override val challengeRepository =
         RoomChallengeRepository(
             dao = localDatabase.challengeDao(),
-            tagDao = localDatabase.tagDao()
+            tagDao = localDatabase.tagDao(),
+            remoteDatabase = remoteDatabase
         )
 
     override val eventRepository =
