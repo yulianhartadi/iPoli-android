@@ -93,7 +93,7 @@ class UpdatePlayerStatsUseCase(
                     gemConvertedCount = stats.gemConvertedCount + parameters.eventType.gems
                 )
 
-            is FriendInvited ->
+            is FriendshipAccepted ->
                 stats.copy(
                     friendInvitedCount = stats.friendInvitedCount + 1
                 )
@@ -183,7 +183,7 @@ class UpdatePlayerStatsUseCase(
             object ChallengeCreated : EventType()
             object DayPlanned : EventType()
             data class GemsConverted(val gems: Int) : EventType(gems)
-            object FriendInvited : EventType()
+            object FriendshipAccepted : EventType()
             data class ExperienceIncreased(val value: Long) : EventType()
             data class ExperienceDecreased(val value: Long) : EventType()
             object PetItemEquipped : EventType()

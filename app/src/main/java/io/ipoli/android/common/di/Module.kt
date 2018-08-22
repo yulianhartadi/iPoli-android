@@ -867,7 +867,8 @@ class MainUseCaseModule(private val context: Context) : UseCaseModule {
         get() = UpdateAchievementProgressUseCase(
             playerRepository,
             calculateAwesomenessScoreUseCase,
-            calculateFocusDurationUseCase
+            calculateFocusDurationUseCase,
+            friendRepository
         )
 
     override val createAchievementItemsUseCase
