@@ -362,7 +362,7 @@ class TodayViewController(args: Bundle? = null) :
         val awesomenessScore = Constants.DECIMAL_FORMATTER.format(state.awesomenessScore!!)
         view.todayAwesomenessScore.text = "$awesomenessScore/${Constants.MAX_AWESOMENESS_SCORE}"
 
-        val focusDuration = DurationFormatter.formatNarrow(state.focusDuration!!.intValue)
+        val focusDuration = DurationFormatter.format(view.context, state.focusDuration!!.intValue)
 
         view.todayFocusDuration.text = "$focusDuration/${Constants.DAILY_FOCUS_HOURS_GOAL}h"
 
