@@ -169,6 +169,7 @@ class TodayViewController(args: Bundle? = null) :
                 val questId = questId(viewHolder)
                 if (direction == ItemTouchHelper.END) {
                     dispatch(TodayAction.CompleteQuest(questId(viewHolder)))
+                    view.questItems.adapter.notifyItemChanged(viewHolder.adapterPosition)
                 } else {
                     navigate()
                         .toReschedule(
