@@ -242,8 +242,14 @@ class PredefinedHabitListViewController(args: Bundle? = null) :
     }
 
     override fun onAttach(view: View) {
+        colorStatusBars()
         super.onAttach(view)
         showBackButton()
+    }
+
+    private fun colorStatusBars() {
+        activity?.window?.statusBarColor = attrData(io.ipoli.android.R.attr.colorPrimaryDark)
+        activity?.window?.navigationBarColor = attrData(io.ipoli.android.R.attr.colorPrimary)
     }
 
     override fun onOptionsItemSelected(item: MenuItem) =

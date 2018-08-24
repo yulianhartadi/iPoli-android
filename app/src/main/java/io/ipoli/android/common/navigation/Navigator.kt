@@ -59,6 +59,7 @@ import io.ipoli.android.quest.schedule.addquest.AddQuestViewController
 import io.ipoli.android.quest.schedule.agenda.AgendaViewController
 import io.ipoli.android.quest.schedule.calendar.CalendarViewController
 import io.ipoli.android.quest.schedule.summary.ScheduleSummaryViewController
+import io.ipoli.android.quest.schedule.today.TodayViewController
 import io.ipoli.android.quest.show.QuestViewController
 import io.ipoli.android.repeatingquest.add.AddRepeatingQuestViewController
 import io.ipoli.android.repeatingquest.edit.EditRepeatingQuestViewController
@@ -125,6 +126,10 @@ class Navigator(private val router: Router) {
 
     fun toPlanDay() {
         pushController({ PlanDayViewController() }, VerticalChangeHandler())
+    }
+
+    fun toToday() {
+        pushController({ TodayViewController() }, SimpleSwapChangeHandler())
     }
 
     fun toScheduleSummary(currentDate: LocalDate) {

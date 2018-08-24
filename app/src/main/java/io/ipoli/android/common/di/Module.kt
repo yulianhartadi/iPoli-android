@@ -53,6 +53,7 @@ import io.ipoli.android.dailychallenge.data.persistence.RoomDailyChallengeReposi
 import io.ipoli.android.dailychallenge.job.AndroidDailyChallengeCompleteScheduler
 import io.ipoli.android.dailychallenge.job.DailyChallengeCompleteScheduler
 import io.ipoli.android.dailychallenge.sideeffect.DailyChallengeSideEffectHandler
+import io.ipoli.android.dailychallenge.usecase.CheckDailyChallengeProgressUseCase
 import io.ipoli.android.dailychallenge.usecase.CheckForDailyChallengeCompletionUseCase
 import io.ipoli.android.dailychallenge.usecase.LoadDailyChallengeUseCase
 import io.ipoli.android.dailychallenge.usecase.SaveDailyChallengeQuestIdsUseCase
@@ -126,6 +127,7 @@ import io.ipoli.android.quest.schedule.agenda.usecase.FindAgendaDatesUseCase
 import io.ipoli.android.quest.schedule.calendar.sideeffect.DayViewSideEffectHandler
 import io.ipoli.android.quest.schedule.summary.sideeffect.ScheduleSummarySideEffectHandler
 import io.ipoli.android.quest.schedule.summary.usecase.CreateScheduleSummaryUseCase
+import io.ipoli.android.quest.schedule.today.usecase.CreateTodayItemsUseCase
 import io.ipoli.android.quest.show.job.AndroidJobTimerCompleteScheduler
 import io.ipoli.android.quest.show.job.TimerCompleteScheduler
 import io.ipoli.android.quest.show.sideeffect.QuestSideEffectHandler
@@ -382,6 +384,7 @@ interface UseCaseModule {
     val saveTimeFormatUseCase: SaveTimeFormatUseCase
     val saveTemperatureUnitUseCase: SaveTemperatureUnitUseCase
     val checkForDailyChallengeCompletionUseCase: CheckForDailyChallengeCompletionUseCase
+    val checkDailyChallengeProgressUseCase: CheckDailyChallengeProgressUseCase
     val loadDailyChallengeUseCase: LoadDailyChallengeUseCase
     val saveDailyChallengeQuestIdsUseCase: SaveDailyChallengeQuestIdsUseCase
     val calculateGrowthStatsUseCase: CalculateGrowthStatsUseCase
@@ -403,6 +406,7 @@ interface UseCaseModule {
     val createReactionHistoryItemsUseCase: CreateReactionHistoryItemsUseCase
     val logDataUseCase: LogDataUseCase
     val saveResetDayTimeUseCase: SaveResetDayTimeUseCase
+    val createTodayItemsUseCase: CreateTodayItemsUseCase
     val updatePlayerStatsUseCase: UpdatePlayerStatsUseCase
 }
 
@@ -829,6 +833,9 @@ class MainUseCaseModule(private val context: Context) : UseCaseModule {
     override val checkForDailyChallengeCompletionUseCase
         get() = CheckForDailyChallengeCompletionUseCase(dailyChallengeRepository, questRepository)
 
+    override val checkDailyChallengeProgressUseCase
+        get() = CheckDailyChallengeProgressUseCase(dailyChallengeRepository, questRepository)
+
     override val loadDailyChallengeUseCase
         get() = LoadDailyChallengeUseCase(dailyChallengeRepository)
 
@@ -924,6 +931,9 @@ class MainUseCaseModule(private val context: Context) : UseCaseModule {
 
     override val saveResetDayTimeUseCase
         get() = SaveResetDayTimeUseCase(playerRepository, resetDayScheduler)
+
+    override val createTodayItemsUseCase
+        get() = CreateTodayItemsUseCase()
 }
 
 interface StateStoreModule {

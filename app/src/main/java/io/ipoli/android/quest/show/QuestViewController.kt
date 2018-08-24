@@ -214,11 +214,13 @@ class QuestViewController : ReduxViewController<QuestAction, QuestViewState, Que
         super.onAttach(view)
         showBackButton()
         view.questContainer.requestFocus()
+        val showTitle =
+            appBarOffsetListener.currentState != AppBarStateChangeListener.State.EXPANDED
+        (activity as MainActivity).supportActionBar?.setDisplayShowTitleEnabled(showTitle)
     }
 
     override fun onDetach(view: View) {
         view.appbar.setOnTouchListener(null)
-        (activity as MainActivity).supportActionBar?.setDisplayShowTitleEnabled(true)
         handler.removeCallbacksAndMessages(null)
         cancelAnimations(view)
         super.onDetach(view)
@@ -327,10 +329,6 @@ class QuestViewController : ReduxViewController<QuestAction, QuestViewState, Que
             }
 
             QuestViewState.StateType.RESUMED -> {
-
-                val showTitle =
-                    appBarOffsetListener.currentState != AppBarStateChangeListener.State.EXPANDED
-                (activity as MainActivity).supportActionBar?.setDisplayShowTitleEnabled(showTitle)
 
                 showDataContainer(view)
 

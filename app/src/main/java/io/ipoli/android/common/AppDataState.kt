@@ -8,6 +8,7 @@ import io.ipoli.android.common.datetime.Minute
 import io.ipoli.android.common.redux.Action
 import io.ipoli.android.common.redux.Reducer
 import io.ipoli.android.common.redux.State
+import io.ipoli.android.dailychallenge.usecase.CheckDailyChallengeProgressUseCase
 import io.ipoli.android.event.Calendar
 import io.ipoli.android.event.Event
 import io.ipoli.android.friends.feed.PostViewModel
@@ -25,6 +26,7 @@ import io.ipoli.android.quest.Quest
 import io.ipoli.android.quest.RepeatingQuest
 import io.ipoli.android.quest.schedule.agenda.usecase.CreateAgendaItemsUseCase
 import io.ipoli.android.quest.schedule.summary.usecase.CreateScheduleSummaryUseCase
+import io.ipoli.android.quest.schedule.today.usecase.CreateTodayItemsUseCase
 import io.ipoli.android.quest.usecase.Schedule
 import io.ipoli.android.repeatingquest.usecase.CreateRepeatingQuestHistoryUseCase
 import io.ipoli.android.store.gem.GemPack
@@ -127,13 +129,20 @@ sealed class DataLoadedAction : Action {
     data class ReactionHistoryItemsChanged(val items: List<CreateReactionHistoryItemsUseCase.ReactionHistoryItem>) :
         DataLoadedAction()
 
-    data class FriendsChanged(val friends : List<Friend>) : DataLoadedAction()
+    data class FriendsChanged(val friends: List<Friend>) : DataLoadedAction()
     data class PostItemPickerItemsChanged(
         val quests: List<Quest>?,
         val challenges: List<Challenge>?
     ) : DataLoadedAction()
 
-    data class FriendChallengesChanged(val challenges : List<Challenge>) : DataLoadedAction()
+    data class FriendChallengesChanged(val challenges: List<Challenge>) : DataLoadedAction()
+
+    data class TodayQuestItemsChanged(
+        val questItems: CreateTodayItemsUseCase.Result,
+        val awesomenessScore: Double,
+        val focusDuration: Duration<Minute>,
+        val dailyChallengeProgress: CheckDailyChallengeProgressUseCase.Result
+    ) : DataLoadedAction()
 }
 
 data class AppDataState(

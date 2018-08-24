@@ -302,5 +302,6 @@ interface Constants {
 
         const val RESET_DAY_MINUTE = 0
         val RESET_DAY_TIME = Time.of(RESET_DAY_MINUTE)
+        const val MAX_AWESOMENESS_SCORE = 5
     }
 }

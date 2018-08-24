@@ -9,6 +9,7 @@ import io.ipoli.android.habit.edit.EditHabitAction
 import io.ipoli.android.habit.edit.EditHabitViewState
 import io.ipoli.android.habit.list.HabitListAction
 import io.ipoli.android.habit.usecase.*
+import io.ipoli.android.quest.schedule.today.TodayAction
 import space.traversal.kapsule.required
 
 /**
@@ -48,10 +49,11 @@ object HabitSideEffectHandler : AppSideEffectHandler() {
             is EditHabitAction.Remove ->
                 removeHabitUseCase.execute(RemoveHabitUseCase.Params(action.habitId))
 
+            is TodayAction.Load ->
+                createHabitItemsFromState(state)
+
             is HabitListAction.Load ->
-                state.dataState.habits?.let {
-                    dispatchNewHabitItems(it)
-                }
+                createHabitItemsFromState(state)
 
             is DataLoadedAction.HabitsChanged ->
                 dispatchNewHabitItems(action.habits)
@@ -59,11 +61,23 @@ object HabitSideEffectHandler : AppSideEffectHandler() {
             is HabitListAction.CompleteHabit ->
                 completeHabitUseCase.execute(CompleteHabitUseCase.Params(habitId = action.habitId))
 
+            is TodayAction.CompleteHabit ->
+                completeHabitUseCase.execute(CompleteHabitUseCase.Params(habitId = action.habitId))
+
+            is TodayAction.UndoCompleteHabit ->
+                undoCompleteHabitUseCase.execute(UndoCompleteHabitUseCase.Params(habitId = action.habitId))
+
             is HabitListAction.UndoCompleteHabit ->
                 undoCompleteHabitUseCase.execute(UndoCompleteHabitUseCase.Params(habitId = action.habitId))
 
             else -> {
             }
+        }
+    }
+
+    private fun createHabitItemsFromState(state: AppState) {
+        state.dataState.habits?.let {
+            dispatchNewHabitItems(it)
         }
     }
 
@@ -79,4 +93,5 @@ object HabitSideEffectHandler : AppSideEffectHandler() {
     override fun canHandle(action: Action) =
         action is EditHabitAction
             || action is HabitListAction || action is DataLoadedAction.HabitsChanged
+            || action is TodayAction
 }

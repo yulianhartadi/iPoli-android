@@ -14,6 +14,7 @@ import io.ipoli.android.quest.edit.EditQuestViewState
 import io.ipoli.android.quest.schedule.addquest.AddQuestAction
 import io.ipoli.android.quest.schedule.addquest.AddQuestViewState
 import io.ipoli.android.quest.schedule.summary.ScheduleSummaryAction
+import io.ipoli.android.quest.schedule.today.TodayAction
 import io.ipoli.android.quest.subquest.SubQuest
 import io.ipoli.android.quest.usecase.CompleteQuestUseCase
 import io.ipoli.android.quest.usecase.RescheduleQuestUseCase
@@ -179,6 +180,27 @@ object EditQuestSideEffectHandler : AppSideEffectHandler() {
 
             is TagAction.CompleteQuest ->
                 completeQuest(action.questId)
+
+
+            is TodayAction.CompleteQuest ->
+                completeQuest(action.questId)
+
+            is TodayAction.RescheduleQuest ->
+                rescheduleQuestUseCase.execute(
+                    RescheduleQuestUseCase.Params(
+                        action.questId,
+                        action.date
+                    )
+                )
+
+            is TodayAction.RemoveQuest ->
+                removeQuestUseCase.execute(action.questId)
+
+            is TodayAction.UndoRemoveQuest ->
+                undoRemoveQuestUseCase.execute(action.questId)
+
+            is TodayAction.UndoCompleteQuest ->
+                undoCompletedQuestUseCase.execute(action.questId)
         }
     }
 
@@ -198,6 +220,7 @@ object EditQuestSideEffectHandler : AppSideEffectHandler() {
     override fun canHandle(action: Action) =
         action is EditQuestAction
             || action is AddQuestAction
+            || action is TodayAction
             || action is TagAction.CompleteQuest
             || action is BucketListAction.CompleteQuest
             || action is BucketListAction.ScheduleForToday

@@ -10,6 +10,7 @@ import android.text.style.ForegroundColorSpan
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.animation.AccelerateInterpolator
 import android.widget.TextView
 import io.ipoli.android.R
 import io.ipoli.android.common.ViewUtils
@@ -86,14 +87,16 @@ val ViewGroup.children: List<View>
 fun ViewGroup.inflate(@LayoutRes layout: Int, attachToRoot: Boolean = false): View =
     LayoutInflater.from(context).inflate(layout, this, attachToRoot)
 
-fun View.fadeIn(animationDuration: Long, onComplete: () -> Unit = {}) {
+fun View.fadeIn(animationDuration: Long, to: Float = 1f, delay: Long = 0L, onComplete: () -> Unit = {}) {
     alpha = 0f
     animate().apply {
-        alpha(1f)
+        alpha(to)
+        startDelay = delay
         duration = animationDuration
+        interpolator = AccelerateInterpolator()
         setListener(object : AnimatorListenerAdapter() {
             override fun onAnimationEnd(animation: Animator?) {
-                alpha = 1f
+                alpha = to
                 onComplete()
             }
         })

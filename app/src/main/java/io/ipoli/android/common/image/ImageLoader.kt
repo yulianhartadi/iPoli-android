@@ -13,7 +13,15 @@ import io.ipoli.android.R
 
 interface ImageLoader {
     fun loadMotivationalImage(
-        imageUrl: String, view: ImageView,
+        imageUrl: String,
+        view: ImageView,
+        onReady: () -> Unit,
+        onError: (Exception?) -> Unit
+    )
+
+    fun loadTodayImage(
+        imageUrl: String,
+        view: ImageView,
         onReady: () -> Unit,
         onError: (Exception?) -> Unit
     )
@@ -61,6 +69,47 @@ class AndroidImageLoader : ImageLoader {
                 }
             })
             .into(view)
+    }
+
+    override fun loadTodayImage(
+        imageUrl: String,
+        view: ImageView,
+        onReady: () -> Unit,
+        onError: (Exception?) -> Unit
+    ) {
+        val reqOps =
+            RequestOptions()
+                .centerCrop()
+                .dontAnimate()
+                .error(R.drawable.fallback_today)
+
+        Glide.with(view.context)
+            .load(imageUrl)
+            .apply(reqOps)
+            .listener(object : RequestListener<Drawable> {
+                override fun onLoadFailed(
+                    e: GlideException?,
+                    model: Any?,
+                    target: Target<Drawable>?,
+                    isFirstResource: Boolean
+                ): Boolean {
+                    onError(e)
+                    return false
+                }
+
+                override fun onResourceReady(
+                    resource: Drawable?,
+                    model: Any?,
+                    target: Target<Drawable>?,
+                    dataSource: DataSource?,
+                    isFirstResource: Boolean
+                ): Boolean {
+                    onReady()
+                    return false
+                }
+            })
+            .into(view)
+
     }
 
 }

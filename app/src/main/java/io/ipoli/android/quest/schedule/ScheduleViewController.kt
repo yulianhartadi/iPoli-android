@@ -114,6 +114,12 @@ class ScheduleViewController(args: Bundle? = null) :
                 }
                 true
             }
+
+            R.id.actionToday -> {
+                navigateFromRoot().toToday()
+                true
+            }
+
             else -> super.onOptionsItemSelected(item)
         }
 

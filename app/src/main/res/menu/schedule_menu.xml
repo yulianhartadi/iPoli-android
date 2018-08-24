@@ -12,4 +12,9 @@
         android:icon="@drawable/ic_sword_cross_white_24dp"
         android:title="@string/daily_challenge_title"
         app:showAsAction="always" />
+
+    <item
+        android:id="@+id/actionToday"
+        android:title="@string/today"
+        app:showAsAction="never" />
 </menu>

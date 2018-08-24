@@ -90,7 +90,7 @@ class AgendaViewController(args: Bundle? = null) :
             view.context,
             R.drawable.ic_done_white_24dp,
             R.color.md_green_500,
-            R.drawable.ic_close_white_24dp,
+            R.drawable.ic_undo_white_24dp,
             R.color.md_amber_500
         ) {
             override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {

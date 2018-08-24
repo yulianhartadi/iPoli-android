@@ -5,16 +5,22 @@ import io.ipoli.android.common.AppSideEffectHandler
 import io.ipoli.android.common.AppState
 import io.ipoli.android.common.DataLoadedAction
 import io.ipoli.android.common.redux.Action
+import io.ipoli.android.event.usecase.FindEventsBetweenDatesUseCase
 import io.ipoli.android.note.usecase.SaveQuestNoteUseCase
+import io.ipoli.android.planday.usecase.CalculateAwesomenessScoreUseCase
+import io.ipoli.android.planday.usecase.CalculateFocusDurationUseCase
 import io.ipoli.android.quest.CompletedQuestAction
 import io.ipoli.android.quest.Quest
 import io.ipoli.android.quest.schedule.summary.ScheduleSummaryAction
+import io.ipoli.android.quest.schedule.today.TodayAction
+import io.ipoli.android.quest.schedule.today.usecase.CreateTodayItemsUseCase
 import io.ipoli.android.quest.show.QuestAction
 import io.ipoli.android.quest.show.QuestReducer
 import io.ipoli.android.quest.show.QuestViewState
 import io.ipoli.android.quest.show.usecase.*
 import io.ipoli.android.quest.subquest.usecase.*
 import kotlinx.coroutines.experimental.channels.Channel
+import org.threeten.bp.LocalDate
 import space.traversal.kapsule.required
 
 /**
@@ -44,6 +50,11 @@ object QuestSideEffectHandler : AppSideEffectHandler() {
     private val removeQuestUseCase by required { removeQuestUseCase }
     private val undoRemoveQuestUseCase by required { undoRemoveQuestUseCase }
     private val notificationManager by required { notificationManager }
+    private val createTodayItemsUseCase by required { createTodayItemsUseCase }
+    private val findEventsBetweenDatesUseCase by required { findEventsBetweenDatesUseCase }
+    private val calculateAwesomenessScoreUseCase by required { calculateAwesomenessScoreUseCase }
+    private val calculateFocusDurationUseCase by required { calculateFocusDurationUseCase }
+    private val checkDailyChallengeProgressUseCase by required { checkDailyChallengeProgressUseCase }
 
     private var questChannel: Channel<Quest?>? = null
     private var completedQuestChannel: Channel<Quest?>? = null
@@ -182,6 +193,59 @@ object QuestSideEffectHandler : AppSideEffectHandler() {
 
             is ScheduleSummaryAction.UndoRemoveQuest ->
                 undoRemoveQuestUseCase.execute(action.questId)
+
+            is TodayAction.Load ->
+                state.dataState.todayQuests?.let {
+
+                    val events = findEventsBetweenDatesUseCase.execute(
+                        FindEventsBetweenDatesUseCase.Params(
+                            startDate = action.today,
+                            endDate = action.today
+                        )
+                    )
+
+                    dispatch(
+                        DataLoadedAction.TodayQuestItemsChanged(
+                            questItems = createTodayItemsUseCase.execute(
+                                CreateTodayItemsUseCase.Params(quests = it, events = events)
+                            ),
+                            awesomenessScore = calculateAwesomenessScoreUseCase.execute(
+                                CalculateAwesomenessScoreUseCase.Params.WithQuests(it)
+                            ),
+                            focusDuration = calculateFocusDurationUseCase.execute(
+                                CalculateFocusDurationUseCase.Params.WithQuests(it)
+                            ),
+                            dailyChallengeProgress = checkDailyChallengeProgressUseCase.execute(Unit)
+                        )
+                    )
+                }
+
+            is DataLoadedAction.TodayQuestsChanged -> {
+
+                val events = findEventsBetweenDatesUseCase.execute(
+                    FindEventsBetweenDatesUseCase.Params(
+                        startDate = LocalDate.now(),
+                        endDate = LocalDate.now()
+                    )
+                )
+
+                val quests = action.quests
+                dispatch(
+                    DataLoadedAction.TodayQuestItemsChanged(
+                        questItems = createTodayItemsUseCase.execute(
+                            CreateTodayItemsUseCase.Params(quests = quests, events = events)
+                        ),
+                        awesomenessScore = calculateAwesomenessScoreUseCase.execute(
+                            CalculateAwesomenessScoreUseCase.Params.WithQuests(quests)
+                        ),
+                        focusDuration = calculateFocusDurationUseCase.execute(
+                            CalculateFocusDurationUseCase.Params.WithQuests(quests)
+                        ),
+                        dailyChallengeProgress = checkDailyChallengeProgressUseCase.execute(Unit)
+                    )
+                )
+            }
+
         }
     }
 
@@ -253,5 +317,5 @@ object QuestSideEffectHandler : AppSideEffectHandler() {
         state.stateFor(QuestViewState::class.java)
 
     override fun canHandle(action: Action) =
-        action is QuestAction || action is CompletedQuestAction || action is ScheduleSummaryAction
+        action is QuestAction || action is CompletedQuestAction || action is ScheduleSummaryAction || action is TodayAction || action is DataLoadedAction
 }

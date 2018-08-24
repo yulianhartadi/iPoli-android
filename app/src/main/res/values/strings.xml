@@ -1701,5 +1701,8 @@ You can also manage your **shared posts**, **friends** and **shared challenges**
     <string name="faq">FAQ</string>
     <string name="reset_my_day_at">Reset my day at</string>
     <string name="report_bug">Report a bug</string>
+    <string name="today_empty_habits">You have no Habits for today</string>
+    <string name="today_empty_quests">You haven\'t added any Quests for today</string>
+    <string name="today_all_quests_done">All Quests done for today. Yay!</string>
 
 </resources>
