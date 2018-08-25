@@ -28,6 +28,7 @@ import io.ipoli.android.tag.widget.EditItemAutocompleteTagAdapter
 import io.ipoli.android.tag.widget.EditItemTagAdapter
 import kotlinx.android.synthetic.main.controller_add_repeating_quest_summary.view.*
 import kotlinx.android.synthetic.main.controller_edit_repeating_quest.view.*
+import kotlinx.android.synthetic.main.item_edit_repeating_quest_sub_quest.view.*
 import kotlinx.android.synthetic.main.view_no_elevation_toolbar.view.*
 import java.util.*
 
@@ -166,6 +167,7 @@ class EditRepeatingQuestViewController(args: Bundle? = null) :
                 renderColor(view, state)
                 renderChallenge(view, state)
                 renderNote(view, state)
+                renderSubQuests(view, state)
             }
 
             EditRepeatingQuestViewState.StateType.TAGS_CHANGED ->
@@ -212,8 +214,12 @@ class EditRepeatingQuestViewController(args: Bundle? = null) :
                 view.summaryNameLayout.error = stringRes(R.string.name_validation)
             }
 
-            EditRepeatingQuestViewState.StateType.VALID_NAME ->
-                dispatch(EditRepeatingQuestAction.Save)
+            EditRepeatingQuestViewState.StateType.VALID_NAME -> {
+                val newSubQuestNames = view.summarySubQuestList.children.map {
+                    it.editSubQuestName.text.toString()
+                }
+                dispatch(EditRepeatingQuestAction.Save(newSubQuestNames))
+            }
 
             EditRepeatingQuestViewState.StateType.CLOSE ->
                 router.popController(this)
@@ -222,6 +228,10 @@ class EditRepeatingQuestViewController(args: Bundle? = null) :
             }
 
         }
+    }
+
+    private fun renderSubQuests(view: View, state: EditRepeatingQuestViewState) {
+        (view.summarySubQuestList.adapter as ReadOnlySubQuestAdapter).updateAll(state.subQuestViewModels)
     }
 
     private fun renderTags(
@@ -408,6 +418,14 @@ class EditRepeatingQuestViewController(args: Bundle? = null) :
                 name = it.name,
                 icon = it.icon?.androidIcon?.icon ?: MaterialDesignIconic.Icon.gmi_label,
                 tag = it
+            )
+        }
+
+    private val EditRepeatingQuestViewState.subQuestViewModels: List<ReadOnlySubQuestAdapter.ReadOnlySubQuestViewModel>
+        get() = subQuests.entries.map {
+            ReadOnlySubQuestAdapter.ReadOnlySubQuestViewModel(
+                id = it.key,
+                name = it.value.name
             )
         }
 }

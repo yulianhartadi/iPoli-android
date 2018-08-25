@@ -46,33 +46,43 @@ object RepeatingQuestSideEffectHandler : AppSideEffectHandler() {
                 )
             }
 
-            EditRepeatingQuestAction.SaveNew,
-            EditRepeatingQuestAction.Save -> {
-                val rqState = state.stateFor(EditRepeatingQuestViewState::class.java)
-                val r = rqState.reminder
-                val reminder = r?.let {
-                    Reminder.Relative(it.message, it.minutesFromStart)
-                }
-                val rqParams = SaveRepeatingQuestUseCase.Params(
-                    id = rqState.id,
-                    name = rqState.name,
-                    tags = rqState.questTags,
-                    subQuestNames = rqState.subQuestNames,
-                    color = rqState.color,
-                    icon = rqState.icon,
-                    startTime = rqState.startTime,
-                    duration = rqState.duration.intValue,
-                    reminders = reminder?.let { listOf(it) },
-                    repeatPattern = rqState.repeatPattern!!,
-                    challengeId = rqState.challenge?.id,
-                    note = rqState.note
-                )
-                saveRepeatingQuestUseCase.execute(rqParams)
-            }
+            is EditRepeatingQuestAction.SaveNew ->
+                saveRepeatingQuest(state, action.newSubQuestNames)
+
+            is EditRepeatingQuestAction.Save ->
+                saveRepeatingQuest(state, action.newSubQuestNames)
+
 
             is RepeatingQuestAction.Remove ->
                 removeRepeatingQuestUseCase.execute(RemoveRepeatingQuestUseCase.Params(action.repeatingQuestId))
         }
+    }
+
+    private fun saveRepeatingQuest(
+        state: AppState,
+        subQuestNames: List<String>
+    ) {
+        val rqState = state.stateFor(EditRepeatingQuestViewState::class.java)
+
+        val r = rqState.reminder
+        val reminder = r?.let {
+            Reminder.Relative(it.message, it.minutesFromStart)
+        }
+        val rqParams = SaveRepeatingQuestUseCase.Params(
+            id = rqState.id,
+            name = rqState.name,
+            tags = rqState.questTags,
+            subQuestNames = subQuestNames,
+            color = rqState.color,
+            icon = rqState.icon,
+            startTime = rqState.startTime,
+            duration = rqState.duration.intValue,
+            reminders = reminder?.let { listOf(it) },
+            repeatPattern = rqState.repeatPattern!!,
+            challengeId = rqState.challenge?.id,
+            note = rqState.note
+        )
+        saveRepeatingQuestUseCase.execute(rqParams)
     }
 
     enum class ValidationError {
@@ -81,8 +91,8 @@ object RepeatingQuestSideEffectHandler : AppSideEffectHandler() {
 
 
     override fun canHandle(action: Action) =
-        action === EditRepeatingQuestAction.Save
-            || action === EditRepeatingQuestAction.SaveNew
+        action is EditRepeatingQuestAction.Save
+            || action is EditRepeatingQuestAction.SaveNew
             || action is RepeatingQuestAction.Remove
             || action is RepeatingQuestAction.Load
 }

@@ -38,6 +38,7 @@ import kotlinx.android.synthetic.main.controller_add_repeating_quest.view.*
 import kotlinx.android.synthetic.main.controller_add_repeating_quest_name.view.*
 import kotlinx.android.synthetic.main.controller_add_repeating_quest_summary.view.*
 import kotlinx.android.synthetic.main.controller_wizard_options.view.*
+import kotlinx.android.synthetic.main.item_edit_repeating_quest_sub_quest.view.*
 import kotlinx.android.synthetic.main.view_no_elevation_toolbar.view.*
 import java.util.*
 
@@ -624,8 +625,12 @@ class AddRepeatingQuestViewController(args: Bundle? = null) :
                     view.summaryName.error = stringRes(R.string.name_validation)
                 }
 
-                EditRepeatingQuestViewState.StateType.VALID_NAME ->
-                    dispatch(EditRepeatingQuestAction.SaveNew)
+                EditRepeatingQuestViewState.StateType.VALID_NAME -> {
+                    val newSubQuestNames = view.summarySubQuestList.children.map {
+                        it.editSubQuestName.text.toString()
+                    }
+                    dispatch(EditRepeatingQuestAction.SaveNew(newSubQuestNames))
+                }
 
                 else -> {
                 }

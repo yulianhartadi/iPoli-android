@@ -72,7 +72,7 @@ object AchievementProgressMiddleWare : MiddleWare<AppState>, Injects<BackgroundM
             is PlanDayAction.StartDay ->
                 DayPlanned
 
-            EditRepeatingQuestAction.SaveNew ->
+            is EditRepeatingQuestAction.SaveNew ->
                 RepeatingQuestCreated
 
             is ChallengeAction.Complete ->

@@ -16,12 +16,14 @@ import io.ipoli.android.quest.Color
 import io.ipoli.android.quest.Icon
 import io.ipoli.android.quest.Reminder
 import io.ipoli.android.quest.reminder.picker.ReminderViewModel
+import io.ipoli.android.quest.subquest.SubQuest
 import io.ipoli.android.repeatingquest.add.EditRepeatingQuestViewState.DurationOption.*
 import io.ipoli.android.repeatingquest.add.EditRepeatingQuestViewState.RepeatPatternOption.*
 import io.ipoli.android.repeatingquest.add.EditRepeatingQuestViewState.StateType.*
 import io.ipoli.android.repeatingquest.entity.RepeatPattern
 import io.ipoli.android.tag.Tag
 import org.threeten.bp.DayOfWeek
+import java.util.*
 
 /**
  * Created by Venelin Valkov <venelin@mypoli.fun>
@@ -108,10 +110,14 @@ sealed class EditRepeatingQuestAction : Action {
 
     object Back : EditRepeatingQuestAction()
 
-    object Save : EditRepeatingQuestAction()
+    data class Save(val newSubQuestNames: List<String>) : EditRepeatingQuestAction() {
+        override fun toMap() = mapOf("newSubQuestNames" to newSubQuestNames)
+    }
     object LoadName : EditRepeatingQuestAction()
     object LoadSummary : EditRepeatingQuestAction()
-    object SaveNew : EditRepeatingQuestAction()
+    data class SaveNew(val newSubQuestNames: List<String>) : EditRepeatingQuestAction() {
+        override fun toMap() = mapOf("newSubQuestNames" to newSubQuestNames)
+    }
 }
 
 object EditRepeatingQuestReducer : BaseViewStateReducer<EditRepeatingQuestViewState>() {
@@ -240,7 +246,10 @@ object EditRepeatingQuestReducer : BaseViewStateReducer<EditRepeatingQuestViewSt
                     name = rq.name,
                     questTags = rq.tags,
                     tags = state.dataState.tags - rq.tags,
-                    subQuestNames = rq.subQuests.map { it.name },
+//                    subQuestNames = rq.subQuests.map { it.name },
+                    subQuests = rq.subQuests.map {
+                        UUID.randomUUID().toString() to it
+                    }.toMap(),
                     startTime = rq.startTime,
                     repeatPattern = rq.repeatPattern,
                     duration = rq.duration.minutes,
@@ -269,7 +278,7 @@ object EditRepeatingQuestReducer : BaseViewStateReducer<EditRepeatingQuestViewSt
             is EditRepeatingQuestAction.AddSubQuest ->
                 subState.copy(
                     type = SUB_QUEST_ADDED,
-                    subQuestNames = subState.subQuestNames + action.name,
+//                    subQuestNames = subState.subQuestNames + action.name,
                     newSubQuestName = action.name
                 )
 
@@ -338,8 +347,8 @@ object EditRepeatingQuestReducer : BaseViewStateReducer<EditRepeatingQuestViewSt
                 )
             }
 
-            EditRepeatingQuestAction.SaveNew,
-            EditRepeatingQuestAction.Save ->
+            is EditRepeatingQuestAction.SaveNew,
+            is EditRepeatingQuestAction.Save ->
                 subState.copy(
                     type = CLOSE
                 )
@@ -394,7 +403,7 @@ object EditRepeatingQuestReducer : BaseViewStateReducer<EditRepeatingQuestViewSt
             name = "",
             tags = emptyList(),
             questTags = emptyList(),
-            subQuestNames = emptyList(),
+            subQuests = emptyMap(),
             newSubQuestName = "",
             startTime = null,
             color = Color.GREEN,
@@ -421,7 +430,8 @@ data class EditRepeatingQuestViewState(
     val name: String,
     val tags: List<Tag>,
     val questTags: List<Tag>,
-    val subQuestNames: List<String>,
+    val subQuests: Map<String, SubQuest>,
+//    val subQuestNames: List<String>,
     val newSubQuestName: String,
     val startTime: Time?,
     val color: Color,
