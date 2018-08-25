@@ -15,7 +15,7 @@ class UpdateHabitStreaksUseCase(
 ) : UseCase<UpdateHabitStreaksUseCase.Params, List<Habit>> {
 
     override fun execute(parameters: Params): List<Habit> {
-        val habits = habitRepository.findAll()
+        val habits = habitRepository.findAllNotRemoved()
 
         val date = parameters.today.minusDays(1)
 

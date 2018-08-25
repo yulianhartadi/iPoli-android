@@ -81,6 +81,7 @@ object PowerUpStoreReducer : BaseViewStateReducer<PowerUpStoreViewState>() {
                     || it == PowerUp.Type.TAGS
                     || it == PowerUp.Type.CUSTOM_DURATION
                     || it == PowerUp.Type.TRACK_CHALLENGE_VALUES
+                    || it == PowerUp.Type.HABIT_WIDGET
             }
             .map {
                 when {

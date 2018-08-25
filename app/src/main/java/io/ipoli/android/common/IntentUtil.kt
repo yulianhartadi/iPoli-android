@@ -7,6 +7,7 @@ import android.net.Uri
 import android.os.Build
 import io.ipoli.android.Constants
 import io.ipoli.android.MainActivity
+import io.ipoli.android.store.powerup.PowerUp
 
 /**
  * Created by Venelin Valkov <venelin@mypoli.fun>
@@ -47,6 +48,15 @@ object IntentUtil {
             if (Build.VERSION.SDK_INT < MIN_NO_NEW_TASK_VERSION) {
                 flags = Intent.FLAG_ACTIVITY_NEW_TASK
             }
+        }
+
+    fun showBuyPowerUp(context: Context, powerUp: PowerUp.Type) =
+        Intent(context, MainActivity::class.java).apply {
+            action = MainActivity.ACTION_SHOW_UNLOCK_POWER_UP
+            if (Build.VERSION.SDK_INT < MIN_NO_NEW_TASK_VERSION) {
+                flags = Intent.FLAG_ACTIVITY_NEW_TASK
+            }
+            putExtra(Constants.POWER_UP_EXTRA_KEY, powerUp.name)
         }
 
     fun startApp(context: Context) =

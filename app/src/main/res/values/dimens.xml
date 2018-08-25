@@ -8,5 +8,5 @@
     <dimen name="extended_touch_width">64dp</dimen>
     <dimen name="extended_touch_height">48dp</dimen>
     <dimen name="duration_picker_item_height">60dp</dimen>
-    <!--<dimen name="store_item_height">180dp</dimen>-->
+    <dimen name="habit_widget_item_size">80dp</dimen>
 </resources>

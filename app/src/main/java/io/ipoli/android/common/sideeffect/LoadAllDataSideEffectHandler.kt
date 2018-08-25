@@ -58,7 +58,7 @@ object LoadAllDataSideEffectHandler : AppSideEffectHandler() {
 
         if (action is DataLoadedAction.TodayQuestsChanged) {
             withContext(UI) {
-                updateWidgets()
+                updateQuestWidgets()
             }
             if (sharedPreferences.getBoolean(
                     Constants.KEY_QUICK_DO_NOTIFICATION_ENABLED,
@@ -68,6 +68,12 @@ object LoadAllDataSideEffectHandler : AppSideEffectHandler() {
                     MyPoliApp.instance,
                     action.quests
                 )
+            }
+        }
+
+        if (action is DataLoadedAction.HabitsChanged) {
+            withContext(UI) {
+                AppWidgetUtil.updateHabitWidget(MyPoliApp.instance)
             }
         }
 
@@ -218,11 +224,12 @@ object LoadAllDataSideEffectHandler : AppSideEffectHandler() {
         )
     }
 
-    private fun updateWidgets() {
+    private fun updateQuestWidgets() {
         AppWidgetUtil.updateAgendaWidget(MyPoliApp.instance)
     }
 
     override fun canHandle(action: Action) =
         action == LoadDataAction.All
             || action is DataLoadedAction.TodayQuestsChanged
+            || action is DataLoadedAction.HabitsChanged
 }

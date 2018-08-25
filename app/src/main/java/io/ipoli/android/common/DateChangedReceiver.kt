@@ -2,7 +2,6 @@ package io.ipoli.android.common
 
 import android.content.Context
 import android.content.Intent
-import io.ipoli.android.R.string.quests
 import io.ipoli.android.common.notification.QuickDoNotificationUtil
 import io.ipoli.android.common.view.AppWidgetUtil
 import kotlinx.coroutines.experimental.android.UI

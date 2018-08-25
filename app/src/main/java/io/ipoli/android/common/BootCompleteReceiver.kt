@@ -26,6 +26,7 @@ class BootCompleteReceiver : AsyncBroadcastReceiver() {
                 reminderScheduler.schedule()
                 launch(UI) {
                     AppWidgetUtil.updateAgendaWidget(context)
+                    AppWidgetUtil.updateHabitWidget(context)
                 }
                 val quests = questRepository.findScheduledAt(LocalDate.now())
                 if (p.preferences.isQuickDoNotificationEnabled) {

@@ -1701,8 +1701,15 @@ You can also manage your **shared posts**, **friends** and **shared challenges**
     <string name="faq">FAQ</string>
     <string name="reset_my_day_at">Reset my day at</string>
     <string name="report_bug">Report a bug</string>
+    <string name="habit_widget">Habits Widget</string>
+    <string name="widget_habit_empty">No habits for today!</string>
+    <string name="agenda_habits_name">Daily Habits</string>
     <string name="today_empty_habits">You have no Habits for today</string>
     <string name="today_empty_quests">You haven\'t added any Quests for today</string>
     <string name="today_all_quests_done">All Quests done for today. Yay!</string>
+    <string name="power_up_habits_widget_sub_title">Never forget completing a Habit</string>
+    <string name="power_up_habits_widget_long_desc">Complete your Daily Habits from your home screen.
+    The widget provides you a simple and easy way to manage your habits for the day.
+    </string>
 
 </resources>

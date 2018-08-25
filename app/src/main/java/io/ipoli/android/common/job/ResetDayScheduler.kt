@@ -4,6 +4,7 @@ import android.content.Context
 import io.ipoli.android.MyPoliApp
 import io.ipoli.android.achievement.usecase.UpdatePlayerStatsUseCase
 import io.ipoli.android.common.di.BackgroundModule
+import io.ipoli.android.common.view.AppWidgetUtil
 import io.ipoli.android.habit.usecase.UpdateHabitStreaksUseCase
 import io.ipoli.android.pet.usecase.LowerPetStatsUseCase
 import kotlinx.coroutines.experimental.CommonPool
@@ -43,6 +44,8 @@ class ResetDayJob : FixedDailyJob(ResetDayJob.TAG) {
                 )
             )
         }
+
+        AppWidgetUtil.updateHabitWidget(context)
 
         return Result.SUCCESS
     }

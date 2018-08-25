@@ -30,6 +30,7 @@ interface HabitRepository : CollectionRepository<Habit> {
     fun findAllForChallenge(challengeId: String): List<Habit>
     fun findNotRemovedForChallenge(challengeId: String): List<Habit>
     fun removeFromChallenge(habitId: String)
+    fun findAllNotRemoved(): List<Habit>
 }
 
 data class DbHabit(override val map: MutableMap<String, Any?> = mutableMapOf()) :
@@ -63,6 +64,9 @@ data class DbCompletedEntry(val map: MutableMap<String, Any?> = mutableMapOf()) 
 abstract class HabitDao : BaseDao<RoomHabit>() {
     @Query("SELECT * FROM habits")
     abstract fun findAll(): List<RoomHabit>
+
+    @Query("SELECT * FROM habits WHERE removedAt IS NULL")
+    abstract fun findAllNotRemoved(): List<RoomHabit>
 
     @Query("SELECT * FROM habits WHERE id = :id")
     abstract fun findById(id: String): RoomHabit
@@ -106,6 +110,9 @@ abstract class HabitDao : BaseDao<RoomHabit>() {
 
 class RoomHabitRepository(dao: HabitDao, tagDao: TagDao) : HabitRepository,
     BaseRoomRepositoryWithTags<Habit, RoomHabit, HabitDao, RoomHabit.Companion.RoomTagJoin>(dao) {
+
+    override fun findAllNotRemoved() =
+        dao.findAllNotRemoved().map { toEntityObject(it) }
 
     private val mapper = RoomHabitMapper(tagDao)
 
