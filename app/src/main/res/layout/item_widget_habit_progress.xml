@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content">
+
+    <io.ipoli.android.common.view.widget.CircleProgressBar
+        android:id="@+id/habitProgress"
+        android:layout_width="72dp"
+        android:layout_height="72dp"
+        app:progress_background_color="@color/md_green_100"
+        app:progress_end_color="@color/md_green_500"
+        app:progress_start_color="@color/md_green_500"
+        app:progress_stroke_cap="round"
+        app:style="solid_line"
+        app:progress_stroke_width="8dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"/>
+
+    <io.ipoli.android.common.view.widget.CircleProgressBar
+        android:id="@+id/habitTimesADayProgress"
+        android:layout_width="80dp"
+        android:layout_height="80dp"
+        app:progress_background_color="@color/md_white"
+        app:progress_end_color="@color/md_green_500"
+        app:progress_start_color="@color/md_green_500"
+        app:progress_stroke_cap="square"
+        app:line_count="5"
+        app:line_width="5dp"
+        app:progress_stroke_width="8dp"
+        app:layout_constraintBottom_toBottomOf="@+id/habitProgress"
+        app:layout_constraintEnd_toEndOf="@+id/habitProgress"
+        app:layout_constraintStart_toStartOf="@+id/habitProgress"
+        app:layout_constraintTop_toTopOf="@+id/habitProgress"/>
+
+    <View
+        android:id="@+id/habitCompletedBackground"
+        style="?android:attr/progressBarStyleHorizontal"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:background="@drawable/oval_background"
+        app:layout_constraintBottom_toBottomOf="@+id/habitProgress"
+        app:layout_constraintEnd_toEndOf="@+id/habitProgress"
+        app:layout_constraintStart_toStartOf="@+id/habitProgress"
+        app:layout_constraintTop_toTopOf="@+id/habitProgress" />
+
+    <ImageView
+        android:id="@+id/habitIcon"
+        android:layout_width="24dp"
+        android:layout_height="24dp"
+        app:layout_constraintBottom_toBottomOf="@+id/habitProgress"
+        app:layout_constraintEnd_toEndOf="@+id/habitProgress"
+        app:layout_constraintStart_toStartOf="@+id/habitProgress"
+        app:layout_constraintTop_toTopOf="@+id/habitProgress"
+        tools:src="@drawable/drawer_achievement_trophy" />
+
+</android.support.constraint.ConstraintLayout>

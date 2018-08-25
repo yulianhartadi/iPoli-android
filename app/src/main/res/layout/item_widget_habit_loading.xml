@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<TextView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="@dimen/habit_widget_item_size"
+    android:layout_height="@dimen/habit_widget_item_size"
+    android:text="@string/loading"
+    android:gravity="center"
+    android:textAppearance="@style/TextAppearance.AppCompat.Caption" />

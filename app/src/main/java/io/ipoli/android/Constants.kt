@@ -43,9 +43,13 @@ interface Constants {
 
         val PLAYER_ID_EXTRA_KEY = "player_id"
 
+        val POWER_UP_EXTRA_KEY = "power_up"
+
         val PROFILE_ID_EXTRA_KEY = "profile_id"
 
         val QUEST_ID_EXTRA_KEY = "quest_id"
+
+        val HABIT_ID_EXTRA_KEY = "quest_id"
 
         val REPEATING_QUEST_ID_EXTRA_KEY = "repeating_quest_id"
 

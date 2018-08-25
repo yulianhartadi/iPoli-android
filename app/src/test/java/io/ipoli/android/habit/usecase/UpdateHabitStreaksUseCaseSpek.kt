@@ -33,7 +33,7 @@ class UpdateHabitStreaksUseCaseSpek : Spek({
         ) =
             UpdateHabitStreaksUseCase(
                 mock {
-                    on { findAll() } doReturn habits
+                    on { findAllNotRemoved() } doReturn habits
                     on { save(any<List<Habit>>()) } doAnswer { invocation ->
                         invocation.getArgument(0)
                     }

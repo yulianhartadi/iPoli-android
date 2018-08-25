@@ -26,11 +26,13 @@ import io.ipoli.android.common.privacy.PrivacyPolicyViewController
 import io.ipoli.android.common.redux.Action
 import io.ipoli.android.common.redux.Dispatcher
 import io.ipoli.android.common.redux.SideEffectHandler
+import io.ipoli.android.common.view.AppWidgetUtil
 import io.ipoli.android.common.view.Debounce
 import io.ipoli.android.common.view.playerTheme
 import io.ipoli.android.player.auth.AuthAction
 import io.ipoli.android.player.data.Membership
 import io.ipoli.android.store.powerup.AndroidPowerUp
+import io.ipoli.android.store.powerup.PowerUp
 import io.ipoli.android.store.powerup.buy.BuyPowerUpDialogController
 import io.ipoli.android.store.powerup.middleware.ShowBuyPowerUpAction
 import io.ipoli.android.tag.show.TagAction
@@ -56,7 +58,6 @@ class MainActivity : AppCompatActivity(), Injects<UIModule>, SideEffectHandler<A
     private val playerRepository by required { playerRepository }
     private val sharedPreferences by required { sharedPreferences }
     private val unlockAchievementsUseCase by required { unlockAchievementsUseCase }
-    private val resetDayScheduler by required { resetDayScheduler }
 
     private val stateStore by required { stateStore }
     private val dataExporter by required { dataExporter }
@@ -160,6 +161,19 @@ class MainActivity : AppCompatActivity(), Injects<UIModule>, SideEffectHandler<A
             ACTION_PLAN_DAY ->
                 navigator.setPlanDay()
 
+            ACTION_SHOW_UNLOCK_POWER_UP -> {
+                val powerUp =
+                    PowerUp.Type.valueOf(intent.getStringExtra(Constants.POWER_UP_EXTRA_KEY))
+
+                router.pushController(
+                    RouterTransaction.with(BuyPowerUpDialogController(powerUp) {
+                        AppWidgetUtil.updateHabitWidget(this)
+                    })
+                        .pushChangeHandler(FadeChangeHandler(false))
+                        .popChangeHandler(FadeChangeHandler(false))
+                )
+            }
+
             else -> navigator.setHome()
         }
 
@@ -208,32 +222,41 @@ class MainActivity : AppCompatActivity(), Injects<UIModule>, SideEffectHandler<A
             navigator.setPet(showBackButton = false)
         } else if (intent.action == ACTION_PLAN_DAY) {
             navigator.setPlanDay()
-        } else if (!router.hasRootController()) {
-            navigator.setHome()
-
-            launch(CommonPool) {
-                val p = playerRepository.find()!!
-                launch(UI) {
-                    if (p.isLoggedIn() && p.username.isNullOrEmpty()) {
-                        Navigator(router).setAuth()
-                    } else if (Random().nextInt(10) == 1 && p.membership == Membership.NONE) {
-                        showPremiumSnackbar()
-                    }
-                }
-                unlockAchievementsUseCase.execute(UnlockAchievementsUseCase.Params(p))
-                resetDayScheduler.schedule()
-                if (p.isLoggedIn()) {
-                    try {
-                        dataExporter.exportNewData()
-                    } catch (e: Throwable) {
-                        ErrorLogger.log(e)
-                    }
-                }
-
+        } else if (intent.action == ACTION_SHOW_UNLOCK_POWER_UP) {
+            showHome(navigator)
+            val powerUp = PowerUp.Type.valueOf(intent.getStringExtra(Constants.POWER_UP_EXTRA_KEY))
+            showPowerUpDialog(powerUp) {
+                AppWidgetUtil.updateHabitWidget(this)
             }
+        } else if (!router.hasRootController()) {
+            showHome(navigator)
         }
 
         incrementAppRun()
+    }
+
+    fun showHome(navigator: Navigator) {
+        navigator.setHome()
+
+        launch(CommonPool) {
+            val p = playerRepository.find()!!
+            launch(UI) {
+                if (p.isLoggedIn() && p.username.isNullOrEmpty()) {
+                    Navigator(router).setAuth()
+                } else if (Random().nextInt(10) == 1 && p.membership == Membership.NONE) {
+                    showPremiumSnackbar()
+                }
+            }
+            unlockAchievementsUseCase.execute(UnlockAchievementsUseCase.Params(p))
+            if (p.isLoggedIn()) {
+                try {
+                    dataExporter.exportNewData()
+                } catch (e: Throwable) {
+                    ErrorLogger.log(e)
+                }
+            }
+
+        }
     }
 
     private fun shouldShowQuickAdd(startIntent: Intent) =
@@ -294,7 +317,7 @@ class MainActivity : AppCompatActivity(), Injects<UIModule>, SideEffectHandler<A
         withContext(UI) {
             when (action) {
                 is ShowBuyPowerUpAction ->
-                    showPowerUpDialog(action)
+                    showPowerUpDialog(action.powerUp)
 
                 is TagAction.TagCountLimitReached ->
                     Toast.makeText(
@@ -318,8 +341,8 @@ class MainActivity : AppCompatActivity(), Injects<UIModule>, SideEffectHandler<A
         }
     }
 
-    private fun showPowerUpDialog(action: ShowBuyPowerUpAction) {
-        Navigator(router).toBuyPowerUp(action.powerUp) { result ->
+    private fun showPowerUpDialog(powerUp: PowerUp.Type, onBought: (() -> Unit) = {}) {
+        Navigator(router).toBuyPowerUp(powerUp) { result ->
             when (result) {
                 BuyPowerUpDialogController.Result.TooExpensive ->
                     Toast.makeText(
@@ -337,6 +360,7 @@ class MainActivity : AppCompatActivity(), Injects<UIModule>, SideEffectHandler<A
                         ),
                         Toast.LENGTH_LONG
                     ).show()
+                    onBought()
                 }
 
                 is BuyPowerUpDialogController.Result.UnlockAll ->
@@ -358,5 +382,7 @@ class MainActivity : AppCompatActivity(), Injects<UIModule>, SideEffectHandler<A
         const val ACTION_SHOW_QUICK_ADD = "io.ipoli.android.intent.action.SHOW_QUICK_ADD"
         const val ACTION_SHOW_PET = "io.ipoli.android.intent.action.SHOW_PET"
         const val ACTION_PLAN_DAY = "io.ipoli.android.intent.action.PLAN_DAY"
+        const val ACTION_SHOW_UNLOCK_POWER_UP =
+            "io.ipoli.android.intent.action.SHOW_UNLOCK_POWER_UP"
     }
 }

@@ -224,10 +224,10 @@
 
             <android.support.v7.widget.RecyclerView
                 android:id="@+id/habitItems"
-                android:layout_marginStart="16dp"
-                android:layout_marginEnd="16dp"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content" />
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="16dp"
+                android:layout_marginStart="16dp" />
 
             <TextView
                 android:id="@+id/completedQuestsLabel"
@@ -237,6 +237,7 @@
 
             <android.support.v7.widget.RecyclerView
                 android:id="@+id/completedQuests"
+                android:layout_marginBottom="16dp"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content" />
         </LinearLayout>

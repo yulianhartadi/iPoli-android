@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@android:color/transparent"
+    android:orientation="vertical">
+
+    <TextView
+        android:id="@+id/widgetHabitHeader"
+        android:layout_width="match_parent"
+        android:layout_height="42dp"
+        android:gravity="center"
+        android:text="Daily Habits"
+        android:background="@color/md_blue_500"
+        android:textAppearance="@style/TextAppearance.Widget.AppCompat.Toolbar.Title"
+        android:textColor="@color/md_white" />
+
+    <LinearLayout
+        android:id="@+id/habitWidgetLockedContainer"
+        android:visibility="gone"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/md_white"
+        android:gravity="center"
+        android:orientation="vertical"
+        android:padding="8dp">
+
+        <TextView
+            android:id="@+id/widgetHabitLocked"
+            style="@style/TextAppearance.AppCompat.Subhead"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:textAlignment="center"
+            android:text="Power-Up is required for this widget"
+            android:textColor="@color/md_dark_text_54" />
+
+        <Button
+            android:id="@+id/widgetHabitUnlock"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:background="@color/colorAccent"
+            style="@style/Widget.AppCompat.Button.Colored"
+            android:text="UNLOCK" />
+
+    </LinearLayout>
+
+    <GridView
+        android:id="@+id/widgetHabitList"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="?android:colorBackground"
+        android:numColumns="5" />
+
+    <TextView
+        android:id="@+id/widgetHabitEmpty"
+        style="@style/TextAppearance.AppCompat.Body1"
+        android:layout_width="match_parent"
+        android:layout_height="48dp"
+        android:background="@color/md_white"
+        android:gravity="center"
+        android:padding="8dp"
+        android:text="@string/widget_habit_empty"
+        android:textColor="@color/md_dark_text_54" />
+
+
+
+</LinearLayout>

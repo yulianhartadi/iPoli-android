@@ -23,6 +23,7 @@ object HabitSideEffectHandler : AppSideEffectHandler() {
     private val undoCompleteHabitUseCase by required { undoCompleteHabitUseCase }
     private val removeHabitUseCase by required { removeHabitUseCase }
     private val createHabitItemsUseCase by required { createHabitItemsUseCase }
+    private val habitRepository by required { habitRepository }
 
     override suspend fun doExecute(action: Action, state: AppState) {
 
@@ -50,10 +51,10 @@ object HabitSideEffectHandler : AppSideEffectHandler() {
                 removeHabitUseCase.execute(RemoveHabitUseCase.Params(action.habitId))
 
             is TodayAction.Load ->
-                createHabitItemsFromState(state)
+                loadHabits()
 
             is HabitListAction.Load ->
-                createHabitItemsFromState(state)
+                loadHabits()
 
             is DataLoadedAction.HabitsChanged ->
                 dispatchNewHabitItems(action.habits)
@@ -75,10 +76,8 @@ object HabitSideEffectHandler : AppSideEffectHandler() {
         }
     }
 
-    private fun createHabitItemsFromState(state: AppState) {
-        state.dataState.habits?.let {
-            dispatchNewHabitItems(it)
-        }
+    private fun loadHabits() {
+        dispatchNewHabitItems(habitRepository.findAllNotRemoved())
     }
 
     private fun dispatchNewHabitItems(habits: List<Habit>) {

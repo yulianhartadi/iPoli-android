@@ -120,6 +120,14 @@ enum class AndroidPowerUp(
         Ionicons.Icon.ion_ios_analytics,
         R.color.md_blue_600,
         R.color.md_blue_800
+    ),
+    HABIT_WIDGET(
+        R.string.habit_widget,
+        R.string.power_up_habits_widget_sub_title,
+        R.string.power_up_habits_widget_long_desc,
+        Ionicons.Icon.ion_heart,
+        R.color.md_pink_400,
+        R.color.md_pink_600
     )
 }
 
