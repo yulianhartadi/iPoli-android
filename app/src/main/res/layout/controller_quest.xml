@@ -48,9 +48,9 @@
                         android:ellipsize="marquee"
                         android:gravity="center"
                         android:maxLines="3"
-                        android:textColor="@color/md_white"
                         android:paddingBottom="8dp"
                         android:paddingTop="8dp"
+                        android:textColor="@color/md_white"
                         app:layout_constraintBottom_toTopOf="@+id/timerProgressCircle"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintStart_toStartOf="parent"
@@ -78,7 +78,7 @@
                         android:layout_marginTop="16dp"
                         android:inAnimation="@anim/slide_in_right"
                         android:outAnimation="@anim/slide_out_left"
-                        app:layout_constraintBottom_toTopOf="@+id/timerTypePomodoroIndicator"
+                        app:layout_constraintBottom_toTopOf="@+id/timerTypePomodoroButton"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toBottomOf="@+id/questNameInfo">
@@ -130,29 +130,41 @@
 
                     </ViewSwitcher>
 
-                    <View
-                        android:id="@+id/timerTypePomodoroIndicator"
-                        android:layout_width="8dp"
-                        android:layout_height="8dp"
+                    <TextView
+                        android:id="@+id/timerTypePomodoroButton"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
                         android:layout_marginBottom="32dp"
                         android:layout_marginTop="16dp"
-                        android:background="@drawable/progress_indicator_full"
+                        android:clickable="true"
+                        android:focusable="true"
+                        android:padding="8dp"
+                        android:text="Pomodoro"
+                        android:textAllCaps="true"
+                        android:textAppearance="@style/TextAppearance.AppCompat.Body1"
+                        android:textColor="@color/md_white"
                         app:layout_constraintBottom_toBottomOf="parent"
-                        app:layout_constraintEnd_toStartOf="@+id/timerTypeCountdownIndicator"
+                        app:layout_constraintEnd_toStartOf="@+id/timerTypeCountdownButton"
                         app:layout_constraintHorizontal_chainStyle="packed"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toBottomOf="@+id/timerType" />
 
-                    <View
-                        android:id="@+id/timerTypeCountdownIndicator"
-                        android:layout_width="8dp"
-                        android:layout_height="8dp"
-                        android:layout_marginStart="8dp"
-                        android:background="@drawable/progress_indicator_empty"
-                        app:layout_constraintBottom_toBottomOf="@+id/timerTypePomodoroIndicator"
+                    <TextView
+                        android:id="@+id/timerTypeCountdownButton"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="16dp"
+                        android:clickable="true"
+                        android:focusable="true"
+                        android:padding="8dp"
+                        android:text="Countdown"
+                        android:textAllCaps="true"
+                        android:textAppearance="@style/TextAppearance.AppCompat.Body1"
+                        android:textColor="@color/md_light_text_50"
+                        app:layout_constraintBottom_toBottomOf="@+id/timerTypePomodoroButton"
                         app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintStart_toEndOf="@+id/timerTypePomodoroIndicator"
-                        app:layout_constraintTop_toTopOf="@+id/timerTypePomodoroIndicator" />
+                        app:layout_constraintStart_toEndOf="@+id/timerTypePomodoroButton"
+                        app:layout_constraintTop_toTopOf="@+id/timerTypePomodoroButton" />
 
                     <io.ipoli.android.common.view.widget.CircleProgressBar
                         android:id="@+id/timerProgressCircle"
@@ -217,9 +229,9 @@
                         android:id="@+id/timerProgressScroll"
                         android:layout_width="0dp"
                         android:layout_height="82dp"
+                        android:layout_marginBottom="32dp"
                         android:layout_marginEnd="16dp"
                         android:layout_marginStart="16dp"
-                        android:layout_marginBottom="32dp"
                         android:orientation="horizontal"
                         android:scrollbars="none"
                         app:layout_constraintBottom_toBottomOf="parent"

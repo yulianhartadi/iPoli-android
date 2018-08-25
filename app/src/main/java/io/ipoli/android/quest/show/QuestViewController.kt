@@ -162,6 +162,15 @@ class QuestViewController : ReduxViewController<QuestAction, QuestViewState, Que
         view.removePomodoro.dispatchOnClick { QuestAction.RemovePomodoro }
         view.removePomodoroInBreak.dispatchOnClick { QuestAction.RemovePomodoro }
 
+        view.timerTypeCountdownButton.onDebounceClick {
+            onSwipeRight(view)
+        }
+
+        view.timerTypePomodoroButton.isClickable = false
+        view.timerTypePomodoroButton.setBackgroundResource(R.drawable.bordered_rectangle_white_background)
+        view.timerTypeCountdownButton.isClickable = true
+        view.timerTypeCountdownButton.setBackgroundResource(attrResourceId(android.R.attr.selectableItemBackground))
+
         return view
     }
 
@@ -393,7 +402,7 @@ class QuestViewController : ReduxViewController<QuestAction, QuestViewState, Que
     private fun renderNote(state: QuestViewState, view: View) {
         view.questNote.setMarkdown(state.noteText)
         view.questNote.onDebounceClick {
-            val noteText = if(state.note == null || state.note.isBlank()) "" else state.note
+            val noteText = if (state.note == null || state.note.isBlank()) "" else state.note
             navigateFromRoot().toNotePicker(noteText) { newNote ->
                 dispatch(QuestAction.SaveNote(newNote))
             }
@@ -439,12 +448,12 @@ class QuestViewController : ReduxViewController<QuestAction, QuestViewState, Que
     ) {
         if (state.showTimerTypeSwitch) {
             setAppBarSwipeListener(view)
-            view.timerTypePomodoroIndicator.visible()
-            view.timerTypeCountdownIndicator.visible()
+            view.timerTypePomodoroButton.visible()
+            view.timerTypeCountdownButton.visible()
         } else {
             view.appbar.setOnTouchListener(null)
-            view.timerTypePomodoroIndicator.invisible()
-            view.timerTypeCountdownIndicator.invisible()
+            view.timerTypePomodoroButton.invisible()
+            view.timerTypeCountdownButton.invisible()
             onNotShow()
         }
     }
@@ -491,8 +500,19 @@ class QuestViewController : ReduxViewController<QuestAction, QuestViewState, Que
         view.timerType.setOutAnimation(view.context, R.anim.left_out)
 
         view.timerType.showNext()
-        view.timerTypePomodoroIndicator.setBackgroundResource(R.drawable.progress_indicator_empty)
-        view.timerTypeCountdownIndicator.setBackgroundResource(R.drawable.progress_indicator_full)
+
+        view.timerTypePomodoroButton.isClickable = true
+        view.timerTypePomodoroButton.setBackgroundResource(attrResourceId(android.R.attr.selectableItemBackground))
+        view.timerTypePomodoroButton.setTextColor(colorRes(R.color.md_light_text_50))
+
+        view.timerTypeCountdownButton.isClickable = false
+        view.timerTypeCountdownButton.setBackgroundResource(R.drawable.bordered_rectangle_white_background)
+        view.timerTypeCountdownButton.setTextColor(colorRes(R.color.md_white))
+
+        view.timerTypePomodoroButton.onDebounceClick {
+            onSwipeLeft(view)
+        }
+        view.timerTypeCountdownButton.setOnClickListener(null)
 
         dispatch(QuestAction.ShowCountDownTimer)
     }
@@ -502,8 +522,20 @@ class QuestViewController : ReduxViewController<QuestAction, QuestViewState, Que
         view.timerType.setOutAnimation(view.context, R.anim.right_out)
 
         view.timerType.showPrevious()
-        view.timerTypePomodoroIndicator.setBackgroundResource(R.drawable.progress_indicator_full)
-        view.timerTypeCountdownIndicator.setBackgroundResource(R.drawable.progress_indicator_empty)
+
+        view.timerTypePomodoroButton.isClickable = false
+        view.timerTypePomodoroButton.setBackgroundResource(R.drawable.bordered_rectangle_white_background)
+        view.timerTypePomodoroButton.setTextColor(colorRes(R.color.md_white))
+
+        view.timerTypeCountdownButton.isClickable = true
+        view.timerTypeCountdownButton.setBackgroundResource(attrResourceId(android.R.attr.selectableItemBackground))
+        view.timerTypeCountdownButton.setTextColor(colorRes(R.color.md_light_text_50))
+
+
+        view.timerTypePomodoroButton.setOnClickListener(null)
+        view.timerTypeCountdownButton.onDebounceClick {
+            onSwipeRight(view)
+        }
 
         dispatch(QuestAction.ShowPomodoroTimer)
     }
@@ -620,8 +652,8 @@ class QuestViewController : ReduxViewController<QuestAction, QuestViewState, Que
 
         view.timerPreviewGroup.gone()
         view.timerRunningGroup.visible()
-        view.timerTypePomodoroIndicator.invisible()
-        view.timerTypeCountdownIndicator.invisible()
+        view.timerTypePomodoroButton.invisible()
+        view.timerTypeCountdownButton.invisible()
 
         renderTimerProgress(view, state)
         renderTimerIndicatorsProgress(view, state)
