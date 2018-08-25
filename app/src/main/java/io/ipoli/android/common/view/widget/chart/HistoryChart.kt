@@ -65,22 +65,67 @@ class HistoryChart @JvmOverloads constructor(
         fun create(): List<RowData> {
             val result = mutableListOf<RowData>()
 
-            val shouldSplit =
-                start.monthValue != end.monthValue
+            if (start.monthValue != currentDate.monthValue && end.monthValue != currentDate.monthValue) {
+                result.addAll(createForDoubleSplit())
+            } else {
 
-//            val shouldSplit =
-//                start.monthValue != end.with(TemporalAdjusters.previousOrSame(DateUtils.firstDayOfWeek)).monthValue
+                val shouldSplit =
+                    start.monthValue != end.monthValue
 
-            val lastTopDay = start.plusWeeks(3).minusDays(1)
+                val lastTopDay = start.plusWeeks(3).minusDays(1)
 
-            val shouldSplitTop = shouldSplit && lastTopDay.monthValue != start.monthValue
-            val shouldSplitBottom = shouldSplit && !shouldSplitTop
+                val shouldSplitTop = shouldSplit && lastTopDay.monthValue != start.monthValue
+                val shouldSplitBottom = shouldSplit && !shouldSplitTop
 
-            when {
-                shouldSplitTop -> result.addAll(createForTopSplit())
-                shouldSplitBottom -> result.addAll(createForBottomSplit())
-                else -> result.addAll(createWithNoSplit())
+                when {
+                    shouldSplitTop -> result.addAll(createForTopSplit())
+                    shouldSplitBottom -> result.addAll(createForBottomSplit())
+                    else -> result.addAll(createWithNoSplit())
+                }
             }
+
+            return result
+        }
+
+        private fun createForDoubleSplit() : List<RowData> {
+            val result = mutableListOf<RowData>()
+            result.add(
+                RowData.CellRow(
+                    createWeekWithNoneCellsAtEnd(
+                        start.with(TemporalAdjusters.lastDayOfMonth())
+                    )
+                )
+            )
+
+            result.addAll(createMonthWithWeekDaysRows(currentDate.month, currentDate.year))
+
+            result.add(
+                RowData.CellRow(
+                    createWeekWithNoneCellsAtStart(
+                        currentDate.with(TemporalAdjusters.firstDayOfMonth())
+                    )
+                )
+            )
+
+            result.addAll(createCellsForWeeks(3, start.plusWeeks(1)))
+
+            result.add(
+                RowData.CellRow(
+                    createWeekWithNoneCellsAtEnd(
+                        end.minusDays(6)
+                    )
+                )
+            )
+
+            result.addAll(createMonthWithWeekDaysRows(end.month, end.year))
+
+            result.add(
+                RowData.CellRow(
+                    createWeekWithNoneCellsAtStart(
+                        end.with(TemporalAdjusters.firstDayOfMonth())
+                    )
+                )
+            )
 
             return result
         }
@@ -441,7 +486,22 @@ class HistoryChart @JvmOverloads constructor(
     fun updateData(history: CreateRepeatingQuestHistoryUseCase.History) {
         rowData.clear()
         rowData.addAll(CellDataCreator(history).create())
+        calculateHeight()
         postInvalidate()
+    }
+
+    private fun calculateHeight() {
+        val cellRowHeight = ViewUtils.dpToPx(40f, context).toInt()
+        val monthRowHeight = ViewUtils.dpToPx(64f, context).toInt()
+        val lp = layoutParams
+        lp.height = rowData.sumBy {
+            when (it) {
+                is RowData.WeekDaysRow,
+                is RowData.CellRow -> cellRowHeight
+                is RowData.MonthRow -> monthRowHeight
+            }
+        }
+        layoutParams = lp
     }
 
 
