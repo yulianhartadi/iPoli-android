@@ -40,6 +40,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
             android:background="@color/colorAccent"
+            android:textColor="@color/md_white"
             style="@style/Widget.AppCompat.Button.Colored"
             android:text="UNLOCK" />
 
@@ -49,7 +50,7 @@
         android:id="@+id/widgetHabitList"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="?android:colorBackground"
+        android:background="@color/md_white"
         android:numColumns="5" />
 
     <TextView
@@ -62,7 +63,5 @@
         android:padding="8dp"
         android:text="@string/widget_habit_empty"
         android:textColor="@color/md_dark_text_54" />
-
-
 
 </LinearLayout>
