@@ -174,10 +174,6 @@ class QuestViewController : ReduxViewController<QuestAction, QuestViewState, Que
         return view
     }
 
-    companion object {
-        private const val SWIPE_DISTANCE_THRESHOLD = 100
-    }
-
     override fun onPrepareOptionsMenu(menu: Menu) {
         menu.findItem(R.id.actionMarkDone).isVisible = isTimerStopped
         menu.findItem(R.id.actionEdit).isVisible = isTimerStopped
@@ -308,7 +304,6 @@ class QuestViewController : ReduxViewController<QuestAction, QuestViewState, Que
                 showInfoAppBar(view)
 
                 view.complete.gone()
-                setAppBarSwipeListener(view)
                 view.questStartTimer.visible()
 
                 colorLayout(state, view)
@@ -447,7 +442,6 @@ class QuestViewController : ReduxViewController<QuestAction, QuestViewState, Que
         onNotShow: () -> Unit
     ) {
         if (state.showTimerTypeSwitch) {
-            setAppBarSwipeListener(view)
             view.timerTypePomodoroButton.visible()
             view.timerTypeCountdownButton.visible()
         } else {
@@ -455,43 +449,6 @@ class QuestViewController : ReduxViewController<QuestAction, QuestViewState, Que
             view.timerTypePomodoroButton.invisible()
             view.timerTypeCountdownButton.invisible()
             onNotShow()
-        }
-    }
-
-    private fun setAppBarSwipeListener(view: View) {
-        view.appbar.setOnClickListener(null)
-        var x1 = 0f
-        var y1 = 0f
-
-        view.appbar.setOnTouchListener { _, event ->
-            when (event.action) {
-
-                MotionEvent.ACTION_DOWN -> {
-                    x1 = event.x
-                    y1 = event.y
-                    return@setOnTouchListener true
-                }
-
-                MotionEvent.ACTION_UP, MotionEvent.ACTION_CANCEL -> {
-                    val distanceX = event.x - x1
-                    val distanceY = event.y - y1
-                    if (
-                        Math.abs(distanceX) > Math.abs(distanceY) &&
-                        Math.abs(distanceX) > SWIPE_DISTANCE_THRESHOLD
-                    ) {
-
-                        if (distanceX > 0 && view.timerType.displayedChild == 1) {
-                            onSwipeLeft(view)
-                        } else if (distanceX < 0 && view.timerType.displayedChild == 0) {
-                            onSwipeRight(view)
-                        }
-                    }
-
-                    return@setOnTouchListener true
-                }
-            }
-
-            false
         }
     }
 
