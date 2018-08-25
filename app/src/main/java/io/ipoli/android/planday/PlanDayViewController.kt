@@ -482,6 +482,10 @@ class PlanDayViewController(args: Bundle? = null) :
         dispatch(PlanDayAction.GetWeather)
     }
 
+    override fun onPermissionsDenied(requestCode: Int, permissions: List<String>) {
+        enterFullScreen()
+        dispatch(PlanDayAction.GetWeather)
+    }
 
     override fun handleBack(): Boolean {
         dispatch(PlanDayAction.Back)
