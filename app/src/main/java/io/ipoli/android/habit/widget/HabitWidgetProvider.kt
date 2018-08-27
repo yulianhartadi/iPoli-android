@@ -80,10 +80,6 @@ class HabitWidgetProvider : AppWidgetProvider(), Injects<BackgroundModule> {
 
                 withContext(UI) {
                     val rv = RemoteViews(context.packageName, R.layout.widget_habits)
-                    rv.setOnClickPendingIntent(
-                        R.id.widgetHabitHeader,
-                        createStartAppIntent(context)
-                    )
                     if (player == null) {
                         showEmptyView(rv)
                     } else if (!player.isPowerUpEnabled(PowerUp.Type.HABIT_WIDGET)) {
@@ -148,12 +144,6 @@ class HabitWidgetProvider : AppWidgetProvider(), Injects<BackgroundModule> {
             PendingIntent.FLAG_UPDATE_CURRENT
         )
     }
-
-    private fun createStartAppIntent(context: Context) =
-        IntentUtil.getActivityPendingIntent(
-            context,
-            IntentUtil.startApp(context)
-        )
 
     private fun createShowBuyPowerUpIntent(context: Context) =
         IntentUtil.getActivityPendingIntent(

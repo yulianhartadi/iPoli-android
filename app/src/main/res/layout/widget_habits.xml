@@ -5,16 +5,6 @@
     android:background="@android:color/transparent"
     android:orientation="vertical">
 
-    <TextView
-        android:id="@+id/widgetHabitHeader"
-        android:layout_width="match_parent"
-        android:layout_height="42dp"
-        android:gravity="center"
-        android:text="Daily Habits"
-        android:background="@color/md_blue_500"
-        android:textAppearance="@style/TextAppearance.Widget.AppCompat.Toolbar.Title"
-        android:textColor="@color/md_white" />
-
     <LinearLayout
         android:id="@+id/habitWidgetLockedContainer"
         android:visibility="gone"
@@ -31,7 +21,7 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:textAlignment="center"
-            android:text="Power-Up is required for this widget"
+            android:text="@string/widget_habits_locked_message"
             android:textColor="@color/md_dark_text_54" />
 
         <Button
@@ -42,7 +32,7 @@
             android:background="@color/colorAccent"
             android:textColor="@color/md_white"
             style="@style/Widget.AppCompat.Button.Colored"
-            android:text="UNLOCK" />
+            android:text="@string/unlock" />
 
     </LinearLayout>
 

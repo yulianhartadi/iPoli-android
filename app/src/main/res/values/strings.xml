@@ -1711,5 +1711,6 @@ You can also manage your **shared posts**, **friends** and **shared challenges**
     <string name="power_up_habits_widget_long_desc">Complete your Daily Habits from your home screen.
     The widget provides you a simple and easy way to manage your habits for the day.
     </string>
+    <string name="widget_habits_locked_message">Power-Up is required for this widget</string>
 
 </resources>
