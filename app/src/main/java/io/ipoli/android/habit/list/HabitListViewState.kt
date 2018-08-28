@@ -22,6 +22,10 @@ sealed class HabitListAction : Action {
     }
 
     object Load : HabitListAction()
+
+    object Add : HabitListAction()
+
+    object AddPreset : HabitListAction()
 }
 
 object HabitListReducer : BaseViewStateReducer<HabitListViewState>() {
@@ -59,6 +63,8 @@ data class HabitListViewState(
 ) : BaseViewState() {
     enum class StateType {
         LOADING,
-        DATA_CHANGED
+        DATA_CHANGED,
+        SHOW_ADD,
+        SHOW_ADD_PRESET
     }
 }

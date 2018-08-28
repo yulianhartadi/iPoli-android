@@ -9,6 +9,7 @@ import io.ipoli.android.common.redux.Dispatcher
 import io.ipoli.android.common.redux.MiddleWare
 import io.ipoli.android.common.view.DurationPickerDialogAction
 import io.ipoli.android.growth.GrowthAction
+import io.ipoli.android.habit.list.HabitListAction
 import io.ipoli.android.player.data.Inventory
 import io.ipoli.android.store.powerup.PowerUp
 import io.ipoli.android.tag.list.TagListAction
@@ -41,6 +42,15 @@ object CheckEnabledPowerUpMiddleWare : MiddleWare<AppState> {
 
 //            is QuestAction.Start ->
 //                checkForAvailablePowerUp(PowerUp.Type.TIMER, inventory, dispatcher)
+
+            is HabitListAction.Add -> {
+                val habits = state.dataState.habits
+                if (habits == null || habits.size < Constants.MAX_FREE_HABITS) {
+                    MiddleWare.Result.Continue
+                } else {
+                    checkForAvailablePowerUp(PowerUp.Type.HABITS, inventory, dispatcher)
+                }
+            }
 
             is TagListAction.AddTag ->
                 if (state.dataState.tags.size < Constants.MAX_FREE_TAGS)
