@@ -43,6 +43,7 @@ object CheckEnabledPowerUpMiddleWare : MiddleWare<AppState> {
 //            is QuestAction.Start ->
 //                checkForAvailablePowerUp(PowerUp.Type.TIMER, inventory, dispatcher)
 
+            is HabitListAction.AddPreset,
             is HabitListAction.Add -> {
                 val habits = state.dataState.habits
                 if (habits == null || habits.size < Constants.MAX_FREE_HABITS) {

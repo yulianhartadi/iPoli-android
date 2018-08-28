@@ -46,6 +46,16 @@ object HabitListReducer : BaseViewStateReducer<HabitListViewState>() {
                     showEmptyView = action.habitItems.isEmpty()
                 )
 
+            is HabitListAction.Add ->
+                subState.copy(
+                    type = HabitListViewState.StateType.SHOW_ADD
+                )
+
+            is HabitListAction.AddPreset ->
+                subState.copy(
+                    type = HabitListViewState.StateType.SHOW_ADD_PRESET
+                )
+
             else -> subState
         }
 

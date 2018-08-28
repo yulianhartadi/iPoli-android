@@ -18,7 +18,7 @@ import io.ipoli.android.common.redux.android.ReduxViewController
 import io.ipoli.android.common.view.*
 import io.ipoli.android.common.view.recyclerview.MultiViewRecyclerViewAdapter
 import io.ipoli.android.common.view.recyclerview.RecyclerViewViewModel
-import io.ipoli.android.habit.list.HabitListViewState.StateType.DATA_CHANGED
+import io.ipoli.android.habit.list.HabitListViewState.StateType.*
 import io.ipoli.android.habit.usecase.CreateHabitItemsUseCase
 import kotlinx.android.synthetic.main.controller_habit_list.view.*
 import kotlinx.android.synthetic.main.item_habit_list.view.*
@@ -64,9 +64,8 @@ class HabitListViewController(args: Bundle? = null) :
                 }
         }
 
-        view.addHabit.onDebounceClick {
-            navigateFromRoot().toAddHabit()
-        }
+        view.addHabit.dispatchOnClick { HabitListAction.Add }
+
         view.emptyAnimation.setAnimation("empty_habit_list.json")
 
         return view
@@ -82,7 +81,7 @@ class HabitListViewController(args: Bundle? = null) :
     override fun onOptionsItemSelected(item: MenuItem) =
         when (item.itemId) {
             R.id.actionPredefinedHabits -> {
-                navigateFromRoot().toPredefinedHabits()
+                dispatch(HabitListAction.AddPreset)
                 true
             }
             else -> super.onOptionsItemSelected(item)
@@ -106,6 +105,12 @@ class HabitListViewController(args: Bundle? = null) :
 
                 (view.habitList.adapter as HabitListAdapter).updateAll(state.viewModels)
             }
+
+            SHOW_ADD ->
+                navigateFromRoot().toAddHabit()
+
+            SHOW_ADD_PRESET ->
+                navigateFromRoot().toPredefinedHabits()
 
             else -> {
 
