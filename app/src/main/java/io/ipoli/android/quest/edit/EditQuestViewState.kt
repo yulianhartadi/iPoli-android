@@ -37,6 +37,7 @@ sealed class EditQuestAction : Action {
             "reminderViewModel" to params?.reminderViewModel
         )
     }
+
     data class Load(
         val questId: String,
         val params: EditQuestViewController.Params?
@@ -107,9 +108,7 @@ sealed class EditQuestAction : Action {
         override fun toMap() = mapOf("name" to name)
     }
 
-    data class Save(val newSubQuestNames: Map<String, String>) : EditQuestAction() {
-        override fun toMap() = mapOf("newSubQuestNames" to newSubQuestNames)
-    }
+    data class Save(val newSubQuestNames: Map<String, String>) : EditQuestAction()
 
     data class RemoveTag(val tag: Tag) : EditQuestAction() {
         override fun toMap() = mapOf("tag" to tag)

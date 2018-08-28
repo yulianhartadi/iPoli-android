@@ -110,14 +110,12 @@ sealed class EditRepeatingQuestAction : Action {
 
     object Back : EditRepeatingQuestAction()
 
-    data class Save(val newSubQuestNames: List<String>) : EditRepeatingQuestAction() {
-        override fun toMap() = mapOf("newSubQuestNames" to newSubQuestNames)
-    }
+    data class Save(val newSubQuestNames: List<String>) : EditRepeatingQuestAction()
+
     object LoadName : EditRepeatingQuestAction()
     object LoadSummary : EditRepeatingQuestAction()
-    data class SaveNew(val newSubQuestNames: List<String>) : EditRepeatingQuestAction() {
-        override fun toMap() = mapOf("newSubQuestNames" to newSubQuestNames)
-    }
+
+    data class SaveNew(val newSubQuestNames: List<String>) : EditRepeatingQuestAction()
 }
 
 object EditRepeatingQuestReducer : BaseViewStateReducer<EditRepeatingQuestViewState>() {
