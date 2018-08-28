@@ -776,13 +776,6 @@
         It helps you focus on the most important tasks.
     </string>
 
-    <string name="power_up_sync_calendars_sub_title">Import all your events</string>
-    <string name="power_up_sync_calendars_short_desc">Import and sync events and tasks from your other calendars</string>
-    <string name="power_up_sync_calendars_long_desc">
-        Keep myPoli up to date by syncing events and tasks from your calendars.
-        Assign different category for each calendar (work, personal, …)
-    </string>
-
     <string name="power_up_predefined_challenges_sub_title">Easy to follow helpful formulas</string>
     <string name="power_up_predefined_challenges_short_desc">Challenge yourself with special programs to be more healthy, skillful and happy</string>
     <string name="power_up_predefined_challenges_long_desc">
@@ -1712,5 +1705,10 @@ You can also manage your **shared posts**, **friends** and **shared challenges**
     The widget provides you a simple and easy way to manage your habits for the day.
     </string>
     <string name="widget_habits_locked_message">Power-Up is required for this widget</string>
-
+    <string name="power_up_habits_title">Unlimited Habits</string>
+    <string name="power_up_habits_sub_title">Add more than 6 Habits</string>
+    <string name="power_up_habits_long_desc">Create new Habits as much as you want or choose from the presets. Stay productive, build amazing Habits that stick or get rid of the bad ones!</string>
+    <string name="power_up_calendars_title">Unlimited Sync Calendars</string>
+    <string name="power_up_calendars_sub_title">Sync more than 3 Calendars</string>
+    <string name="power_up_calendars_long_desc">Sync all your Calendars right into myPoli and make your schedule complete. No more missed events &amp; meetings!</string>
 </resources>

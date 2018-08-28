@@ -66,12 +66,12 @@ enum class AndroidPowerUp(
         R.color.md_indigo_700
     ),
     CALENDAR_SYNC(
-        R.string.settings_sync_google_calendars,
-        R.string.power_up_sync_calendars_sub_title,
-        R.string.power_up_sync_calendars_long_desc,
+        R.string.power_up_calendars_title,
+        R.string.power_up_calendars_sub_title,
+        R.string.power_up_calendars_long_desc,
         GoogleMaterial.Icon.gmd_event_available,
-        R.color.md_red_400,
-        R.color.md_red_600
+        R.color.md_teal_400,
+        R.color.md_teal_600
     ),
     TIMER(
         R.string.timer,
@@ -128,6 +128,14 @@ enum class AndroidPowerUp(
         Ionicons.Icon.ion_heart,
         R.color.md_pink_400,
         R.color.md_pink_600
+    ),
+    HABITS(
+        R.string.power_up_habits_title,
+        R.string.power_up_habits_sub_title,
+        R.string.power_up_habits_long_desc,
+        Ionicons.Icon.ion_ios_nutrition,
+        R.color.md_orange_500,
+        R.color.md_orange_700
     )
 }
 

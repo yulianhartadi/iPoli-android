@@ -29,6 +29,7 @@ data class PowerUp(
         SUB_QUESTS(180),
         CUSTOM_DURATION(130),
         TRACK_CHALLENGE_VALUES(400),
-        HABIT_WIDGET(500)
+        HABIT_WIDGET(500),
+        HABITS(350)
     }
 }

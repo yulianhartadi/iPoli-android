@@ -23,6 +23,7 @@ sealed class PowerUpStoreAction : Action {
     data class Enable(val type: PowerUp.Type) : PowerUpStoreAction() {
         override fun toMap() = mapOf("type" to type.name)
     }
+
     data class SyncCalendarsSelected(val calendars: Set<Player.Preferences.SyncCalendar>) :
         PowerUpStoreAction() {
         override fun toMap() = mapOf("calendars" to calendars)
@@ -82,6 +83,8 @@ object PowerUpStoreReducer : BaseViewStateReducer<PowerUpStoreViewState>() {
                     || it == PowerUp.Type.CUSTOM_DURATION
                     || it == PowerUp.Type.TRACK_CHALLENGE_VALUES
                     || it == PowerUp.Type.HABIT_WIDGET
+                    || it == PowerUp.Type.CALENDAR_SYNC
+                    || it == PowerUp.Type.HABITS
             }
             .map {
                 when {
