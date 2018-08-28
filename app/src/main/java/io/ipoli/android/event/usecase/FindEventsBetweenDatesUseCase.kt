@@ -25,10 +25,6 @@ class FindEventsBetweenDatesUseCase(
 
         val p = playerRepository.find() ?: return emptyList()
 
-//        if (!p.isPowerUpEnabled(PowerUp.Type.CALENDAR_SYNC)) {
-//            return emptyList()
-//        }
-
         val calendars = p.preferences.syncCalendars
 
         if (calendars.isEmpty()) {

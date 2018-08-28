@@ -241,15 +241,8 @@ class PowerUpStoreViewController(args: Bundle? = null) :
                 colorLayout(vm)
             }
 
-            PowerUpStoreViewState.StateType.POWER_UP_BOUGHT -> {
+            PowerUpStoreViewState.StateType.POWER_UP_BOUGHT ->
                 showLongToast(state.message)
-//                if (state.powerUp == PowerUp.Type.CALENDAR_SYNC) {
-//                    requestPermissions(
-//                        mapOf(Manifest.permission.READ_CALENDAR to stringRes(R.string.allow_read_calendars_perm_reason)),
-//                        Constants.RC_CALENDAR_PERM
-//                    )
-//                }
-            }
 
             PowerUpStoreViewState.StateType.POWER_UP_TOO_EXPENSIVE ->
                 showShortToast(R.string.power_up_too_expensive)

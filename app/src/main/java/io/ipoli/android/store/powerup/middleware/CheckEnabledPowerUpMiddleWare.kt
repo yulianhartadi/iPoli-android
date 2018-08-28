@@ -8,6 +8,8 @@ import io.ipoli.android.common.redux.Action
 import io.ipoli.android.common.redux.Dispatcher
 import io.ipoli.android.common.redux.MiddleWare
 import io.ipoli.android.common.view.DurationPickerDialogAction
+import io.ipoli.android.event.calendar.picker.CalendarPickerAction
+import io.ipoli.android.event.calendar.picker.CalendarPickerViewState
 import io.ipoli.android.growth.GrowthAction
 import io.ipoli.android.habit.list.HabitListAction
 import io.ipoli.android.player.data.Inventory
@@ -71,6 +73,15 @@ object CheckEnabledPowerUpMiddleWare : MiddleWare<AppState> {
 //
 //            is SettingsAction.ToggleSyncCalendar ->
 //                checkForAvailablePowerUp(PowerUp.Type.CALENDAR_SYNC, inventory, dispatcher)
+
+            is CalendarPickerAction.SyncSelectedCalendars -> {
+                val s = state.stateFor(CalendarPickerViewState::class.java)
+                if (s.syncCalendars.size <= Constants.MAX_FREE_SYNC_CALENDARS)
+                    MiddleWare.Result.Continue
+                else
+                    checkForAvailablePowerUp(PowerUp.Type.CALENDAR_SYNC, inventory, dispatcher)
+            }
+
 
             is EditChallengeAction.ShowTargetTrackedValuePicker -> {
                 checkForAddChallengeValue(action.trackedValues, inventory, dispatcher)

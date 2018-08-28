@@ -248,6 +248,7 @@ interface Constants {
         const val MAX_FREE_TAGS = 5
         const val MAX_TAGS_PER_ITEM = 3
         const val MAX_FREE_HABITS = 6
+        const val MAX_FREE_SYNC_CALENDARS = 3
 
         const val DEFAULT_RELATIVE_REMINDER_MINUTES_FROM_START = 0L
         const val DAILY_FOCUS_HOURS_GOAL = 5
