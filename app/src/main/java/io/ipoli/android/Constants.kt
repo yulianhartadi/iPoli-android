@@ -17,7 +17,7 @@ import java.text.DecimalFormat
 interface Constants {
     companion object {
 
-        val DISCORD_CHAT_LINK = "https://discord.gg/7AMKs28"
+        const val DISCORD_CHAT_LINK = "https://discord.gg/7AMKs28"
         const val COMMUNITY_LINK = "https://discuss.mypoli.fun/"
         const val FEEDBACK_LINK = "https://discuss.mypoli.fun/c/mypoli/requests"
 

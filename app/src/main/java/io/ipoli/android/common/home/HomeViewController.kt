@@ -1,9 +1,13 @@
 package io.ipoli.android.common.home
 
+import android.annotation.SuppressLint
+import android.content.Intent
+import android.content.Intent.ACTION_VIEW
 import android.content.res.Resources
 import android.graphics.Color
 import android.graphics.PorterDuff
 import android.graphics.drawable.GradientDrawable
+import android.net.Uri
 import android.os.Bundle
 import android.support.annotation.ColorRes
 import android.support.annotation.IdRes
@@ -25,6 +29,7 @@ import com.bumptech.glide.request.RequestOptions
 import com.mikepenz.iconics.IconicsDrawable
 import com.mikepenz.iconics.typeface.IIcon
 import com.mikepenz.material_design_iconic_typeface_library.MaterialDesignIconic
+import io.ipoli.android.Constants
 import io.ipoli.android.MainActivity
 import io.ipoli.android.R
 import io.ipoli.android.challenge.list.ChallengeListViewController
@@ -132,6 +137,11 @@ class HomeViewController(args: Bundle? = null) :
 
             R.id.community ->
                 navigateFromRoot().toCommunity()
+
+            R.id.chat ->
+                startActivity(
+                    Intent(ACTION_VIEW, Uri.parse(Constants.DISCORD_CHAT_LINK))
+                )
 
             R.id.shareApp ->
                 showShareApp()
@@ -260,6 +270,7 @@ class HomeViewController(args: Bundle? = null) :
         }
     }
 
+    @SuppressLint("InflateParams")
     private fun renderBucketList(bucketListQuestCount: Int, view: View) {
         val item = view.navigationView.menu.findItem(R.id.bucketList)
 
@@ -290,7 +301,7 @@ class HomeViewController(args: Bundle? = null) :
                     tagId = tag.id,
                     viewId = TAG_IDS[index],
                     name = tag.name,
-                    icon = state.tagIcon(tag),
+                    icon = tagIcon(tag),
                     iconColor = tag.color.androidColor.color500,
                     questCount = tag.questCount,
                     isVisible = state.showTags
@@ -303,8 +314,8 @@ class HomeViewController(args: Bundle? = null) :
             val shouldClose = tagItems.isEmpty() || tagItems.first().isVisible
             val rotationDegree = if (shouldClose) 0f else 180f
             it.rotation = rotationDegree
-            tagItems.forEach {
-                it.isVisible = !it.isVisible
+            tagItems.forEach { m ->
+                m.isVisible = !m.isVisible
             }
             if (shouldClose) {
                 dispatch(HomeAction.HideTags)
@@ -354,6 +365,7 @@ class HomeViewController(args: Bundle? = null) :
         view.levelProgress.progress = state.progress
     }
 
+    @SuppressLint("InflateParams")
     private fun createTagForNavigationDrawer(
         view: View,
         @IdRes viewId: Int,
@@ -428,7 +440,7 @@ class HomeViewController(args: Bundle? = null) :
     private val HomeViewState.experienceText
         get() = LongFormatter.format(activity!!, experience)
 
-    private fun HomeViewState.tagIcon(tag: Tag): IIcon =
+    private fun tagIcon(tag: Tag): IIcon =
         tag.icon?.androidIcon?.icon ?: MaterialDesignIconic.Icon.gmi_label
 
 

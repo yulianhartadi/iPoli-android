@@ -34,6 +34,7 @@
     <string name="dialog_delete_challenge_message">Would you like to remove all quests for the challenge as well?</string>
     <string name="inbox">Inbox</string>
     <string name="send_feedback">Feedback</string>
+    <string name="suggest_ideas">Suggest ideas</string>
     <string name="contact_us">Contact Us</string>
     <string name="yesterday_calendar_format">\'Yesterday - \'d MMM</string>
     <string name="today_calendar_format">\'Today - \'EEE, d MMM</string>
@@ -1231,6 +1232,7 @@
     <string name="theme_too_expensive">Theme too expensive</string>
     <string name="theme_bought">Enjoy your theme!</string>
     <string name="community">Community</string>
+    <string name="chat_with_us">Chat with us</string>
     <string name="preview">preview</string>
     <string name="quests">Quests</string>
     <string name="motivation">Motivation</string>

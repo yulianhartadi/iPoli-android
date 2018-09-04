@@ -91,12 +91,20 @@
             android:title="@string/community" />
 
         <item
+            android:id="@+id/chat"
+            android:checkable="false"
+            android:checked="false"
+            android:icon="@drawable/ic_discord_black_24dp"
+            android:orderInCategory="1"
+            android:title="@string/chat_with_us" />
+
+        <item
             android:id="@+id/feedback"
             android:checkable="false"
             android:checked="false"
             android:icon="@drawable/ic_megaphone_black_24dp"
             android:orderInCategory="1"
-            android:title="@string/send_feedback" />
+            android:title="@string/suggest_ideas" />
 
         <item
             android:id="@+id/help"
