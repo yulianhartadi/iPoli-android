@@ -88,7 +88,6 @@ class ScheduleSummaryViewController(args: Bundle? = null) :
         renderToolbarDate(view, currentDate.monthValue, currentDate.year)
 
         val swipeHandler = object : SimpleSwipeCallback(
-            view.context,
             R.drawable.ic_event_white_24dp,
             R.color.md_blue_500,
             R.drawable.ic_delete_white_24dp,

@@ -4,7 +4,6 @@ import io.ipoli.android.common.AppState
 import io.ipoli.android.common.BaseViewStateReducer
 import io.ipoli.android.common.DataLoadedAction
 import io.ipoli.android.common.datetime.isBetween
-
 import io.ipoli.android.common.redux.Action
 import io.ipoli.android.common.redux.BaseViewState
 import io.ipoli.android.quest.schedule.agenda.usecase.CreateAgendaItemsUseCase.AgendaItem
@@ -28,12 +27,24 @@ sealed class AgendaAction : Action {
         override fun toMap() = mapOf("itemPosition" to itemPosition)
     }
 
-    data class CompleteQuest(val itemPosition: Int) : AgendaAction() {
-        override fun toMap() = mapOf("itemPosition" to itemPosition)
+    data class CompleteQuest(val questId: String) : AgendaAction() {
+        override fun toMap() = mapOf("questId" to questId)
     }
 
-    data class UndoCompleteQuest(val itemPosition: Int) : AgendaAction() {
-        override fun toMap() = mapOf("itemPosition" to itemPosition)
+    data class UndoCompleteQuest(val questId: String) : AgendaAction() {
+        override fun toMap() = mapOf("questId" to questId)
+    }
+
+    data class RescheduleQuest(val questId: String, val date: LocalDate?) : AgendaAction() {
+        override fun toMap() = mapOf("questId" to questId, "date" to date)
+    }
+
+    data class RemoveQuest(val questId: String) : AgendaAction() {
+        override fun toMap() = mapOf("questId" to questId)
+    }
+
+    data class UndoRemoveQuest(val questId: String) : AgendaAction() {
+        override fun toMap() = mapOf("questId" to questId)
     }
 
     data class FirstVisibleItemChanged(val itemPosition: Int) : AgendaAction() {

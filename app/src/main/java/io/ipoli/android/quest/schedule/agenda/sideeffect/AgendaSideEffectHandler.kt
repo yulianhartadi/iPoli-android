@@ -12,8 +12,6 @@ import io.ipoli.android.quest.schedule.agenda.AgendaReducer
 import io.ipoli.android.quest.schedule.agenda.AgendaViewState
 import io.ipoli.android.quest.schedule.agenda.usecase.CreateAgendaItemsUseCase
 import io.ipoli.android.quest.schedule.agenda.usecase.FindAgendaDatesUseCase
-import io.ipoli.android.quest.show.usecase.CompleteTimeRangeUseCase
-import io.ipoli.android.quest.usecase.CompleteQuestUseCase
 import io.ipoli.android.repeatingquest.usecase.CreatePlaceholderQuestsForRepeatingQuestsUseCase
 import kotlinx.coroutines.experimental.channels.Channel
 import org.threeten.bp.LocalDate
@@ -21,13 +19,10 @@ import space.traversal.kapsule.required
 
 object AgendaSideEffectHandler : AppSideEffectHandler() {
 
-    private val completeQuestUseCase by required { completeQuestUseCase }
-    private val undoCompletedQuestUseCase by required { undoCompletedQuestUseCase }
     private val findAgendaDatesUseCase by required { findAgendaDatesUseCase }
     private val createAgendaItemsUseCase by required { createAgendaItemsUseCase }
     private val questRepository by required { questRepository }
     private val findEventsBetweenDatesUseCase by required { findEventsBetweenDatesUseCase }
-    private val completeTimeRangeUseCase by required { completeTimeRangeUseCase }
     private val createPlaceholderQuestsForRepeatingQuestsUseCase by required { createPlaceholderQuestsForRepeatingQuestsUseCase }
 
     private var agendaQuestsChannel: Channel<List<Quest>>? = null
@@ -92,36 +87,6 @@ object AgendaSideEffectHandler : AppSideEffectHandler() {
                     currentDate = agendaDate,
                     changeCurrentAgendaItem = false
                 )
-            }
-
-            is AgendaAction.CompleteQuest -> {
-                val adapterPos = action.itemPosition
-                val agendaState = state.stateFor(AgendaViewState::class.java)
-                val questItem =
-                    agendaState.agendaItems[adapterPos] as CreateAgendaItemsUseCase.AgendaItem.QuestItem
-
-                val quest = questItem.quest
-                if (quest.isStarted) {
-                    completeTimeRangeUseCase.execute(
-                        CompleteTimeRangeUseCase.Params(
-                            quest.id
-                        )
-                    )
-                } else {
-                    completeQuestUseCase.execute(
-                        CompleteQuestUseCase.Params.WithQuest(
-                            quest
-                        )
-                    )
-                }
-            }
-
-            is AgendaAction.UndoCompleteQuest -> {
-                val agendaItems = state.stateFor(AgendaViewState::class.java).agendaItems
-                val adapterPos = action.itemPosition
-                val questItem =
-                    agendaItems[adapterPos] as CreateAgendaItemsUseCase.AgendaItem.QuestItem
-                undoCompletedQuestUseCase.execute(questItem.quest.id)
             }
 
         }

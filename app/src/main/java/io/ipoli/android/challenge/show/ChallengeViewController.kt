@@ -85,7 +85,6 @@ class ChallengeViewController(args: Bundle? = null) :
         view.habitList.adapter = HabitAdapter()
 
         val questSwipeHandler = object : SimpleSwipeCallback(
-            view.context,
             R.drawable.ic_done_white_24dp,
             R.color.md_green_500,
             R.drawable.ic_delete_white_24dp,
@@ -106,7 +105,6 @@ class ChallengeViewController(args: Bundle? = null) :
         questTouchHelper.attachToRecyclerView(view.questList)
 
         val habitSwipeHandler = object : SimpleSwipeCallback(
-            view.context,
             R.drawable.ic_done_white_24dp,
             R.color.md_green_500,
             R.drawable.ic_delete_white_24dp,

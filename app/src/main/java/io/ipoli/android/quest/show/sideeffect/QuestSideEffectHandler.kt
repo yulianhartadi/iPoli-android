@@ -11,6 +11,7 @@ import io.ipoli.android.planday.usecase.CalculateAwesomenessScoreUseCase
 import io.ipoli.android.planday.usecase.CalculateFocusDurationUseCase
 import io.ipoli.android.quest.CompletedQuestAction
 import io.ipoli.android.quest.Quest
+import io.ipoli.android.quest.schedule.agenda.AgendaAction
 import io.ipoli.android.quest.schedule.summary.ScheduleSummaryAction
 import io.ipoli.android.quest.schedule.today.TodayAction
 import io.ipoli.android.quest.schedule.today.usecase.CreateTodayItemsUseCase
@@ -317,5 +318,5 @@ object QuestSideEffectHandler : AppSideEffectHandler() {
         state.stateFor(QuestViewState::class.java)
 
     override fun canHandle(action: Action) =
-        action is QuestAction || action is CompletedQuestAction || action is ScheduleSummaryAction || action is TodayAction || action is DataLoadedAction
+        action is QuestAction || action is CompletedQuestAction || action is ScheduleSummaryAction || action is TodayAction || action is DataLoadedAction || action is AgendaAction
 }

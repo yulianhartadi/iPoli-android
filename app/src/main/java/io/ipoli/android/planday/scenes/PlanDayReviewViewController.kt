@@ -4,7 +4,6 @@ import android.content.res.ColorStateList
 import android.graphics.drawable.GradientDrawable
 import android.os.Bundle
 import android.support.annotation.ColorRes
-import android.support.v4.content.ContextCompat
 import android.support.v4.widget.TextViewCompat
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
@@ -25,7 +24,7 @@ import io.ipoli.android.common.view.*
 import io.ipoli.android.common.view.recyclerview.MultiViewRecyclerViewAdapter
 import io.ipoli.android.common.view.recyclerview.RecyclerViewViewModel
 import io.ipoli.android.common.view.recyclerview.SwipeCallback
-import io.ipoli.android.common.view.recyclerview.SwipeResources
+import io.ipoli.android.common.view.recyclerview.SwipeResource
 import io.ipoli.android.pet.AndroidPetAvatar
 import io.ipoli.android.pet.PetState
 import io.ipoli.android.planday.PlanDayAction
@@ -91,32 +90,31 @@ class PlanDayReviewViewController(args: Bundle? = null) :
 
     private fun initSwipe(view: View) {
         val swipeHandler = object : SwipeCallback() {
-            private val completeQuestSwipeRes = SwipeResources(
-                ContextCompat.getDrawable(view.context, R.drawable.ic_done_white_24dp)!!,
-                colorRes(R.color.md_green_500)
+            private val completeQuestSwipeRes = SwipeResource(
+                R.drawable.ic_done_white_24dp,
+                R.color.md_green_500
             )
 
-            private val scheduleQuestSwipeRes = SwipeResources(
-                ContextCompat.getDrawable(view.context, R.drawable.ic_event_white_24dp)!!,
-                colorRes(R.color.md_blue_500)
+            private val scheduleQuestSwipeRes = SwipeResource(
+                R.drawable.ic_event_white_24dp,
+                R.color.md_blue_500
             )
 
-            private val undoCompleteQuestSwipeRes = SwipeResources(
-                ContextCompat.getDrawable(view.context, R.drawable.ic_close_white_24dp)!!,
-                colorRes(R.color.md_amber_500)
+            private val undoCompleteQuestSwipeRes = SwipeResource(
+                R.drawable.ic_close_white_24dp, R.color.md_amber_500
             )
 
-            override fun swipeStartResources(itemViewType: Int) =
+            override fun swipeStartResource(itemViewType: Int) =
                 when (itemViewType) {
                     ViewType.QUEST.value -> completeQuestSwipeRes
-                    else -> throw IllegalStateException("Can't swipe start type ${itemViewType}")
+                    else -> throw IllegalStateException("Can't swipe start type $itemViewType")
                 }
 
-            override fun swipeEndResources(itemViewType: Int) =
+            override fun swipeEndResource(itemViewType: Int) =
                 when (itemViewType) {
                     ViewType.QUEST.value -> scheduleQuestSwipeRes
                     ViewType.COMPLETED_QUEST.value -> undoCompleteQuestSwipeRes
-                    else -> throw IllegalStateException("Can't swipe end type ${itemViewType}")
+                    else -> throw IllegalStateException("Can't swipe end type $itemViewType")
                 }
 
             override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
@@ -388,9 +386,9 @@ class PlanDayReviewViewController(args: Bundle? = null) :
                 ItemViewModel.QuestItem(
                     id = it.id,
                     name = it.name,
-                    tags = it.tags.map {
+                    tags = it.tags.map { t ->
                         ItemViewModel.TagViewModel(
-                            it.name,
+                            t.name,
                             AndroidColor.valueOf(it.color.name).color500
                         )
                     },
@@ -412,9 +410,9 @@ class PlanDayReviewViewController(args: Bundle? = null) :
                 ItemViewModel.CompletedQuestItem(
                     id = it.id,
                     name = it.name,
-                    tags = it.tags.map {
+                    tags = it.tags.map { t ->
                         ItemViewModel.TagViewModel(
-                            it.name,
+                            t.name,
                             AndroidColor.valueOf(it.color.name).color500
                         )
                     },

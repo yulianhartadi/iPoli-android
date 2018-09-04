@@ -15,7 +15,12 @@ import android.view.View
  * Created by Venelin Valkov <venelin@mypoli.fun>
  * on 01/31/2018.
  */
-data class SwipeResources(val icon: Drawable, val color: Int)
+data class SwipeResource(@DrawableRes val iconRes: Int, @ColorRes val colorRes: Int) {
+
+    fun getIconDrawable(context: Context) = ContextCompat.getDrawable(context, iconRes)!!
+
+    fun getColor(context: Context) = ContextCompat.getColor(context, colorRes)
+}
 
 abstract class SwipeCallback :
     ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.END) {
@@ -33,12 +38,12 @@ abstract class SwipeCallback :
         target: RecyclerView.ViewHolder?
     ) = false
 
-    abstract fun swipeStartResources(itemViewType: Int): SwipeResources
-    abstract fun swipeEndResources(itemViewType: Int): SwipeResources
+    abstract fun swipeStartResource(itemViewType: Int): SwipeResource
+    abstract fun swipeEndResource(itemViewType: Int): SwipeResource
 
     override fun onChildDraw(
         c: Canvas?,
-        recyclerView: RecyclerView?,
+        recyclerView: RecyclerView,
         viewHolder: RecyclerView.ViewHolder,
         dX: Float,
         dY: Float,
@@ -49,13 +54,13 @@ abstract class SwipeCallback :
         val alpha =
             ALPHA_FULL - (Math.abs(dX) / viewHolder.itemView.width.toFloat()) * ALPHA_MAGNIFICATION
         if (dX > 0) {
-            val res = swipeStartResources(viewHolder.itemViewType)
-            drawSwipeStartBackground(res.color, viewHolder.itemView, dX, c)
-            drawSwipeStartIcon(res.icon, viewHolder.itemView, c)
+            val res = swipeStartResource(viewHolder.itemViewType)
+            drawSwipeStartBackground(res.getColor(recyclerView.context), viewHolder.itemView, dX, c)
+            drawSwipeStartIcon(res.getIconDrawable(recyclerView.context), viewHolder.itemView, c)
         } else {
-            val res = swipeEndResources(viewHolder.itemViewType)
-            drawSwipeEndBackground(res.color, viewHolder.itemView, dX, c)
-            drawSwipeEndIcon(res.icon, viewHolder.itemView, c)
+            val res = swipeEndResource(viewHolder.itemViewType)
+            drawSwipeEndBackground(res.getColor(recyclerView.context), viewHolder.itemView, dX, c)
+            drawSwipeEndIcon(res.getIconDrawable(recyclerView.context), viewHolder.itemView, c)
         }
         viewHolder.itemView.alpha = alpha
 
@@ -140,23 +145,31 @@ abstract class SwipeCallback :
 }
 
 abstract class SimpleSwipeCallback(
-    context: Context,
     @DrawableRes swipeStartIcon: Int,
     @ColorRes swipeStartBackground: Int,
     @DrawableRes swipeEndIcon: Int,
     @ColorRes swipeEndBackground: Int
 ) : SwipeCallback() {
-    private val swipeResStart = SwipeResources(
-        ContextCompat.getDrawable(context, swipeStartIcon)!!,
-        ContextCompat.getColor(context, swipeStartBackground)
-    )
 
-    private val swipeResEnd = SwipeResources(
-        ContextCompat.getDrawable(context, swipeEndIcon)!!,
-        ContextCompat.getColor(context, swipeEndBackground)
-    )
+    private val swipeResStart = SwipeResource(swipeStartIcon, swipeStartBackground)
 
-    override fun swipeStartResources(itemViewType: Int) = swipeResStart
+    private val swipeResEnd = SwipeResource(swipeEndIcon, swipeEndBackground)
 
-    override fun swipeEndResources(itemViewType: Int) = swipeResEnd
+    override fun swipeStartResource(itemViewType: Int) = swipeResStart
+
+    override fun swipeEndResource(itemViewType: Int) = swipeResEnd
+}
+
+abstract class MultiViewTypeSwipeCallback(
+    private val startResources: Map<Int, SwipeResource>,
+    private val endResources: Map<Int, SwipeResource>
+) : SwipeCallback() {
+
+    override fun swipeStartResource(itemViewType: Int) =
+        startResources[itemViewType]
+            ?: throw IllegalStateException("Swiping start viewType with unspecified resource")
+
+    override fun swipeEndResource(itemViewType: Int) =
+        endResources[itemViewType]
+            ?: throw IllegalStateException("Swiping end viewType with unspecified resource")
 }

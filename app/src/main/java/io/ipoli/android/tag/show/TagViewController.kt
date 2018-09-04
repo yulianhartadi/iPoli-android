@@ -69,7 +69,6 @@ class TagViewController(args: Bundle? = null) :
         view.tagQuests.adapter = ItemAdapter()
 
         val swipeHandler = object : SimpleSwipeCallback(
-            view.context,
             R.drawable.ic_done_white_24dp,
             R.color.md_green_500,
             R.drawable.ic_close_white_24dp,

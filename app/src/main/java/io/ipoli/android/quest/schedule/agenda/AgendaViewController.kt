@@ -22,14 +22,16 @@ import com.mikepenz.iconics.typeface.IIcon
 import com.mikepenz.ionicons_typeface_library.Ionicons
 import io.ipoli.android.R
 import io.ipoli.android.common.ViewUtils
+import io.ipoli.android.common.datetime.isToday
 import io.ipoli.android.common.datetime.weekOfYear
 import io.ipoli.android.common.redux.android.ReduxViewController
 import io.ipoli.android.common.text.DateFormatter
 import io.ipoli.android.common.text.QuestStartTimeFormatter
 import io.ipoli.android.common.view.*
 import io.ipoli.android.common.view.recyclerview.MultiViewRecyclerViewAdapter
+import io.ipoli.android.common.view.recyclerview.MultiViewTypeSwipeCallback
 import io.ipoli.android.common.view.recyclerview.RecyclerViewViewModel
-import io.ipoli.android.common.view.recyclerview.SimpleSwipeCallback
+import io.ipoli.android.common.view.recyclerview.SwipeResource
 import io.ipoli.android.event.Event
 import io.ipoli.android.quest.CompletedQuestViewController
 import io.ipoli.android.quest.schedule.agenda.usecase.CreateAgendaItemsUseCase
@@ -86,27 +88,96 @@ class AgendaViewController(args: Bundle? = null) :
         view.agendaList.layoutManager = layoutManager
         view.agendaList.adapter = AgendaAdapter()
 
-        val swipeHandler = object : SimpleSwipeCallback(
-            view.context,
-            R.drawable.ic_done_white_24dp,
-            R.color.md_green_500,
-            R.drawable.ic_undo_white_24dp,
-            R.color.md_amber_500
+        val swipeHandler = object : MultiViewTypeSwipeCallback(
+            startResources = mapOf(
+                ItemType.QUEST.ordinal to SwipeResource(
+                    R.drawable.ic_done_white_24dp,
+                    R.color.md_green_500
+                ),
+                ItemType.COMPLETED_QUEST.ordinal to SwipeResource(
+                    R.drawable.ic_undo_white_24dp,
+                    R.color.md_amber_500
+                )
+            ),
+            endResources = mapOf(
+                ItemType.QUEST.ordinal to SwipeResource(
+                    R.drawable.ic_event_white_24dp,
+                    R.color.md_blue_500
+                ),
+                ItemType.COMPLETED_QUEST.ordinal to SwipeResource(
+                    R.drawable.ic_delete_white_24dp,
+                    R.color.md_red_500
+                )
+            )
         ) {
             override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
-                if (direction == ItemTouchHelper.END) {
-                    dispatch(AgendaAction.CompleteQuest(viewHolder.adapterPosition))
-                } else if (direction == ItemTouchHelper.START) {
-                    dispatch(AgendaAction.UndoCompleteQuest(viewHolder.adapterPosition))
+                val questId = questId(viewHolder)
+                when (viewHolder.itemViewType) {
+                    ItemType.QUEST.ordinal -> {
+                        if (direction == ItemTouchHelper.END) {
+                            dispatch(AgendaAction.CompleteQuest(questId))
+                        } else if (direction == ItemTouchHelper.START) {
+                            val a = view.agendaList.adapter as AgendaAdapter
+                            val vm =
+                                a.getItemAt<AgendaViewModel.QuestViewModel>(viewHolder.adapterPosition)
+                            navigate()
+                                .toReschedule(
+                                    includeToday = !vm.isScheduledForToday,
+                                    listener = { date ->
+                                        dispatch(AgendaAction.RescheduleQuest(questId, date))
+                                    },
+                                    cancelListener = {
+                                        view.agendaList.adapter.notifyItemChanged(viewHolder.adapterPosition)
+                                    }
+                                )
+                        }
+                    }
+
+                    ItemType.COMPLETED_QUEST.ordinal -> {
+                        if (direction == ItemTouchHelper.END) {
+                            dispatch(AgendaAction.UndoCompleteQuest(questId))
+                        } else if (direction == ItemTouchHelper.START) {
+                            dispatch(AgendaAction.RemoveQuest(questId))
+                            PetMessagePopup(
+                                stringRes(R.string.remove_quest_undo_message),
+                                {
+                                    dispatch(AgendaAction.UndoRemoveQuest(questId))
+                                    view.agendaList.adapter.notifyItemChanged(viewHolder.adapterPosition)
+                                },
+                                stringRes(R.string.undo)
+                            ).show(view.context)
+                        }
+                    }
+
+                    else -> throw IllegalStateException("Swiping unknown view type ${viewHolder.itemViewType} in direction $direction")
                 }
+
+            }
+
+            private fun questId(holder: RecyclerView.ViewHolder): String {
+                val a = view.agendaList.adapter as AgendaAdapter
+                return when {
+                    holder.itemViewType == ItemType.QUEST.ordinal -> {
+                        val item =
+                            a.getItemAt<AgendaViewModel.QuestViewModel>(holder.adapterPosition)
+                        item.id
+                    }
+                    holder.itemViewType == ItemType.COMPLETED_QUEST.ordinal -> {
+                        val item =
+                            a.getItemAt<AgendaViewModel.CompletedQuestViewModel>(holder.adapterPosition)
+                        item.id
+                    }
+                    else -> throw IllegalStateException("Unknown questId for viewType ${holder.itemViewType}")
+                }
+
             }
 
             override fun getSwipeDirs(
                 recyclerView: RecyclerView,
                 viewHolder: RecyclerView.ViewHolder
             ) = when {
-                viewHolder.itemViewType == ItemType.QUEST.ordinal -> ItemTouchHelper.END
-                viewHolder.itemViewType == ItemType.COMPLETED_QUEST.ordinal -> ItemTouchHelper.START
+                viewHolder.itemViewType == ItemType.QUEST.ordinal -> (ItemTouchHelper.END or ItemTouchHelper.START)
+                viewHolder.itemViewType == ItemType.COMPLETED_QUEST.ordinal -> (ItemTouchHelper.END or ItemTouchHelper.START)
                 else -> 0
             }
         }
@@ -224,7 +295,8 @@ class AgendaViewController(args: Bundle? = null) :
             override val icon: IIcon,
             override val showDivider: Boolean,
             override val isRepeating: Boolean,
-            override val isFromChallenge: Boolean
+            override val isFromChallenge: Boolean,
+            val isScheduledForToday: Boolean
         ) : AgendaViewModel(id), QuestItemViewModel
 
         data class QuestPlaceholderViewModel(
@@ -534,7 +606,8 @@ class AgendaViewController(args: Bundle? = null) :
                             ?: Ionicons.Icon.ion_android_clipboard,
                         showDivider = shouldShowDivider(nextAgendaItem),
                         isRepeating = quest.isFromRepeatingQuest,
-                        isFromChallenge = quest.isFromChallenge
+                        isFromChallenge = quest.isFromChallenge,
+                        isScheduledForToday = quest.scheduledDate!!.isToday
                     )
                 }
             }

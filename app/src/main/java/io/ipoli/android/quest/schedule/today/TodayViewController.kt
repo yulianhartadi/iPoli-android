@@ -118,7 +118,6 @@ class TodayViewController(args: Bundle? = null) :
 
     private fun initCompletedSwipeHandler(view: View) {
         val swipeHandler = object : SimpleSwipeCallback(
-            view.context,
             R.drawable.ic_undo_white_24dp,
             R.color.md_amber_500,
             R.drawable.ic_delete_white_24dp,
@@ -159,7 +158,6 @@ class TodayViewController(args: Bundle? = null) :
 
     private fun initIncompleteSwipeHandler(view: View) {
         val swipeHandler = object : SimpleSwipeCallback(
-            view.context,
             R.drawable.ic_done_white_24dp,
             R.color.md_green_500,
             R.drawable.ic_event_white_24dp,

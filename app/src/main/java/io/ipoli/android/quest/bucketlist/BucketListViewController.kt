@@ -60,7 +60,6 @@ class BucketListViewController(args: Bundle? = null) :
         view.questList.adapter = QuestAdapter()
 
         val swipeHandler = object : SimpleSwipeCallback(
-            view.context,
             R.drawable.ic_done_white_24dp,
             R.color.md_green_500,
             R.drawable.ic_event_white_24dp,

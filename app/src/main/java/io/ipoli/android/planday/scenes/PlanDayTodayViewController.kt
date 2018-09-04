@@ -98,7 +98,6 @@ class PlanDayTodayViewController(args: Bundle? = null) :
 
     private fun initSwipe(view: View) {
         val swipeHandler = object : SimpleSwipeCallback(
-            view.context,
             R.drawable.ic_event_white_24dp,
             R.color.md_blue_500,
             R.drawable.ic_delete_white_24dp,
