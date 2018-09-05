@@ -2,10 +2,10 @@ package io.ipoli.android.quest.bucketlist
 
 import io.ipoli.android.common.AppState
 import io.ipoli.android.common.BaseViewStateReducer
-
 import io.ipoli.android.common.redux.Action
 import io.ipoli.android.common.redux.BaseViewState
 import io.ipoli.android.quest.bucketlist.usecase.CreateBucketListItemsUseCase
+import org.threeten.bp.LocalDate
 
 sealed class BucketListAction : Action {
     data class ItemsChanged(val items: List<CreateBucketListItemsUseCase.BucketListItem>) :
@@ -17,7 +17,19 @@ sealed class BucketListAction : Action {
         override fun toMap() = mapOf("questId" to questId)
     }
 
-    data class ScheduleForToday(val questId: String) : BucketListAction() {
+    data class UndoCompleteQuest(val questId: String) : BucketListAction() {
+        override fun toMap() = mapOf("questId" to questId)
+    }
+
+    data class RescheduleQuest(val questId: String, val date: LocalDate?) : BucketListAction() {
+        override fun toMap() = mapOf("questId" to questId, "date" to date)
+    }
+
+    data class RemoveQuest(val questId: String) : BucketListAction() {
+        override fun toMap() = mapOf("questId" to questId)
+    }
+
+    data class UndoRemoveQuest(val questId: String) : BucketListAction() {
         override fun toMap() = mapOf("questId" to questId)
     }
 

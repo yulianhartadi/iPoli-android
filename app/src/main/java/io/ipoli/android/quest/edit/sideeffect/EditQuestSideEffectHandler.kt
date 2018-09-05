@@ -163,14 +163,6 @@ object EditQuestSideEffectHandler : AppSideEffectHandler() {
             is BucketListAction.CompleteQuest ->
                 completeQuest(action.questId)
 
-            is BucketListAction.ScheduleForToday ->
-                rescheduleQuestUseCase.execute(
-                    RescheduleQuestUseCase.Params(
-                        action.questId,
-                        LocalDate.now()
-                    )
-                )
-
             is ScheduleSummaryAction.RescheduleQuest ->
                 rescheduleQuestUseCase.execute(
                     RescheduleQuestUseCase.Params(
@@ -222,6 +214,23 @@ object EditQuestSideEffectHandler : AppSideEffectHandler() {
 
             is AgendaAction.UndoRemoveQuest ->
                 undoRemoveQuestUseCase.execute(action.questId)
+
+            is BucketListAction.UndoCompleteQuest ->
+                undoCompletedQuestUseCase.execute(action.questId)
+
+            is BucketListAction.RescheduleQuest ->
+                rescheduleQuestUseCase.execute(
+                    RescheduleQuestUseCase.Params(
+                        action.questId,
+                        action.date
+                    )
+                )
+
+            is BucketListAction.RemoveQuest ->
+                removeQuestUseCase.execute(action.questId)
+
+            is BucketListAction.UndoRemoveQuest ->
+                undoRemoveQuestUseCase.execute(action.questId)
         }
     }
 
@@ -243,8 +252,7 @@ object EditQuestSideEffectHandler : AppSideEffectHandler() {
             || action is AddQuestAction
             || action is TodayAction
             || action is TagAction.CompleteQuest
-            || action is BucketListAction.CompleteQuest
-            || action is BucketListAction.ScheduleForToday
+            || action is BucketListAction
             || action is PlanDayAction
             || action is ScheduleSummaryAction.RescheduleQuest
             || action is AgendaAction

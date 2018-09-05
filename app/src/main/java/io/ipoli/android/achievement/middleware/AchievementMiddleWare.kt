@@ -64,6 +64,7 @@ object AchievementProgressMiddleWare : MiddleWare<AppState>, Injects<BackgroundM
                 QuestCompleted
 
             is PlanDayAction.UndoCompleteQuest,
+            is BucketListAction.UndoCompleteQuest,
             is TagAction.UndoCompleteQuest,
             is AgendaAction.UndoCompleteQuest,
             is DayViewAction.UndoCompleteQuest ->
@@ -99,7 +100,7 @@ object AchievementProgressMiddleWare : MiddleWare<AppState>, Injects<BackgroundM
             is PetAction.PetDied ->
                 PetDied
 
-            HomeAction.FeedbackSent ->
+            is HomeAction.FeedbackSent ->
                 FeedbackSent
 
             is MembershipAction.Subscribed ->

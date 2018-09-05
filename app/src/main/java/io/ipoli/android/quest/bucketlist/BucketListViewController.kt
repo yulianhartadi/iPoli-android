@@ -26,8 +26,9 @@ import io.ipoli.android.common.text.DateFormatter
 import io.ipoli.android.common.text.QuestStartTimeFormatter
 import io.ipoli.android.common.view.*
 import io.ipoli.android.common.view.recyclerview.MultiViewRecyclerViewAdapter
+import io.ipoli.android.common.view.recyclerview.MultiViewTypeSwipeCallback
 import io.ipoli.android.common.view.recyclerview.RecyclerViewViewModel
-import io.ipoli.android.common.view.recyclerview.SimpleSwipeCallback
+import io.ipoli.android.common.view.recyclerview.SwipeResource
 import io.ipoli.android.quest.CompletedQuestViewController
 import io.ipoli.android.quest.Quest
 import io.ipoli.android.quest.bucketlist.usecase.CreateBucketListItemsUseCase
@@ -59,30 +60,83 @@ class BucketListViewController(args: Bundle? = null) :
         view.questList.layoutManager = LinearLayoutManager(activity!!)
         view.questList.adapter = QuestAdapter()
 
-        val swipeHandler = object : SimpleSwipeCallback(
-            R.drawable.ic_done_white_24dp,
-            R.color.md_green_500,
-            R.drawable.ic_event_white_24dp,
-            R.color.md_blue_500
+        val swipeHandler = object : MultiViewTypeSwipeCallback(
+            startResources = mapOf(
+                ItemType.QUEST.ordinal to SwipeResource(
+                    R.drawable.ic_done_white_24dp,
+                    R.color.md_green_500
+                ),
+                ItemType.COMPLETED_QUEST.ordinal to SwipeResource(
+                    R.drawable.ic_undo_white_24dp,
+                    R.color.md_amber_500
+                )
+            ),
+            endResources = mapOf(
+                ItemType.QUEST.ordinal to SwipeResource(
+                    R.drawable.ic_event_white_24dp,
+                    R.color.md_blue_500
+                ),
+                ItemType.COMPLETED_QUEST.ordinal to SwipeResource(
+                    R.drawable.ic_delete_white_24dp,
+                    R.color.md_red_500
+                )
+            )
         ) {
             override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
-                if (direction == ItemTouchHelper.END) {
-                    dispatch(BucketListAction.CompleteQuest(questId(viewHolder)))
-                } else if (direction == ItemTouchHelper.START) {
-                    dispatch(BucketListAction.ScheduleForToday(questId(viewHolder)))
-                    showShortToast(R.string.quest_scheduled_for_today)
+                val questId = questId(viewHolder)
+                when (viewHolder.itemViewType) {
+                    ItemType.QUEST.ordinal -> {
+                        if (direction == ItemTouchHelper.END) {
+                            dispatch(BucketListAction.CompleteQuest(questId))
+                        } else if (direction == ItemTouchHelper.START) {
+                            navigate()
+                                .toReschedule(
+                                    includeToday = true,
+                                    listener = { date ->
+                                        dispatch(BucketListAction.RescheduleQuest(questId, date))
+                                    },
+                                    cancelListener = {
+                                        view.questList.adapter.notifyItemChanged(viewHolder.adapterPosition)
+                                    }
+                                )
+                        }
+                    }
+
+                    ItemType.COMPLETED_QUEST.ordinal -> {
+                        if (direction == ItemTouchHelper.END) {
+                            dispatch(BucketListAction.UndoCompleteQuest(questId))
+                        } else if (direction == ItemTouchHelper.START) {
+                            dispatch(BucketListAction.RemoveQuest(questId))
+                            PetMessagePopup(
+                                stringRes(R.string.remove_quest_undo_message),
+                                {
+                                    dispatch(BucketListAction.UndoRemoveQuest(questId))
+                                    view.questList.adapter.notifyItemChanged(viewHolder.adapterPosition)
+                                },
+                                stringRes(R.string.undo)
+                            ).show(view.context)
+                        }
+                    }
+
+                    else -> throw IllegalStateException("Swiping unknown view type ${viewHolder.itemViewType} in direction $direction")
                 }
+
             }
 
             private fun questId(holder: RecyclerView.ViewHolder): String {
-                val adapter = view.questList.adapter as QuestAdapter
-                return if (holder.itemViewType == ViewType.QUEST.value) {
-                    val item = adapter.getItemAt<ItemViewModel.QuestItem>(holder.adapterPosition)
-                    item.id
-                } else {
-                    val item =
-                        adapter.getItemAt<ItemViewModel.CompletedQuestItem>(holder.adapterPosition)
-                    item.id
+                val a = view.questList.adapter as QuestAdapter
+                return when {
+                    holder.itemViewType == ItemType.QUEST.ordinal -> {
+                        val item =
+                            a.getItemAt<ItemViewModel.QuestItem>(holder.adapterPosition)
+                        item.id
+                    }
+                    holder.itemViewType == ItemType.COMPLETED_QUEST.ordinal -> {
+                        val item =
+                            a.getItemAt<ItemViewModel.CompletedQuestItem>(holder.adapterPosition)
+                        item.id
+                    }
+                    else -> throw IllegalStateException("Unknown questId for viewType ${holder.itemViewType}")
                 }
 
             }
@@ -91,7 +145,8 @@ class BucketListViewController(args: Bundle? = null) :
                 recyclerView: RecyclerView,
                 viewHolder: RecyclerView.ViewHolder
             ) = when {
-                viewHolder.itemViewType == ViewType.QUEST.value -> (ItemTouchHelper.END or ItemTouchHelper.START)
+                viewHolder.itemViewType == ItemType.QUEST.ordinal -> (ItemTouchHelper.END or ItemTouchHelper.START)
+                viewHolder.itemViewType == ItemType.COMPLETED_QUEST.ordinal -> (ItemTouchHelper.END or ItemTouchHelper.START)
                 else -> 0
             }
         }
@@ -201,10 +256,10 @@ class BucketListViewController(args: Bundle? = null) :
         ) : ItemViewModel(id)
     }
 
-    enum class ViewType(val value: Int) {
-        SECTION(0),
-        QUEST(1),
-        COMPLETED_QUEST(2)
+    enum class ItemType {
+        SECTION,
+        QUEST,
+        COMPLETED_QUEST
     }
 
     inner class QuestAdapter : MultiViewRecyclerViewAdapter<ItemViewModel>() {
@@ -212,14 +267,14 @@ class BucketListViewController(args: Bundle? = null) :
         override fun onRegisterItemBinders() {
 
             registerBinder<ItemViewModel.SectionItem>(
-                ViewType.SECTION.value,
+                ItemType.SECTION.ordinal,
                 R.layout.item_list_section
             ) { vm, view, _ ->
                 (view as TextView).text = vm.text
             }
 
             registerBinder<ItemViewModel.QuestItem>(
-                ViewType.QUEST.value,
+                ItemType.QUEST.ordinal,
                 R.layout.item_agenda_quest
             ) { vm, view, _ ->
                 view.questName.text = vm.name
@@ -249,7 +304,7 @@ class BucketListViewController(args: Bundle? = null) :
             }
 
             registerBinder<ItemViewModel.CompletedQuestItem>(
-                ViewType.COMPLETED_QUEST.value,
+                ItemType.COMPLETED_QUEST.ordinal,
                 R.layout.item_agenda_quest
             ) { vm, view, _ ->
                 val span = SpannableString(vm.name)
@@ -333,10 +388,10 @@ class BucketListViewController(args: Bundle? = null) :
                             color = color,
                             icon = q.icon?.androidIcon?.icon
                                 ?: Ionicons.Icon.ion_android_clipboard,
-                            tags = q.tags.map {
+                            tags = q.tags.map { t ->
                                 ItemViewModel.TagViewModel(
-                                    it.name,
-                                    AndroidColor.valueOf(it.color.name).color500
+                                    t.name,
+                                    t.color.androidColor.color500
                                 )
                             },
                             isRepeating = q.isFromRepeatingQuest,
@@ -351,10 +406,10 @@ class BucketListViewController(args: Bundle? = null) :
                             color = color,
                             icon = q.icon?.androidIcon?.icon
                                 ?: Ionicons.Icon.ion_android_clipboard,
-                            tags = q.tags.map {
+                            tags = q.tags.map { t ->
                                 ItemViewModel.TagViewModel(
-                                    it.name,
-                                    AndroidColor.valueOf(it.color.name).color500
+                                    t.name,
+                                    t.color.androidColor.color500
                                 )
                             },
                             isRepeating = q.isFromRepeatingQuest,
