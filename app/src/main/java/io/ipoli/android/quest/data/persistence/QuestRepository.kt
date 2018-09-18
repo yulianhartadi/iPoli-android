@@ -873,7 +873,19 @@ class RoomQuestRepository(
             preferredStartTime = TimePreference.valueOf(dbObject.preferredStartTime),
             reward = dbObject.coins?.let {
 
-                val dbBounty = DbBounty(dbObject.bounty!!.toMutableMap())
+                val bounty = dbObject.bounty?.let { b ->
+                    val dbBounty = DbBounty(b.toMutableMap())
+                    when {
+                        dbBounty.type == DbBounty.Type.NONE.name -> Quest.Bounty.None
+                        dbBounty.type == DbBounty.Type.FOOD.name -> Quest.Bounty.Food(
+                            Food.valueOf(
+                                dbBounty.name!!
+                            )
+                        )
+                        else -> throw IllegalArgumentException("Unknown bounty type ${dbBounty.type}")
+                    }
+                } ?: Quest.Bounty.None
+
                 Reward(
                     attributePoints = dbObject.attributePoints!!.map { a ->
                         Player.AttributeType.valueOf(
@@ -883,15 +895,7 @@ class RoomQuestRepository(
                     healthPoints = dbObject.healthPoints!!.toInt(),
                     experience = dbObject.experience!!.toInt(),
                     coins = dbObject.coins.toInt(),
-                    bounty = when {
-                        dbBounty.type == DbBounty.Type.NONE.name -> Quest.Bounty.None
-                        dbBounty.type == DbBounty.Type.FOOD.name -> Quest.Bounty.Food(
-                            Food.valueOf(
-                                dbBounty.name!!
-                            )
-                        )
-                        else -> throw IllegalArgumentException("Unknown bounty type ${dbBounty.type}")
-                    }
+                    bounty = bounty
                 )
             },
             completedAtDate = dbObject.completedAtDate?.startOfDayUTC,
@@ -1218,7 +1222,20 @@ class FirestoreQuestRepository(
             priority = Priority.valueOf(cq.priority),
             preferredStartTime = TimePreference.valueOf(cq.preferredStartTime),
             reward = cq.coins?.let {
-                val dbBounty = DbBounty(cq.bounty!!.toMutableMap())
+
+                val bounty = cq.bounty?.let { b ->
+                    val dbBounty = DbBounty(b.toMutableMap())
+                    when {
+                        dbBounty.type == DbBounty.Type.NONE.name -> Quest.Bounty.None
+                        dbBounty.type == DbBounty.Type.FOOD.name -> Quest.Bounty.Food(
+                            Food.valueOf(
+                                dbBounty.name!!
+                            )
+                        )
+                        else -> throw IllegalArgumentException("Unknown bounty type ${dbBounty.type}")
+                    }
+                } ?: Quest.Bounty.None
+
                 Reward(
                     attributePoints = cq.attributePoints!!.map { a ->
                         Player.AttributeType.valueOf(
@@ -1228,15 +1245,7 @@ class FirestoreQuestRepository(
                     healthPoints = cq.healthPoints!!.toInt(),
                     experience = cq.experience!!.toInt(),
                     coins = cq.coins!!.toInt(),
-                    bounty = when {
-                        dbBounty.type == DbBounty.Type.NONE.name -> Quest.Bounty.None
-                        dbBounty.type == DbBounty.Type.FOOD.name -> Quest.Bounty.Food(
-                            Food.valueOf(
-                                dbBounty.name!!
-                            )
-                        )
-                        else -> throw IllegalArgumentException("Unknown bounty type ${dbBounty.type}")
-                    }
+                    bounty = bounty
                 )
             },
             completedAtDate = cq.completedAtDate?.startOfDayUTC,
