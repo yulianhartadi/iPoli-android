@@ -1,5 +1,6 @@
 package io.ipoli.android.quest
 
+import io.ipoli.android.common.Reward
 import io.ipoli.android.common.datetime.*
 import io.ipoli.android.common.persistence.EntityWithTags
 import io.ipoli.android.common.sumByLong
@@ -166,9 +167,7 @@ data class Quest(
     val totalPomodoros: Int? = null,
     val completedAtDate: LocalDate? = null,
     val completedAtTime: Time? = null,
-    val experience: Int? = null,
-    val coins: Int? = null,
-    val bounty: Bounty? = null,
+    val reward: Reward? = null,
     val isRemoved: Boolean = false,
     val repeatingQuestId: String? = null,
     val challengeId: String? = null,

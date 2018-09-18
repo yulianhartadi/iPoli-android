@@ -24,12 +24,18 @@ import io.ipoli.android.common.persistence.BaseEntityFirestoreRepository
 import io.ipoli.android.common.persistence.BaseRoomRepository
 import io.ipoli.android.common.persistence.getSync
 import io.ipoli.android.pet.*
+import io.ipoli.android.player.AttributePointsForLevelGenerator
 import io.ipoli.android.player.Theme
 import io.ipoli.android.player.data.*
 import io.ipoli.android.player.persistence.model.*
+import io.ipoli.android.player.usecase.FindPlayerRankUseCase
+import io.ipoli.android.quest.Color
 import io.ipoli.android.quest.ColorPack
 import io.ipoli.android.quest.IconPack
 import io.ipoli.android.store.powerup.PowerUp
+import io.ipoli.android.tag.Tag
+import io.ipoli.android.tag.persistence.RoomTagMapper
+import io.ipoli.android.tag.persistence.TagDao
 import kotlinx.coroutines.experimental.async
 import kotlinx.coroutines.experimental.channels.Channel
 import kotlinx.coroutines.experimental.runBlocking
@@ -101,6 +107,8 @@ data class RoomPlayer(
     val displayName: String?,
     val bio: String?,
     val schemaVersion: Long,
+    val health: MutableMap<String, Any?>,
+    val attributes: MutableMap<String, Map<String, Any?>>,
     val level: Long,
     val coins: Long,
     val gems: Long,
@@ -120,8 +128,11 @@ data class RoomPlayer(
 
 class AndroidPlayerRepository(
     private val database: FirebaseFirestore,
-    dao: PlayerDao
+    dao: PlayerDao,
+    private val tagDao: TagDao
 ) : BaseRoomRepository<Player, RoomPlayer, PlayerDao>(dao), PlayerRepository {
+
+    private val tagMapper = RoomTagMapper()
 
     override fun save(entities: List<Player>): List<Player> {
         TODO("not implemented")
@@ -267,13 +278,43 @@ class AndroidPlayerRepository(
             )
         }
 
+        val dbHealth = DbHealth(dbObject.health)
+
+        val allTags = tagDao.findAll().map { tagMapper.toEntityObject(it) }
+
+        val attributes = dbObject.attributes.map {
+            val dbAttribute = DbAttribute(it.value.toMutableMap())
+            val attrType = Player.AttributeType.valueOf(it.key)
+            attrType to Player.Attribute(
+                type = attrType,
+                points = dbAttribute.points.toInt(),
+                level = dbAttribute.level.toInt(),
+                pointsForNextLevel = dbAttribute.pointsForNextLevel.toInt(),
+                tags = dbAttribute.tagIds.map { id -> allTags.first { t -> t.id == id } }
+            )
+        }.toMap()
+
+        val level = dbObject.level.toInt()
+
+        val (currentRank, nextRank) = FindPlayerRankUseCase().execute(
+            FindPlayerRankUseCase.Params(
+                attributes,
+                level
+            )
+        )
+
         return Player(
             id = dbObject.id,
             username = dbObject.username,
             displayName = dbObject.displayName,
             bio = dbObject.bio,
             schemaVersion = dbObject.schemaVersion.toInt(),
-            level = dbObject.level.toInt(),
+            health = Player.Health(
+                current = dbHealth.current.toInt(),
+                max = dbHealth.max.toInt()
+            ),
+            attributes = attributes,
+            level = level,
             coins = dbObject.coins.toInt(),
             gems = dbObject.gems.toInt(),
             experience = dbObject.experience,
@@ -287,15 +328,16 @@ class AndroidPlayerRepository(
             membership = Membership.valueOf(dbObject.membership),
             preferences = pref,
             achievements = achievements,
-            statistics = createStatistics(dbObject.statistics)
-
+            statistics = createStatistics(dbObject.statistics),
+            rank = currentRank,
+            nextRank = nextRank
         )
 
     }
 
     private fun createPetEquipment(dbPet: DbPet): PetEquipment {
         val e = DbPetEquipment(dbPet.equipment)
-        val toPetItem: (String?) -> PetItem? = { it?.let { PetItem.valueOf(it) } }
+        val toPetItem: (String?) -> PetItem? = { it?.let { i -> PetItem.valueOf(i) } }
         return PetEquipment(toPetItem(e.hat), toPetItem(e.mask), toPetItem(e.bodyArmor))
     }
 
@@ -336,7 +378,32 @@ class AndroidPlayerRepository(
             joinMembershipCount = createCountStatistic("joinMembershipCount", stats),
             powerUpActivatedCount = createCountStatistic("powerUpActivatedCount", stats),
             petRevivedCount = createCountStatistic("petRevivedCount", stats),
-            petDiedCount = createCountStatistic("petDiedCount", stats)
+            petDiedCount = createCountStatistic("petDiedCount", stats),
+            inviteForFriendCount = createCountStatistic("inviteForFriendCount", stats),
+            strengthStatusIndex = createCountStatistic(
+                statisticKey = "strengthStatusIndex",
+                stats = stats
+            ),
+            intelligenceStatusIndex = createCountStatistic(
+                statisticKey = "intelligenceStatusIndex",
+                stats = stats
+            ),
+            charismaStatusIndex = createCountStatistic(
+                statisticKey = "charismaStatusIndex",
+                stats = stats
+            ),
+            expertiseStatusIndex = createCountStatistic(
+                statisticKey = "expertiseStatusIndex",
+                stats = stats
+            ),
+            wellBeingStatusIndex = createCountStatistic(
+                statisticKey = "wellBeingStatusIndex",
+                stats = stats
+            ),
+            willpowerStatusIndex = createCountStatistic(
+                statisticKey = "willpowerStatusIndex",
+                stats = stats
+            )
         )
     }
 
@@ -371,6 +438,21 @@ class AndroidPlayerRepository(
             displayName = entity.displayName,
             bio = entity.bio,
             schemaVersion = entity.schemaVersion.toLong(),
+            health = DbHealth().apply {
+                current = entity.health.current.toLong()
+                max = entity.health.max.toLong()
+            }.map,
+            attributes = entity.attributes.map {
+                val value = it.value
+                val dbAttribute = DbAttribute().apply {
+                    type = it.key.name
+                    points = value.points.toLong()
+                    level = value.level.toLong()
+                    pointsForNextLevel = value.pointsForNextLevel.toLong()
+                    tagIds = value.tags.map { t -> t.id }
+                }
+                it.key.name to dbAttribute.map
+            }.toMap().toMutableMap(),
             level = entity.level.toLong(),
             coins = entity.coins.toLong(),
             gems = entity.gems.toLong(),
@@ -514,7 +596,14 @@ class AndroidPlayerRepository(
             "joinMembershipCount" to stats.joinMembershipCount,
             "powerUpActivatedCount" to stats.powerUpActivatedCount,
             "petRevivedCount" to stats.petRevivedCount,
-            "petDiedCount" to stats.petDiedCount
+            "petDiedCount" to stats.petDiedCount,
+            "inviteForFriendCount" to stats.inviteForFriendCount,
+            "strengthStatusIndex" to stats.strengthStatusIndex,
+            "intelligenceStatusIndex" to stats.intelligenceStatusIndex,
+            "charismaStatusIndex" to stats.charismaStatusIndex,
+            "expertiseStatusIndex" to stats.expertiseStatusIndex,
+            "wellBeingStatusIndex" to stats.wellBeingStatusIndex,
+            "willpowerStatusIndex" to stats.willpowerStatusIndex
         )
 
     private fun createDbStreakStatistic(stat: Statistics.StreakStatistic) =
@@ -580,6 +669,73 @@ class FirestorePlayerRepository(
         get() = collectionReference.document(playerId)
 
     override fun toEntityObject(dataMap: MutableMap<String, Any?>): Player {
+
+        if (!dataMap.containsKey("health")) {
+            dataMap["health"] = DbHealth().apply {
+                current = Constants.DEFAULT_PLAYER_MAX_HP.toLong()
+                max = Constants.DEFAULT_PLAYER_MAX_HP.toLong()
+            }.map
+        }
+
+        if (!dataMap.containsKey("attributes")) {
+            dataMap["attributes"] = mapOf(
+                Player.AttributeType.STRENGTH.name to DbAttribute().apply {
+                    type = Player.AttributeType.STRENGTH.name
+                    points = 0
+                    level = Constants.DEFAULT_ATTRIBUTE_LEVEL.toLong()
+                    pointsForNextLevel =
+                        AttributePointsForLevelGenerator.forLevel(Constants.DEFAULT_ATTRIBUTE_LEVEL + 1)
+                            .toLong()
+                    tagIds = emptyList()
+                }.map,
+                Player.AttributeType.INTELLIGENCE.name to DbAttribute().apply {
+                    type = Player.AttributeType.INTELLIGENCE.name
+                    points = 0
+                    level = Constants.DEFAULT_ATTRIBUTE_LEVEL.toLong()
+                    pointsForNextLevel =
+                        AttributePointsForLevelGenerator.forLevel(Constants.DEFAULT_ATTRIBUTE_LEVEL + 1)
+                            .toLong()
+                    tagIds = emptyList()
+                }.map,
+                Player.AttributeType.CHARISMA.name to DbAttribute().apply {
+                    type = Player.AttributeType.CHARISMA.name
+                    points = 0
+                    level = Constants.DEFAULT_ATTRIBUTE_LEVEL.toLong()
+                    pointsForNextLevel =
+                        AttributePointsForLevelGenerator.forLevel(Constants.DEFAULT_ATTRIBUTE_LEVEL + 1)
+                            .toLong()
+                    tagIds = emptyList()
+                }.map,
+                Player.AttributeType.EXPERTISE.name to DbAttribute().apply {
+                    type = Player.AttributeType.EXPERTISE.name
+                    points = 0
+                    level = Constants.DEFAULT_ATTRIBUTE_LEVEL.toLong()
+                    pointsForNextLevel =
+                        AttributePointsForLevelGenerator.forLevel(Constants.DEFAULT_ATTRIBUTE_LEVEL + 1)
+                            .toLong()
+                    tagIds = emptyList()
+                }.map,
+                Player.AttributeType.WELL_BEING.name to DbAttribute().apply {
+                    type = Player.AttributeType.WELL_BEING.name
+                    points = 0
+                    level = Constants.DEFAULT_ATTRIBUTE_LEVEL.toLong()
+                    pointsForNextLevel =
+                        AttributePointsForLevelGenerator.forLevel(Constants.DEFAULT_ATTRIBUTE_LEVEL + 1)
+                            .toLong()
+                    tagIds = emptyList()
+                }.map,
+                Player.AttributeType.WILLPOWER.name to DbAttribute().apply {
+                    type = Player.AttributeType.WILLPOWER.name
+                    points = 0
+                    level = Constants.DEFAULT_ATTRIBUTE_LEVEL.toLong()
+                    pointsForNextLevel =
+                        AttributePointsForLevelGenerator.forLevel(Constants.DEFAULT_ATTRIBUTE_LEVEL + 1)
+                            .toLong()
+                    tagIds = emptyList()
+                }.map
+            )
+        }
+
         val cp = DbPlayer(dataMap)
 
         val authProvider = cp.authProvider?.let {
@@ -680,13 +836,48 @@ class FirestorePlayerRepository(
             )
         }
 
+        val dbHealth = DbHealth(cp.health)
+
+        val attributes = cp.attributes.map {
+            val dbAttribute = DbAttribute(it.value.toMutableMap())
+            val attrType = Player.AttributeType.valueOf(it.key)
+            attrType to Player.Attribute(
+                type = attrType,
+                points = dbAttribute.points.toInt(),
+                level = dbAttribute.level.toInt(),
+                pointsForNextLevel = dbAttribute.pointsForNextLevel.toInt(),
+                tags = dbAttribute.tagIds.map { id ->
+                    Tag(
+                        id = id,
+                        name = "",
+                        color = Color.GREEN,
+                        isFavorite = false
+                    )
+                }
+            )
+        }.toMap()
+
+        val level = cp.level.toInt()
+
+        val (currentRank, nextRank) = FindPlayerRankUseCase().execute(
+            FindPlayerRankUseCase.Params(
+                attributes,
+                level
+            )
+        )
+
         return Player(
             id = cp.id,
             username = cp.username,
             displayName = cp.displayName,
             bio = cp.bio,
             schemaVersion = cp.schemaVersion.toInt(),
-            level = cp.level.toInt(),
+            health = Player.Health(
+                current = dbHealth.current.toInt(),
+                max = dbHealth.max.toInt()
+            ),
+            attributes = attributes,
+            level = level,
             coins = cp.coins.toInt(),
             gems = cp.gems.toInt(),
             experience = cp.experience,
@@ -700,7 +891,9 @@ class FirestorePlayerRepository(
             membership = Membership.valueOf(cp.membership),
             preferences = pref,
             achievements = achievements,
-            statistics = createStatistics(cp.statistics)
+            statistics = createStatistics(cp.statistics),
+            rank = currentRank,
+            nextRank = nextRank
         )
     }
 
@@ -747,7 +940,32 @@ class FirestorePlayerRepository(
             joinMembershipCount = createCountStatistic("joinMembershipCount", stats),
             powerUpActivatedCount = createCountStatistic("powerUpActivatedCount", stats),
             petRevivedCount = createCountStatistic("petRevivedCount", stats),
-            petDiedCount = createCountStatistic("petDiedCount", stats)
+            petDiedCount = createCountStatistic("petDiedCount", stats),
+            inviteForFriendCount = createCountStatistic("inviteForFriendCount", stats),
+            strengthStatusIndex = createCountStatistic(
+                statisticKey = "strengthStatusIndex",
+                stats = stats
+            ),
+            intelligenceStatusIndex = createCountStatistic(
+                statisticKey = "intelligenceStatusIndex",
+                stats = stats
+            ),
+            charismaStatusIndex = createCountStatistic(
+                statisticKey = "charismaStatusIndex",
+                stats = stats
+            ),
+            expertiseStatusIndex = createCountStatistic(
+                statisticKey = "expertiseStatusIndex",
+                stats = stats
+            ),
+            wellBeingStatusIndex = createCountStatistic(
+                statisticKey = "wellBeingStatusIndex",
+                stats = stats
+            ),
+            willpowerStatusIndex = createCountStatistic(
+                statisticKey = "willpowerStatusIndex",
+                stats = stats
+            )
         )
     }
 
@@ -782,6 +1000,21 @@ class FirestorePlayerRepository(
             it.displayName = entity.displayName
             it.bio = entity.bio
             it.schemaVersion = entity.schemaVersion.toLong()
+            it.health = DbHealth().apply {
+                current = entity.health.current.toLong()
+                max = entity.health.max.toLong()
+            }.map
+            it.attributes = entity.attributes.map { a ->
+                val value = a.value
+                val dbAttribute = DbAttribute().apply {
+                    type = a.key.name
+                    points = value.points.toLong()
+                    level = value.level.toLong()
+                    pointsForNextLevel = value.pointsForNextLevel.toLong()
+                    tagIds = value.tags.map { t -> t.id }
+                }
+                a.key.name to dbAttribute.map
+            }.toMap().toMutableMap()
             it.level = entity.level.toLong()
             it.coins = entity.coins.toLong()
             it.gems = entity.gems.toLong()
@@ -925,7 +1158,14 @@ class FirestorePlayerRepository(
             "joinMembershipCount" to stats.joinMembershipCount,
             "powerUpActivatedCount" to stats.powerUpActivatedCount,
             "petRevivedCount" to stats.petRevivedCount,
-            "petDiedCount" to stats.petDiedCount
+            "petDiedCount" to stats.petDiedCount,
+            "inviteForFriendCount" to stats.inviteForFriendCount,
+            "strengthStatusIndex" to stats.strengthStatusIndex,
+            "intelligenceStatusIndex" to stats.intelligenceStatusIndex,
+            "charismaStatusIndex" to stats.charismaStatusIndex,
+            "expertiseStatusIndex" to stats.expertiseStatusIndex,
+            "wellBeingStatusIndex" to stats.wellBeingStatusIndex,
+            "willpowerStatusIndex" to stats.willpowerStatusIndex
         )
 
     private fun createDbStreakStatistic(stat: Statistics.StreakStatistic) =

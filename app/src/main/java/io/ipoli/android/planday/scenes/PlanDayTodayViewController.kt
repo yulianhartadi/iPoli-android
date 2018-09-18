@@ -237,11 +237,6 @@ class PlanDayTodayViewController(args: Bundle? = null) :
                 )
 
             DAY_STARTED -> {
-                activity?.let {
-                    val message = stringsRes(R.array.plan_day_done).shuffled().first()
-                    PetMessagePopup(message)
-                        .show(it)
-                }
                 dispatch(PlanDayAction.Done)
                 navigateFromRoot().setHome()
             }

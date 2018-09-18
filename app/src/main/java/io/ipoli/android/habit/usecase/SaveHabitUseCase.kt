@@ -1,8 +1,6 @@
 package io.ipoli.android.habit.usecase
 
-import io.ipoli.android.common.SimpleReward
 import io.ipoli.android.common.UseCase
-import io.ipoli.android.habit.HabitReward
 import io.ipoli.android.habit.data.Habit
 import io.ipoli.android.habit.persistence.HabitRepository
 import io.ipoli.android.player.data.Player
@@ -11,7 +9,6 @@ import io.ipoli.android.player.usecase.RemoveRewardFromPlayerUseCase
 import io.ipoli.android.player.usecase.RewardPlayerUseCase
 import io.ipoli.android.quest.Color
 import io.ipoli.android.quest.Icon
-import io.ipoli.android.quest.Quest
 import io.ipoli.android.tag.Tag
 import org.threeten.bp.DayOfWeek
 import org.threeten.bp.LocalDateTime
@@ -43,8 +40,13 @@ class SaveHabitUseCase(
         } else {
             var h = habitRepository.findById(parameters.id)!!
 
-            if(h.timesADay != parameters.timesADay) {
-                h = handleRewardIfTimesADayUpdated(h, parameters.timesADay, parameters.dateTime, parameters.player)
+            if (h.timesADay != parameters.timesADay) {
+                h = handleRewardIfTimesADayUpdated(
+                    h,
+                    parameters.timesADay,
+                    parameters.dateTime,
+                    parameters.player
+                )
             }
 
             h.copy(
@@ -73,31 +75,21 @@ class SaveHabitUseCase(
         val date = p.currentDate(dateTime)
         val resetTime = p.preferences.resetDayTime
 
-        if(!habit.shouldBeDoneOn(dateTime, resetTime)) {
+        if (!habit.shouldBeDoneOn(dateTime, resetTime)) {
             return habit
         }
 
         val completedCountForDate = habit.completedCountForDate(dateTime, resetTime)
 
         if (completedCountForDate >= timesADay) {
+
+            val reward =
+                rewardPlayerUseCase.execute(RewardPlayerUseCase.Params.ForHabit(habit, date, p))
+                    .reward
+
             val history = habit.history.toMutableMap()
 
-            val pet = p.pet
-
-            history[date]!!.coins?.let {
-                val reward = HabitReward().generate(pet.coinBonus, pet.experienceBonus)
-                history[date] = history[date]!!.copy(
-                    coins = reward.coins,
-                    experience = reward.experience
-                )
-            }
-            rewardPlayerUseCase.execute(
-                SimpleReward(
-                    coins = history[date]!!.coins!!,
-                    experience = history[date]!!.experience!!,
-                    bounty = Quest.Bounty.None
-                )
-            )
+            history[date] = history[date]!!.copy(reward = reward)
 
             return habit.copy(
                 history = history
@@ -106,13 +98,7 @@ class SaveHabitUseCase(
 
         if (habit.isCompletedFor(dateTime, resetTime)) {
             val history = habit.history
-            removeRewardFromPlayerUseCase.execute(
-                SimpleReward(
-                    coins = history[date]!!.coins!!,
-                    experience = history[date]!!.experience!!,
-                    bounty = Quest.Bounty.None
-                )
-            )
+            removeRewardFromPlayerUseCase.execute(RemoveRewardFromPlayerUseCase.Params(history[date]!!.reward!!))
         }
 
         return habit

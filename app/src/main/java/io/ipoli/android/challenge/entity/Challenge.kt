@@ -1,5 +1,6 @@
 package io.ipoli.android.challenge.entity
 
+import io.ipoli.android.common.Reward
 import io.ipoli.android.common.datetime.Time
 import io.ipoli.android.common.persistence.EntityWithTags
 import io.ipoli.android.habit.data.Habit
@@ -23,8 +24,7 @@ data class Challenge(
     val startDate: LocalDate,
     val endDate: LocalDate,
     val motivations: List<String>,
-    val experience: Int? = null,
-    val coins: Int? = null,
+    val reward: Reward? = null,
     val completedAtDate: LocalDate? = null,
     val completedAtTime: Time? = null,
     val nextDate: LocalDate? = null,

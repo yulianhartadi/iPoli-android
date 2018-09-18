@@ -16,6 +16,7 @@ import io.ipoli.android.friends.feed.data.Post
 import io.ipoli.android.friends.persistence.Friend
 import io.ipoli.android.pet.Pet
 import io.ipoli.android.player.data.Avatar
+import io.ipoli.android.player.data.Membership
 import io.ipoli.android.player.data.Player
 import io.ipoli.android.player.profile.ProfileViewState.StateType.*
 
@@ -32,9 +33,6 @@ sealed class ProfileAction : Action {
         override fun toMap() = mapOf("friendId" to friendId)
     }
 
-
-    object StartEdit : ProfileAction()
-    object StopEdit : ProfileAction()
     object LoadPlayerChallenges : ProfileAction()
     object LoadFriends : ProfileAction()
     data class LoadPosts(val mapToViewModel: (Post) -> PostViewModel, val friendId: String?) :
@@ -122,16 +120,6 @@ class ProfileReducer(reducerKey: String) : BaseViewStateReducer<ProfileViewState
                 else
                     subState
 
-            is ProfileAction.StartEdit ->
-                subState.copy(
-                    type = EDIT
-                )
-
-            ProfileAction.StopEdit ->
-                subState.copy(
-                    type = ProfileViewState.StateType.EDIT_STOPPED
-                )
-
             is ProfileAction.LoadPlayerChallenges -> {
                 val player = state.dataState.player
                 when {
@@ -139,7 +127,7 @@ class ProfileReducer(reducerKey: String) : BaseViewStateReducer<ProfileViewState
                         type = ProfileViewState.StateType.CHALLENGE_LIST_LOADING
                     )
                     player.authProvider == null -> subState.copy(
-                        type = SHOW_REQUIRE_LOGIN
+                        type = ProfileViewState.StateType.SHOW_REQUIRE_LOGIN
                     )
                     state.dataState.challenges == null -> subState.copy(
                         type = ProfileViewState.StateType.CHALLENGE_LIST_LOADING
@@ -166,7 +154,7 @@ class ProfileReducer(reducerKey: String) : BaseViewStateReducer<ProfileViewState
 
             is ProfileAction.ShowRequireLogin ->
                 subState.copy(
-                    type = SHOW_REQUIRE_LOGIN
+                    type = ProfileViewState.StateType.SHOW_REQUIRE_LOGIN
                 )
 
             is DataLoadedAction.PostsChanged ->
@@ -222,7 +210,15 @@ class ProfileReducer(reducerKey: String) : BaseViewStateReducer<ProfileViewState
             levelXpMaxProgress = player.experienceForNextLevel,
             coins = player.coins,
             gems = player.gems,
-            pet = player.pet
+            pet = player.pet,
+            isMember = player.membership != Membership.NONE,
+            attributes = Player.AttributeType.values().map {
+                player.attributes[it]!!
+            },
+            health = player.health.current,
+            maxHealth = player.health.max,
+            rank = player.rank,
+            nextRank = player.nextRank
         )
         return if (hasProfileDataLoaded(newState)) {
             newState.copy(
@@ -248,6 +244,9 @@ class ProfileReducer(reducerKey: String) : BaseViewStateReducer<ProfileViewState
             levelXpMaxProgress = -1,
             coins = -1,
             gems = -1,
+            health = -1,
+            maxHealth = -1,
+            attributes = null,
             dailyChallengeStreak = -1,
             last7DaysAverageProductiveDuration = null,
             unlockedAchievements = emptyList(),
@@ -255,7 +254,10 @@ class ProfileReducer(reducerKey: String) : BaseViewStateReducer<ProfileViewState
             friends = null,
             posts = null,
             currentPostId = null,
-            friendId = null
+            friendId = null,
+            isMember = null,
+            rank = null,
+            nextRank = null
         )
 
     override val stateKey = reducerKey
@@ -278,8 +280,13 @@ data class ProfileViewState(
     val level: Int,
     val levelXpProgress: Int,
     val levelXpMaxProgress: Int,
+    val rank : Player.Rank?,
+    val nextRank : Player.Rank?,
     val coins: Int,
     val gems: Int,
+    val health: Int,
+    val maxHealth: Int,
+    val attributes : List<Player.Attribute>?,
     val dailyChallengeStreak: Int,
     val last7DaysAverageProductiveDuration: Duration<Minute>?,
     val unlockedAchievements: List<CreateAchievementItemsUseCase.AchievementItem>,
@@ -287,14 +294,13 @@ data class ProfileViewState(
     val friends: List<Friend>?,
     val posts: PagedList<PostViewModel>?,
     val currentPostId: String?,
-    val friendId: String?
+    val friendId: String?,
+    val isMember: Boolean?
 ) : BaseViewState() {
 
     enum class StateType {
         LOADING,
         PROFILE_DATA_LOADED,
-        EDIT,
-        EDIT_STOPPED,
         CHALLENGE_LIST_DATA_CHANGED,
         CHALLENGE_LIST_LOADING,
         FRIENDS_LIST_CHANGED,

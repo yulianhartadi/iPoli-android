@@ -46,8 +46,11 @@ import io.ipoli.android.pet.PetViewController
 import io.ipoli.android.pet.store.PetStoreViewController
 import io.ipoli.android.planday.PlanDayViewController
 import io.ipoli.android.planday.RescheduleDialogController
+import io.ipoli.android.player.attribute.AttributeListViewController
 import io.ipoli.android.player.auth.AuthViewController
 import io.ipoli.android.player.data.Player
+import io.ipoli.android.player.profile.EditProfileDialogController
+import io.ipoli.android.player.profile.FriendProfileViewController
 import io.ipoli.android.player.profile.ProfileViewController
 import io.ipoli.android.quest.Color
 import io.ipoli.android.quest.CompletedQuestViewController
@@ -109,7 +112,7 @@ class Navigator(private val router: Router) {
         val profileViewController =
             if (FirebaseAuth.getInstance().currentUser?.uid == friendId)
                 ProfileViewController()
-            else ProfileViewController(friendId)
+            else FriendProfileViewController(friendId)
 
         val changeHandler = HorizontalChangeHandler()
         router.pushController(
@@ -134,6 +137,13 @@ class Navigator(private val router: Router) {
 
     fun toScheduleSummary(currentDate: LocalDate) {
         pushController({ ScheduleSummaryViewController(currentDate) }, VerticalChangeHandler())
+    }
+
+    fun toAttributes(attribute: Player.AttributeType? = null) {
+        pushController({
+            if (attribute == null) AttributeListViewController()
+            else AttributeListViewController(attribute)
+        }, VerticalChangeHandler())
     }
 
     fun setAddQuest(
@@ -428,6 +438,10 @@ class Navigator(private val router: Router) {
 
     fun toInviteFriends() {
         pushDialog { InviteFriendsDialogController() }
+    }
+
+    fun toEditProfile() {
+        pushDialog { EditProfileDialogController() }
     }
 
     fun toAcceptFriendship(invitePlayerId: String) {

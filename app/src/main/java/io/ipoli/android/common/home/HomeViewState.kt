@@ -90,7 +90,8 @@ object HomeReducer : BaseViewStateReducer<HomeViewState>() {
             titleIndex = player.level / 10,
             level = player.level,
             progress = player.experienceProgressForLevel,
-            maxProgress = player.experienceForNextLevel
+            maxProgress = player.experienceForNextLevel,
+            rank = player.rank
         )
 
     override fun defaultState() = HomeViewState(
@@ -103,6 +104,7 @@ object HomeReducer : BaseViewStateReducer<HomeViewState>() {
         petState = PetState.AWESOME,
         gems = 0,
         lifeCoins = 0,
+        rank = Player.Rank.NOVICE,
         experience = 0,
         progress = 0,
         maxProgress = 0,
@@ -123,6 +125,7 @@ data class HomeViewState(
     val petState: PetState,
     val gems: Int,
     val lifeCoins: Int,
+    val rank : Player.Rank,
     val experience: Long,
     val progress: Int,
     val maxProgress: Int,

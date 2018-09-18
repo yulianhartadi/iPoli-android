@@ -3,6 +3,7 @@ package io.ipoli.android.growth.usecase
 import com.nhaarman.mockito_kotlin.doReturn
 import com.nhaarman.mockito_kotlin.mock
 import io.ipoli.android.TestUtil
+import io.ipoli.android.common.Reward
 import io.ipoli.android.common.datetime.*
 import io.ipoli.android.planday.usecase.CalculateAwesomenessScoreUseCase
 import io.ipoli.android.planday.usecase.CalculateFocusDurationUseCase
@@ -25,8 +26,7 @@ import org.threeten.bp.temporal.TemporalAdjusters
 class CalculateGrowthStatsUseCaseSpek : Spek({
 
     val completedQuest = TestUtil.quest.copy(
-        experience = 50,
-        coins = 50,
+        reward = Reward(emptyMap(), 0,50, 50, Quest.Bounty.None),
         completedAtDate = LocalDate.now(),
         completedAtTime = Time.now()
     )

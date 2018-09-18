@@ -1,5 +1,6 @@
 package io.ipoli.android.dailychallenge.data
 
+import io.ipoli.android.common.Reward
 import io.ipoli.android.quest.Entity
 import org.threeten.bp.Instant
 import org.threeten.bp.LocalDate
@@ -13,6 +14,7 @@ data class DailyChallenge(
     val date: LocalDate,
     val questIds: List<String> = emptyList(),
     val isCompleted: Boolean = false,
+    val reward: Reward? = null,
     override val createdAt: Instant = Instant.now(),
     override val updatedAt: Instant = Instant.now(),
     val removedAt: Instant? = null

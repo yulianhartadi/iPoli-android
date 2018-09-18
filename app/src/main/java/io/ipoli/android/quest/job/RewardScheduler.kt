@@ -53,6 +53,7 @@ class AndroidJobRewardScheduler(private val context: Context) : RewardScheduler 
                 petHeadImage = petHeadImage,
                 earnedXP = reward.experience,
                 earnedCoins = reward.coins,
+                attributes = reward.attributePoints,
                 bounty = if (bounty is Quest.Bounty.Food) {
                     bounty.food
                 } else {

@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<TextView xmlns:android="http://schemas.android.com/apk/res/android"
+    style="?android:attr/dropDownItemStyle"
+    android:layout_width="match_parent"
+    android:layout_height="?android:attr/listPreferredItemHeight"
+    android:drawablePadding="8dp"
+    android:drawableStart="@drawable/tag_indicator"
+    android:ellipsize="marquee"
+    android:paddingStart="16dp"
+    android:paddingEnd="16dp"
+    android:includeFontPadding="false"
+    android:singleLine="true"
+    android:textAppearance="?android:attr/textAppearanceLargePopupMenu" />

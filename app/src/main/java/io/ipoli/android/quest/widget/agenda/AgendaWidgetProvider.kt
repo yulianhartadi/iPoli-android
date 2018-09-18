@@ -5,15 +5,24 @@ import android.appwidget.AppWidgetManager
 import android.appwidget.AppWidgetProvider
 import android.content.Context
 import android.content.Intent
+import android.view.View
 import android.widget.RemoteViews
 import io.ipoli.android.Constants
+import io.ipoli.android.MyPoliApp
 import io.ipoli.android.R
 import io.ipoli.android.common.IntentUtil
+import io.ipoli.android.common.di.BackgroundModule
 import io.ipoli.android.common.text.CalendarFormatter
-import io.ipoli.android.MyPoliApp
 import io.ipoli.android.quest.receiver.CompleteQuestReceiver
+import kotlinx.coroutines.experimental.CommonPool
+import kotlinx.coroutines.experimental.android.UI
+import kotlinx.coroutines.experimental.launch
+import kotlinx.coroutines.experimental.withContext
 import org.threeten.bp.LocalDate
 import org.threeten.bp.format.TextStyle
+import space.traversal.kapsule.Injects
+import space.traversal.kapsule.inject
+import space.traversal.kapsule.required
 import java.util.*
 
 
@@ -21,7 +30,9 @@ import java.util.*
  * Created by Venelin Valkov <venelin@mypoli.fun>
  * on 02/10/2018.
  */
-class AgendaWidgetProvider : AppWidgetProvider() {
+class AgendaWidgetProvider : AppWidgetProvider(), Injects<BackgroundModule> {
+
+    private val playerRepository by required { playerRepository }
 
     companion object {
         const val WIDGET_QUEST_LIST_ACTION =
@@ -63,7 +74,7 @@ class AgendaWidgetProvider : AppWidgetProvider() {
         appWidgetManager: AppWidgetManager,
         appWidgetIds: IntArray
     ) {
-
+        inject(MyPoliApp.backgroundModule(context))
         val calendarFormatter = CalendarFormatter(MyPoliApp.instance)
 
         val today = LocalDate.now()
@@ -73,33 +84,62 @@ class AgendaWidgetProvider : AppWidgetProvider() {
         val date = calendarFormatter.dateWithoutYear(today)
 
         appWidgetIds.forEach {
+            launch(CommonPool) {
+                val player = playerRepository.find()
 
-            val rv = RemoteViews(context.packageName, R.layout.widget_agenda)
+                withContext(UI) {
 
-            rv.setTextViewText(R.id.widgetDayOfWeek, dayOfWeek)
-            rv.setTextViewText(R.id.widgetDate, date)
+                    val rv = RemoteViews(context.packageName, R.layout.widget_agenda)
 
-            rv.setOnClickPendingIntent(R.id.widgetAgendaHeader, createStartAppIntent(context))
-            rv.setOnClickPendingIntent(R.id.widgetAgendaPet, createShowPetIntent(context))
-            rv.setOnClickPendingIntent(R.id.widgetAgendaAdd, createQuickAddIntent(context))
+                    rv.setTextViewText(R.id.widgetDayOfWeek, dayOfWeek)
+                    rv.setTextViewText(R.id.widgetDate, date)
 
-            rv.setRemoteAdapter(
-                R.id.widgetAgendaList,
-                createQuestListIntent(context, it)
-            )
+                    rv.setOnClickPendingIntent(
+                        R.id.widgetAgendaHeader,
+                        createStartAppIntent(context)
+                    )
+                    rv.setOnClickPendingIntent(R.id.widgetAgendaPet, createShowPetIntent(context))
+                    rv.setOnClickPendingIntent(R.id.widgetAgendaAdd, createQuickAddIntent(context))
 
-            rv.setPendingIntentTemplate(
-                R.id.widgetAgendaList,
-                createQuestClickIntent(context, it)
-            )
+                    if(player != null && player.isDead) {
+                        rv.setViewVisibility(R.id.widgetAgendaPlayerDiedContainer, View.VISIBLE)
+                        rv.setViewVisibility(R.id.widgetAgendaList, View.GONE)
+                        rv.setViewVisibility(R.id.widgetAgendaEmpty, View.GONE)
+                        rv.setViewVisibility(R.id.widgetAgendaPet, View.GONE)
+                        rv.setViewVisibility(R.id.widgetAgendaAdd, View.GONE)
 
-            rv.setEmptyView(R.id.widgetAgendaList, R.id.widgetAgendaEmpty)
+                        rv.setOnClickPendingIntent(
+                            R.id.widgetAgendaRevive,
+                            createStartAppIntent(context)
+                        )
+                    } else {
 
-            appWidgetManager.notifyAppWidgetViewDataChanged(it, R.id.widgetDayOfWeek)
-            appWidgetManager.notifyAppWidgetViewDataChanged(it, R.id.widgetDate)
+                        rv.setViewVisibility(R.id.widgetAgendaPlayerDiedContainer, View.GONE)
+                        rv.setViewVisibility(R.id.widgetAgendaList, View.VISIBLE)
+                        rv.setViewVisibility(R.id.widgetAgendaEmpty, View.VISIBLE)
+                        rv.setViewVisibility(R.id.widgetAgendaPet, View.VISIBLE)
+                        rv.setViewVisibility(R.id.widgetAgendaAdd, View.VISIBLE)
 
-            appWidgetManager.notifyAppWidgetViewDataChanged(it, R.id.widgetAgendaList)
-            appWidgetManager.updateAppWidget(it, rv)
+                        rv.setRemoteAdapter(
+                            R.id.widgetAgendaList,
+                            createQuestListIntent(context, it)
+                        )
+
+                        rv.setPendingIntentTemplate(
+                            R.id.widgetAgendaList,
+                            createQuestClickIntent(context, it)
+                        )
+
+                        rv.setEmptyView(R.id.widgetAgendaList, R.id.widgetAgendaEmpty)
+                    }
+
+                    appWidgetManager.notifyAppWidgetViewDataChanged(it, R.id.widgetDayOfWeek)
+                    appWidgetManager.notifyAppWidgetViewDataChanged(it, R.id.widgetDate)
+
+                    appWidgetManager.notifyAppWidgetViewDataChanged(it, R.id.widgetAgendaList)
+                    appWidgetManager.updateAppWidget(it, rv)
+                }
+            }
         }
 
         super.onUpdate(context, appWidgetManager, appWidgetIds)

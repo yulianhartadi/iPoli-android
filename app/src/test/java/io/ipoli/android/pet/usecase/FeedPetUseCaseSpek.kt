@@ -1,6 +1,6 @@
 package io.ipoli.android.pet.usecase
 
-import io.ipoli.android.TestUtil.player
+import io.ipoli.android.TestUtil
 import io.ipoli.android.TestUtil.playerRepoMock
 import io.ipoli.android.pet.Food
 import io.ipoli.android.pet.Pet
@@ -27,7 +27,7 @@ class FeedPetUseCaseSpek : Spek({
         describe("Player Inventory") {
 
             it("should not feed pet when not enough gems") {
-                val player = player().copy(
+                val player = TestUtil.player.copy(
                     gems = 0,
                     inventory = Inventory()
                 )
@@ -37,7 +37,7 @@ class FeedPetUseCaseSpek : Spek({
             }
 
             it("should buy food and feed pet") {
-                val player = player().copy(
+                val player = TestUtil.player.copy(
                     gems = Food.BANANA.price.gems,
                     inventory = Inventory()
                 )
@@ -50,7 +50,7 @@ class FeedPetUseCaseSpek : Spek({
             }
 
             it("should use food from inventory") {
-                val player = player().copy(
+                val player = TestUtil.player.copy(
                     gems = 10,
                     inventory = Inventory(mapOf(Food.BANANA to 1))
                 )
@@ -63,7 +63,7 @@ class FeedPetUseCaseSpek : Spek({
             }
 
             it("should buy new food and not use food from inventory") {
-                val player = player().copy(
+                val player = TestUtil.player.copy(
                     gems = Food.APPLE.price.gems,
                     inventory = Inventory(mapOf(Food.BANANA to 1))
                 )
@@ -83,7 +83,7 @@ class FeedPetUseCaseSpek : Spek({
         describe("Pet Stats") {
 
             it("should not change stats when they are with max values") {
-                val player = player().let {
+                val player = TestUtil.player.let {
                     it.copy(
                         inventory = Inventory(mapOf(Food.BANANA to 1)),
                         pet = it.pet.copy(
@@ -100,7 +100,7 @@ class FeedPetUseCaseSpek : Spek({
             }
 
             it("should like fruit when it is herbivorous") {
-                val player = player().let {
+                val player = TestUtil.player.let {
                     it.copy(
                         inventory = Inventory(mapOf(Food.BANANA to 1)),
                         pet = it.pet.copy(
@@ -118,7 +118,7 @@ class FeedPetUseCaseSpek : Spek({
             }
 
             it("should not like meat when it is herbivorous") {
-                val player = player().let {
+                val player = TestUtil.player.let {
                     it.copy(
                         inventory = Inventory(mapOf(Food.STEAK to 1)),
                         pet = it.pet.copy(
@@ -136,7 +136,7 @@ class FeedPetUseCaseSpek : Spek({
             }
 
             it("should like meat & fruit when it is omnivorous") {
-                val player = player().let {
+                val player = TestUtil.player.let {
                     it.copy(
                         inventory = Inventory(
                             mapOf(
@@ -160,7 +160,7 @@ class FeedPetUseCaseSpek : Spek({
             }
 
             it("should eat junk food") {
-                val player = player().let {
+                val player = TestUtil.player.let {
                     it.copy(
                         inventory = Inventory(mapOf(Food.HOT_DOG to 1)),
                         pet = it.pet.copy(
@@ -178,7 +178,7 @@ class FeedPetUseCaseSpek : Spek({
             }
 
             it("should die") {
-                val player = player().let {
+                val player = TestUtil.player.let {
                     it.copy(
                         inventory = Inventory(mapOf(Food.POOP to 1)),
                         pet = it.pet.copy(
@@ -195,7 +195,7 @@ class FeedPetUseCaseSpek : Spek({
             }
 
             it("should not like food") {
-                val player = player().let {
+                val player = TestUtil.player.let {
                     it.copy(
                         inventory = Inventory(mapOf(Food.POOP to 1)),
                         pet = it.pet.copy(
@@ -211,7 +211,7 @@ class FeedPetUseCaseSpek : Spek({
             }
 
             it("should like food") {
-                val player = player().let {
+                val player = TestUtil.player.let {
                     it.copy(
                         inventory = Inventory(mapOf(Food.BANANA to 1)),
                         pet = it.pet.copy(

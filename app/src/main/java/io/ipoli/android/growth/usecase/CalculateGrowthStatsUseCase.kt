@@ -167,8 +167,8 @@ class CalculateGrowthStatsUseCase(
     private fun createSummaryStats(quests: List<Quest>) =
         SummaryStats(
             timeSpent = timeSpentFor(quests),
-            experienceEarned = quests.map { it.experience!! }.sum(),
-            coinsEarned = quests.map { it.coins!! }.sum()
+            experienceEarned = quests.map { it.reward!!.experience }.sum(),
+            coinsEarned = quests.map { it.reward!!.coins }.sum()
         )
 
     private fun createTodayChallengeProgress(

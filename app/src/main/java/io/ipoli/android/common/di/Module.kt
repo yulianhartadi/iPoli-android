@@ -105,12 +105,17 @@ import io.ipoli.android.player.AndroidLevelDownScheduler
 import io.ipoli.android.player.AndroidLevelUpScheduler
 import io.ipoli.android.player.LevelDownScheduler
 import io.ipoli.android.player.LevelUpScheduler
+import io.ipoli.android.player.attribute.usecase.AddTagToAttributeUseCase
+import io.ipoli.android.player.attribute.usecase.CheckForOneTimeBoostUseCase
+import io.ipoli.android.player.attribute.usecase.RemoveTagFromAttributeUseCase
 import io.ipoli.android.player.auth.saga.AuthSideEffectHandler
+import io.ipoli.android.player.job.AndroidSecretSocietyInviteScheduler
+import io.ipoli.android.player.job.SecretSocietyInviteScheduler
 import io.ipoli.android.player.persistence.AndroidPlayerRepository
 import io.ipoli.android.player.persistence.PlayerRepository
 import io.ipoli.android.player.sideeffect.ProfileSideEffectHandler
 import io.ipoli.android.player.usecase.*
-import io.ipoli.android.player.view.LevelUpSideEffectHandler
+import io.ipoli.android.player.view.PlayerSideEffectHandler
 import io.ipoli.android.quest.bucketlist.sideeffect.BucketListSideEffectHandler
 import io.ipoli.android.quest.bucketlist.usecase.CreateBucketListItemsUseCase
 import io.ipoli.android.quest.data.persistence.QuestRepository
@@ -295,6 +300,7 @@ interface UseCaseModule {
     val updateAchievementProgressScheduler: UpdateAchievementProgressScheduler
     val showUnlockedAchievementsScheduler: ShowUnlockedAchievementsScheduler
     val resetDayScheduler: ResetDayScheduler
+    val secretSocietyInviteScheduler: SecretSocietyInviteScheduler
 
     val loadScheduleForDateUseCase: LoadScheduleForDateUseCase
     val saveQuestUseCase: SaveQuestUseCase
@@ -326,7 +332,7 @@ interface UseCaseModule {
     val buyChallengeUseCase: BuyChallengeUseCase
     val splitDurationForPomodoroTimerUseCase: SplitDurationForPomodoroTimerUseCase
     val findPlayerLevelUseCase: FindPlayerLevelUseCase
-    val lowerPetStatsUseCase: LowerPetStatsUseCase
+    val lowerPlayerStatsUseCase: LowerPlayerStatsUseCase
     val completeTimeRangeUseCase: CompleteTimeRangeUseCase
     val cancelTimerUseCase: CancelTimerUseCase
     val addPomodoroUseCase: AddPomodoroUseCase
@@ -408,6 +414,9 @@ interface UseCaseModule {
     val saveResetDayTimeUseCase: SaveResetDayTimeUseCase
     val createTodayItemsUseCase: CreateTodayItemsUseCase
     val updatePlayerStatsUseCase: UpdatePlayerStatsUseCase
+    val checkForOneTimeBoostUseCase: CheckForOneTimeBoostUseCase
+    val addTagToAttributeUseCase: AddTagToAttributeUseCase
+    val removeTagFromAttributeUseCase: RemoveTagFromAttributeUseCase
 }
 
 class MainUseCaseModule(private val context: Context) : UseCaseModule {
@@ -434,8 +443,9 @@ class MainUseCaseModule(private val context: Context) : UseCaseModule {
 
     override val playerRepository =
         AndroidPlayerRepository(
-            remoteDatabase,
-            localDatabase.playerDao()
+            database = remoteDatabase,
+            dao = localDatabase.playerDao(),
+            tagDao = localDatabase.tagDao()
         )
 
     override val repeatingQuestRepository =
@@ -530,6 +540,9 @@ class MainUseCaseModule(private val context: Context) : UseCaseModule {
     override val resetDayScheduler
         get() = AndroidResetDayScheduler(context)
 
+    override val secretSocietyInviteScheduler
+        get() = AndroidSecretSocietyInviteScheduler()
+
     override val saveQuestUseCase
         get() = SaveQuestUseCase(
             questRepository,
@@ -558,7 +571,6 @@ class MainUseCaseModule(private val context: Context) : UseCaseModule {
             ratePopupScheduler,
             rewardPlayerUseCase,
             checkForDailyChallengeCompletionUseCase,
-            dailyChallengeCompleteScheduler,
             savePostsUseCase
         )
     override val undoCompletedQuestUseCase
@@ -571,7 +583,9 @@ class MainUseCaseModule(private val context: Context) : UseCaseModule {
         get() = RewardPlayerUseCase(
             playerRepository,
             levelUpScheduler,
-            unlockAchievementsUseCase
+            unlockAchievementsUseCase,
+            checkForOneTimeBoostUseCase,
+            removeRewardFromPlayerUseCase
         )
     override val removeRewardFromPlayerUseCase
         get() = RemoveRewardFromPlayerUseCase(
@@ -635,8 +649,8 @@ class MainUseCaseModule(private val context: Context) : UseCaseModule {
     override val findPlayerLevelUseCase
         get() = FindPlayerLevelUseCase(playerRepository)
 
-    override val lowerPetStatsUseCase
-        get() = LowerPetStatsUseCase(
+    override val lowerPlayerStatsUseCase
+        get() = LowerPlayerStatsUseCase(
             questRepository,
             playerRepository
         )
@@ -730,6 +744,7 @@ class MainUseCaseModule(private val context: Context) : UseCaseModule {
     override val completeChallengeUseCase
         get() = CompleteChallengeUseCase(
             challengeRepository,
+            rewardPlayerUseCase,
             playerRepository,
             savePostsUseCase
         )
@@ -804,7 +819,7 @@ class MainUseCaseModule(private val context: Context) : UseCaseModule {
         get() = AddQuestCountToTagUseCase(questRepository)
 
     override val removeTagUseCase
-        get() = RemoveTagUseCase(tagRepository)
+        get() = RemoveTagUseCase(tagRepository, playerRepository)
 
     override val createBucketListItemsUseCase
         get() = CreateBucketListItemsUseCase()
@@ -831,7 +846,14 @@ class MainUseCaseModule(private val context: Context) : UseCaseModule {
         get() = SaveTemperatureUnitUseCase(playerRepository)
 
     override val checkForDailyChallengeCompletionUseCase
-        get() = CheckForDailyChallengeCompletionUseCase(dailyChallengeRepository, questRepository)
+        get() = CheckForDailyChallengeCompletionUseCase(
+            dailyChallengeRepository,
+            questRepository,
+            playerRepository,
+            rewardPlayerUseCase,
+            savePostsUseCase,
+            dailyChallengeCompleteScheduler
+        )
 
     override val checkDailyChallengeProgressUseCase
         get() = CheckDailyChallengeProgressUseCase(dailyChallengeRepository, questRepository)
@@ -893,9 +915,8 @@ class MainUseCaseModule(private val context: Context) : UseCaseModule {
         get() = CompleteHabitUseCase(
             habitRepository,
             playerRepository,
-            rewardScheduler,
             rewardPlayerUseCase,
-            removeRewardFromPlayerUseCase
+            rewardScheduler
         )
 
     override val undoCompleteHabitUseCase
@@ -934,6 +955,15 @@ class MainUseCaseModule(private val context: Context) : UseCaseModule {
 
     override val createTodayItemsUseCase
         get() = CreateTodayItemsUseCase()
+
+    override val checkForOneTimeBoostUseCase
+        get() = CheckForOneTimeBoostUseCase(secretSocietyInviteScheduler)
+
+    override val addTagToAttributeUseCase
+        get() = AddTagToAttributeUseCase(playerRepository)
+
+    override val removeTagFromAttributeUseCase
+        get() = RemoveTagFromAttributeUseCase(playerRepository)
 }
 
 interface StateStoreModule {
@@ -983,7 +1013,7 @@ class AndroidStateStoreModule : StateStoreModule, Injects<UIModule> {
                 ProfileSideEffectHandler,
                 AchievementListSideEffectHandler,
                 HabitSideEffectHandler,
-                LevelUpSideEffectHandler,
+                PlayerSideEffectHandler,
                 PetMessageSideEffectHandler,
                 PetDialogSideEffectHandler,
                 ScheduleSummarySideEffectHandler,
@@ -1006,8 +1036,7 @@ class UIModule(
     androidModule: AndroidModule,
     useCaseModule: UseCaseModule,
     stateStoreModule: StateStoreModule
-) :
-    AndroidModule by androidModule,
+) : AndroidModule by androidModule,
     UseCaseModule by useCaseModule,
     StateStoreModule by stateStoreModule,
     HasModules {

@@ -22,8 +22,8 @@ class EnableAllPowerUpsUseCaseSpek : Spek({
             expirationDate: LocalDate,
             existingPowerUps: List<PowerUp> = listOf()
         ): Player {
-            val player = TestUtil.player().copy(
-                inventory = TestUtil.player().inventory.setPowerUps(existingPowerUps)
+            val player = TestUtil.player.copy(
+                inventory = TestUtil.player.inventory.setPowerUps(existingPowerUps)
             )
             return EnableAllPowerUpsUseCase(TestUtil.playerRepoMock(player))
                 .execute(Params(expirationDate))

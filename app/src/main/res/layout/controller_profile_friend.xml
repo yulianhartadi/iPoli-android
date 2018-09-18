@@ -1,0 +1,345 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="?android:colorBackground"
+    android:focusable="true"
+    android:focusableInTouchMode="true">
+
+
+
+    <android.support.design.widget.CoordinatorLayout
+        android:id="@+id/profileContainer"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:visibility="visible">
+
+        <android.support.design.widget.AppBarLayout
+            android:id="@+id/appbar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@android:color/transparent"
+            android:theme="@style/ThemeOverlay.AppCompat.Light"
+            app:elevation="0dp">
+
+            <android.support.design.widget.CollapsingToolbarLayout
+                android:id="@+id/collapsingToolbarContainer"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:minHeight="?attr/actionBarSize"
+                app:contentScrim="@color/md_white"
+                app:layout_scrollFlags="scroll|exitUntilCollapsed|snap"
+                app:statusBarScrim="@color/md_white">
+
+                <android.support.constraint.ConstraintLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="?attr/actionBarSize"
+                    android:layout_marginTop="?attr/actionBarSize">
+
+                    <ImageView
+                        android:id="@+id/friendPlayerAvatar"
+                        android:layout_width="108dp"
+                        android:layout_height="108dp"
+                        android:layout_marginTop="16dp"
+                        android:background="@drawable/white_circular_background"
+                        android:elevation="6dp"
+                        android:scaleType="fitCenter"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@+id/friendUsername"
+                        tools:src="@drawable/avatar_03" />
+
+
+                    <TextView
+                        android:id="@+id/friendDisplayName"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginEnd="16dp"
+                        android:layout_marginStart="16dp"
+                        android:layout_marginTop="16dp"
+                        android:ellipsize="end"
+                        android:maxLines="2"
+                        android:textAlignment="center"
+                        android:textAppearance="@style/TextAppearance.AppCompat.Title"
+                        app:layout_constraintEnd_toStartOf="@+id/friendMembershipStatus"
+                        app:layout_constraintHorizontal_bias="0.5"
+                        app:layout_constraintHorizontal_chainStyle="spread"
+                        app:layout_constraintStart_toEndOf="@+id/friendPlayerAvatar"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent"
+                        tools:text="Tumba Lumbaaaaa a taka s lopata w ryka" />
+
+                    <ImageView
+                        android:id="@+id/friendPetAvatar"
+                        android:layout_width="92dp"
+                        android:layout_height="92dp"
+                        android:layout_marginStart="72dp"
+                        android:layout_marginTop="54dp"
+                        android:background="@drawable/white_circular_background"
+                        android:elevation="6dp"
+                        android:scaleType="fitCenter"
+                        app:layout_constraintStart_toStartOf="@+id/friendPlayerAvatar"
+                        app:layout_constraintTop_toTopOf="@+id/friendPlayerAvatar" />
+
+                    <include
+                        layout="@layout/view_profile_pet"
+                        android:layout_width="0dp"
+                        android:layout_height="0dp"
+                        android:elevation="6dp"
+                        android:layout_margin="8dp"
+                        app:layout_constraintBottom_toBottomOf="@id/friendPetAvatar"
+                        app:layout_constraintEnd_toEndOf="@id/friendPetAvatar"
+                        app:layout_constraintStart_toStartOf="@id/friendPetAvatar"
+                        app:layout_constraintTop_toTopOf="@id/friendPetAvatar" />
+
+                    <TextView
+                        android:id="@+id/friendUsername"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginEnd="8dp"
+                        android:layout_marginTop="8dp"
+                        android:textAlignment="center"
+                        android:textAppearance="@style/TextAppearance.AppCompat.Caption"
+                        app:layout_constraintEnd_toEndOf="@+id/friendDisplayName"
+                        app:layout_constraintStart_toStartOf="@id/friendDisplayName"
+                        app:layout_constraintTop_toBottomOf="@id/friendDisplayName"
+                        tools:text="@Tumba Lumba" />
+
+                    <View
+                        android:id="@+id/friendMembershipStatus"
+                        android:layout_width="48dp"
+                        android:layout_height="48dp"
+                        android:layout_marginEnd="16dp"
+                        android:background="@drawable/bordered_circle"
+                        android:visibility="visible"
+                        app:layout_constraintBottom_toBottomOf="@+id/friendDisplayName"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintHorizontal_bias="0.5"
+                        app:layout_constraintStart_toEndOf="@+id/friendDisplayName"
+                        app:layout_constraintTop_toTopOf="@+id/friendDisplayName" />
+
+                    <ImageView
+                        android:id="@+id/friendMembershipStatusIcon"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:src="@drawable/ic_profile_membership"
+                        android:visibility="gone"
+                        app:layout_constraintBottom_toBottomOf="@id/friendMembershipStatus"
+                        app:layout_constraintEnd_toEndOf="@id/friendMembershipStatus"
+                        app:layout_constraintStart_toStartOf="@id/friendMembershipStatus"
+                        app:layout_constraintTop_toTopOf="@id/friendMembershipStatus" />
+
+                    <TextView
+                        android:id="@+id/levelTitle"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="16dp"
+                        android:layout_marginTop="16dp"
+                        android:text="Level"
+                        android:textAppearance="@style/TextAppearance.AppCompat.Caption"
+                        app:layout_constraintEnd_toStartOf="@+id/divider1"
+                        app:layout_constraintHorizontal_chainStyle="spread"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@id/friendPetAvatar" />
+
+                    <TextView
+                        android:id="@+id/level"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="8dp"
+                        android:text="12"
+                        android:textAppearance="@style/TextAppearance.AppCompat.Body2"
+                        app:layout_constraintTop_toBottomOf="@id/levelTitle"
+                        app:layout_constraintStart_toStartOf="@+id/levelTitle"
+                        app:layout_constraintEnd_toEndOf="@+id/levelTitle" />
+
+                    <TextView
+                        android:id="@+id/divider1"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="8dp"
+                        android:text="|"
+                        android:textAppearance="@style/TextAppearance.AppCompat.Body2"
+                        app:layout_constraintBottom_toBottomOf="@id/levelTitle"
+                        app:layout_constraintEnd_toStartOf="@+id/rankTitle"
+                        app:layout_constraintHorizontal_chainStyle="spread"
+                        app:layout_constraintStart_toEndOf="@+id/levelTitle"
+                        app:layout_constraintTop_toTopOf="@+id/levelTitle" />
+
+                    <TextView
+                        android:id="@+id/rankTitle"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="8dp"
+                        android:text="Rank"
+                        android:textAppearance="@style/TextAppearance.AppCompat.Caption"
+                        app:layout_constraintBottom_toBottomOf="@id/levelTitle"
+                        app:layout_constraintEnd_toStartOf="@+id/divider2"
+                        app:layout_constraintHorizontal_chainStyle="spread"
+                        app:layout_constraintStart_toEndOf="@+id/divider1"
+                        app:layout_constraintTop_toTopOf="@+id/levelTitle" />
+
+                    <TextView
+                        android:id="@+id/rank"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="8dp"
+                        android:text="Apprentice"
+                        android:textAppearance="@style/TextAppearance.AppCompat.Body2"
+                        app:layout_constraintTop_toBottomOf="@id/rankTitle"
+                        app:layout_constraintStart_toStartOf="@+id/rankTitle"
+                        app:layout_constraintEnd_toEndOf="@id/rankTitle"/>
+
+                    <TextView
+                        android:id="@+id/divider2"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="8dp"
+                        android:text="|"
+                        android:textAppearance="@style/TextAppearance.AppCompat.Body2"
+                        app:layout_constraintBottom_toBottomOf="@id/levelTitle"
+                        app:layout_constraintEnd_toStartOf="@+id/joinedTitle"
+                        app:layout_constraintHorizontal_chainStyle="spread"
+                        app:layout_constraintStart_toEndOf="@+id/rankTitle"
+                        app:layout_constraintTop_toTopOf="@+id/levelTitle" />
+
+                    <TextView
+                        android:id="@+id/joinedTitle"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="8dp"
+                        android:layout_marginEnd="16dp"
+                        android:text="Joined"
+                        android:textAppearance="@style/TextAppearance.AppCompat.Caption"
+                        app:layout_constraintBottom_toBottomOf="@id/levelTitle"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintHorizontal_chainStyle="spread"
+                        app:layout_constraintStart_toEndOf="@+id/divider2"
+                        app:layout_constraintTop_toTopOf="@+id/levelTitle" />
+
+
+                    <TextView
+                        android:id="@+id/joined"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="8dp"
+                        android:text="4 days ago"
+                        android:textAppearance="@style/TextAppearance.AppCompat.Body2"
+                        app:layout_constraintTop_toBottomOf="@id/joinedTitle"
+                        app:layout_constraintStart_toStartOf="@+id/joinedTitle"
+                        app:layout_constraintEnd_toEndOf="@id/joinedTitle" />
+
+                    <TextView
+                        android:id="@+id/description"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginEnd="16dp"
+                        android:layout_marginStart="16dp"
+                        android:layout_marginTop="24dp"
+                        android:textAppearance="@style/TextAppearance.AppCompat.Body1"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@id/level"
+                        tools:text="@string/profile_default_bio" />
+
+                    <android.support.v7.widget.RecyclerView
+                        android:id="@+id/attributes"
+                        app:layout_constraintTop_toBottomOf="@+id/description"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        android:layout_marginTop="24dp"
+                        android:layout_marginStart="16dp"
+                        android:layout_marginEnd="16dp"
+                        android:layout_marginBottom="16dp"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"/>
+
+
+                    <android.support.constraint.Guideline
+                        android:id="@+id/middle"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        app:layout_constraintGuide_percent="0.5" />
+
+                </android.support.constraint.ConstraintLayout>
+
+                <android.support.v7.widget.Toolbar
+                    android:id="@+id/toolbar"
+                    android:layout_width="match_parent"
+                    android:layout_height="?attr/actionBarSize"
+                    android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar" />
+
+                <android.support.design.widget.TabLayout
+                    android:id="@+id/tabLayout"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="bottom"
+                    android:layout_marginEnd="32dp"
+                    android:layout_marginStart="32dp"
+                    android:layout_marginTop="?attr/actionBarSize"
+                    android:background="@drawable/rounded_top_corners_rectangle">
+
+                    <android.support.design.widget.TabItem
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:icon="@drawable/tab_profile_info" />
+
+                    <android.support.design.widget.TabItem
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:icon="@drawable/tab_profile_posts" />
+
+                    <android.support.design.widget.TabItem
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:icon="@drawable/tab_profile_challenges" />
+                </android.support.design.widget.TabLayout>
+
+            </android.support.design.widget.CollapsingToolbarLayout>
+        </android.support.design.widget.AppBarLayout>
+
+        <View
+            android:id="@+id/coloredBackground"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:layout_behavior="@string/appbar_scrolling_view_behavior"
+            android:background="@drawable/profile_background" />
+
+        <android.support.v4.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:fillViewport="true"
+            app:layout_behavior="@string/appbar_scrolling_view_behavior">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:paddingStart="8dp"
+                android:paddingBottom="8dp"
+                android:paddingEnd="8dp">
+
+                <android.support.v4.view.ViewPager
+                    android:id="@+id/pager"
+                    android:layout_marginStart="8dp"
+                    android:layout_marginEnd="8dp"
+                    android:layout_marginBottom="8dp"
+                    android:elevation="4dp"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:background="@drawable/rounded_rectangle_white_background" />
+            </LinearLayout>
+        </android.support.v4.widget.NestedScrollView>
+
+
+    </android.support.design.widget.CoordinatorLayout>
+
+    <include layout="@layout/view_loader" />
+
+
+</FrameLayout>

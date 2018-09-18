@@ -11,12 +11,15 @@ import android.view.View
 import android.widget.ImageView
 import com.bumptech.glide.Glide
 import io.ipoli.android.Constants
+import io.ipoli.android.MyPoliApp
 import io.ipoli.android.R
 import io.ipoli.android.common.AppSideEffectHandler
 import io.ipoli.android.common.AppState
 import io.ipoli.android.common.BaseViewStateReducer
+import io.ipoli.android.common.notification.QuickDoNotificationUtil
 import io.ipoli.android.common.redux.Action
 import io.ipoli.android.common.redux.BaseViewState
+import io.ipoli.android.common.view.AppWidgetUtil
 import io.ipoli.android.common.view.ReduxPopup
 import io.ipoli.android.common.view.anim.TypewriterTextAnimator
 import io.ipoli.android.common.view.visible
@@ -24,6 +27,8 @@ import io.ipoli.android.pet.AndroidPetAvatar
 import io.ipoli.android.pet.PetAvatar
 import io.ipoli.android.player.data.Player
 import kotlinx.android.synthetic.main.popup_level_up.view.*
+import kotlinx.coroutines.experimental.android.UI
+import kotlinx.coroutines.experimental.launch
 import space.traversal.kapsule.required
 
 
@@ -42,17 +47,37 @@ sealed class LevelUpAction : Action {
     }
 }
 
-object LevelUpSideEffectHandler : AppSideEffectHandler() {
+object PlayerSideEffectHandler : AppSideEffectHandler() {
 
     private val playerRepository by required { playerRepository }
+    private val sharedPreferences by required { sharedPreferences }
 
     override suspend fun doExecute(action: Action, state: AppState) {
-        if (action is LevelUpAction.Load) {
-            dispatch(LevelUpAction.PlayerLoaded(playerRepository.find()!!))
+        when (action) {
+            is LevelUpAction.Load ->
+                dispatch(LevelUpAction.PlayerLoaded(playerRepository.find()!!))
+
+            is ReviveAction -> {
+                val p = playerRepository.find()!!
+                playerRepository.save(p.revive())
+
+                sharedPreferences.edit().putBoolean(Constants.KEY_PLAYER_DEAD, false).commit()
+
+                launch(UI) {
+                    state.dataState.todayQuests?.let {
+                        if (p.preferences.isQuickDoNotificationEnabled) {
+                            QuickDoNotificationUtil.update(MyPoliApp.instance, it)
+                        }
+                    }
+
+                    AppWidgetUtil.updateAgendaWidget(MyPoliApp.instance)
+                    AppWidgetUtil.updateHabitWidget(MyPoliApp.instance)
+                }
+            }
         }
     }
 
-    override fun canHandle(action: Action) = action is LevelUpAction.Load
+    override fun canHandle(action: Action) = action is LevelUpAction.Load || action is ReviveAction
 
 }
 

@@ -19,6 +19,30 @@ import io.ipoli.android.quest.receiver.CompleteQuestReceiver
 
 object QuickDoNotificationUtil {
 
+    fun showDefeated(context: Context) {
+
+        val builder =
+            NotificationCompat.Builder(context, Constants.PLAN_DAY_NOTIFICATION_CHANNEL_ID)
+                .setContentTitle(context.getString(R.string.defeated))
+                .setContentText(context.getString(R.string.defeated_notification_text))
+                .setContentIntent(
+                    IntentUtil.getActivityPendingIntent(
+                        context,
+                        IntentUtil.startApp(context)
+                    )
+                )
+                .setSmallIcon(R.drawable.evil_snail)
+                .setOnlyAlertOnce(true)
+                .setOngoing(true)
+                .setPriority(NotificationCompat.PRIORITY_MAX)
+                .setColor(ContextCompat.getColor(context, R.color.evil_snail_background))
+                .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
+                .setDefaults(0)
+
+        NotificationManagerCompat.from(context)
+            .notify(Constants.ONGOING_NOTIFICATION_ID, builder.build())
+    }
+
     fun update(context: Context, quests: List<Quest>) {
 
         val nextQuest = quests.firstOrNull { !it.isCompleted }

@@ -15,7 +15,15 @@ import space.traversal.kapsule.required
  * on 03/20/2018.
  */
 
-data class BuyPowerUpCompletedAction(val result: BuyPowerUpUseCase.Result) : Action
+data class BuyPowerUpCompletedAction(val result: BuyPowerUpUseCase.Result) : Action {
+    override fun toMap() =
+        when (result) {
+            is BuyPowerUpUseCase.Result.TooExpensive ->
+                mapOf("result" to "too_expensive")
+            is BuyPowerUpUseCase.Result.Bought ->
+                mapOf("result" to "bought", "power_up" to result.powerUp.name)
+        }
+}
 
 object PowerUpSideEffectHandler : AppSideEffectHandler() {
 

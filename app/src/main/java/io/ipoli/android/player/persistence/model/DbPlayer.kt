@@ -14,6 +14,8 @@ data class DbPlayer(override val map: MutableMap<String, Any?> = mutableMapOf())
     var displayName: String? by map
     var bio: String? by map
     var schemaVersion: Long by map
+    var health: MutableMap<String, Any?> by map
+    var attributes: MutableMap<String, Map<String, Any?>> by map
     var level: Long by map
     var coins: Long by map
     var gems: Long by map
@@ -29,6 +31,19 @@ data class DbPlayer(override val map: MutableMap<String, Any?> = mutableMapOf())
     override var createdAt: Long by map
     override var updatedAt: Long by map
     override var removedAt: Long? by map
+}
+
+data class DbHealth(val map: MutableMap<String, Any?> = mutableMapOf()) {
+    var current: Long by map
+    var max: Long by map
+}
+
+data class DbAttribute(val map: MutableMap<String, Any?> = mutableMapOf()) {
+    var type: String by map
+    var points: Long by map
+    var level: Long by map
+    var pointsForNextLevel: Long by map
+    var tagIds: List<String> by map
 }
 
 data class DbAuthProvider(val map: MutableMap<String, Any?> = mutableMapOf()) {

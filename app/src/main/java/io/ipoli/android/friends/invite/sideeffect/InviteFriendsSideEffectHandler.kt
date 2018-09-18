@@ -11,6 +11,7 @@ object InviteFriendsSideEffectHandler : AppSideEffectHandler() {
 
     private val internetConnectionChecker by required { internetConnectionChecker }
     private val inviteLinkBuilder by required { inviteLinkBuilder }
+    private val playerRepository by required { playerRepository }
 
     override suspend fun doExecute(action: Action, state: AppState) {
         if (action is InviteFriendsAction.CreateLink) {
@@ -19,7 +20,19 @@ object InviteFriendsSideEffectHandler : AppSideEffectHandler() {
                 return
             }
             try {
-                dispatch(InviteFriendsAction.LinkReady(inviteLinkBuilder.create()))
+                val link = inviteLinkBuilder.create()
+                val p = playerRepository.find()!!
+                val newPlayer = playerRepository.save(
+                    p.copy(
+                        statistics = p.statistics.copy(
+                            inviteForFriendCount = Math.max(
+                                p.statistics.inviteForFriendCount - 1,
+                                0
+                            )
+                        )
+                    )
+                )
+                dispatch(InviteFriendsAction.LinkReady(link, newPlayer.statistics.inviteForFriendCount.toInt()))
             } catch (e: Throwable) {
                 ErrorLogger.log(e)
                 dispatch(InviteFriendsAction.CreateLinkError(InviteFriendsAction.CreateLinkError.ErrorType.UNKNOWN))

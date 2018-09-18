@@ -7,10 +7,15 @@ import com.google.firebase.firestore.CollectionReference
 import com.google.firebase.firestore.FirebaseFirestore
 import io.ipoli.android.challenge.entity.Challenge
 import io.ipoli.android.challenge.entity.SharingPreference
+import io.ipoli.android.common.Reward
 import io.ipoli.android.common.datetime.*
 import io.ipoli.android.common.persistence.*
+import io.ipoli.android.pet.Food
+import io.ipoli.android.player.data.Player
 import io.ipoli.android.quest.Color
 import io.ipoli.android.quest.Icon
+import io.ipoli.android.quest.Quest
+import io.ipoli.android.quest.data.persistence.DbBounty
 import io.ipoli.android.quest.data.persistence.DbEmbedTag
 import io.ipoli.android.tag.Tag
 import io.ipoli.android.tag.persistence.RoomTag
@@ -125,8 +130,28 @@ class RoomChallengeRepository(
             startDate = dbObject.startDate.startOfDayUTC,
             endDate = dbObject.endDate.startOfDayUTC,
             motivations = dbObject.motivations,
-            experience = dbObject.experience?.toInt(),
-            coins = dbObject.coins?.toInt(),
+            reward = dbObject.coins?.let {
+                val dbBounty = DbBounty(dbObject.bounty!!.toMutableMap())
+                Reward(
+                    attributePoints = dbObject.attributePoints!!.map { a ->
+                        Player.AttributeType.valueOf(
+                            a.key
+                        ) to a.value.toInt()
+                    }.toMap(),
+                    healthPoints = 0,
+                    experience = dbObject.experience!!.toInt(),
+                    coins = dbObject.coins.toInt(),
+                    bounty = when {
+                        dbBounty.type == DbBounty.Type.NONE.name -> Quest.Bounty.None
+                        dbBounty.type == DbBounty.Type.FOOD.name -> Quest.Bounty.Food(
+                            Food.valueOf(
+                                dbBounty.name!!
+                            )
+                        )
+                        else -> throw IllegalArgumentException("Unknown bounty type ${dbBounty.type}")
+                    }
+                )
+            },
             completedAtDate = dbObject.completedAtDate?.startOfDayUTC,
             completedAtTime = dbObject.completedAtMinute?.let {
                 Time.of(it.toInt())
@@ -207,8 +232,18 @@ class RoomChallengeRepository(
             startDate = entity.startDate.startOfDayUTC(),
             endDate = entity.endDate.startOfDayUTC(),
             motivations = entity.motivations,
-            experience = entity.experience?.toLong(),
-            coins = entity.coins?.toLong(),
+            experience = entity.reward?.experience?.toLong(),
+            coins = entity.reward?.coins?.toLong(),
+            attributePoints = entity.reward?.attributePoints?.map { a -> a.key.name to a.value.toLong() }?.toMap(),
+            bounty = entity.reward?.let {
+                DbBounty().apply {
+                    type = when (it.bounty) {
+                        is Quest.Bounty.None -> DbBounty.Type.NONE.name
+                        is Quest.Bounty.Food -> DbBounty.Type.FOOD.name
+                    }
+                    name = if (it.bounty is Quest.Bounty.Food) it.bounty.food.name else null
+                }.map
+            },
             completedAtDate = entity.completedAtDate?.startOfDayUTC(),
             completedAtMinute = entity.completedAtTime?.toMinuteOfDay()?.toLong(),
             trackedValues = entity.trackedValues.map {
@@ -304,6 +339,8 @@ data class RoomChallenge(
     val motivations: List<String>,
     val experience: Long?,
     val coins: Long?,
+    val bounty: Map<String, Any?>?,
+    val attributePoints: Map<String, Long>?,
     val completedAtDate: Long?,
     val completedAtMinute: Long?,
     val trackedValues: List<Map<String, Any?>>,
@@ -368,6 +405,20 @@ class FirestoreChallengeRepository(
             dataMap["trackedValues"] = listOf(dbVal.map)
         }
 
+        if (dataMap["coins"] != null) {
+
+            if (!dataMap.containsKey("bounty")) {
+                dataMap["bounty"] = DbBounty().apply {
+                    type = DbBounty.Type.NONE.name
+                    name = null
+                }.map
+            }
+
+            if (!dataMap.containsKey("attributePoints")) {
+                dataMap["attributePoints"] = emptyMap<String, Long>()
+            }
+        }
+
         val c = FirestoreChallenge(dataMap.withDefault {
             null
         })
@@ -386,8 +437,28 @@ class FirestoreChallengeRepository(
             startDate = c.startDate.startOfDayUTC,
             endDate = c.endDate.startOfDayUTC,
             motivations = c.motivations,
-            experience = c.experience?.toInt(),
-            coins = c.coins?.toInt(),
+            reward = c.coins?.let {
+                val dbBounty = DbBounty(c.bounty!!.toMutableMap())
+                Reward(
+                    attributePoints = c.attributePoints!!.map { a ->
+                        Player.AttributeType.valueOf(
+                            a.key
+                        ) to a.value.toInt()
+                    }.toMap(),
+                    healthPoints = 0,
+                    experience = c.experience!!.toInt(),
+                    coins = c.coins!!.toInt(),
+                    bounty = when {
+                        dbBounty.type == DbBounty.Type.NONE.name -> Quest.Bounty.None
+                        dbBounty.type == DbBounty.Type.FOOD.name -> Quest.Bounty.Food(
+                            Food.valueOf(
+                                dbBounty.name!!
+                            )
+                        )
+                        else -> throw IllegalArgumentException("Unknown bounty type ${dbBounty.type}")
+                    }
+                )
+            },
             completedAtDate = c.completedAtDate?.startOfDayUTC,
             completedAtTime = c.completedAtMinute?.let {
                 Time.of(it.toInt())
@@ -462,8 +533,19 @@ class FirestoreChallengeRepository(
         c.startDate = entity.startDate.startOfDayUTC()
         c.endDate = entity.endDate.startOfDayUTC()
         c.motivations = entity.motivations
-        c.experience = entity.experience?.toLong()
-        c.coins = entity.coins?.toLong()
+        entity.reward?.let {
+            c.experience = it.experience.toLong()
+            c.coins = it.coins.toLong()
+            c.attributePoints =
+                it.attributePoints.map { a -> a.key.name to a.value.toLong() }.toMap()
+            c.bounty = DbBounty().apply {
+                type = when (it.bounty) {
+                    is Quest.Bounty.None -> DbBounty.Type.NONE.name
+                    is Quest.Bounty.Food -> DbBounty.Type.FOOD.name
+                }
+                name = if (it.bounty is Quest.Bounty.Food) it.bounty.food.name else null
+            }.map
+        }
         c.completedAtDate = entity.completedAtDate?.startOfDayUTC()
         c.completedAtMinute = entity.completedAtTime?.toMinuteOfDay()?.toLong()
         c.note = entity.note
@@ -557,6 +639,8 @@ data class FirestoreChallenge(override val map: MutableMap<String, Any?> = mutab
     var motivations: List<String> by map
     var experience: Long? by map
     var coins: Long? by map
+    var bounty: Map<String, Any?>? by map
+    var attributePoints: Map<String, Long>? by map
     var completedAtDate: Long? by map
     var completedAtMinute: Long? by map
     var note: String by map

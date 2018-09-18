@@ -29,7 +29,7 @@ class BuyPowerUpUseCaseSpek : Spek({
         ) =
             BuyPowerUpUseCase(
                 TestUtil.playerRepoMock(
-                    TestUtil.player().copy(coins = playerCoins)
+                    TestUtil.player.copy(coins = playerCoins)
                 )
             ).execute(
                 BuyPowerUpUseCase.Params(

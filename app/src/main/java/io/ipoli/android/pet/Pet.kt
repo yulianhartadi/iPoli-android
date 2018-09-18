@@ -78,13 +78,13 @@ data class Pet(
         )
     }
 
-    fun rewardFor(reward: Reward): Pet {
-        val rewardHP = healthPointsForXP(reward.experience)
-        val rewardMP = moodPointsForXP(reward.experience)
+    fun rewardWith(experience: Int): Pet {
+        val rewardHP = healthPointsForXP(experience)
+        val rewardMP = moodPointsForXP(experience)
         return addHealthAndMoodPoints(rewardHP, rewardMP)
     }
 
-    fun addHealthAndMoodPoints(healthPoints: Int, moodPoints: Int): Pet {
+    private fun addHealthAndMoodPoints(healthPoints: Int, moodPoints: Int): Pet {
         require(!isDead)
         require(healthPoints >= 0)
         require(moodPoints >= 0)
@@ -160,10 +160,10 @@ data class Pet(
     private fun removeHealthPoints(rewardHP: Int) = Math.max(this.healthPoints - rewardHP, 0)
 
     private fun healthPointsForXP(experience: Int) =
-        Math.floor(experience / Constants.XP_TO_PET_HP_RATIO).toInt()
+        Math.ceil(experience.toFloat() / Constants.XP_TO_PET_HP_RATIO).toInt()
 
     private fun moodPointsForXP(experience: Int) =
-        Math.floor(experience / Constants.XP_TO_PET_MOOD_RATIO).toInt()
+        Math.ceil(experience.toFloat() / Constants.XP_TO_PET_MOOD_RATIO).toInt()
 
 
     companion object {

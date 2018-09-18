@@ -19,7 +19,7 @@ import org.jetbrains.spek.api.dsl.it
 class RenamePetUseCaseSpek : Spek({
     describe("RenamePetUseCaseSpek") {
 
-        val player = TestUtil.player().let {
+        val player = TestUtil.player.let {
             it.copy(
                 pet = it.pet.copy(
                     name = "Flopsy",

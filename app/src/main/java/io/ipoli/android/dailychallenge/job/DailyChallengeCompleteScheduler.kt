@@ -6,14 +6,10 @@ import com.evernote.android.job.util.support.PersistableBundleCompat
 import io.ipoli.android.MyPoliApp
 import io.ipoli.android.achievement.usecase.UnlockAchievementsUseCase
 import io.ipoli.android.achievement.usecase.UpdatePlayerStatsUseCase
-import io.ipoli.android.common.SimpleReward
 import io.ipoli.android.common.datetime.seconds
 import io.ipoli.android.common.di.BackgroundModule
 import io.ipoli.android.common.view.asThemedWrapper
 import io.ipoli.android.dailychallenge.DailyChallengeCompletePopup
-import io.ipoli.android.friends.usecase.SavePostsUseCase
-import io.ipoli.android.quest.Quest
-import kotlinx.coroutines.experimental.CommonPool
 import kotlinx.coroutines.experimental.android.UI
 import kotlinx.coroutines.experimental.launch
 import space.traversal.kapsule.Kapsule
@@ -23,10 +19,8 @@ class DailyChallengeCompleteJob : Job() {
     override fun onRunJob(params: Params): Result {
 
         val kap = Kapsule<BackgroundModule>()
-        val rewardPlayerUseCase by kap.required { rewardPlayerUseCase }
         val unlockAchievement by kap.required { unlockAchievementsUseCase }
         val playerRepository by kap.required { playerRepository }
-        val savePostsUseCase by kap.required { savePostsUseCase }
         kap.inject(MyPoliApp.backgroundModule(context))
 
         val coins = params.extras.getInt(KEY_COINS, -1)
@@ -39,13 +33,7 @@ class DailyChallengeCompleteJob : Job() {
 
         val c = context.asThemedWrapper()
         launch(UI) {
-            val popup = DailyChallengeCompletePopup(experience, coins)
-            popup.hideListener = {
-                launch(CommonPool) {
-                    rewardPlayerUseCase.execute(SimpleReward(experience, coins, Quest.Bounty.None))
-                }
-            }
-            popup.show(c)
+            DailyChallengeCompletePopup(experience, coins).show(c)
         }
 
         unlockAchievement.execute(
@@ -54,8 +42,6 @@ class DailyChallengeCompleteJob : Job() {
                 UpdatePlayerStatsUseCase.Params.EventType.DailyChallengeCompleted
             )
         )
-
-        savePostsUseCase.execute(SavePostsUseCase.Params.DailyChallengeComplete())
 
         return Result.SUCCESS
     }
@@ -84,7 +70,7 @@ class AndroidDailyChallengeCompleteScheduler : DailyChallengeCompleteScheduler {
         JobRequest.Builder(DailyChallengeCompleteJob.TAG)
             .setExtras(params)
             .setUpdateCurrent(true)
-            .setExact(1.seconds.millisValue)
+            .setExact(2.seconds.millisValue)
             .build()
             .schedule()
     }

@@ -19,6 +19,7 @@ import io.ipoli.android.quest.RepeatingQuest
 import io.ipoli.android.quest.data.persistence.QuestRepository
 import io.ipoli.android.repeatingquest.entity.RepeatPattern
 import io.ipoli.android.repeatingquest.persistence.RepeatingQuestRepository
+import io.ipoli.android.tag.Tag
 import org.threeten.bp.DayOfWeek
 import org.threeten.bp.LocalDate
 
@@ -27,7 +28,7 @@ import org.threeten.bp.LocalDate
  * on 12/1/17.
  */
 object TestUtil {
-    fun player() = Player(
+    val player = Player(
         level = 1,
         coins = 10,
         gems = 0,
@@ -41,7 +42,9 @@ object TestUtil {
             avatar = PetAvatar.ELEPHANT,
             healthPoints = 30,
             moodPoints = Pet.AWESOME_MIN_MOOD_POINTS - 1
-        )
+        ),
+        rank = Player.Rank.NOVICE,
+        nextRank = Player.Rank.APPRENTICE
     )
 
     fun playerRepoMock(player: Player?) = mock<PlayerRepository> {
@@ -66,7 +69,8 @@ object TestUtil {
         }
     }
 
-    fun challengeRepoMock() = mock<ChallengeRepository> {
+    fun challengeRepoMock(challenge: Challenge? = null) = mock<ChallengeRepository> {
+        on { findById(challenge?.id ?: "") } doReturn challenge
         on { save(any<Challenge>()) } doAnswer { invocation ->
             invocation.getArgument(0)
         }
@@ -97,6 +101,7 @@ object TestUtil {
     )
 
     val challenge = Challenge(
+        id = "123",
         name = "Test",
         color = Color.BLUE,
         icon = Icon.STAR,
@@ -113,5 +118,12 @@ object TestUtil {
         days = DayOfWeek.values().toSet(),
         isGood = true,
         timesADay = 1
+    )
+
+    val tag = Tag(
+        name = "wellness",
+        color = Color.GREEN,
+        icon = Icon.FLOWER,
+        isFavorite = true
     )
 }

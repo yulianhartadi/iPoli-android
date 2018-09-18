@@ -1,13 +1,11 @@
 package io.ipoli.android.habit.usecase
 
 import io.ipoli.android.common.ErrorLogger
-import io.ipoli.android.common.SimpleReward
 import io.ipoli.android.common.UseCase
 import io.ipoli.android.habit.data.Habit
 import io.ipoli.android.habit.persistence.HabitRepository
 import io.ipoli.android.player.persistence.PlayerRepository
 import io.ipoli.android.player.usecase.RemoveRewardFromPlayerUseCase
-import io.ipoli.android.quest.Quest
 import org.threeten.bp.LocalDateTime
 
 /**
@@ -31,7 +29,7 @@ class UndoCompleteHabitUseCase(
 
         val history = habit!!.history.toMutableMap()
 
-        if(habit.completedCountForDate(dateTime, resetDayTime) == 0) {
+        if (habit.completedCountForDate(dateTime, resetDayTime) == 0) {
             return habit
         }
 
@@ -41,7 +39,7 @@ class UndoCompleteHabitUseCase(
 
         val ced = if (endDate != null && history[endDate] != null) endDate else startDate
 
-        if(history[ced]!!.completedAtTimes.isNotEmpty()) {
+        if (history[ced]!!.completedAtTimes.isNotEmpty()) {
             history[ced] = history[ced]!!.undoLastComplete()
         } else {
             history[startDate] = history[startDate]!!.undoLastComplete()
@@ -49,16 +47,10 @@ class UndoCompleteHabitUseCase(
 
         if (wasCompleted && habit.isGood) {
 
-            if(history[ced]!!.coins == null) {
+            if (history[ced]!!.reward == null) {
                 ErrorLogger.log(IllegalStateException("Illegal undo habit: ${habit.history}, $ced, $resetDayTime, $dateTime"))
             } else {
-                removeRewardFromPlayerUseCase.execute(
-                    SimpleReward(
-                        coins = history[ced]!!.coins!!,
-                        experience = history[ced]!!.experience!!,
-                        bounty = Quest.Bounty.None
-                    )
-                )
+                removeRewardFromPlayerUseCase.execute(RemoveRewardFromPlayerUseCase.Params(history[ced]!!.reward!!))
             }
         }
 

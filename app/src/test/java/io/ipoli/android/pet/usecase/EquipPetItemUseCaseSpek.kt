@@ -30,7 +30,7 @@ class EquipPetItemUseCaseSpek : Spek({
             )
 
         it("should have item in pet inventory") {
-            val player = TestUtil.player().copy(
+            val player = TestUtil.player.copy(
                 pet = Pet(
                     "Pencho",
                     PetAvatar.ELEPHANT
@@ -46,7 +46,7 @@ class EquipPetItemUseCaseSpek : Spek({
         }
 
         it("should equip item") {
-            val player = TestUtil.player().copy(
+            val player = TestUtil.player.copy(
                 pet = Pet(
                     "Pencho",
                     PetAvatar.ELEPHANT
@@ -66,7 +66,7 @@ class EquipPetItemUseCaseSpek : Spek({
         }
 
         it("should change equipped item") {
-            val player = TestUtil.player().copy(
+            val player = TestUtil.player.copy(
                 pet = Pet(
                     "Pencho",
                     PetAvatar.ELEPHANT,

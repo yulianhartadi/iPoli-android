@@ -123,7 +123,7 @@ class FeedViewController(args: Bundle? = null) :
                 return router.handleBack()
 
             R.id.actionAddFriend -> {
-                navigate().toInviteFriends()
+                dispatch(FeedAction.InviteFriend)
                 return true
             }
 
@@ -207,6 +207,12 @@ class FeedViewController(args: Bundle? = null) :
                 view.emptyTitle.text = stringRes(R.string.error_no_internet_title)
                 view.emptyText.text = stringRes(R.string.feed_no_internet_text)
             }
+
+            NO_INVITES_LEFT ->
+                showLongToast(R.string.no_invites_left)
+
+            SHOW_INVITE_FRIEND ->
+                navigate().toInviteFriends()
 
             else -> {
 

@@ -84,6 +84,8 @@ class HabitWidgetProvider : AppWidgetProvider(), Injects<BackgroundModule> {
                         showEmptyView(rv)
                     } else if (!player.isPowerUpEnabled(PowerUp.Type.HABIT_WIDGET)) {
                         showNoPowerUp(rv, context)
+                    } else if(player.isDead) {
+                        showDeadView(rv, context)
                     } else {
                         showHabitList(rv, context, it)
 
@@ -114,6 +116,18 @@ class HabitWidgetProvider : AppWidgetProvider(), Injects<BackgroundModule> {
         )
 
         rv.setEmptyView(R.id.widgetHabitList, R.id.widgetHabitEmpty)
+    }
+
+    private fun showDeadView(rv: RemoteViews, context: Context) {
+        rv.setViewVisibility(R.id.habitWidgetPlayerDiedContainer, View.VISIBLE)
+        rv.setViewVisibility(R.id.habitWidgetLockedContainer, View.GONE)
+        rv.setViewVisibility(R.id.widgetHabitEmpty, View.GONE)
+        rv.setViewVisibility(R.id.widgetHabitList, View.GONE)
+
+        rv.setOnClickPendingIntent(
+            R.id.widgetHabitRevive,
+            createStartAppIntent(context)
+        )
     }
 
     private fun showNoPowerUp(rv: RemoteViews, context: Context) {
@@ -155,4 +169,10 @@ class HabitWidgetProvider : AppWidgetProvider(), Injects<BackgroundModule> {
         Intent(context, HabitWidgetService::class.java).apply {
             putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, widgetId)
         }
+
+    private fun createStartAppIntent(context: Context) =
+        IntentUtil.getActivityPendingIntent(
+            context,
+            IntentUtil.startApp(context)
+        )
 }

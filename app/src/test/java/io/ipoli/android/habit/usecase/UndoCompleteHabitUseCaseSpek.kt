@@ -2,7 +2,7 @@ package io.ipoli.android.habit.usecase
 
 import com.nhaarman.mockito_kotlin.mock
 import io.ipoli.android.TestUtil
-import io.ipoli.android.common.SimpleReward
+import io.ipoli.android.common.Reward
 import io.ipoli.android.common.datetime.Time
 import io.ipoli.android.habit.data.CompletedEntry
 import io.ipoli.android.habit.data.Habit
@@ -26,13 +26,13 @@ class UndoCompleteHabitUseCaseSpek : Spek({
 
     describe("UndoCompleteHabitUseCase") {
         val completedEntry =
-            CompletedEntry(completedAtTimes = listOf(Time.now()), coins = 1, experience = 1)
+            CompletedEntry(completedAtTimes = listOf(Time.now()), reward = Reward(emptyMap(), 0, 1, 1, Quest.Bounty.None))
 
         fun executeUseCase(
             habit: Habit,
             dateTime: LocalDateTime = LocalDateTime.now(),
             removeRewardFromPlayerUseCase: RemoveRewardFromPlayerUseCase = mock(),
-            player: Player = TestUtil.player()
+            player: Player = TestUtil.player
         ) =
             UndoCompleteHabitUseCase(
                 TestUtil.habitRepoMock(
@@ -178,15 +178,13 @@ class UndoCompleteHabitUseCaseSpek : Spek({
                         history = mapOf(
                             today.toLocalDate() to CompletedEntry(
                                 completedAtTimes = listOf(Time.now()),
-                                coins = 1,
-                                experience = 1
+                                reward = completedEntry.reward
                             )
                         )
                     ),
                     today
                 )
-                habit.history[today.toLocalDate()]!!.coins.`should not be null`()
-                habit.history[today.toLocalDate()]!!.experience.`should not be null`()
+                habit.history[today.toLocalDate()]!!.reward.`should not be null`()
             }
         }
 
@@ -203,10 +201,8 @@ class UndoCompleteHabitUseCaseSpek : Spek({
                 today,
                 removeRewardFromPlayerUseCaseMock
             )
-            val expectedReward =
-                SimpleReward(completedEntry.experience!!, completedEntry.coins!!, Quest.Bounty.None)
             Verify on removeRewardFromPlayerUseCaseMock that removeRewardFromPlayerUseCaseMock.execute(
-                expectedReward
+                RemoveRewardFromPlayerUseCase.Params(completedEntry.reward!!)
             ) was called
         }
 
@@ -224,10 +220,8 @@ class UndoCompleteHabitUseCaseSpek : Spek({
                 today,
                 removeRewardFromPlayerUseCaseMock
             )
-            val expectedReward =
-                SimpleReward(completedEntry.experience!!, completedEntry.coins!!, Quest.Bounty.None)
             `Verify not called` on removeRewardFromPlayerUseCaseMock that removeRewardFromPlayerUseCaseMock.execute(
-                expectedReward
+                RemoveRewardFromPlayerUseCase.Params(completedEntry.reward!!)
             )
         }
 
@@ -245,10 +239,8 @@ class UndoCompleteHabitUseCaseSpek : Spek({
                 today,
                 removeRewardFromPlayerUseCaseMock
             )
-            val expectedReward =
-                SimpleReward(completedEntry.experience!!, completedEntry.coins!!, Quest.Bounty.None)
             `Verify not called` on removeRewardFromPlayerUseCaseMock that removeRewardFromPlayerUseCaseMock.execute(
-                expectedReward
+                RemoveRewardFromPlayerUseCase.Params(completedEntry.reward!!)
             )
         }
 
@@ -266,8 +258,8 @@ class UndoCompleteHabitUseCaseSpek : Spek({
                 )
             )
 
-            val p = TestUtil.player().copy(
-                preferences = TestUtil.player().preferences.copy(
+            val p = TestUtil.player.copy(
+                preferences = TestUtil.player.preferences.copy(
                     resetDayTime = Time.at(12, 30)
                 )
             )
@@ -297,8 +289,8 @@ class UndoCompleteHabitUseCaseSpek : Spek({
                 )
             )
 
-            val p = TestUtil.player().copy(
-                preferences = TestUtil.player().preferences.copy(
+            val p = TestUtil.player.copy(
+                preferences = TestUtil.player.preferences.copy(
                     resetDayTime = Time.at(12, 30)
                 )
             )
@@ -316,6 +308,8 @@ class UndoCompleteHabitUseCaseSpek : Spek({
         }
 
         it("should remove time from current date history entry") {
+            val expectedReward =
+                Reward(emptyMap(), 0, 10, 1, Quest.Bounty.None)
             val removeRewardFromPlayerUseCaseMock = mock<RemoveRewardFromPlayerUseCase>()
             val today = LocalDate.now()
             val habit = TestUtil.habit.copy(
@@ -327,20 +321,17 @@ class UndoCompleteHabitUseCaseSpek : Spek({
                             Time.at(12, 15),
                             Time.at(12, 40),
                             Time.at(12, 45)
-                        ),
-                        experience = null,
-                        coins = null
+                        )
                     ),
                     today.plusDays(1) to CompletedEntry(
                         completedAtTimes = emptyList(),
-                        coins = 1,
-                        experience = 10
+                        reward = expectedReward
                     )
                 )
             )
 
-            val p = TestUtil.player().copy(
-                preferences = TestUtil.player().preferences.copy(
+            val p = TestUtil.player.copy(
+                preferences = TestUtil.player.preferences.copy(
                     resetDayTime = Time.at(12, 30)
                 )
             )
@@ -358,10 +349,9 @@ class UndoCompleteHabitUseCaseSpek : Spek({
             ce1.completedAtTimes.size.`should be`(2)
             ce2.completedAtTimes.`should be empty`()
 
-            val expectedReward =
-                SimpleReward(10, 1, Quest.Bounty.None)
+
             Verify on removeRewardFromPlayerUseCaseMock that removeRewardFromPlayerUseCaseMock.execute(
-                expectedReward
+                RemoveRewardFromPlayerUseCase.Params(expectedReward)
             ) was called
         }
 

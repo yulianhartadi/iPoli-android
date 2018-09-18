@@ -2,14 +2,13 @@ package io.ipoli.android.habit.usecase
 
 import com.nhaarman.mockito_kotlin.mock
 import io.ipoli.android.TestUtil
-import io.ipoli.android.common.SimpleReward
 import io.ipoli.android.common.datetime.Time
 import io.ipoli.android.habit.data.CompletedEntry
 import io.ipoli.android.habit.data.Habit
+import io.ipoli.android.player.attribute.usecase.CheckForOneTimeBoostUseCase
 import io.ipoli.android.player.data.Player
 import io.ipoli.android.player.usecase.RemoveRewardFromPlayerUseCase
 import io.ipoli.android.player.usecase.RewardPlayerUseCase
-import io.ipoli.android.quest.Quest
 import org.amshove.kluent.*
 import org.jetbrains.spek.api.Spek
 import org.jetbrains.spek.api.dsl.describe
@@ -32,22 +31,30 @@ class CompleteHabitUseCaseSpek : Spek({
         fun executeUseCase(
             habit: Habit,
             date: LocalDateTime = LocalDateTime.now(),
-            rewardPlayerUseCase: RewardPlayerUseCase = mock(),
-            removeRewardFromPlayerUseCase: RemoveRewardFromPlayerUseCase = mock(),
-            player: Player = TestUtil.player()
+            player: Player = TestUtil.player
+        ): Habit {
 
-        ) =
-            CompleteHabitUseCase(
+            val playerRepository = TestUtil.playerRepoMock(TestUtil.player)
+            val rewardPlayerUseCase =
+                RewardPlayerUseCase(
+                    playerRepository,
+                    mock(),
+                    mock(),
+                    CheckForOneTimeBoostUseCase(mock()),
+                    RemoveRewardFromPlayerUseCase(playerRepository, mock(), mock())
+                )
+
+            return CompleteHabitUseCase(
                 TestUtil.habitRepoMock(
                     habit
                 ),
                 TestUtil.playerRepoMock(player),
-                mock(),
                 rewardPlayerUseCase,
-                removeRewardFromPlayerUseCase
+                mock()
             ).execute(
                 CompleteHabitUseCase.Params(habit.id, date)
             )
+        }
 
         it("should add entry in history") {
             val habit = executeUseCase(
@@ -199,65 +206,44 @@ class CompleteHabitUseCaseSpek : Spek({
         describe("Rewards") {
 
             it("should give rewards") {
-                val rewardPlayerPlayerUseCaseMock = mock<RewardPlayerUseCase>()
                 val today = LocalDate.now()
                 val habit = executeUseCase(
                     TestUtil.habit.copy(
                         isGood = true
                     ),
-                    LocalDateTime.now(),
-                    rewardPlayerPlayerUseCaseMock
+                    LocalDateTime.now()
                 )
                 val ce = habit.history[today]!!
-                ce.coins!!.`should be greater than`(0)
-                ce.experience!!.`should be greater than`(0)
-
-                Verify on rewardPlayerPlayerUseCaseMock that rewardPlayerPlayerUseCaseMock.execute(
-                    SimpleReward(ce.experience!!, ce.coins!!, Quest.Bounty.None)
-                ) was called
+                val r = ce.reward!!
+                r.coins.`should be greater than`(0)
+                r.experience.`should be greater than`(0)
             }
 
             it("should not give rewards if not completed") {
-                val rewardPlayerPlayerUseCaseMock = mock<RewardPlayerUseCase>()
                 val today = LocalDate.now()
                 val habit = executeUseCase(
                     TestUtil.habit.copy(
                         isGood = true,
                         timesADay = 2
                     ),
-                    LocalDateTime.now(),
-                    rewardPlayerPlayerUseCaseMock
+                    LocalDateTime.now()
                 )
                 val ce = habit.history[today]!!
-                ce.coins.`should be null`()
-                ce.experience.`should be null`()
+                ce.reward.`should be null`()
             }
 
             it("should assign rewards if negative") {
-                val rewardPlayerPlayerUseCaseMock = mock<RewardPlayerUseCase>()
-                val removeRewardFromPlayerUseCaseMock = mock<RemoveRewardFromPlayerUseCase>()
                 val today = LocalDate.now()
                 val habit = executeUseCase(
                     TestUtil.habit.copy(
                         isGood = false
                     ),
-                    LocalDateTime.now(),
-                    rewardPlayerPlayerUseCaseMock,
-                    removeRewardFromPlayerUseCaseMock
+                    LocalDateTime.now()
                 )
                 val ce = habit.history[today]!!
-                ce.coins!!.`should be greater than`(0)
-                ce.experience!!.`should be greater than`(0)
-
-                val reward = SimpleReward(ce.experience!!, ce.coins!!, Quest.Bounty.None)
-
-                `Verify not called` on rewardPlayerPlayerUseCaseMock that rewardPlayerPlayerUseCaseMock.execute(
-                    reward
-                )
-
-                Verify on removeRewardFromPlayerUseCaseMock that removeRewardFromPlayerUseCaseMock.execute(
-                    reward
-                ) was called
+                val r = ce.reward!!
+                r.coins.`should be greater than`(0)
+                r.experience.`should be greater than`(0)
             }
 
             it("should not give reward when completed before reset day time") {
@@ -273,8 +259,8 @@ class CompleteHabitUseCaseSpek : Spek({
                     )
                 )
 
-                val p = TestUtil.player().copy(
-                    preferences = TestUtil.player().preferences.copy(
+                val p = TestUtil.player.copy(
+                    preferences = TestUtil.player.preferences.copy(
                         resetDayTime = Time.at(12, 30)
                     )
                 )
@@ -288,8 +274,7 @@ class CompleteHabitUseCaseSpek : Spek({
                 newHabit.history.size.`should be`(1)
                 val ce = newHabit.history.values.first()
                 ce.completedAtTimes.size.`should be`(2)
-                ce.coins.`should be null`()
-                ce.experience.`should be null`()
+                ce.reward.`should be null`()
             }
 
             it("should give reward when completed before and after reset day time") {
@@ -306,8 +291,8 @@ class CompleteHabitUseCaseSpek : Spek({
                     )
                 )
 
-                val p = TestUtil.player().copy(
-                    preferences = TestUtil.player().preferences.copy(
+                val p = TestUtil.player.copy(
+                    preferences = TestUtil.player.preferences.copy(
                         resetDayTime = Time.at(12, 30)
                     )
                 )
@@ -321,8 +306,7 @@ class CompleteHabitUseCaseSpek : Spek({
                 newHabit.history.size.`should be`(2)
                 val ce = newHabit.history.values.last()
                 ce.completedAtTimes.size.`should be`(0)
-                ce.coins.`should not be null`()
-                ce.experience.`should not be null`()
+                ce.reward.`should not be null`()
             }
         }
     }

@@ -24,7 +24,7 @@ class ChangeThemeUseCaseSpek : Spek({
 
 
         it("should require theme in inventory") {
-            val player = TestUtil.player().copy(
+            val player = TestUtil.player.copy(
                 inventory = Inventory(
                     themes = setOf(Theme.RED)
                 )
@@ -36,7 +36,7 @@ class ChangeThemeUseCaseSpek : Spek({
         it("should change theme") {
             val currentTheme = Theme.RED
             val newTheme = Theme.BLUE
-            val p = TestUtil.player()
+            val p = TestUtil.player
             val player = p.copy(
                 preferences = p.preferences.copy(theme = currentTheme),
                 inventory = Inventory(

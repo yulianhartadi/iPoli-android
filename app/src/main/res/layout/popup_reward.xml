@@ -15,8 +15,18 @@
         android:layout_marginBottom="8dp"
         android:layout_marginStart="16dp"
         android:layout_marginTop="8dp"
-        tools:src="@drawable/pet_1_head"
-        android:adjustViewBounds="true" />
+        android:adjustViewBounds="true"
+        tools:src="@drawable/pet_1_head" />
+
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/attributes"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerVertical="true"
+        android:layout_marginStart="16dp"
+        android:layout_toEndOf="@+id/pet"
+        android:layout_toStartOf="@+id/petAction"
+        android:visibility="invisible" />
 
     <TextView
         android:id="@+id/message"

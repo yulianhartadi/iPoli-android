@@ -27,7 +27,7 @@ class BuyChallengeUseCaseSpek : Spek({
 
 
         it("should require not bought challenge") {
-            val player = TestUtil.player().copy(
+            val player = TestUtil.player.copy(
                 inventory = Inventory(
                     challenges = setOf(
                         PredefinedChallenge.STRESS_FREE_MIND
@@ -39,7 +39,7 @@ class BuyChallengeUseCaseSpek : Spek({
         }
 
         it("should not buy when not enough gems") {
-            val player = TestUtil.player().copy(
+            val player = TestUtil.player.copy(
                 gems = PredefinedChallenge.STRESS_FREE_MIND.gemPrice - 1,
                 inventory = Inventory()
             )
@@ -48,7 +48,7 @@ class BuyChallengeUseCaseSpek : Spek({
         }
 
         it("should buy challenge") {
-            val player = TestUtil.player().copy(
+            val player = TestUtil.player.copy(
                 gems = PredefinedChallenge.STRESS_FREE_MIND.gemPrice,
                 inventory = Inventory()
             )

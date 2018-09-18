@@ -26,7 +26,7 @@ class ChangePetUseCaseSpek : Spek({
             ChangePetUseCase(TestUtil.playerRepoMock(player)).execute(pet)
 
         it("should require pet in inventory") {
-            val player = TestUtil.player().copy(
+            val player = TestUtil.player.copy(
                 inventory = Inventory(
                     pets = setOf(
                         InventoryPet("", PetAvatar.CHICKEN)
@@ -47,7 +47,7 @@ class ChangePetUseCaseSpek : Spek({
                 name = "",
                 avatar = PetAvatar.CHICKEN
             )
-            val player = TestUtil.player().copy(
+            val player = TestUtil.player.copy(
                 pet = currentPet,
                 inventory = Inventory(
                     pets = setOf(

@@ -6,11 +6,13 @@ import android.arch.persistence.room.Entity
 import android.arch.persistence.room.ForeignKey.CASCADE
 import com.google.firebase.firestore.CollectionReference
 import com.google.firebase.firestore.FirebaseFirestore
+import io.ipoli.android.common.Reward
 import io.ipoli.android.common.datetime.*
 import io.ipoli.android.common.distinct
 import io.ipoli.android.common.persistence.*
 import io.ipoli.android.dailychallenge.data.DailyChallenge
 import io.ipoli.android.pet.Food
+import io.ipoli.android.player.data.Player
 import io.ipoli.android.quest.*
 import io.ipoli.android.quest.subquest.SubQuest
 import io.ipoli.android.tag.Tag
@@ -869,15 +871,28 @@ class RoomQuestRepository(
             duration = dbObject.duration.toInt(),
             priority = Priority.valueOf(dbObject.priority),
             preferredStartTime = TimePreference.valueOf(dbObject.preferredStartTime),
-            experience = dbObject.experience?.toInt(),
-            coins = dbObject.coins?.toInt(),
-            bounty = dbObject.bounty?.let {
-                val cr = DbBounty(it)
-                when {
-                    cr.type == DbBounty.Type.NONE.name -> Quest.Bounty.None
-                    cr.type == DbBounty.Type.FOOD.name -> Quest.Bounty.Food(Food.valueOf(cr.name!!))
-                    else -> null
-                }
+            reward = dbObject.coins?.let {
+
+                val dbBounty = DbBounty(dbObject.bounty!!.toMutableMap())
+                Reward(
+                    attributePoints = dbObject.attributePoints!!.map { a ->
+                        Player.AttributeType.valueOf(
+                            a.key
+                        ) to a.value.toInt()
+                    }.toMap(),
+                    healthPoints = dbObject.healthPoints!!.toInt(),
+                    experience = dbObject.experience!!.toInt(),
+                    coins = dbObject.coins.toInt(),
+                    bounty = when {
+                        dbBounty.type == DbBounty.Type.NONE.name -> Quest.Bounty.None
+                        dbBounty.type == DbBounty.Type.FOOD.name -> Quest.Bounty.Food(
+                            Food.valueOf(
+                                dbBounty.name!!
+                            )
+                        )
+                        else -> throw IllegalArgumentException("Unknown bounty type ${dbBounty.type}")
+                    }
+                )
             },
             completedAtDate = dbObject.completedAtDate?.startOfDayUTC,
             completedAtTime = dbObject.completedAtMinute?.let {
@@ -904,7 +919,7 @@ class RoomQuestRepository(
                 SubQuest(
                     name = dsq.name,
                     completedAtDate = dsq.completedAtDate?.startOfDayUTC,
-                    completedAtTime = dsq.completedAtMinute?.let { Time.of(it.toInt()) }
+                    completedAtTime = dsq.completedAtMinute?.let { m -> Time.of(m.toInt()) }
                 )
             },
             timeRanges = dbObject.timeRanges.map {
@@ -947,20 +962,18 @@ class RoomQuestRepository(
                     completedAtMinute = it.completedAtTime?.toMinuteOfDay()?.toLong()
                 }.map
             },
-            experience = entity.experience?.toLong(),
-            coins = entity.coins?.toLong(),
-            bounty = entity.bounty?.let {
-                val cr = DbBounty()
-
-                cr.type = when (it) {
-                    Quest.Bounty.None -> DbBounty.Type.NONE.name
-                    is Quest.Bounty.Food -> DbBounty.Type.FOOD.name
-                }
-
-                if (it is Quest.Bounty.Food) {
-                    cr.name = it.food.name
-                }
-                cr.map
+            healthPoints = entity.reward?.healthPoints?.toLong(),
+            experience = entity.reward?.experience?.toLong(),
+            coins = entity.reward?.coins?.toLong(),
+            attributePoints = entity.reward?.attributePoints?.map { a -> a.key.name to a.value.toLong() }?.toMap(),
+            bounty = entity.reward?.let {
+                DbBounty().apply {
+                    type = when (it.bounty) {
+                        is Quest.Bounty.None -> DbBounty.Type.NONE.name
+                        is Quest.Bounty.Food -> DbBounty.Type.FOOD.name
+                    }
+                    name = if (it.bounty is Quest.Bounty.Food) it.bounty.food.name else null
+                }.map
             },
             startMinute = entity.startTime?.toMinuteOfDay()?.toLong(),
             completedAtDate = entity.completedAtDate?.startOfDayUTC(),
@@ -1030,9 +1043,11 @@ data class RoomQuest(
     val preferredStartTime: String,
     val reminders: List<MutableMap<String, Any?>>,
     val startMinute: Long?,
+    val healthPoints: Long?,
     val experience: Long?,
     val coins: Long?,
-    val bounty: MutableMap<String, Any?>?,
+    val bounty: Map<String, Any?>?,
+    val attributePoints: Map<String, Long>?,
     val startDate: Long?,
     val dueDate: Long?,
     val scheduledDate: Long?,
@@ -1087,9 +1102,11 @@ data class DbQuest(override val map: MutableMap<String, Any?> = mutableMapOf()) 
     var preferredStartTime: String by map
     var reminders: List<MutableMap<String, Any?>> by map
     var startMinute: Long? by map
+    var healthPoints: Long? by map
     var experience: Long? by map
     var coins: Long? by map
-    var bounty: MutableMap<String, Any?>? by map
+    var bounty: Map<String, Any?>? by map
+    var attributePoints: Map<String, Long>? by map
     var startDate: Long? by map
     var dueDate: Long? by map
     var scheduledDate: Long? by map
@@ -1166,6 +1183,18 @@ class FirestoreQuestRepository(
             .notRemovedEntities
 
     override fun toEntityObject(dataMap: MutableMap<String, Any?>): Quest {
+
+        if (dataMap["experience"] != null) {
+
+            if (!dataMap.containsKey("healthPoints")) {
+                dataMap["healthPoints"] = 0L
+            }
+
+            if (!dataMap.containsKey("attributePoints")) {
+                dataMap["attributePoints"] = emptyMap<String, Long>()
+            }
+        }
+
         val cq = DbQuest(dataMap.withDefault {
             null
         })
@@ -1188,15 +1217,27 @@ class FirestoreQuestRepository(
             duration = cq.duration.toInt(),
             priority = Priority.valueOf(cq.priority),
             preferredStartTime = TimePreference.valueOf(cq.preferredStartTime),
-            experience = cq.experience?.toInt(),
-            coins = cq.coins?.toInt(),
-            bounty = cq.bounty?.let {
-                val cr = DbBounty(it)
-                when {
-                    cr.type == DbBounty.Type.NONE.name -> Quest.Bounty.None
-                    cr.type == DbBounty.Type.FOOD.name -> Quest.Bounty.Food(Food.valueOf(cr.name!!))
-                    else -> null
-                }
+            reward = cq.coins?.let {
+                val dbBounty = DbBounty(cq.bounty!!.toMutableMap())
+                Reward(
+                    attributePoints = cq.attributePoints!!.map { a ->
+                        Player.AttributeType.valueOf(
+                            a.key
+                        ) to a.value.toInt()
+                    }.toMap(),
+                    healthPoints = cq.healthPoints!!.toInt(),
+                    experience = cq.experience!!.toInt(),
+                    coins = cq.coins!!.toInt(),
+                    bounty = when {
+                        dbBounty.type == DbBounty.Type.NONE.name -> Quest.Bounty.None
+                        dbBounty.type == DbBounty.Type.FOOD.name -> Quest.Bounty.Food(
+                            Food.valueOf(
+                                dbBounty.name!!
+                            )
+                        )
+                        else -> throw IllegalArgumentException("Unknown bounty type ${dbBounty.type}")
+                    }
+                )
             },
             completedAtDate = cq.completedAtDate?.startOfDayUTC,
             completedAtTime = cq.completedAtMinute?.let {
@@ -1223,7 +1264,7 @@ class FirestoreQuestRepository(
                 SubQuest(
                     name = dsq.name,
                     completedAtDate = dsq.completedAtDate?.startOfDayUTC,
-                    completedAtTime = dsq.completedAtMinute?.let { Time.of(it.toInt()) }
+                    completedAtTime = dsq.completedAtMinute?.let { m -> Time.of(m.toInt()) }
                 )
             },
             timeRanges = cq.timeRanges.map {
@@ -1268,20 +1309,19 @@ class FirestoreQuestRepository(
                 completedAtMinute = it.completedAtTime?.toMinuteOfDay()?.toLong()
             }.map
         }
-        q.experience = entity.experience?.toLong()
-        q.coins = entity.coins?.toLong()
-        q.bounty = entity.bounty?.let {
-            val cr = DbBounty()
-
-            cr.type = when (it) {
-                Quest.Bounty.None -> DbBounty.Type.NONE.name
-                is Quest.Bounty.Food -> DbBounty.Type.FOOD.name
-            }
-
-            if (it is Quest.Bounty.Food) {
-                cr.name = it.food.name
-            }
-            cr.map
+        q.healthPoints = entity.reward?.healthPoints?.toLong()
+        q.experience = entity.reward?.experience?.toLong()
+        q.coins = entity.reward?.coins?.toLong()
+        q.attributePoints =
+            entity.reward?.attributePoints?.map { a -> a.key.name to a.value.toLong() }?.toMap()
+        q.bounty = entity.reward?.let {
+            DbBounty().apply {
+                type = when (it.bounty) {
+                    is Quest.Bounty.None -> DbBounty.Type.NONE.name
+                    is Quest.Bounty.Food -> DbBounty.Type.FOOD.name
+                }
+                name = if (it.bounty is Quest.Bounty.Food) it.bounty.food.name else null
+            }.map
         }
         q.startMinute = entity.startTime?.toMinuteOfDay()?.toLong()
         q.completedAtDate = entity.completedAtDate?.startOfDayUTC()

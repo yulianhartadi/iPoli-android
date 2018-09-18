@@ -1144,18 +1144,17 @@
     <string name="validation_timer_running">Can\'t edit Quest with running timer</string>
     <string name="timer_type">Pomodoro</string>
 
-    <string-array name="player_titles">
-        <item>Novice</item>
-        <item>Apprentice</item>
-        <item>Adept</item>
-        <item>Expert</item>
-        <item>Folk Hero</item>
-        <item>Master</item>
-        <item>Legend</item>
-        <item>Immortal</item>
-        <item>Demigod</item>
-        <item>Titan</item>
-    </string-array>
+    <string name="novice">Novice</string>
+    <string name="apprentice">Apprentice</string>
+    <string name="adept">Adept</string>
+    <string name="specialist">Specialist</string>
+    <string name="expert">Expert</string>
+    <string name="master">Master</string>
+    <string name="legend">Legend</string>
+    <string name="immortal">Immortal</string>
+    <string name="demigod">Demigod</string>
+    <string name="titan">Titan</string>
+    <string name="divinity">Divinity</string>
 
     <string-array name="repeating_quest_picker_frequencies">
         <item>Day</item>
@@ -1547,7 +1546,7 @@
     <string name="not_helpful">Not helpful</string>
     <string name="send">Send</string>
     <string name="help">Help</string>
-    <string name="help_dialog_feedback_hint">What do you think...</string>
+    <string name="help_dialog_feedback_hint">What do you think…</string>
 
     <string name="help_dialog_bucket_list_title">Bucket List</string>
     <string name="help_dialog_bucket_list_message">
@@ -1713,4 +1712,89 @@ You can also manage your **shared posts**, **friends** and **shared challenges**
     <string name="power_up_calendars_title">Unlimited Sync Calendars</string>
     <string name="power_up_calendars_sub_title">Sync more than 3 Calendars</string>
     <string name="power_up_calendars_long_desc">Sync all your Calendars right into myPoli and make your schedule complete. No more missed events &amp; meetings!</string>
+    <string name="no_invites_left">You have no friend invites</string>
+    <string name="avg_focus_hours_per_day">Avg. focus hours per day  (last 7 days)</string>
+    <string name="daily_challenge_streak">Daily Challenge Streak</string>
+    <string name="revive">Revive</string>
+    <string name="defeated">You were defeated</string>
+    <string name="defeated_notification_text">You lost all your health. The The Evil Snail caught you and locked you in his dungeon!</string>
+
+    <string name="attribute_strength">Strength</string>
+    <string name="attribute_strength_desc">A measure of how physically powerful you are. Associate your fitness Quests &amp; Habits with this attribute.</string>
+
+    <string name="attribute_intelligence">Intelligence</string>
+    <string name="attribute_intelligence_desc">A measure of how wise, creative &amp; witty you are. Associate your studying, reading and possibly work-related Quests &amp; Habits with this attribute.</string>
+
+    <string name="attribute_charisma">Charisma</string>
+    <string name="attribute_charisma_desc">A measure of how well developed your social skills are. Associate hanging out with friends &amp; family, visiting movies, museums and concerts with this attribute.</string>
+
+    <string name="attribute_expertise">Expertise</string>
+    <string name="attribute_expertise_desc">A measure of how well you\'re developing your skills. Associate learning a new language, how to program, knitting or swimming Quests with this attribute.</string>
+
+    <string name="attribute_well_being">Well-being</string>
+    <string name="attribute_well_being_desc">A measure of how well you\'re taking care of yourself. Associate relaxation, mindfulness, de-stress and other health-related Quests with this attribute.</string>
+
+    <string name="attribute_willpower">Willpower</string>
+    <string name="attribute_willpower_desc">A measure of your mental resistance and tenacity. Associate chores &amp; Quests that contribute towards completing your Challenges with this attribute.</string>
+
+    <string name="attributes">Attributes</string>
+    <string name="more">More</string>
+    <string name="inactive_attribute_hint">This attribute is inactive. Activate it by adding a Tag.</string>
+
+    <string name="strength_apprentice_bonus_name">Enhanced</string>
+    <string name="strength_apprentice_bonus_desc">Increase your life by 20%</string>
+
+    <string name="strength_adept_bonus_name">Beast</string>
+    <string name="strength_adept_bonus_desc">Increase your life by 30%</string>
+
+    <string name="strength_specialist_bonus_name">Lifesaver</string>
+    <string name="strength_specialist_bonus_desc">Increase health regeneration by 20% when completing a Quest</string>
+
+    <string name="intelligence_apprentice_bonus_name">Crafter</string>
+    <string name="intelligence_apprentice_bonus_desc">Scheduled Quests completed within 2 hours of their end time receive 20% bonus XP &amp; Life Coins</string>
+
+    <string name="intelligence_adept_bonus_name">Empowered</string>
+    <string name="intelligence_adept_bonus_desc">Quests tracked with the Timer get 100% bonus XP</string>
+
+    <string name="intelligence_specialist_bonus_name">Enlightened</string>
+    <string name="intelligence_specialist_bonus_desc">Receive invite to the secret myPoli society</string>
+
+    <string name="charisma_apprentice_bonus_name">Buddy up</string>
+    <string name="charisma_apprentice_bonus_desc">Receive 1 invite for a buddy</string>
+
+    <string name="charisma_adept_bonus_name">Firestarter</string>
+    <string name="charisma_adept_bonus_desc">Receive 5 invites for a buddy</string>
+
+    <string name="charisma_specialist_bonus_name">Bonded</string>
+    <string name="charisma_specialist_bonus_desc">Completing shared Challenge gives 50% more attribute points</string>
+
+    <string name="expertise_apprentice_bonus_name">Wise</string>
+    <string name="expertise_apprentice_bonus_desc">Gain intelligence 5% faster</string>
+
+    <string name="expertise_adept_bonus_name">Contender</string>
+    <string name="expertise_adept_bonus_desc">Gain 20% more XP &amp; Life Coins when completing Daily Challenge</string>
+
+    <string name="expertise_specialist_bonus_name">Dominator</string>
+    <string name="expertise_specialist_bonus_desc">Gain 30% more XP &amp; Life Coins when completing Daily Challenge</string>
+
+    <string name="well_being_apprentice_bonus_name">Powerful</string>
+    <string name="well_being_apprentice_bonus_desc">Instant level up</string>
+
+    <string name="well_being_adept_bonus_name">Keen</string>
+    <string name="well_being_adept_bonus_desc">Gain attribute points 5% faster</string>
+
+    <string name="well_being_specialist_bonus_name">Tactician</string>
+    <string name="well_being_specialist_bonus_desc">Gain attribute points 10% faster</string>
+
+    <string name="willpower_apprentice_bonus_name">Relentless</string>
+    <string name="willpower_apprentice_bonus_desc">Quests &amp; Habits from Repeating Quests and Challenges give more XP &amp; Life Coins</string>
+
+    <string name="willpower_adept_bonus_name">Prepared</string>
+    <string name="willpower_adept_bonus_desc">Planning your day gives XP &amp; Life Coins</string>
+
+    <string name="willpower_specialist_bonus_name">Driven</string>
+    <string name="willpower_specialist_bonus_desc">Streaks of Repeating Quests &amp; Habits increase XP &amp; Life Coins</string>
+    <string name="bonuses">Bonuses</string>
+    <string name="rank">Rank:</string>
+    <string name="next_rank">Next: %s</string>
 </resources>

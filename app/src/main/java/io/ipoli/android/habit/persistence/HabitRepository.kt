@@ -5,13 +5,18 @@ import android.arch.persistence.room.*
 import android.arch.persistence.room.ForeignKey.CASCADE
 import com.google.firebase.firestore.CollectionReference
 import com.google.firebase.firestore.FirebaseFirestore
+import io.ipoli.android.common.Reward
 import io.ipoli.android.common.datetime.*
 import io.ipoli.android.common.distinct
 import io.ipoli.android.common.persistence.*
 import io.ipoli.android.habit.data.CompletedEntry
 import io.ipoli.android.habit.data.Habit
+import io.ipoli.android.pet.Food
+import io.ipoli.android.player.data.Player
 import io.ipoli.android.quest.Color
 import io.ipoli.android.quest.Icon
+import io.ipoli.android.quest.Quest
+import io.ipoli.android.quest.data.persistence.DbBounty
 import io.ipoli.android.quest.data.persistence.DbEmbedTag
 import io.ipoli.android.tag.Tag
 import io.ipoli.android.tag.persistence.RoomTag
@@ -58,6 +63,8 @@ data class DbCompletedEntry(val map: MutableMap<String, Any?> = mutableMapOf()) 
     var completedAtMinutes: List<Long> by map
     var experience: Long? by map
     var coins: Long? by map
+    var bounty: Map<String, Any?>? by map
+    var attributePoints: Map<String, Long>? by map
 }
 
 @Dao
@@ -221,23 +228,71 @@ class RoomHabitMapper(private val tagDao: TagDao) {
 
     private fun createDbCompletedEntry(completedEntry: CompletedEntry) =
         DbCompletedEntry().apply {
+            val reward = completedEntry.reward
+
             completedAtMinutes = completedEntry.completedAtTimes.map { it.toMinuteOfDay().toLong() }
-            coins = completedEntry.coins?.toLong()
-            experience = completedEntry.experience?.toLong()
+
+            attributePoints =
+                reward?.attributePoints?.map { a -> a.key.name to a.value.toLong() }?.toMap()
+            experience = reward?.experience?.toLong()
+            coins = reward?.coins?.toLong()
+            bounty = reward?.let {
+                DbBounty().apply {
+                    type = when (it.bounty) {
+                        is Quest.Bounty.None -> DbBounty.Type.NONE.name
+                        is Quest.Bounty.Food -> DbBounty.Type.FOOD.name
+                    }
+                    name = if (it.bounty is Quest.Bounty.Food) it.bounty.food.name else null
+                }.map
+            }
+
         }
 
-    private fun createCompletedEntry(dataMap: MutableMap<String, Any?>) =
-        with(
+    private fun createCompletedEntry(dataMap: MutableMap<String, Any?>): CompletedEntry {
+        if (dataMap["experience"] != null) {
+            if (!dataMap.containsKey("bounty")) {
+                dataMap["bounty"] = DbBounty().apply {
+                    type = DbBounty.Type.NONE.name
+                    name = null
+                }.map
+            }
+
+            if (!dataMap.containsKey("attributePoints")) {
+                dataMap["attributePoints"] = emptyMap<String, Long>()
+            }
+        }
+        return with(
             DbCompletedEntry(dataMap.withDefault {
                 null
             })
         ) {
             CompletedEntry(
                 completedAtTimes = completedAtMinutes.map { Time.of(it.toInt()) },
-                coins = coins?.toInt(),
-                experience = experience?.toInt()
+                reward = coins?.let {
+                    val dbBounty = DbBounty(bounty!!.toMutableMap())
+                    Reward(
+                        attributePoints = attributePoints!!.map { a ->
+                            Player.AttributeType.valueOf(
+                                a.key
+                            ) to a.value.toInt()
+                        }.toMap(),
+                        healthPoints = 0,
+                        experience = experience!!.toInt(),
+                        coins = coins!!.toInt(),
+                        bounty = when {
+                            dbBounty.type == DbBounty.Type.NONE.name -> Quest.Bounty.None
+                            dbBounty.type == DbBounty.Type.FOOD.name -> Quest.Bounty.Food(
+                                Food.valueOf(
+                                    dbBounty.name!!
+                                )
+                            )
+                            else -> throw IllegalArgumentException("Unknown bounty type ${dbBounty.type}")
+                        }
+                    )
+                }
             )
         }
+    }
 }
 
 
@@ -388,21 +443,69 @@ class FirestoreHabitRepository(
 
     private fun createDbCompletedEntry(completedEntry: CompletedEntry) =
         DbCompletedEntry().apply {
+            val reward = completedEntry.reward
+
             completedAtMinutes = completedEntry.completedAtTimes.map { it.toMinuteOfDay().toLong() }
-            coins = completedEntry.coins?.toLong()
-            experience = completedEntry.experience?.toLong()
+
+            attributePoints =
+                reward?.attributePoints?.map { a -> a.key.name to a.value.toLong() }?.toMap()
+            experience = reward?.experience?.toLong()
+            coins = reward?.coins?.toLong()
+            bounty = reward?.let {
+                DbBounty().apply {
+                    type = when (it.bounty) {
+                        is Quest.Bounty.None -> DbBounty.Type.NONE.name
+                        is Quest.Bounty.Food -> DbBounty.Type.FOOD.name
+                    }
+                    name = if (it.bounty is Quest.Bounty.Food) it.bounty.food.name else null
+                }.map
+            }
+
         }
 
-    private fun createCompletedEntry(dataMap: MutableMap<String, Any?>) =
-        with(
+    private fun createCompletedEntry(dataMap: MutableMap<String, Any?>): CompletedEntry {
+        if (dataMap["experience"] != null) {
+            if (!dataMap.containsKey("bounty")) {
+                dataMap["bounty"] = DbBounty().apply {
+                    type = DbBounty.Type.NONE.name
+                    name = null
+                }.map
+            }
+
+            if (!dataMap.containsKey("attributePoints")) {
+                dataMap["attributePoints"] = emptyMap<String, Long>()
+            }
+        }
+        return with(
             DbCompletedEntry(dataMap.withDefault {
                 null
             })
         ) {
             CompletedEntry(
                 completedAtTimes = completedAtMinutes.map { Time.of(it.toInt()) },
-                coins = coins?.toInt(),
-                experience = experience?.toInt()
+                reward = coins?.let {
+                    val dbBounty = DbBounty(bounty!!.toMutableMap())
+                    Reward(
+                        attributePoints = attributePoints!!.map { a ->
+                            Player.AttributeType.valueOf(
+                                a.key
+                            ) to a.value.toInt()
+                        }.toMap(),
+                        healthPoints = 0,
+                        experience = experience!!.toInt(),
+                        coins = coins!!.toInt(),
+                        bounty = when {
+                            dbBounty.type == DbBounty.Type.NONE.name -> Quest.Bounty.None
+                            dbBounty.type == DbBounty.Type.FOOD.name -> Quest.Bounty.Food(
+                                Food.valueOf(
+                                    dbBounty.name!!
+                                )
+                            )
+                            else -> throw IllegalArgumentException("Unknown bounty type ${dbBounty.type}")
+                        }
+                    )
+                }
             )
         }
+    }
 }

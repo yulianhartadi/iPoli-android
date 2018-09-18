@@ -17,6 +17,9 @@ import io.ipoli.android.friends.invite.AcceptFriendshipAction
 import io.ipoli.android.pet.PetAction
 import io.ipoli.android.pet.store.PetStoreAction
 import io.ipoli.android.planday.PlanDayAction
+import io.ipoli.android.player.attribute.AttributeRank
+import io.ipoli.android.player.data.Player
+import io.ipoli.android.player.usecase.RewardPlayerUseCase
 import io.ipoli.android.quest.bucketlist.BucketListAction
 import io.ipoli.android.quest.schedule.agenda.AgendaAction
 import io.ipoli.android.quest.schedule.calendar.dayview.view.DayViewAction
@@ -25,6 +28,7 @@ import io.ipoli.android.store.avatar.AvatarStoreAction
 import io.ipoli.android.store.membership.MembershipAction
 import io.ipoli.android.store.powerup.PowerUpStoreAction
 import io.ipoli.android.tag.show.TagAction
+import org.threeten.bp.LocalDate
 import space.traversal.kapsule.Injects
 import space.traversal.kapsule.inject
 import space.traversal.kapsule.required
@@ -37,6 +41,7 @@ object AchievementProgressMiddleWare : MiddleWare<AppState>, Injects<BackgroundM
 
     private val unlockAchievementsUseCase by required { unlockAchievementsUseCase }
     private val playerRepository by required { playerRepository }
+    private val rewardPlayerUseCase by required { rewardPlayerUseCase }
 
     override fun onCreate() {
         inject(MyPoliApp.backgroundModule(MyPoliApp.instance))
@@ -70,8 +75,18 @@ object AchievementProgressMiddleWare : MiddleWare<AppState>, Injects<BackgroundM
             is DayViewAction.UndoCompleteQuest ->
                 QuestUncompleted
 
-            is PlanDayAction.StartDay ->
+            is PlanDayAction.StartDay -> {
+                val p = playerRepository.find()!!
+                val dayPlanStreak = p.statistics.planDayStreak
+                if (LocalDate.now() != dayPlanStreak.lastDate) {
+                    val willPowerStatus =
+                        AttributeRank.of(p.attributeLevel(Player.AttributeType.WILLPOWER), p.rank)
+                    if (willPowerStatus != Player.Rank.NOVICE && willPowerStatus != Player.Rank.APPRENTICE) {
+                        rewardPlayerUseCase.execute(RewardPlayerUseCase.Params.ForPlanDay())
+                    }
+                }
                 DayPlanned
+            }
 
             is EditRepeatingQuestAction.SaveNew ->
                 RepeatingQuestCreated

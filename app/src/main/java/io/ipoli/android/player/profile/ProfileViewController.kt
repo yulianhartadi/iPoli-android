@@ -1,17 +1,18 @@
 package io.ipoli.android.player.profile
 
 import android.annotation.SuppressLint
+import android.content.res.ColorStateList
 import android.graphics.PorterDuff
 import android.graphics.drawable.GradientDrawable
-import android.os.Build
 import android.os.Bundle
+import android.support.annotation.ColorInt
 import android.support.design.widget.TabLayout
 import android.support.v4.graphics.drawable.DrawableCompat
 import android.support.v4.view.PagerAdapter
 import android.support.v4.view.ViewPager
-import android.text.Editable
-import android.text.TextWatcher
 import android.view.*
+import android.widget.ProgressBar
+import android.widget.TextView
 import com.bluelinelabs.conductor.Controller
 import com.bluelinelabs.conductor.Router
 import com.bluelinelabs.conductor.RouterTransaction
@@ -19,63 +20,38 @@ import com.bluelinelabs.conductor.changehandler.HorizontalChangeHandler
 import com.bluelinelabs.conductor.support.RouterPagerAdapter
 import com.bumptech.glide.Glide
 import com.bumptech.glide.request.RequestOptions
-import io.ipoli.android.Constants
 import io.ipoli.android.R
-import io.ipoli.android.common.datetime.startOfDayUTC
+import io.ipoli.android.common.ViewUtils
 import io.ipoli.android.common.redux.android.ReduxViewController
 import io.ipoli.android.common.text.LongFormatter
 import io.ipoli.android.common.view.*
+import io.ipoli.android.player.data.AndroidAttribute
 import io.ipoli.android.player.data.AndroidAvatar
-import io.ipoli.android.player.profile.ProfileViewState.StateType.*
+import io.ipoli.android.player.data.AndroidRank
+import io.ipoli.android.player.data.Player
+import io.ipoli.android.player.profile.ProfileViewState.StateType.LOADING
+import io.ipoli.android.player.profile.ProfileViewState.StateType.PROFILE_DATA_LOADED
 import kotlinx.android.synthetic.main.controller_profile.view.*
+import kotlinx.android.synthetic.main.profile_charisma_attribute.view.*
+import kotlinx.android.synthetic.main.profile_expertise_attribute.view.*
+import kotlinx.android.synthetic.main.profile_intelligence_attribute.view.*
+import kotlinx.android.synthetic.main.profile_strength_attribute.view.*
+import kotlinx.android.synthetic.main.profile_wellbeing_attribute.view.*
+import kotlinx.android.synthetic.main.profile_willpower_attribute.view.*
 import kotlinx.android.synthetic.main.view_loader.view.*
-import org.threeten.bp.LocalDate
-import org.threeten.bp.Period
 
-class ProfileViewController :
-    ReduxViewController<ProfileAction, ProfileViewState, ProfileReducer> {
+class ProfileViewController(args: Bundle? = null) :
+    ReduxViewController<ProfileAction, ProfileViewState, ProfileReducer>(args) {
 
     override var reducer = ProfileReducer(ProfileReducer.PROFILE_KEY)
 
     override var helpConfig: HelpConfig? =
         HelpConfig(
-            R.string.help_dialog_profile_title,
-            R.string.help_dialog_profile_message
+            io.ipoli.android.R.string.help_dialog_profile_title,
+            io.ipoli.android.R.string.help_dialog_profile_message
         )
 
     private var isEdit: Boolean = false
-    private var friendId: String? = null
-
-    private val displayNameWatcher: TextWatcher = object : TextWatcher {
-
-        override fun afterTextChanged(s: Editable) {
-            renderDisplayNameLengthHint(s.length)
-        }
-
-        override fun beforeTextChanged(s: CharSequence, start: Int, count: Int, after: Int) {
-
-        }
-
-        override fun onTextChanged(s: CharSequence, start: Int, before: Int, count: Int) {
-
-        }
-    }
-
-    private val bioWatcher: TextWatcher = object : TextWatcher {
-
-        override fun afterTextChanged(s: Editable) {
-            renderBioLengthHint(s.length)
-        }
-
-        override fun beforeTextChanged(s: CharSequence, start: Int, count: Int, after: Int) {
-
-        }
-
-        override fun onTextChanged(s: CharSequence, start: Int, before: Int, count: Int) {
-
-        }
-
-    }
 
     private val pageChangeListener = object : ViewPager.OnPageChangeListener {
         override fun onPageScrollStateChanged(state: Int) {
@@ -107,47 +83,25 @@ class ProfileViewController :
         }
     }
 
-    constructor(friendId: String) : this() {
-        this.friendId = friendId
-        reducer = ProfileReducer(ProfileReducer.FRIEND_KEY)
-    }
-
-    constructor(args: Bundle? = null) : super(args = args) {
-        reducer = ProfileReducer(ProfileReducer.PROFILE_KEY)
-    }
-
-    private fun renderDisplayNameLengthHint(length: Int) {
-        @SuppressLint("SetTextI18n")
-        view!!.displayNameLengthHint.text = "$length/${Constants.DISPLAY_NAME_MAX_LENGTH}"
-    }
-
-    private fun renderBioLengthHint(length: Int) {
-        @SuppressLint("SetTextI18n")
-        view!!.bioLengthHint.text = "$length/${Constants.BIO_MAX_LENGTH}"
-    }
-
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup,
         savedViewState: Bundle?
     ): View {
         setHasOptionsMenu(true)
-        val view = container.inflate(R.layout.controller_profile)
+        val view = container.inflate(io.ipoli.android.R.layout.controller_profile)
         setToolbar(view.toolbar)
         val collapsingToolbar = view.collapsingToolbarContainer
         collapsingToolbar.isTitleEnabled = false
-        view.toolbar.title = stringRes(R.string.controller_profile_title)
+        view.toolbar.title = stringRes(io.ipoli.android.R.string.controller_profile_title)
+        view.toolbar.setBackgroundColor(attrData(R.attr.colorPrimary))
 
         var coloredBackground = view.coloredBackground.background.mutate()
         coloredBackground = DrawableCompat.wrap(coloredBackground)
         DrawableCompat.setTint(coloredBackground, attrData(R.attr.colorPrimary))
         DrawableCompat.setTintMode(coloredBackground, PorterDuff.Mode.SRC_IN)
 
-        if(friendId != null) {
-            view.tabLayout.removeTabAt(2)
-        }
-
-        val avatarBackground = view.playerAvatarBackground.background as GradientDrawable
+        val avatarBackground = view.playerAvatar.background as GradientDrawable
         avatarBackground.setColor(attrData(android.R.attr.colorBackground))
 
         view.post {
@@ -157,34 +111,16 @@ class ProfileViewController :
         return view
     }
 
-    override fun colorStatusBars() {
-        activity?.let {
-            it.window.statusBarColor = attrData(android.R.attr.colorBackground)
-            it.window.navigationBarColor = attrData(io.ipoli.android.R.attr.colorPrimary)
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                it.window.decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR
-            }
-        }
-    }
-
     override fun onAttach(view: View) {
         super.onAttach(view)
         showBackButton()
-        if (friendId == null) {
-            view.pager.adapter = ProfilePagerAdapter(this)
-        } else {
-            view.pager.adapter = ProfileFriendPagerAdapter(this)
-        }
-        view.displayNameEdit.addTextChangedListener(displayNameWatcher)
-        view.bioEdit.addTextChangedListener(bioWatcher)
+        view.pager.adapter = ProfilePagerAdapter(this)
         view.tabLayout.getTabAt(0)!!.select()
         view.tabLayout.addOnTabSelectedListener(tabListener)
         view.pager.addOnPageChangeListener(pageChangeListener)
     }
 
     override fun onDetach(view: View) {
-        view.displayNameEdit.removeTextChangedListener(displayNameWatcher)
-        view.bioEdit.removeTextChangedListener(bioWatcher)
         view.tabLayout.removeOnTabSelectedListener(tabListener)
         view.pager.removeOnPageChangeListener(pageChangeListener)
         view.pager.adapter = object : PagerAdapter() {
@@ -203,22 +139,12 @@ class ProfileViewController :
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         super.onCreateOptionsMenu(menu, inflater)
-        inflater.inflate(R.menu.profile_menu, menu)
+        inflater.inflate(io.ipoli.android.R.menu.profile_menu, menu)
     }
 
     override fun onPrepareOptionsMenu(menu: Menu) {
-        val editAction = menu.findItem(R.id.actionEdit)
-        val saveAction = menu.findItem(R.id.actionSave)
-        if (friendId != null) {
-            saveAction.isVisible = false
-            editAction.isVisible = false
-        } else if (isEdit) {
-            saveAction.isVisible = true
-            editAction.isVisible = false
-        } else {
-            saveAction.isVisible = false
-            editAction.isVisible = true
-        }
+        val editAction = menu.findItem(io.ipoli.android.R.id.actionEdit)
+        editAction.isVisible = !isEdit
         super.onPrepareOptionsMenu(menu)
     }
 
@@ -228,29 +154,17 @@ class ProfileViewController :
             android.R.id.home ->
                 return router.handleBack()
 
-            R.id.actionEdit ->
-                dispatch(ProfileAction.StartEdit)
-
-            R.id.actionSave ->
-                dispatch(
-                    ProfileAction.Save(
-                        view!!.displayNameEdit.text.toString(),
-                        view!!.bioEdit.text.toString()
-                    )
-                )
+            io.ipoli.android.R.id.actionEdit ->
+                navigate().toEditProfile()
         }
         return super.onOptionsItemSelected(item)
     }
 
     override fun handleBack(): Boolean {
-        if (isEdit) {
-            dispatch(ProfileAction.StopEdit)
-            return true
-        }
         return super.handleBack()
     }
 
-    override fun onCreateLoadAction() = ProfileAction.Load(friendId)
+    override fun onCreateLoadAction() = ProfileAction.Load(null)
 
     override fun render(state: ProfileViewState, view: View) {
         when (state.type) {
@@ -265,32 +179,116 @@ class ProfileViewController :
                 activity!!.invalidateOptionsMenu()
                 view.loader.gone()
                 view.profileContainer.visible()
-                view.editGroup.gone()
-                view.displayName.visible()
-                view.bio.visible()
 
-                renderAvatar(state, view)
                 renderInfo(state, view)
+                renderAvatar(state, view)
+                renderMembershipStatus(state, view)
+                renderAttributes(state, view)
                 renderLevelProgress(state, view)
+                renderHealth(state, view)
                 renderCoinsAndGems(state, view)
-            }
-
-            EDIT -> {
-                isEdit = true
-                activity!!.invalidateOptionsMenu()
-                renderEdit(view, state)
-            }
-
-            EDIT_STOPPED -> {
-                isEdit = false
-                activity!!.invalidateOptionsMenu()
-                view.editGroup.gone()
-                view.displayName.visible()
-                view.bio.visible()
+                renderRank(state, view)
             }
 
             else -> {
             }
+        }
+    }
+
+    private fun renderRank(state: ProfileViewState, view: View) {
+        view.rank.text = state.rankText
+        view.nextRank.text = state.nextRankText
+    }
+
+    private fun renderAttributes(state: ProfileViewState, view: View) {
+        view.moreAttributes.onDebounceClick {
+            navigateFromRoot().toAttributes()
+        }
+
+        val vms = state.attributeViewModels
+
+        renderAttribute(
+            vms[Player.AttributeType.STRENGTH]!!,
+            view.strengthProgress,
+            view.strengthLevel,
+            view.strengthProgressText,
+            view.strengthContainer
+        )
+
+        renderAttribute(
+            vms[Player.AttributeType.INTELLIGENCE]!!,
+            view.intelligenceProgress,
+            view.intelligenceLevel,
+            view.intelligenceProgressText,
+            view.intelligenceContainer
+        )
+
+        renderAttribute(
+            vms[Player.AttributeType.CHARISMA]!!,
+            view.charismaProgress,
+            view.charismaLevel,
+            view.charismaProgressText,
+            view.charismaContainer
+        )
+
+        renderAttribute(
+            vms[Player.AttributeType.EXPERTISE]!!,
+            view.expertiseProgress,
+            view.expertiseLevel,
+            view.expertiseProgressText,
+            view.expertiseContainer
+        )
+
+        renderAttribute(
+            vms[Player.AttributeType.WELL_BEING]!!,
+            view.wellbeingProgress,
+            view.wellbeingLevel,
+            view.wellbeingProgressText,
+            view.wellbeingContainer
+        )
+
+        renderAttribute(
+            vms[Player.AttributeType.WILLPOWER]!!,
+            view.willpowerProgress,
+            view.willpowerLevel,
+            view.willpowerProgressText,
+            view.willpowerContainer
+        )
+    }
+
+    private fun renderAttribute(
+        attribute: AttributeViewModel,
+        progressView: ProgressBar,
+        levelView: TextView,
+        levelProgressView: TextView,
+        container: View
+    ) {
+        progressView.progress = attribute.progress
+        progressView.max = attribute.max
+        progressView.progressTintList =
+            ColorStateList.valueOf(attribute.progressColor)
+        progressView.secondaryProgressTintList =
+            ColorStateList.valueOf(attribute.secondaryColor)
+        container.onDebounceClick {
+            navigateFromRoot().toAttributes(attribute.type)
+        }
+        levelView.text = attribute.level
+        levelProgressView.text = attribute.progressText
+    }
+
+
+    private fun renderMembershipStatus(state: ProfileViewState, view: View) {
+        if (state.isMember!!) {
+            view.membershipStatus.visible()
+            view.membershipStatusIcon.visible()
+            val background = view.membershipStatus.background as GradientDrawable
+            background.setStroke(
+                ViewUtils.dpToPx(2f, view.context).toInt(),
+                attrData(io.ipoli.android.R.attr.colorPrimary)
+            )
+        } else {
+            view.membershipStatus.gone()
+            view.membershipStatusIcon.gone()
         }
     }
 
@@ -299,23 +297,8 @@ class ProfileViewController :
         view.gems.text = state.gemsText
     }
 
-    private fun renderEdit(view: View, state: ProfileViewState) {
-        view.displayName.gone()
-        view.bio.gone()
-        view.editGroup.visible()
-        val displayNameLength = state.displayNameText?.length ?: 0
-        val bioLength = state.bioText?.length ?: 0
-        view.displayNameEdit.setText(state.displayNameText ?: "")
-        view.bioEdit.setText(state.bioText ?: "")
-        view.displayNameEdit.setSelection(displayNameLength)
-        view.bioEdit.setSelection(bioLength)
-
-        renderDisplayNameLengthHint(displayNameLength)
-        renderBioLengthHint(bioLength)
-    }
-
     private fun renderInfo(state: ProfileViewState, view: View) {
-        view.displayName.text = state.displayNameText
+        view.profileDisplayName.text = state.displayNameText
         if (state.username.isNullOrBlank()) {
             view.username.gone()
         } else {
@@ -323,8 +306,6 @@ class ProfileViewController :
             @SuppressLint("SetTextI18n")
             view.username.text = "@${state.username}"
         }
-        view.info.text = state.info
-        view.bio.text = state.bioText
     }
 
     private fun renderAvatar(state: ProfileViewState, view: View) {
@@ -334,17 +315,31 @@ class ProfileViewController :
         val background = view.playerAvatar.background as GradientDrawable
         background.setColor(colorRes(AndroidAvatar.valueOf(state.avatar.name).backgroundColor))
 
-        if(friendId == null) {
-            view.playerAvatar.onDebounceClick {
-                navigateFromRoot().toAvatarStore(HorizontalChangeHandler())
-            }
+        view.playerAvatar.onDebounceClick {
+            navigateFromRoot().toAvatarStore(HorizontalChangeHandler())
         }
     }
 
+    private fun renderHealth(state: ProfileViewState, view: View) {
+        view.healthProgress.max = state.maxHealth
+        view.healthProgress.animateProgressFromZero(state.health)
+        view.healthProgressText.text = state.healthProgressText
+        val background = view.healthIconBackground.background as GradientDrawable
+        background.setStroke(
+            ViewUtils.dpToPx(2f, view.context).toInt(),
+            colorRes(R.color.md_red_900)
+        )
+    }
+
     private fun renderLevelProgress(state: ProfileViewState, view: View) {
+        val background = view.xpBackground.background as GradientDrawable
+        background.setStroke(
+            ViewUtils.dpToPx(2f, view.context).toInt(),
+            colorRes(R.color.md_yellow_800)
+        )
         view.levelProgress.max = state.levelXpMaxProgress
         view.levelProgress.animateProgressFromZero(state.levelXpProgress)
-        view.levelText.text = state.levelText
+        view.level.text = state.levelText
         view.levelProgressText.text = state.levelProgressText
     }
 
@@ -353,42 +348,18 @@ class ProfileViewController :
 
     private val ProfileViewState.displayNameText
         get() = if (displayName.isNullOrBlank())
-            stringRes(R.string.unknown_hero)
+            stringRes(io.ipoli.android.R.string.unknown_hero)
         else
             displayName
 
-    private val ProfileViewState.info
-        get() = "$titleText | Joined $createdAgoText"
-
-    private val ProfileViewState.titleText: String
-        get() {
-            val titles = resources!!.getStringArray(R.array.player_titles)
-            return titles[Math.min(titleIndex, titles.size - 1)]
-        }
-
-    private val ProfileViewState.createdAgoText: String
-        get() {
-            val p = Period.between(createdAgo.startOfDayUTC, LocalDate.now())
-            return when {
-                p.isZero || p.isNegative -> stringRes(R.string.today).toLowerCase()
-                p.years > 0 -> "${p.years} years ago"
-                p.months > 0 -> "${p.months} months ago"
-                else -> "${p.days} days ago"
-            }
-        }
-
-    private val ProfileViewState.bioText
-        get() =
-            if (bio.isNullOrBlank())
-                stringRes(R.string.blank_bio)
-            else
-                bio
-
     private val ProfileViewState.levelText
-        get() = "Level $level"
+        get() = "$level"
 
     private val ProfileViewState.levelProgressText
         get() = "$levelXpProgress / $levelXpMaxProgress"
+
+    private val ProfileViewState.healthProgressText
+        get() = "$health / $maxHealth"
 
     private val ProfileViewState.gemsText
         get() = LongFormatter.format(activity!!, gems.toLong())
@@ -396,15 +367,24 @@ class ProfileViewController :
     private val ProfileViewState.lifeCoinsText
         get() = LongFormatter.format(activity!!, coins.toLong())
 
+    private val ProfileViewState.rankText
+        get() = stringRes(AndroidRank.valueOf(rank!!.name).title)
+
+    private val ProfileViewState.nextRankText
+        get() = stringRes(
+            R.string.next_rank,
+            stringRes(AndroidRank.valueOf(nextRank!!.name).title)
+        )
+
     inner class ProfilePagerAdapter(controller: Controller) :
         RouterPagerAdapter(controller) {
 
         override fun configureRouter(router: Router, position: Int) {
             val page = when (position) {
                 0 -> ProfileInfoViewController(reducer.stateKey)
-                1 -> ProfilePostListViewController(reducer.stateKey, friendId)
+                1 -> ProfilePostListViewController(reducer.stateKey, null)
                 2 -> ProfileFriendListViewController(reducer.stateKey)
-                3 -> ProfileChallengeListViewController(reducer.stateKey, friendId)
+                3 -> ProfileChallengeListViewController(reducer.stateKey, null)
                 else -> throw IllegalArgumentException("Unknown controller position $position")
             }
             router.setRoot(RouterTransaction.with(page))
@@ -415,21 +395,28 @@ class ProfileViewController :
         override fun getCount() = 4
     }
 
-    inner class ProfileFriendPagerAdapter(controller: Controller) :
-        RouterPagerAdapter(controller) {
+    data class AttributeViewModel(
+        val type: Player.AttributeType,
+        val level: String,
+        val progress: Int,
+        val max: Int,
+        val progressText: String,
+        @ColorInt val secondaryColor: Int,
+        @ColorInt val progressColor: Int
+    )
 
-        override fun configureRouter(router: Router, position: Int) {
-            val page = when (position) {
-                0 -> ProfileInfoViewController(reducer.stateKey, friendId)
-                1 -> ProfilePostListViewController(reducer.stateKey, friendId)
-                2 -> ProfileChallengeListViewController(reducer.stateKey, friendId)
-                else -> throw IllegalArgumentException("Unknown controller position $position")
-            }
-            router.setRoot(RouterTransaction.with(page))
-        }
+    private val ProfileViewState.attributeViewModels: Map<Player.AttributeType, AttributeViewModel>
+        get() = attributes!!.map {
+            val attr = AndroidAttribute.valueOf(it.type.name)
+            it.type to AttributeViewModel(
+                type = it.type,
+                level = "Lvl ${it.level}",
+                progress = it.points,
+                max = it.pointsForNextLevel,
+                progressText = "${it.points}/${it.pointsForNextLevel}",
+                secondaryColor = colorRes(attr.colorPrimary),
+                progressColor = colorRes(attr.colorPrimaryDark)
+            )
+        }.toMap()
 
-        override fun getItemPosition(`object`: Any): Int = PagerAdapter.POSITION_NONE
-
-        override fun getCount() = 3
-    }
 }

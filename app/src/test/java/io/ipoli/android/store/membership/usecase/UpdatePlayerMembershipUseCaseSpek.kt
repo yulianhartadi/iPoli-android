@@ -50,7 +50,7 @@ class UpdatePlayerMembershipUseCaseSpek : Spek({
 
         it("should change membership") {
             val result = executeUseCase(
-                TestUtil.player().copy(membership = Membership.NONE),
+                TestUtil.player.copy(membership = Membership.NONE),
                 MembershipPlan.YEARLY
             )
             result.membership.`should be`(Membership.YEARLY)
@@ -58,9 +58,9 @@ class UpdatePlayerMembershipUseCaseSpek : Spek({
 
         it("should compute expiration date") {
             val purchaseDate = LocalDate.now().with(TemporalAdjusters.firstDayOfYear())
-            val player = TestUtil.player().copy(
+            val player = TestUtil.player.copy(
                 membership = Membership.NONE,
-                inventory = TestUtil.player().inventory
+                inventory = TestUtil.player.inventory
                     .setPowerUps(
                         listOf(
                             PowerUp.fromType(
@@ -86,9 +86,9 @@ class UpdatePlayerMembershipUseCaseSpek : Spek({
 
         it("should use expiration date from parameters") {
             val purchaseDate = LocalDate.now().with(TemporalAdjusters.firstDayOfYear())
-            val player = TestUtil.player().copy(
+            val player = TestUtil.player.copy(
                 membership = Membership.NONE,
-                inventory = TestUtil.player().inventory
+                inventory = TestUtil.player.inventory
                     .setPowerUps(
                         listOf(
                             PowerUp.fromType(

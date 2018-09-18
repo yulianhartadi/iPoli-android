@@ -1,0 +1,308 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <View
+        android:id="@+id/attributeBackground"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_marginBottom="8dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="54dp"
+        android:background="@drawable/rounded_rectangle_white_background"
+        android:elevation="2dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <View
+        android:id="@+id/attributeIconBack"
+        android:layout_width="108dp"
+        android:layout_height="108dp"
+        android:elevation="2dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <ImageView
+        android:id="@+id/attributeIcon"
+        android:layout_width="42dp"
+        android:layout_height="42dp"
+        android:elevation="2dp"
+        android:src="@drawable/ic_intelligence_white"
+        app:layout_constraintBottom_toBottomOf="@+id/attributeIconBack"
+        app:layout_constraintEnd_toEndOf="@+id/attributeIconBack"
+        app:layout_constraintStart_toStartOf="@+id/attributeIconBack"
+        app:layout_constraintTop_toTopOf="@+id/attributeIconBack"
+        app:layout_constraintVertical_bias="0.45" />
+
+
+    <TextView
+        android:id="@+id/attributeLevel"
+        android:layout_width="32dp"
+        android:layout_height="32dp"
+        android:layout_marginTop="84dp"
+        android:background="@drawable/attribute_square"
+        android:elevation="2dp"
+        android:gravity="center"
+        android:text="10"
+        android:textAppearance="@style/TextAppearance.AppCompat.Body1"
+        android:textColor="@color/md_white"
+        app:layout_constraintEnd_toEndOf="@+id/attributeIconBack"
+        app:layout_constraintStart_toStartOf="@+id/attributeIconBack"
+        app:layout_constraintTop_toTopOf="@+id/attributeIconBack" />
+
+    <TextView
+        android:id="@+id/attributeName"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="16dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="16dp"
+        android:elevation="2dp"
+        android:textAlignment="center"
+        android:textAppearance="@style/TextAppearance.AppCompat.Title"
+        app:layout_constraintEnd_toEndOf="@+id/attributeBackground"
+        app:layout_constraintStart_toStartOf="@+id/attributeBackground"
+        app:layout_constraintTop_toBottomOf="@id/attributeIconBack"
+        tools:text="Intelligence" />
+
+    <ImageView
+        android:id="@+id/attributeHintIcon"
+        android:layout_width="24dp"
+        android:layout_height="24dp"
+        android:layout_marginBottom="8dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="8dp"
+        android:elevation="2dp"
+        app:layout_constraintBottom_toBottomOf="@+id/attributeProgress"
+        app:layout_constraintStart_toStartOf="@id/attributeBackground"
+        app:layout_constraintTop_toTopOf="@id/attributeProgress" />
+
+    <TextView
+        android:id="@+id/attributeHint"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="16dp"
+        android:layout_marginStart="16dp"
+        android:elevation="2dp"
+        android:text="@string/inactive_attribute_hint"
+        android:textAppearance="@style/TextAppearance.AppCompat.Body1"
+        android:visibility="invisible"
+        app:layout_constraintBottom_toBottomOf="@+id/attributeHintIcon"
+        app:layout_constraintEnd_toEndOf="@id/attributeBackground"
+        app:layout_constraintStart_toEndOf="@+id/attributeHintIcon"
+        app:layout_constraintTop_toTopOf="@+id/attributeHintIcon" />
+
+    <ProgressBar
+        android:id="@+id/attributeProgress"
+        style="@style/Widget.AppCompat.ProgressBar.Horizontal"
+        android:layout_width="0dp"
+        android:layout_height="32dp"
+        android:layout_marginEnd="24dp"
+        android:layout_marginStart="24dp"
+        android:layout_marginTop="16dp"
+        android:elevation="2dp"
+        android:max="100"
+        android:progress="32"
+        android:progressDrawable="@drawable/attribute_progress_bar"
+        android:visibility="visible"
+        app:layout_constraintEnd_toEndOf="@id/attributeBackground"
+        app:layout_constraintStart_toStartOf="@id/attributeBackground"
+        app:layout_constraintTop_toBottomOf="@id/attributeName" />
+
+    <TextView
+        android:id="@+id/attributeProgressText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:elevation="2dp"
+        android:textAppearance="@style/TextAppearance.AppCompat.Body1"
+        android:textColor="@color/md_white"
+        app:layout_constraintBottom_toBottomOf="@id/attributeProgress"
+        app:layout_constraintEnd_toEndOf="@id/attributeProgress"
+        app:layout_constraintStart_toStartOf="@id/attributeProgress"
+        app:layout_constraintTop_toTopOf="@id/attributeProgress"
+        tools:text="15/20" />
+
+    <TextView
+        android:id="@+id/attributeDescription"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="16dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="16dp"
+        android:elevation="2dp"
+        android:textAppearance="@style/TextAppearance.AppCompat.Body1"
+        app:layout_constraintEnd_toEndOf="@id/attributeBackground"
+        app:layout_constraintStart_toStartOf="@id/attributeBackground"
+        app:layout_constraintTop_toBottomOf="@id/attributeProgress"
+        tools:text="La la lala ala la al lalal" />
+
+    <android.support.v4.widget.NestedScrollView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:elevation="2dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginBottom="16dp"
+        android:layout_marginTop="16dp"
+        app:layout_constraintBottom_toBottomOf="@+id/attributeBackground"
+        app:layout_constraintStart_toStartOf="@id/attributeBackground"
+        app:layout_constraintEnd_toEndOf="@id/attributeBackground"
+        app:layout_constraintTop_toBottomOf="@+id/attributeDescription">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:descendantFocusability="blocksDescendants"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/tagsTitle"
+                style="@style/SectionTitle"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:elevation="2dp"
+                android:text="@string/tags" />
+
+
+            <org.apmem.tools.layouts.FlowLayout
+                android:id="@+id/tagList"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:elevation="2dp"
+                android:gravity="center_horizontal">
+
+                <TextView
+                    android:id="@+id/tag1"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="8dp"
+                    android:layout_marginTop="8dp"
+                    android:background="@drawable/attribute_tag_background"
+                    android:drawableEnd="@drawable/ic_close_black_16dp"
+                    android:drawablePadding="8dp"
+                    android:drawableStart="@drawable/tag_indicator"
+                    android:elevation="2dp"
+                    android:ellipsize="end"
+                    android:foreground="?attr/selectableItemBackground"
+                    android:maxLines="1"
+                    android:paddingBottom="4dp"
+                    android:paddingEnd="8dp"
+                    android:paddingStart="8dp"
+                    android:paddingTop="4dp"
+                    android:textAppearance="@style/TextAppearance.AppCompat.Body1"
+                    android:textColor="@color/md_dark_text_54"
+                    android:visibility="gone"
+                    tools:text="texty" />
+
+                <TextView
+                    android:id="@+id/tag2"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="8dp"
+                    android:layout_marginStart="16dp"
+                    android:layout_marginTop="8dp"
+                    android:background="@drawable/attribute_tag_background"
+                    android:drawableEnd="@drawable/ic_close_black_16dp"
+                    android:drawablePadding="8dp"
+                    android:drawableStart="@drawable/tag_indicator"
+                    android:elevation="2dp"
+                    android:ellipsize="end"
+                    android:foreground="?attr/selectableItemBackground"
+                    android:maxLines="1"
+                    android:paddingBottom="4dp"
+                    android:paddingEnd="8dp"
+                    android:paddingStart="8dp"
+                    android:paddingTop="4dp"
+                    android:textAppearance="@style/TextAppearance.AppCompat.Body1"
+                    android:textColor="@color/md_dark_text_54"
+                    android:visibility="gone"
+                    tools:text="texty" />
+
+
+                <TextView
+                    android:id="@+id/tag3"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="8dp"
+                    android:layout_marginStart="16dp"
+                    android:layout_marginTop="8dp"
+                    android:background="@drawable/attribute_tag_background"
+                    android:drawableEnd="@drawable/ic_close_black_16dp"
+                    android:drawablePadding="8dp"
+                    android:drawableStart="@drawable/tag_indicator"
+                    android:elevation="2dp"
+                    android:ellipsize="end"
+                    android:foreground="?attr/selectableItemBackground"
+                    android:maxLines="1"
+                    android:paddingBottom="4dp"
+                    android:paddingEnd="8dp"
+                    android:paddingStart="8dp"
+                    android:paddingTop="4dp"
+                    android:textAppearance="@style/TextAppearance.AppCompat.Body1"
+                    android:textColor="@color/md_dark_text_54"
+                    android:visibility="gone"
+                    tools:text="texty" />
+
+                <TextView
+                    android:id="@+id/addTag"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="8dp"
+                    android:layout_marginStart="16dp"
+                    android:layout_marginTop="8dp"
+                    android:background="@drawable/attribute_add_tag_background"
+                    android:elevation="2dp"
+                    android:paddingBottom="4dp"
+                    android:paddingEnd="16dp"
+                    android:paddingStart="16dp"
+                    android:paddingTop="4dp"
+                    android:text="+ Add"
+                    android:textAppearance="@style/TextAppearance.AppCompat.Body1"
+                    android:textColor="@color/md_white" />
+            </org.apmem.tools.layouts.FlowLayout>
+
+            <TextView
+                android:id="@+id/bonusListTitle"
+                style="@style/SectionTitle"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:elevation="2dp"
+                android:text="@string/bonuses"
+                />
+
+            <android.support.v7.widget.RecyclerView
+                android:id="@+id/attributeBonusList"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:elevation="2dp"
+                />
+
+        </LinearLayout>
+
+    </android.support.v4.widget.NestedScrollView>
+
+    <android.support.constraint.Group
+        android:id="@+id/hintGroup"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:constraint_referenced_ids="attributeHintIcon,attributeHint" />
+
+    <android.support.constraint.Group
+        android:id="@+id/progressGroup"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:constraint_referenced_ids="attributeProgressText,attributeProgress" />
+
+
+</android.support.constraint.ConstraintLayout>

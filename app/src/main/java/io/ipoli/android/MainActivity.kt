@@ -31,6 +31,7 @@ import io.ipoli.android.common.view.Debounce
 import io.ipoli.android.common.view.playerTheme
 import io.ipoli.android.player.auth.AuthAction
 import io.ipoli.android.player.data.Membership
+import io.ipoli.android.player.view.RevivePopup
 import io.ipoli.android.store.powerup.AndroidPowerUp
 import io.ipoli.android.store.powerup.PowerUp
 import io.ipoli.android.store.powerup.buy.BuyPowerUpDialogController
@@ -72,7 +73,6 @@ class MainActivity : AppCompatActivity(), Injects<UIModule>, SideEffectHandler<A
         }
         setTheme(playerTheme)
         setContentView(R.layout.activity_main)
-
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && !Settings.canDrawOverlays(this)) {
             val intent =
@@ -243,6 +243,8 @@ class MainActivity : AppCompatActivity(), Injects<UIModule>, SideEffectHandler<A
             launch(UI) {
                 if (p.isLoggedIn() && p.username.isNullOrEmpty()) {
                     Navigator(router).setAuth()
+                } else if (p.isDead) {
+                    RevivePopup().show(this@MainActivity)
                 } else if (Random().nextInt(10) == 1 && p.membership == Membership.NONE) {
                     showPremiumSnackbar()
                 }

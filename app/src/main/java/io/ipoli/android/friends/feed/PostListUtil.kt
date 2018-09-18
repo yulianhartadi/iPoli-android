@@ -344,7 +344,7 @@ class PostAdapter(private val reactionPopupHandler: ReactionPopupHandler) :
                 }
             )
 
-            view.save.setOnClickListener(Debounce.clickListener {
+            view.profileSave.setOnClickListener(Debounce.clickListener {
                 ViewUtils.hideKeyboard(view.playerMessageEdit)
                 view.requestFocus()
                 val message = view.playerMessageEdit.text.toString()

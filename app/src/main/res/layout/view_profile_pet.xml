@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:id="@+id/petContainer"
+    android:layout_height="92dp"
+    android:elevation="6dp">
+
+    <ImageView
+        android:id="@+id/pet"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:adjustViewBounds="true"
+        android:scaleType="fitStart"
+        app:layout_constraintBottom_toBottomOf="@id/hat"
+        app:layout_constraintEnd_toEndOf="@id/hat"
+        app:layout_constraintStart_toStartOf="@id/hat"
+        tools:src="@drawable/pet_11" />
+
+    <ImageView
+        android:id="@+id/petState"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:adjustViewBounds="true"
+        android:scaleType="fitStart"
+        app:layout_constraintBottom_toBottomOf="@+id/pet"
+        app:layout_constraintEnd_toEndOf="@+id/pet"
+        app:layout_constraintStart_toStartOf="@+id/pet"
+        app:layout_constraintTop_toTopOf="@+id/pet"
+        tools:src="@drawable/pet_11_awesome" />
+
+    <ImageView
+        android:id="@+id/bodyArmor"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:scaleType="fitStart"
+        app:layout_constraintBottom_toBottomOf="@+id/pet"
+        app:layout_constraintEnd_toEndOf="@+id/pet"
+        app:layout_constraintStart_toStartOf="@+id/pet"
+        app:layout_constraintTop_toTopOf="@+id/pet"
+        tools:src="@drawable/pet_11_item_sweater_red_deer" />
+
+    <ImageView
+        android:id="@+id/mask"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:adjustViewBounds="true"
+        android:scaleType="fitStart"
+        app:layout_constraintBottom_toBottomOf="@+id/pet"
+        app:layout_constraintEnd_toEndOf="@+id/pet"
+        app:layout_constraintStart_toStartOf="@+id/pet"
+        app:layout_constraintTop_toTopOf="@+id/pet"
+        tools:src="@drawable/pet_11_item_face_glasses" />
+
+    <ImageView
+        android:id="@+id/hat"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:adjustViewBounds="true"
+        android:scaleType="fitStart"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:src="@drawable/pet_11_item_head_pirate_cloth" />
+</android.support.constraint.ConstraintLayout>

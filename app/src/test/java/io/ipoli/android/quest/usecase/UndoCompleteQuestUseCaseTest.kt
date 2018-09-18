@@ -3,6 +3,7 @@ package io.ipoli.android.quest.usecase
 import com.nhaarman.mockito_kotlin.any
 import com.nhaarman.mockito_kotlin.doReturn
 import com.nhaarman.mockito_kotlin.mock
+import io.ipoli.android.common.Reward
 import io.ipoli.android.player.usecase.RemoveRewardFromPlayerUseCase
 import io.ipoli.android.quest.Color
 import io.ipoli.android.quest.Quest
@@ -13,7 +14,6 @@ import org.jetbrains.spek.api.Spek
 import org.jetbrains.spek.api.dsl.describe
 import org.jetbrains.spek.api.dsl.it
 import org.threeten.bp.LocalDate
-import org.threeten.bp.LocalDateTime
 
 /**
  * Created by Venelin Valkov <venelin@io.ipoli.io>
@@ -30,9 +30,7 @@ class UndoCompleteQuestUseCaseSpek : Spek({
             scheduledDate = LocalDate.now(),
             duration = 30,
             reminders = listOf(),
-            experience = 20,
-            coins = 10,
-            bounty = Quest.Bounty.None
+            reward = Reward(emptyMap(), 0, 20, 10, Quest.Bounty.None)
         )
 
         var questRepo = mock<QuestRepository>()
@@ -81,12 +79,12 @@ class UndoCompleteQuestUseCaseSpek : Spek({
 
         it("should not remove XP") {
             val newQuest = useCase.execute(questId)
-            newQuest.experience.shouldNotBeNull()
+            newQuest.reward!!.experience.shouldNotBeNull()
         }
 
         it("should not remove coins") {
             val newQuest = useCase.execute(questId)
-            newQuest.coins.shouldNotBeNull()
+            newQuest.reward!!.coins.shouldNotBeNull()
         }
     }
 

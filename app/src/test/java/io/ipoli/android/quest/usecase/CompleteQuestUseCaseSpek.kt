@@ -5,10 +5,10 @@ import com.nhaarman.mockito_kotlin.doReturn
 import com.nhaarman.mockito_kotlin.mock
 import com.nhaarman.mockito_kotlin.reset
 import io.ipoli.android.TestUtil
-import io.ipoli.android.common.SimpleReward
+import io.ipoli.android.common.Reward
 import io.ipoli.android.common.rate.RatePopupScheduler
 import io.ipoli.android.pet.Food
-import io.ipoli.android.player.persistence.PlayerRepository
+import io.ipoli.android.player.attribute.usecase.CheckForOneTimeBoostUseCase
 import io.ipoli.android.player.usecase.RewardPlayerUseCase
 import io.ipoli.android.quest.Quest
 import io.ipoli.android.quest.data.persistence.QuestRepository
@@ -33,8 +33,6 @@ class CompleteQuestUseCaseSpek : Spek({
                 quest
         }
 
-        val player = TestUtil.player()
-
         val quest = TestUtil.quest
 
         val questRepo = createQuestRepository(quest)
@@ -42,28 +40,28 @@ class CompleteQuestUseCaseSpek : Spek({
         val rewardScheduler = mock<RewardScheduler>()
         val reminderScheduler = mock<ReminderScheduler>()
         val ratePopupScheduler = mock<RatePopupScheduler>()
-        val rewardPlayerUseCase = mock<RewardPlayerUseCase>()
-
-        val playerRepo = mock<PlayerRepository> {
-            on { find() } doReturn player
-        }
+        val rewardPlayerUseCase = RewardPlayerUseCase(
+            TestUtil.playerRepoMock(TestUtil.player),
+            mock(),
+            mock(),
+            CheckForOneTimeBoostUseCase(mock()),
+            mock()
+        )
 
         val useCase = CompleteQuestUseCase(
             questRepo,
-            playerRepo,
+            TestUtil.playerRepoMock(TestUtil.player),
             mock(),
             reminderScheduler,
             rewardScheduler,
             ratePopupScheduler,
             rewardPlayerUseCase,
             mock(),
-            mock(),
-            mock(),
-            42
+            mock()
         )
 
         beforeEachTest {
-            reset(rewardPlayerUseCase, rewardScheduler, reminderScheduler)
+            reset(rewardScheduler, reminderScheduler)
         }
 
         val questId = "sampleid"
@@ -88,98 +86,71 @@ class CompleteQuestUseCaseSpek : Spek({
 
         it("should schedule show quest complete message") {
             useCase.execute(WithQuestId(questId))
-            Verify on rewardScheduler that rewardScheduler.schedule(any(), any(), any(), any()) was called
+            Verify on rewardScheduler that rewardScheduler.schedule(
+                any(),
+                any(),
+                any(),
+                any()
+            ) was called
         }
 
         it("should have XP") {
             val newQuest = useCase.execute(WithQuestId(questId))
-            newQuest.experience.shouldNotBeNull()
-            newQuest.experience!! `should be greater than` 0
+
+            newQuest.reward!!.experience `should be greater than` 0
         }
 
         it("should have coins") {
             val newQuest = useCase.execute(WithQuestId(questId))
-            newQuest.coins.shouldNotBeNull()
-            newQuest.coins!! `should be greater than` 0
-        }
-
-        it("should have None bounty") {
-            val newQuest = useCase.execute(WithQuestId(questId))
-            newQuest.bounty.`should be`(Quest.Bounty.None)
+            newQuest.reward!!.coins `should be greater than` 0
         }
 
         it("should have Food bounty") {
 
+            val p = TestUtil.player.copy(
+                pet = TestUtil.player.pet.copy(
+                    itemDropBonus = 10000f
+                )
+            )
+
             val foodUseCase = CompleteQuestUseCase(
                 questRepo,
-                playerRepo,
+                TestUtil.playerRepoMock(p),
                 mock(),
                 reminderScheduler,
                 rewardScheduler,
                 ratePopupScheduler,
                 rewardPlayerUseCase,
                 mock(),
-                mock(),
-                mock(),
-                4096
+                mock()
             )
 
             val newQuest = foodUseCase.execute(WithQuestId(questId))
-            newQuest.bounty.`should be instance of`(Quest.Bounty.Food::class)
+            newQuest.reward!!.bounty.`should be instance of`(Quest.Bounty.Food::class)
         }
 
-        it("should not change bounty") {
-            val noChangeUseCase = CompleteQuestUseCase(
+
+        it("should not give reward when was already completed") {
+
+            val expectedReward = Reward(emptyMap(), 0, 10, 20, Quest.Bounty.Food(Food.BANANA))
+            val noNewBountyUseCase = CompleteQuestUseCase(
                 createQuestRepository(
                     quest.copy(
-                        bounty = Quest.Bounty.None
+                        reward = expectedReward
                     )
                 ),
-                playerRepo,
+                TestUtil.playerRepoMock(TestUtil.player),
                 mock(),
                 reminderScheduler,
                 rewardScheduler,
                 ratePopupScheduler,
                 rewardPlayerUseCase,
-                mock(),
-                mock(),
-                mock(),
-                4096
-            )
-
-            val newQuest = noChangeUseCase.execute(WithQuestId(questId))
-            newQuest.bounty.`should be`(Quest.Bounty.None)
-        }
-
-        it("should not give bounty when was already completed") {
-
-            val rewardPlayerUseCaseMock = mock<RewardPlayerUseCase>()
-
-            val xp = 10
-            val coins = 20
-            val noNewBountyUseCase = CompleteQuestUseCase(
-                createQuestRepository(
-                    quest.copy(
-                        experience = xp,
-                        coins = coins,
-                        bounty = Quest.Bounty.Food(Food.BANANA)
-                    )
-                ),
-                playerRepo,
-                mock(),
-                reminderScheduler,
-                rewardScheduler,
-                ratePopupScheduler,
-                rewardPlayerUseCaseMock,
-                mock(),
                 mock(),
                 mock()
             )
 
             val newQuest = noNewBountyUseCase.execute(WithQuestId(questId))
-            newQuest.bounty.`should be instance of`(Quest.Bounty.Food::class)
-            val expectedReward = SimpleReward(xp, coins, Quest.Bounty.None)
-            Verify on rewardPlayerUseCaseMock that rewardPlayerUseCaseMock.execute(expectedReward) was called
+            newQuest.reward!!.bounty.`should be instance of`(Quest.Bounty.Food::class)
         }
     }
 })

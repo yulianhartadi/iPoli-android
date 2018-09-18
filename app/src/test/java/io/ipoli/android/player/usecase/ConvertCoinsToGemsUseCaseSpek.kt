@@ -23,7 +23,7 @@ class ConvertCoinsToGemsUseCaseSpek : Spek({
             )
 
         it("should not convert gems with insufficient coins") {
-            val player = TestUtil.player().copy(
+            val player = TestUtil.player.copy(
                 coins = Constants.GEM_COINS_PRICE - 1,
                 gems = 0
             )
@@ -33,7 +33,7 @@ class ConvertCoinsToGemsUseCaseSpek : Spek({
 
         it("should convert gems") {
             val gems = 3
-            val player = TestUtil.player().copy(
+            val player = TestUtil.player.copy(
                 coins = Constants.GEM_COINS_PRICE * gems + 10,
                 gems = 0
             )

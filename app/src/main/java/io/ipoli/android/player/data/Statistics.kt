@@ -31,7 +31,14 @@ data class Statistics(
     val joinMembershipCount: Long = 0,
     val powerUpActivatedCount: Long = 0,
     val petRevivedCount: Long = 0,
-    val petDiedCount: Long = 0
+    val petDiedCount: Long = 0,
+    val inviteForFriendCount: Long = 0,
+    val strengthStatusIndex: Long = 0,
+    val intelligenceStatusIndex: Long = 0,
+    val charismaStatusIndex: Long = 0,
+    val expertiseStatusIndex: Long = 0,
+    val wellBeingStatusIndex: Long = 0,
+    val willpowerStatusIndex: Long = 0
 ) {
     data class StreakStatistic(val count: Long = 0, val lastDate: LocalDate? = null)
 }

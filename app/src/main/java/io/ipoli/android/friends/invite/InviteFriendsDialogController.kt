@@ -37,13 +37,15 @@ import java.net.URI
 
 sealed class InviteFriendsAction : Action {
 
+    object Load : InviteFriendsAction()
+
     data class CreateLink(val inviteProvider: InviteFriendsViewState.InviteProvider) :
         InviteFriendsAction() {
         override fun toMap() = mapOf("provider" to inviteProvider.name)
     }
 
-    data class LinkReady(val link: URI) : InviteFriendsAction() {
-        override fun toMap() = mapOf("link" to link.toString())
+    data class LinkReady(val link: URI, val invitesLeft: Int) : InviteFriendsAction() {
+        override fun toMap() = mapOf("link" to link.toString(), "invitesLeft" to invitesLeft)
     }
 
     data class CreateLinkError(val error: ErrorType) : InviteFriendsAction() {
@@ -61,6 +63,15 @@ object InviteFriendsReducer : BaseViewStateReducer<InviteFriendsViewState>() {
         action: Action
     ) =
         when (action) {
+
+            is InviteFriendsAction.Load ->
+                state.dataState.player?.let {
+                    subState.copy(
+                        type = StateType.DATA_LOADED,
+                        invitesLeft = it.statistics.inviteForFriendCount.toInt()
+                    )
+                } ?: subState.copy(type = StateType.LOADING)
+
             is InviteFriendsAction.CreateLink ->
                 subState.copy(
                     type = StateType.CREATING_LINK,
@@ -70,6 +81,7 @@ object InviteFriendsReducer : BaseViewStateReducer<InviteFriendsViewState>() {
             is InviteFriendsAction.LinkReady ->
                 subState.copy(
                     type = StateType.INVITE_LINK_CREATED,
+                    invitesLeft = action.invitesLeft,
                     link = action.link
                 )
 
@@ -89,9 +101,10 @@ object InviteFriendsReducer : BaseViewStateReducer<InviteFriendsViewState>() {
 
     override fun defaultState() =
         InviteFriendsViewState(
-            type = StateType.DATA_LOADED,
+            type = StateType.LOADING,
             link = null,
-            inviteProvider = null
+            inviteProvider = null,
+            invitesLeft = 0
         )
 
     override val stateKey = key<InviteFriendsViewState>()
@@ -100,9 +113,10 @@ object InviteFriendsReducer : BaseViewStateReducer<InviteFriendsViewState>() {
 data class InviteFriendsViewState(
     val type: StateType,
     val link: URI?,
-    val inviteProvider: InviteProvider?
+    val inviteProvider: InviteProvider?,
+    val invitesLeft: Int
 ) : BaseViewState() {
-    enum class StateType { DATA_LOADED, CREATING_LINK, INVITE_LINK_CREATED, UNKNOWN_ERROR, NO_INTERNET_ERROR }
+    enum class StateType { LOADING, DATA_LOADED, CREATING_LINK, INVITE_LINK_CREATED, UNKNOWN_ERROR, NO_INTERNET_ERROR }
     enum class InviteProvider {
         SMS, EMAIL, WHATSAPP, FACEBOOK, LINK
     }
@@ -157,6 +171,8 @@ class InviteFriendsDialogController(args: Bundle? = null) :
         return view
     }
 
+    override fun onCreateLoadAction() = InviteFriendsAction.Load
+
     private fun setInviteProviderClickListener(
         view: View,
         providerView: View,
@@ -164,6 +180,7 @@ class InviteFriendsDialogController(args: Bundle? = null) :
     ) {
         providerView.dispatchOnClick {
             view.loader.visible()
+            view.inviteInvitesLeft.gone()
             view.inviteProviderWhatsapp.gone()
             view.inviteProviderGroup.gone()
             InviteFriendsAction.CreateLink(inviteProvider)
@@ -190,17 +207,30 @@ class InviteFriendsDialogController(args: Bundle? = null) :
     override fun render(state: InviteFriendsViewState, view: View) {
         when (state.type) {
 
+            StateType.DATA_LOADED ->
+                view.inviteInvitesLeft.text = "${state.invitesLeft} invites left"
+
             StateType.INVITE_LINK_CREATED -> {
-                showProviders(view)
+                view.loader.gone()
+                view.inviteInvitesLeft.visible()
                 sendLinkToProvider(state.link!!, state.inviteProvider!!)
+                if (state.invitesLeft == 0) {
+                    view.inviteInvitesLeft.text = "No invites left"
+                } else {
+                    showProviders(view)
+                    view.inviteInvitesLeft.text = "${state.invitesLeft} invites left"
+                }
+
             }
 
             StateType.NO_INTERNET_ERROR -> {
+                view.loader.gone()
                 showProviders(view)
                 showShortToast(R.string.invite_friends_error_no_internet)
             }
 
             StateType.UNKNOWN_ERROR -> {
+                view.loader.gone()
                 showProviders(view)
                 showShortToast(R.string.invite_friends_error_unknown)
             }
@@ -321,7 +351,6 @@ class InviteFriendsDialogController(args: Bundle? = null) :
     }
 
     private fun showProviders(view: View) {
-        view.loader.gone()
         view.inviteProviderGroup.visible()
         if (!view.context.isAppInstalled(Constants.WHATSAPP_PACKAGE)) {
             view.inviteProviderWhatsapp.gone()

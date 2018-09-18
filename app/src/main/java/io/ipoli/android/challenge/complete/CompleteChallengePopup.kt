@@ -28,8 +28,8 @@ class CompleteChallengePopup(private val challenge: Challenge) : Popup(position 
                 contentView.challengeName.visible()
 
                 contentView.challengeName.text = challenge.name
-                contentView.challengeXP.text = "+${challenge.experience!!} experience"
-                contentView.challengeCoins.text = "+${challenge.coins!!} life coins"
+                contentView.challengeXP.text = "+${challenge.reward!!.experience} experience"
+                contentView.challengeCoins.text = "+${challenge.reward.coins} life coins"
             }
         })
         contentView.trophyAnimation.playAnimation()

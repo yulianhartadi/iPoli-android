@@ -24,7 +24,7 @@ class RevivePetUseCaseSpek : Spek({
             RevivePetUseCase(TestUtil.playerRepoMock(player)).execute(Unit)
 
         it("should require dead pet") {
-            val player = TestUtil.player().copy(
+            val player = TestUtil.player.copy(
                 pet = Pet(
                     "",
                     avatar = PetAvatar.ELEPHANT,
@@ -37,8 +37,8 @@ class RevivePetUseCaseSpek : Spek({
         }
 
         it("should not revive when not enough gems") {
-            val pet = TestUtil.player().pet
-            val player = TestUtil.player().copy(
+            val pet = TestUtil.player.pet
+            val player = TestUtil.player.copy(
                 gems = Constants.REVIVE_PET_GEM_PRICE - 1,
                 pet = pet.copy(
                     healthPoints = 0,
@@ -50,8 +50,8 @@ class RevivePetUseCaseSpek : Spek({
         }
 
         it("should revive pet") {
-            val pet = TestUtil.player().pet
-            val player = TestUtil.player().copy(
+            val pet = TestUtil.player.pet
+            val player = TestUtil.player.copy(
                 gems = Constants.REVIVE_PET_GEM_PRICE,
                 pet = pet.copy(
                     healthPoints = 0,

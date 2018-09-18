@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:background="?attr/selectableItemBackground">
+
+    <TextView
+        android:id="@+id/expertiseTitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:drawablePadding="8dp"
+        android:drawableStart="@drawable/ic_expertise_indigo"
+        android:gravity="center_vertical"
+        android:text="@string/attribute_expertise"
+        android:textAppearance="@style/TextAppearance.AppCompat.Subhead"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+
+    <ProgressBar
+        android:id="@+id/expertiseProgress"
+        style="@style/Widget.AppCompat.ProgressBar.Horizontal"
+        android:layout_width="0dp"
+        android:layout_height="18dp"
+        android:layout_marginTop="8dp"
+        android:max="100"
+        android:progress="32"
+        android:progressDrawable="@drawable/attribute_progress_bar"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="@+id/expertiseTitle"
+        app:layout_constraintTop_toBottomOf="@+id/expertiseTitle" />
+
+    <TextView
+        android:id="@+id/expertiseLevel"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:text="Lev 2"
+        android:textAppearance="@style/TextAppearance.AppCompat.Caption"
+        android:textColor="@color/md_white"
+        app:layout_constraintBottom_toBottomOf="@id/expertiseProgress"
+        app:layout_constraintStart_toStartOf="@id/expertiseProgress"
+        app:layout_constraintTop_toTopOf="@id/expertiseProgress" />
+
+    <TextView
+        android:id="@+id/expertiseProgressText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:text="30/100"
+        android:layout_marginEnd="8dp"
+        android:textAppearance="@style/TextAppearance.AppCompat.Caption"
+        android:textColor="@color/md_white"
+        app:layout_constraintBottom_toBottomOf="@id/expertiseProgress"
+        app:layout_constraintEnd_toEndOf="@id/expertiseProgress"
+        app:layout_constraintTop_toTopOf="@id/expertiseProgress" />
+
+
+</android.support.constraint.ConstraintLayout>

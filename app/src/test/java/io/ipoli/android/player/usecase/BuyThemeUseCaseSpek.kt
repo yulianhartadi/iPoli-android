@@ -23,7 +23,7 @@ class BuyThemeUseCaseSpek : Spek({
 
 
         it("should require not bought theme") {
-            val player = TestUtil.player().copy(
+            val player = TestUtil.player.copy(
                 inventory = Inventory(themes = setOf(Theme.BLUE))
             )
             val exec = { executeUseCase(player, Theme.BLUE) }
@@ -31,7 +31,7 @@ class BuyThemeUseCaseSpek : Spek({
         }
 
         it("should not buy when not enough gems") {
-            val player = TestUtil.player().copy(
+            val player = TestUtil.player.copy(
                 gems = Theme.BLUE.gemPrice - 1,
                 inventory = Inventory()
             )
@@ -40,7 +40,7 @@ class BuyThemeUseCaseSpek : Spek({
         }
 
         it("should buy theme") {
-            val player = TestUtil.player().copy(
+            val player = TestUtil.player.copy(
                 gems = Theme.BLUE.gemPrice,
                 inventory = Inventory()
             )

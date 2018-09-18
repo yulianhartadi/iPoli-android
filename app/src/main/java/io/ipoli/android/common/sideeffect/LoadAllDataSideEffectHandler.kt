@@ -60,10 +60,15 @@ object LoadAllDataSideEffectHandler : AppSideEffectHandler() {
             withContext(UI) {
                 updateQuestWidgets()
             }
-            if (sharedPreferences.getBoolean(
+
+            if (sharedPreferences.getBoolean(Constants.KEY_PLAYER_DEAD, false)) {
+                QuickDoNotificationUtil.showDefeated(MyPoliApp.instance)
+            } else if (sharedPreferences.getBoolean(
                     Constants.KEY_QUICK_DO_NOTIFICATION_ENABLED,
                     Constants.DEFAULT_QUICK_DO_NOTIFICATION_ENABLED
-                )) {
+                )
+            ) {
+
                 QuickDoNotificationUtil.update(
                     MyPoliApp.instance,
                     action.quests

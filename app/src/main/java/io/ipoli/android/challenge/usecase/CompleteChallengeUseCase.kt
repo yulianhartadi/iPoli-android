@@ -7,8 +7,8 @@ import io.ipoli.android.common.UseCase
 import io.ipoli.android.common.datetime.Time
 import io.ipoli.android.friends.usecase.SavePostsUseCase
 import io.ipoli.android.player.persistence.PlayerRepository
+import io.ipoli.android.player.usecase.RewardPlayerUseCase
 import org.threeten.bp.LocalDate
-import java.util.*
 
 /**
  * Created by Polina Zhelyazkova <polina@mypoli.fun>
@@ -16,6 +16,7 @@ import java.util.*
  */
 class CompleteChallengeUseCase(
     private val challengeRepository: ChallengeRepository,
+    private val rewardPlayerUseCase: RewardPlayerUseCase,
     private val playerRepository: PlayerRepository,
     private val savePostsUseCase: SavePostsUseCase
 ) :
@@ -27,45 +28,26 @@ class CompleteChallengeUseCase(
         val challenge = challengeRepository.findById(challengeId)!!
 
         val player = playerRepository.find()!!
-        val pet = player.pet
 
-        val experience = experience(pet.experienceBonus)
-        val coins = coins(pet.coinBonus)
-        val newChallenge = challenge.copy(
+        val completeChallenge = challenge.copy(
             completedAtDate = LocalDate.now(),
-            completedAtTime = Time.now(),
-            experience = experience,
-            coins = coins
+            completedAtTime = Time.now()
         )
+        val reward = rewardPlayerUseCase.execute(
+            RewardPlayerUseCase.Params.ForChallenge(
+                completeChallenge,
+                player
+            )
+        ).reward
 
-        challengeRepository.save(newChallenge)
+        val c = challengeRepository.save(completeChallenge.copy(reward = reward))
 
-        if(newChallenge.sharingPreference == SharingPreference.FRIENDS) {
-            savePostsUseCase.execute(SavePostsUseCase.Params.ChallengeComplete(newChallenge, player))
+        if (c.sharingPreference == SharingPreference.FRIENDS) {
+            savePostsUseCase.execute(SavePostsUseCase.Params.ChallengeComplete(c, player))
         }
 
-        return newChallenge
+        return c
     }
 
     data class Params(val challengeId: String, val randomSeed: Long? = null)
-
-    private fun coins(coinBonusPercentage: Float, randomSeed: Long? = null): Int {
-        val rewards = intArrayOf(10, 15, 25, 40, 50)
-        val bonusCoef = (100 + coinBonusPercentage) / 100
-        val reward = rewards[createRandom(randomSeed).nextInt(rewards.size)]
-        return (reward * bonusCoef).toInt()
-    }
-
-    private fun experience(xpBonusPercentage: Float, randomSeed: Long? = null): Int {
-        val rewards = intArrayOf(20, 30, 40, 50, 60)
-        val bonusCoef = (100 + xpBonusPercentage) / 100
-        val reward = rewards[createRandom(randomSeed).nextInt(rewards.size)]
-        return (reward * bonusCoef).toInt()
-    }
-
-    private fun createRandom(randomSeed: Long?): Random {
-        val random = Random()
-        randomSeed?.let { random.setSeed(it) }
-        return random
-    }
 }

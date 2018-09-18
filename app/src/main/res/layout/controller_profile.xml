@@ -9,6 +9,7 @@
     android:focusable="true"
     android:focusableInTouchMode="true">
 
+
     <android.support.design.widget.CoordinatorLayout
         android:id="@+id/profileContainer"
         android:layout_width="match_parent"
@@ -19,7 +20,7 @@
             android:id="@+id/appbar"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="?android:colorBackground"
+            android:background="@android:color/transparent"
             android:theme="@style/ThemeOverlay.AppCompat.Light"
             app:elevation="0dp">
 
@@ -38,306 +39,392 @@
                     android:layout_marginBottom="?attr/actionBarSize"
                     android:layout_marginTop="?attr/actionBarSize">
 
-                    <ImageView
-                        android:id="@+id/coloredBackground"
-                        android:layout_width="0dp"
-                        android:layout_height="0dp"
-                        android:layout_marginTop="36dp"
-                        android:background="@drawable/profile_background"
-                        android:scaleType="fitXY"
-                        app:layout_constraintBottom_toBottomOf="parent"
-                        app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toTopOf="@+id/playerAvatar" />
-
-                    <View
-                        android:id="@+id/playerAvatarBackground"
-                        android:layout_width="124dp"
-                        android:layout_height="124dp"
-                        android:layout_marginTop="24dp"
-                        android:background="@drawable/white_circular_background"
-                        app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toTopOf="parent" />
 
                     <ImageView
                         android:id="@+id/playerAvatar"
                         android:layout_width="108dp"
                         android:layout_height="108dp"
+                        android:layout_marginStart="16dp"
+                        android:layout_marginTop="24dp"
                         android:background="@drawable/white_circular_background"
-                        android:elevation="3dp"
+                        android:elevation="6dp"
                         android:scaleType="fitCenter"
-                        app:layout_constraintBottom_toBottomOf="@+id/playerAvatarBackground"
-                        app:layout_constraintEnd_toEndOf="@+id/playerAvatarBackground"
-                        app:layout_constraintStart_toStartOf="@+id/playerAvatarBackground"
-                        app:layout_constraintTop_toTopOf="@+id/playerAvatarBackground"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent"
                         tools:src="@drawable/avatar_03" />
 
 
                     <TextView
-                        android:id="@+id/displayName"
+                        android:id="@+id/profileDisplayName"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
-                        android:layout_marginEnd="24dp"
-                        android:layout_marginStart="24dp"
-                        android:layout_marginTop="16dp"
-                        android:textAlignment="center"
+                        android:layout_marginEnd="8dp"
+                        android:layout_marginStart="16dp"
+                        android:ellipsize="end"
+                        android:maxLines="2"
                         android:textAppearance="@style/TextAppearance.AppCompat.Title"
-                        android:textColor="@color/md_light_text_100"
-                        app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toBottomOf="@+id/playerAvatarBackground"
-                        tools:text="Tumba Lumbaaaaa" />
-
-                    <EditText
-                        android:id="@+id/displayNameEdit"
-                        style="@style/ProfileWhiteEditTextSubhead"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_marginEnd="24dp"
-                        android:layout_marginStart="24dp"
-                        android:hint="@string/name_hint"
-                        android:maxLength="50"
-                        android:textAlignment="center"
-                        android:visibility="visible"
-                        app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toBottomOf="@+id/playerAvatarBackground"
-                        tools:text="Tumba Lumbaaaaa" />
+                        app:layout_constraintEnd_toStartOf="@id/membershipStatus"
+                        app:layout_constraintStart_toEndOf="@id/playerAvatar"
+                        app:layout_constraintTop_toTopOf="@+id/playerAvatar"
+                        tools:text="Tumba Lumbaaaaa a taka s lopata w ryka" />
 
                     <TextView
                         android:id="@+id/username"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
-                        android:textAlignment="center"
+                        android:layout_marginEnd="8dp"
+                        android:layout_marginTop="8dp"
                         android:textAppearance="@style/TextAppearance.AppCompat.Caption"
-                        android:textColor="@color/md_light_text_70"
+                        app:layout_constraintEnd_toStartOf="@+id/membershipStatus"
+                        app:layout_constraintStart_toStartOf="@id/profileDisplayName"
+                        app:layout_constraintTop_toBottomOf="@id/profileDisplayName"
+                        tools:text="@Tumba Lumba" />
+
+                    <View
+                        android:id="@+id/membershipStatus"
+                        android:layout_width="48dp"
+                        android:layout_height="48dp"
+                        android:layout_marginEnd="16dp"
+                        android:background="@drawable/bordered_circle"
+                        android:visibility="gone"
+                        app:layout_constraintBottom_toBottomOf="@+id/profileDisplayName"
                         app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toBottomOf="@+id/displayNameBarrier"
-                        tools:text="Tumba Lumba" />
+                        app:layout_constraintTop_toTopOf="@+id/profileDisplayName" />
+
+                    <ImageView
+                        android:id="@+id/membershipStatusIcon"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:src="@drawable/ic_profile_membership"
+                        android:visibility="gone"
+                        app:layout_constraintBottom_toBottomOf="@id/membershipStatus"
+                        app:layout_constraintEnd_toEndOf="@id/membershipStatus"
+                        app:layout_constraintStart_toStartOf="@id/membershipStatus"
+                        app:layout_constraintTop_toTopOf="@id/membershipStatus" />
+
+                    <ProgressBar
+                        android:id="@+id/healthProgress"
+                        style="@style/Widget.AppCompat.ProgressBar.Horizontal"
+                        android:layout_width="0dp"
+                        android:layout_height="18dp"
+                        android:layout_marginEnd="32dp"
+                        android:layout_marginStart="16dp"
+                        android:progressDrawable="@drawable/health_progress_bar"
+                        app:layout_constraintBottom_toBottomOf="@+id/healthIconBackground"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="@+id/healthIcon"
+                        app:layout_constraintTop_toTopOf="@+id/healthIconBackground" />
 
                     <TextView
-                        android:id="@+id/info"
-                        android:layout_width="0dp"
+                        android:id="@+id/healthProgressText"
+                        android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:textAlignment="center"
-                        android:textAppearance="@style/TextAppearance.AppCompat.Body2"
-                        android:textColor="@color/md_light_text_70"
-                        app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toBottomOf="@+id/username"
-                        tools:text="Novice Joined today" />
+                        android:layout_marginStart="8dp"
+                        android:textAppearance="@style/TextAppearance.AppCompat.Caption"
+                        android:textColor="@color/md_white"
+                        app:layout_constraintBottom_toBottomOf="@id/healthProgress"
+                        app:layout_constraintStart_toEndOf="@id/healthIconBackground"
+                        app:layout_constraintTop_toTopOf="@id/healthProgress"
+                        tools:text="50/100" />
 
-                    <TextView
-                        android:id="@+id/bio"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_marginEnd="24dp"
-                        android:layout_marginStart="24dp"
-                        android:layout_marginTop="16dp"
-                        android:textAlignment="center"
-                        android:textAppearance="@style/TextAppearance.AppCompat.Body1"
-                        android:textColor="@color/md_light_text_70"
-                        app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toBottomOf="@+id/info"
-                        tools:text="This player likes to keep things mysterious" />
+                    <View
+                        android:id="@+id/healthIconBackground"
+                        android:layout_width="32dp"
+                        android:layout_height="32dp"
+                        android:layout_marginTop="8dp"
+                        android:background="@drawable/bordered_circle"
+                        app:layout_constraintStart_toStartOf="@+id/profileDisplayName"
+                        app:layout_constraintTop_toBottomOf="@+id/username" />
 
-                    <EditText
-                        android:id="@+id/bioEdit"
-                        style="@style/ProfileWhiteEditTextBody"
-                        android:layout_width="0dp"
+                    <ImageView
+                        android:id="@+id/healthIcon"
+                        android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginEnd="24dp"
-                        android:layout_marginStart="24dp"
-                        android:hint="@string/short_bio_hint"
-                        android:maxLength="150"
-                        android:textAppearance="@style/TextAppearance.AppCompat.Body1"
-                        app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toBottomOf="@+id/info"
-                        tools:text="Tumba Lumbaaaaa" />
+                        android:src="@drawable/ic_heart_red_24dp"
+                        app:layout_constraintBottom_toBottomOf="@id/healthIconBackground"
+                        app:layout_constraintEnd_toEndOf="@id/healthIconBackground"
+                        app:layout_constraintStart_toStartOf="@id/healthIconBackground"
+                        app:layout_constraintTop_toTopOf="@id/healthIconBackground" />
 
                     <ProgressBar
                         android:id="@+id/levelProgress"
                         style="@style/Widget.AppCompat.ProgressBar.Horizontal"
                         android:layout_width="0dp"
-                        android:layout_height="12dp"
-                        android:layout_marginEnd="32dp"
-                        android:layout_marginStart="48dp"
-                        android:layout_marginTop="16dp"
-                        android:progressDrawable="@drawable/rounded_experience_progress_bar"
-                        app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toBottomOf="@+id/bioBarrier" />
-
-                    <TextView
-                        android:id="@+id/levelText"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="4dp"
-                        android:textAppearance="@style/TextAppearance.AppCompat.Body1"
-                        android:textColor="@color/md_light_text_70"
-                        app:layout_constraintStart_toStartOf="@+id/levelProgress"
-                        app:layout_constraintTop_toBottomOf="@+id/levelProgress" />
+                        android:layout_height="18dp"
+                        android:layout_marginEnd="16dp"
+                        android:layout_marginStart="16dp"
+                        android:progressDrawable="@drawable/profile_xp_level_progress_bar"
+                        app:layout_constraintBottom_toBottomOf="@+id/xpBackground"
+                        app:layout_constraintEnd_toStartOf="@id/coins"
+                        app:layout_constraintStart_toStartOf="@+id/xpBackground"
+                        app:layout_constraintTop_toTopOf="@+id/xpBackground" />
 
                     <TextView
                         android:id="@+id/levelProgressText"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:layout_marginStart="8dp"
                         android:textAppearance="@style/TextAppearance.AppCompat.Caption"
-                        android:textColor="@color/md_light_text_70"
-                        app:layout_constraintBottom_toBottomOf="@+id/levelText"
-                        app:layout_constraintEnd_toEndOf="@+id/levelProgress"
-                        app:layout_constraintTop_toTopOf="@+id/levelText" />
+                        android:textColor="@color/md_white"
+                        app:layout_constraintBottom_toBottomOf="@id/levelProgress"
+                        app:layout_constraintStart_toEndOf="@id/xpBackground"
+                        app:layout_constraintTop_toTopOf="@id/levelProgress"
+                        tools:text="50/100" />
 
 
-                    <!--<ImageView-->
-                    <!--android:id="@+id/pet"-->
-                    <!--android:layout_width="0dp"-->
-                    <!--android:layout_height="wrap_content"-->
-                    <!--android:adjustViewBounds="true"-->
-                    <!--android:elevation="3dp"-->
-                    <!--android:scaleType="fitEnd"-->
-                    <!--app:layout_constraintBottom_toBottomOf="@+id/petHat"-->
-                    <!--app:layout_constraintEnd_toEndOf="@+id/petHat"-->
-                    <!--app:layout_constraintHorizontal_bias="0.0"-->
-                    <!--app:layout_constraintStart_toStartOf="@+id/petHat"-->
-                    <!--tools:src="@drawable/pet_11" />-->
+                    <View
+                        android:id="@+id/xpBackground"
+                        android:layout_width="28dp"
+                        android:layout_height="28dp"
+                        android:layout_marginTop="8dp"
+                        android:background="@drawable/bordered_circle"
+                        app:layout_constraintStart_toStartOf="@+id/profileDisplayName"
+                        app:layout_constraintTop_toBottomOf="@+id/healthIconBackground" />
 
 
-                    <!--<TextView-->
-                    <!--android:id="@+id/petName"-->
-                    <!--android:layout_width="0dp"-->
-                    <!--android:layout_height="wrap_content"-->
-                    <!--android:layout_marginBottom="16dp"-->
-                    <!--android:elevation="2dp"-->
-                    <!--android:textAlignment="center"-->
-                    <!--android:textAppearance="@style/TextAppearance.AppCompat.Body1"-->
-                    <!--app:layout_constraintBottom_toBottomOf="@id/petBackground"-->
-                    <!--app:layout_constraintEnd_toEndOf="@id/middle"-->
-                    <!--app:layout_constraintTop_toBottomOf="@+id/petHat"-->
-                    <!--app:layout_constraintStart_toStartOf="@id/petBackground"-->
-                    <!--tools:text="Ciganche" />-->
+                    <TextView
+                        android:id="@+id/level"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textAppearance="@style/TextAppearance.AppCompat.Body1"
+                        android:textColor="@color/md_dark_text_87"
+                        app:layout_constraintBottom_toBottomOf="@id/xpBackground"
+                        app:layout_constraintEnd_toEndOf="@id/xpBackground"
+                        app:layout_constraintStart_toStartOf="@id/xpBackground"
+                        app:layout_constraintTop_toTopOf="@id/xpBackground"
+                        tools:text="24" />
 
 
                     <TextView
                         android:id="@+id/coins"
                         android:layout_width="wrap_content"
                         android:layout_height="match_parent"
-                        android:layout_marginStart="8dp"
-                        android:drawablePadding="4dp"
-                        android:drawableStart="@drawable/ic_life_coin_24dp"
-                        android:gravity="center_vertical"
+                        android:layout_marginEnd="4dp"
+                        android:drawableTop="@drawable/ic_life_coin_24dp"
+                        android:gravity="center"
                         android:textAppearance="@style/TextAppearance.AppCompat.Body1"
-                        android:textColor="@color/md_white"
-                        app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintHorizontal_bias="0.5"
-                        app:layout_constraintStart_toEndOf="@+id/gems"
-                        app:layout_constraintTop_toTopOf="@+id/gems"
+                        app:layout_constraintEnd_toStartOf="@id/gems"
+                        app:layout_constraintTop_toTopOf="@id/levelProgress"
                         tools:text="345" />
+
 
                     <TextView
                         android:id="@+id/gems"
                         android:layout_width="wrap_content"
                         android:layout_height="match_parent"
-                        android:layout_marginBottom="24dp"
-                        android:layout_marginEnd="8dp"
-                        android:drawablePadding="4dp"
-                        android:drawableStart="@drawable/ic_gem_24dp"
-                        android:gravity="center_vertical"
+                        android:layout_marginEnd="16dp"
+                        android:drawableTop="@drawable/ic_gem_24dp"
+                        android:gravity="center"
                         android:textAppearance="@style/TextAppearance.AppCompat.Body1"
-                        android:textColor="@color/md_white"
-                        app:layout_constraintBottom_toBottomOf="parent"
-                        app:layout_constraintEnd_toStartOf="@+id/coins"
-                        app:layout_constraintHorizontal_bias="0.5"
-                        app:layout_constraintHorizontal_chainStyle="packed"
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toBottomOf="@+id/levelText"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintTop_toTopOf="@id/levelProgress"
                         tools:text="17" />
 
 
                     <TextView
-                        android:id="@+id/displayNameLengthHint"
+                        android:id="@+id/rankTitle"
                         android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:textAppearance="@style/TextAppearance.AppCompat.Caption"
-                        android:textColor="@color/md_light_text_70"
-                        app:layout_constraintEnd_toEndOf="@+id/displayNameEdit"
-                        app:layout_constraintTop_toBottomOf="@+id/displayNameEdit"
-                        tools:text="3/50" />
-
-                    <android.support.constraint.Barrier
-                        android:id="@+id/displayNameBarrier"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        app:barrierDirection="bottom"
-                        app:constraint_referenced_ids="displayNameLengthHint, displayName" />
+                        android:layout_height="match_parent"
+                        android:layout_marginTop="16dp"
+                        android:text="Rank: "
+                        android:textAppearance="@style/TextAppearance.AppCompat.Body1"
+                        app:layout_constraintEnd_toStartOf="@+id/rank"
+                        app:layout_constraintHorizontal_bias="0.5"
+                        app:layout_constraintHorizontal_chainStyle="packed"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@+id/coins" />
 
                     <TextView
-                        android:id="@+id/bioLengthHint"
+                        android:id="@+id/rank"
                         android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
+                        android:layout_height="match_parent"
+                        android:text="Apprentice"
+                        android:textAppearance="@style/TextAppearance.AppCompat.Body2"
+                        app:layout_constraintBottom_toBottomOf="@+id/rankTitle"
+                        app:layout_constraintEnd_toStartOf="@+id/rankDivider"
+                        app:layout_constraintHorizontal_bias="0.5"
+                        app:layout_constraintStart_toEndOf="@+id/rankTitle"
+                        app:layout_constraintTop_toTopOf="@+id/rankTitle" />
+
+                    <TextView
+                        android:id="@+id/rankDivider"
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:layout_marginStart="8dp"
+                        android:text="|"
+                        android:textAppearance="@style/TextAppearance.AppCompat.Body2"
+                        app:layout_constraintBottom_toBottomOf="@+id/rankTitle"
+                        app:layout_constraintEnd_toStartOf="@+id/nextRank"
+                        app:layout_constraintHorizontal_bias="0.5"
+                        app:layout_constraintStart_toEndOf="@+id/rank"
+                        app:layout_constraintTop_toTopOf="@+id/rankTitle" />
+
+                    <TextView
+                        android:id="@+id/nextRank"
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:layout_marginStart="8dp"
+                        android:text="Next: Master"
                         android:textAppearance="@style/TextAppearance.AppCompat.Caption"
-                        android:textColor="@color/md_light_text_70"
-                        app:layout_constraintEnd_toEndOf="@+id/bioEdit"
-                        app:layout_constraintTop_toBottomOf="@+id/bioEdit"
-                        tools:text="3/50" />
+                        app:layout_constraintBottom_toBottomOf="@+id/rankTitle"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintHorizontal_bias="0.5"
+                        app:layout_constraintStart_toEndOf="@+id/rankDivider"
+                        app:layout_constraintTop_toTopOf="@+id/rankTitle" />
 
+                    <TextView
+                        android:id="@+id/attributesTitle"
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:layout_marginTop="16dp"
+                        android:text="@string/attributes"
+                        android:textAppearance="@style/TextAppearance.AppCompat.Title"
+                        app:layout_constraintStart_toStartOf="@+id/playerAvatar"
+                        app:layout_constraintTop_toBottomOf="@+id/rankTitle" />
 
-                    <android.support.constraint.Group
-                        android:id="@+id/editGroup"
+                    <Button
+                        android:id="@+id/moreAttributes"
+                        style="@style/Widget.AppCompat.Button.Borderless"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:visibility="gone"
-                        app:constraint_referenced_ids="displayNameLengthHint,displayNameEdit,bioEdit,bioLengthHint" />
+                        android:layout_marginEnd="8dp"
+                        android:layout_marginTop="8dp"
+                        android:text="@string/more"
+                        app:layout_constraintBottom_toBottomOf="@+id/attributesTitle"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintTop_toTopOf="@+id/attributesTitle" />
 
 
-                    <android.support.constraint.Barrier
-                        android:id="@+id/bioBarrier"
+                    <include
+                        android:id="@+id/strengthContainer"
+                        layout="@layout/profile_strength_attribute"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginEnd="8dp"
+                        android:layout_marginTop="16dp"
+                        app:layout_constraintEnd_toStartOf="@id/middle"
+                        app:layout_constraintStart_toStartOf="@id/playerAvatar"
+                        app:layout_constraintTop_toBottomOf="@id/attributesTitle" />
+
+                    <include
+                        android:id="@+id/intelligenceContainer"
+                        layout="@layout/profile_intelligence_attribute"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginEnd="16dp"
+                        android:layout_marginStart="8dp"
+                        app:layout_constraintBottom_toBottomOf="@id/strengthContainer"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="@+id/middle"
+                        app:layout_constraintTop_toTopOf="@+id/strengthContainer" />
+
+                    <include
+                        android:id="@+id/wellbeingContainer"
+                        layout="@layout/profile_wellbeing_attribute"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginEnd="8dp"
+                        android:layout_marginTop="16dp"
+                        app:layout_constraintEnd_toEndOf="@+id/middle"
+                        app:layout_constraintStart_toStartOf="@id/strengthContainer"
+                        app:layout_constraintTop_toBottomOf="@id/strengthContainer"
+                        />
+
+                    <include
+                        android:id="@+id/willpowerContainer"
+                        layout="@layout/profile_willpower_attribute"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginEnd="16dp"
+                        android:layout_marginStart="8dp"
+                        app:layout_constraintBottom_toBottomOf="@+id/wellbeingContainer"
+                        app:layout_constraintStart_toStartOf="@+id/middle"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintTop_toTopOf="@+id/wellbeingContainer"/>
+
+                    <include
+                        android:id="@+id/expertiseContainer"
+                        layout="@layout/profile_expertise_attribute"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginEnd="8dp"
+                        android:layout_marginTop="16dp"
+                        android:layout_marginBottom="16dp"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="@+id/middle"
+                        app:layout_constraintStart_toStartOf="@id/strengthContainer"
+                        app:layout_constraintTop_toBottomOf="@id/wellbeingContainer" />
+
+
+                    <include
+                        android:id="@+id/charismaContainer"
+                        layout="@layout/profile_charisma_attribute"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="8dp"
+                        android:layout_marginEnd="16dp"
+                        app:layout_constraintBottom_toBottomOf="@+id/expertiseContainer"
+                        app:layout_constraintStart_toStartOf="@+id/middle"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintTop_toTopOf="@+id/expertiseContainer"
+                         />
+
+
+                    <android.support.constraint.Guideline
+                        android:id="@+id/middle"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        app:barrierDirection="bottom"
-                        app:constraint_referenced_ids="bioLengthHint, bio" />
+                        android:orientation="vertical"
+                        app:layout_constraintGuide_percent="0.5" />
+
                 </android.support.constraint.ConstraintLayout>
 
                 <android.support.v7.widget.Toolbar
                     android:id="@+id/toolbar"
                     android:layout_width="match_parent"
                     android:layout_height="?attr/actionBarSize"
-                    app:popupTheme="@style/ThemeOverlay.AppCompat.Light" />
+                    android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar" />
 
                 <android.support.design.widget.TabLayout
                     android:id="@+id/tabLayout"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_gravity="bottom"
-                    android:layout_marginTop="?attr/actionBarSize">
+                    android:layout_marginEnd="32dp"
+                    android:layout_marginStart="32dp"
+                    android:layout_marginTop="?attr/actionBarSize"
+                    android:background="@drawable/rounded_top_corners_rectangle">
 
                     <android.support.design.widget.TabItem
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Info" />
+                        android:icon="@drawable/tab_profile_info" />
 
                     <android.support.design.widget.TabItem
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="My posts" />
+                        android:icon="@drawable/tab_profile_posts" />
 
                     <android.support.design.widget.TabItem
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Friends" />
+                        android:icon="@drawable/tab_profile_friends" />
 
                     <android.support.design.widget.TabItem
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Shared" />
-
+                        android:icon="@drawable/tab_profile_challenges" />
                 </android.support.design.widget.TabLayout>
+
             </android.support.design.widget.CollapsingToolbarLayout>
         </android.support.design.widget.AppBarLayout>
+
+        <View
+            android:id="@+id/coloredBackground"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/profile_background"
+            app:layout_behavior="@string/appbar_scrolling_view_behavior" />
 
         <android.support.v4.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
             android:layout_width="match_parent"
@@ -345,14 +432,29 @@
             android:fillViewport="true"
             app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
-            <android.support.v4.view.ViewPager
-                android:id="@+id/pager"
-
+            <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="match_parent" />
+                android:layout_height="match_parent"
+                android:paddingBottom="8dp"
+                android:paddingEnd="8dp"
+                android:paddingStart="8dp">
+
+                <android.support.v4.view.ViewPager
+                    android:id="@+id/pager"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_marginBottom="8dp"
+                    android:layout_marginEnd="8dp"
+                    android:layout_marginStart="8dp"
+                    android:background="@drawable/rounded_rectangle_white_background"
+                    android:elevation="4dp" />
+            </LinearLayout>
         </android.support.v4.widget.NestedScrollView>
+
 
     </android.support.design.widget.CoordinatorLayout>
 
     <include layout="@layout/view_loader" />
+
+
 </FrameLayout>

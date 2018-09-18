@@ -8,7 +8,6 @@ import android.support.v7.widget.GridLayoutManager
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import com.bluelinelabs.conductor.changehandler.HorizontalChangeHandler
 import io.ipoli.android.R
 import io.ipoli.android.achievement.androidAchievement
 import io.ipoli.android.common.redux.android.BaseViewController
@@ -19,13 +18,10 @@ import io.ipoli.android.common.view.recyclerview.RecyclerViewViewModel
 import io.ipoli.android.common.view.recyclerview.SimpleViewHolder
 import io.ipoli.android.common.view.stringRes
 import io.ipoli.android.common.view.visible
-import io.ipoli.android.pet.AndroidPetAvatar
-import io.ipoli.android.pet.Pet
 import io.ipoli.android.player.profile.ProfileViewState.StateType.PROFILE_DATA_LOADED
 import io.ipoli.android.player.profile.ProfileViewState.StateType.PROFILE_INFO_LOADED
 import kotlinx.android.synthetic.main.controller_profile_info.view.*
 import kotlinx.android.synthetic.main.item_achievement.view.*
-import kotlin.math.roundToInt
 
 /**
  * Created by Polina Zhelyazkova <polina@mypoli.fun>
@@ -67,10 +63,7 @@ class ProfileInfoViewController(args: Bundle? = null) :
 
             PROFILE_INFO_LOADED,
             PROFILE_DATA_LOADED -> {
-                renderPet(state, view)
-                renderPetStats(state, view)
                 renderPlayerStats(state, view)
-
                 renderAchievements(view, state)
             }
 
@@ -79,41 +72,9 @@ class ProfileInfoViewController(args: Bundle? = null) :
         }
     }
 
-    private fun renderPetStats(state: ProfileViewState, view: View) {
-        view.coinBonus.text = state.coinBonus
-        view.xpBonus.text = state.xpBonus
-        view.itemDropBonus.text = state.itemDropBonus
-
-        view.healthProgress.max = state.maxPetHp
-        view.healthProgress.animateProgressFromZero(state.petHp)
-        view.moodProgress.max = state.maxPetMp
-        view.moodProgress.animateProgressFromZero(state.petMp)
-
-        view.petStateName.text = state.petStateName
-    }
-
     private fun renderPlayerStats(state: ProfileViewState, view: View) {
         view.playerStat1.animateToValueFromZero(state.dailyChallengeStreak)
         view.playerStat2.animateToValueFromZero(state.last7DaysAverageProductiveDuration!!.asHours.intValue)
-    }
-
-    private fun renderPet(state: ProfileViewState, view: View) {
-        view.pet.setImageResource(state.petImage)
-        view.petState.setImageResource(state.petStateImage)
-        view.petName.text = state.pet!!.name
-
-//            val setItem: (ImageView, Int?) -> Unit = { iv, image ->
-//                if (image == null) iv.setImageDrawable(null)
-//                else iv.setImageResource(image)
-//            }
-
-//            setItem(view.petHat, state.petHat)
-//            setItem(view.petMask, state.petMask)
-//            setItem(view.petBody, state.petBody)
-
-        view.pet.onDebounceClick {
-            navigateFromRoot().toPet(HorizontalChangeHandler())
-        }
     }
 
     private fun renderAchievements(
@@ -168,60 +129,6 @@ class ProfileInfoViewController(args: Bundle? = null) :
         }
 
     }
-
-    private val ProfileViewState.petMp
-        get() = pet!!.moodPoints
-
-    private val ProfileViewState.petHp
-        get() = pet!!.healthPoints
-
-    private val ProfileViewState.maxPetMp
-        get() = Pet.MAX_MP
-
-    private val ProfileViewState.maxPetHp
-        get() = Pet.MAX_HP
-
-    private val ProfileViewState.coinBonus
-        get() = "+ ${pet!!.coinBonus.roundToInt()}%"
-
-    private val ProfileViewState.xpBonus
-        get() = "+ ${pet!!.experienceBonus.roundToInt()}%"
-
-    private val ProfileViewState.itemDropBonus
-        get() = "+ ${pet!!.itemDropBonus.roundToInt()}%"
-
-    private val ProfileViewState.petImage
-        get() = AndroidPetAvatar.valueOf(pet!!.avatar.name).image
-
-    private val ProfileViewState.petStateImage
-        get() = AndroidPetAvatar.valueOf(pet!!.avatar.name).stateImage[pet.state]!!
-
-    private val ProfileViewState.petStateName
-        get() = pet!!.state.name.toLowerCase().capitalize()
-
-    private val ProfileViewState.petHat: Int?
-        get() {
-            val petItems = AndroidPetAvatar.valueOf(pet!!.avatar.name).items
-            return pet.equipment.hat?.let {
-                petItems[it]!!
-            }
-        }
-
-    private val ProfileViewState.petMask: Int?
-        get() {
-            val petItems = AndroidPetAvatar.valueOf(pet!!.avatar.name).items
-            return pet.equipment.mask?.let {
-                petItems[it]!!
-            }
-        }
-
-    private val ProfileViewState.petBody: Int?
-        get() {
-            val petItems = AndroidPetAvatar.valueOf(pet!!.avatar.name).items
-            return pet.equipment.bodyArmor?.let {
-                petItems[it]!!
-            }
-        }
 
     private val ProfileViewState.achievementViewModels: List<AchievementViewModel>
         get() =

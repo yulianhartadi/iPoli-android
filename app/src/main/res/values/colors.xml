@@ -328,4 +328,6 @@
     <color name="invite_provider_background_email">#F9D154</color>
     <color name="invite_provider_background_sms">#F33052</color>
     <color name="invite_provider_background_link">#4dae43</color>
+
+    <color name="evil_snail_background">#424242</color>
 </resources>

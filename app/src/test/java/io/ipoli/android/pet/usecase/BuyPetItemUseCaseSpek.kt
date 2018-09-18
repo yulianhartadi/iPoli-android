@@ -29,7 +29,7 @@ class BuyPetItemUseCaseSpek : Spek({
 
         it("should require not bought pet item") {
 
-            val player = TestUtil.player().copy(
+            val player = TestUtil.player.copy(
                 pet = Pet(
                     "Pencho",
                     PetAvatar.ELEPHANT
@@ -49,7 +49,7 @@ class BuyPetItemUseCaseSpek : Spek({
         }
 
         it("should not buy when not enough gems") {
-            val player = TestUtil.player().copy(
+            val player = TestUtil.player.copy(
                 gems = PetItem.RED_HAT.gemPrice - 1,
                 pet = Pet(
                     "Pencho",
@@ -69,7 +69,7 @@ class BuyPetItemUseCaseSpek : Spek({
         }
 
         it("should buy pet item") {
-            val player = TestUtil.player().copy(
+            val player = TestUtil.player.copy(
                 gems = PetItem.RED_HAT.gemPrice,
                 pet = Pet(
                     "Pencho",

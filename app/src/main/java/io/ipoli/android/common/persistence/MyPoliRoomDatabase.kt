@@ -4,6 +4,7 @@ import android.arch.persistence.db.SupportSQLiteDatabase
 import android.arch.persistence.room.*
 import android.arch.persistence.room.migration.Migration
 import android.content.Context
+import io.ipoli.android.Constants
 import io.ipoli.android.challenge.entity.SharingPreference
 import io.ipoli.android.challenge.persistence.ChallengeDao
 import io.ipoli.android.challenge.persistence.DbTrackedValue
@@ -14,8 +15,13 @@ import io.ipoli.android.friends.feed.persistence.PostDao
 import io.ipoli.android.friends.feed.persistence.RoomPost
 import io.ipoli.android.habit.persistence.HabitDao
 import io.ipoli.android.habit.persistence.RoomHabit
+import io.ipoli.android.player.AttributePointsForLevelGenerator
+import io.ipoli.android.player.data.Player
 import io.ipoli.android.player.persistence.PlayerDao
 import io.ipoli.android.player.persistence.RoomPlayer
+import io.ipoli.android.player.persistence.model.DbAttribute
+import io.ipoli.android.player.persistence.model.DbHealth
+import io.ipoli.android.quest.data.persistence.DbBounty
 import io.ipoli.android.quest.data.persistence.QuestDao
 import io.ipoli.android.quest.data.persistence.RoomQuest
 import io.ipoli.android.repeatingquest.persistence.RepeatingQuestDao
@@ -102,6 +108,20 @@ class Converters {
             toList(JSONArray(it)) as List<Map<String, Any?>>?
         }
     }
+
+    @TypeConverter
+    fun fromMapStringToLong(data: Map<String, Long>?): String? {
+        return data?.let {
+            JSONObject(it).toString()
+        }
+    }
+
+    @TypeConverter
+    fun toMapStringToLong(data: String?) =
+        data?.let {
+            @Suppress("unchecked_cast")
+            toMap(JSONObject(it)) as Map<String, Long>
+        }
 
     @TypeConverter
     fun fromMapStringToList(data: Map<String, List<Long>>?): String? {
@@ -355,6 +375,103 @@ object Migration3To4 : Migration(3, 4) {
     }
 }
 
+object Migration4To5 : Migration(4, 5) {
+
+    override fun migrate(database: SupportSQLiteDatabase) {
+        val defaultHealth = Converters().fromObjectMap(
+            DbHealth().apply {
+                current = Constants.DEFAULT_PLAYER_MAX_HP.toLong()
+                max = Constants.DEFAULT_PLAYER_MAX_HP.toLong()
+            }.map
+        )
+
+        database.execSQL("ALTER TABLE players ADD COLUMN `health` TEXT NOT NULL DEFAULT '$defaultHealth'")
+
+        val defaultAttributes = Converters().fromObjectMap(
+            mapOf(
+                Player.AttributeType.STRENGTH.name to DbAttribute().apply {
+                    type = Player.AttributeType.STRENGTH.name
+                    points = 0
+                    level = Constants.DEFAULT_ATTRIBUTE_LEVEL.toLong()
+                    pointsForNextLevel =
+                        AttributePointsForLevelGenerator.forLevel(Constants.DEFAULT_ATTRIBUTE_LEVEL + 1)
+                            .toLong()
+                    tagIds = emptyList()
+                }.map,
+                Player.AttributeType.INTELLIGENCE.name to DbAttribute().apply {
+                    type = Player.AttributeType.INTELLIGENCE.name
+                    points = 0
+                    level = Constants.DEFAULT_ATTRIBUTE_LEVEL.toLong()
+                    pointsForNextLevel =
+                        AttributePointsForLevelGenerator.forLevel(Constants.DEFAULT_ATTRIBUTE_LEVEL + 1)
+                            .toLong()
+                    tagIds = emptyList()
+                }.map,
+                Player.AttributeType.CHARISMA.name to DbAttribute().apply {
+                    type = Player.AttributeType.CHARISMA.name
+                    points = 0
+                    level = Constants.DEFAULT_ATTRIBUTE_LEVEL.toLong()
+                    pointsForNextLevel =
+                        AttributePointsForLevelGenerator.forLevel(Constants.DEFAULT_ATTRIBUTE_LEVEL + 1)
+                            .toLong()
+                    tagIds = emptyList()
+                }.map,
+                Player.AttributeType.EXPERTISE.name to DbAttribute().apply {
+                    type = Player.AttributeType.EXPERTISE.name
+                    points = 0
+                    level = Constants.DEFAULT_ATTRIBUTE_LEVEL.toLong()
+                    pointsForNextLevel =
+                        AttributePointsForLevelGenerator.forLevel(Constants.DEFAULT_ATTRIBUTE_LEVEL + 1)
+                            .toLong()
+                    tagIds = emptyList()
+                }.map,
+                Player.AttributeType.WELL_BEING.name to DbAttribute().apply {
+                    type = Player.AttributeType.WELL_BEING.name
+                    points = 0
+                    level = Constants.DEFAULT_ATTRIBUTE_LEVEL.toLong()
+                    pointsForNextLevel =
+                        AttributePointsForLevelGenerator.forLevel(Constants.DEFAULT_ATTRIBUTE_LEVEL + 1)
+                            .toLong()
+                    tagIds = emptyList()
+                }.map,
+                Player.AttributeType.WILLPOWER.name to DbAttribute().apply {
+                    type = Player.AttributeType.WILLPOWER.name
+                    points = 0
+                    level = Constants.DEFAULT_ATTRIBUTE_LEVEL.toLong()
+                    pointsForNextLevel =
+                        AttributePointsForLevelGenerator.forLevel(Constants.DEFAULT_ATTRIBUTE_LEVEL + 1)
+                            .toLong()
+                    tagIds = emptyList()
+                }.map
+
+            )
+        )
+        database.execSQL("ALTER TABLE players ADD COLUMN `attributes` TEXT NOT NULL DEFAULT '$defaultAttributes'")
+
+        database.execSQL("ALTER TABLE quests ADD COLUMN `healthPoints` INTEGER DEFAULT 0")
+        database.execSQL("ALTER TABLE quests ADD COLUMN `attributePoints` TEXT DEFAULT NULL")
+
+        database.execSQL("UPDATE quests SET attributePoints='{}' WHERE coins IS NOT NULL")
+
+        val defaultBounty = Converters().fromObjectMap(
+            DbBounty().apply {
+                type = DbBounty.Type.NONE.name
+                name = null
+            }.map
+        )
+
+        database.execSQL("ALTER TABLE challenges ADD COLUMN `bounty` TEXT DEFAULT NULL")
+        database.execSQL("ALTER TABLE challenges ADD COLUMN `attributePoints` TEXT DEFAULT NULL")
+        database.execSQL("UPDATE challenges SET attributePoints='{}' WHERE coins IS NOT NULL")
+        database.execSQL("UPDATE challenges SET bounty='$defaultBounty' WHERE coins IS NOT NULL")
+
+        database.execSQL("ALTER TABLE daily_challenges ADD COLUMN `coins` INTEGER DEFAULT NULL")
+        database.execSQL("ALTER TABLE daily_challenges ADD COLUMN `experience` INTEGER DEFAULT NULL")
+        database.execSQL("ALTER TABLE daily_challenges ADD COLUMN `bounty` TEXT DEFAULT NULL")
+        database.execSQL("ALTER TABLE daily_challenges ADD COLUMN `attributePoints` TEXT DEFAULT NULL")
+    }
+}
+
 @Database(
     entities = [
         RoomPlayer::class,
@@ -371,7 +488,7 @@ object Migration3To4 : Migration(3, 4) {
         RoomEntityReminder::class,
         RoomPost::class
     ],
-    version = 4,
+    version = 5,
     exportSchema = false
 )
 @TypeConverters(Converters::class)
@@ -414,7 +531,8 @@ abstract class MyPoliRoomDatabase : RoomDatabase() {
                 .addMigrations(
                     Migration1To2,
                     Migration2To3,
-                    Migration3To4
+                    Migration3To4,
+                    Migration4To5
                 )
                 .addCallback(CALLBACK)
                 .build()

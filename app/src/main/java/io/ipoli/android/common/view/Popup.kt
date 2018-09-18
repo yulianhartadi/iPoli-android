@@ -14,6 +14,7 @@ import android.util.AttributeSet
 import android.util.DisplayMetrics
 import android.view.*
 import android.widget.RelativeLayout
+import io.ipoli.android.MyPoliApp
 import io.ipoli.android.R
 import io.ipoli.android.common.AppState
 import io.ipoli.android.common.NamespaceAction
@@ -24,7 +25,6 @@ import io.ipoli.android.common.redux.Action
 import io.ipoli.android.common.redux.StateStore
 import io.ipoli.android.common.redux.ViewState
 import io.ipoli.android.common.redux.ViewStateReducer
-import io.ipoli.android.MyPoliApp
 import kotlinx.coroutines.experimental.android.UI
 import kotlinx.coroutines.experimental.withContext
 import space.traversal.kapsule.Injects

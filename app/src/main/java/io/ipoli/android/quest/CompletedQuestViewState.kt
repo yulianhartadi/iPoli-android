@@ -85,6 +85,8 @@ object CompletedQuestReducer : BaseViewStateReducer<CompletedQuestViewState>() {
 
                 val player = state.dataState.player!!
 
+                val reward = quest.reward!!
+
                 subState.copy(
                     type = DATA_LOADED,
                     name = quest.name,
@@ -98,9 +100,9 @@ object CompletedQuestReducer : BaseViewStateReducer<CompletedQuestViewState>() {
                     startedAt = quest.actualStartTime,
                     finishedAt = quest.completedAtTime,
                     timer = timer,
-                    experience = quest.experience,
-                    coins = quest.coins,
-                    bounty = quest.bounty.let {
+                    experience = reward.experience,
+                    coins = reward.coins,
+                    bounty = reward.bounty.let {
                         if (it is Quest.Bounty.Food) {
                             it.food
                         } else {

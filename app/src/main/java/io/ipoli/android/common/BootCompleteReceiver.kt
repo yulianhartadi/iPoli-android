@@ -27,13 +27,17 @@ class BootCompleteReceiver : AsyncBroadcastReceiver() {
                 launch(UI) {
                     AppWidgetUtil.updateAgendaWidget(context)
                     AppWidgetUtil.updateHabitWidget(context)
-                }
-                val quests = questRepository.findScheduledAt(LocalDate.now())
-                if (p.preferences.isQuickDoNotificationEnabled) {
-                    QuickDoNotificationUtil.update(
-                        context = context,
-                        quests = quests
-                    )
+                    if (p.isDead) {
+                        QuickDoNotificationUtil.showDefeated(context)
+                    } else {
+                        val quests = questRepository.findScheduledAt(LocalDate.now())
+                        if (p.preferences.isQuickDoNotificationEnabled) {
+                            QuickDoNotificationUtil.update(
+                                context = context,
+                                quests = quests
+                            )
+                        }
+                    }
                 }
             }
         }

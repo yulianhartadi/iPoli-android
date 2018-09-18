@@ -2,6 +2,7 @@ package io.ipoli.android.dailychallenge.data.persistence
 
 import android.arch.persistence.room.*
 import com.google.firebase.firestore.FirebaseFirestore
+import io.ipoli.android.common.Reward
 import io.ipoli.android.common.datetime.Duration
 import io.ipoli.android.common.datetime.Millisecond
 import io.ipoli.android.common.datetime.instant
@@ -11,6 +12,10 @@ import io.ipoli.android.common.persistence.BaseDao
 import io.ipoli.android.common.persistence.BaseRoomRepository
 import io.ipoli.android.common.persistence.FirestoreModel
 import io.ipoli.android.dailychallenge.data.DailyChallenge
+import io.ipoli.android.pet.Food
+import io.ipoli.android.player.data.Player
+import io.ipoli.android.quest.Quest
+import io.ipoli.android.quest.data.persistence.DbBounty
 import org.jetbrains.annotations.NotNull
 import org.threeten.bp.LocalDate
 import java.util.*
@@ -95,6 +100,28 @@ class RoomDailyChallengeRepository(dao: DailyChallengeDao) : DailyChallengeRepos
             date = dbObject.date.startOfDayUTC,
             questIds = dbObject.questIds,
             isCompleted = dbObject.isCompleted,
+            reward = dbObject.coins?.let {
+                val dbBounty = DbBounty(dbObject.bounty!!.toMutableMap())
+                Reward(
+                    attributePoints = dbObject.attributePoints!!.map { a ->
+                        Player.AttributeType.valueOf(
+                            a.key
+                        ) to a.value.toInt()
+                    }.toMap(),
+                    healthPoints = 0,
+                    experience = dbObject.experience!!.toInt(),
+                    coins = dbObject.coins.toInt(),
+                    bounty = when {
+                        dbBounty.type == DbBounty.Type.NONE.name -> Quest.Bounty.None
+                        dbBounty.type == DbBounty.Type.FOOD.name -> Quest.Bounty.Food(
+                            Food.valueOf(
+                                dbBounty.name!!
+                            )
+                        )
+                        else -> throw IllegalArgumentException("Unknown bounty type ${dbBounty.type}")
+                    }
+                )
+            },
             createdAt = dbObject.createdAt.instant,
             updatedAt = dbObject.updatedAt.instant,
             removedAt = dbObject.removedAt?.instant
@@ -106,6 +133,18 @@ class RoomDailyChallengeRepository(dao: DailyChallengeDao) : DailyChallengeRepos
             date = entity.date.startOfDayUTC(),
             questIds = entity.questIds,
             isCompleted = entity.isCompleted,
+            experience = entity.reward?.experience?.toLong(),
+            coins = entity.reward?.coins?.toLong(),
+            attributePoints = entity.reward?.attributePoints?.map { a -> a.key.name to a.value.toLong() }?.toMap(),
+            bounty = entity.reward?.let {
+                DbBounty().apply {
+                    type = when (it.bounty) {
+                        is Quest.Bounty.None -> DbBounty.Type.NONE.name
+                        is Quest.Bounty.Food -> DbBounty.Type.FOOD.name
+                    }
+                    name = if (it.bounty is Quest.Bounty.Food) it.bounty.food.name else null
+                }.map
+            },
             createdAt = entity.createdAt.toEpochMilli(),
             updatedAt = System.currentTimeMillis(),
             removedAt = entity.removedAt?.toEpochMilli()
@@ -129,6 +168,10 @@ data class RoomDailyChallenge(
     val date: Long,
     val questIds: List<String>,
     val isCompleted: Boolean,
+    val experience: Long?,
+    val coins: Long?,
+    val bounty: Map<String, Any?>?,
+    val attributePoints: Map<String, Long>?,
     val createdAt: Long,
     val updatedAt: Long,
     val removedAt: Long?
@@ -140,6 +183,10 @@ data class DbDailyChallenge(override val map: MutableMap<String, Any?> = mutable
     var date: Long by map
     var questIds: List<String> by map
     var isCompleted: Boolean by map
+    var experience: Long? by map
+    var coins: Long? by map
+    var bounty: Map<String, Any?>? by map
+    var attributePoints: Map<String, Long>? by map
     override var createdAt: Long by map
     override var updatedAt: Long by map
     override var removedAt: Long? by map
@@ -163,6 +210,28 @@ class FirestoreDailyChallengeRepository(
             date = dc.date.startOfDayUTC,
             questIds = dc.questIds,
             isCompleted = dc.isCompleted,
+            reward = dc.coins?.let {
+                val dbBounty = DbBounty(dc.bounty!!.toMutableMap())
+                Reward(
+                    attributePoints = dc.attributePoints!!.map { a ->
+                        Player.AttributeType.valueOf(
+                            a.key
+                        ) to a.value.toInt()
+                    }.toMap(),
+                    healthPoints = 0,
+                    experience = dc.experience!!.toInt(),
+                    coins = dc.coins!!.toInt(),
+                    bounty = when {
+                        dbBounty.type == DbBounty.Type.NONE.name -> Quest.Bounty.None
+                        dbBounty.type == DbBounty.Type.FOOD.name -> Quest.Bounty.Food(
+                            Food.valueOf(
+                                dbBounty.name!!
+                            )
+                        )
+                        else -> throw IllegalArgumentException("Unknown bounty type ${dbBounty.type}")
+                    }
+                )
+            },
             createdAt = dc.createdAt.instant,
             updatedAt = dc.updatedAt.instant,
             removedAt = dc.removedAt?.instant
@@ -175,6 +244,19 @@ class FirestoreDailyChallengeRepository(
             it.date = entity.date.startOfDayUTC()
             it.questIds = entity.questIds
             it.isCompleted = entity.isCompleted
+            entity.reward?.let { r ->
+                it.experience = r.experience.toLong()
+                it.coins = r.coins.toLong()
+                it.attributePoints =
+                    r.attributePoints.map { a -> a.key.name to a.value.toLong() }.toMap()
+                it.bounty = DbBounty().apply {
+                    type = when (r.bounty) {
+                        is Quest.Bounty.None -> DbBounty.Type.NONE.name
+                        is Quest.Bounty.Food -> DbBounty.Type.FOOD.name
+                    }
+                    name = if (r.bounty is Quest.Bounty.Food) r.bounty.food.name else null
+                }.map
+            }
             it.createdAt = entity.createdAt.toEpochMilli()
             it.updatedAt = entity.updatedAt.toEpochMilli()
             it.removedAt = entity.removedAt?.toEpochMilli()

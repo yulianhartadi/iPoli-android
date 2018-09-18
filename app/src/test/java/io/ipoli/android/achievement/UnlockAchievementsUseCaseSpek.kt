@@ -42,7 +42,7 @@ class UnlockAchievementsUseCaseSpek : Spek({
 
         it("should unlock first completed quest") {
             val achievements = executeUseCase(
-                TestUtil.player().copy(
+                TestUtil.player.copy(
                     achievements = emptyList(),
                     statistics = Statistics(questCompletedCountForToday = 1)
                 ),
@@ -54,7 +54,7 @@ class UnlockAchievementsUseCaseSpek : Spek({
 
         it("should unlock 10 completed Quests in a day") {
             val achievements = executeUseCase(
-                TestUtil.player().copy(
+                TestUtil.player.copy(
                     achievements = listOf(
                         Achievement.FIRST_QUEST_COMPLETED.asUnlocked
                     ),
@@ -68,7 +68,7 @@ class UnlockAchievementsUseCaseSpek : Spek({
 
         it("should unlock complete Quests for 100 days in a row") {
             val achievements = executeUseCase(
-                TestUtil.player().copy(
+                TestUtil.player.copy(
                     achievements = emptyList(),
                     statistics = Statistics(
                         questCompletedStreak = Statistics.StreakStatistic(
@@ -85,7 +85,7 @@ class UnlockAchievementsUseCaseSpek : Spek({
 
         it("should not unlock complete Quests for 100 days in a row") {
             val achievements = executeUseCase(
-                TestUtil.player().copy(
+                TestUtil.player.copy(
                     achievements = emptyList(),
                     statistics = Statistics(
                         questCompletedStreak = Statistics.StreakStatistic(
@@ -102,7 +102,7 @@ class UnlockAchievementsUseCaseSpek : Spek({
 
         it("should not unlock already unlocked achievement") {
             val achievements = executeUseCase(
-                TestUtil.player().copy(
+                TestUtil.player.copy(
                     achievements = listOf(
                         Achievement.FIRST_QUEST_COMPLETED.asUnlocked
                     ),
@@ -115,7 +115,7 @@ class UnlockAchievementsUseCaseSpek : Spek({
 
         it("should unlock Daily Challenge for 30 days streak") {
             val achievements = executeUseCase(
-                TestUtil.player().copy(
+                TestUtil.player.copy(
                     achievements = emptyList(),
                     statistics = Statistics(
                         dailyChallengeCompleteStreak = Statistics.StreakStatistic(
@@ -133,7 +133,7 @@ class UnlockAchievementsUseCaseSpek : Spek({
 
         it("should unlock keep pet happy for 5 days in a row") {
             val achievements = executeUseCase(
-                TestUtil.player().copy(
+                TestUtil.player.copy(
                     achievements = emptyList(),
                     statistics = Statistics(
                         petHappyStateStreak = 5
@@ -147,7 +147,7 @@ class UnlockAchievementsUseCaseSpek : Spek({
 
         it("should unlock awesomeness score for 5 days streak") {
             val achievements = executeUseCase(
-                TestUtil.player().copy(
+                TestUtil.player.copy(
                     achievements = emptyList(),
                     statistics = Statistics(
                         awesomenessScoreStreak = 5
@@ -160,7 +160,7 @@ class UnlockAchievementsUseCaseSpek : Spek({
 
         it("should unlock focus hours for 5 days streak") {
             val achievements = executeUseCase(
-                TestUtil.player().copy(
+                TestUtil.player.copy(
                     achievements = emptyList(),
                     statistics = Statistics(
                         focusHoursStreak = 5
@@ -174,7 +174,7 @@ class UnlockAchievementsUseCaseSpek : Spek({
         it("should unlock plan day for 5 days streak") {
             val today = LocalDate.now()
             val achievements = executeUseCase(
-                TestUtil.player().copy(
+                TestUtil.player.copy(
                     achievements = emptyList(),
                     statistics = Statistics(
                         planDayStreak = Statistics.StreakStatistic(4, today.minusDays(1))
@@ -189,7 +189,7 @@ class UnlockAchievementsUseCaseSpek : Spek({
         it("should not increment plan day streak") {
             val today = LocalDate.now()
             val achievements = executeUseCase(
-                TestUtil.player().copy(
+                TestUtil.player.copy(
                     achievements = emptyList(),
                     statistics = Statistics(
                         planDayStreak = Statistics.StreakStatistic(4, today)
@@ -202,7 +202,7 @@ class UnlockAchievementsUseCaseSpek : Spek({
 
         it("should unlock first repeating quest created") {
             val achievements = executeUseCase(
-                TestUtil.player().copy(
+                TestUtil.player.copy(
                     achievements = emptyList(),
                     statistics = Statistics(
                         repeatingQuestCreatedCount = 0
@@ -216,7 +216,7 @@ class UnlockAchievementsUseCaseSpek : Spek({
 
         it("should unlock 5 completed challenges") {
             val achievements = executeUseCase(
-                TestUtil.player().copy(
+                TestUtil.player.copy(
                     achievements = emptyList(),
                     statistics = Statistics(
                         challengeCompletedCount = 4
@@ -230,7 +230,7 @@ class UnlockAchievementsUseCaseSpek : Spek({
 
         it("should unlock first challenge created") {
             val achievements = executeUseCase(
-                TestUtil.player().copy(
+                TestUtil.player.copy(
                     achievements = emptyList(),
                     statistics = Statistics(
                         challengeCreatedCount = 0
@@ -244,7 +244,7 @@ class UnlockAchievementsUseCaseSpek : Spek({
 
         it("should unlock 20 gems converted") {
             val achievements = executeUseCase(
-                TestUtil.player().copy(
+                TestUtil.player.copy(
                     achievements = emptyList(),
                     statistics = Statistics(
                         gemConvertedCount = 15
@@ -258,7 +258,7 @@ class UnlockAchievementsUseCaseSpek : Spek({
 
         it("should unlock invite friend") {
             val achievements = executeUseCase(
-                TestUtil.player().copy(
+                TestUtil.player.copy(
                     achievements = emptyList(),
                     statistics = Statistics(
                         friendInvitedCount = 0
@@ -272,7 +272,7 @@ class UnlockAchievementsUseCaseSpek : Spek({
 
         it("should unlock gain 999 xp in a day") {
             val achievements = executeUseCase(
-                TestUtil.player().copy(
+                TestUtil.player.copy(
                     achievements = emptyList(),
                     statistics = Statistics(
                         experienceForToday = 998
@@ -286,7 +286,7 @@ class UnlockAchievementsUseCaseSpek : Spek({
 
         it("should unlock first pet item equipped") {
             val achievements = executeUseCase(
-                TestUtil.player().copy(
+                TestUtil.player.copy(
                     achievements = emptyList(),
                     statistics = Statistics(
                         petItemEquippedCount = 0
@@ -300,7 +300,7 @@ class UnlockAchievementsUseCaseSpek : Spek({
 
         it("should unlock first avatar changed") {
             val achievements = executeUseCase(
-                TestUtil.player().copy(
+                TestUtil.player.copy(
                     achievements = emptyList(),
                     statistics = Statistics(
                         avatarChangeCount = 0
@@ -314,7 +314,7 @@ class UnlockAchievementsUseCaseSpek : Spek({
 
         it("should unlock first pet changed") {
             val achievements = executeUseCase(
-                TestUtil.player().copy(
+                TestUtil.player.copy(
                     achievements = emptyList(),
                     statistics = Statistics(
                         petChangeCount = 0
@@ -328,7 +328,7 @@ class UnlockAchievementsUseCaseSpek : Spek({
 
         it("should unlock pet fed with poop") {
             val achievements = executeUseCase(
-                TestUtil.player().copy(
+                TestUtil.player.copy(
                     achievements = emptyList(),
                     statistics = Statistics(
                         petFedWithPoopCount = 0
@@ -342,7 +342,7 @@ class UnlockAchievementsUseCaseSpek : Spek({
 
         it("should unlock pet fed") {
             val achievements = executeUseCase(
-                TestUtil.player().copy(
+                TestUtil.player.copy(
                     achievements = emptyList(),
                     statistics = Statistics(
                         petFedCount = 0
@@ -356,7 +356,7 @@ class UnlockAchievementsUseCaseSpek : Spek({
 
         it("should unlock feedback sent") {
             val achievements = executeUseCase(
-                TestUtil.player().copy(
+                TestUtil.player.copy(
                     achievements = emptyList(),
                     statistics = Statistics(
                         feedbackSentCount = 0
@@ -370,7 +370,7 @@ class UnlockAchievementsUseCaseSpek : Spek({
 
         it("should unlock become member") {
             val achievements = executeUseCase(
-                TestUtil.player().copy(
+                TestUtil.player.copy(
                     achievements = emptyList(),
                     statistics = Statistics(
                         joinMembershipCount = 0
@@ -384,7 +384,7 @@ class UnlockAchievementsUseCaseSpek : Spek({
 
         it("should unlock first power up activated") {
             val achievements = executeUseCase(
-                TestUtil.player().copy(
+                TestUtil.player.copy(
                     achievements = emptyList(),
                     statistics = Statistics(
                         powerUpActivatedCount = 0
@@ -398,7 +398,7 @@ class UnlockAchievementsUseCaseSpek : Spek({
 
         it("should unlock pet revived") {
             val achievements = executeUseCase(
-                TestUtil.player().copy(
+                TestUtil.player.copy(
                     achievements = emptyList(),
                     statistics = Statistics(
                         petRevivedCount = 0
@@ -412,7 +412,7 @@ class UnlockAchievementsUseCaseSpek : Spek({
 
         it("should unlock pet died") {
             val achievements = executeUseCase(
-                TestUtil.player().copy(
+                TestUtil.player.copy(
                     achievements = emptyList(),
                     statistics = Statistics(
                         petDiedCount = 1

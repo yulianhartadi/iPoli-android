@@ -103,12 +103,14 @@ interface Constants {
         val KEY_DAILY_CHALLENGE_LAST_COMPLETED = "DAILY_CHALLENGE_LAST_COMPLETED"
 
         const val KEY_QUICK_DO_NOTIFICATION_ENABLED = "QUICK_DO_NOTIFICATION_ENABLED"
+        const val KEY_PLAYER_DEAD = "IS_PLAYER_DEAD"
 
         val KEY_SHOULD_SHOW_TUTORIAL = "SHOULD_SHOW_TUTORIAL"
 
         val MYPOLI_EMAIL = "hi@mypoli.fun"
 
         val API_RESOURCE_SOURCE = "io.ipoli-android"
+        val DEFAULT_PLAYER_MAX_HP = 100
         val DEFAULT_PLAYER_XP: Long = 20
         val DEFAULT_PLAYER_LEVEL = 1
         val DEFAULT_PLAYER_COINS = 10
@@ -309,5 +311,9 @@ interface Constants {
         const val RESET_DAY_MINUTE = 0
         val RESET_DAY_TIME = Time.of(RESET_DAY_MINUTE)
         const val MAX_AWESOMENESS_SCORE = 5
+
+        const val DEFAULT_ATTRIBUTE_LEVEL = 1
+
+        const val PLAYER_REVIVE_HEALTH_PERCENTAGE = 0.8f
     }
 }

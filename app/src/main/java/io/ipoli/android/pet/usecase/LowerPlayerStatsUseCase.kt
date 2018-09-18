@@ -2,7 +2,7 @@ package io.ipoli.android.pet.usecase
 
 import io.ipoli.android.common.UseCase
 import io.ipoli.android.common.datetime.Time
-import io.ipoli.android.pet.Pet
+import io.ipoli.android.player.attribute.AttributeRank
 import io.ipoli.android.player.data.Player
 import io.ipoli.android.player.persistence.PlayerRepository
 import io.ipoli.android.quest.Quest
@@ -15,21 +15,21 @@ import java.util.*
  * Created by Venelin Valkov <venelin@mypoli.fun>
  * on 11/30/17.
  */
-class LowerPetStatsUseCase(
+class LowerPlayerStatsUseCase(
     private val questRepository: QuestRepository,
     private val playerRepository: PlayerRepository,
     private val randomSeed: Long = System.currentTimeMillis()
-) : UseCase<LowerPetStatsUseCase.Params, Pet> {
+) : UseCase<LowerPlayerStatsUseCase.Params, Player> {
 
     private lateinit var player: Player
 
-    override fun execute(parameters: Params): Pet {
+    override fun execute(parameters: Params): Player {
         val p = playerRepository.find()
         requireNotNull(p)
         player = p!!
 
         if (player.pet.isDead) {
-            return player.pet
+            return player
         }
 
         val dateTime = parameters.dateTime.minusDays(1)
@@ -43,12 +43,16 @@ class LowerPetStatsUseCase(
         val lowProductiveHours =
             if (isPlanDay) PLAN_DAY_LOW_PRODUCTIVE_HOURS else NON_PLAN_DAY_LOW_PRODUCTIVE_HOURS
 
-        val rhp = HEALTH_POINTS_PENALTIES[Random(randomSeed).nextInt(
-            HEALTH_POINTS_PENALTIES.size
+        val petRHP = PET_HEALTH_POINTS_PENALTIES[createRandom().nextInt(
+            PET_HEALTH_POINTS_PENALTIES.size
         )]
 
-        val rmp = MOOD_POINTS_PENALTIES[Random(randomSeed).nextInt(
-            MOOD_POINTS_PENALTIES.size
+        val petRMP = PET_MOOD_POINTS_PENALTIES[createRandom().nextInt(
+            PET_MOOD_POINTS_PENALTIES.size
+        )]
+
+        val playerRHP = PLAYER_HEALTH_PENALTIES[createRandom().nextInt(
+            PLAYER_HEALTH_PENALTIES.size
         )]
 
         val (start, end) = player.datesSpan(dateTime)
@@ -65,39 +69,78 @@ class LowerPetStatsUseCase(
         )
 
         if (totalDuration >= highProductiveHours * Time.MINUTES_IN_AN_HOUR) {
-            return savePlayer(rhp, rmp)
+            return savePlayer(
+                healthPenalty = addAdditionalDamage(playerRHP),
+                petHealthPenalty = petRHP,
+                petMoodPenalty = petRMP
+            )
         }
 
         if (totalDuration >= mediumProductiveHours * Time.MINUTES_IN_AN_HOUR) {
-            return savePlayer(LOW_PENALTY + rhp, LOW_PENALTY + rmp)
+            return savePlayer(
+                healthPenalty = addAdditionalDamage(playerRHP + PLAYER_LOW_PENALTY),
+                petHealthPenalty = PET_LOW_PENALTY + petRHP,
+                petMoodPenalty = PET_LOW_PENALTY + petRMP
+            )
         }
 
         if (totalDuration >= lowProductiveHours * Time.MINUTES_IN_AN_HOUR) {
-            return savePlayer(MEDIUM_PENALTY + rhp, MEDIUM_PENALTY + rmp)
+            return savePlayer(
+                healthPenalty = addAdditionalDamage(playerRHP + PLAYER_MEDIUM_PENALTY),
+                petHealthPenalty = PET_MEDIUM_PENALTY + petRHP,
+                petMoodPenalty = PET_MEDIUM_PENALTY + petRMP
+            )
         }
 
         if (totalDuration > 0) {
-            return savePlayer(HIGH_PENALTY + rhp, HIGH_PENALTY + rmp)
+            return savePlayer(
+                healthPenalty = addAdditionalDamage(playerRHP + PLAYER_HIGH_PENALTY),
+                petHealthPenalty = PET_HIGH_PENALTY + petRHP,
+                petMoodPenalty = PET_HIGH_PENALTY + petRMP
+            )
         }
 
-        return savePlayer(MAX_PENALTY + rhp, MAX_PENALTY + rmp)
+        return savePlayer(
+            healthPenalty = addAdditionalDamage(playerRHP + PLAYER_MAX_PENALTY),
+            petHealthPenalty = PET_MAX_PENALTY + petRHP,
+            petMoodPenalty = PET_MAX_PENALTY + petRMP
+        )
     }
 
-    private fun savePlayer(healthPenalty: Int, moodPenalty: Int) =
+    private fun playerDamage(): Int {
+        return when (AttributeRank.of(
+            player.attributeLevel(Player.AttributeType.STRENGTH),
+            player.rank
+        )) {
+            Player.Rank.NOVICE -> 0
+            Player.Rank.APPRENTICE -> 10
+            else -> 30
+        }
+    }
+
+    private fun savePlayer(healthPenalty: Int, petHealthPenalty: Int, petMoodPenalty: Int) =
         playerRepository.save(
-            player.copy(
-                pet = player.pet.removeHealthAndMoodPoints(healthPenalty, moodPenalty)
-            )
-        ).pet
+            player
+                .removeHealthPoints(healthPenalty)
+                .copy(
+                    pet = player.pet.removeHealthAndMoodPoints(petHealthPenalty, petMoodPenalty)
+                )
+        )
 
     companion object {
-        val HEALTH_POINTS_PENALTIES = intArrayOf(3, 4, 5, 6, 7)
-        val MOOD_POINTS_PENALTIES = intArrayOf(3, 4, 5, 6, 7)
+        val PET_HEALTH_POINTS_PENALTIES = intArrayOf(3, 4, 5, 6, 7)
+        val PET_MOOD_POINTS_PENALTIES = intArrayOf(3, 4, 5, 6, 7)
+        val PLAYER_HEALTH_PENALTIES = intArrayOf(3, 4, 5)
 
-        const val MAX_PENALTY = 25
-        const val HIGH_PENALTY = 18
-        const val MEDIUM_PENALTY = 8
-        const val LOW_PENALTY = 4
+        const val PET_MAX_PENALTY = 25
+        const val PET_HIGH_PENALTY = 18
+        const val PET_MEDIUM_PENALTY = 8
+        const val PET_LOW_PENALTY = 4
+
+        const val PLAYER_MAX_PENALTY = 22
+        const val PLAYER_HIGH_PENALTY = 16
+        const val PLAYER_MEDIUM_PENALTY = 5
+        const val PLAYER_LOW_PENALTY = 3
 
         const val PLAN_DAY_HIGH_PRODUCTIVE_HOURS = 10
         const val PLAN_DAY_MEDIUM_PRODUCTIVE_HOURS = 6
@@ -106,6 +149,7 @@ class LowerPetStatsUseCase(
         const val NON_PLAN_DAY_HIGH_PRODUCTIVE_HOURS = 5
         const val NON_PLAN_DAY_MEDIUM_PRODUCTIVE_HOURS = 3
         const val NON_PLAN_DAY_LOW_PRODUCTIVE_HOURS = 1
+
 
         fun findQuestsDurationInInterval(
             start: LocalDate,
@@ -139,6 +183,13 @@ class LowerPetStatsUseCase(
 
             }.fold(0) { acc, dur -> acc + dur }
     }
+
+    private fun addAdditionalDamage(penalty: Int): Int {
+        val damageCoef = (100 + playerDamage().toFloat()) / 100
+        return (penalty * damageCoef).toInt()
+    }
+
+    private fun createRandom() = Random(randomSeed)
 
     data class Params(val dateTime: LocalDateTime = LocalDateTime.now())
 }

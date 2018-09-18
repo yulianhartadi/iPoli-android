@@ -20,8 +20,8 @@ class RemoveExpiredPowerUpsUseCaseSpek : Spek({
     describe("RemoveExpiredPowerUpsUseCaseCase") {
 
         fun executeUseCase(existingPowerUps: List<PowerUp> = listOf()): Player {
-            val player = TestUtil.player().copy(
-                inventory = TestUtil.player().inventory.setPowerUps(existingPowerUps)
+            val player = TestUtil.player.copy(
+                inventory = TestUtil.player.inventory.setPowerUps(existingPowerUps)
             )
             return RemoveExpiredPowerUpsUseCase(TestUtil.playerRepoMock(player))
                 .execute(RemoveExpiredPowerUpsUseCase.Params(currentDate = LocalDate.now()))

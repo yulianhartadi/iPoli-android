@@ -14,7 +14,11 @@ import io.ipoli.android.friends.feed.PostViewModel
 import io.ipoli.android.friends.feed.data.Post
 import io.ipoli.android.friends.feed.persistence.PostRepository
 import io.ipoli.android.friends.usecase.SavePostReactionUseCase
+import io.ipoli.android.player.attribute.AttributeListAction
+import io.ipoli.android.player.attribute.usecase.AddTagToAttributeUseCase
+import io.ipoli.android.player.attribute.usecase.RemoveTagFromAttributeUseCase
 import io.ipoli.android.player.data.Player
+import io.ipoli.android.player.profile.EditProfileAction
 import io.ipoli.android.player.profile.ProfileAction
 import io.ipoli.android.player.profile.ProfileReducer
 import io.ipoli.android.player.profile.ProfileViewState
@@ -35,6 +39,8 @@ object ProfileSideEffectHandler : AppSideEffectHandler() {
     private val challengeRepository by required { challengeRepository }
     private val executor by required { executorService }
     private val savePostReactionUseCase by required { savePostReactionUseCase }
+    private val addTagToAttributeUseCase by required { addTagToAttributeUseCase }
+    private val removeTagFromAttributeUseCase by required { removeTagFromAttributeUseCase }
     private val internetConnectionChecker by required { internetConnectionChecker }
 
     private var postsChangedChannel: Channel<Unit>? = null
@@ -54,7 +60,7 @@ object ProfileSideEffectHandler : AppSideEffectHandler() {
                 if (state.hasState(ProfileReducer.PROFILE_KEY))
                     updateProfileData(action.player)
 
-            is ProfileAction.Save ->
+            is EditProfileAction.Save ->
                 saveProfileUseCase.execute(
                     SaveProfileUseCase.Params(
                         displayName = action.displayName,
@@ -159,6 +165,21 @@ object ProfileSideEffectHandler : AppSideEffectHandler() {
                 )
             }
 
+            is AttributeListAction.AddTag ->
+                addTagToAttributeUseCase.execute(
+                    AddTagToAttributeUseCase.Params(
+                        action.attributeType,
+                        action.tag
+                    )
+                )
+
+            is AttributeListAction.RemoveTag ->
+                removeTagFromAttributeUseCase.execute(
+                    RemoveTagFromAttributeUseCase.Params(
+                        action.attributeType,
+                        action.tag
+                    )
+                )
         }
     }
 
@@ -243,7 +264,10 @@ object ProfileSideEffectHandler : AppSideEffectHandler() {
         it is CreateAchievementItemsUseCase.AchievementListItem.LockedItem && it.achievementItem.isMultiLevel && it.achievementItem.currentLevel >= 1
 
     override fun canHandle(action: Action) =
-        action is ProfileAction || action is DataLoadedAction.PlayerChanged
+        action is ProfileAction
+            || action is DataLoadedAction.PlayerChanged
+            || action is EditProfileAction
+            || action is AttributeListAction
 
     private class PostDataSource(
         private val playerId: String,

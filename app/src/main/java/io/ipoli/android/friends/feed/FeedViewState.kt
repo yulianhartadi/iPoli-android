@@ -21,6 +21,7 @@ sealed class FeedAction : Action {
     object ErrorLoadingFeedPage : FeedAction()
     object ErrorLoadingInitialFeed : FeedAction()
     object RequireLogin : FeedAction()
+    object InviteFriend : FeedAction()
 
     data class Load(val mapToViewModel: (Post) -> PostViewModel) : FeedAction()
     data class React(
@@ -78,6 +79,13 @@ object FeedReducer : BaseViewStateReducer<FeedViewState>() {
                     type = SHOW_REQUIRE_LOGIN
                 )
 
+            is FeedAction.InviteFriend ->
+                state.dataState.player?.let {
+                    if (it.statistics.inviteForFriendCount <= 0) {
+                        subState.copy(type = NO_INVITES_LEFT)
+                    } else subState.copy(type = SHOW_INVITE_FRIEND)
+                } ?: subState.copy(type = NO_INVITES_LEFT)
+
             else -> subState
         }
 
@@ -103,6 +111,8 @@ data class FeedViewState(
         NON_EMPTY_FEED,
         EMPTY_FEED,
         REACTION_POPUP_SHOWN,
-        SHOW_REQUIRE_LOGIN
+        SHOW_REQUIRE_LOGIN,
+        NO_INVITES_LEFT,
+        SHOW_INVITE_FRIEND
     }
 }

@@ -25,7 +25,7 @@ class BuyIconPackUseCaseSpek : Spek({
 
         it("should require not bought icon pack") {
 
-            val p = TestUtil.player().copy(
+            val p = TestUtil.player.copy(
                 inventory = Inventory(
                     iconPacks = setOf(IconPack.BASIC)
                 )
@@ -36,7 +36,7 @@ class BuyIconPackUseCaseSpek : Spek({
         }
 
         it("should not buy when not enough gems") {
-            val p = TestUtil.player().copy(
+            val p = TestUtil.player.copy(
                 gems = IconPack.BASIC.gemPrice - 1,
                 inventory = Inventory()
             )
@@ -45,7 +45,7 @@ class BuyIconPackUseCaseSpek : Spek({
         }
 
         it("should buy icon pack") {
-            val p = TestUtil.player().copy(
+            val p = TestUtil.player.copy(
                 gems = IconPack.BASIC.gemPrice,
                 inventory = Inventory()
             )

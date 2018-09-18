@@ -1,13 +1,16 @@
 package io.ipoli.android.common.job
 
 import android.content.Context
+import io.ipoli.android.Constants
 import io.ipoli.android.MyPoliApp
 import io.ipoli.android.achievement.usecase.UpdatePlayerStatsUseCase
 import io.ipoli.android.common.di.BackgroundModule
+import io.ipoli.android.common.notification.QuickDoNotificationUtil
 import io.ipoli.android.common.view.AppWidgetUtil
 import io.ipoli.android.habit.usecase.UpdateHabitStreaksUseCase
-import io.ipoli.android.pet.usecase.LowerPetStatsUseCase
+import io.ipoli.android.pet.usecase.LowerPlayerStatsUseCase
 import kotlinx.coroutines.experimental.CommonPool
+import kotlinx.coroutines.experimental.android.UI
 import kotlinx.coroutines.experimental.launch
 import org.threeten.bp.LocalDateTime
 import space.traversal.kapsule.Kapsule
@@ -19,8 +22,9 @@ class ResetDayJob : FixedDailyJob(ResetDayJob.TAG) {
         val kap = Kapsule<BackgroundModule>()
         val playerRepository by kap.required { playerRepository }
         val updateHabitStreaksUseCase by kap.required { updateHabitStreaksUseCase }
-        val lowerPetStatsUseCase by kap.required { lowerPetStatsUseCase }
+        val lowerPetStatsUseCase by kap.required { lowerPlayerStatsUseCase }
         val updatePlayerStatsUseCase by kap.required { updatePlayerStatsUseCase }
+        val sharedPreferences by kap.required { sharedPreferences }
         kap.inject(MyPoliApp.backgroundModule(context))
 
         val player = playerRepository.find()!!
@@ -34,7 +38,8 @@ class ResetDayJob : FixedDailyJob(ResetDayJob.TAG) {
 
         val oldPet = player.pet
 
-        val newPet = lowerPetStatsUseCase.execute(LowerPetStatsUseCase.Params())
+        val newPlayer = lowerPetStatsUseCase.execute(LowerPlayerStatsUseCase.Params())
+        val newPet = newPlayer.pet
 
         if (oldPet.isDead != newPet.isDead) {
             updatePlayerStatsUseCase.execute(
@@ -45,7 +50,19 @@ class ResetDayJob : FixedDailyJob(ResetDayJob.TAG) {
             )
         }
 
-        AppWidgetUtil.updateHabitWidget(context)
+        if (newPlayer.isDead) {
+            sharedPreferences.edit().putBoolean(Constants.KEY_PLAYER_DEAD, true).commit()
+        }
+
+        launch(UI) {
+
+            if (newPlayer.isDead) {
+                QuickDoNotificationUtil.showDefeated(context)
+            }
+
+            AppWidgetUtil.updateAgendaWidget(context)
+            AppWidgetUtil.updateHabitWidget(context)
+        }
 
         return Result.SUCCESS
     }

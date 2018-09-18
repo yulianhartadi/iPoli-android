@@ -1,5 +1,6 @@
 package io.ipoli.android.habit.data
 
+import io.ipoli.android.common.Reward
 import io.ipoli.android.common.datetime.Time
 import io.ipoli.android.common.persistence.EntityWithTags
 import io.ipoli.android.player.data.Player
@@ -66,12 +67,13 @@ data class Habit(
         return days.contains(currentDate.dayOfWeek)
     }
 
+    val isFromChallenge get() = challengeId != null
+
 }
 
 data class CompletedEntry(
     val completedAtTimes: List<Time> = emptyList(),
-    val experience: Int? = null,
-    val coins: Int? = null
+    val reward: Reward? = null
 ) {
     val completedCount = completedAtTimes.size
 

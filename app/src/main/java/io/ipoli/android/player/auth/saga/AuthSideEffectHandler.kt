@@ -19,6 +19,7 @@ import io.ipoli.android.player.auth.UsernameValidator
 import io.ipoli.android.player.data.AuthProvider
 import io.ipoli.android.player.data.Avatar
 import io.ipoli.android.player.data.Player
+import io.ipoli.android.player.data.Player.AttributeType.*
 import io.ipoli.android.quest.Color
 import io.ipoli.android.quest.Icon
 import io.ipoli.android.quest.RepeatingQuest
@@ -285,13 +286,15 @@ object AuthSideEffectHandler : AppSideEffectHandler() {
             displayName = displayName,
             schemaVersion = Constants.SCHEMA_VERSION,
             pet = Pet(petName, petAvatar),
-            avatar = playerAvatar
+            avatar = playerAvatar,
+            rank = Player.Rank.NOVICE,
+            nextRank = Player.Rank.APPRENTICE
         )
 
-        playerRepository.save(player)
+        val newPlayer = playerRepository.save(player)
         savePlayerId(playerId)
 
-        return saveDefaultTags()
+        return saveDefaultTags(newPlayer)
     }
 
     private fun saveRepeatingQuests(
@@ -343,8 +346,8 @@ object AuthSideEffectHandler : AppSideEffectHandler() {
         }
     }
 
-    private fun saveDefaultTags() =
-        tagRepository.save(
+    private fun saveDefaultTags(player: Player): List<Tag> {
+        val tags = tagRepository.save(
             listOf(
                 Tag(
                     name = "Personal",
@@ -366,6 +369,24 @@ object AuthSideEffectHandler : AppSideEffectHandler() {
                 )
             )
         )
+
+        val personalTag = tags.first { it.name == "Personal" }
+        val workTag = tags.first { it.name == "Work" }
+        val wellnessTag = tags.first { it.name == "Wellness" }
+
+        playerRepository.save(
+            player
+                .addTagToAttribute(STRENGTH, wellnessTag)
+                .addTagToAttribute(INTELLIGENCE, workTag)
+                .addTagToAttribute(CHARISMA, personalTag)
+                .addTagToAttribute(EXPERTISE, workTag)
+                .addTagToAttribute(WELL_BEING, wellnessTag)
+                .addTagToAttribute(WELL_BEING, personalTag)
+                .addTagToAttribute(WILLPOWER, workTag)
+        )
+
+        return tags
+    }
 
     private fun loginExistingPlayer() {
         try {

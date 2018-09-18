@@ -16,27 +16,24 @@ open class RemoveRewardFromPlayerUseCase(
     private val playerRepository: PlayerRepository,
     private val levelDownScheduler: LevelDownScheduler,
     private val unlockAchievementsUseCase: UnlockAchievementsUseCase
-) : UseCase<Reward, Player> {
-    override fun execute(parameters: Reward): Player {
-        val player = playerRepository.find()
+) : UseCase<RemoveRewardFromPlayerUseCase.Params, Player> {
+    override fun execute(parameters: Params): Player {
+        val player = parameters.player ?: playerRepository.find()
         requireNotNull(player)
-        val pet = player!!.pet
-        val newPet = if (pet.isDead) pet else pet.removeReward(parameters)
-        val newPlayer = player
-            .removeExperience(parameters.experience)
-            .removeCoins(parameters.coins)
-            .copy(pet = newPet)
-        val p = playerRepository.save(newPlayer)
+        val reward = parameters.reward
+        val newPlayer = playerRepository.save(player!!.removeReward(reward))
         if (player.level != newPlayer.level) {
             levelDownScheduler.schedule()
         }
         unlockAchievementsUseCase.execute(
             UnlockAchievementsUseCase.Params(
-                player = p,
-                eventType = UpdatePlayerStatsUseCase.Params.EventType.ExperienceDecreased(parameters.experience.toLong())
+                player = newPlayer,
+                eventType = UpdatePlayerStatsUseCase.Params.EventType.ExperienceDecreased(reward.experience.toLong())
             )
         )
-        return p
+        return newPlayer
     }
+
+    data class Params(val reward: Reward, val player: Player? = null)
 
 }

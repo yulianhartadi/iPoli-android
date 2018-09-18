@@ -1,17 +1,14 @@
 package io.ipoli.android.habit.usecase
 
-import io.ipoli.android.common.SimpleReward
 import io.ipoli.android.common.UseCase
 import io.ipoli.android.common.datetime.toTime
-import io.ipoli.android.habit.HabitReward
 import io.ipoli.android.habit.data.CompletedEntry
 import io.ipoli.android.habit.data.Habit
 import io.ipoli.android.habit.persistence.HabitRepository
 import io.ipoli.android.player.persistence.PlayerRepository
-import io.ipoli.android.player.usecase.RemoveRewardFromPlayerUseCase
 import io.ipoli.android.player.usecase.RewardPlayerUseCase
-import io.ipoli.android.quest.Quest
 import io.ipoli.android.quest.job.RewardScheduler
+import org.threeten.bp.LocalDate
 import org.threeten.bp.LocalDateTime
 
 /**
@@ -21,10 +18,8 @@ import org.threeten.bp.LocalDateTime
 class CompleteHabitUseCase(
     private val habitRepository: HabitRepository,
     private val playerRepository: PlayerRepository,
-    private val rewardScheduler: RewardScheduler,
     private val rewardPlayerUseCase: RewardPlayerUseCase,
-    private val removeRewardFromPlayerUseCase: RemoveRewardFromPlayerUseCase,
-    private val randomSeed: Long? = null
+    private val rewardScheduler: RewardScheduler
 ) : UseCase<CompleteHabitUseCase.Params, Habit> {
 
     override fun execute(parameters: Params): Habit {
@@ -56,13 +51,7 @@ class CompleteHabitUseCase(
         val playerDate = player.currentDate(dateTime)
 
         if (isCompleted) {
-            val pet = player.pet
-            val ce = history[playerDate] ?: CompletedEntry()
-            val reward = HabitReward(randomSeed).generate(pet.coinBonus, pet.experienceBonus)
-            history[playerDate] = ce.copy(
-                experience = ce.coins ?: reward.coins,
-                coins = ce.experience ?: reward.experience
-            )
+            history[playerDate] = history[playerDate] ?: CompletedEntry()
         }
 
         val currentStreak =
@@ -71,34 +60,63 @@ class CompleteHabitUseCase(
             else habit.currentStreak
 
 
-        if (isCompleted) {
-            val reward = SimpleReward(
-                coins = history[playerDate]!!.coins!!,
-                experience = history[playerDate]!!.experience!!,
-                bounty = Quest.Bounty.None
-            )
+        return if (isCompleted) {
             if (habit.isGood) {
-                rewardPlayerUseCase.execute(reward)
+                val reward = rewardPlayerUseCase.execute(
+                    RewardPlayerUseCase.Params.ForHabit(
+                        habit.copy(history = history),
+                        playerDate = playerDate,
+                        player = player
+                    )
+                ).reward
+                history[playerDate] = history[playerDate]!!.copy(
+                    reward = reward
+                )
+                val h = saveHabit(habit, history, currentStreak)
                 rewardScheduler.schedule(
                     reward = reward,
                     type = RewardScheduler.Type.HABIT,
                     entityId = habit.id
                 )
+                h
+
             } else {
-                removeRewardFromPlayerUseCase.execute(reward)
+                val reward = rewardPlayerUseCase.execute(
+                    RewardPlayerUseCase.Params.ForBadHabit(
+                        habit.copy(history = history),
+                        playerDate = playerDate,
+                        player = player
+                    )
+                ).reward
+                history[playerDate] = history[playerDate]!!.copy(
+                    reward = reward
+                )
+                val h = saveHabit(habit, history, currentStreak)
                 rewardScheduler.schedule(
                     reward = reward.copy(
+                        experience = -reward.experience,
                         coins = -reward.coins,
-                        experience = -reward.experience
+                        attributePoints = reward.attributePoints.map {
+                            it.key to -it.value
+                        }.toMap()
                     ),
                     isPositive = false,
                     type = RewardScheduler.Type.HABIT,
                     entityId = habit.id
                 )
+                h
             }
+        } else {
+            saveHabit(habit, history, currentStreak)
         }
+    }
 
-        return habitRepository.save(
+    private fun saveHabit(
+        habit: Habit,
+        history: MutableMap<LocalDate, CompletedEntry>,
+        currentStreak: Int
+    ) =
+        habitRepository.save(
             habit.copy(
                 history = history,
                 currentStreak = currentStreak,
@@ -106,7 +124,6 @@ class CompleteHabitUseCase(
                 bestStreak = Math.max(currentStreak, habit.bestStreak)
             )
         )
-    }
 
     data class Params(val habitId: String, val dateTime: LocalDateTime = LocalDateTime.now())
 }

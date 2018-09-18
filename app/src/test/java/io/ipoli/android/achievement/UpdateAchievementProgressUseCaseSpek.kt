@@ -38,7 +38,7 @@ class UpdateAchievementProgressUseCaseSpek : Spek({
             pet: Pet = Pet("A", PetAvatar.BEAR)
         ): Statistics {
 
-            val p = TestUtil.player()
+            val p = TestUtil.player
             val player = p.copy(
                 statistics = statistics,
                 preferences = p.preferences.copy(

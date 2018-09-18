@@ -3,7 +3,6 @@ package io.ipoli.android.common.home
 import android.annotation.SuppressLint
 import android.content.Intent
 import android.content.Intent.ACTION_VIEW
-import android.content.res.Resources
 import android.graphics.Color
 import android.graphics.PorterDuff
 import android.graphics.drawable.GradientDrawable
@@ -43,6 +42,7 @@ import io.ipoli.android.habit.list.HabitListViewController
 import io.ipoli.android.pet.AndroidPetAvatar
 import io.ipoli.android.pet.AndroidPetMood
 import io.ipoli.android.player.data.AndroidAvatar
+import io.ipoli.android.player.data.AndroidRank
 import io.ipoli.android.quest.bucketlist.BucketListViewController
 import io.ipoli.android.quest.schedule.ScheduleViewController
 import io.ipoli.android.repeatingquest.list.RepeatingQuestListViewController
@@ -354,7 +354,7 @@ class HomeViewController(args: Bundle? = null) :
         drawerHeaderView.drawerPlayerCoins.text = state.lifeCoinsText
         drawerHeaderView.drawerCurrentExperience.text = state.experienceText
 
-        drawerHeaderView.drawerPlayerTitle.text = state.title(resources!!)
+        drawerHeaderView.drawerPlayerTitle.text = state.title
 
         val drawable = drawerHeaderView.petMood.background as GradientDrawable
         drawable.setColor(colorRes(state.petMoodColor))
@@ -425,11 +425,12 @@ class HomeViewController(args: Bundle? = null) :
     private val HomeViewState.petMoodColor
         get() = AndroidPetMood.valueOf(petState.name).color
 
-    private fun HomeViewState.title(resources: Resources): String {
-        val titles = resources.getStringArray(R.array.player_titles)
-        val titleText = titles[Math.min(titleIndex, titles.size - 1)]
-        return stringRes(R.string.player_level, level, titleText)
-    }
+    private val HomeViewState.title
+        get() = stringRes(
+            R.string.player_level,
+            level,
+            stringRes(AndroidRank.valueOf(rank.name).title)
+        )
 
     private val HomeViewState.gemsText
         get() = LongFormatter.format(activity!!, gems.toLong())

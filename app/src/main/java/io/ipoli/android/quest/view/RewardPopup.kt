@@ -8,14 +8,22 @@ import android.os.Build
 import android.os.Handler
 import android.os.Looper
 import android.support.annotation.DrawableRes
+import android.support.v4.content.ContextCompat
+import android.support.v7.widget.GridLayoutManager
 import android.util.DisplayMetrics
 import android.view.*
 import android.view.animation.OvershootInterpolator
+import android.widget.TextView
 import io.ipoli.android.R
 import io.ipoli.android.common.ViewUtils
 import io.ipoli.android.common.view.anim.TypewriterTextAnimator
+import io.ipoli.android.common.view.recyclerview.BaseRecyclerViewAdapter
+import io.ipoli.android.common.view.recyclerview.RecyclerViewViewModel
+import io.ipoli.android.common.view.recyclerview.SimpleViewHolder
 import io.ipoli.android.common.view.visible
 import io.ipoli.android.pet.Food
+import io.ipoli.android.player.data.AndroidAttribute
+import io.ipoli.android.player.data.Player
 import kotlinx.android.synthetic.main.popup_reward.view.*
 import java.util.*
 
@@ -23,6 +31,7 @@ class RewardPopup(
     @DrawableRes private val petHeadImage: Int,
     private val earnedXP: Int,
     private val earnedCoins: Int,
+    private val attributes: Map<Player.AttributeType, Int> = emptyMap(),
     private val bounty: Food? = null,
     private val undoListener: () -> Unit = {},
     private val isPositive: Boolean = true
@@ -30,8 +39,40 @@ class RewardPopup(
 
 
     @SuppressLint("InflateParams")
-    override fun createView(inflater: LayoutInflater): View =
-        inflater.inflate(R.layout.popup_reward, null)
+    override fun createView(inflater: LayoutInflater): View {
+        val view = inflater.inflate(R.layout.popup_reward, null)
+        view.attributes.layoutManager = GridLayoutManager(view.context, 3)
+        val adapter = AttributeRewardAdapter()
+        view.attributes.adapter = adapter
+
+        adapter.updateAll(attributes.map {
+            val attr = AndroidAttribute.valueOf(it.key.name)
+            AttributeRewardViewModel(it.key.name, it.value.toString(), attr.whiteIcon)
+        })
+        return view
+    }
+
+    data class AttributeRewardViewModel(
+        override val id: String,
+        val text: String,
+        val icon: Int
+    ) : RecyclerViewViewModel
+
+    inner class AttributeRewardAdapter :
+        BaseRecyclerViewAdapter<AttributeRewardViewModel>(R.layout.item_reward_popup_attribute) {
+
+        override fun onBindViewModel(
+            vm: AttributeRewardViewModel,
+            view: View,
+            holder: SimpleViewHolder
+        ) {
+            val textView = view as TextView
+            textView.text = vm.text
+            textView.setCompoundDrawablesRelativeWithIntrinsicBounds(
+                ContextCompat.getDrawable(view.context, vm.icon), null, null, null
+            )
+        }
+    }
 
     override fun onViewShown(contentView: View) {
         contentView.pet.setImageResource(petHeadImage)
@@ -103,8 +144,9 @@ class RewardPopup(
 
             override fun onAnimationEnd(animation: Animator) {
 
-                if (bounty != null) playRewardAnimation(contentView)
-                else autoHideAfter(700)
+                if (attributes.isNotEmpty() || bounty != null) {
+                    playRewardAnimation(contentView)
+                } else autoHideAfter(700)
             }
         })
 
@@ -122,11 +164,49 @@ class RewardPopup(
 
         alphaSet.addListener(object : AnimatorListenerAdapter() {
             override fun onAnimationEnd(animation: Animator?) {
-                playBountyAnimation(contentView)
+                if (attributes.isNotEmpty()) {
+                    playAttributesAnimation(contentView)
+                } else {
+                    playBountyAnimation(contentView)
+                }
             }
         })
 
         alphaSet.start()
+    }
+
+    private fun playAttributesAnimation(contentView: View) {
+
+        val fadeAnim = ObjectAnimator.ofFloat(contentView.attributes, "alpha", 0f, 1f)
+
+        fadeAnim.addListener(object : AnimatorListenerAdapter() {
+
+            override fun onAnimationStart(animation: Animator?) {
+                contentView.attributes.visible()
+            }
+
+            override fun onAnimationEnd(animation: Animator?) {
+                if (bounty != null) playBountyAnimationAfterAttribute(contentView)
+                else autoHideAfter(700)
+            }
+        })
+
+        fadeAnim.duration = 500
+        fadeAnim.start()
+    }
+
+    private fun playBountyAnimationAfterAttribute(contentView: View) {
+        val fadeAnim = ObjectAnimator.ofFloat(contentView.attributes, "alpha", 1f, 0f)
+
+        fadeAnim.addListener(object : AnimatorListenerAdapter() {
+            override fun onAnimationEnd(animation: Animator?) {
+                playBountyAnimation(contentView)
+            }
+        })
+
+        fadeAnim.startDelay = 500
+
+        fadeAnim.start()
     }
 
     private fun playBountyAnimation(contentView: View) {
@@ -238,7 +318,7 @@ abstract class ToastOverlay {
     }
 
     private fun onDestroy() {
-        if(contentView.windowToken != null) {
+        if (contentView.windowToken != null) {
             windowManager.removeViewImmediate(contentView)
         }
     }

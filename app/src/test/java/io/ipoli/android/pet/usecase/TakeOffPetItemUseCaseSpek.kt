@@ -29,7 +29,7 @@ class TakeOffPetItemUseCaseSpek : Spek({
 
         it("should require equipped item") {
 
-            val player = TestUtil.player().copy(
+            val player = TestUtil.player.copy(
                 pet = Pet(
                     "Pencho",
                     PetAvatar.ELEPHANT
@@ -40,7 +40,7 @@ class TakeOffPetItemUseCaseSpek : Spek({
         }
 
         it("should take item off") {
-            val player = TestUtil.player().copy(
+            val player = TestUtil.player.copy(
                 pet = Pet(
                     "Pencho",
                     PetAvatar.ELEPHANT,

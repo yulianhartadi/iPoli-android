@@ -26,7 +26,7 @@ object BuyPetUseCaseSpek : Spek({
                 avatar = PetAvatar.ELEPHANT
             )
 
-            val player = TestUtil.player().copy(
+            val player = TestUtil.player.copy(
                 pet = pet,
                 inventory = Inventory(
                     pets = setOf(
@@ -41,7 +41,7 @@ object BuyPetUseCaseSpek : Spek({
         }
 
         it("should not buy when not enough gems") {
-            val player = TestUtil.player().copy(
+            val player = TestUtil.player.copy(
                 gems = PetAvatar.ELEPHANT.gemPrice - 1,
                 inventory = Inventory()
             )
@@ -50,7 +50,7 @@ object BuyPetUseCaseSpek : Spek({
         }
 
         it("should buy pet") {
-            val player = TestUtil.player().copy(
+            val player = TestUtil.player.copy(
                 gems = PetAvatar.ELEPHANT.gemPrice,
                 inventory = Inventory()
             )
