@@ -24,17 +24,17 @@ class BootCompleteReceiver : AsyncBroadcastReceiver() {
             val p = playerRepository.find()
             if (p != null) {
                 reminderScheduler.schedule()
+                val questsForToday = questRepository.findScheduledAt(LocalDate.now())
                 launch(UI) {
                     AppWidgetUtil.updateAgendaWidget(context)
                     AppWidgetUtil.updateHabitWidget(context)
                     if (p.isDead) {
                         QuickDoNotificationUtil.showDefeated(context)
                     } else {
-                        val quests = questRepository.findScheduledAt(LocalDate.now())
                         if (p.preferences.isQuickDoNotificationEnabled) {
                             QuickDoNotificationUtil.update(
                                 context = context,
-                                quests = quests
+                                quests = questsForToday
                             )
                         }
                     }
