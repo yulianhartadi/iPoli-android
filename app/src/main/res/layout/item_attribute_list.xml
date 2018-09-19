@@ -130,20 +130,6 @@
         app:layout_constraintTop_toTopOf="@id/attributeProgress"
         tools:text="15/20" />
 
-    <TextView
-        android:id="@+id/attributeDescription"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginEnd="16dp"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="16dp"
-        android:elevation="2dp"
-        android:textAppearance="@style/TextAppearance.AppCompat.Body1"
-        app:layout_constraintEnd_toEndOf="@id/attributeBackground"
-        app:layout_constraintStart_toStartOf="@id/attributeBackground"
-        app:layout_constraintTop_toBottomOf="@id/attributeProgress"
-        tools:text="La la lala ala la al lalal" />
-
     <android.support.v4.widget.NestedScrollView
         android:layout_width="match_parent"
         android:layout_height="0dp"
@@ -155,7 +141,8 @@
         app:layout_constraintBottom_toBottomOf="@+id/attributeBackground"
         app:layout_constraintStart_toStartOf="@id/attributeBackground"
         app:layout_constraintEnd_toEndOf="@id/attributeBackground"
-        app:layout_constraintTop_toBottomOf="@+id/attributeDescription">
+        app:layout_constraintTop_toBottomOf="@+id/attributeProgress">
+
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -164,8 +151,19 @@
             android:orientation="vertical">
 
             <TextView
+                android:id="@+id/attributeDescription"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="16dp"
+                android:layout_marginStart="16dp"
+                android:textAppearance="@style/TextAppearance.AppCompat.Body1"
+                tools:text="La la lala ala la al lalal" />
+
+
+            <TextView
                 android:id="@+id/tagsTitle"
                 style="@style/SectionTitle"
+                android:layout_marginTop="16dp"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:elevation="2dp"
