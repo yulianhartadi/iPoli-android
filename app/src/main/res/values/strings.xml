@@ -1,70 +1,26 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">myPoli</string>
-    <string name="title_fragment_inbox">Inbox</string>
     <string name="title_edit_quest">Edit quest</string>
-    <string name="quest_deleted">Quest deleted</string>
-    <string name="repeating_quest_deleted">Repeating Quest deleted</string>
-    <string name="quest_complete">Quest complete</string>
-    <string name="quest_complete_with_reward">Quest complete! +%1$d XP +%2$d coins.</string>
-    <string name="achievement_with_reward">%1$s +%2$d XP +%3$d coins.</string>
-    <string name="challenge_complete">Challenge %s complete</string>
-    <string name="quest_undone">Quest undone. -%1$d XP -%2$d coins.</string>
-    <string name="quest_undone_to_inbox">Quest moved to Inbox. -%1$d XP -%2$d coins.</string>
     <string name="today">Today</string>
     <string name="any_other_day">Any other day</string>
-    <string name="add_quest_name_hint">Name (e.g. Read a book)</string>
     <string name="start">Start</string>
     <string name="edit">Edit</string>
-    <string name="stop">Stop</string>
     <string name="quest_item_full_duration">%1$dh %2$dm</string>
     <string name="quest_item_minutes_duration">%d min</string>
     <string name="quest_item_hours_duration">%dh</string>
     <string name="tomorrow">Tomorrow</string>
-    <string name="next_7_days">Next 7 days</string>
     <string name="upcoming">Upcoming</string>
     <string name="cancel">Cancel</string>
-    <string name="title_fragment_wizard_quest_name">New Quest</string>
-    <string name="unknown_choice">Don\'t know</string>
-    <string name="delete">Delete</string>
-    <string name="delete_it">DELETE IT</string>
-    <string name="dialog_delete_quest_title">Delete quest</string>
-    <string name="dialog_delete_quest_message">Sure you want to delete this awesome quest?</string>
-    <string name="dialog_delete_challenge_title">Delete challenge</string>
-    <string name="dialog_delete_challenge_message">Would you like to remove all quests for the challenge as well?</string>
-    <string name="inbox">Inbox</string>
-    <string name="send_feedback">Feedback</string>
     <string name="suggest_ideas">Suggest ideas</string>
     <string name="contact_us">Contact Us</string>
-    <string name="yesterday_calendar_format">\'Yesterday - \'d MMM</string>
-    <string name="today_calendar_format">\'Today - \'EEE, d MMM</string>
-    <string name="tomorrow_calendar_format">\'Tomorrow - \'d MMM</string>
-    <string name="calendar_format">MMM d YY</string>
-    <string name="agenda_calendar_format">EEEE, d MMM</string>
-    <string name="widget_agenda_title_format">EEE, d MMM</string>
-    <string name="quest_scheduled_for_today">Quest scheduled for today</string>
     <string name="quest_moved_to_bucket_list">Moved to Bucket List</string>
-    <string name="quest_scheduled_for_tomorrow">Quest scheduled for tomorrow</string>
 
     <string name="contact_us_email_chooser_title">Contact us</string>
-    <string name="repeating_quest_saved">Repeating Quest saved</string>
-
-    <string-array name="growth_intervals">
-        <item>This week</item>
-        <item>This month</item>
-        <item>Last 7 days</item>
-        <item>Last 4 weeks</item>
-        <item>Last 3 months</item>
-    </string-array>
-
-    <string name="title_activity_main">myPoli</string>
 
     <string name="save">SAVE</string>
-    <string name="title_fragment_repeating_quests">Repeating Quests</string>
     <string name="share">Share</string>
     <string name="share_app">Share myPoli</string>
-    <string name="cannot_edit_completed_quests">Completed quests cannot be edited</string>
-    <string name="fragment_overview_title">Your Journey Ahead</string>
     <string name="widget_journey_name">Daily Journey</string>
     <string name="add">ADD</string>
     <string name="rate_dialog_initial_title">Hey Hero</string>
@@ -78,54 +34,14 @@
     <string name="rate_dialog_feedback_title">Please, help me improve</string>
     <string name="rate_dialog_feedback_send">Send</string>
     <string name="rate_dialog_feedback_no">No, thanks</string>
-    <string name="rate_dialog_feedback_thanks">Thanks! +10 XP Just kidding ;)</string>
-    <string name="quest_saved">Quest saved</string>
-    <string name="help_explain_screen">Know this screen</string>
-    <string name="help_dialog_calendar_title">What is calendar all about?</string>
-    <string name="help_dialog_overview_title">What is overview all about?</string>
-    <string name="help_dialog_pick_daily_challenge_quests_title">Why to accept daily challenge?</string>
-    <string name="help_dialog_inbox_title">What is my inbox for?</string>
-    <string name="help_dialog_repeating_quests_title">What are my repeating quests?</string>
-    <string name="help_dialog_ok">OK</string>
-    <string name="help_dialog_more_help">More help</string>
-    <string name="help_wanted_email_subject">Help wanted</string>
-    <string name="help_wanted_chooser_title">Ask us for help</string>
-    <string name="help_dialog_calendar_text1">Calendar is the place where you can control your daily schedule.</string>
-    <string name="help_dialog_calendar_text2">Above the calendar is the area with your unscheduled quests for the day.</string>
-    <string name="help_dialog_calendar_text3">In grey you can see where myPoli recommends to schedule them.</string>
-    <string name="help_dialog_calendar_drag">Touch, hold and drag quest to schedule it</string>
-    <string name="help_dialog_repeating_quests_text1">Repeating Quests are called all your repeating tasks.</string>
-    <string name="help_dialog_repeating_quests_text2">myPoli automatically makes a quest in your calendar for the repeating one if you have to do it on a particular date.</string>
-    <string name="help_dialog_repeating_quests_text3">From this screen you can track your weekly progress.</string>
-    <string name="help_dialog_inbox_text1">This is the place with all your unscheduled quests.</string>
-    <string name="help_dialog_inbox_text2">If you don\'t complete a quest during the day it will automatically move to your Inbox.</string>
-    <string name="help_dialog_overview_text1">Use the overview to manage your uncompleted quests for the next 7 days.</string>
-    <string name="help_dialog_rewards_title">Earn your rewards</string>
-    <string name="help_dialog_rewards_text2">Reward can be anything. For example: \'Eat a chocolate\' or \'Go on a vacation\'.</string>
-    <string name="help_dialog_rewards_text3">You choose how much it costs depending on your efforts.</string>
 
     <string name="drawer_close">Navigation Closed</string>
     <string name="drawer_open">Navigation Opened</string>
     <string name="drawer_repeating_quests">Repeating Quests</string>
     <string name="drawer_challenges">Challenges</string>
     <string name="growth">Growth</string>
-    <string name="rewards">Rewards</string>
-    <string name="title_fragment_challenges">Challenges</string>
-    <string name="title_fragment_rewards">Rewards</string>
-    <string name="title_activity_add_reward">Add Reward</string>
-    <string name="reward_name_hint">Name (e.g. Eat a chocolate)</string>
 
-    <string name="dialog_delete_reward_title">Delete reward</string>
-    <string name="dialog_delete_reward_message">Sure you want to delete this awesome reward?</string>
-    <string name="reward_deleted">Reward deleted</string>
-    <string name="reward_activity_edit_title">Edit reward</string>
-    <string name="reward_too_expensive">Too expensive. Go complete some quests!</string>
-    <string name="level_up_title">You gained a new level</string>
     <string name="sweet">SWEET</string>
-    <string name="level_up_message"><![CDATA[Good job! You are now at level <b>%d</b>! Keep up the good work!]]></string>
-    <string name="empty_text_rewards">What a shame! No rewards here! Add one?</string>
-    <string name="empty_overview_text">Your adventure is empty! Start it by adding a quest?</string>
-    <string name="empty_inbox_text">Your inbox is empty</string>
     <string name="empty_repeating_quests_title">No Repeating Quests?</string>
     <string name="empty_repeating_quests_text">Schedule &amp; organize repeating tasks better with Repeating Quests. Start by creating your first one.</string>
     <string name="empty_challenges_title">Ready to achieve your goals?</string>
@@ -134,188 +50,59 @@
     <string name="empty_habits_text">Build good Habits or avoid bad ones. Create your first Habit now and start building your streak!</string>
     <string name="empty_shared_challenges_title">Complete your Challenges easier</string>
     <string name="empty_shared_challenges_text">Players who share their Challenges with friends are up to 5x more likely to complete them</string>
-    <string name="title_activity_add_challenge">Challenge Yourself</string>
-    <string name="reward_name_validation">You must add name for your reward</string>
     <string name="end_of_time">End of time</string>
-    <string name="quest_end_date_question">When will you do it?</string>
-    <string name="quest_start_time_question">When should it start?</string>
     <string name="quest_duration_question">How long will it take?</string>
-    <string name="quest_repeat_pattern_question">How often should it repeat?</string>
-    <string name="reward_description_question">Why do you want this reward?</string>
-    <string name="reward_price_question">How much does it cost?</string>
-    <string name="reward_saved">Reward saved</string>
-    <string name="quest_note_question">Note</string>
     <string name="none">None</string>
-    <string name="pick_note_title">Enter a note</string>
     <string name="settings">Settings</string>
     <string name="accept">Accept</string>
-    <string name="challenge_days_question">Challenge me on these days</string>
     <string name="no_challenge_days">No days selected</string>
     <string name="do_not_know">Don\'t know</string>
-    <string name="title_pick_daily_challenge_quests">Choose 3 quests</string>
-    <string name="daily_challenge_notification_title">Your daily challenge</string>
-    <string name="daily_challenge_notification_text">When the day is over, what 3 quests will you want to have conquered?</string>
-    <string name="empty_daily_challenge_quests_text">No Quests to challenge you!</string>
-    <string name="pick_max_3_miq">Pick max 3 most important quest</string>
-    <string name="miq_saved">Most important quests for today saved</string>
-    <string name="menu_miq">Choose important quests</string>
-    <string name="daily_challenge_complete_dialog_title">Daily challenge complete</string>
-    <string name="experience_gained">Experience gained</string>
-    <string name="coins_won">Coins won</string>
     <string name="add_challenge_name_hint">Name (e.g. Run a 5k marathon)</string>
-    <string name="add_repeating_quest_name_hint">Brush my teeth</string>
-    <string name="challenge_difficulty_question">How difficult is it?</string>
-    <string name="challenge_expected_results_question">What results do you expect to achieve?</string>
-    <string name="challenge_reasons_question">Why do you want to do it?</string>
-    <string name="add_challenge_name">Please, add challenge name</string>
-    <string name="add_challenge_expected_result">Add at least 1 expected result to motivate yourself</string>
-    <string name="add_challenge_reason">Add at least 1 reason to know why you are doing this</string>
-    <string name="challenge_saved">Challenge accepted</string>
     <string name="title_edit_challenge">Edit Challenge</string>
-    <string name="challenge_deleted">Challenge deleted</string>
-    <string name="challenge_with_quests_deleted">Challenge and quests deleted</string>
-    <string name="quest_challenge_question">Challenge</string>
-    <string name="quest_pick_challenge">Pick a challenge</string>
-    <string name="help_dialog_challenges_title">Ready to achieve more?</string>
     <string name="reminder_dialog_title">When should I remind you?</string>
-    <string name="reminder_dialog_add_custom_time_value">Please, add time value</string>
     <string name="do_not_remind">Don\'t remind</string>
-    <string name="ready_to_start">Ready to start?</string>
     <string name="snooze">Snooze</string>
-    <string name="recurrence_picker_title">Pick repeating pattern</string>
-    <string name="pick_flexible_count_title">How often?</string>
-    <string name="preferred_days">Preferred days</string>
     <string name="history">History</string>
-    <string name="help_dialog_repeating_quest_title">Track your progress</string>
-    <string name="help_dialog_repeating_quest_text1">Check how you are doing with your repeating quest</string>
-    <string name="help_dialog_repeating_quest_duration">How much time you\'ve spent on this quest</string>
-    <string name="help_dialog_repeating_quest_next">When is the next quest</string>
-    <string name="help_dialog_repeating_quest_streak">Streak counter. The higher your streak, the more XP and coins you will receive when completing the quest.</string>
     <string name="action_search">Search</string>
-    <string name="title_pick_challenge_quests_activity">Choose quests</string>
     <string name="unscheduled">Not scheduled</string>
-    <string name="help_dialog_challenge_title">Track your challenge</string>
-    <string name="help_dialog_challenge_text1">Check your progress and how you are doing with your challenge.</string>
-    <string name="help_dialog_challenge_text2">Track how many quests you\'ve completed and how many remain.</string>
-    <string name="help_dialog_challenge_spent_time">How much time you\'ve spent on this challenge</string>
-    <string name="help_dialog_challenge_next">When is the next quest for the challenge</string>
-    <string name="help_dialog_challenge_due_date">Due date for the challenge</string>
-    <string name="help_dialog_challenge_quest_list">List of remaining quests. Add more or swipe left to remove one.</string>
-    <string name="activity_quick_add_title">Quick Add</string>
-    <string name="quick_add_hint">Enter name, duration, start time …</string>
-    <string name="quest_name_validation">Please, add quest name</string>
     <string name="name_validation">Please, add name</string>
 
     <string name="calendar">Calendar</string>
     <string name="agenda">Agenda</string>
-    <string name="overview">Journey Ahead</string>
-    <string name="do_today">Do today</string>
-    <string name="snooze_for_tomorrow">Snooze for tomorrow</string>
-    <string name="quest_duplicated">Quest duplicated</string>
-    <string name="view">View</string>
     <string name="pick_date">Pick date</string>
-    <string name="quest_snoozed">Quest snoozed</string>
-    <string name="quest_moved_to_inbox">Quest moved to Inbox</string>
-    <string name="help_dialog_calendar_quick_add">Long tap on any free time slot to use quick add</string>
     <string name="ongoing_notification_no_quests_text">Smile, greatness awaits you!</string>
     <string name="ongoing_notification_no_quests_title">Time to add your first Quest</string>
     <string name="ongoing_notification_done_title">All done for today!</string>
     <string name="ongoing_notification_progress_text">Daily progress: %1$d/%2$d</string>
-    <string name="quest_sub_quests_question">Do you have a checklist?</string>
     <string name="rename_your_pet">Rename your pet</string>
-    <string name="not_enough_coins_to_buy_pet">Not enough coins to buy this pet</string>
 
-    <string name="edit_menu">Edit</string>
-
-    <string name="title_activity_pick_challenge">Pick a Challenge</string>
-    <string name="personalize">Personalize</string>
-    <string name="title_activity_personalize_challenge">Accept the Challenge</string>
     <string name="mark_done">MARK DONE</string>
-    <string name="pick_challenge">PICK CHALLENGE</string>
     <string name="challenge_accepted">Challenge accepted!</string>
     <string name="widget_agenda_empty">myPoli wants a quest!</string>
-    <string name="quest_started">Quest started</string>
-    <string name="quest_stopped">Quest stopped</string>
-    <string name="reward_earned">%s earned! Enjoy!</string>
     <string name="pet_store">Pets</string>
-    <string name="no_internet_to_buy_coins">If you want some coins, you should enable your internet!</string>
-    <string name="sign_in_no_connection">I need Internet to get you in</string>
     <string name="something_went_wrong">Something went wrong, please try again later!</string>
-    <string name="work_days_picker_title">Which days do you work?</string>
-    <string name="work_hours_dialog_title">When do you work?</string>
-    <string name="sleep_hours_dialog_title">When do you sleep?</string>
-    <string name="time_of_day_picker_title">When you are most productive?</string>
-    <string name="quest_times_a_day_question">How many times a day?</string>
-    <string name="title_activity_agenda">Your calendar</string>
-    <string name="migration_text">Oh no, you have to wait!\nmyPoli is eating a biscuit and upgrading your experience</string>
-    <string name="agenda_daily_journey">Daily Journey for %s</string>
-    <string name="add_quest_by_date">By %s</string>
-    <string name="agenda_daily_journey_format">MMMM d\'%s\'</string>
-    <string name="empty_agenda_text">No quests for this date</string>
     <string name="invite_title">Invite Your Friends</string>
     <string name="invite_message">Hey, look what I found. It is a really cool time management app!</string>
     <string name="invite_call_to_action">Download Now</string>
     <string name="completed">Completed</string>
     <string name="next">Next</string>
-    <string name="any_reasonable_time">Any reasonable time</string>
-    <string name="work_hours">Work hours</string>
-    <string name="personal_hours">Personal hours</string>
     <string name="morning">Morning</string>
     <string name="afternoon">Afternoon</string>
     <string name="evening">Evening</string>
-    <string name="at_exactly">At exactly…</string>
-    <string name="on">On…</string>
-    <string name="someday_by">Someday by…</string>
-    <string name="by_the_end_of_month">By the end of the month</string>
-    <string name="by_the_end_of_week">By the end of the week</string>
-    <string name="important_urgent">Important \n Urgent</string>
-    <string name="important_not_urgent">Important \n Not Urgent</string>
-    <string name="not_important_urgent">Not Important \n Urgent</string>
-    <string name="not_important_not_urgent">Not Important \n Not Urgent</string>
-    <string name="important_urgent_readable">Important &amp; Urgent</string>
-    <string name="important_not_urgent_readable">Important &amp; Not Urgent</string>
-    <string name="not_important_urgent_readable">Not Important &amp; Urgent</string>
-    <string name="not_important_not_urgent_readable">Not Important &amp; Not Urgent</string>
-    <string name="title_fragment_wizard_quest_date">When will you do it?</string>
-    <string name="title_fragment_wizard_quest_time">At what time?</string>
-    <string name="title_fragment_wizard_quest_priority">How important is it?</string>
     <string name="add_to_challenge">Add to Challenge</string>
-    <string name="add_reminder">Add Reminder</string>
-    <string name="by_end_of_week">By the end of the week</string>
-    <string name="by_end_of_month">By the end of the month</string>
     <string name="note">Note</string>
-    <string name="at_any_reasonable_time">At any reasonable time</string>
-    <string name="title_fragment_wizard_repeating_quest_name">New Repeating Quest</string>
-    <string name="quest_priority_question">How important it is?</string>
     <string name="times_a_week">%d times a week</string>
     <string name="times_a_month">%d times a month</string>
     <string name="once_a_week">Once a week</string>
-    <string name="twice_a_week">Twice a week</string>
     <string name="three_times_a_week">3 times a week</string>
     <string name="five_times_a_week">5 times a week</string>
     <string name="once_a_month">Once a month</string>
     <string name="once_a_year">Once a year</string>
     <string name="every_day">Every day</string>
     <string name="more_options">More options…</string>
-    <string name="set_times_a_day">Set times a day</string>
-    <string name="title_fragment_wizard_challenge_name">New Challenge</string>
-    <string name="title_fragment_wizard_challenge_results">What will you achieve?</string>
-    <string name="add_challenge_result1_hint">1st result</string>
-    <string name="add_challenge_result2_hint">2nd result</string>
-    <string name="add_challenge_result3_hint">3rd result</string>
-    <string name="add_challenge_reason1_hint">1st reason</string>
-    <string name="add_challenge_reason2_hint">2nd reason</string>
-    <string name="add_challenge_reason3_hint">3rd reason</string>
     <string name="add_challenge_motivation1_hint">1st motivation</string>
     <string name="add_challenge_motivation2_hint">2nd motivation</string>
     <string name="add_challenge_motivation3_hint">3rd motivation</string>
-    <string name="title_fragment_wizard_challenge_reasons">Why will you do it?</string>
-    <string name="title_fragment_wizard_challenge_end_date">Achieve it in</string>
-    <string name="one_month">1 month</string>
-    <string name="one_week">1 week</string>
-    <string name="two_weeks">2 weeks</string>
-    <string name="three_months">3 months</string>
-    <string name="fifteen_days">15 days</string>
     <string name="seven_days">7 days</string>
     <string name="ten_days">10 days</string>
     <string name="fourteen_days">14 days</string>
@@ -323,87 +110,30 @@
     <string name="end_of_week">End of this week</string>
     <string name="end_of_month">End of this month</string>
     <string name="exact_date">Choose date…</string>
-    <string name="select_quests">Choose quests</string>
-    <string name="title_edit_repeating_quest">Edit repeating quest</string>
-    <string name="use_24_hour_format">Use 24-hour format</string>
     <string name="sign_in_button">Sign in</string>
     <string name="continue_as_guest">Continue as Guest*</string>
-    <string name="sign_in_slogan">Join more than 20,000 heroes!</string>
     <string name="guest_sign_up_warning">* When using Guest login your data is NOT stored to the cloud. Use other sign up options for cloud-based, multi-device synchronization!</string>
     <string name="sign_in_internet">myPoli needs internet to sign you in!</string>
     <string name="sign_in_loading_dialog_title">Letting you in</string>
     <string name="sign_in_loading_dialog_message">I hope that this will be quick and painless</string>
-    <string name="sync_calendars_loading_dialog_title">Importing events</string>
-    <string name="sync_calendars_loading_dialog_message">I hope that this will be quick and painless</string>
-    <string name="title_sign_in_activity">Sign Up</string>
-    <string name="using_as_guest">You are using myPoli as Guest</string>
-    <string name="widget_quick_add_validation">You must sign up to add quests</string>
-    <string name="choose_calendars_title">Choose calendars</string>
     <string name="sync_calendars_count">%d calendars selected</string>
     <string name="no_calendars_selected_to_sync">No calendars selected</string>
-    <string name="dialog_disable_google_calendar_sync_title">Disable Google calendar sync</string>
-    <string name="dialog_disable_google_calendar_sync_message">Disabling Google calendar sync will delete all your not completed quests from Google calendars. Are you sure?</string>
-    <string name="settings_scheduling_title">Scheduling</string>
-    <string name="settings_most_productive_time">Most productive time</string>
-    <string name="settings_work_days">Work days</string>
-    <string name="settings_work_hours">Work hours</string>
-    <string name="settings_sleep_hours">Sleep hours</string>
-    <string name="settings_daily_challenge">Daily challenge</string>
-    <string name="settings_show_a_reminder">Show a reminder</string>
-    <string name="settings_remind_me_at">Remind me at</string>
     <string name="settings_sync_calendars">Calendar sync</string>
     <string name="settings_select_sync_calendars">Calendars to sync</string>
     <string name="settings_sync_google_calendars">Sync Google calendars</string>
     <string name="settings_quick_do_notification">Show Quick Do notification</string>
-    <string name="empty_eisenhower_matrix_text">No quests for this date. Why not add some?</string>
     <string name="allow_read_calendars_perm_reason">myPoli needs to read your calendars to import your events as quests</string>
-    <string name="allow_read_calendars_perm_reason_disable_option">myPoli needs to read your calendars to import your events as quests. You can disable it from Settings.</string>
-    <string name="sync_calendars_delete_loading_dialog_title">Deleting quests</string>
-    <string name="challenge_deadline_question">When is the deadline?</string>
-    <string name="add_reminder_button">+ Add reminder</string>
     <string name="settings_general_title">General</string>
-    <string name="settings_avatar_title">Change your vm</string>
-    <string name="settings_avatar_desc">Pick an awesome new vm for yourself</string>
-    <string name="settings_persistent_notification_title">Persistent notification</string>
-    <string name="settings_persistent_notification_desc">Quickly view your daily quests and progress</string>
-    <string name="settings_tutorial_title">Show tutorial</string>
-    <string name="settings_tutorial_desc">View tutorial again to find out more about myPoli</string>
     <string name="settings_about_title">About</string>
     <string name="settings_rate_title">Help myPoli</string>
     <string name="settings_rate_desc">Rate myPoli on Google Play and share your opinion</string>
     <string name="settings_app_version">App version</string>
     <string name="settings_privacy_policy">Privacy Policy</string>
-    <string name="duplicate">Duplicate</string>
-    <string name="mark_as_done">Mark as done</string>
     <string name="reminder_message">Message (e.g. Don\'t be lazy)</string>
     <string name="rate_dialog_feedback_hint">What do you think of myPoli …</string>
-    <string name="repeat_type_flexible">Flexible</string>
-    <string name="repeat_frequency">Frequency</string>
-    <string name="sunday_short">Sun</string>
-    <string name="monday_short">Mon</string>
-    <string name="tuesday_short">Tue</string>
-    <string name="wednesday_short">Wed</string>
-    <string name="thursday_short">Thu</string>
-    <string name="friday_short">Fri</string>
-    <string name="saturday_short">Sat</string>
-    <string name="day_of_month">Day of month</string>
     <string name="day">Day</string>
     <string name="until">Until</string>
-    <string name="start_time">Start time</string>
-    <string name="end_time">End time</string>
-    <string name="fab_quick_add">Quick Add</string>
-    <string name="fab_reward">Reward</string>
-    <string name="fab_challenge">Challenge</string>
-    <string name="fab_repeating_quest">Repeating Quest</string>
-    <string name="fab_quest">Quest</string>
-    <string name="repeating_quest_completed_this_month">%d completed this month</string>
-    <string name="this_month">this month</string>
-    <string name="last_week">last week</string>
-    <string name="this_week">this week</string>
     <string name="percentage_done">%d%% done</string>
-    <string name="pet_xp">XP: %d%%</string>
-    <string name="pet_coins">Coins: %d%%</string>
-    <string name="pet_revive_not_enough_coins">Not enough coins to revive %s</string>
 
     <string name="category_learning">Learning</string>
     <string name="category_wellness">Wellness</string>
@@ -412,32 +142,12 @@
     <string name="category_fun">Fun</string>
     <string name="category_chores">Chores</string>
 
-    <string name="any_time">Any time</string>
-
-    <string name="pet_state_awesome">Awesome</string>
-    <string name="pet_state_happy">Happy</string>
-    <string name="pet_state_good">Good</string>
-    <string name="pet_state_sad">Sad</string>
-    <string name="pet_state_dead">Dead</string>
-
-    <string name="pet_sad_notification_title">I am so sad, don\'t let me die</string>
-    <string name="pet_died_notification_title">%s has died</string>
-    <string name="pet_revive_notification_message">Revive %s to help you with your quests!</string>
-    <string name="pet_notification_message">Complete your quests to make me happy!</string>
     <string name="notification_for_time">for %s</string>
     <string name="sub_quests">Sub Quests</string>
     <string name="notes">Notes</string>
     <string name="tap_to_add_note">Tap to add a note</string>
-    <string name="times_per_period_single">%d time</string>
-    <string name="times_per_period_multiple">%d times</string>
     <string name="player_level">Level %1$d: %2$s</string>
 
-    <string name="move_to_inbox">Move to inbox</string>
-    <string name="pick_time">Pick time</string>
-    <string name="snooze_time_min">%d min</string>
-    <string name="snooze_time_hour">%d hour</string>
-    <string name="inbox_no_due_date">No due date</string>
-    <string name="inbox_due_date">Due %s</string>
     <string name="inbox_overdue_by">Overdue by %1$d %2$s</string>
     <string name="days">Days</string>
 
@@ -448,14 +158,7 @@
     <string name="reminder_time_format_1_minute">Remind 1 minute before</string>
     <string name="reminder_time_format_minutes">Remind %d minutes before</string>
 
-    <string name="minutes">minutes</string>
-    <string name="hours">hours</string>
-    <string name="weeks">weeks</string>
-
-    <string name="minute">minute</string>
-    <string name="hour">hour</string>
     <string name="week">week</string>
-    <string name="reminder_time_format_offset">%1$d %2$s before</string>
     <string name="custom">Custom</string>
 
     <string-array name="time_before">
@@ -493,231 +196,36 @@
     <string name="no_events">No Events</string>
     <string name="nothing_scheduled">Nothing scheduled</string>
 
-    <string name="duration_for_time">For %s</string>
-    <string name="once_a_day">Once a day</string>
-    <string name="twice_a_day">Twice a day</string>
     <string name="times_a_day">%d times a day</string>
     <string name="time_a_day">%d time a day</string>
-    <string name="once">Once</string>
-    <string name="twice">Twice</string>
     <string name="yesterday">Yesterday</string>
-    <string name="repeating_quest_done">Done</string>
-    <string name="repeating_quest_more_this_month">%d more this month</string>
-    <string name="repeating_quest_more_this_week">%d more this week</string>
-    <string name="repeating_quest_for_time">for %s</string>
     <string name="repeating_quest_next">Next: %s</string>
     <string name="for_time">for %s</string>
-    <string name="quest_at_time">at %s</string>
-    <string name="quest_short_for_time">for\n%s</string>
-    <string name="quest_short_at_time">at\n%s</string>
-    <string name="quest_remaining_count">x%d more</string>
-
-    <string name="challenge2_name">Stress-Free Mind</string>
-    <string name="challenge2_reason1">Be more focused</string>
-    <string name="challenge2_reason2">Be relaxed</string>
-    <string name="challenge2_reason3">Be healthy</string>
-    <string name="challenge2_exp_result1">Concentrate for at least 30 min at a time</string>
-    <string name="challenge2_exp_result2">Completely stop anxiety</string>
-    <string name="challenge2_exp_result3">Lose 5 pounds</string>
-    <string name="challenge2_desc">Be mindful and stay in the flow longer</string>
-    <string name="challenge1_name">Weight Cutter</string>
-    <string name="challenge1_reason1">Feel great</string>
-    <string name="challenge1_reason2">Become more confident</string>
-    <string name="challenge1_reason3">Become healthier</string>
-    <string name="challenge1_exp_result1">Lose 10 pounds</string>
-    <string name="challenge1_exp_result2">Reduce wear size</string>
-    <string name="challenge1_exp_result3">Love working out</string>
-    <string name="challenge1_desc">Start shedding some weight and feel great</string>
-    <string name="challenge3_name"><![CDATA[Healthy & Fit]]></string>
-    <string name="challenge3_reason1">Be healthier</string>
-    <string name="challenge3_reason2">Stay fit</string>
-    <string name="challenge3_reason3">Feel great</string>
-    <string name="challenge3_exp_result1">Lose 5 pounds</string>
-    <string name="challenge3_exp_result2">Concentrate for at least 30 min at a time</string>
-    <string name="challenge3_exp_result3">Workout 3 times a week</string>
-    <string name="challenge3_desc">Keep working out and live healthier life</string>
-    <string name="challenge4_name">English Jedi</string>
-    <string name="challenge4_reason1">Learn to read great books</string>
-    <string name="challenge4_reason2">Participate in conversations</string>
-    <string name="challenge4_reason3"><![CDATA[Meet & speak with new people]]></string>
-    <string name="challenge4_exp_result1">Read a book</string>
-    <string name="challenge4_exp_result2">Understand movies</string>
-    <string name="challenge4_exp_result3">Write an essay in English</string>
-    <string name="challenge4_desc">Advance your English skills</string>
-    <string name="challenge5_name">Programming Ninja</string>
-    <string name="challenge5_reason1">Learn to command my computer</string>
-    <string name="challenge5_reason2">Understand technologies better</string>
-    <string name="challenge5_reason3">Find new job</string>
-    <string name="challenge5_exp_result1">Write simple webpage</string>
-    <string name="challenge5_exp_result2">Understand what code editors are</string>
-    <string name="challenge5_exp_result3">Understand how Internet works</string>
-    <string name="challenge5_desc">Learn the fundamentals of computer programming</string>
-    <string name="challenge6_name">Master Presenter</string>
-    <string name="challenge6_reason1">Better present my ideas</string>
-    <string name="challenge6_reason2">Become more confident</string>
-    <string name="challenge6_reason3">Explain better</string>
-    <string name="challenge6_exp_result1">Prepare a presentation</string>
-    <string name="challenge6_exp_result2">Present in front of an audience</string>
-    <string name="challenge6_exp_result3">Upload my presentation on the Internet</string>
-    <string name="challenge6_desc">Learn how to create and present effectively</string>
-    <string name="challenge7_name">Famous writer</string>
-    <string name="challenge7_reason1">Better present my ideas</string>
-    <string name="challenge7_reason2">Become more confident</string>
-    <string name="challenge7_reason3">Meet new people</string>
-    <string name="challenge7_exp_result1">Have a blog</string>
-    <string name="challenge7_exp_result2">100 readers per month</string>
-    <string name="challenge7_exp_result3">Write 5 blog posts</string>
-    <string name="challenge7_desc"><![CDATA[Learn how to become great writer & blogger]]></string>
-    <string name="challenge8_name"><![CDATA[Friends & Family time]]></string>
-    <string name="challenge8_reason1">Feel more connected to others</string>
-    <string name="challenge8_reason2">Have more fun</string>
-    <string name="challenge8_reason3">Stay close with family</string>
-    <string name="challenge8_exp_result1">Spend more time with family</string>
-    <string name="challenge8_exp_result2">Go out more often</string>
-    <string name="challenge8_exp_result3">See friends more often</string>
-    <string name="challenge8_desc">Connect with your friends and family</string>
-    <string name="challenge2_rq1_raw_text">Meditate every day for 10 min</string>
-    <string name="challenge2_rq1_name">Meditate</string>
-    <string name="challenge2_rq2_raw_text">Read a book for 30 min 3 times a week</string>
-    <string name="challenge2_rq2_name">Read a book</string>
-    <string name="challenge2_quest1_name">Share your troubles with a friend</string>
-    <string name="challenge2_rq3_raw_text">Take a walk for 30 min 5 times a week</string>
-    <string name="challenge2_rq3_name">Take a walk</string>
-    <string name="challenge2_rq4_raw_text">Say 3 things that I am grateful for every morning</string>
-    <string name="challenge2_rq4_name">Say 3 things that I am grateful</string>
-    <string name="challenge1_quest1_name">Sign up for a gym club card</string>
-    <string name="challenge1_rq1_raw_text">Run 2 times a week for 30 min</string>
-    <string name="challenge1_rq1_name">Run</string>
-    <string name="challenge1_rq2_raw_text">Workout at the gym 3 times a week for 1h</string>
-    <string name="challenge1_rq2_name">Workout</string>
-    <string name="challenge1_rq3_raw_text">Measure my weight every morning</string>
-    <string name="challenge1_rq3_name">Measure my weight</string>
-    <string name="challenge1_rq4_raw_text">Prepare healthy dinner 6 times a week</string>
-    <string name="challenge1_rq4_name">Prepare healthy dinner</string>
-    <string name="challenge3_rq1_raw_text">Drink 6 glasses of water every day</string>
-    <string name="challenge3_rq1_name">Drink glass of water</string>
-    <string name="challenge3_rq2_raw_text">Eat healthy breakfast every day</string>
-    <string name="challenge3_rq2_name">Eat healthy breakfast</string>
-    <string name="challenge3_rq3_raw_text">Workout 3 times a week</string>
-    <string name="challenge3_rq3_name">Workout</string>
-    <string name="challenge3_rq4_raw_text">Go for a walk 3 times a week</string>
-    <string name="challenge3_rq4_name">Go for a walk</string>
-    <string name="challenge3_rq5_raw_text">Go for a run 2 times a week</string>
-    <string name="challenge3_rq5_name">Go for a run</string>
-    <string name="challenge3_rq6_raw_text">Cook healthy dinner 5 times a week</string>
-    <string name="challenge3_rq6_name">Cook healthy dinner</string>
-    <string name="challenge3_rq7_raw_text">Meditate 3 times a week</string>
-    <string name="challenge3_rq7_name">Meditate</string>
-    <string name="challenge3_rq8_raw_text">Say 3 things I am grateful for every day</string>
-    <string name="challenge3_rq8_name">Say 3 things I am grateful for</string>
-    <string name="challenge3_rq9_raw_text">Eat a fruit every day</string>
-    <string name="challenge3_rq9_name">Eat a fruit</string>
-    <string name="challenge4_quest1_name">Sign up at Duolingo</string>
-    <string name="challenge4_quest1_note1">Sign up at Duolingo</string>
-    <string name="challenge4_quest2_name">Sign up for a local English course</string>
-    <string name="challenge4_quest3_name">Subscribe to the Misterduncan YouTube channel</string>
-    <string name="challenge4_quest3_note1">Subscribe to Misterduncan</string>
-    <string name="challenge4_rq1_raw_text">Learn using Duolingo for 15 min every day</string>
-    <string name="challenge4_rq1_note1">Learn using Duolingo</string>
-    <string name="challenge4_rq1_name">Learn using Duolingo</string>
-    <string name="challenge4_rq2_raw_text">Watch a movie with English subtitles 5 times a week</string>
-    <string name="challenge4_rq2_name">Watch a movie with English subtitles</string>
-    <string name="challenge4_rq3_raw_text">Read Alice in Wonderland 4 times a week</string>
-    <string name="challenge4_rq3_name">Read Alice in Wonderland</string>
-    <string name="challenge4_rq3_note1">Read Alice in Wonderland</string>
-    <string name="challenge5_quest1_name">Sign up at freeCodeCamp</string>
-    <string name="challenge5_quest1_note1">Sign up at freeCodeCamp</string>
-    <string name="challenge5_rq1_raw_text">Read JavaScript For Cats 3 times a week</string>
-    <string name="challenge5_rq1_name">Read JavaScript For Cats</string>
-    <string name="challenge5_rq1_note1">JavaScript For Cats</string>
-    <string name="challenge5_rq2_raw_text">Conquer freeCodeCamp challenges 5 times a week</string>
-    <string name="challenge5_rq2_name">Conquer freeCodeCamp challenges</string>
-    <string name="challenge5_rq2_note1">freeCodeCamp challenges</string>
-    <string name="challenge5_rq3_raw_text">Watch CS50x Programming Course 2 times a week</string>
-    <string name="challenge5_rq3_name">Watch CS50x Programming Course</string>
-    <string name="challenge5_rq3_note1">Watch CS50x on edX</string>
-    <string name="challenge6_quest1_name">Learn how to give great presentation</string>
-    <string name="challenge6_quest1_note1">Presentation Tips by Princeton University</string>
-    <string name="challenge6_quest1_note2">Presentation Tips by University of Kent</string>
-    <string name="challenge6_quest2_name">Sign up at Canva</string>
-    <string name="challenge6_quest2_note1">Sign up at Canva</string>
-    <string name="challenge6_quest3_name">Create my presentation at Canva</string>
-    <string name="challenge6_quest3_note1">Open Canva</string>
-    <string name="challenge6_rq1_raw_text">Practice presenting alone twice a day for a week</string>
-    <string name="challenge6_rq1_name">Practice presenting alone</string>
-    <string name="challenge6_quest4_name">Practice presenting to a friend</string>
-    <string name="challenge6_quest5_name">Upload my presentation to SlideShare</string>
-    <string name="challenge6_quest5_note1">Sign up at SlideShare.net</string>
-    <string name="challenge7_quest1_name">Create a blog at Medium</string>
-    <string name="challenge7_quest1_note1">Create my blog at Medium</string>
-    <string name="challenge7_quest2_name">Choose what I am going to write about</string>
-    <string name="challenge7_quest3_name">Pick 5 bloggers who inspire you and read most of their posts</string>
-    <string name="challenge7_quest4_name"><![CDATA[Research & write my first blog post]]></string>
-    <string name="challenge7_rq1_raw_text">Write a blog post once every week</string>
-    <string name="challenge7_rq1_name">Write a blog post</string>
-    <string name="challenge7_rq1_note1">Visit Medium</string>
-    <string name="challenge8_quest1_name">Plan a vacation with friends</string>
-    <string name="challenge8_rq1_raw_text">Call parents once every week</string>
-    <string name="challenge8_rq1_name">Call parents</string>
-    <string name="challenge8_rq2_raw_text">Visit parents once every month</string>
-    <string name="challenge8_rq2_name">Visit parents</string>
-    <string name="challenge8_rq3_raw_text">Have family dinner 3 times a week</string>
-    <string name="challenge8_rq3_name">Have family dinner</string>
-    <string name="challenge8_rq4_raw_text">Go out with friends 2 times a week</string>
-    <string name="challenge8_rq4_name">Go out with friends</string>
 
     <string name="drawer_store">Store</string>
-    <string name="power_up_dialog_not_enough_coins">Unfortunately, you don\'t have enough coins to enable this power-up. Become premium member to enable all power-ups at once!</string>
 
     <string name="pet_seal">Modern Tail</string>
     <string name="pet_donkey">Meaningful Look</string>
     <string name="pet_elephant">Jazzy Ears</string>
     <string name="pet_beaver">Crazy Teeth</string>
     <string name="pet_chicken">Chicken Invader</string>
-    <string name="pet_store_use_pet">Use it</string>
-    <string name="pet_selected_message">Pet successfully changed</string>
-    <string name="avatar_store_use_avatar">Use it</string>
-    <string name="not_enough_coins_to_buy_avatar">Not enough coins to buy vm</string>
-    <string name="avatar_selected_message">Avatar successfully changed</string>
 
-    <string name="growth_no_categories_selected">Select a category to view more data</string>
-    <string name="last_month">Last month</string>
-    <string name="tracked">Tracked</string>
     <string name="overdue">Overdue</string>
-    <string name="title_activity_eisenhower_matrix">Eisenhower Matrix</string>
-    <string name="delegate">Delegate</string>
-    <string name="not_important">Not Important</string>
-    <string name="accomplish">Accomplish</string>
-    <string name="do_it">Do it</string>
-    <string name="important">Important</string>
-    <string name="urgent">Urgent</string>
-    <string name="not_urgent">Not Urgent</string>
 
-    <string name="power_up_price">%d life coins</string>
     <string name="power_up_expires_on">Enabled for %1$d days (until %2$s)</string>
-    <string name="fragment_avatar_store_title">Buy vm</string>
-    <string name="fragment_pet_store_title">Buy pet</string>
     <string name="controller_power_up_store_title">Power-Ups</string>
     <string name="power_up_bought">Enjoy %s for 30 days</string>
     <string name="power_up_too_expensive">Not enough coins to buy this</string>
     <string name="power_up_dialog_title">You\'ve discovered %s</string>
     <string name="go_premium">Go premium</string>
     <string name="unlock_all">Unlock all</string>
-    <string name="not_now">Not now</string>
-    <string name="go_to_store">Go to Store</string>
     <string name="membership_store_title">Premium membership</string>
-    <string name="life_coins">Life coins</string>
     <string name="life_coins_title">Life Coins</string>
     <string name="power_ups">Power-Ups</string>
     <string name="avatars">Avatars</string>
     <string name="pets">Pets</string>
-    <string name="reward_price_coins">%d coins</string>
-    <string name="help_dialog_rewards_buy">Press the button to buy your reward. If the button is grey, work a little bit harder to earn these coins!</string>
-    <string name="help_dialog_rewards_text1">Define your own rewards and buy them when you win enough coins by completing your quests.</string>
-    <string name="get_it">Get it</string>
     <string name="reminders">Reminders</string>
     <string name="timer">Timer</string>
-    <string name="programmed_challenges">Programmed challenges</string>
     <string name="no_challenges">You have not challenged yourself</string>
     <string name="big_value_format">%sK</string>
     <string name="monthly_plan">Monthly Plan</string>
@@ -758,52 +266,32 @@
     <string name="membership_benefit_enable_all_power_ups">Enable all power-ups (incl. all future ones)</string>
 
     <string name="power_up_challenges_sub_title">Set and achieve your goals</string>
-    <string name="power_up_challenges_short_desc">Plan and achieve your short and long-term goals</string>
     <string name="power_up_challenges_long_desc">
         Challenges help you plan and achieve your life goals. Create challenges for all your short and long-term goals.
         Then you can track your progress and stay motivated.
       </string>
 
     <string name="power_up_growth_sub_title">Boost your productivity</string>
-    <string name="power_up_growth_short_desc">Track and compare your progress and productivity during different time spans.</string>
     <string name="power_up_growth_long_desc">
         Find the perfect work-fun balance by measuring your monthly and weekly productivity. Complete your Challenges faster and spend more time in the flow.
     </string>
 
-    <string name="power_up_matrix_sub_title">Separate important from urgent</string>
-    <string name="power_up_matrix_short_desc">Prioritize your tasks and focus on important ones</string>
-    <string name="power_up_matrix_long_desc">
-        The Eisenhower matrix divides your quests into 4 groups depending on their priority.
-        It helps you focus on the most important tasks.
-    </string>
-
-    <string name="power_up_predefined_challenges_sub_title">Easy to follow helpful formulas</string>
-    <string name="power_up_predefined_challenges_short_desc">Challenge yourself with special programs to be more healthy, skillful and happy</string>
-    <string name="power_up_predefined_challenges_long_desc">
-        We\'ve prepared special challenges for you to be healthy, fit, to learn new skills and spend more time with your family.
-        The programs are easy to follow but you can always adjust them according to your needs.
-    </string>
-
     <string name="power_up_notes_sub_title">Stay organized and clear your mind</string>
-    <string name="power_up_notes_short_desc">Stay organized by adding notes to your quests</string>
     <string name="power_up_notes_long_desc">Add simple notes to your quests to help you remember important information. </string>
 
     <string name="power_up_timer_sub_title">Keep track of your time</string>
-    <string name="power_up_timer_short_desc">Manage and track your time even more effectively</string>
     <string name="power_up_timer_long_desc">
         Don\'t know where your time flies? Monitor it by tracking your quests duration
         or use it as a timer for your Pomodoros, fitness activities or cooking recipes.
     </string>
 
     <string name="power_up_sub_quests_sub_title">Create checklists for your quests</string>
-    <string name="power_up_sub_quests_short_desc">Create checklists for your quests</string>
     <string name="power_up_sub_quests_long_desc">
         Be more productive by dividing your tasks into smaller pieces.
         Define steps, subtasks or even create shopping lists.
     </string>
 
     <string name="power_up_reminders_sub_title">Never forget anything again</string>
-    <string name="power_up_reminders_short_desc">Let myPoli remind you when it\'s time for the next quest</string>
     <string name="power_up_reminders_long_desc">
         Add reminders to your quests. No need to look at your phone or watch all the time,
         focus on the current task and myPoli will notify you when the next one comes.
@@ -811,7 +299,6 @@
 
     <string name="custom_duration">Custom Duration</string>
     <string name="power_up_custom_duration_sub_title">Choose duration precisely</string>
-    <string name="power_up_custom_duration_short_desc">Not satisfied with provided options for quests duration? You can now define your own duration spans.</string>
     <string name="power_up_custom_duration_long_desc">
         Choose your own time intervals for quests. The minimum value is 10 minutes.
         The maximum is still 4 hours. If you need longer value, then try to divide your quest into shorter quests.
@@ -820,160 +307,47 @@
     <string name="power_up_tracked_value_sub_title">Stay on track</string>
     <string name="power_up_tracked_value_long_desc">Allows to add more than one value to track for your Challenges which allows you to track progress towards what matters most</string>
 
-    <string name="power_up_dialog_name">You\'ve discovered %s!</string>
     <string name="power_up_dialog_price_message">%1$d for %2$d days</string>
-    <string name="enable">Enable</string>
-    <string name="requires_power_up_message">Requires %s</string>
-    <string name="reward_last_used_date">Last used: %s</string>
-    <string name="used_rewards_count">%d used</string>
-    <string name="reward_price">%d coins</string>
-    <string name="why_are_you_here">Psst, why are you here?</string>
-    <string name="improve_myself">To improve myself</string>
-    <string name="no_idea">No idea</string>
-    <string name="then_what_are_you_doing_here">Then what are you doing here!?</string>
-    <string name="ready_to_go">Ready to go</string>
-    <string name="the_one">The ONE?</string>
-    <string name="i_accept">I Accept</string>
-    <string name="nah_not_me">Nah, not me</string>
-    <string name="i_believe_in_you">Come on! I believe in you!</string>
-    <string name="another_of_those">Gosh, we have another one of those…</string>
-    <string name="lets_start_over">OK, OK. Let\'s start over!</string>
     <string name="welcome_hero">Welcome, Hero!</string>
-    <string name="embrace_journey">Are you ready to embrace your destiny of studying many hours, working late, doing sports and eating yucky food?</string>
-    <string name="you_the_one">So, we\'ve established the fact that you might be the ONE. Would you like some tips?</string>
-    <string name="daemon_intro">Many millenniums ago, a daemon from another dimension came to conquer us. Yes, he used backdoor that was left intentionally open!</string>
-    <string name="daemon_objective">His objective? Eat all the ice-cream on Earth! And kill the ONE!</string>
-    <string name="daemon_backstory">Counterintuitively enough, only the ONE can stop him! Let\'s hope that\'s you! That daemon I was telling you about is pretty evil! He is so evil that his name is EVIL Snail! Yes, that name was given to him by his mother</string>
-    <string name="journey_start">Your greatest journey is starting today!</string>
-    <string name="your_name">Your name</string>
-    <string name="your_name_prompt">First, let\'s get to know you a bit better. How should I call you?</string>
-    <string name="name_prompt_validation">Please, tell me your name</string>
-    <string name="name_prompt_welcome">Welcome, %s!</string>
-    <string name="accept_challenge">Accept Challenge</string>
-    <string name="outro_text">%s, let\'s achieve your life goals by fighting procrastination, laziness and clutter together!</string>
-    <string name="tutorial_calendar_quest_hint">Your quest has been added to your calendar. Complete it by tapping on the checkbox.</string>
-    <string name="tutorial_quest_complete">Every time you complete a quest you get a reward! Experience allows you to level up and with life coins you can enable power-ups, buy new avatars ot pets.</string>
-    <string name="tutorial_follow_progress">You can follow your progress here. These are your vm and pet. Keep your pet happy by completing your quests regularly to achieve maximum coins and XP bonus!</string>
-    <string name="tutorial_store">Use your hard earned coins to enable powerful power-ups (Challenges, Calendar sync, Notes etc) or buy new avatars and cute pets!</string>
-    <string name="choose_category">Choose Category</string>
-    <string name="tutorial_quest_name">Quest name</string>
-    <string name="tutorial_quest_button">Do you see the button below? Will you do me the honor?</string>
-    <string name="tutorial_quest_first_quest">Enter the name of your first quest</string>
-    <string name="choose_a_category">Now, choose a category</string>
-    <string name="tutorial_quest_validation">Still waiting for that name</string>
-    <string name="tutorial_quest_tasks">Your tasks are now called quests. Let\'s start by adding your first one!</string>
-    <string name="want_to_skip_tutorial">Do you want me to show you how we will fight your life enemies together?</string>
-    <string name="show_me">Show me</string>
-    <string name="no_skip_tutorial">No, skip tutorial</string>
-    <string name="quest_max_duration_value_message">Quests can\'t be longer than 4 hours</string>
-    <string name="quest_min_duration_value_message">Quests can\'t be shorter than 10 minutes</string>
-    <string name="empty_reward_price_message">Can\'t have free rewards</string>
-    <string name="too_expensive_reward_price_message">Too expensive, be more realistic</string>
-    <string name="max_reward_price">max %d</string>
-    <string name="min_reward_price">min %d</string>
     <string name="ready_for_power_up">Ready for upgrade?</string>
     <string name="invite_request_update_facebook">Please install/update the Facebook app</string>
-    <string name="no_more_suggestions">No more suggestions</string>
     <string name="suggestion_accepted">Suggestion accepted</string>
-    <string name="achievement_feed">Achievement Feed</string>
-    <string name="sign_in_to_post_message">Please, sign in to share your achievement!</string>
-    <string name="sign_in_to_give_kudos_message">Please, sign in to give kudos</string>
-    <string name="sign_in_to_add_post_as_quest_message">Please, sign in to schedule a posted quest</string>
-    <string name="player_profile_current_xp">Current XP: %s</string>
     <string name="controller_profile_title">Profile</string>
     <string name="controller_achievement_list_title">Achievements</string>
-    <string name="player_profile_level">Level %1$d: %2$s</string>
-    <string name="following">Following</string>
-    <string name="followers">Followers</string>
-    <string name="posts">Posts</string>
-    <string name="sign_in_to_follow_message">Please, sign in to follow players</string>
-    <string name="share_achievement">Share Achievement</string>
-    <string name="follow">follow</string>
     <string name="username_is_taken">Sorry, that one is taken</string>
     <string name="username_is_empty">Come on, you need username</string>
-    <string name="username_picker_title">Choose your username</string>
     <string name="username_format_hint">English letters, digits and underscores</string>
     <string name="username_wrong_format">Оnly english letters, digits and underscores</string>
     <string name="username_wrong_length">Use between %1$d and %2$d characters</string>
-    <string name="enable_internet_to_do_action">You need internet to do this</string>
-    <string name="sign_in_to_view_profile">Please, sign in to view your profile</string>
     <string name="profile_default_bio">This player likes to keep things mysterious</string>
-    <string name="achievement_already_shared">You already shared this achievement</string>
-    <string name="player_profile_list_level">Level %1$d:\n%2$s</string>
-    <string name="empty_quest_picker_text">No quests to share. Go complete some!</string>
-    <string name="title_activity_quest_picker">Pick Quest to Share</string>
     <string name="short_bio_hint">Enter a short bio</string>
-    <string name="date_time_picker_title">Pick date and time</string>
-    <string name="quest_from_post_added">Quest scheduled in your calendar</string>
-    <string name="title_fragment_feed">Achievements by Heroes</string>
-    <string name="dialog_delete_post_title">Delete post</string>
-    <string name="dialog_delete_post_message">Sure you want to delete this amazing post?</string>
-    <string name="trial_expiring_message">To continue using all power-ups become premium member or buy them with coins</string>
-    <string name="trial_expiring_title">myPoli trial expires today</string>
-    <string name="membership_expiring_title">myPoli membership is expiring</string>
-    <string name="membership_no_payment_title">myPoli membership payment problem</string>
-    <string name="power_ups_expiring_title">myPoli power-ups are getting locked</string>
-    <plurals name="membership_no_payment_message">
-        <item quantity="one">There is a problem with your subscription payment. You have %d day left to renew your membership</item>
-        <item quantity="other">There is a problem with your subscription payment. You have %d days left to renew your membership</item>
-    </plurals>
 
-    <plurals name="power_ups_expiring_message">
-        <item quantity="one">You have %d power-up expiring today</item>
-        <item quantity="other">You have %d power-ups expiring today</item>
-    </plurals>
-
-    <string name="trial_message">Surprise! All power-ups are FREE for you for %d days.</string>
     <string name="membership">Membership</string>
     <string name="membership_benefit_free_trial">%d days FREE trial</string>
     <string name="membership_benefit_cancellation">Cancel at any time</string>
-    <string name="subscription_price_per_month">%s per month</string>
-    <string name="enable_all_power_ups">Enable all power-ups</string>
-    <string name="get_all_future_power_ups_for_free">Get all future power-ups for FREE</string>
     <string name="quarterly_plan_disadvantage1">Expensive option - billed every 3 months</string>
     <string name="monthly_plan_disadvantage1">Most expensive option - billed monthly</string>
     <string name="yearly_plan_benefit3">Smartest plan - billed yearly</string>
     <string name="current_plan">Current plan</string>
-    <string name="or">OR</string>
-    <string name="already_have_an_account">I already have an account</string>
     <string name="username">username</string>
     <string name="achievement_first_quest_completed_name">Did that!</string>
     <string name="achievement_first_quest_completed_desc">Complete your first Quest</string>
 
-    <string name="overlay_permission_reason">Please, allow this permission to see your achievements and reminders</string>
     <string name="achievement_unlocked">Achievement Unlocked</string>
     <string name="achievement_first_repeating_quest_created_name">Replay</string>
     <string name="achievement_first_repeating_quest_created_desc">Create your first Repeating Quest</string>
     <string name="achievement_first_challenge_created_name">Braveheart</string>
     <string name="achievement_first_challenge_created_desc">Accept your first Challenge</string>
-    <string name="achievement_first_reward_used_name">Indulgence</string>
-    <string name="achievement_first_reward_used_desc">Use Reward for a first time</string>
-    <string name="achievement_first_post_created_name">Enthusiast</string>
-    <string name="achievement_first_post_created_desc">Share your first Quest</string>
     <string name="achievement_first_avatar_changed_name">Fancy pants</string>
     <string name="achievement_first_avatar_changed_desc">Choose a new Avatar for yourself</string>
-    <string name="achievement_five_posts_created_name">Motivator</string>
-    <string name="achievement_five_posts_created_desc">Share 5 posts</string>
     <string name="achievement_complete_10_quests_in_a_day_name">Mean machine</string>
     <string name="achievement_complete_10_quests_in_a_day_desc">Complete 10 Quests in one day</string>
-    <string name="achievement_complete_daily_challenge_5_days_in_row_name">Achiever</string>
-    <string name="achievement_complete_daily_challenge_5_days_in_row_desc">Complete your Daily Challenge 5 days in a row</string>
-    <string name="achievement_reach_level_15th_name">Warrior</string>
-    <string name="achievement_reach_level_15th_desc">Reach level 15th</string>
     <string name="achievement_first_power_up_name">Wizard</string>
     <string name="achievement_first_power_up_desc">Use Power Up for a first time</string>
-    <string name="achievement_have_1k_coins_name">Richie Rich</string>
-    <string name="achievement_have_1k_coins_desc">Have 1000 coins in your inventory</string>
     <string name="achievement_change_pet_name">Pet lover</string>
     <string name="achievement_change_pet_desc">Buy a new Pet for yourself</string>
     <string name="achievement_first_pet_died_name">Grim Reaper</string>
     <string name="achievement_first_pet_died_desc">Let your own Pet die</string>
-    <string name="achievement_first_follow_name">Follower</string>
-    <string name="achievement_first_follow_desc">Follow your first Player</string>
-    <string name="achievement_first_follower_name">Acknowledged</string>
-    <string name="achievement_first_follower_desc">Get your first follower</string>
-    <string name="achievement_reach_level_20th_name">Leader</string>
-    <string name="achievement_reach_level_20th_desc">Reach 20th level</string>
     <string name="achievement_gain_xp_in_a_day_name">Triple digits</string>
     <string name="achievement_gain_xp_in_a_day_desc">Earn 999 XP in a day</string>
     <string name="achievement_complete_quests_in_row_name">Grand master</string>
@@ -986,11 +360,6 @@
     <string name="achievement_keep_pet_happy_name_level_2_desc">Keep your Pet in happy state for 15 days in a row</string>
     <string name="achievement_keep_pet_happy_name_level_3_desc">Keep your Pet in happy state for 40 days in a row</string>
 
-    <string name="pick_challenge_to_start">Pick a challenge to start with</string>
-    <string name="growth_awesomeness_score">Awesomeness score</string>
-    <string name="growth_completed_quests">Completed quests</string>
-    <string name="growth_time_spent">Time spent</string>
-    <string name="growth_coins_earned">Coins earned</string>
     <string name="growth_experience">Experience</string>
     <string name="invalid_reminder_time">Can you think of a number?</string>
     <string name="pet_tasty_food_response">yummy</string>
@@ -1022,7 +391,6 @@
     <string name="store_current_avatar">I am your Avatar</string>
     <string name="text_picker_empty_error">Think of a name</string>
     <string name="themes">Themes</string>
-    <string name="theme_store_title">Themes</string>
     <string name="theme_red">Dragon Breath</string>
     <string name="theme_orange">Orange Juice</string>
     <string name="theme_pink">Pinky Swear</string>
@@ -1138,11 +506,9 @@
     <string name="challenge_stay_on_top_of_things">Stay on top of things</string>
     <string name="challenge_stay_on_top_of_things_description">Keep the bills paid and your fridge full with healthy food</string>
     <string name="no_quest_selected">Select some quests first</string>
-    <string name="feedback_response">Thank you!</string>
     <string name="date">Date</string>
     <string name="timer_replaced">All other timers are stopped. Have fun!</string>
     <string name="validation_timer_running">Can\'t edit Quest with running timer</string>
-    <string name="timer_type">Pomodoro</string>
 
     <string name="novice">Novice</string>
     <string name="apprentice">Apprentice</string>
@@ -1171,11 +537,6 @@
         <item>Yearly</item>
     </string-array>
 
-    <string-array name="repeating_quest_flexible_frequencies">
-        <item>Weekly</item>
-        <item>Monthly</item>
-    </string-array>
-
     <string-array name="difficulties">
         <item>Easy</item>
         <item>Normal</item>
@@ -1186,19 +547,11 @@
     <string name="facebook_application_id" translatable="false">1609232436065758</string>
     <string name="facebook_login_protocol_scheme" translatable="false">fb1609232436065758</string>
 
-    <string name="facebook_app_id">1609232436065758</string>
-    <string name="fb_login_protocol_scheme">fb1609232436065758</string>
-    <string name="login_no_existing_user_error">There is no user with this account</string>
-    <string name="login_anonymous_no_existing_user_error">Please, register account</string>
     <string name="loading">Loading…</string>
     <string name="please_wait">Please wait…</string>
-    <string name="login_error_contact_us_message">Something went really wrong</string>
-    <string name="help_me_login">Help me login</string>
     <string name="welcome_back_hero">Welcome back, Hero!</string>
     <string name="every">Every</string>
     <string name="times">times</string>
-    <string name="quest_color_question">What color?</string>
-    <string name="quest_icon_question">Want an icon?</string>
     <string name="pattern_picker_flexible_weekly_no_selected_days">I\'ll schedule it at the perfect days of the week</string>
     <string name="pattern_picker_flexible_weekly_selected_days">I\'ll schedule it at your preferred days of the week</string>
     <string name="pattern_picker_flexible_monthly_no_selected_days">I\'ll schedule it at the perfect days of the month</string>
@@ -1236,14 +589,12 @@
     <string name="quests">Quests</string>
     <string name="motivation">Motivation</string>
     <string name="tracked_values">Tracked values</string>
-    <string name="empty_sub_quests">Divide your Quest into smaller ones</string>
     <string name="empty_note_hint"># My awesome note\n Markdown notes are really amazing! Create yours now!</string>
     <string name="note_hint">Something important</string>
     <string name="permission_rationale_title">Why myPoli needs it?</string>
     <string name="permission_rationale_default_message">To provide you better experience</string>
     <string name="tags">Tags</string>
     <string name="add_tag">+ Add Tag</string>
-    <string name="edit_tag">Edit Tag</string>
     <string name="favorite">Favorite</string>
     <string name="previous">Previous</string>
     <string name="empty_tag_list_title">Huh, no Tags here?</string>
@@ -1280,18 +631,13 @@
     <string name="someday">Someday</string>
     <string name="empty_bucket_list_title">Unscheduled Quests rest here</string>
     <string name="empty_bucket_list_text">Tasks without a scheduled date will be put here. myPoli will help you schedule and get them done!</string>
-    <string name="turn_it_off">Turn It Off</string>
-    <string name="battery_optimization_warn">Battery optimization might prevent you from receiving Reminders on time</string>
     <string name="valid_username">All good</string>
     <string name="choose_your_avatar">Choose Your Avatar</string>
     <string name="color_pack_unlocked">Enjoy your new colors</string>
     <string name="icon_pack_unlocked">Enjoy your new icons</string>
     <string name="quest_added">Quest added</string>
-    <string name="all_tags">All tags</string>
     <string name="tag_picker_title">Choose some tags</string>
     <string name="allow_overlay_request">Please, allow myPoli to show over other apps for cute Reminders</string>
-    <string name="predefined_rq_floss">Floss</string>
-    <string name="predefined_rq_drink_water">Drink a glass of water</string>
     <string name="predefined_rq_walk_the_dog">Walk the dog</string>
     <string name="predefined_rq_play_with_cat">Play with the cat</string>
     <string name="predefined_rq_meditate">Meditate for 30 minutes</string>
@@ -1316,7 +662,6 @@
     <string name="onboard_story_p3">Suddenly, a couple of stars started shining in the sky. YOU and your cute pet appeared from the dark, you were ready to fight. There was hope! Hope for an awesome world!</string>
     <string name="onboard_player">Welcome Hero! A great evil is upon our world! Its minions are already here and the silent war is waging everywhere. Unfortunately, we\'re losing - more and more people are falling victim to procrastination, couch potating and dumbification. Desperate time calls for desperate measures, so you are going to battle! First, you must tell me how should I call you and choose your battle avatar. Choose wisely, you can\'t change your username later!</string>
     <string name="onboard_pet">You\'re going to war against the evilest thing of them all - \"The Evil Snail\", emperor of procrastination and lazy-buttness. You can use all the help you can get!\n\nYour new Pet will help you throughout your journey by keeping you motivated and giving you bonus rewards. Choose your Pet and its name now.</string>
-    <string name="skip">Skip</string>
     <string name="skip_tutorial">Skip Tutorial</string>
     <string name="onboard_pick_repeating_quests_title">Choose Quests to start with</string>
     <string name="onboard_first_quest_title">My amazing day</string>
@@ -1328,12 +673,10 @@
     <string name="plan_day_evening">Good evening, %s!</string>
     <string name="plan_day_hello">Hello, %s!</string>
     <string name="start_my_day">Start my day</string>
-    <string name="no_start_time">No start time</string>
     <string name="yesterday_review">Yesterday Review</string>
     <string name="plan_day">Plan day</string>
     <string name="empty_review_quest_list_title">Feeling lazy these days?</string>
     <string name="empty_review_quest_list_text">Did you achieve anything yesterday? You can log your progress now.</string>
-    <string name="reschedule">Reschedule</string>
     <string name="daily_awesomeness_score">Your Awesomeness Grade</string>
     <string name="plan_my_day">Plan my day</string>
     <string name="empty_plan_today_list_title">Plan your amazing day</string>
@@ -1491,8 +834,6 @@
     <string name="invite_friends_message">Let\'s help each other achieve Goals and stick to good Habits with this app %s</string>
     <string name="invite_link_copied">Invite link copied to clipboard</string>
     <string name="invite_via">Invite via</string>
-    <string name="invite">Invite</string>
-    <string name="friend">Friend</string>
     <string name="like">Like</string>
     <string name="love">Love</string>
     <string name="cool">Cool</string>
@@ -1819,6 +1160,5 @@ These are your physical and mental characteristics.\n\n
     <string name="willpower_specialist_bonus_name">Driven</string>
     <string name="willpower_specialist_bonus_desc">Streaks of Repeating Quests &amp; Habits increase XP &amp; Life Coins</string>
     <string name="bonuses">Bonuses</string>
-    <string name="rank">Rank:</string>
     <string name="next_rank">Next: %s</string>
 </resources>
