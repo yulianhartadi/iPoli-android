@@ -235,7 +235,7 @@ open class RewardPlayerUseCase(
                 }
         }
 
-        return result
+        return result.filter { it.value > 0 }
     }
 
     private fun attributePoints(
