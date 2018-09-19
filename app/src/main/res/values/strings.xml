@@ -1677,9 +1677,22 @@ Tap **Start My Day** to complete planning your day. In **Settings** you can adju
 
     <string name="help_dialog_profile_title">Profile</string>
     <string name="help_dialog_profile_message">
-You can change your **avatar** or edit your **display dame** and **short bio**. This is how your friends will see your profile. \n\n
+You can change your **avatar** or edit your **display name** and **short bio**. This is how your friends will see your profile. \n\n
 You can also manage your **shared posts**, **friends** and **shared challenges**.\n\n
 **Average focus hours per day** is formed by how much time  you\'ve tracked with the **timer** (both pomodoro and countdown).
+    </string>
+
+    <string name="help_dialog_attribute_list_title">Attributes</string>
+    <string name="help_dialog_attribute_list_message">
+These are your physical and mental characteristics.\n\n
+        Each attribute has its own points, level, and **rank**.
+        **Leveling up** the attribute\'s rank will give you more bonuses and rewards. In the **Bonuses** list
+        you can see what you\'ve already unlocked and what are the next you\'ll get. \n\n
+
+        To **activate** the attribute you have to assign **tags** to it. \n\n
+        Each attribute can have
+        no more than **3 tags** and each tag can be assigned to no more than **3 attributes**.
+        When you tag your quests and habits and complete them, you win **points** for the attributes.
     </string>
 
     <string name="help_dialog_friends_feed_title">Friends Feed</string>

@@ -44,6 +44,12 @@ class AttributeListViewController(args: Bundle? = null) :
 
     private var attribute: Player.AttributeType? = null
 
+    override var helpConfig: HelpConfig? =
+        HelpConfig(
+            io.ipoli.android.R.string.help_dialog_attribute_list_title,
+            io.ipoli.android.R.string.help_dialog_attribute_list_message
+        )
+
     private val onPageChangeListener = object : ViewPager.OnPageChangeListener {
         override fun onPageScrollStateChanged(state: Int) {}
 
