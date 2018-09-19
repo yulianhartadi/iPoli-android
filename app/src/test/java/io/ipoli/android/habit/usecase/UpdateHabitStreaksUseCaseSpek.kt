@@ -351,7 +351,7 @@ class UpdateHabitStreaksUseCaseSpek : Spek({
                         history = emptyMap()
                     )
                 ),
-                today = today.toLocalDateTime(),
+                today = today.toLocalDateTime(Time.atHours(4)),
                 resetDayTime = resetDayTime
             )
 
