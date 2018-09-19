@@ -24,7 +24,7 @@
         android:id="@+id/strengthProgress"
         style="@style/Widget.AppCompat.ProgressBar.Horizontal"
         android:layout_width="0dp"
-        android:layout_height="18dp"
+        android:layout_height="@dimen/profile_attribute_progress_height"
         android:layout_marginTop="8dp"
         android:max="100"
         android:progress="32"

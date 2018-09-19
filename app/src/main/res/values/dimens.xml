@@ -9,4 +9,5 @@
     <dimen name="extended_touch_height">48dp</dimen>
     <dimen name="duration_picker_item_height">60dp</dimen>
     <dimen name="habit_widget_item_size">80dp</dimen>
+    <dimen name="profile_attribute_progress_height">20dp</dimen>
 </resources>
