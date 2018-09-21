@@ -408,12 +408,13 @@ class ProfileViewController(args: Bundle? = null) :
     private val ProfileViewState.attributeViewModels: Map<Player.AttributeType, AttributeViewModel>
         get() = attributes!!.map {
             val attr = AndroidAttribute.valueOf(it.type.name)
+
             it.type to AttributeViewModel(
                 type = it.type,
                 level = "Lvl ${it.level}",
-                progress = it.points,
-                max = it.pointsForNextLevel,
-                progressText = "${it.points}/${it.pointsForNextLevel}",
+                progress = ((it.progressForLevel * 100f) / it.progressForNextLevel).toInt(),
+                max = 100,
+                progressText = "${it.progressForLevel}/${it.progressForNextLevel}",
                 secondaryColor = colorRes(attr.colorPrimary),
                 progressColor = colorRes(attr.colorPrimaryDark)
             )

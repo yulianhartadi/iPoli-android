@@ -143,7 +143,19 @@ data class Player(
         val level: Int,
         val pointsForNextLevel: Int,
         val tags: List<Tag>
-    )
+    ) {
+        val progressForLevel: Int
+            get() {
+                val thisLevelPoints = AttributePointsForLevelGenerator.forLevel(level).toInt()
+                return points - thisLevelPoints
+            }
+
+        val progressForNextLevel: Int
+            get() {
+                val thisLevelPoints = AttributePointsForLevelGenerator.forLevel(level)
+                return pointsForNextLevel - thisLevelPoints
+            }
+    }
 
     data class UnlockedAchievement(
         val achievement: Achievement,
@@ -251,10 +263,12 @@ data class Player(
                 val attr = it.value
                 if (attributePoints.contains(it.key)) {
                     val newPoints = attr.points + attributePoints[it.key]!!
+                    val newLevel = nextAttrLevel(newPoints, attr.level)
                     Pair(
                         it.key, attr.copy(
                             points = newPoints,
-                            level = nextAttrLevel(newPoints, attr.level)
+                            level = newLevel,
+                            pointsForNextLevel = AttributePointsForLevelGenerator.forLevel(newLevel + 1)
                         )
                     )
                 } else Pair(it.key, attr)
@@ -275,10 +289,12 @@ data class Player(
                 val attr = it.value
                 if (attributePoints.contains(it.key)) {
                     val newPoints = Math.max(attr.points - attributePoints[it.key]!!, 0)
+                    val newLevel = prevAttrLevel(newPoints, attr.level)
                     Pair(
                         it.key, attr.copy(
                             points = newPoints,
-                            level = prevAttrLevel(newPoints, attr.level)
+                            level = newLevel,
+                            pointsForNextLevel = AttributePointsForLevelGenerator.forLevel(newLevel + 1)
                         )
                     )
                 } else Pair(it.key, attr)
