@@ -54,7 +54,7 @@ android {
 
             jacocoOptions {
                 excludedClasses += []
-                excludedSources += []
+//                excludedSources += []
 
                 taskGenerationEnabled = true
 

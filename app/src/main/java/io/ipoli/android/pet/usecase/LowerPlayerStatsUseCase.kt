@@ -28,7 +28,7 @@ class LowerPlayerStatsUseCase(
         requireNotNull(p)
         player = p!!
 
-        if (player.pet.isDead) {
+        if (player.isDead) {
             return player
         }
 
@@ -123,7 +123,8 @@ class LowerPlayerStatsUseCase(
             player
                 .removeHealthPoints(healthPenalty)
                 .copy(
-                    pet = player.pet.removeHealthAndMoodPoints(petHealthPenalty, petMoodPenalty)
+                    pet = if (player.pet.isDead) player.pet
+                    else player.pet.removeHealthAndMoodPoints(petHealthPenalty, petMoodPenalty)
                 )
         )
 
