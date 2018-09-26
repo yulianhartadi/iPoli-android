@@ -61,6 +61,24 @@ fun Controller.attrResourceId(@AttrRes attributeRes: Int) =
         it.resourceId
     }
 
+val Controller.colorTextPrimaryResource
+    get() = attrResourceId(android.R.attr.textColorPrimary)
+
+val Controller.colorTextSecondaryResource
+    get() = attrResourceId(android.R.attr.textColorSecondary)
+
+val Controller.colorTextHintResource
+    get() = attrResourceId(android.R.attr.textColorHint)
+
+val Controller.colorDividerResource
+    get() = attrResourceId(android.R.attr.listDivider)
+
+val Controller.colorSurfaceResource
+    get() = attrResourceId(R.attr.colorSurface)
+
+val Controller.colorBackgroundResource
+    get() = attrResourceId(android.R.attr.colorBackground)
+
 var Controller.toolbarTitle: String
     set(value) {
         (activity!! as MainActivity).supportActionBar!!.title = value

@@ -14,7 +14,7 @@
         android:layout_marginEnd="8dp"
         android:layout_marginStart="8dp"
         android:layout_marginTop="54dp"
-        android:background="@drawable/rounded_rectangle_white_background"
+        android:background="@drawable/rounded_rectangle_surface_background"
         android:elevation="2dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
@@ -94,6 +94,7 @@
         android:elevation="2dp"
         android:text="@string/inactive_attribute_hint"
         android:textAppearance="@style/TextAppearance.AppCompat.Body1"
+        android:textColor="?android:textColorSecondary"
         android:visibility="invisible"
         app:layout_constraintBottom_toBottomOf="@+id/attributeHintIcon"
         app:layout_constraintEnd_toEndOf="@id/attributeBackground"
@@ -133,14 +134,14 @@
     <android.support.v4.widget.NestedScrollView
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:elevation="2dp"
+        android:layout_marginBottom="16dp"
         android:layout_marginEnd="16dp"
         android:layout_marginStart="16dp"
-        android:layout_marginBottom="16dp"
         android:layout_marginTop="16dp"
+        android:elevation="2dp"
         app:layout_constraintBottom_toBottomOf="@+id/attributeBackground"
-        app:layout_constraintStart_toStartOf="@id/attributeBackground"
         app:layout_constraintEnd_toEndOf="@id/attributeBackground"
+        app:layout_constraintStart_toStartOf="@id/attributeBackground"
         app:layout_constraintTop_toBottomOf="@+id/attributeProgress">
 
 
@@ -157,15 +158,16 @@
                 android:layout_marginEnd="16dp"
                 android:layout_marginStart="16dp"
                 android:textAppearance="@style/TextAppearance.AppCompat.Body1"
+                android:textColor="?android:textColorPrimary"
                 tools:text="La la lala ala la al lalal" />
 
 
             <TextView
                 android:id="@+id/tagsTitle"
                 style="@style/SectionTitle"
-                android:layout_marginTop="16dp"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
                 android:elevation="2dp"
                 android:text="@string/tags" />
 
@@ -185,7 +187,7 @@
                     android:layout_marginBottom="8dp"
                     android:layout_marginTop="8dp"
                     android:background="@drawable/attribute_tag_background"
-                    android:drawableEnd="@drawable/ic_close_black_16dp"
+                    android:drawableEnd="@drawable/ic_close_text_secondary_16dp"
                     android:drawablePadding="8dp"
                     android:drawableStart="@drawable/tag_indicator"
                     android:elevation="2dp"
@@ -197,7 +199,7 @@
                     android:paddingStart="8dp"
                     android:paddingTop="4dp"
                     android:textAppearance="@style/TextAppearance.AppCompat.Body1"
-                    android:textColor="@color/md_dark_text_54"
+                    android:textColor="?android:textColorSecondary"
                     android:visibility="gone"
                     tools:text="texty" />
 
@@ -209,7 +211,7 @@
                     android:layout_marginStart="16dp"
                     android:layout_marginTop="8dp"
                     android:background="@drawable/attribute_tag_background"
-                    android:drawableEnd="@drawable/ic_close_black_16dp"
+                    android:drawableEnd="@drawable/ic_close_text_secondary_16dp"
                     android:drawablePadding="8dp"
                     android:drawableStart="@drawable/tag_indicator"
                     android:elevation="2dp"
@@ -221,7 +223,7 @@
                     android:paddingStart="8dp"
                     android:paddingTop="4dp"
                     android:textAppearance="@style/TextAppearance.AppCompat.Body1"
-                    android:textColor="@color/md_dark_text_54"
+                    android:textColor="?android:textColorSecondary"
                     android:visibility="gone"
                     tools:text="texty" />
 
@@ -234,7 +236,7 @@
                     android:layout_marginStart="16dp"
                     android:layout_marginTop="8dp"
                     android:background="@drawable/attribute_tag_background"
-                    android:drawableEnd="@drawable/ic_close_black_16dp"
+                    android:drawableEnd="@drawable/ic_close_text_secondary_16dp"
                     android:drawablePadding="8dp"
                     android:drawableStart="@drawable/tag_indicator"
                     android:elevation="2dp"
@@ -246,7 +248,7 @@
                     android:paddingStart="8dp"
                     android:paddingTop="4dp"
                     android:textAppearance="@style/TextAppearance.AppCompat.Body1"
-                    android:textColor="@color/md_dark_text_54"
+                    android:textColor="?android:textColorSecondary"
                     android:visibility="gone"
                     tools:text="texty" />
 
@@ -275,16 +277,14 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
                 android:elevation="2dp"
-                android:text="@string/bonuses"
-                />
+                android:text="@string/bonuses" />
 
             <android.support.v7.widget.RecyclerView
                 android:id="@+id/attributeBonusList"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
-                android:elevation="2dp"
-                />
+                android:elevation="2dp" />
 
         </LinearLayout>
 

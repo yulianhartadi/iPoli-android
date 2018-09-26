@@ -10,17 +10,20 @@
         android:layout_width="72dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="-4dp"
+        android:textColor="?android:textColorSecondary"
         android:paddingEnd="8dp"
         android:paddingStart="16dp" />
 
     <View
+        android:id="@+id/timeVerticalDivider"
         android:layout_width="1dp"
         android:layout_height="match_parent"
-        android:background="@color/md_grey_100" />
+        android:background="?android:listDivider" />
 
     <View
+        android:id="@+id/timeHorizontalDivider"
         android:layout_width="match_parent"
         android:layout_height="1dp"
         android:layout_marginStart="-1dp"
-        android:background="@color/md_grey_300" />
+        android:background="?android:listDivider" />
 </LinearLayout>

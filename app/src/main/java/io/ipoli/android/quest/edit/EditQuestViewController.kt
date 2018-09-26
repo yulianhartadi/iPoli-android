@@ -314,7 +314,7 @@ class EditQuestViewController(args: Bundle? = null) :
         view.questScheduleDate.onDebounceClick {
             val date = state.scheduleDate ?: LocalDate.now()
             val datePickerDialog = DatePickerDialog(
-                view.context, R.style.Theme_myPoli_AlertDialog,
+                view.context,
                 DatePickerDialog.OnDateSetListener { _, year, month, dayOfMonth ->
                     dispatch(EditQuestAction.ChangeDate(LocalDate.of(year, month + 1, dayOfMonth)))
                 }, date.year, date.month.value - 1, date.dayOfMonth

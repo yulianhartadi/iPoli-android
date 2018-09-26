@@ -196,16 +196,16 @@ class SettingsViewController(args: Bundle? = null) :
 
         view.selectedSyncCalendars.text = state.selectedCalendarsText
         if (state.isCalendarSyncEnabled) {
-            view.calendarsToSyncTitle.setTextColor(colorRes(R.color.md_dark_text_87))
-            view.selectedSyncCalendars.setTextColor(colorRes(R.color.md_dark_text_54))
+            view.calendarsToSyncTitle.setTextColor(colorRes(colorTextPrimaryResource))
+            view.selectedSyncCalendars.setTextColor(colorRes(colorTextSecondaryResource))
             view.selectSyncCalendarsContainer.isEnabled = true
             view.selectSyncCalendarsContainer.setOnClickListener {
                 showSyncCalendars()
             }
         } else {
             view.selectSyncCalendarsContainer.isEnabled = false
-            view.calendarsToSyncTitle.setTextColor(colorRes(R.color.md_dark_text_38))
-            view.selectedSyncCalendars.setTextColor(colorRes(R.color.md_dark_text_38))
+            view.calendarsToSyncTitle.setTextColor(colorRes(colorTextHintResource))
+            view.selectedSyncCalendars.setTextColor(colorRes(colorTextHintResource))
             view.selectSyncCalendarsContainer.setOnClickListener(null)
         }
     }

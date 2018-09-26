@@ -299,12 +299,12 @@ class MembershipViewController(args: Bundle? = null) :
     }
 
     private fun resetCards(view: View) {
-        val defaultBackground = attrResourceId(android.R.attr.background)
+        val defaultBackground = colorRes(colorSurfaceResource)
         view.monthlyPlanContainer.setCardBackgroundColor(defaultBackground)
         view.yearlyPlanContainer.setCardBackgroundColor(defaultBackground)
         view.quarterlyPlanContainer.setCardBackgroundColor(defaultBackground)
 
-        val black = colorRes(R.color.md_black)
+        val black = colorRes(colorTextPrimaryResource)
         view.monthlyPlanLayout.children.forEach {
             (it as TextView).setTextColor(black)
         }

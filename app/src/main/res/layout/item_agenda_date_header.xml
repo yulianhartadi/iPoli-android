@@ -6,4 +6,4 @@
     android:paddingEnd="16dp"
     android:paddingStart="16dp"
     android:textAppearance="@style/TextAppearance.AppCompat.Title"
-    android:textColor="@color/md_dark_text_54" />
+    android:textColor="?android:textColorSecondary" />

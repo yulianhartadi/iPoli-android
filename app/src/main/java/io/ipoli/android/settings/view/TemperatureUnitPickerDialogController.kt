@@ -60,12 +60,12 @@ class TemperatureUnitPickerDialogController(args: Bundle? = null) :
         return dialogBuilder
             .setSingleChoiceItems(
                 items.toTypedArray(),
-                checked,
-                { _, which ->
-                    selectedTemperatureUnit =
-                        if (which == 0) Preferences.TemperatureUnit.FAHRENHEIT
-                        else Preferences.TemperatureUnit.CELSIUS
-                })
+                checked
+            ) { _, which ->
+                selectedTemperatureUnit =
+                    if (which == 0) Preferences.TemperatureUnit.FAHRENHEIT
+                    else Preferences.TemperatureUnit.CELSIUS
+            }
             .setPositiveButton(R.string.dialog_ok, null)
             .setNegativeButton(R.string.cancel, null)
             .create()
@@ -73,7 +73,7 @@ class TemperatureUnitPickerDialogController(args: Bundle? = null) :
 
     override fun onDialogCreated(dialog: AlertDialog, contentView: View) {
         dialog.setOnShowListener {
-            dialog.getButton(DialogInterface.BUTTON_POSITIVE).setOnClickListener {
+            dialog.getButton(DialogInterface.BUTTON_POSITIVE).setOnClickListener { _ ->
                 listener(selectedTemperatureUnit)
                 dismiss()
             }

@@ -5,9 +5,9 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/rootCoordinator"
     android:layout_width="match_parent"
+    android:layout_height="match_parent"
     android:clickable="true"
-    android:focusable="true"
-    android:layout_height="match_parent">
+    android:focusable="true">
 
     <include layout="@layout/view_inventory_toolbar" />
 
@@ -21,9 +21,9 @@
 
         <android.support.constraint.ConstraintLayout
             android:layout_width="match_parent"
+            android:layout_height="wrap_content"
             android:clickable="true"
-            android:focusable="true"
-            android:layout_height="wrap_content">
+            android:focusable="true">
 
             <android.support.v7.widget.CardView
                 android:id="@+id/basicPackContainer"
@@ -32,19 +32,19 @@
                 android:layout_marginEnd="16dp"
                 android:layout_marginStart="16dp"
                 android:layout_marginTop="16dp"
-                app:cardCornerRadius="6dp"
-                app:cardElevation="6dp"
                 android:clickable="true"
                 android:focusable="true"
+                app:cardCornerRadius="6dp"
+                app:cardElevation="6dp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent">
 
                 <android.support.constraint.ConstraintLayout
                     android:layout_width="match_parent"
+                    android:layout_height="match_parent"
                     android:clickable="true"
-                    android:focusable="true"
-                    android:layout_height="match_parent">
+                    android:focusable="true">
 
                     <View
                         android:id="@+id/basicHeaderBackground"
@@ -104,7 +104,7 @@
                         android:layout_marginEnd="16dp"
                         android:layout_marginStart="16dp"
                         android:textAppearance="@style/TextAppearance.AppCompat.Title"
-                        android:textColor="@color/md_dark_text_87"
+                        android:textColor="?android:textColorSecondary"
                         app:layout_constraintBottom_toBottomOf="parent"
                         app:layout_constraintEnd_toStartOf="@+id/basicPackBuy"
                         app:layout_constraintHorizontal_bias="0.0"
@@ -207,7 +207,7 @@
                         android:layout_marginEnd="16dp"
                         android:layout_marginStart="16dp"
                         android:textAppearance="@style/TextAppearance.AppCompat.Title"
-                        android:textColor="@color/md_dark_text_87"
+                        android:textColor="?android:textColorSecondary"
                         app:layout_constraintBottom_toTopOf="@+id/giftBackground"
                         app:layout_constraintEnd_toStartOf="@+id/smartPackBuy"
                         app:layout_constraintHorizontal_bias="0.0"
@@ -403,7 +403,7 @@
                         android:layout_marginEnd="16dp"
                         android:layout_marginStart="16dp"
                         android:textAppearance="@style/TextAppearance.AppCompat.Title"
-                        android:textColor="@color/md_dark_text_87"
+                        android:textColor="?android:textColorSecondary"
                         app:layout_constraintBottom_toBottomOf="parent"
                         app:layout_constraintEnd_toStartOf="@+id/platinumPackBuy"
                         app:layout_constraintHorizontal_bias="0.0"

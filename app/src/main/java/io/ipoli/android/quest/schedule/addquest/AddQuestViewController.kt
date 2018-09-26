@@ -4,6 +4,7 @@ import android.app.DatePickerDialog
 import android.app.Dialog
 import android.graphics.drawable.GradientDrawable
 import android.os.Bundle
+import android.support.annotation.ColorInt
 import android.text.Editable
 import android.text.TextWatcher
 import android.view.LayoutInflater
@@ -82,7 +83,12 @@ class AddQuestViewController(args: Bundle? = null) :
                 if (text.isBlank() || text.length == 1) {
                     setIcon(GoogleMaterial.Icon.gmd_send, view.done)
                 } else {
-                    setIcon(GoogleMaterial.Icon.gmd_send, view.done, true)
+                    setIcon(
+                        GoogleMaterial.Icon.gmd_send,
+                        view.done,
+                        true,
+                        attrData(R.attr.colorAccent)
+                    )
                 }
             }
 
@@ -121,12 +127,17 @@ class AddQuestViewController(args: Bundle? = null) :
         d.setColor(colorRes(color.androidColor.color500))
     }
 
-    private fun setIcon(icon: IIcon, view: ImageView, useAccentColor: Boolean = false) {
+    private fun setIcon(
+        icon: IIcon,
+        view: ImageView,
+        isSelected: Boolean = false,
+        @ColorInt selectedColor: Int? = null
+    ) {
         val color =
-            if (useAccentColor)
-                attrData(R.attr.colorAccent)
+            if (isSelected)
+                selectedColor ?: colorRes(colorTextHintResource)
             else
-                colorRes(R.color.md_dark_text_54)
+                colorRes(colorTextPrimaryResource)
 
         val iconDrawable =
             IconicsDrawable(activity!!)
@@ -243,7 +254,7 @@ class AddQuestViewController(args: Bundle? = null) :
         view.scheduleDate.onDebounceClick {
             val date = state.date ?: LocalDate.now()
             val datePickerDialog = DatePickerDialog(
-                view.context, R.style.Theme_myPoli_AlertDialog,
+                view.context,
                 DatePickerDialog.OnDateSetListener { _, year, month, dayOfMonth ->
                     dispatch(AddQuestAction.DatePicked(LocalDate.of(year, month + 1, dayOfMonth)))
                 }, date.year, date.month.value - 1, date.dayOfMonth
@@ -289,7 +300,7 @@ class AddQuestViewController(args: Bundle? = null) :
             setIcon(
                 icon = GoogleMaterial.Icon.gmd_local_florist,
                 view = view.icon,
-                useAccentColor = false
+                isSelected = false
             )
         }
         view.icon.onDebounceClick {
@@ -338,15 +349,6 @@ class AddQuestViewController(args: Bundle? = null) :
                 }, 10)
             }
             dialog.show(router)
-//            dialog.setButton(
-//                Dialog.BUTTON_NEUTRAL,
-//                view.context.getString(R.string.do_not_know),
-//                { _, _ ->
-//                    dispatch(AddQuestAction.TimePicked(null))
-//                })
-//
-//
-//            dialog.show()
         }
     }
 

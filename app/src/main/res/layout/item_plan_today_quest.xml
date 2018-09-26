@@ -19,7 +19,6 @@
         android:includeFontPadding="false"
         android:maxLines="1"
         android:textAppearance="@style/TextAppearance.AppCompat.Title"
-        android:textColor="@color/md_dark_text_54"
         android:textSize="18sp"
         app:layout_constraintEnd_toStartOf="@+id/questStar"
         app:layout_constraintStart_toEndOf="@+id/questStartTime"
@@ -48,7 +47,6 @@
         android:layout_marginStart="16dp"
         android:textAlignment="center"
         android:textAppearance="@style/TextAppearance.AppCompat.Body1"
-        android:textColor="@color/md_dark_text_54"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toEndOf="@+id/questIcon"
         app:layout_constraintTop_toTopOf="parent"
@@ -60,7 +58,7 @@
         android:layout_height="1dp"
         android:layout_marginEnd="8dp"
         android:layout_marginStart="8dp"
-        android:background="@color/md_dark_text_54"
+        android:background="?android:textColorSecondary"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="@+id/questStartTime"
         app:layout_constraintStart_toStartOf="@+id/questStartTime"
@@ -78,7 +76,6 @@
         android:includeFontPadding="false"
         android:maxLines="1"
         android:textAppearance="@style/TextAppearance.AppCompat.Caption"
-        android:textColor="@color/md_dark_text_54"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@+id/questDuration"
         app:layout_constraintHorizontal_bias="0.0"
@@ -93,11 +90,9 @@
         android:layout_height="wrap_content"
         android:layout_marginEnd="8dp"
         android:drawablePadding="2dp"
-        android:drawableStart="@drawable/ic_timer_black_16dp"
         android:gravity="center_vertical"
         android:includeFontPadding="false"
         android:textAppearance="@style/TextAppearance.AppCompat.Caption"
-        android:textColor="@color/md_dark_text_54"
         app:layout_constraintBottom_toBottomOf="@+id/questTagName"
         app:layout_constraintEnd_toStartOf="@+id/questRepeatIndicator"
         app:layout_constraintStart_toEndOf="@+id/questTagName"
@@ -113,7 +108,7 @@
         app:layout_constraintEnd_toStartOf="@+id/questChallengeIndicator"
         app:layout_constraintStart_toEndOf="@+id/questDuration"
         app:layout_constraintTop_toTopOf="@+id/questTagName"
-        app:srcCompat="@drawable/ic_repeat_black_24dp" />
+        app:srcCompat="@drawable/ic_repeat_text_secondary_24dp" />
 
     <ImageView
         android:id="@+id/questChallengeIndicator"
@@ -123,7 +118,7 @@
         app:layout_constraintEnd_toStartOf="@+id/questStar"
         app:layout_constraintStart_toEndOf="@+id/questRepeatIndicator"
         app:layout_constraintTop_toTopOf="@+id/questTagName"
-        app:srcCompat="@drawable/ic_sword_black_24dp" />
+        app:srcCompat="@drawable/ic_sword_text_secondary_24dp" />
 
     <ImageButton
         android:id="@+id/questStar"
@@ -133,7 +128,7 @@
         android:layout_marginEnd="16dp"
         android:background="?selectableItemBackgroundBorderless"
         android:scaleType="fitXY"
-        android:src="@drawable/ic_star_border_black_24dp"
+        android:src="@drawable/ic_star_border_text_secondary_24dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent" />

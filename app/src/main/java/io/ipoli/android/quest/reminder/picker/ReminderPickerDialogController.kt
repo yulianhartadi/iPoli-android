@@ -1,5 +1,6 @@
 package io.ipoli.android.quest.reminder.picker
 
+import android.annotation.SuppressLint
 import android.content.DialogInterface
 import android.os.Bundle
 import android.support.v7.app.AlertDialog
@@ -59,6 +60,7 @@ class ReminderPickerDialogController :
         headerView.dialogHeaderTitle.setText(R.string.reminder_dialog_title)
     }
 
+    @SuppressLint("InflateParams")
     override fun onCreateContentView(inflater: LayoutInflater, savedViewState: Bundle?): View {
         val contentView = inflater.inflate(R.layout.dialog_reminder_picker, null)
 

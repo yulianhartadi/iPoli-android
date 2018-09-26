@@ -90,7 +90,7 @@ class PlanDayTodayViewController(args: Bundle? = null) :
         view.descriptionIcon.setImageDrawable(
             IconicsDrawable(activity!!)
                 .icon(GoogleMaterial.Icon.gmd_info_outline)
-                .color(attrData(R.attr.colorPrimary))
+                .color(attrData(R.attr.colorAccent))
                 .sizeDp(24)
         )
         return view
@@ -342,6 +342,14 @@ class PlanDayTodayViewController(args: Bundle? = null) :
             view.questStartTime.layoutParams.width = width.toInt()
 
             view.questDuration.text = vm.duration
+            view.questDuration.setCompoundDrawablesRelativeWithIntrinsicBounds(
+                IconicsDrawable(view.context)
+                    .icon(GoogleMaterial.Icon.gmd_timer)
+                    .sizeDp(16)
+                    .colorRes(colorTextSecondaryResource)
+                    .respectFontBounds(true),
+                null, null, null
+            )
 
             if (vm.tags.isNotEmpty()) {
                 renderTag(view.questTagName, vm.tags.first())
@@ -367,7 +375,7 @@ class PlanDayTodayViewController(args: Bundle? = null) :
                 }
             } else if (vm.isSelectableForDailyChallenge) {
                 view.questStar.visible()
-                view.questStar.setImageResource(R.drawable.ic_star_border_black_24dp)
+                view.questStar.setImageResource(R.drawable.ic_star_border_text_secondary_24dp)
                 view.questStar.onDebounceClick {
                     dispatch(PlanDayAction.AddDailyChallengeQuest(vm.id))
                 }
@@ -394,8 +402,7 @@ class PlanDayTodayViewController(args: Bundle? = null) :
                 IconicsDrawable(view.context)
                     .icon(vm.startTimeIcon)
                     .sizeDp(16)
-                    .alpha(Constants.MEDIUM_ALPHA)
-                    .colorRes(R.color.md_black)
+                    .colorRes(colorTextSecondaryResource)
                     .respectFontBounds(true),
                 null, null, null
             )

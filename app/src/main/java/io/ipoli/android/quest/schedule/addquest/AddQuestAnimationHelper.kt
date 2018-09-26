@@ -114,10 +114,10 @@ class AddQuestAnimationHelper(
         val fabTranslation = ObjectAnimator.ofFloat(fab, "x", x)
 
         val fabColor = controller.attrData(R.attr.colorAccent)
-        val whiteColor = controller.colorRes(R.color.md_white)
+        val transitionColor = controller.colorRes(controller.colorSurfaceResource)
 
-        val startColor = if (reverse) whiteColor else fabColor
-        val endColor = if (reverse) fabColor else whiteColor
+        val startColor = if (reverse) transitionColor else fabColor
+        val endColor = if (reverse) fabColor else transitionColor
 
         val rgbAnim = ObjectAnimator.ofArgb(
             fab,

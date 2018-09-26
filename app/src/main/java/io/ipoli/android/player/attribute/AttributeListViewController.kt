@@ -215,7 +215,7 @@ class AttributeListViewController(args: Bundle? = null) :
                 view.attributeHintIcon.setImageDrawable(
                     IconicsDrawable(view.context)
                         .icon(GoogleMaterial.Icon.gmd_info_outline)
-                        .color(attrData(R.attr.colorPrimary))
+                        .color(attrData(R.attr.colorAccent))
                         .sizeDp(24)
                 )
             }
@@ -399,7 +399,7 @@ class AttributeListViewController(args: Bundle? = null) :
                     ).mapIndexed { i, r ->
                         BonusViewModel(
                             id = r.name,
-                            title = stringRes(attr.bonusNames[r]!!),
+                            title = "Level ${(i + 1) * 10}: ${stringRes(attr.bonusNames[r]!!)}",
                             description = stringRes(attr.bonusDescriptions[r]!!),
                             isLocked = !(attrRank == Player.Rank.DIVINITY || i + 1 < lastRankIndex - 1)
                         )

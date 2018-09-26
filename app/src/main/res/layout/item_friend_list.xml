@@ -41,7 +41,6 @@
         android:layout_marginEnd="8dp"
         android:gravity="end"
         android:textAppearance="@style/TextAppearance.AppCompat.Body1"
-        android:textColor="@color/md_dark_text_87"
         app:layout_constraintBottom_toBottomOf="@+id/playerName"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="@+id/playerName"

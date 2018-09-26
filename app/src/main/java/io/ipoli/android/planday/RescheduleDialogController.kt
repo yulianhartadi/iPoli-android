@@ -1,5 +1,6 @@
 package io.ipoli.android.planday
 
+import android.annotation.SuppressLint
 import android.app.DatePickerDialog
 import android.content.DialogInterface
 import android.os.Bundle
@@ -97,6 +98,7 @@ class RescheduleDialogController(args: Bundle? = null) :
         this.cancelListener = cancelListener
     }
 
+    @SuppressLint("InflateParams")
     override fun onCreateContentView(inflater: LayoutInflater, savedViewState: Bundle?): View {
         val view = inflater.inflate(R.layout.dialog_reschedule, null)
         view.dateList.layoutManager = GridLayoutManager(view.context, 2)
@@ -162,7 +164,7 @@ class RescheduleDialogController(args: Bundle? = null) :
                 } else {
                     val date = LocalDate.now()
                     DatePickerDialog(
-                        view.context, R.style.Theme_myPoli_AlertDialog,
+                        view.context,
                         DatePickerDialog.OnDateSetListener { _, year, month, dayOfMonth ->
                             listener(LocalDate.of(year, month + 1, dayOfMonth))
                             dismiss()
@@ -182,19 +184,19 @@ class RescheduleDialogController(args: Bundle? = null) :
             vms.addAll(
                 listOf(
                     DateViewModel(
-                        R.drawable.ic_tomorrow_black_24dp,
+                        R.drawable.ic_tomorrow_text_secondary_24dp,
                         stringRes(R.string.tomorrow),
                         today.plusDays(1)
                     ),
 
                     DateViewModel(
-                        R.drawable.ic_bucket_black_24dp,
+                        R.drawable.ic_bucket_text_secondary_24dp,
                         stringRes(R.string.bucket),
                         null
                     ),
 
                     DateViewModel(
-                        R.drawable.ic_more_circle_black_24dp,
+                        R.drawable.ic_more_circle_text_secondary_24dp,
                         stringRes(R.string.pick_date),
                         null,
                         true
@@ -205,7 +207,7 @@ class RescheduleDialogController(args: Bundle? = null) :
                 vms.add(
                     0,
                     DateViewModel(
-                        R.drawable.ic_today_black_24dp,
+                        R.drawable.ic_today_text_secondary_24dp,
                         stringRes(R.string.today),
                         today
                     )
@@ -214,7 +216,7 @@ class RescheduleDialogController(args: Bundle? = null) :
                 vms.add(
                     1,
                     DateViewModel(
-                        R.drawable.ic_next_week,
+                        R.drawable.ic_next_week_text_secondary_24dp,
                         stringRes(R.string.next_week),
                         today.plusDays(7)
                     )

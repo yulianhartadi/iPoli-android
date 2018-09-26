@@ -186,7 +186,7 @@ abstract class ReduxDialogController<A : Action, VS : ViewState, out R : ViewSta
         onHeaderViewCreated(headerView)
         contentView = onCreateContentView(inflater, savedViewState)
 
-        val dialogBuilder = AlertDialog.Builder(activity!!)
+        val dialogBuilder = AlertDialog.Builder(contentView.context)
             .setView(contentView)
             .setCustomTitle(headerView)
         dialog = onCreateDialog(dialogBuilder, contentView, savedViewState)

@@ -184,7 +184,12 @@ class EditProfileDialogController(args: Bundle? = null) :
                 view.profileBio.setSelection(state.bioText.length)
 
                 view.profileSave.onDebounceClick {
-                    dispatch(EditProfileAction.Save(view.profileDisplayName.text.toString(), view.profileBio.text.toString()))
+                    dispatch(
+                        EditProfileAction.Save(
+                            view.profileDisplayName.text.toString(),
+                            view.profileBio.text.toString()
+                        )
+                    )
                     dismiss()
                 }
             }
@@ -194,13 +199,13 @@ class EditProfileDialogController(args: Bundle? = null) :
         }
     }
 
-    private val EditProfileViewState.avatarImage : Int
+    private val EditProfileViewState.avatarImage: Int
         get() = AndroidAvatar.valueOf(avatar!!.name).image
 
-    private val EditProfileViewState.displayNameText : String
+    private val EditProfileViewState.displayNameText: String
         get() = displayName ?: ""
 
-    private val EditProfileViewState.bioText : String
+    private val EditProfileViewState.bioText: String
         get() = bio ?: ""
 
 }

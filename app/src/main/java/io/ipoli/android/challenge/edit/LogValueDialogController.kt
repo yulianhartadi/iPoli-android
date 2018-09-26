@@ -239,7 +239,6 @@ class LogValueDialogController(args: Bundle? = null) :
             val date = state.date
             val datePickerDialog = DatePickerDialog(
                 view.context,
-                R.style.Theme_myPoli_AlertDialog,
                 DatePickerDialog.OnDateSetListener { _, year, month, dayOfMonth ->
                     dispatch(
                         LogValueAction.ChangeDate(

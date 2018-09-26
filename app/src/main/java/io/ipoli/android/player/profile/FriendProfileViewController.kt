@@ -222,7 +222,7 @@ class FriendProfileViewController(args: Bundle? = null) :
         }
 
         val background = view.friendPetAvatar.background as GradientDrawable
-        background.setColor(attrData(android.R.attr.colorBackground))
+        background.setColor(colorRes(R.color.md_grey_50))
     }
 
     private fun renderMembershipStatus(state: ProfileViewState, view: View) {
@@ -232,7 +232,7 @@ class FriendProfileViewController(args: Bundle? = null) :
             val background = view.friendMembershipStatus.background as GradientDrawable
             background.setStroke(
                 ViewUtils.dpToPx(2f, view.context).toInt(),
-                attrData(io.ipoli.android.R.attr.colorPrimary)
+                attrData(io.ipoli.android.R.attr.colorAccent)
             )
         } else {
             view.friendMembershipStatus.gone()

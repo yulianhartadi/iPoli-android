@@ -1,5 +1,6 @@
 package io.ipoli.android.common
 
+import android.annotation.SuppressLint
 import android.os.Bundle
 import android.support.v7.app.AlertDialog
 import android.view.LayoutInflater
@@ -65,6 +66,7 @@ class TimePickerDialogViewController(args: Bundle? = null) :
         this.listener = listener
     }
 
+    @SuppressLint("InflateParams")
     override fun onCreateContentView(inflater: LayoutInflater, savedViewState: Bundle?): View {
         val view = inflater.inflate(R.layout.dialog_time_picker, null)
         (view as TimePicker).setIs24HourView(shouldUse24HourFormat)
@@ -82,22 +84,21 @@ class TimePickerDialogViewController(args: Bundle? = null) :
     ): AlertDialog {
         val builder = dialogBuilder
             .setCustomTitle(null)
-            .setPositiveButton(R.string.dialog_ok, { _, _ ->
+            .setPositiveButton(R.string.dialog_ok) { _, _ ->
                 listener(
                     Time.at(
                         (contentView as TimePicker).currentHour,
                         contentView.currentMinute
                     )
                 )
-            })
+            }
             .setNegativeButton(R.string.cancel, null)
         if (showNeutral) {
-            builder.setNeutralButton(R.string.do_not_know, { _, _ ->
+            builder.setNeutralButton(R.string.do_not_know) { _, _ ->
                 listener(null)
-            })
+            }
         }
-        val dialog = builder.create()
-        return dialog
+        return builder.create()
     }
 
     override fun createHeaderView(inflater: LayoutInflater): View? = null

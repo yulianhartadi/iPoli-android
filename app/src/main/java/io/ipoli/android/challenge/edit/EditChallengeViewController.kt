@@ -323,7 +323,7 @@ open class EditChallengeViewController(args: Bundle? = null) :
         val date = state.end
         view.challengeEndDate.onDebounceClick {
             DatePickerDialog(
-                view.context, R.style.Theme_myPoli_AlertDialog,
+                view.context,
                 DatePickerDialog.OnDateSetListener { _, year, month, dayOfMonth ->
                     dispatch(
                         EditChallengeAction.ChangeEndDate(

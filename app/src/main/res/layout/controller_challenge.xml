@@ -11,7 +11,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@color/md_white"
-        android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar">
+        android:theme="?android:toolbarStyle">
 
         <android.support.design.widget.CollapsingToolbarLayout
             android:id="@+id/collapsingToolbarContainer"
@@ -143,8 +143,8 @@
                 android:id="@+id/toolbar"
                 android:layout_width="match_parent"
                 android:layout_height="?attr/actionBarSize"
-                app:layout_collapseMode="pin"
-                app:popupTheme="@style/ThemeOverlay.AppCompat.Light" />
+                android:theme="?android:toolbarStyle"
+                app:layout_collapseMode="pin" />
 
         </android.support.design.widget.CollapsingToolbarLayout>
 
@@ -180,11 +180,11 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_marginBottom="16dp"
                 android:layout_marginEnd="8dp"
                 android:layout_marginStart="8dp"
                 android:layout_marginTop="8dp"
-                android:layout_marginBottom="16dp"
-                android:background="@drawable/rounded_rectangle_white_background"
+                android:background="@drawable/rounded_rectangle_surface_background"
                 android:orientation="vertical"
                 android:paddingBottom="40dp">
 
@@ -240,7 +240,8 @@
                     android:paddingTop="8dp"
                     android:text="@string/challenge_empty_quest_list"
                     android:textAlignment="center"
-                    android:textAppearance="@style/TextAppearance.AppCompat.Caption" />
+                    android:textAppearance="@style/TextAppearance.AppCompat.Caption"
+                    android:textColor="?android:textColorSecondary" />
 
                 <TextView
                     style="@style/SectionTitle"
@@ -260,7 +261,8 @@
                     android:paddingTop="8dp"
                     android:text="@string/challenge_empty_habit_list"
                     android:textAlignment="center"
-                    android:textAppearance="@style/TextAppearance.AppCompat.Caption" />
+                    android:textAppearance="@style/TextAppearance.AppCompat.Caption"
+                    android:textColor="?android:textColorSecondary" />
 
                 <TextView
                     style="@style/SectionTitle"

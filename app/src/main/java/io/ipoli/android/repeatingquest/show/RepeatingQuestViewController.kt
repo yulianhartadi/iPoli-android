@@ -174,7 +174,7 @@ class RepeatingQuestViewController(args: Bundle? = null) :
             view.note.setMarkdown(state.note)
         } else {
             view.note.setText(R.string.tap_to_add_note)
-            view.note.setTextColor(colorRes(R.color.md_dark_text_54))
+            view.note.setTextColor(colorRes(colorTextSecondaryResource))
         }
         view.note.setOnClickListener { showEdit() }
     }

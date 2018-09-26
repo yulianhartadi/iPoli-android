@@ -23,6 +23,7 @@
         <attr name="timeLineLayout" format="reference" />
     </declare-styleable>
     <attr name="colorPrimaryLight" format="color" />
+    <attr name="colorSurface" format="color" />
 
     <declare-styleable name="CircleProgressBar">
         <attr name="line_count" format="integer"/>

@@ -20,6 +20,7 @@ import io.ipoli.android.common.notification.QuickDoNotificationUtil
 import io.ipoli.android.common.redux.Action
 import io.ipoli.android.common.redux.BaseViewState
 import io.ipoli.android.common.view.AppWidgetUtil
+import io.ipoli.android.common.view.Debounce
 import io.ipoli.android.common.view.ReduxPopup
 import io.ipoli.android.common.view.anim.TypewriterTextAnimator
 import io.ipoli.android.common.view.visible
@@ -115,16 +116,16 @@ class LevelUpPopup(private val newLevel: Int) :
             view.pet.setImageResource(androidAvatar.headImage)
             val params = mutableMapOf<String, Any>()
             params["level"] = state.level!!
-            view.positive.setOnClickListener {
+            view.positive.setOnClickListener(Debounce.clickListener { _ ->
                 params["sentiment"] = "positive"
                 eventLogger.logEvent("reward_response", params)
                 hide()
-            }
-            view.negative.setOnClickListener {
+            })
+            view.negative.setOnClickListener(Debounce.clickListener { _ ->
                 params["sentiment"] = "negative"
                 eventLogger.logEvent("reward_response", params)
                 hide()
-            }
+            })
             startTypingAnimation(view, state.level)
         }
     }

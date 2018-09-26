@@ -4,7 +4,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="60dp"
-    android:background="?attr/selectableItemBackground"
+    android:background="?colorSurface"
+    android:foreground="?attr/selectableItemBackground"
     android:clickable="true"
     android:focusable="true">
 
@@ -18,7 +19,7 @@
         android:ellipsize="end"
         android:maxLines="2"
         android:textAppearance="@style/TextAppearance.AppCompat.Subhead"
-        android:textColor="@color/md_dark_text_54"
+        android:textColor="?android:textColorPrimary"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@+id/habitIcon"

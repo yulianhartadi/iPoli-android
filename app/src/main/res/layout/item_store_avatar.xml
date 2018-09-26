@@ -34,7 +34,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="-32dp"
-        app:cardBackgroundColor="@color/md_white"
+        app:cardBackgroundColor="?colorSurface"
         app:cardCornerRadius="8dp"
         app:cardElevation="6dp"
         app:cardUseCompatPadding="true">
@@ -68,6 +68,7 @@
                 android:gravity="center_vertical"
                 android:includeFontPadding="false"
                 android:textAppearance="@style/TextAppearance.AppCompat.Subhead"
+                android:textColor="?android:textColorSecondary"
                 tools:text="5" />
 
             <Button
@@ -92,7 +93,7 @@
                 android:text="@string/store_current_avatar"
                 android:textAllCaps="true"
                 android:textAppearance="@style/TextAppearance.AppCompat.Subhead"
-                android:textColor="@color/md_dark_text_54" />
+                android:textColor="?android:textColorSecondary" />
         </LinearLayout>
     </android.support.v7.widget.CardView>
 

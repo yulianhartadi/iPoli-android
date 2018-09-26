@@ -3,9 +3,9 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/emptyContainer"
-    android:visibility="invisible"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:visibility="invisible">
 
     <com.airbnb.lottie.LottieAnimationView
         android:id="@+id/emptyAnimation"
@@ -13,13 +13,13 @@
         android:layout_height="wrap_content"
         android:adjustViewBounds="true"
         android:elevation="2dp"
-        app:lottie_loop="true"
         app:layout_constraintBottom_toTopOf="@+id/emptyTitle"
         app:layout_constraintEnd_toStartOf="@+id/guidelineEnd"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="@+id/guidelineStart"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_chainStyle="packed" />
+        app:layout_constraintVertical_chainStyle="packed"
+        app:lottie_loop="true" />
 
     <TextView
         android:id="@+id/emptyTitle"
@@ -31,6 +31,7 @@
         android:layout_marginTop="16dp"
         android:textAlignment="center"
         android:textAppearance="@style/TextAppearance.AppCompat.Headline"
+        android:textColor="?android:textColorPrimary"
         app:layout_constraintBottom_toTopOf="@+id/emptyText"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
@@ -50,7 +51,7 @@
         android:gravity="center_horizontal"
         android:textAlignment="center"
         android:textAppearance="@style/TextAppearance.AppCompat.Subhead"
-        android:textColor="@color/md_dark_text_54"
+        android:textColor="?android:textColorSecondary"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"

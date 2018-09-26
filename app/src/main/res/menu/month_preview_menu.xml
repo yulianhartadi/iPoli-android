@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
     <item
         android:id="@+id/actionGoToToday"
-        android:icon="@drawable/ic_today_black_24dp"
+        android:icon="@drawable/ic_today_text_secondary_24dp"
         android:title="@string/today"
         app:showAsAction="always" />
 </menu>

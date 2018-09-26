@@ -16,6 +16,7 @@
         android:gravity="center_vertical"
         android:text="@string/attribute_strength"
         android:textAppearance="@style/TextAppearance.AppCompat.Subhead"
+        android:textColor="?android:textColorPrimary"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
@@ -38,25 +39,25 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
-        tools:text="Lev 2"
         android:textAppearance="@style/TextAppearance.AppCompat.Caption"
         android:textColor="@color/md_white"
         app:layout_constraintBottom_toBottomOf="@id/strengthProgress"
         app:layout_constraintStart_toStartOf="@id/strengthProgress"
-        app:layout_constraintTop_toTopOf="@id/strengthProgress" />
+        app:layout_constraintTop_toTopOf="@id/strengthProgress"
+        tools:text="Lev 2" />
 
     <TextView
         android:id="@+id/strengthProgressText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
-        tools:text="30/100"
         android:layout_marginEnd="8dp"
+        android:layout_marginStart="8dp"
         android:textAppearance="@style/TextAppearance.AppCompat.Caption"
         android:textColor="@color/md_white"
         app:layout_constraintBottom_toBottomOf="@id/strengthProgress"
         app:layout_constraintEnd_toEndOf="@id/strengthProgress"
-        app:layout_constraintTop_toTopOf="@id/strengthProgress" />
+        app:layout_constraintTop_toTopOf="@id/strengthProgress"
+        tools:text="30/100" />
 
 
 </android.support.constraint.ConstraintLayout>

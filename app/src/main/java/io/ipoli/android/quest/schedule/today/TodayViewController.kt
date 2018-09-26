@@ -564,7 +564,7 @@ class TodayViewController(args: Bundle? = null) :
                 streak = vm.streak,
                 isBestStreak = vm.isBestStreak,
                 color = if (vm.isCompleted) R.color.md_white else vm.color,
-                textColor = if (vm.isCompleted) R.color.md_white else R.color.md_dark_text_87
+                textColor = if (vm.isCompleted) R.color.md_white else colorTextPrimaryResource
             )
             renderCompletedBackground(view, vm.color)
 
@@ -713,7 +713,7 @@ class TodayViewController(args: Bundle? = null) :
                     view.habitIcon.setImageDrawable(
                         IconicsDrawable(view.context).normalIcon(vm.icon, vm.color)
                     )
-                    view.habitStreak.setTextColor(colorRes(R.color.md_dark_text_87))
+                    view.habitStreak.setTextColor(colorRes(colorTextPrimaryResource))
                     renderProgress(view, vm.progress - 1, vm.maxProgress)
                     renderTimesADayProgress(view, vm.progress - 1, vm.maxProgress)
 

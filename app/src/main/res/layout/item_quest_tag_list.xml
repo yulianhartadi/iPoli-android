@@ -8,10 +8,11 @@
     android:layout_marginEnd="16dp"
     android:layout_marginTop="4dp"
     android:drawablePadding="4dp"
-    android:gravity="center"
     android:drawableStart="@drawable/tag_indicator"
     android:ellipsize="end"
+    android:gravity="center"
     android:includeFontPadding="false"
     android:maxLines="1"
-    android:textColor="@color/md_dark_text_54"
-    android:textAppearance="@style/TextAppearance.AppCompat.Body1" tools:text="texty " />
+    android:textAppearance="@style/TextAppearance.AppCompat.Body1"
+    android:textColor="?android:textColorSecondary"
+    tools:text="texty " />

@@ -65,7 +65,7 @@ class AddChallengeEndDateViewController(args: Bundle? = null) :
                 view.onDebounceClick {
                     val date = LocalDate.now()
                     val datePickerDialog = DatePickerDialog(
-                        view.context, R.style.Theme_myPoli_AlertDialog,
+                        view.context,
                         DatePickerDialog.OnDateSetListener { _, year, month, dayOfMonth ->
                             dispatch(
                                 EditChallengeAction.SelectDate(

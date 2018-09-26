@@ -2,6 +2,7 @@
 <android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:background="?colorSurface"
     android:layout_width="match_parent"
     android:layout_height="116dp">
 
@@ -26,6 +27,7 @@
         android:layout_marginStart="16dp"
         android:layout_marginTop="8dp"
         android:textAppearance="@style/TextAppearance.AppCompat.Title"
+        android:textColor="?android:textColorPrimary"
         app:layout_constraintBottom_toTopOf="@+id/achievementDesc"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
@@ -42,6 +44,7 @@
         android:layout_marginTop="2dp"
         android:maxLines="3"
         android:textAppearance="@style/TextAppearance.AppCompat.Body1"
+        android:textColor="?android:textColorSecondary"
         app:layout_constraintBottom_toTopOf="@+id/achievementProgress"
         app:layout_constraintEnd_toEndOf="@id/achievementTitle"
         app:layout_constraintHorizontal_bias="0.5"
@@ -69,10 +72,10 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textAppearance="@style/TextAppearance.AppCompat.Caption"
+        android:textColor="?android:textColorSecondary"
         app:layout_constraintBottom_toBottomOf="@+id/achievementProgress"
         app:layout_constraintEnd_toEndOf="@id/achievementTitle"
         app:layout_constraintTop_toTopOf="@+id/achievementProgress"
         tools:text="3/15" />
-
 
 </android.support.constraint.ConstraintLayout>

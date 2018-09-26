@@ -9,8 +9,6 @@
     android:focusable="true"
     android:focusableInTouchMode="true">
 
-
-
     <android.support.design.widget.CoordinatorLayout
         android:id="@+id/profileContainer"
         android:layout_width="match_parent"
@@ -22,7 +20,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:background="@android:color/transparent"
-            android:theme="@style/ThemeOverlay.AppCompat.Light"
+            android:theme="?android:toolbarStyle"
             app:elevation="0dp">
 
             <android.support.design.widget.CollapsingToolbarLayout
@@ -30,9 +28,9 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:minHeight="?attr/actionBarSize"
-                app:contentScrim="@color/md_white"
+                app:contentScrim="?android:colorBackground"
                 app:layout_scrollFlags="scroll|exitUntilCollapsed|snap"
-                app:statusBarScrim="@color/md_white">
+                app:statusBarScrim="?android:colorBackground">
 
                 <android.support.constraint.ConstraintLayout
                     android:layout_width="match_parent"
@@ -89,8 +87,8 @@
                         layout="@layout/view_profile_pet"
                         android:layout_width="0dp"
                         android:layout_height="0dp"
-                        android:elevation="6dp"
                         android:layout_margin="8dp"
+                        android:elevation="6dp"
                         app:layout_constraintBottom_toBottomOf="@id/friendPetAvatar"
                         app:layout_constraintEnd_toEndOf="@id/friendPetAvatar"
                         app:layout_constraintStart_toStartOf="@id/friendPetAvatar"
@@ -153,9 +151,9 @@
                         android:layout_marginTop="8dp"
                         android:text="12"
                         android:textAppearance="@style/TextAppearance.AppCompat.Body2"
-                        app:layout_constraintTop_toBottomOf="@id/levelTitle"
+                        app:layout_constraintEnd_toEndOf="@+id/levelTitle"
                         app:layout_constraintStart_toStartOf="@+id/levelTitle"
-                        app:layout_constraintEnd_toEndOf="@+id/levelTitle" />
+                        app:layout_constraintTop_toBottomOf="@id/levelTitle" />
 
                     <TextView
                         android:id="@+id/divider1"
@@ -190,9 +188,9 @@
                         android:layout_marginTop="8dp"
                         android:text="Apprentice"
                         android:textAppearance="@style/TextAppearance.AppCompat.Body2"
-                        app:layout_constraintTop_toBottomOf="@id/rankTitle"
+                        app:layout_constraintEnd_toEndOf="@id/rankTitle"
                         app:layout_constraintStart_toStartOf="@+id/rankTitle"
-                        app:layout_constraintEnd_toEndOf="@id/rankTitle"/>
+                        app:layout_constraintTop_toBottomOf="@id/rankTitle" />
 
                     <TextView
                         android:id="@+id/divider2"
@@ -211,8 +209,8 @@
                         android:id="@+id/joinedTitle"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginStart="8dp"
                         android:layout_marginEnd="16dp"
+                        android:layout_marginStart="8dp"
                         android:text="Joined"
                         android:textAppearance="@style/TextAppearance.AppCompat.Caption"
                         app:layout_constraintBottom_toBottomOf="@id/levelTitle"
@@ -229,9 +227,9 @@
                         android:layout_marginTop="8dp"
                         android:text="4 days ago"
                         android:textAppearance="@style/TextAppearance.AppCompat.Body2"
-                        app:layout_constraintTop_toBottomOf="@id/joinedTitle"
+                        app:layout_constraintEnd_toEndOf="@id/joinedTitle"
                         app:layout_constraintStart_toStartOf="@+id/joinedTitle"
-                        app:layout_constraintEnd_toEndOf="@id/joinedTitle" />
+                        app:layout_constraintTop_toBottomOf="@id/joinedTitle" />
 
                     <TextView
                         android:id="@+id/description"
@@ -248,16 +246,16 @@
 
                     <android.support.v7.widget.RecyclerView
                         android:id="@+id/attributes"
-                        app:layout_constraintTop_toBottomOf="@+id/description"
-                        app:layout_constraintBottom_toBottomOf="parent"
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintEnd_toEndOf="parent"
-                        android:layout_marginTop="24dp"
-                        android:layout_marginStart="16dp"
-                        android:layout_marginEnd="16dp"
-                        android:layout_marginBottom="16dp"
                         android:layout_width="match_parent"
-                        android:layout_height="wrap_content"/>
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="16dp"
+                        android:layout_marginEnd="16dp"
+                        android:layout_marginStart="16dp"
+                        android:layout_marginTop="24dp"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@+id/description" />
 
 
                     <android.support.constraint.Guideline
@@ -273,7 +271,7 @@
                     android:id="@+id/toolbar"
                     android:layout_width="match_parent"
                     android:layout_height="?attr/actionBarSize"
-                    android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar" />
+                    android:theme="?android:toolbarStyle" />
 
                 <android.support.design.widget.TabLayout
                     android:id="@+id/tabLayout"
@@ -308,8 +306,8 @@
             android:id="@+id/coloredBackground"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            app:layout_behavior="@string/appbar_scrolling_view_behavior"
-            android:background="@drawable/profile_background" />
+            android:background="@drawable/profile_background"
+            app:layout_behavior="@string/appbar_scrolling_view_behavior" />
 
         <android.support.v4.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
             android:layout_width="match_parent"
@@ -320,19 +318,19 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:paddingStart="8dp"
                 android:paddingBottom="8dp"
-                android:paddingEnd="8dp">
+                android:paddingEnd="8dp"
+                android:paddingStart="8dp">
 
                 <android.support.v4.view.ViewPager
                     android:id="@+id/pager"
-                    android:layout_marginStart="8dp"
-                    android:layout_marginEnd="8dp"
-                    android:layout_marginBottom="8dp"
-                    android:elevation="4dp"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:background="@drawable/rounded_rectangle_white_background" />
+                    android:layout_marginBottom="8dp"
+                    android:layout_marginEnd="8dp"
+                    android:layout_marginStart="8dp"
+                    android:background="@drawable/rounded_rectangle_background"
+                    android:elevation="4dp" />
             </LinearLayout>
         </android.support.v4.widget.NestedScrollView>
 

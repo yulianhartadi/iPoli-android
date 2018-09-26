@@ -60,7 +60,7 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@+id/questCheck"
         app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@drawable/ic_repeat_black_24dp" />
+        app:srcCompat="@drawable/ic_repeat_text_secondary_24dp" />
 
     <CheckBox
         android:id="@+id/questCheck"

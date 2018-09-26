@@ -4,6 +4,7 @@ import android.animation.Animator
 import android.animation.AnimatorListenerAdapter
 import android.animation.AnimatorSet
 import android.animation.ObjectAnimator
+import android.annotation.SuppressLint
 import android.content.Context
 import android.graphics.PixelFormat
 import android.graphics.Rect
@@ -18,7 +19,7 @@ import io.ipoli.android.common.view.views
 import io.ipoli.android.pet.AndroidPetAvatar
 import io.ipoli.android.pet.PetAvatar
 import io.ipoli.android.pet.PetState
-import kotlinx.android.synthetic.main.view_reminder.view.*
+import kotlinx.android.synthetic.main.popup_pet_notification.view.*
 
 /**
  * Created by Venelin Valkov <venelin@mypoli.fun>
@@ -43,9 +44,10 @@ class PetNotificationPopup(
     private lateinit var overlayView: ViewGroup
     private lateinit var windowManager: WindowManager
 
+    @SuppressLint("InflateParams")
     fun show(context: Context) {
         overlayView =
-            LayoutInflater.from(context).inflate(R.layout.view_reminder, null) as ViewGroup
+            LayoutInflater.from(context).inflate(R.layout.popup_pet_notification, null) as ViewGroup
         windowManager = context.getSystemService(Context.WINDOW_SERVICE) as WindowManager
         addViewToWindowManager(overlayView)
 

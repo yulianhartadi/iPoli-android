@@ -3,7 +3,8 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="60dp">
+    android:layout_height="60dp"
+    android:background="?colorSurface">
 
     <ImageView
         android:id="@+id/suggestionIcon"
@@ -29,7 +30,6 @@
         android:ellipsize="end"
         android:maxLines="1"
         android:textAppearance="@style/TextAppearance.AppCompat.Title"
-        android:textColor="@color/md_dark_text_54"
         android:textSize="18sp"
         app:layout_constraintBottom_toTopOf="@+id/suggestionStartTime"
         app:layout_constraintEnd_toStartOf="@+id/suggestionAccept"
@@ -67,7 +67,6 @@
         android:gravity="center_vertical"
         android:includeFontPadding="false"
         android:textAppearance="@style/TextAppearance.AppCompat.Caption"
-        android:textColor="@color/md_dark_text_54"
         app:layout_constraintBottom_toBottomOf="@+id/suggestionTagName"
         app:layout_constraintEnd_toStartOf="@+id/suggestionRepeatIndicator"
         app:layout_constraintStart_toEndOf="@+id/suggestionTagName"
@@ -83,7 +82,7 @@
         app:layout_constraintEnd_toStartOf="@+id/suggestionChallengeIndicator"
         app:layout_constraintStart_toEndOf="@+id/suggestionStartTime"
         app:layout_constraintTop_toTopOf="@+id/suggestionTagName"
-        app:srcCompat="@drawable/ic_repeat_black_24dp" />
+        app:srcCompat="@drawable/ic_repeat_text_secondary_24dp" />
 
     <ImageView
         android:id="@+id/suggestionChallengeIndicator"
@@ -94,7 +93,7 @@
         app:layout_constraintEnd_toStartOf="@+id/suggestionAccept"
         app:layout_constraintStart_toEndOf="@+id/suggestionRepeatIndicator"
         app:layout_constraintTop_toTopOf="@+id/suggestionTagName"
-        app:srcCompat="@drawable/ic_sword_black_24dp" />
+        app:srcCompat="@drawable/ic_sword_text_secondary_24dp" />
 
     <ImageView
         android:id="@+id/suggestionAccept"
@@ -114,8 +113,8 @@
         android:layout_height="1dp"
         android:layout_marginEnd="16dp"
         android:layout_marginStart="74dp"
-        android:background="@color/md_dark_text_12"
+        android:background="?android:listDivider"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@+id/suggestionAcceptSuggestion"
+        app:layout_constraintEnd_toStartOf="@+id/suggestionAccept"
         app:layout_constraintStart_toEndOf="@+id/suggestionIcon" />
 </android.support.constraint.ConstraintLayout>

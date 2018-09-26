@@ -3,7 +3,6 @@ package io.ipoli.android.common.view.widget
 import android.annotation.SuppressLint
 import android.content.Context
 import android.support.annotation.AttrRes
-import android.support.v4.content.ContextCompat
 import android.support.v4.widget.TextViewCompat
 import android.util.AttributeSet
 import android.util.TypedValue
@@ -41,8 +40,6 @@ class WheelItemPickerView : ScrollView {
     private lateinit var autoScrollTask: Runnable
 
     private var measuredItemHeight = 0
-
-    private var changeItemListener: ((Int) -> Unit)? = null
 
     companion object {
         private const val SCROLL_DELAY_MILLIS = 50
@@ -135,7 +132,6 @@ class WheelItemPickerView : ScrollView {
                 val remainder = lastYPosition % measuredItemHeight
                 selectedIndex = getItemIndex(lastYPosition)
                 if (remainder != 0) {
-                    changeItemListener?.invoke(selectedItemIndex)
                     this@WheelItemPickerView.post {
                         if (remainder > measuredItemHeight / 2) {
                             this@WheelItemPickerView.smoothScrollTo(
@@ -219,7 +215,7 @@ class WheelItemPickerView : ScrollView {
                 itemView.setTextColor(attrData(R.attr.colorAccent))
             } else {
                 itemView.setTextSize(TypedValue.COMPLEX_UNIT_PX, textSize.toFloat())
-                itemView.setTextColor(ContextCompat.getColor(context, R.color.md_dark_text_38))
+                itemView.setTextColor(attrData(android.R.attr.textColorHint))
             }
         }
     }
@@ -259,13 +255,4 @@ class WheelItemPickerView : ScrollView {
         view.measure(width, expandSpec)
         return view.measuredHeight
     }
-
-    fun setChangeItemListener(listener: (Int) -> Unit) {
-        changeItemListener = listener
-    }
-
-    fun removeChangeItemListener() {
-        changeItemListener = null
-    }
-
 }

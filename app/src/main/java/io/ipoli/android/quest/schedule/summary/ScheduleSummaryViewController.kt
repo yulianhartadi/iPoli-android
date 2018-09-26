@@ -62,7 +62,7 @@ class ScheduleSummaryViewController(args: Bundle? = null) :
         val view = container.inflate(R.layout.controller_schedule_summary)
         setToolbar(view.toolbar)
         activity?.let {
-            (it as MainActivity).supportActionBar?.setHomeAsUpIndicator(R.drawable.ic_close_black_24dp)
+            (it as MainActivity).supportActionBar?.setHomeAsUpIndicator(R.drawable.ic_close_text_secondary_24dp)
         }
         setHasOptionsMenu(true)
         view.dailyQuests.layoutManager = LinearLayoutManager(view.context)
@@ -155,11 +155,11 @@ class ScheduleSummaryViewController(args: Bundle? = null) :
 
     override fun onCreateLoadAction() = ScheduleSummaryAction.Load(currentDate)
 
-
     override fun colorStatusBars() {
         activity?.let {
-            it.window.statusBarColor = colorRes(R.color.md_grey_50)
-            it.window.navigationBarColor = colorRes(R.color.md_grey_50)
+            it.window.statusBarColor = colorRes(attrResourceId(android.R.attr.colorBackground))
+            it.window.navigationBarColor = colorRes(attrResourceId(android.R.attr.colorBackground))
+            if (it.isDarkTheme) return
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                 it.window.decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR or
                     View.SYSTEM_UI_FLAG_LIGHT_NAVIGATION_BAR

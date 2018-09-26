@@ -10,10 +10,10 @@
     <include layout="@layout/view_no_elevation_toolbar" />
 
     <android.support.constraint.ConstraintLayout
-        android:layout_width="match_parent"
         android:id="@+id/membershipDataContainer"
-        android:visibility="gone"
-        android:layout_height="match_parent">
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:visibility="gone">
 
         <View
             android:id="@+id/membershipHeaderBackground"
@@ -474,6 +474,7 @@
     <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent">
+
         <include layout="@layout/view_loader" />
     </FrameLayout>
 </LinearLayout>

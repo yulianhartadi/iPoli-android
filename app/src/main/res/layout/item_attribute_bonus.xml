@@ -23,6 +23,7 @@
         android:layout_marginStart="16dp"
         android:layout_marginTop="8dp"
         android:textAppearance="@style/TextAppearance.AppCompat.Body2"
+        android:textColor="?android:textColorPrimary"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@id/bonusIcon"
         app:layout_constraintTop_toTopOf="parent"
@@ -32,12 +33,13 @@
         android:id="@+id/bonusDescription"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginEnd="16dp"
         android:layout_marginBottom="8dp"
+        android:layout_marginEnd="16dp"
         android:textAppearance="@style/TextAppearance.AppCompat.Body1"
+        android:textColor="?android:textColorSecondary"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="@id/bonusTitle"
-        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/bonusTitle"
         tools:text="@string/bonuses" />
 </android.support.constraint.ConstraintLayout>

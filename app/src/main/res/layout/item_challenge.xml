@@ -4,9 +4,10 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="72dp"
-    android:background="?attr/selectableItemBackground"
+    android:background="?colorSurface"
     android:clickable="true"
-    android:focusable="true">
+    android:focusable="true"
+    android:foreground="?attr/selectableItemBackground">
 
     <View
         android:id="@+id/divider"
@@ -14,7 +15,7 @@
         android:layout_height="1dp"
         android:layout_marginEnd="16dp"
         android:layout_marginStart="74dp"
-        android:background="@color/md_dark_text_12"
+        android:background="?android:listDivider"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@+id/cIcon" />
@@ -30,7 +31,7 @@
         android:ellipsize="end"
         android:maxLines="2"
         android:textAppearance="@style/TextAppearance.AppCompat.Title"
-        android:textColor="@color/md_dark_text_54"
+        android:textColor="?android:textColorPrimary"
         android:textSize="18sp"
         app:layout_constraintBottom_toTopOf="@+id/cNext"
         app:layout_constraintEnd_toStartOf="@+id/cTagName"
@@ -52,7 +53,7 @@
         android:includeFontPadding="false"
         android:maxLines="1"
         android:textAppearance="@style/TextAppearance.AppCompat.Body1"
-        android:textColor="@color/md_dark_text_54"
+        android:textColor="?android:textColorSecondary"
         app:layout_constraintBottom_toBottomOf="@+id/cName"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="@+id/cName"
@@ -93,7 +94,7 @@
         android:layout_marginEnd="8dp"
         android:layout_marginTop="4dp"
         android:textAppearance="@style/TextAppearance.AppCompat.Body1"
-        android:textColor="@color/md_dark_text_54"
+        android:textColor="?android:textColorSecondary"
         app:layout_constraintBottom_toTopOf="@+id/divider"
         app:layout_constraintEnd_toStartOf="@+id/cEnd"
         app:layout_constraintHorizontal_bias="0.0"
@@ -109,6 +110,7 @@
         android:layout_marginEnd="16dp"
         android:textAlignment="viewEnd"
         android:textAppearance="@style/TextAppearance.AppCompat.Caption"
+        android:textColor="?android:textColorSecondary"
         app:layout_constraintBottom_toBottomOf="@+id/cNext"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="@+id/cNext"

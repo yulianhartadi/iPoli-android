@@ -398,6 +398,17 @@
     <string name="theme_blue">Blue Lagoon</string>
     <string name="theme_purple">Dreamland</string>
     <string name="theme_blue_grey">Silver Mist</string>
+    <string name="theme_dark_purple">Purple Pills</string>
+    <string name="theme_dark_blue">Mystery Skies</string>
+    <string name="theme_dark_blue_grey">Nocturnal Animal</string>
+    <string name="theme_dark_teal">Zombie Land</string>
+    <string name="theme_dark_orange">Midnight Moon</string>
+    <string name="theme_dark_red">Bloody Mary</string>
+    <string name="theme_dark_pink">Naughty Doll</string>
+    <string name="theme_dark_deep_purple">Sweet Violet</string>
+    <string name="theme_black_teal">Pitch Black</string>
+    <string name="theme_black_red">Vampire`s Redemption</string>
+    <string name="theme_black_blue">Black Panther</string>
     <string name="store_current_theme">Current theme</string>
     <string name="store_buy_theme">Buy now</string>
     <string name="pick_me">Pick me</string>
@@ -1161,4 +1172,5 @@ These are your physical and mental characteristics.\n\n
     <string name="willpower_specialist_bonus_desc">Streaks of Repeating Quests &amp; Habits increase XP &amp; Life Coins</string>
     <string name="bonuses">Bonuses</string>
     <string name="next_rank">Next: %s</string>
+    <string name="add_quest_hint">e.g. Go for a run</string>
 </resources>

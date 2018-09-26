@@ -518,7 +518,7 @@ class DayViewController :
 
     private fun showDatePicker(selectedDate: LocalDate) {
         val datePickerDialog = DatePickerDialog(
-            view!!.context, R.style.Theme_myPoli_AlertDialog,
+            view!!.context,
             DatePickerDialog.OnDateSetListener { _, year, month, dayOfMonth ->
                 dispatch(DayViewAction.DatePicked(LocalDate.of(year, month + 1, dayOfMonth)))
             }, selectedDate.year, selectedDate.month.value - 1, selectedDate.dayOfMonth
@@ -967,7 +967,7 @@ class DayViewController :
                 viewModel.icon?.let {
                     val icon = IconicsDrawable(itemView.context)
                         .icon(it.icon)
-                        .colorRes(R.color.md_dark_text_38)
+                        .colorRes(colorTextHintResource)
                         .sizeDp(24)
                     itemView.unscheduledQuestIcon.visible = true
                     itemView.unscheduledQuestIcon.setImageDrawable(icon)
@@ -1061,17 +1061,17 @@ class DayViewController :
                 duration = it.duration,
                 icon = it.icon?.androidIcon,
                 backgroundColor = color,
-                textColor = color.color900,
+                textColor = colorTextPrimaryResource,
                 isCompleted = it.isCompleted,
                 isStarted = it.isStarted,
                 repeatingQuestId = it.repeatingQuestId,
                 challengeId = it.challengeId,
                 isPlaceholder = it.id.isEmpty(),
-                tags = it.tags.map {
+                tags = it.tags.map { t ->
                     TagViewModel(
-                        it.name,
-                        it.color.androidColor.color500,
-                        it
+                        t.name,
+                        t.color.androidColor.color500,
+                        t
                     )
                 }
             )

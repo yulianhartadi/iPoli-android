@@ -1,5 +1,6 @@
 package io.ipoli.android.repeatingquest.edit.picker
 
+import android.annotation.SuppressLint
 import android.app.DatePickerDialog
 import android.os.Bundle
 import android.support.annotation.ColorInt
@@ -58,6 +59,7 @@ class RepeatPatternPickerDialogController :
         this.cancelListener = cancelListener
     }
 
+    @SuppressLint("InflateParams")
     override fun onCreateContentView(inflater: LayoutInflater, savedViewState: Bundle?): View {
         val view = inflater.inflate(R.layout.dialog_repeating_picker, null)
 
@@ -153,7 +155,7 @@ class RepeatPatternPickerDialogController :
         view.rpEnd.onDebounceClick {
             val date = state.pickerEndDate
             val datePickerDialog = DatePickerDialog(
-                view.context, R.style.Theme_myPoli_AlertDialog,
+                view.context,
                 DatePickerDialog.OnDateSetListener { _, year, month, dayOfMonth ->
                     dispatch(
                         RepeatPatternAction.ChangeEndDate(
@@ -181,7 +183,7 @@ class RepeatPatternPickerDialogController :
         view.rpStart.onDebounceClick {
             val date = state.startDate
             val datePickerDialog = DatePickerDialog(
-                view.context, R.style.Theme_myPoli_AlertDialog,
+                view.context,
                 DatePickerDialog.OnDateSetListener { _, year, month, dayOfMonth ->
                     dispatch(
                         RepeatPatternAction.ChangeStartDate(
@@ -238,7 +240,7 @@ class RepeatPatternPickerDialogController :
         view.rpDayOfYear.onDebounceClick {
             val date = state.dayOfYear
             val datePickerDialog = DatePickerDialog(
-                view.context, R.style.Theme_myPoli_AlertDialog,
+                view.context,
                 DatePickerDialog.OnDateSetListener { _, year, month, dayOfMonth ->
                     dispatch(
                         RepeatPatternAction.ChangeDayOfYear(
@@ -554,7 +556,7 @@ class RepeatPatternPickerDialogController :
             val textColor = if (isSelected)
                 R.color.md_white
             else
-                R.color.md_dark_text_54
+                colorTextSecondaryResource
 
             RepeatPatternPickerDialogController.MonthDayViewModel(
                 text = it.toString(),

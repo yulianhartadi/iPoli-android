@@ -29,10 +29,10 @@
         android:layout_height="32dp"
         android:layout_marginEnd="8dp"
         android:layout_marginTop="8dp"
-        android:background="@drawable/dark_oval_outline_background"
+        android:background="@drawable/text_secondary_oval_outline_background"
         android:padding="8dp"
         android:scaleType="fitCenter"
-        android:src="@drawable/ic_close_black_24dp"
+        android:src="@drawable/ic_close_text_secondary_24dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="@+id/acceptBackground" />
 

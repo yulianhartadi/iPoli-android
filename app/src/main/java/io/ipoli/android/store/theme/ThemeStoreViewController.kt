@@ -1,10 +1,12 @@
 package io.ipoli.android.store.theme
 
 import android.content.res.ColorStateList
+import android.graphics.drawable.GradientDrawable
 import android.os.Bundle
 import android.preference.PreferenceManager
 import android.support.annotation.ColorInt
 import android.support.v4.view.ViewPager
+import android.support.v7.widget.LinearLayoutManager
 import android.view.LayoutInflater
 import android.view.MenuItem
 import android.view.View
@@ -16,9 +18,11 @@ import io.ipoli.android.common.datetime.Time
 import io.ipoli.android.common.redux.android.ReduxViewController
 import io.ipoli.android.common.view.*
 import io.ipoli.android.common.view.pager.BasePagerAdapter
+import io.ipoli.android.common.view.recyclerview.BaseRecyclerViewAdapter
+import io.ipoli.android.common.view.recyclerview.RecyclerViewViewModel
+import io.ipoli.android.common.view.recyclerview.SimpleViewHolder
 import io.ipoli.android.player.Theme
 import io.ipoli.android.player.inventory.InventoryViewController
-import io.ipoli.android.quest.schedule.calendar.dayview.view.widget.CalendarDayView
 import kotlinx.android.synthetic.main.calendar_hour_cell.view.*
 import kotlinx.android.synthetic.main.calendar_time_line.view.*
 import kotlinx.android.synthetic.main.controller_theme_store.view.*
@@ -99,6 +103,7 @@ class ThemeStoreViewController(args: Bundle? = null) :
         view!!.toolbar.setBackgroundColor(viewModel.primaryColor)
         activity?.window?.navigationBarColor = viewModel.primaryColor
         activity?.window?.statusBarColor = viewModel.primaryColorDark
+        view?.rootCoordinator?.setBackgroundColor(viewModel.backgroundColor)
     }
 
     override fun render(state: ThemeStoreViewState, view: View) {
@@ -141,13 +146,16 @@ class ThemeStoreViewController(args: Bundle? = null) :
 
         override fun bindItem(item: ThemeViewModel, view: View) {
 
+            view.themeRoot.setBackgroundColor(item.surfaceColor)
             view.themeToolbar.setBackgroundColor(item.primaryColor)
             view.themeNavigationBar.setBackgroundColor(item.primaryColor)
             view.themeStatusBar.setBackgroundColor(item.primaryColorDark)
             view.themeFab.backgroundTintList = ColorStateList.valueOf(item.accentColor)
 
+            view.themeName.setTextColor(item.textColor)
             view.themeName.text = item.name
 
+            view.themePrice.setTextColor(item.textColor)
             view.themePrice.text = if (item.theme.gemPrice == 0) {
                 stringRes(R.string.free)
             } else {
@@ -156,6 +164,8 @@ class ThemeStoreViewController(args: Bundle? = null) :
 
             val action = view.themeAction
             val current = view.themeCurrent
+
+            current.setTextColor(item.textColorSecondary)
 
             when {
                 item.isCurrent -> {
@@ -176,20 +186,51 @@ class ThemeStoreViewController(args: Bundle? = null) :
                 }
             }
 
-            view.themeCalendar.setHourAdapter(object : CalendarDayView.HourCellAdapter {
-                override fun bind(view: View, hour: Int) {
-                    if (hour > 0) {
-                        view.timeLabel.text = Time.atHours(hour).toString(shouldUse24HourFormat)
-                    }
-                }
+            view.leftCalendarBorder.setBackgroundColor(item.dividerColor)
+            view.rightCalendarBorder.setBackgroundColor(item.dividerColor)
+
+            view.themeCalendar.setBackgroundColor(item.backgroundColor)
+            view.themeCalendar.layoutManager = LinearLayoutManager(view.context)
+            val calendarAdapter = CalendarAdapter()
+            view.themeCalendar.adapter = calendarAdapter
+            calendarAdapter.updateAll((0..23).map {
+                HourViewModel(
+                    id = it.toString(),
+                    label = if (it > 0) Time.atHours(it).toString(shouldUse24HourFormat) else "",
+                    labelColor = item.textColorSecondary,
+                    dividerColor = item.dividerColor
+                )
             })
 
-            view.themeCalendar.timeLine.setBackgroundColor(item.accentColor)
-            view.themeCalendar.timeLineIndicator.backgroundTintList =
-                ColorStateList.valueOf(item.accentColor)
-
-            view.themeCalendar.scrollToNow()
+            view.timeLine.setBackgroundColor(item.accentColor)
+            val indicatorBackground = view.timeLineIndicator.background as GradientDrawable
+            indicatorBackground.color = ColorStateList.valueOf(item.accentColor)
         }
+
+    }
+
+    data class HourViewModel(
+        override val id: String,
+        val label: String,
+        @ColorInt val labelColor: Int,
+        @ColorInt val dividerColor: Int
+    ) : RecyclerViewViewModel
+
+    inner class CalendarAdapter :
+        BaseRecyclerViewAdapter<HourViewModel>(R.layout.calendar_hour_cell) {
+
+        override fun onBindViewModel(vm: HourViewModel, view: View, holder: SimpleViewHolder) {
+            val lp = view.layoutParams
+            lp.height = ViewUtils.dpToPx(48f, view.context).toInt()
+            view.layoutParams = lp
+
+            view.timeLabel.text = vm.label
+
+            view.timeLabel.setTextColor(vm.labelColor)
+            view.timeHorizontalDivider.setBackgroundColor(vm.dividerColor)
+            view.timeVerticalDivider.setBackgroundColor(vm.dividerColor)
+        }
+
     }
 
     private val ThemeStoreViewState.viewModels
@@ -200,7 +241,12 @@ class ThemeStoreViewController(args: Bundle? = null) :
             val attrs = intArrayOf(
                 R.attr.colorPrimary,
                 R.attr.colorPrimaryDark,
-                R.attr.colorAccent
+                R.attr.colorAccent,
+                R.attr.colorSurface,
+                android.R.attr.colorBackground,
+                android.R.attr.textColorPrimary,
+                android.R.attr.textColorSecondary,
+                android.R.attr.listDivider
             ).sortedArray()
             val a = activity!!.theme.obtainStyledAttributes(
                 at.style,
@@ -212,6 +258,20 @@ class ThemeStoreViewController(args: Bundle? = null) :
                 a.getResourceId(a.getIndex(attrs.indexOf(R.attr.colorPrimaryDark)), 0)
             val accentColor = a.getColor(a.getIndex(attrs.indexOf(R.attr.colorAccent)), 0)
 
+            val surfaceColor = if (it.theme.isDark) R.color.md_grey_800 else R.color.md_white
+
+            val backgroundColor =
+                a.getColor(a.getIndex(attrs.indexOf(android.R.attr.colorBackground)), 0)
+
+            val textColor =
+                a.getColor(a.getIndex(attrs.indexOf(android.R.attr.textColorPrimary)), 0)
+
+            val textColorSecondary =
+                a.getColor(a.getIndex(attrs.indexOf(android.R.attr.textColorSecondary)), 0)
+
+            val dividerColor =
+                a.getColor(a.getIndex(attrs.indexOf(android.R.attr.listDivider)), 0)
+
             a.recycle()
 
             ThemeViewModel(
@@ -220,6 +280,11 @@ class ThemeStoreViewController(args: Bundle? = null) :
                 primaryColor = colorRes(primaryColor),
                 primaryColorDark = colorRes(primaryDarkColor),
                 accentColor = accentColor,
+                surfaceColor = colorRes(surfaceColor),
+                backgroundColor = backgroundColor,
+                textColor = textColor,
+                textColorSecondary = textColorSecondary,
+                dividerColor = dividerColor,
                 isCurrent = it is ThemeItem.Current,
                 isBought = it is ThemeItem.Bought
             )
@@ -233,6 +298,11 @@ data class ThemeViewModel(
     @ColorInt val primaryColor: Int,
     @ColorInt val primaryColorDark: Int,
     @ColorInt val accentColor: Int,
+    @ColorInt val surfaceColor: Int,
+    @ColorInt val backgroundColor: Int,
+    @ColorInt val textColor: Int,
+    @ColorInt val textColorSecondary: Int,
+    @ColorInt val dividerColor: Int,
     val isBought: Boolean = false,
     val isCurrent: Boolean = false
 )

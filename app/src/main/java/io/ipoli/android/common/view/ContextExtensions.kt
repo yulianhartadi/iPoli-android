@@ -8,6 +8,7 @@ import android.support.v4.content.ContextCompat
 import android.support.v7.view.ContextThemeWrapper
 import android.util.TypedValue
 import io.ipoli.android.Constants
+import io.ipoli.android.player.Theme
 
 /**
  * Created by Venelin Valkov <venelin@mypoli.fun>
@@ -24,6 +25,18 @@ val Context.playerTheme: Int
             }
         }
         return AndroidTheme.valueOf(Constants.DEFAULT_THEME.name).style
+    }
+
+val Context.isDarkTheme: Boolean
+    get() {
+        val pm = PreferenceManager.getDefaultSharedPreferences(this)
+        if (pm.contains(Constants.KEY_THEME)) {
+            val themeName = pm.getString(Constants.KEY_THEME, "")
+            if (themeName.isNotEmpty()) {
+                return Theme.valueOf(themeName).isDark
+            }
+        }
+        return Constants.DEFAULT_THEME.isDark
     }
 
 fun Context.asThemedWrapper() =

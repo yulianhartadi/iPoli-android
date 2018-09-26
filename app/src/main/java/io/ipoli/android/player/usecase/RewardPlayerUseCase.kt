@@ -169,7 +169,7 @@ open class RewardPlayerUseCase(
         val booster = TotalBonusBooster.forHabit(habit, player, rank)
         val xp = experience(booster.experiencePercentage, HABIT_XP_BASE_REWARDS)
         val coins = coins(booster.coinsPercentage, HABIT_COINS_BASE_REWARDS)
-        val bounty = bounty(booster.itemDropPercentage)
+        val bounty = Quest.Bounty.None
 
         val attrs = attributePoints(
             tags = habit.tags,

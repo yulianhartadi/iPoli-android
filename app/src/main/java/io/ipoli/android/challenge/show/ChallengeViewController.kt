@@ -373,7 +373,7 @@ class ChallengeViewController(args: Bundle? = null) :
             view.note.setMarkdown(state.note)
         } else {
             view.note.setText(R.string.tap_to_add_note)
-            view.note.setTextColor(colorRes(R.color.md_dark_text_54))
+            view.note.setTextColor(colorRes(colorTextSecondaryResource))
         }
         view.note.onDebounceClick { showEdit() }
     }
@@ -768,7 +768,7 @@ class ChallengeViewController(args: Bundle? = null) :
 
                     val dates = LocalDate.now().minusDays(9).datesBetween(LocalDate.now())
 
-                    val valueHistory = if(it.isCumulative) it.cumulativeHistory!! else it.history
+                    val valueHistory = if (it.isCumulative) it.cumulativeHistory!! else it.history
 
                     val values = dates.map { d -> valueHistory[d]?.value }
 
@@ -851,7 +851,7 @@ class ChallengeViewController(args: Bundle? = null) :
 
                     val maxVal = Math.max(nonNullValues.max() ?: 0.0, it.upperBound)
 
-                    val chartEntries = values.mapIndexed { index, v ->
+                    val chartEntries = values.asSequence().mapIndexed { index, v ->
                         if (v != null) {
                             BarEntry(index.toFloat(), v.toFloat())
                         } else null
@@ -887,7 +887,7 @@ class ChallengeViewController(args: Bundle? = null) :
                     id = it.id,
                     name = it.name,
                     color = if (it.isCompleted) R.color.md_grey_300 else it.color.androidColor.color500,
-                    textColor = if (it.isCompleted) R.color.md_dark_text_38 else R.color.md_dark_text_54,
+                    textColor = if (it.isCompleted) colorTextHintResource else colorTextPrimaryResource,
                     icon = it.icon?.androidIcon?.icon ?: GoogleMaterial.Icon.gmd_local_florist,
                     isRepeating = false,
                     isCompleted = it.isCompleted
@@ -896,7 +896,7 @@ class ChallengeViewController(args: Bundle? = null) :
                     id = it.id,
                     name = it.name,
                     color = it.color.androidColor.color500,
-                    textColor = if (it.isCompleted) R.color.md_dark_text_38 else R.color.md_dark_text_54,
+                    textColor = if (it.isCompleted) colorTextHintResource else colorTextPrimaryResource,
                     icon = it.icon?.androidIcon?.icon ?: GoogleMaterial.Icon.gmd_local_florist,
                     isRepeating = true,
                     isCompleted = it.isCompleted

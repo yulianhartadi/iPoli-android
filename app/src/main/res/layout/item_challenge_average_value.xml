@@ -5,7 +5,7 @@
     android:layout_height="wrap_content"
     android:layout_marginEnd="8dp"
     android:layout_marginStart="8dp"
-    android:background="@drawable/rounded_rectangle_white_background">
+    android:background="@drawable/rounded_rectangle_surface_background">
 
     <TextView
         android:id="@+id/averageValueLabel"
@@ -32,6 +32,7 @@
         android:layout_marginTop="32dp"
         android:gravity="bottom"
         android:text="Average"
+        android:textColor="?android:textColorSecondary"
         android:textAppearance="@style/TextAppearance.AppCompat.Caption"
         app:layout_constraintBottom_toTopOf="@+id/averageValue"
         app:layout_constraintEnd_toEndOf="parent"
@@ -46,7 +47,7 @@
         android:layout_marginTop="4dp"
         android:gravity="center_vertical"
         android:textAppearance="@style/TextAppearance.AppCompat.Title"
-        android:textColor="?attr/colorPrimary"
+        android:textColor="?attr/colorAccent"
         app:layout_constraintBottom_toTopOf="@+id/averageValueDeviation"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -59,7 +60,7 @@
         android:layout_marginTop="4dp"
         android:gravity="top"
         android:textAppearance="@style/TextAppearance.AppCompat.Body1"
-        android:textColor="@color/md_dark_text_54"
+        android:textColor="?android:textColorSecondary"
         app:layout_constraintBottom_toTopOf="@+id/averageValueChart"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"

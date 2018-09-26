@@ -82,7 +82,7 @@ class DailyChallengeViewController(args: Bundle? = null) :
         view.descriptionIcon.setImageDrawable(
             IconicsDrawable(activity!!)
                 .icon(GoogleMaterial.Icon.gmd_info_outline)
-                .color(attrData(R.attr.colorPrimary))
+                .color(attrData(R.attr.colorAccent))
                 .sizeDp(24)
         )
 
@@ -245,7 +245,7 @@ class DailyChallengeViewController(args: Bundle? = null) :
                         dispatch(DailyChallengeAction.RemoveQuest(vm.id))
                     }
                 } else {
-                    view.questStar.setImageResource(R.drawable.ic_star_border_black_24dp)
+                    view.questStar.setImageResource(R.drawable.ic_star_border_text_secondary_24dp)
                     view.questStar.onDebounceClick {
                         dispatch(DailyChallengeAction.AddQuest(vm.id))
                     }

@@ -9,4 +9,5 @@
     android:maxLines="1"
     android:minWidth="24dp"
     android:padding="4dp"
-    android:textAppearance="@style/TextAppearance.AppCompat.Caption" />
+    android:textAppearance="@style/TextAppearance.AppCompat.Caption"
+    android:textColor="?android:textColorSecondary" />

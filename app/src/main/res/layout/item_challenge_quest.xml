@@ -4,9 +4,10 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="60dp"
-    android:background="?attr/selectableItemBackground"
+    android:background="?colorSurface"
     android:clickable="true"
-    android:focusable="true">
+    android:focusable="true"
+    android:foreground="?attr/selectableItemBackground">
 
     <TextView
         android:id="@+id/questName"
@@ -18,7 +19,7 @@
         android:ellipsize="end"
         android:maxLines="2"
         android:textAppearance="@style/TextAppearance.AppCompat.Subhead"
-        android:textColor="@color/md_dark_text_54"
+        android:textColor="?android:textColorPrimary"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@+id/questRepeatIndicator"
         app:layout_constraintStart_toEndOf="@+id/questIcon"
@@ -31,7 +32,7 @@
         android:layout_width="0dp"
         android:layout_height="1dp"
         android:layout_marginEnd="16dp"
-        android:background="@color/md_dark_text_12"
+        android:background="?android:listDivider"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="@+id/questName" />
@@ -59,6 +60,6 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@drawable/ic_repeat_black_24dp" />
+        app:srcCompat="@drawable/ic_repeat_text_secondary_24dp" />
 
 </android.support.constraint.ConstraintLayout>

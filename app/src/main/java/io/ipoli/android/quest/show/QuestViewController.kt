@@ -148,7 +148,7 @@ class QuestViewController : ReduxViewController<QuestAction, QuestViewState, Que
         view.subQuestsHintIcon.setImageDrawable(
             IconicsDrawable(view.context)
                 .icon(GoogleMaterial.Icon.gmd_info_outline)
-                .color(attrData(R.attr.colorPrimary))
+                .color(attrData(R.attr.colorAccent))
                 .sizeDp(24)
         )
 

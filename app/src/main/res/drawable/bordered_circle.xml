@@ -3,6 +3,6 @@
     android:shape="oval">
     <stroke
         android:width="1.5dp"
-        android:color="@color/colorAccent" />
+        android:color="?colorAccent" />
     <solid android:color="?android:colorBackground"/>
 </shape>

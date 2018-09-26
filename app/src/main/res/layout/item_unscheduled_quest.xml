@@ -4,6 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="@dimen/unscheduled_quest_item_height"
+    android:background="?colorSurface"
     android:foreground="?attr/selectableItemBackground">
 
     <CheckBox
@@ -52,7 +53,7 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@+id/unscheduledQuestChallengeIndicator"
         app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@drawable/ic_repeat_black_24dp" />
+        app:srcCompat="@drawable/ic_repeat_text_secondary_24dp" />
 
     <ImageView
         android:id="@+id/unscheduledQuestChallengeIndicator"
@@ -62,7 +63,7 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@+id/questTagName"
         app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@drawable/ic_sword_black_24dp" />
+        app:srcCompat="@drawable/ic_sword_text_secondary_24dp" />
 
     <TextView
         android:id="@+id/questTagName"
@@ -76,7 +77,7 @@
         android:includeFontPadding="false"
         android:maxLines="1"
         android:textAppearance="@style/TextAppearance.AppCompat.Body1"
-        android:textColor="@color/md_dark_text_54"
+        android:textColor="?android:textColorSecondary"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent"

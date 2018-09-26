@@ -114,8 +114,9 @@ class GrowthViewController(args: Bundle? = null) :
         chart.description.isEnabled = false
         chart.setTouchEnabled(false)
         chart.transparentCircleRadius = chart.holeRadius
+        chart.setHoleColor(colorRes(colorSurfaceResource))
         chart.setUsePercentValues(true)
-        chart.setEntryLabelColor(colorRes(R.color.md_dark_text_87))
+        chart.setEntryLabelColor(colorRes(colorTextSecondaryResource))
         chart.setEntryLabelTextSize(12f)
         chart.setExtraOffsets(0.0f, 10.0f, 0.0f, 10.0f)
         chart.rotationAngle = 270f
@@ -252,7 +253,7 @@ class GrowthViewController(args: Bundle? = null) :
         val dataSet = PieDataSet(pieData, "")
         dataSet.xValuePosition = PieDataSet.ValuePosition.OUTSIDE_SLICE
         dataSet.yValuePosition = PieDataSet.ValuePosition.OUTSIDE_SLICE
-        dataSet.valueTextColor = colorRes(R.color.md_dark_text_54)
+        dataSet.valueTextColor = colorRes(colorTextSecondaryResource)
         dataSet.valueTextSize = 12f
         dataSet.setDrawIcons(false)
 
@@ -458,7 +459,7 @@ class GrowthViewController(args: Bundle? = null) :
         dummySet.isVisible = false
         dummySet.isHighlightEnabled = false
         dummySet.axisDependency = YAxis.AxisDependency.RIGHT
-        dummySet.color = colorRes(R.color.md_white)
+        dummySet.color = colorRes(colorSurfaceResource)
 
         view.awesomenessChart.data =
             LineData(
@@ -491,7 +492,7 @@ class GrowthViewController(args: Bundle? = null) :
             axisRight.granularity = 1f
             axisRight.setDrawAxisLine(false)
             axisRight.textSize = ViewUtils.spToPx(5, activity!!).toFloat()
-            axisRight.textColor = colorRes(R.color.md_dark_text_54)
+            axisRight.textColor = colorRes(colorTextSecondaryResource)
             axisRight.setValueFormatter { value, _ -> "    ${value.toInt()}" }
 
             axisLeft.isEnabled = false
@@ -499,7 +500,7 @@ class GrowthViewController(args: Bundle? = null) :
             xAxis.isGranularityEnabled = true
             xAxis.granularity = 1f
             xAxis.textSize = ViewUtils.spToPx(4.5f, activity!!).toFloat()
-            xAxis.textColor = colorRes(R.color.md_dark_text_54)
+            xAxis.textColor = colorRes(colorTextSecondaryResource)
             xAxis.setDrawGridLines(false)
             xAxis.position = XAxis.XAxisPosition.BOTTOM
             xAxis.setAvoidFirstLastClipping(true)
@@ -507,7 +508,7 @@ class GrowthViewController(args: Bundle? = null) :
 
             xAxis.labelRotationAngle = 335f
 
-            legend.textColor = colorRes(R.color.md_dark_text_54)
+            legend.textColor = colorRes(colorTextSecondaryResource)
             legend.textSize = ViewUtils.spToPx(5, activity!!).toFloat()
             legend.form = Legend.LegendForm.CIRCLE
             legend.xEntrySpace = ViewUtils.dpToPx(4f, activity!!)

@@ -497,7 +497,7 @@ class PetViewController(args: Bundle? = null) :
             }
             ItemComparisonViewModel.Change.NO_CHANGE -> {
                 changeView.text = "$change="
-                changeView.setTextColor(colorRes(R.color.md_dark_text_87))
+                changeView.setTextColor(colorRes(colorTextSecondaryResource))
                 changeView.setCompoundDrawablesWithIntrinsicBounds(
                     null,
                     null,
@@ -908,7 +908,7 @@ class PetViewController(args: Bundle? = null) :
             holder.itemView.itemImage.setImageResource(vm.image)
 
             if (vm.isSelected) {
-                holder.itemView.setBackgroundColor(colorRes(R.color.md_grey_200))
+                holder.itemView.setBackgroundColor(colorTextHintResource)
             } else {
                 holder.itemView.background = null
             }
@@ -999,7 +999,6 @@ class PetViewController(args: Bundle? = null) :
                 equippedMask,
                 equippedBodyArmor
             ).toSet()
-            val selectedItem = PetItem.values().first { it.type == selectedItemType }
             return PetItem.values()
                 .filter { it.type == selectedItemType }
                 .map {
@@ -1007,7 +1006,7 @@ class PetViewController(args: Bundle? = null) :
                         image = AndroidPetItem.valueOf(it.name).image,
                         gemPrice = it.gemPrice,
                         item = it,
-                        isSelected = it == selectedItem,
+                        isSelected = it == compareNewItem,
                         isBought = boughtItems.contains(it),
                         isEquipped = equippedPetItems.contains(it)
                     )

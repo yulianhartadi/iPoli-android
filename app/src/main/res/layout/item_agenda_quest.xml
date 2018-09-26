@@ -4,9 +4,10 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="60dp"
-    android:background="?attr/selectableItemBackground"
+    android:background="?colorSurface"
     android:clickable="true"
-    android:focusable="true">
+    android:focusable="true"
+    android:foreground="?attr/selectableItemBackground">
 
     <View
         android:id="@+id/divider"
@@ -30,7 +31,7 @@
         android:ellipsize="end"
         android:maxLines="1"
         android:textAppearance="@style/TextAppearance.AppCompat.Title"
-        android:textColor="@color/md_dark_text_54"
+        android:textColor="?android:textColorPrimary"
         android:textSize="18sp"
         app:layout_constraintBottom_toTopOf="@+id/questStartTime"
         app:layout_constraintEnd_toStartOf="@+id/questTagName"
@@ -52,7 +53,7 @@
         android:includeFontPadding="false"
         android:maxLines="1"
         android:textAppearance="@style/TextAppearance.AppCompat.Body1"
-        android:textColor="@color/md_dark_text_54"
+        android:textColor="?android:textColorSecondary"
         app:layout_constraintBottom_toBottomOf="@+id/questName"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="@+id/questName"
@@ -80,7 +81,7 @@
         android:layout_marginBottom="8dp"
         android:layout_marginStart="16dp"
         android:textAppearance="@style/TextAppearance.AppCompat.Caption"
-        android:textColor="@color/md_dark_text_54"
+        android:textColor="?android:textColorSecondary"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toEndOf="@+id/questIcon"
         app:layout_constraintTop_toBottomOf="@+id/questName"
@@ -94,7 +95,7 @@
         app:layout_constraintBottom_toBottomOf="@+id/questStartTime"
         app:layout_constraintStart_toEndOf="@+id/questStartTime"
         app:layout_constraintTop_toTopOf="@+id/questStartTime"
-        app:srcCompat="@drawable/ic_repeat_black_24dp" />
+        app:srcCompat="@drawable/ic_repeat_primary_text_24dp" />
 
     <ImageView
         android:id="@+id/questChallengeIndicator"
@@ -107,5 +108,5 @@
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toEndOf="@+id/questRepeatIndicator"
         app:layout_constraintTop_toTopOf="@+id/questStartTime"
-        app:srcCompat="@drawable/ic_sword_black_24dp" />
+        app:srcCompat="@drawable/ic_sword_primary_text_24dp" />
 </android.support.constraint.ConstraintLayout>

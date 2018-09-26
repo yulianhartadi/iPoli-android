@@ -4,6 +4,7 @@ import android.content.Context
 import android.graphics.Canvas
 import android.graphics.Paint
 import android.graphics.Rect
+import android.support.annotation.AttrRes
 import android.support.annotation.ColorRes
 import android.support.v4.content.ContextCompat
 import android.util.AttributeSet
@@ -87,7 +88,7 @@ class HistoryChart @JvmOverloads constructor(
             return result
         }
 
-        private fun createForDoubleSplit() : List<RowData> {
+        private fun createForDoubleSplit(): List<RowData> {
             val result = mutableListOf<RowData>()
             result.add(
                 RowData.CellRow(
@@ -316,7 +317,10 @@ class HistoryChart @JvmOverloads constructor(
             return result
         }
 
-        private fun createMonthWithWeekDaysRows(month : Month = currentDate.month, year : Int = currentDate.year) =
+        private fun createMonthWithWeekDaysRows(
+            month: Month = currentDate.month,
+            year: Int = currentDate.year
+        ) =
             listOf(
                 RowData.MonthRow(YearMonth.of(year, month)),
                 RowData.WeekDaysRow
@@ -442,7 +446,7 @@ class HistoryChart @JvmOverloads constructor(
         failedPaint.color = ContextCompat.getColor(context, R.color.md_red_500)
         failedPaint.isAntiAlias = true
 
-        nonePaint.color = ContextCompat.getColor(context, R.color.md_dark_text_12)
+        nonePaint.color = ContextCompat.getColor(context, attrResourceId(android.R.attr.listDivider))
         nonePaint.isAntiAlias = true
 
         todoPaint.color = ContextCompat.getColor(context, R.color.md_green_700)
@@ -460,15 +464,15 @@ class HistoryChart @JvmOverloads constructor(
         todayPaint.strokeWidth = ViewUtils.dpToPx(1.5f, context)
         todayPaint.style = Paint.Style.STROKE
 
-        monthPaint.color = ContextCompat.getColor(context, R.color.md_dark_text_87)
+        monthPaint.color = ContextCompat.getColor(context, attrResourceId(android.R.attr.textColorPrimary))
         monthPaint.isAntiAlias = true
         monthPaint.textAlign = Paint.Align.CENTER
         monthPaint.textSize = ViewUtils.spToPx(18, context).toFloat()
 
         dayPaintLight = createTextPaint(context, R.color.md_light_text_100, 14)
-        dayPaintDark = createTextPaint(context, R.color.md_dark_text_87, 14)
+        dayPaintDark = createTextPaint(context, attrResourceId(android.R.attr.textColorPrimary), 14)
 
-        dayOfWeekPaint.color = ContextCompat.getColor(context, R.color.md_dark_text_87)
+        dayOfWeekPaint.color = ContextCompat.getColor(context, attrResourceId(android.R.attr.textColorPrimary))
         dayOfWeekPaint.isAntiAlias = true
         dayOfWeekPaint.textAlign = Paint.Align.CENTER
         dayOfWeekPaint.textSize = ViewUtils.spToPx(12, context).toFloat()
@@ -620,4 +624,10 @@ class HistoryChart @JvmOverloads constructor(
         paint.getTextBounds(dayOfMonth, 0, dayOfMonth.length, textBounds)
         drawText(dayOfMonth, x, y - textBounds.exactCenterY(), paint)
     }
+
+    private fun attrResourceId(@AttrRes attributeRes: Int) =
+        TypedValue().let {
+            context.theme.resolveAttribute(attributeRes, it, true)
+            it.resourceId
+        }
 }

@@ -29,7 +29,7 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
         android:drawablePadding="8dp"
-        android:drawableStart="@drawable/ic_reminder_black_24dp"
+        android:drawableStart="@drawable/ic_reminder_text_secondary_24dp"
         android:gravity="center_vertical"
         android:text="@string/remind_label"
         android:textAppearance="@style/TextAppearance.AppCompat.Body1"
