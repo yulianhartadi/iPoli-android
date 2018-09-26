@@ -34,7 +34,7 @@
         app:layout_constraintTop_toTopOf="@+id/habitProgress"
         app:line_count="5"
         app:line_width="5dp"
-        app:progress_background_color="@color/md_white"
+        app:progress_background_color="?android:colorBackground"
         app:progress_end_color="@color/md_green_500"
         app:progress_start_color="@color/md_green_500"
         app:progress_stroke_cap="square"

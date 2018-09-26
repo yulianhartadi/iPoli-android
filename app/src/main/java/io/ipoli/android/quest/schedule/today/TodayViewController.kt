@@ -576,8 +576,8 @@ class TodayViewController(args: Bundle? = null) :
 
             if (vm.timesADay > 1) {
                 view.habitTimesADayProgress.visible()
-                view.habitTimesADayProgress.setProgressStartColor(colorRes(R.color.md_white))
-                view.habitTimesADayProgress.setProgressEndColor(colorRes(R.color.md_white))
+                view.habitTimesADayProgress.setProgressStartColor(attrData(android.R.attr.colorBackground))
+                view.habitTimesADayProgress.setProgressEndColor(attrData(android.R.attr.colorBackground))
                 view.habitTimesADayProgress.setProgressFormatter(null)
                 renderTimesADayProgress(view, vm.progress, vm.maxProgress)
             } else {
