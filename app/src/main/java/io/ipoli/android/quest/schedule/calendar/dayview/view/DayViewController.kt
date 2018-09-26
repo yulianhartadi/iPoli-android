@@ -13,7 +13,6 @@ import android.os.Bundle
 import android.support.annotation.ColorInt
 import android.support.annotation.ColorRes
 import android.support.v4.content.ContextCompat
-import android.support.v4.graphics.ColorUtils
 import android.support.v4.widget.TextViewCompat
 import android.support.v4.widget.TintableCompoundButton
 import android.text.Editable
@@ -1128,10 +1127,7 @@ class DayViewController :
                     nameColor = ColorUtil.darkenColor(e.color),
                     timeColor = ColorUtil.darkenColor(e.color),
                     indicatorColor = e.color,
-                    backgroundColor = ColorUtils.setAlphaComponent(
-                        e.color,
-                        ColorUtil.alphaInt(0.30f)
-                    ),
+                    backgroundColor = ColorUtil.lightenColor(e.color, 0.6f),
                     isRepeating = e.isRepeating
                 )
             }

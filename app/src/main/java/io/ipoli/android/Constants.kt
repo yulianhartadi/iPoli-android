@@ -232,7 +232,7 @@ interface Constants {
 
         const val KEY_THEME = "CURRENT_THEME"
 
-        val DEFAULT_THEME = Theme.DARK_ORANGE
+        val DEFAULT_THEME = Theme.BLUE
 
         const val DEFAULT_POMODORO_WORK_DURATION = 25
         const val DEFAULT_POMODORO_BREAK_DURATION = 5

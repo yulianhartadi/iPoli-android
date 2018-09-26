@@ -98,6 +98,16 @@ object ColorUtil {
         return Color.HSVToColor(hsv)
     }
 
+    @ColorInt
+    fun lightenColor(@ColorInt color: Int, factor: Float): Int {
+        return Color.argb(
+            Color.alpha(color),
+            ((Color.red(color) * (1 - factor) / 255 + factor) * 255).toInt(),
+            ((Color.green(color) * (1 - factor) / 255 + factor) * 255).toInt(),
+            ((Color.blue(color) * (1 - factor) / 255 + factor) * 255).toInt()
+        )
+    }
+
     fun alphaInt(@FloatRange(from = 0.0, to = 1.0) value: Float): Int {
         return (255 * value).toInt()
     }
