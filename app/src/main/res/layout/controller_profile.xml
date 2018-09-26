@@ -35,8 +35,8 @@
                 <android.support.constraint.ConstraintLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginBottom="?attr/actionBarSize"
-                    android:layout_marginTop="?attr/actionBarSize">
+                    android:layout_marginTop="?attr/actionBarSize"
+                    android:layout_marginBottom="?attr/actionBarSize">
 
                     <ImageView
                         android:id="@+id/playerAvatar"
@@ -56,8 +56,8 @@
                         android:id="@+id/profileDisplayName"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
-                        android:layout_marginEnd="8dp"
                         android:layout_marginStart="16dp"
+                        android:layout_marginEnd="8dp"
                         android:ellipsize="end"
                         android:maxLines="2"
                         android:textAppearance="@style/TextAppearance.AppCompat.Title"
@@ -71,8 +71,8 @@
                         android:id="@+id/username"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
-                        android:layout_marginEnd="8dp"
                         android:layout_marginTop="8dp"
+                        android:layout_marginEnd="8dp"
                         android:textAppearance="@style/TextAppearance.AppCompat.Caption"
                         android:textColor="?android:textColorSecondary"
                         app:layout_constraintEnd_toStartOf="@+id/membershipStatus"
@@ -107,8 +107,8 @@
                         style="@style/Widget.AppCompat.ProgressBar.Horizontal"
                         android:layout_width="0dp"
                         android:layout_height="18dp"
-                        android:layout_marginEnd="32dp"
                         android:layout_marginStart="16dp"
+                        android:layout_marginEnd="32dp"
                         android:progressDrawable="@drawable/health_progress_bar"
                         app:layout_constraintBottom_toBottomOf="@+id/healthIconBackground"
                         app:layout_constraintEnd_toEndOf="parent"
@@ -151,8 +151,8 @@
                         style="@style/Widget.AppCompat.ProgressBar.Horizontal"
                         android:layout_width="0dp"
                         android:layout_height="18dp"
-                        android:layout_marginEnd="16dp"
                         android:layout_marginStart="16dp"
+                        android:layout_marginEnd="16dp"
                         android:progressDrawable="@drawable/profile_xp_level_progress_bar"
                         app:layout_constraintBottom_toBottomOf="@+id/xpBackground"
                         app:layout_constraintEnd_toStartOf="@id/coins"
@@ -286,8 +286,8 @@
                         style="@style/Widget.AppCompat.Button.Borderless.Colored"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginEnd="8dp"
                         android:layout_marginTop="8dp"
+                        android:layout_marginEnd="8dp"
                         android:text="@string/more"
                         app:layout_constraintBottom_toBottomOf="@+id/attributesTitle"
                         app:layout_constraintEnd_toEndOf="parent"
@@ -298,8 +298,8 @@
                         layout="@layout/profile_strength_attribute"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
-                        android:layout_marginEnd="8dp"
                         android:layout_marginTop="16dp"
+                        android:layout_marginEnd="8dp"
                         app:layout_constraintEnd_toStartOf="@id/middle"
                         app:layout_constraintStart_toStartOf="@id/playerAvatar"
                         app:layout_constraintTop_toBottomOf="@id/attributesTitle" />
@@ -309,8 +309,8 @@
                         layout="@layout/profile_intelligence_attribute"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
-                        android:layout_marginEnd="16dp"
                         android:layout_marginStart="8dp"
+                        android:layout_marginEnd="16dp"
                         app:layout_constraintBottom_toBottomOf="@id/strengthContainer"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintStart_toStartOf="@+id/middle"
@@ -321,8 +321,8 @@
                         layout="@layout/profile_wellbeing_attribute"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
-                        android:layout_marginEnd="8dp"
                         android:layout_marginTop="16dp"
+                        android:layout_marginEnd="8dp"
                         app:layout_constraintEnd_toEndOf="@+id/middle"
                         app:layout_constraintStart_toStartOf="@id/strengthContainer"
                         app:layout_constraintTop_toBottomOf="@id/strengthContainer" />
@@ -332,8 +332,8 @@
                         layout="@layout/profile_willpower_attribute"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
-                        android:layout_marginEnd="16dp"
                         android:layout_marginStart="8dp"
+                        android:layout_marginEnd="16dp"
                         app:layout_constraintBottom_toBottomOf="@+id/wellbeingContainer"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintStart_toStartOf="@+id/middle"
@@ -344,9 +344,9 @@
                         layout="@layout/profile_expertise_attribute"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
-                        android:layout_marginBottom="16dp"
-                        android:layout_marginEnd="8dp"
                         android:layout_marginTop="16dp"
+                        android:layout_marginEnd="8dp"
+                        android:layout_marginBottom="16dp"
                         app:layout_constraintBottom_toBottomOf="parent"
                         app:layout_constraintEnd_toEndOf="@+id/middle"
                         app:layout_constraintStart_toStartOf="@id/strengthContainer"
@@ -358,8 +358,8 @@
                         layout="@layout/profile_charisma_attribute"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
-                        android:layout_marginEnd="16dp"
                         android:layout_marginStart="8dp"
+                        android:layout_marginEnd="16dp"
                         app:layout_constraintBottom_toBottomOf="@+id/expertiseContainer"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintStart_toStartOf="@+id/middle"
@@ -386,9 +386,9 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_gravity="bottom"
-                    android:layout_marginEnd="32dp"
                     android:layout_marginStart="32dp"
                     android:layout_marginTop="?attr/actionBarSize"
+                    android:layout_marginEnd="32dp"
                     android:background="@drawable/rounded_top_corners_rectangle">
 
                     <android.support.design.widget.TabItem
@@ -431,17 +431,17 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:paddingBottom="8dp"
+                android:paddingStart="8dp"
                 android:paddingEnd="8dp"
-                android:paddingStart="8dp">
+                android:paddingBottom="8dp">
 
                 <android.support.v4.view.ViewPager
                     android:id="@+id/pager"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:layout_marginBottom="8dp"
-                    android:layout_marginEnd="8dp"
                     android:layout_marginStart="8dp"
+                    android:layout_marginEnd="8dp"
+                    android:layout_marginBottom="8dp"
                     android:background="@drawable/rounded_rectangle_background"
                     android:elevation="4dp" />
             </LinearLayout>
