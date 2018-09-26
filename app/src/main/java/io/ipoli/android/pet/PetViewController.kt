@@ -908,7 +908,7 @@ class PetViewController(args: Bundle? = null) :
             holder.itemView.itemImage.setImageResource(vm.image)
 
             if (vm.isSelected) {
-                holder.itemView.setBackgroundColor(colorTextHintResource)
+                holder.itemView.setBackgroundResource(colorTextHintResource)
             } else {
                 holder.itemView.background = null
             }
