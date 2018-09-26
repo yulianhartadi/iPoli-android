@@ -221,7 +221,7 @@ class ThemeStoreViewController(args: Bundle? = null) :
 
         override fun onBindViewModel(vm: HourViewModel, view: View, holder: SimpleViewHolder) {
             val lp = view.layoutParams
-            lp.height = ViewUtils.dpToPx(48f, view.context).toInt()
+            lp.height = ViewUtils.dpToPx(42f, view.context).toInt()
             view.layoutParams = lp
 
             view.timeLabel.text = vm.label
