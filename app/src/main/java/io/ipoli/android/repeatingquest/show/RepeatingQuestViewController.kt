@@ -258,7 +258,7 @@ class RepeatingQuestViewController(args: Bundle? = null) :
             holder: SimpleViewHolder
         ) {
             view.subQuestIndicator.backgroundTintList =
-                ColorStateList.valueOf(colorRes(R.color.md_dark_text_54))
+                ColorStateList.valueOf(colorRes(colorTextSecondaryResource))
             view.subQuestName.text = vm.value
         }
     }

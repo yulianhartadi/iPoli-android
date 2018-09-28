@@ -20,5 +20,5 @@
         android:layout_gravity="center_vertical"
         android:layout_marginEnd="16dp"
         android:textAppearance="@style/TextAppearance.AppCompat.Body1"
-        android:textColor="@color/md_dark_text_87" />
+        android:textColor="?android:textColorPrimary" />
 </LinearLayout>
