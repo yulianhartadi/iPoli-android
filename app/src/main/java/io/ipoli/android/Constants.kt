@@ -4,7 +4,7 @@ import io.ipoli.android.common.datetime.Time
 import io.ipoli.android.common.datetime.TimeOfDay
 import io.ipoli.android.pet.PetAvatar
 import io.ipoli.android.player.Theme
-import io.ipoli.android.player.data.Player
+import io.ipoli.android.player.data.Player.Preferences.*
 import io.ipoli.android.store.gem.GemPackType
 import org.threeten.bp.DayOfWeek
 import java.math.RoundingMode
@@ -124,8 +124,8 @@ interface Constants {
         val DEFAULT_PLAYER_SLEEP_END_TIME by lazy { Time.atHours(8) }
         val DEFAULT_PLAYER_COMPLETE_DAILY_QUESTS_MINUTE = 0
 
-        val DEFAULT_TIME_FORMAT = Player.Preferences.TimeFormat.DEVICE_DEFAULT
-        val DEFAULT_TEMPERATURE_UNIT = Player.Preferences.TemperatureUnit.FAHRENHEIT
+        val DEFAULT_TIME_FORMAT = TimeFormat.DEVICE_DEFAULT
+        val DEFAULT_TEMPERATURE_UNIT = TemperatureUnit.FAHRENHEIT
 
         val DEFAULT_PLAYER_WORK_DAYS by lazy {
             setOf(
@@ -315,5 +315,9 @@ interface Constants {
         const val DEFAULT_ATTRIBUTE_LEVEL = 1
 
         const val PLAYER_REVIVE_HEALTH_PERCENTAGE = 0.8f
+
+        val DEFAULT_REMINDER_NOTIFICATION_STYLE = NotificationStyle.POPUP
+        val DEFAULT_PLAN_DAY_NOTIFICATION_STYLE = NotificationStyle.POPUP
+        val DEFAULT_START_VIEW = StartView.CALENDAR
     }
 }

@@ -177,7 +177,10 @@ data class Player(
         val planDays: Set<DayOfWeek> = Constants.DEFAULT_PLAN_DAYS,
         val planDayTime: Time = Time.of(Constants.DEFAULT_PLAN_DAY_REMINDER_START_MINUTE),
         val isQuickDoNotificationEnabled: Boolean = Constants.DEFAULT_QUICK_DO_NOTIFICATION_ENABLED,
-        val resetDayTime: Time = Constants.RESET_DAY_TIME
+        val resetDayTime: Time = Constants.RESET_DAY_TIME,
+        val startView: StartView = Constants.DEFAULT_START_VIEW,
+        val reminderNotificationStyle: NotificationStyle = Constants.DEFAULT_REMINDER_NOTIFICATION_STYLE,
+        val planDayNotificationStyle: NotificationStyle = Constants.DEFAULT_PLAN_DAY_NOTIFICATION_STYLE
     ) {
         val nonWorkDays: Set<DayOfWeek>
             get() = DayOfWeek.values().toSet() - workDays
@@ -188,6 +191,14 @@ data class Player(
 
         enum class TemperatureUnit {
             CELSIUS, FAHRENHEIT
+        }
+
+        enum class NotificationStyle {
+            NOTIFICATION, POPUP, ALL
+        }
+
+        enum class StartView {
+            CALENDAR, AGENDA, TODAY
         }
 
         data class SyncCalendar(val id: String, val name: String)

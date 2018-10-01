@@ -248,6 +248,20 @@ class AndroidPlayerRepository(
             dbObject.preferences["resetDayStartMinute"] = Constants.RESET_DAY_MINUTE
         }
 
+        if (!dbObject.preferences.containsKey("startView")) {
+            dbObject.preferences["startView"] = Constants.DEFAULT_START_VIEW.name
+        }
+
+        if (!dbObject.preferences.containsKey("reminderNotificationStyle")) {
+            dbObject.preferences["reminderNotificationStyle"] =
+                Constants.DEFAULT_REMINDER_NOTIFICATION_STYLE.name
+        }
+
+        if (!dbObject.preferences.containsKey("planDayNotificationStyle")) {
+            dbObject.preferences["planDayNotificationStyle"] =
+                Constants.DEFAULT_PLAN_DAY_NOTIFICATION_STYLE.name
+        }
+
         val cPref = DbPreferences(dbObject.preferences)
         val pref = Player.Preferences(
             theme = Theme.valueOf(cPref.theme),
@@ -266,7 +280,10 @@ class AndroidPlayerRepository(
             planDayTime = Time.of(cPref.planDayStartMinute.toInt()),
             planDays = cPref.planDays.map { DayOfWeek.valueOf(it) }.toSet(),
             isQuickDoNotificationEnabled = cPref.isQuickDoNotificationEnabled,
-            resetDayTime = Time.of(cPref.resetDayStartMinute.toInt())
+            resetDayTime = Time.of(cPref.resetDayStartMinute.toInt()),
+            startView = Player.Preferences.StartView.valueOf(cPref.startView),
+            reminderNotificationStyle = Player.Preferences.NotificationStyle.valueOf(cPref.reminderNotificationStyle),
+            planDayNotificationStyle = Player.Preferences.NotificationStyle.valueOf(cPref.planDayNotificationStyle)
         )
 
         val ca = dbObject.achievements.map { DbUnlockedAchievement(it) }
@@ -559,6 +576,9 @@ class AndroidPlayerRepository(
             it.planDays = preferences.planDays.map { it.name }
             it.isQuickDoNotificationEnabled = preferences.isQuickDoNotificationEnabled
             it.resetDayStartMinute = preferences.resetDayTime.toMinuteOfDay().toLong()
+            it.startView = preferences.startView.name
+            it.reminderNotificationStyle = preferences.reminderNotificationStyle.name
+            it.planDayNotificationStyle = preferences.planDayNotificationStyle.name
         }
 
     private fun createDbAchievements(achievements: List<Player.UnlockedAchievement>) =
@@ -806,6 +826,21 @@ class FirestorePlayerRepository(
         if (!cp.preferences.containsKey("resetDayStartMinute")) {
             cp.preferences["resetDayStartMinute"] = Constants.RESET_DAY_MINUTE
         }
+
+        if (!cp.preferences.containsKey("startView")) {
+            cp.preferences["startView"] = Constants.DEFAULT_START_VIEW.name
+        }
+
+        if (!cp.preferences.containsKey("reminderNotificationStyle")) {
+            cp.preferences["reminderNotificationStyle"] =
+                Constants.DEFAULT_REMINDER_NOTIFICATION_STYLE.name
+        }
+
+        if (!cp.preferences.containsKey("planDayNotificationStyle")) {
+            cp.preferences["planDayNotificationStyle"] =
+                Constants.DEFAULT_PLAN_DAY_NOTIFICATION_STYLE.name
+        }
+
         val cPref = DbPreferences(cp.preferences)
         val pref = Player.Preferences(
             theme = Theme.valueOf(cPref.theme),
@@ -824,7 +859,10 @@ class FirestorePlayerRepository(
             planDayTime = Time.of(cPref.planDayStartMinute.toInt()),
             planDays = cPref.planDays.map { DayOfWeek.valueOf(it) }.toSet(),
             isQuickDoNotificationEnabled = cPref.isQuickDoNotificationEnabled,
-            resetDayTime = Time.of(cPref.resetDayStartMinute.toInt())
+            resetDayTime = Time.of(cPref.resetDayStartMinute.toInt()),
+            startView = Player.Preferences.StartView.valueOf(cPref.startView),
+            reminderNotificationStyle = Player.Preferences.NotificationStyle.valueOf(cPref.reminderNotificationStyle),
+            planDayNotificationStyle = Player.Preferences.NotificationStyle.valueOf(cPref.planDayNotificationStyle)
         )
 
         val ca = cp.achievements.map { DbUnlockedAchievement(it) }
@@ -1121,6 +1159,9 @@ class FirestorePlayerRepository(
             it.planDays = preferences.planDays.map { it.name }
             it.isQuickDoNotificationEnabled = preferences.isQuickDoNotificationEnabled
             it.resetDayStartMinute = preferences.resetDayTime.toMinuteOfDay().toLong()
+            it.startView = preferences.startView.name
+            it.reminderNotificationStyle = preferences.reminderNotificationStyle.name
+            it.planDayNotificationStyle = preferences.planDayNotificationStyle.name
         }
 
     private fun createDbAchievements(achievements: List<Player.UnlockedAchievement>) =
