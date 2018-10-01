@@ -91,7 +91,7 @@
                 </LinearLayout>
 
                 <LinearLayout
-                    android:id="@+id/reminderStyleContainer"
+                    android:id="@+id/reminderNotificationStyleContainer"
                     android:layout_width="match_parent"
                     android:layout_height="72dp"
                     android:background="?android:attr/selectableItemBackground"

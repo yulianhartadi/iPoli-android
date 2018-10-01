@@ -389,6 +389,8 @@ interface UseCaseModule {
     val savePlanDaysUseCase: SavePlanDaysUseCase
     val saveTimeFormatUseCase: SaveTimeFormatUseCase
     val saveTemperatureUnitUseCase: SaveTemperatureUnitUseCase
+    val saveReminderNotificationStyleUseCase: SaveReminderNotificationStyleUseCase
+    val savePlanDayNotificationStyleUseCase: SavePlanDayNotificationStyleUseCase
     val checkForDailyChallengeCompletionUseCase: CheckForDailyChallengeCompletionUseCase
     val checkDailyChallengeProgressUseCase: CheckDailyChallengeProgressUseCase
     val loadDailyChallengeUseCase: LoadDailyChallengeUseCase
@@ -844,6 +846,12 @@ class MainUseCaseModule(private val context: Context) : UseCaseModule {
 
     override val saveTemperatureUnitUseCase
         get() = SaveTemperatureUnitUseCase(playerRepository)
+
+    override val savePlanDayNotificationStyleUseCase
+        get() = SavePlanDayNotificationStyleUseCase(playerRepository)
+
+    override val saveReminderNotificationStyleUseCase
+        get() = SaveReminderNotificationStyleUseCase(playerRepository)
 
     override val checkForDailyChallengeCompletionUseCase
         get() = CheckForDailyChallengeCompletionUseCase(

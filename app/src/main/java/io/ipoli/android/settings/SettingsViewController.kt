@@ -19,7 +19,7 @@ import io.ipoli.android.common.datetime.Time
 import io.ipoli.android.common.privacy.PrivacyPolicyViewController
 import io.ipoli.android.common.redux.android.ReduxViewController
 import io.ipoli.android.common.view.*
-import io.ipoli.android.player.data.Player
+import io.ipoli.android.player.data.Player.Preferences.*
 import io.ipoli.android.settings.SettingsViewState.StateType.DATA_CHANGED
 import io.ipoli.android.settings.SettingsViewState.StateType.ENABLE_SYNC_CALENDARS
 import kotlinx.android.synthetic.main.controller_settings.view.*
@@ -87,6 +87,7 @@ class SettingsViewController(args: Bundle? = null) :
     ) {
         renderTimeFormat(state, view)
         renderTemperatureUnit(state, view)
+        renderReminderNotificationStyle(state, view)
         renderResetDay(state, view)
 
         view.enableOngoingNotification.setOnCheckedChangeListener(null)
@@ -124,7 +125,6 @@ class SettingsViewController(args: Bundle? = null) :
                     dispatch(SettingsAction.TemperatureUnitChanged(unit))
                 }
         }
-
     }
 
     private fun renderTimeFormat(state: SettingsViewState, view: View) {
@@ -139,15 +139,27 @@ class SettingsViewController(args: Bundle? = null) :
         }
     }
 
+    private fun renderReminderNotificationStyle(state: SettingsViewState, view: View) {
+        view.reminderNotificationStyle.text = state.reminderNotificationStyleText
+        view.reminderNotificationStyleContainer.onDebounceClick {
+            navigate()
+                .toNotificationStylePicker(
+                    state.reminderNotificationStyle
+                ) { style ->
+                    dispatch(SettingsAction.ReminderNotificationStyleChanged(style))
+                }
+        }
+    }
+
     private fun renderPlanMyDay(state: SettingsViewState, view: View) {
         val use24HourFormat =
-            if (state.timeFormat == Player.Preferences.TimeFormat.DEVICE_DEFAULT) {
+            if (state.timeFormat == TimeFormat.DEVICE_DEFAULT) {
                 DateFormat.is24HourFormat(activity)
-            } else state.timeFormat != Player.Preferences.TimeFormat.TWELVE_HOURS
+            } else state.timeFormat != TimeFormat.TWELVE_HOURS
 
 
         view.planDayTime.text = state.planTime.toString(use24HourFormat)
-        view.planMyDayTimeContainer.onDebounceClick {
+        view.planMyDayTimeContainer.onDebounceClick { _ ->
 
             createTimePickerDialog(
                 startTime = state.planTime,
@@ -178,6 +190,20 @@ class SettingsViewController(args: Bundle? = null) :
 
         view.planNowContainer.onDebounceClick {
             navigateFromRoot().toPlanDay()
+        }
+
+        renderPlanDayNotificationStyle(state, view)
+    }
+
+    private fun renderPlanDayNotificationStyle(state: SettingsViewState, view: View) {
+        view.planDayNotificationStyle.text = state.planDayNotificationStyleText
+        view.planDayNotificationStyleContainer.onDebounceClick {
+            navigate()
+                .toNotificationStylePicker(
+                    state.planDayNotificationStyle
+                ) { style ->
+                    dispatch(SettingsAction.PlanDayNotificationStyleChanged(style))
+                }
         }
     }
 
@@ -265,11 +291,11 @@ class SettingsViewController(args: Bundle? = null) :
 
     private val SettingsViewState.timeFormatText: String
         get() = when (timeFormat) {
-            Player.Preferences.TimeFormat.TWELVE_HOURS -> stringRes(
+            TimeFormat.TWELVE_HOURS -> stringRes(
                 R.string.twelve_hour_format,
                 Time.now().toString(false)
             )
-            Player.Preferences.TimeFormat.TWENTY_FOUR_HOURS -> stringRes(
+            TimeFormat.TWENTY_FOUR_HOURS -> stringRes(
                 R.string.twenty_four_hour_format,
                 Time.now().toString(true)
             )
@@ -280,11 +306,25 @@ class SettingsViewController(args: Bundle? = null) :
             )
         }
 
+    private val SettingsViewState.reminderNotificationStyleText: String
+        get() = when (reminderNotificationStyle) {
+            NotificationStyle.NOTIFICATION -> stringRes(R.string.notification_style_notification)
+            NotificationStyle.POPUP -> stringRes(R.string.notification_style_popup)
+            else -> stringRes(R.string.notification_style_all)
+        }
+
     private val SettingsViewState.temperatureUnitText: String
-        get() = if (temperatureUnit == Player.Preferences.TemperatureUnit.FAHRENHEIT) {
+        get() = if (temperatureUnit == TemperatureUnit.FAHRENHEIT) {
             stringRes(R.string.temperature_unit_fahrenheit)
         } else {
             stringRes(R.string.temperature_unit_celsius)
+        }
+
+    private val SettingsViewState.planDayNotificationStyleText: String
+        get() = when (planDayNotificationStyle) {
+            NotificationStyle.NOTIFICATION -> stringRes(R.string.notification_style_notification)
+            NotificationStyle.POPUP -> stringRes(R.string.notification_style_popup)
+            else -> stringRes(R.string.notification_style_all)
         }
 
     companion object {

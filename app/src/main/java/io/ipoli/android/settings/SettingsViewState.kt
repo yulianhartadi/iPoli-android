@@ -50,6 +50,16 @@ sealed class SettingsAction : Action {
 
     data class ResetDayTimeChanged(val time: Time) : SettingsAction()
 
+    data class ReminderNotificationStyleChanged(val style: Player.Preferences.NotificationStyle) :
+        SettingsAction() {
+        override fun toMap() = mapOf("style" to style.name)
+    }
+
+    data class PlanDayNotificationStyleChanged(val style: Player.Preferences.NotificationStyle) :
+        SettingsAction() {
+        override fun toMap() = mapOf("style" to style.name)
+    }
+
     object Load : SettingsAction()
 }
 
@@ -102,8 +112,10 @@ object SettingsReducer : BaseViewStateReducer<SettingsViewState>() {
             playerId = player.id,
             timeFormat = player.preferences.timeFormat,
             temperatureUnit = player.preferences.temperatureUnit,
+            reminderNotificationStyle = player.preferences.reminderNotificationStyle,
             planTime = player.preferences.planDayTime,
             planDays = player.preferences.planDays,
+            planDayNotificationStyle = player.preferences.planDayNotificationStyle,
             resetDayTime = player.preferences.resetDayTime,
             selectedCalendars = selectedCalendars,
             isCalendarSyncEnabled = selectedCalendars > 0,
@@ -115,9 +127,11 @@ object SettingsReducer : BaseViewStateReducer<SettingsViewState>() {
         playerId = "",
         timeFormat = TWELVE_HOURS,
         temperatureUnit = FAHRENHEIT,
+        reminderNotificationStyle = Constants.DEFAULT_REMINDER_NOTIFICATION_STYLE,
         planDays = Constants.DEFAULT_PLAN_DAYS,
         planTime = Time.of(Constants.DEFAULT_PLAN_DAY_REMINDER_START_MINUTE),
         resetDayTime = Constants.RESET_DAY_TIME,
+        planDayNotificationStyle = Constants.DEFAULT_PLAN_DAY_NOTIFICATION_STYLE,
         isCalendarSyncEnabled = false,
         isQuickDoNotificationEnabled = true,
         selectedCalendars = 0
@@ -132,9 +146,11 @@ data class SettingsViewState(
     val playerId: String,
     val timeFormat: Player.Preferences.TimeFormat,
     val temperatureUnit: Player.Preferences.TemperatureUnit,
+    val reminderNotificationStyle: Player.Preferences.NotificationStyle,
     val resetDayTime: Time,
     val planTime: Time,
     val planDays: Set<DayOfWeek>,
+    val planDayNotificationStyle: Player.Preferences.NotificationStyle,
     val isCalendarSyncEnabled: Boolean,
     val isQuickDoNotificationEnabled: Boolean,
     val selectedCalendars: Int

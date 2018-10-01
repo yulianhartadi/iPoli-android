@@ -21,6 +21,8 @@ object SettingsSideEffectHandler : AppSideEffectHandler() {
     private val saveTimeFormatUseCase by required { saveTimeFormatUseCase }
     private val saveTemperatureUnitUseCase by required { saveTemperatureUnitUseCase }
     private val saveResetDayTimeUseCase by required { saveResetDayTimeUseCase }
+    private val saveReminderNotificationStyleUseCase by required { saveReminderNotificationStyleUseCase }
+    private val savePlanDayNotificationStyleUseCase by required { savePlanDayNotificationStyleUseCase }
     private val saveQuickDoNotificationSettingUseCase by required { saveQuickDoNotificationSettingUseCase }
     private val sharedPreferences by required { sharedPreferences }
 
@@ -37,6 +39,20 @@ object SettingsSideEffectHandler : AppSideEffectHandler() {
 
             is SettingsAction.TemperatureUnitChanged ->
                 saveTemperatureUnitUseCase.execute(SaveTemperatureUnitUseCase.Params(action.unit))
+
+            is SettingsAction.ReminderNotificationStyleChanged ->
+                saveReminderNotificationStyleUseCase.execute(
+                    SaveReminderNotificationStyleUseCase.Params(
+                        action.style
+                    )
+                )
+
+            is SettingsAction.PlanDayNotificationStyleChanged ->
+                savePlanDayNotificationStyleUseCase.execute(
+                    SavePlanDayNotificationStyleUseCase.Params(
+                        action.style
+                    )
+                )
 
             is SettingsAction.ToggleQuickDoNotification -> {
                 saveQuickDoNotificationSettingUseCase.execute(

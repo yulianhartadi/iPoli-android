@@ -70,6 +70,7 @@ import io.ipoli.android.repeatingquest.edit.picker.RepeatPatternPickerDialogCont
 import io.ipoli.android.repeatingquest.entity.RepeatPattern
 import io.ipoli.android.repeatingquest.show.RepeatingQuestViewController
 import io.ipoli.android.settings.view.DaysPickerDialogController
+import io.ipoli.android.settings.view.NotificationStylePickerDialogController
 import io.ipoli.android.settings.view.TemperatureUnitPickerDialogController
 import io.ipoli.android.settings.view.TimeFormatPickerDialogController
 import io.ipoli.android.store.avatar.AvatarStoreViewController
@@ -486,6 +487,13 @@ class Navigator(private val router: Router) {
         listener: (Player.Preferences.TemperatureUnit) -> Unit
     ) {
         pushDialog { TemperatureUnitPickerDialogController(selectedTemperatureUnit, listener) }
+    }
+
+    fun toNotificationStylePicker(
+        selectedNotificationStyle: Player.Preferences.NotificationStyle,
+        listener: (Player.Preferences.NotificationStyle) -> Unit
+    ) {
+        pushDialog { NotificationStylePickerDialogController(selectedNotificationStyle, listener) }
     }
 
     fun toTextPicker(
