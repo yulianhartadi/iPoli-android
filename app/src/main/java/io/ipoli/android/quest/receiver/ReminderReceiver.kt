@@ -60,7 +60,7 @@ class ReminderReceiver : AsyncBroadcastReceiver() {
 
         val quests = findQuestsToRemindUseCase.execute(remindDateTime)
         val p = playerRepository.find()!!
-        val reminderStyle = p.preferences.reminderNotificationStyle
+        val style = p.preferences.reminderNotificationStyle
         val pet = p.pet
 
         launch(UI) {
@@ -86,7 +86,7 @@ class ReminderReceiver : AsyncBroadcastReceiver() {
 
                 val questName = it.name
                 val notificationId =
-                    if (reminderStyle == NotificationStyle.NOTIFICATION || reminderStyle == NotificationStyle.ALL)
+                    if (style == NotificationStyle.NOTIFICATION || style == NotificationStyle.ALL)
                         showNotification(
                             context = context,
                             questId = it.id,
@@ -96,7 +96,7 @@ class ReminderReceiver : AsyncBroadcastReceiver() {
                             notificationManager = notificationManager
                         ) else null
 
-                if (reminderStyle == NotificationStyle.POPUP || reminderStyle == NotificationStyle.ALL) {
+                if (style == NotificationStyle.POPUP || style == NotificationStyle.ALL) {
                     val viewModel = PetNotificationPopup.ViewModel(
                         headline = questName,
                         title = message,

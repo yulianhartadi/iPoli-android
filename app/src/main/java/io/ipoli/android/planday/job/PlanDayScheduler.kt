@@ -8,6 +8,7 @@ import android.widget.Toast
 import com.evernote.android.job.Job
 import com.evernote.android.job.JobRequest
 import io.ipoli.android.Constants
+import io.ipoli.android.MyPoliApp
 import io.ipoli.android.R
 import io.ipoli.android.common.IntentUtil
 import io.ipoli.android.common.datetime.Duration
@@ -20,9 +21,10 @@ import io.ipoli.android.common.notification.NotificationUtil
 import io.ipoli.android.common.notification.ScreenUtil
 import io.ipoli.android.common.view.asThemedWrapper
 import io.ipoli.android.dailychallenge.data.DailyChallenge
-import io.ipoli.android.MyPoliApp
 import io.ipoli.android.pet.AndroidPetAvatar
 import io.ipoli.android.pet.Pet
+import io.ipoli.android.player.data.Player
+import io.ipoli.android.player.data.Player.Preferences.NotificationStyle
 import io.ipoli.android.quest.reminder.PetNotificationPopup
 import kotlinx.coroutines.experimental.CommonPool
 import kotlinx.coroutines.experimental.android.UI
@@ -40,62 +42,102 @@ object PlanDayNotification {
 
     fun show(
         context: Context,
-        pet: Pet,
+        player: Player,
         planDayScheduler: PlanDayScheduler
     ) {
-        val vm = PetNotificationPopup.ViewModel(
-            headline = "Time to plan your day",
-            title = null,
-            body = null,
-            petAvatar = pet.avatar,
-            petState = pet.state
-        )
+
+        val pet = player.pet
+
         val c = context.asThemedWrapper()
 
+        ScreenUtil.awakeScreen(c)
+
+        val notificationManager =
+            c.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+
+        val style = player.preferences.planDayNotificationStyle
+
+        val notificationId =
+            if (style == NotificationStyle.NOTIFICATION || style == NotificationStyle.ALL)
+                showNotification(
+                    c,
+                    pet,
+                    notificationManager
+                ) else null
+        if (style == NotificationStyle.POPUP || style == NotificationStyle.ALL) {
+            val vm = PetNotificationPopup.ViewModel(
+                headline = "Time to plan your day",
+                title = null,
+                body = null,
+                petAvatar = pet.avatar,
+                petState = pet.state
+            )
+            showPetPopup(vm, notificationId, notificationManager, planDayScheduler, c).show(c)
+        }
+    }
+
+    private fun showPetPopup(
+        vm: PetNotificationPopup.ViewModel,
+        notificationId: Int?,
+        notificationManager: NotificationManager,
+        planDayScheduler: PlanDayScheduler,
+        context: Context
+    ) =
+        PetNotificationPopup(
+            vm,
+            onDismiss = {
+                notificationId?.let {
+                    notificationManager.cancel(it)
+                }
+            },
+            onSnooze = {
+                notificationId?.let {
+                    notificationManager.cancel(it)
+                }
+                launch(CommonPool) {
+                    planDayScheduler.scheduleAfter(15.minutes)
+                }
+                Toast
+                    .makeText(context, context.getString(R.string.remind_in_15), Toast.LENGTH_SHORT)
+                    .show()
+            },
+            onStart = {
+                notificationId?.let {
+                    notificationManager.cancel(it)
+                }
+                context.startActivity(IntentUtil.startPlanDay(context))
+            })
+
+    private fun showNotification(
+        context: Context,
+        pet: Pet,
+        notificationManager: NotificationManager
+    ): Int {
         val icon = BitmapFactory.decodeResource(
-            c.resources,
+            context.resources,
             AndroidPetAvatar.valueOf(pet.avatar.name).headImage
         )
 
         val sound =
-            Uri.parse("android.resource://" + c.packageName + "/" + R.raw.notification)
+            Uri.parse("android.resource://" + context.packageName + "/" + R.raw.notification)
 
         val notification = NotificationUtil.createDefaultNotification(
-            context = c,
+            context = context,
             icon = icon,
             title = "Time to plan your day",
             message = "Amazing new day ahead!",
             sound = sound,
             channelId = Constants.PLAN_DAY_NOTIFICATION_CHANNEL_ID,
-            contentIntent = IntentUtil.getActivityPendingIntent(c, IntentUtil.startPlanDay(c))
+            contentIntent = IntentUtil.getActivityPendingIntent(
+                context,
+                IntentUtil.startPlanDay(context)
+            )
         )
 
         val notificationId = Random().nextInt()
 
-        val notificationManager =
-            c.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
-
         notificationManager.notify(notificationId, notification)
-
-        ScreenUtil.awakeScreen(c)
-
-        PetNotificationPopup(vm,
-            onDismiss = {
-                notificationManager.cancel(notificationId)
-            },
-            onSnooze = {
-                notificationManager.cancel(notificationId)
-                launch(CommonPool) {
-                    planDayScheduler.scheduleAfter(15.minutes)
-                }
-                Toast
-                    .makeText(c, c.getString(R.string.remind_in_15), Toast.LENGTH_SHORT)
-                    .show()
-            },
-            onStart = {
-                notificationManager.cancel(notificationId)
-                c.startActivity(IntentUtil.startPlanDay(c))
-            }).show(c)
+        return notificationId
     }
 
 }
@@ -112,9 +154,8 @@ class SnoozedPlanDayJob : Job() {
         val p = playerRepository.find()
         requireNotNull(p)
 
-        val pet = p!!.pet
         launch(UI) {
-            PlanDayNotification.show(getContext(), pet, planDayScheduler)
+            PlanDayNotification.show(context, p!!, planDayScheduler)
         }
 
         return Result.SUCCESS
@@ -144,9 +185,8 @@ class PlanDayJob : FixedDailyJob(PlanDayJob.TAG) {
         dailyChallengeRepository.findForDate(LocalDate.now())
             ?: dailyChallengeRepository.save(DailyChallenge(date = LocalDate.now()))
 
-        val pet = p.pet
         launch(UI) {
-            PlanDayNotification.show(getContext(), pet, planDayScheduler)
+            PlanDayNotification.show(context, p, planDayScheduler)
         }
 
         return Job.Result.SUCCESS
