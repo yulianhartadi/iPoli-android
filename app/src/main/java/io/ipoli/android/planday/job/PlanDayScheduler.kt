@@ -57,13 +57,12 @@ object PlanDayNotification {
 
         val style = player.preferences.planDayNotificationStyle
 
-        val notificationId =
-            if (style == NotificationStyle.NOTIFICATION || style == NotificationStyle.ALL)
-                showNotification(
-                    c,
-                    pet,
-                    notificationManager
-                ) else null
+        var notificationId: Int? = showNotification(c, pet, notificationManager)
+
+        if (!(style == NotificationStyle.NOTIFICATION || style == NotificationStyle.ALL)) {
+            notificationManager.cancel(notificationId!!)
+            notificationId = null
+        }
         if (style == NotificationStyle.POPUP || style == NotificationStyle.ALL) {
             val vm = PetNotificationPopup.ViewModel(
                 headline = "Time to plan your day",

@@ -85,16 +85,20 @@ class ReminderReceiver : AsyncBroadcastReceiver() {
                 )
 
                 val questName = it.name
-                val notificationId =
-                    if (style == NotificationStyle.NOTIFICATION || style == NotificationStyle.ALL)
-                        showNotification(
-                            context = context,
-                            questId = it.id,
-                            questName = questName,
-                            message = message,
-                            icon = icon,
-                            notificationManager = notificationManager
-                        ) else null
+
+
+                var notificationId: Int? = showNotification(
+                    context = context,
+                    questId = it.id,
+                    questName = questName,
+                    message = message,
+                    icon = icon,
+                    notificationManager = notificationManager
+                )
+                if (!(style == NotificationStyle.NOTIFICATION || style == NotificationStyle.ALL)) {
+                    notificationManager.cancel(notificationId!!)
+                    notificationId = null
+                }
 
                 if (style == NotificationStyle.POPUP || style == NotificationStyle.ALL) {
                     val viewModel = PetNotificationPopup.ViewModel(
