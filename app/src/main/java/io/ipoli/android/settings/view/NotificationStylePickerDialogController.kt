@@ -16,24 +16,21 @@ import io.ipoli.android.pet.PetDialogViewState
 import io.ipoli.android.player.data.Player.Preferences
 import kotlinx.android.synthetic.main.view_dialog_header.view.*
 
-/**
- * Created by Polina Zhelyazkova <polina@mypoli.fun>
- * on 5/17/18.
- */
-class TemperatureUnitPickerDialogController(args: Bundle? = null) :
+class NotificationStylePickerDialogController(args: Bundle? = null) :
     ReduxDialogController<LoadPetDialogAction, PetDialogViewState, PetDialogReducer>(args) {
 
     override val reducer = PetDialogReducer
 
-    private lateinit var selectedTemperatureUnit: Preferences.TemperatureUnit
+    private var selectedNotificationStyle: Preferences.NotificationStyle =
+        Preferences.NotificationStyle.ALL
 
-    private lateinit var listener: (Preferences.TemperatureUnit) -> Unit
+    private var listener: (Preferences.NotificationStyle) -> Unit = {}
 
     constructor(
-        selectedTemperatureUnit: Preferences.TemperatureUnit,
-        listener: (Preferences.TemperatureUnit) -> Unit
+        notificationStyle: Preferences.NotificationStyle,
+        listener: (Preferences.NotificationStyle) -> Unit
     ) : this() {
-        this.selectedTemperatureUnit = selectedTemperatureUnit
+        this.selectedNotificationStyle = notificationStyle
         this.listener = listener
     }
 
@@ -42,47 +39,44 @@ class TemperatureUnitPickerDialogController(args: Bundle? = null) :
         inflater.inflate(R.layout.dialog_empty_container, null)
 
     override fun onHeaderViewCreated(headerView: View) {
-        headerView.dialogHeaderTitle.setText(R.string.select_temperature_unit)
+        headerView.dialogHeaderTitle.setText(R.string.select_notification_style)
     }
 
     override fun onCreateDialog(
         dialogBuilder: AlertDialog.Builder,
         contentView: View,
         savedViewState: Bundle?
-    ): AlertDialog {
-
-        val items = listOf(
-            stringRes(R.string.temperature_unit_fahrenheit),
-            stringRes(R.string.temperature_unit_celsius)
-        )
-
-        val checked =
-            if (Preferences.TemperatureUnit.FAHRENHEIT == selectedTemperatureUnit) 0 else 1
-
-        return dialogBuilder
+    ): AlertDialog =
+        dialogBuilder
             .setSingleChoiceItems(
-                items.toTypedArray(),
-                checked
+                listOf(
+                    stringRes(R.string.notification_style_notification),
+                    stringRes(R.string.notification_style_popup),
+                    stringRes(R.string.notification_style_all)
+                ).toTypedArray(),
+                selectedNotificationStyle.ordinal
             ) { _, which ->
-                selectedTemperatureUnit =
-                    if (which == 0) Preferences.TemperatureUnit.FAHRENHEIT
-                    else Preferences.TemperatureUnit.CELSIUS
+                selectedNotificationStyle =
+                    when (which) {
+                        0 -> Preferences.NotificationStyle.NOTIFICATION
+                        1 -> Preferences.NotificationStyle.POPUP
+                        else -> Preferences.NotificationStyle.ALL
+                    }
             }
             .setPositiveButton(R.string.dialog_ok, null)
             .setNegativeButton(R.string.cancel, null)
             .create()
-    }
+
+    override fun onCreateLoadAction() = LoadPetDialogAction
 
     override fun onDialogCreated(dialog: AlertDialog, contentView: View) {
         dialog.setOnShowListener {
             dialog.getButton(DialogInterface.BUTTON_POSITIVE).setOnClickListener { _ ->
-                listener(selectedTemperatureUnit)
+                listener(selectedNotificationStyle)
                 dismiss()
             }
         }
     }
-
-    override fun onCreateLoadAction() = LoadPetDialogAction
 
     override fun render(state: PetDialogViewState, view: View) {
         if (state.type == PetDialogViewState.Type.PET_LOADED) {
