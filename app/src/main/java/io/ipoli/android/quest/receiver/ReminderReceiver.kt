@@ -17,6 +17,7 @@ import io.ipoli.android.common.notification.ScreenUtil
 import io.ipoli.android.common.view.AndroidIcon
 import io.ipoli.android.common.view.asThemedWrapper
 import io.ipoli.android.common.view.largeIcon
+import io.ipoli.android.player.data.Player.Preferences.NotificationStyle
 import io.ipoli.android.quest.Quest
 import io.ipoli.android.quest.reminder.PetNotificationPopup
 import kotlinx.coroutines.experimental.CommonPool
@@ -34,7 +35,8 @@ class ReminderReceiver : AsyncBroadcastReceiver() {
 
     private val findQuestsToRemindUseCase by required { findQuestsToRemindUseCase }
     private val snoozeQuestUseCase by required { snoozeQuestUseCase }
-    private val findPetUseCase by required { findPetUseCase }
+    private val playerRepository by required { playerRepository }
+
     private val reminderScheduler by required { reminderScheduler }
 
     override suspend fun onReceiveAsync(context: Context, intent: Intent) {
@@ -57,7 +59,9 @@ class ReminderReceiver : AsyncBroadcastReceiver() {
         )
 
         val quests = findQuestsToRemindUseCase.execute(remindDateTime)
-        val pet = findPetUseCase.execute(Unit)
+        val p = playerRepository.find()!!
+        val reminderStyle = p.preferences.reminderNotificationStyle
+        val pet = p.pet
 
         launch(UI) {
             quests.forEach {
@@ -81,44 +85,64 @@ class ReminderReceiver : AsyncBroadcastReceiver() {
                 )
 
                 val questName = it.name
-                val notificationId = showNotification(
-                    context = context,
-                    questId = it.id,
-                    questName = questName,
-                    message = message,
-                    icon = icon,
-                    notificationManager = notificationManager
-                )
+                val notificationId =
+                    if (reminderStyle == NotificationStyle.NOTIFICATION || reminderStyle == NotificationStyle.ALL)
+                        showNotification(
+                            context = context,
+                            questId = it.id,
+                            questName = questName,
+                            message = message,
+                            icon = icon,
+                            notificationManager = notificationManager
+                        ) else null
 
-                val viewModel = PetNotificationPopup.ViewModel(
-                    headline = questName,
-                    title = message,
-                    body = startTimeMessage,
-                    petAvatar = pet.avatar,
-                    petState = pet.state
-                )
-                PetNotificationPopup(
-                    viewModel,
-                    onDismiss = {
-                        notificationManager.cancel(notificationId)
-                    },
-                    onSnooze = {
-                        notificationManager.cancel(notificationId)
-                        launch(CommonPool) {
-                            snoozeQuestUseCase.execute(it.id)
-                        }
-                        Toast
-                            .makeText(c, c.getString(R.string.remind_in_15), Toast.LENGTH_SHORT)
-                            .show()
-                    },
-                    onStart = {
-                        notificationManager.cancel(notificationId)
-                        c.startActivity(IntentUtil.showTimer(it.id, c))
-                    }
-                ).show(c)
+                if (reminderStyle == NotificationStyle.POPUP || reminderStyle == NotificationStyle.ALL) {
+                    val viewModel = PetNotificationPopup.ViewModel(
+                        headline = questName,
+                        title = message,
+                        body = startTimeMessage,
+                        petAvatar = pet.avatar,
+                        petState = pet.state
+                    )
+                    showPetPopup(viewModel, notificationManager, notificationId, it, c)
+                }
             }
         }
         reminderScheduler.schedule()
+    }
+
+    private fun showPetPopup(
+        viewModel: PetNotificationPopup.ViewModel,
+        notificationManager: NotificationManager,
+        notificationId: Int?,
+        quest: Quest,
+        context: Context
+    ) {
+        PetNotificationPopup(
+            viewModel,
+            onDismiss = {
+                notificationId?.let {
+                    notificationManager.cancel(it)
+                }
+            },
+            onSnooze = {
+                notificationId?.let {
+                    notificationManager.cancel(it)
+                }
+                launch(CommonPool) {
+                    snoozeQuestUseCase.execute(quest.id)
+                }
+                Toast
+                    .makeText(context, context.getString(R.string.remind_in_15), Toast.LENGTH_SHORT)
+                    .show()
+            },
+            onStart = {
+                notificationId?.let {
+                    notificationManager.cancel(it)
+                }
+                context.startActivity(IntentUtil.showTimer(quest.id, context))
+            }
+        ).show(context)
     }
 
     private fun showNotification(
