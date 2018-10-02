@@ -54,6 +54,7 @@ import io.ipoli.android.tag.show.TagViewController
 import kotlinx.android.synthetic.main.controller_home.view.*
 import kotlinx.android.synthetic.main.drawer_header_home.view.*
 import kotlinx.android.synthetic.main.menu_item_tag_view.view.*
+import space.traversal.kapsule.required
 
 
 /**
@@ -63,6 +64,8 @@ import kotlinx.android.synthetic.main.menu_item_tag_view.view.*
 class HomeViewController(args: Bundle? = null) :
     ReduxViewController<HomeAction, HomeViewState, HomeReducer>(args),
     NavigationView.OnNavigationItemSelectedListener {
+
+    private val eventLogger by required { eventLogger }
 
     private lateinit var actionBarDrawerToggle: ActionBarDrawerToggle
 
@@ -155,7 +158,7 @@ class HomeViewController(args: Bundle? = null) :
                 )
 
             R.id.feedback ->
-                navigateFromRoot().toFeedback()
+                showFeedback()
 
             R.id.reportBug ->
                 navigateFromRoot().toBugReport()
@@ -170,6 +173,28 @@ class HomeViewController(args: Bundle? = null) :
         }
 
         view!!.navigationView.setCheckedItem(item.itemId)
+    }
+
+    private fun showFeedback() {
+        navigateFromRoot()
+            .toFeedback(
+                object : FeedbackDialogController.FeedbackListener {
+                    override fun onSendFeedback(feedback: String) {
+                        if (feedback.isNotEmpty()) {
+                            eventLogger.logEvent(
+                                "feedback",
+                                mapOf("feedback" to feedback)
+                            )
+                            showShortToast(R.string.feedback_response)
+                            dispatch(HomeAction.FeedbackSent)
+                        }
+                    }
+
+                    override fun onSuggestIdea() {
+                        eventLogger.logEvent("feedback_suggest_idea")
+                        navigateFromRoot().toSuggestIdea()
+                    }
+                })
     }
 
     private fun showShareApp() {

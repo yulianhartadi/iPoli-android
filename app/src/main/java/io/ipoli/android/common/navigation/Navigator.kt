@@ -401,13 +401,6 @@ class Navigator(private val router: Router) {
         )
     }
 
-    fun toFeedback() {
-        pushController(
-            { WebUrlViewController(Constants.FEEDBACK_LINK, "Feedback") },
-            VerticalChangeHandler()
-        )
-    }
-
     fun toBugReport() {
         pushController(
             { WebUrlViewController(Constants.BUG_REPORT_LINK, "ReportBug") },
@@ -432,6 +425,14 @@ class Navigator(private val router: Router) {
     fun toFeedback(listener: FeedbackDialogController.FeedbackListener) {
         pushDialog { FeedbackDialogController(listener) }
     }
+
+    fun toSuggestIdea() {
+        pushController(
+            { WebUrlViewController(Constants.SUGGEST_IDEA_LINK, "SuggestIdea") },
+            VerticalChangeHandler()
+        )
+    }
+
 
     fun toShareApp() {
         pushDialog { ShareAppDialogController() }

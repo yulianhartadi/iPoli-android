@@ -125,7 +125,7 @@ data class HomeViewState(
     val petState: PetState,
     val gems: Int,
     val lifeCoins: Int,
-    val rank : Player.Rank,
+    val rank: Player.Rank,
     val experience: Long,
     val progress: Int,
     val maxProgress: Int,

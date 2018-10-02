@@ -12,7 +12,7 @@
     <string name="tomorrow">Tomorrow</string>
     <string name="upcoming">Upcoming</string>
     <string name="cancel">Cancel</string>
-    <string name="suggest_ideas">Suggest ideas</string>
+    <string name="suggest_idea">Suggest idea</string>
     <string name="contact_us">Contact Us</string>
     <string name="quest_moved_to_bucket_list">Moved to Bucket List</string>
 
@@ -1177,4 +1177,6 @@ These are your physical and mental characteristics.\n\n
     <string name="bonuses">Bonuses</string>
     <string name="next_rank">Next: %s</string>
     <string name="add_quest_hint">e.g. Go for a run</string>
+    <string name="feedback_response">Thank you!</string>
+    <string name="feedback">Feedback</string>
 </resources>

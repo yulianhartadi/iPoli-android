@@ -1,5 +1,6 @@
 package io.ipoli.android.common.view
 
+import android.annotation.SuppressLint
 import android.os.Bundle
 import android.support.v7.app.AlertDialog
 import android.view.LayoutInflater
@@ -17,10 +18,13 @@ class FeedbackDialogController : BaseDialogController {
 
     interface FeedbackListener {
         fun onSendFeedback(feedback: String)
-        fun onChatWithUs()
+        fun onSuggestIdea()
     }
 
-    private var listener: FeedbackListener? = null
+    private var listener: FeedbackListener = object : FeedbackListener {
+        override fun onSendFeedback(feedback: String) {}
+        override fun onSuggestIdea() {}
+    }
 
     constructor(listener: FeedbackListener) : this() {
         this.listener = listener
@@ -34,16 +38,17 @@ class FeedbackDialogController : BaseDialogController {
         savedViewState: Bundle?
     ): AlertDialog =
         dialogBuilder
-            .setPositiveButton("Send", { _, _ ->
+            .setPositiveButton("Send") { _, _ ->
                 val feedback = contentView.feedback.text.toString()
-                listener?.onSendFeedback(feedback)
-            })
+                listener.onSendFeedback(feedback)
+            }
             .setNegativeButton(R.string.cancel, null)
-            .setNeutralButton("Chat with us", { _, _ ->
-                listener?.onChatWithUs()
-            })
+            .setNeutralButton(R.string.suggest_idea) { _, _ ->
+                listener.onSuggestIdea()
+            }
             .create()
 
+    @SuppressLint("InflateParams")
     override fun onCreateContentView(inflater: LayoutInflater, savedViewState: Bundle?): View =
         inflater.inflate(R.layout.dialog_feedback, null)
 

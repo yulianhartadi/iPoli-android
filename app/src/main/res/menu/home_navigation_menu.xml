@@ -104,7 +104,7 @@
             android:checked="false"
             android:icon="@drawable/ic_megaphone_black_24dp"
             android:orderInCategory="1"
-            android:title="@string/suggest_ideas" />
+            android:title="@string/feedback" />
 
         <item
             android:id="@+id/help"

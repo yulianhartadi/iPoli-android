@@ -19,7 +19,7 @@ interface Constants {
 
         const val DISCORD_CHAT_LINK = "https://discord.gg/7AMKs28"
         const val COMMUNITY_LINK = "https://discuss.mypoli.fun/"
-        const val FEEDBACK_LINK = "https://discuss.mypoli.fun/c/mypoli/requests"
+        const val SUGGEST_IDEA_LINK = "https://discuss.mypoli.fun/c/mypoli/requests"
 
         const val BUG_REPORT_LINK = "https://discuss.mypoli.fun/c/mypoli/bugs"
 
