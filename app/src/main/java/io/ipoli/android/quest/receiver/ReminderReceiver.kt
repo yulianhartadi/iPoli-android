@@ -19,6 +19,7 @@ import io.ipoli.android.common.view.asThemedWrapper
 import io.ipoli.android.common.view.largeIcon
 import io.ipoli.android.player.data.Player.Preferences.NotificationStyle
 import io.ipoli.android.quest.Quest
+import io.ipoli.android.quest.Reminder
 import io.ipoli.android.quest.reminder.PetNotificationPopup
 import kotlinx.coroutines.experimental.CommonPool
 import kotlinx.coroutines.experimental.android.UI
@@ -67,8 +68,12 @@ class ReminderReceiver : AsyncBroadcastReceiver() {
             quests.forEach {
 
                 val reminder = it.reminders.first()
-                val message =
-                    reminder.message.let { if (it.isEmpty()) "Ready for a quest?" else it }
+
+                val message = when {
+                    reminder.message.isNotBlank() -> reminder.message
+                    reminder is Reminder.Relative -> if (reminder.minutesFromStart == 0L) "This is your Quest - time to act!" else "Time to prepare for your Quest"
+                    else -> "This is your Quest - time to act!"
+                }
 
                 val startTimeMessage = startTimeMessage(it)
 
