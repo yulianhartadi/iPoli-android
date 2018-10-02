@@ -129,14 +129,15 @@ class LowerPlayerStatsUseCase(
         )
 
     companion object {
-        val PET_HEALTH_POINTS_PENALTIES = intArrayOf(3, 4, 5, 6, 7)
-        val PET_MOOD_POINTS_PENALTIES = intArrayOf(3, 4, 5, 6, 7)
+        val PET_HEALTH_POINTS_PENALTIES = intArrayOf(4, 5, 6, 7, 8, 9)
+        val PET_MOOD_POINTS_PENALTIES = intArrayOf(4, 5, 6, 7, 8, 9)
+
         val PLAYER_HEALTH_PENALTIES = intArrayOf(3, 4, 5)
 
-        const val PET_MAX_PENALTY = 25
-        const val PET_HIGH_PENALTY = 18
-        const val PET_MEDIUM_PENALTY = 8
-        const val PET_LOW_PENALTY = 4
+        const val PET_MAX_PENALTY = 30
+        const val PET_HIGH_PENALTY = 25
+        const val PET_MEDIUM_PENALTY = 15
+        const val PET_LOW_PENALTY = 8
 
         const val PLAYER_MAX_PENALTY = 22
         const val PLAYER_HIGH_PENALTY = 16
