@@ -9,7 +9,6 @@ import io.ipoli.android.common.notification.QuickDoNotificationUtil
 import io.ipoli.android.common.view.AppWidgetUtil
 import io.ipoli.android.habit.usecase.UpdateHabitStreaksUseCase
 import io.ipoli.android.pet.usecase.LowerPlayerStatsUseCase
-import kotlinx.coroutines.experimental.CommonPool
 import kotlinx.coroutines.experimental.Dispatchers
 import kotlinx.coroutines.experimental.GlobalScope
 import kotlinx.coroutines.experimental.launch

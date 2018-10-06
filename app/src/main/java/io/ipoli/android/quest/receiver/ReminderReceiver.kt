@@ -21,7 +21,6 @@ import io.ipoli.android.player.data.Player.Preferences.NotificationStyle
 import io.ipoli.android.quest.Quest
 import io.ipoli.android.quest.Reminder
 import io.ipoli.android.quest.reminder.PetNotificationPopup
-import kotlinx.coroutines.experimental.CommonPool
 import kotlinx.coroutines.experimental.Dispatchers
 import kotlinx.coroutines.experimental.GlobalScope
 import kotlinx.coroutines.experimental.launch

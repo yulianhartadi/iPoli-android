@@ -10,9 +10,7 @@ import io.ipoli.android.common.persistence.getSync
 import io.ipoli.android.friends.feed.persistence.DbPost
 import io.ipoli.android.friends.feed.persistence.DbReferencePost
 import io.ipoli.android.player.data.Avatar
-import kotlinx.coroutines.experimental.Deferred
-import kotlinx.coroutines.experimental.async
-import kotlinx.coroutines.experimental.runBlocking
+import kotlinx.coroutines.experimental.*
 import org.threeten.bp.Instant
 
 data class Friend(
@@ -57,7 +55,7 @@ class FirestoreFriendRepository(private val remoteDatabase: FirebaseFirestore) :
         friendsReference(FirebaseAuth.getInstance().currentUser!!.uid)
             .documents
             .map { it.id }
-            .map { async { getPlayerDocument(it) } }
+            .map { GlobalScope.async(Dispatchers.IO) { getPlayerDocument(it) } }
             .let { executeAndCreateEntities(it) }
 
 

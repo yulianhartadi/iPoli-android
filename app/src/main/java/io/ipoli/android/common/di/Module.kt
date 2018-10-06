@@ -173,7 +173,6 @@ import io.ipoli.android.tag.persistence.RoomTagRepository
 import io.ipoli.android.tag.persistence.TagRepository
 import io.ipoli.android.tag.sideeffect.TagSideEffectHandler
 import io.ipoli.android.tag.usecase.*
-import kotlinx.coroutines.experimental.CommonPool
 import space.traversal.kapsule.HasModules
 import space.traversal.kapsule.Injects
 import space.traversal.kapsule.required
@@ -1029,7 +1028,7 @@ class AndroidStateStoreModule : StateStoreModule, Injects<UIModule> {
                 AcceptFriendshipSideEffectHandler,
                 FeedSideEffectHandler
             ),
-            sideEffectHandlerExecutor = CoroutineSideEffectHandlerExecutor(CommonPool),
+            sideEffectHandlerExecutor = CoroutineSideEffectHandlerExecutor(),
             middleware = listOf(
                 LogEventsMiddleWare,
                 CheckEnabledPowerUpMiddleWare,

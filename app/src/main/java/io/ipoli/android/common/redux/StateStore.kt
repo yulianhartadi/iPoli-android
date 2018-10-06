@@ -1,12 +1,12 @@
 package io.ipoli.android.common.redux
 
 import io.ipoli.android.common.UiAction
-import kotlinx.coroutines.experimental.CommonPool
+import kotlinx.coroutines.experimental.Dispatchers
+import kotlinx.coroutines.experimental.GlobalScope
 import kotlinx.coroutines.experimental.channels.Channel
 import kotlinx.coroutines.experimental.channels.actor
 import kotlinx.coroutines.experimental.launch
 import java.util.concurrent.CopyOnWriteArraySet
-import kotlin.coroutines.experimental.CoroutineContext
 
 /**
  * Created by Venelin Valkov <venelin@mypoli.fun>
@@ -37,16 +37,14 @@ interface SideEffectHandlerExecutor<S : CompositeState<S>> {
     )
 }
 
-class CoroutineSideEffectHandlerExecutor<S : CompositeState<S>>(
-    private val coroutineContext: CoroutineContext
-) : SideEffectHandlerExecutor<S> {
+class CoroutineSideEffectHandlerExecutor<S : CompositeState<S>> : SideEffectHandlerExecutor<S> {
     override fun execute(
         sideEffectHandler: SideEffectHandler<S>,
         action: Action,
         state: S,
         dispatcher: Dispatcher
     ) {
-        launch(coroutineContext) {
+        GlobalScope.launch(Dispatchers.IO) {
             sideEffectHandler.execute(action, state, dispatcher)
         }
     }
@@ -111,8 +109,7 @@ class StateStore<S : CompositeState<S>>(
     reducers: Set<Reducer<S, *>>,
     sideEffectHandlers: Set<SideEffectHandler<S>> = setOf(),
     private val sideEffectHandlerExecutor: SideEffectHandlerExecutor<S>,
-    middleware: List<MiddleWare<S>> = emptyList(),
-    coroutineContext: CoroutineContext = CommonPool
+    middleware: List<MiddleWare<S>> = emptyList()
 ) : Dispatcher {
 
     interface StateChangeSubscriber<in S> {
@@ -125,7 +122,7 @@ class StateStore<S : CompositeState<S>>(
     private val reducers = CopyOnWriteArraySet<Reducer<S, *>>(reducers)
     private val stateChangeSubscribers = CopyOnWriteArraySet<StateChangeSubscriber<S>>()
 
-    private val stateActor = createStateActor(coroutineContext)
+    private val stateActor = createStateActor()
 
     private var state = initialState
 
@@ -141,10 +138,8 @@ class StateStore<S : CompositeState<S>>(
         sideEffectHandlers.remove(handler)
     }
 
-    private fun createStateActor(
-        coroutineContext: CoroutineContext
-    ) =
-        actor<Action>(coroutineContext, capacity = Channel.UNLIMITED) {
+    private fun createStateActor() =
+        GlobalScope.actor<Action>(Dispatchers.IO, capacity = Channel.UNLIMITED) {
 
             for (action in channel) {
                 val res = executeMiddleware(state, action)

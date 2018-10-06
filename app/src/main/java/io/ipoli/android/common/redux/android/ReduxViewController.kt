@@ -42,13 +42,9 @@ import io.ipoli.android.friends.feed.data.Post
 import io.ipoli.android.player.data.Player
 import io.ipoli.android.quest.Color
 import io.ipoli.android.quest.Icon
-import kotlinx.coroutines.experimental.CoroutineStart
-import kotlinx.coroutines.experimental.Dispatchers
-import kotlinx.coroutines.experimental.android.UI
+import kotlinx.coroutines.experimental.*
 import kotlinx.coroutines.experimental.channels.SendChannel
 import kotlinx.coroutines.experimental.channels.actor
-import kotlinx.coroutines.experimental.delay
-import kotlinx.coroutines.experimental.withContext
 import space.traversal.kapsule.Injects
 import space.traversal.kapsule.inject
 import space.traversal.kapsule.required
@@ -129,7 +125,7 @@ abstract class BaseViewController<A : Action, VS : ViewState> protected construc
     }
 
     protected open fun colorStatusBars() {
-        if(applyStatusBarColors) {
+        if (applyStatusBarColors) {
             activity?.window?.statusBarColor = attrData(io.ipoli.android.R.attr.colorPrimaryDark)
             activity?.window?.navigationBarColor = attrData(io.ipoli.android.R.attr.colorPrimary)
         }
@@ -161,16 +157,17 @@ abstract class BaseViewController<A : Action, VS : ViewState> protected construc
         animator.start()
     }
 
-    private fun createEventActor() = actor<ViewAction>(UI, start = CoroutineStart.UNDISPATCHED) {
-        for (va in this) {
-            when (va) {
-                is ViewAction.ClickAction -> va.action(va.view)
-                is ViewAction.MenuClickAction -> va.action(va.menuItem)
-            }
+    private fun createEventActor() =
+        GlobalScope.actor<ViewAction>(Dispatchers.Main, start = CoroutineStart.UNDISPATCHED) {
+            for (va in this) {
+                when (va) {
+                    is ViewAction.ClickAction -> va.action(va.view)
+                    is ViewAction.MenuClickAction -> va.action(va.menuItem)
+                }
 
-            delay(400)
+                delay(400)
+            }
         }
-    }
 
     sealed class ViewAction {
         data class ClickAction(val view: View, val action: suspend (View) -> Unit) : ViewAction()

@@ -14,7 +14,8 @@ import android.view.animation.AccelerateInterpolator
 import android.widget.TextView
 import io.ipoli.android.R
 import io.ipoli.android.common.ViewUtils
-import kotlinx.coroutines.experimental.android.UI
+import kotlinx.coroutines.experimental.Dispatchers
+import kotlinx.coroutines.experimental.GlobalScope
 import kotlinx.coroutines.experimental.channels.actor
 import kotlinx.coroutines.experimental.delay
 import org.commonmark.node.Heading
@@ -87,7 +88,12 @@ val ViewGroup.children: List<View>
 fun ViewGroup.inflate(@LayoutRes layout: Int, attachToRoot: Boolean = false): View =
     LayoutInflater.from(context).inflate(layout, this, attachToRoot)
 
-fun View.fadeIn(animationDuration: Long, to: Float = 1f, delay: Long = 0L, onComplete: () -> Unit = {}) {
+fun View.fadeIn(
+    animationDuration: Long,
+    to: Float = 1f,
+    delay: Long = 0L,
+    onComplete: () -> Unit = {}
+) {
     alpha = 0f
     animate().apply {
         alpha(to)
@@ -178,7 +184,7 @@ class HeadlineColorVisitor(
 object Debounce {
 
     fun clickListener(action: suspend (View) -> Unit): View.OnClickListener {
-        val eventActor = actor<View>(UI) {
+        val eventActor = GlobalScope.actor<View>(Dispatchers.Main) {
             for (event in channel) {
                 action(event)
                 delay(400)

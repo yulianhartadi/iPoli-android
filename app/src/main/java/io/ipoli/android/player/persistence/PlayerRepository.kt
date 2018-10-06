@@ -36,6 +36,8 @@ import io.ipoli.android.store.powerup.PowerUp
 import io.ipoli.android.tag.Tag
 import io.ipoli.android.tag.persistence.RoomTagMapper
 import io.ipoli.android.tag.persistence.TagDao
+import kotlinx.coroutines.experimental.Dispatchers
+import kotlinx.coroutines.experimental.GlobalScope
 import kotlinx.coroutines.experimental.async
 import kotlinx.coroutines.experimental.channels.Channel
 import kotlinx.coroutines.experimental.runBlocking
@@ -1221,7 +1223,7 @@ class FirestorePlayerRepository(
     fun findAll(playerIds: List<String>): List<Player> {
         val playerJobs = playerIds
             .map {
-                async {
+                GlobalScope.async(Dispatchers.IO) {
                     collectionReference
                         .document(it)
                         .getSync()

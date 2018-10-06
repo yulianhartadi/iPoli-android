@@ -11,7 +11,6 @@ import io.ipoli.android.tag.Tag
 import kotlinx.coroutines.experimental.CoroutineStart
 import kotlinx.coroutines.experimental.Dispatchers
 import kotlinx.coroutines.experimental.GlobalScope
-import kotlinx.coroutines.experimental.android.UI
 import kotlinx.coroutines.experimental.channels.Channel
 import kotlinx.coroutines.experimental.channels.ConflatedChannel
 import kotlinx.coroutines.experimental.launch
@@ -56,7 +55,11 @@ abstract class BaseRoomRepository<E : io.ipoli.android.quest.Entity, RE, D : Bas
     class SubscriptionChannel<D>(private val subscription: Subscription) : ConflatedChannel<D>() {
 
         override fun afterClose(cause: Throwable?) {
-            launch(UI, start = CoroutineStart.ATOMIC) {
+            onClose()
+        }
+
+        private fun onClose() {
+            GlobalScope.launch(Dispatchers.Main, start = CoroutineStart.ATOMIC) {
                 @Suppress("UNCHECKED_CAST")
                 val l = subscription.liveData as LiveData<D>
                 @Suppress("UNCHECKED_CAST")
