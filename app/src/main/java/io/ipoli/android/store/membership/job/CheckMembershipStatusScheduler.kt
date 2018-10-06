@@ -7,21 +7,20 @@ import com.evernote.android.job.DailyJob
 import com.evernote.android.job.JobRequest
 import io.ipoli.android.BuildConfig
 import io.ipoli.android.Constants
+import io.ipoli.android.MyPoliApp
 import io.ipoli.android.common.api.Api
 import io.ipoli.android.common.billing.BillingError
 import io.ipoli.android.common.datetime.isBetween
 import io.ipoli.android.common.di.BackgroundModule
-import io.ipoli.android.MyPoliApp
 import io.ipoli.android.store.membership.error.SubscriptionError
 import io.ipoli.android.store.membership.usecase.RemoveMembershipUseCase
 import io.ipoli.android.store.powerup.usecase.EnableAllPowerUpsUseCase
-import kotlinx.coroutines.experimental.android.UI
+import kotlinx.coroutines.experimental.Dispatchers
 import kotlinx.coroutines.experimental.runBlocking
 import kotlinx.coroutines.experimental.withContext
 import org.threeten.bp.LocalDate
 import space.traversal.kapsule.Injects
 import space.traversal.kapsule.Kapsule
-import java.lang.Exception
 import java.util.concurrent.TimeUnit
 import kotlin.coroutines.experimental.suspendCoroutine
 
@@ -30,7 +29,6 @@ import kotlin.coroutines.experimental.suspendCoroutine
  * on 03/23/2018.
  */
 class CheckMembershipStatusJob : DailyJob(), Injects<BackgroundModule> {
-
 
     override fun onRunDailyJob(params: Params): DailyJobResult {
         val kap = Kapsule<BackgroundModule>()
@@ -44,7 +42,7 @@ class CheckMembershipStatusJob : DailyJob(), Injects<BackgroundModule> {
         requireNotNull(p)
 
         runBlocking {
-            val billingClient = withContext(UI) {
+            val billingClient = withContext(Dispatchers.Main) {
                 try {
                     val c = BillingClient.newBuilder(context).setListener { _, _ -> }.build()
                     c.connect()
@@ -55,7 +53,7 @@ class CheckMembershipStatusJob : DailyJob(), Injects<BackgroundModule> {
                 }
             } ?: return@runBlocking
             checkMembershipStatus(billingClient, removeMembershipUseCase, enableAllPowerUpsUseCase)
-            withContext(UI) { billingClient.endConnection() }
+            withContext(Dispatchers.Main) { billingClient.endConnection() }
         }
 
         return DailyJobResult.SUCCESS
@@ -87,7 +85,7 @@ class CheckMembershipStatusJob : DailyJob(), Injects<BackgroundModule> {
     ) {
 
         val purchasesResult =
-            withContext(UI) { billingClient.queryPurchases(BillingClient.SkuType.SUBS) }
+            withContext(Dispatchers.Main) { billingClient.queryPurchases(BillingClient.SkuType.SUBS) }
 
         if (purchasesResult.responseCode != BillingClient.BillingResponse.OK) {
             return

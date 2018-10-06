@@ -3,7 +3,8 @@ package io.ipoli.android.common
 import android.content.Context
 import android.content.Intent
 import io.ipoli.android.common.view.AppWidgetUtil
-import kotlinx.coroutines.experimental.android.UI
+import kotlinx.coroutines.experimental.Dispatchers
+import kotlinx.coroutines.experimental.GlobalScope
 import kotlinx.coroutines.experimental.launch
 import space.traversal.kapsule.required
 
@@ -20,7 +21,7 @@ class DateChangedReceiver : AsyncBroadcastReceiver() {
         if (intent.action == Intent.ACTION_DATE_CHANGED) {
             val p = playerRepository.find()
             if (p != null) {
-                launch(UI) {
+                GlobalScope.launch(Dispatchers.Main) {
                     AppWidgetUtil.updateAgendaWidget(context)
                 }
             }

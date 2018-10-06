@@ -27,7 +27,8 @@ import io.ipoli.android.player.data.Player
 import io.ipoli.android.player.data.Player.Preferences.NotificationStyle
 import io.ipoli.android.quest.reminder.PetNotificationPopup
 import kotlinx.coroutines.experimental.CommonPool
-import kotlinx.coroutines.experimental.android.UI
+import kotlinx.coroutines.experimental.Dispatchers
+import kotlinx.coroutines.experimental.GlobalScope
 import kotlinx.coroutines.experimental.launch
 import org.threeten.bp.LocalDate
 import space.traversal.kapsule.Kapsule
@@ -93,7 +94,7 @@ object PlanDayNotification {
                 notificationId?.let {
                     notificationManager.cancel(it)
                 }
-                launch(CommonPool) {
+                GlobalScope.launch(Dispatchers.IO) {
                     planDayScheduler.scheduleAfter(15.minutes)
                 }
                 Toast
@@ -153,7 +154,7 @@ class SnoozedPlanDayJob : Job() {
         val p = playerRepository.find()
         requireNotNull(p)
 
-        launch(UI) {
+        GlobalScope.launch(Dispatchers.Main) {
             PlanDayNotification.show(context, p!!, planDayScheduler)
         }
 
@@ -184,7 +185,7 @@ class PlanDayJob : FixedDailyJob(PlanDayJob.TAG) {
         dailyChallengeRepository.findForDate(LocalDate.now())
             ?: dailyChallengeRepository.save(DailyChallenge(date = LocalDate.now()))
 
-        launch(UI) {
+        GlobalScope.launch(Dispatchers.Main) {
             PlanDayNotification.show(context, p, planDayScheduler)
         }
 
@@ -212,7 +213,7 @@ class AndroidPlanDayScheduler(private val context: Context) : PlanDayScheduler {
     }
 
     override fun schedule() {
-        launch(CommonPool) {
+        GlobalScope.launch(Dispatchers.IO) {
 
             val kap = Kapsule<BackgroundModule>()
             val playerRepository by kap.required { playerRepository }

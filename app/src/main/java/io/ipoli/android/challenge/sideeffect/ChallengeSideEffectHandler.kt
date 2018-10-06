@@ -20,7 +20,8 @@ import io.ipoli.android.common.redux.Action
 import io.ipoli.android.common.view.asThemedWrapper
 import io.ipoli.android.quest.Quest
 import io.ipoli.android.quest.RepeatingQuest
-import kotlinx.coroutines.experimental.android.UI
+import kotlinx.coroutines.experimental.Dispatchers
+import kotlinx.coroutines.experimental.GlobalScope
 import kotlinx.coroutines.experimental.launch
 import org.threeten.bp.LocalDate
 import space.traversal.kapsule.required
@@ -152,7 +153,7 @@ object ChallengeSideEffectHandler : AppSideEffectHandler() {
             is ChallengeAction.Complete -> {
                 val c =
                     completeChallengeUseCase.execute(CompleteChallengeUseCase.Params(action.challengeId))
-                launch(UI) {
+                GlobalScope.launch(Dispatchers.Main) {
                     CompleteChallengePopup(c).show(MyPoliApp.instance.asThemedWrapper())
                 }
             }

@@ -4,12 +4,13 @@ import android.app.AlarmManager
 import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
+import io.ipoli.android.MyPoliApp
 import io.ipoli.android.common.IntentUtil
 import io.ipoli.android.common.datetime.toMillis
 import io.ipoli.android.common.di.BackgroundModule
-import io.ipoli.android.MyPoliApp
 import io.ipoli.android.quest.receiver.ReminderReceiver
-import kotlinx.coroutines.experimental.CommonPool
+import kotlinx.coroutines.experimental.Dispatchers
+import kotlinx.coroutines.experimental.GlobalScope
 import kotlinx.coroutines.experimental.launch
 import org.threeten.bp.LocalDateTime
 import space.traversal.kapsule.Kapsule
@@ -26,7 +27,7 @@ interface ReminderScheduler {
 class AndroidJobReminderScheduler(private val context: Context) : ReminderScheduler {
     override fun schedule() {
 
-        launch(CommonPool) {
+        GlobalScope.launch(Dispatchers.IO) {
 
             val kap = Kapsule<BackgroundModule>()
             val entityReminderRepository by kap.required { entityReminderRepository }

@@ -22,7 +22,7 @@ import io.ipoli.android.repeatingquest.usecase.FindNextDateForRepeatingQuestUseC
 import io.ipoli.android.repeatingquest.usecase.FindPeriodProgressForRepeatingQuestUseCase
 import io.ipoli.android.tag.Tag
 import io.ipoli.android.tag.usecase.AddQuestCountToTagUseCase
-import kotlinx.coroutines.experimental.android.UI
+import kotlinx.coroutines.experimental.Dispatchers
 import kotlinx.coroutines.experimental.channels.Channel
 import kotlinx.coroutines.experimental.withContext
 import org.threeten.bp.LocalDate
@@ -57,7 +57,7 @@ object LoadAllDataSideEffectHandler : AppSideEffectHandler() {
     override suspend fun doExecute(action: Action, state: AppState) {
 
         if (action is DataLoadedAction.TodayQuestsChanged) {
-            withContext(UI) {
+            withContext(Dispatchers.Main) {
                 updateQuestWidgets()
             }
 
@@ -77,7 +77,7 @@ object LoadAllDataSideEffectHandler : AppSideEffectHandler() {
         }
 
         if (action is DataLoadedAction.HabitsChanged) {
-            withContext(UI) {
+            withContext(Dispatchers.Main) {
                 AppWidgetUtil.updateHabitWidget(MyPoliApp.instance)
             }
         }

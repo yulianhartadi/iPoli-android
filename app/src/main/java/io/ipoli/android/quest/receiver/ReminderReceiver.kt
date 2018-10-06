@@ -22,7 +22,8 @@ import io.ipoli.android.quest.Quest
 import io.ipoli.android.quest.Reminder
 import io.ipoli.android.quest.reminder.PetNotificationPopup
 import kotlinx.coroutines.experimental.CommonPool
-import kotlinx.coroutines.experimental.android.UI
+import kotlinx.coroutines.experimental.Dispatchers
+import kotlinx.coroutines.experimental.GlobalScope
 import kotlinx.coroutines.experimental.launch
 import org.threeten.bp.Instant
 import org.threeten.bp.LocalDate
@@ -64,7 +65,7 @@ class ReminderReceiver : AsyncBroadcastReceiver() {
         val style = p.preferences.reminderNotificationStyle
         val pet = p.pet
 
-        launch(UI) {
+        GlobalScope.launch(Dispatchers.Main) {
             quests.forEach {
 
                 val reminder = it.reminders.first()
@@ -138,7 +139,7 @@ class ReminderReceiver : AsyncBroadcastReceiver() {
                 notificationId?.let {
                     notificationManager.cancel(it)
                 }
-                launch(CommonPool) {
+                GlobalScope.launch(Dispatchers.IO) {
                     snoozeQuestUseCase.execute(quest.id)
                 }
                 Toast

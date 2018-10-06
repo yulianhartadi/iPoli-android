@@ -10,7 +10,8 @@ import io.ipoli.android.common.datetime.seconds
 import io.ipoli.android.common.di.BackgroundModule
 import io.ipoli.android.common.view.asThemedWrapper
 import io.ipoli.android.dailychallenge.DailyChallengeCompletePopup
-import kotlinx.coroutines.experimental.android.UI
+import kotlinx.coroutines.experimental.Dispatchers
+import kotlinx.coroutines.experimental.GlobalScope
 import kotlinx.coroutines.experimental.launch
 import space.traversal.kapsule.Kapsule
 
@@ -32,7 +33,7 @@ class DailyChallengeCompleteJob : Job() {
         ) { "DailyChallengeCompleteJob has incorrect experience param $experience" }
 
         val c = context.asThemedWrapper()
-        launch(UI) {
+        GlobalScope.launch(Dispatchers.Main) {
             DailyChallengeCompletePopup(experience, coins).show(c)
         }
 

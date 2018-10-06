@@ -1,9 +1,10 @@
 package io.ipoli.android.player
 
-import io.ipoli.android.common.view.asThemedWrapper
 import io.ipoli.android.MyPoliApp
+import io.ipoli.android.common.view.asThemedWrapper
 import io.ipoli.android.player.view.LevelUpPopup
-import kotlinx.coroutines.experimental.android.UI
+import kotlinx.coroutines.experimental.Dispatchers
+import kotlinx.coroutines.experimental.GlobalScope
 import kotlinx.coroutines.experimental.launch
 
 /**
@@ -18,7 +19,7 @@ class AndroidLevelUpScheduler : LevelUpScheduler {
 
     override fun schedule(newLevel: Int) {
         val c = MyPoliApp.instance.asThemedWrapper()
-        launch(UI) {
+        GlobalScope.launch(Dispatchers.Main) {
             LevelUpPopup(newLevel).show(c)
         }
     }

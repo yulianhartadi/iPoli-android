@@ -10,7 +10,8 @@ import io.ipoli.android.common.AsyncBroadcastReceiver
 import io.ipoli.android.common.notification.QuickDoNotificationUtil
 import io.ipoli.android.common.view.AppWidgetUtil
 import io.ipoli.android.quest.show.usecase.CompleteTimeRangeUseCase
-import kotlinx.coroutines.experimental.android.UI
+import kotlinx.coroutines.experimental.Dispatchers
+import kotlinx.coroutines.experimental.GlobalScope
 import kotlinx.coroutines.experimental.launch
 import org.threeten.bp.LocalDate
 import space.traversal.kapsule.required
@@ -48,11 +49,11 @@ class CompleteQuestReceiver : AsyncBroadcastReceiver() {
             val todayQuests = questRepository.findScheduledAt(LocalDate.now())
 
             QuickDoNotificationUtil.update(context, todayQuests)
-            launch(UI) {
+            GlobalScope.launch(Dispatchers.Main) {
                 updateUIElements(context)
             }
         } else {
-            launch(UI) {
+            GlobalScope.launch(Dispatchers.Main) {
                 updateUIElements(context)
             }
         }

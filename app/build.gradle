@@ -113,7 +113,9 @@ dependencies {
     implementation 'com.haibin:calendarview:3.3.4'
     implementation "space.traversal.kapsule:kapsule-core:0.3"
 
-    implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-android:0.24.0'
+    implementation('org.jetbrains.kotlinx:kotlinx-coroutines-android:0.30.1') {
+        exclude group: "org.jetbrains.kotlinx", module: "atomicfu-common"
+    }
 
     implementation 'com.evernote:android-job:1.2.6'
     implementation 'com.github.PhilJay:MPAndroidChart:b65ba08324'

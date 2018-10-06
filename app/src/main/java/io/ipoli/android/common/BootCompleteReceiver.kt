@@ -4,7 +4,8 @@ import android.content.Context
 import android.content.Intent
 import io.ipoli.android.common.notification.QuickDoNotificationUtil
 import io.ipoli.android.common.view.AppWidgetUtil
-import kotlinx.coroutines.experimental.android.UI
+import kotlinx.coroutines.experimental.Dispatchers
+import kotlinx.coroutines.experimental.GlobalScope
 import kotlinx.coroutines.experimental.launch
 import org.threeten.bp.LocalDate
 import space.traversal.kapsule.required
@@ -25,7 +26,7 @@ class BootCompleteReceiver : AsyncBroadcastReceiver() {
             if (p != null) {
                 reminderScheduler.schedule()
                 val questsForToday = questRepository.findScheduledAt(LocalDate.now())
-                launch(UI) {
+                GlobalScope.launch(Dispatchers.Main) {
                     AppWidgetUtil.updateAgendaWidget(context)
                     AppWidgetUtil.updateHabitWidget(context)
                     if (p.isDead) {

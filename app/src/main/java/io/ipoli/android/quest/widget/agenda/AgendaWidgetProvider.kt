@@ -14,8 +14,8 @@ import io.ipoli.android.common.IntentUtil
 import io.ipoli.android.common.di.BackgroundModule
 import io.ipoli.android.common.text.CalendarFormatter
 import io.ipoli.android.quest.receiver.CompleteQuestReceiver
-import kotlinx.coroutines.experimental.CommonPool
-import kotlinx.coroutines.experimental.android.UI
+import kotlinx.coroutines.experimental.Dispatchers
+import kotlinx.coroutines.experimental.GlobalScope
 import kotlinx.coroutines.experimental.launch
 import kotlinx.coroutines.experimental.withContext
 import org.threeten.bp.LocalDate
@@ -84,10 +84,10 @@ class AgendaWidgetProvider : AppWidgetProvider(), Injects<BackgroundModule> {
         val date = calendarFormatter.dateWithoutYear(today)
 
         appWidgetIds.forEach {
-            launch(CommonPool) {
+            GlobalScope.launch(Dispatchers.IO) {
                 val player = playerRepository.find()
 
-                withContext(UI) {
+                withContext(Dispatchers.Main) {
 
                     val rv = RemoteViews(context.packageName, R.layout.widget_agenda)
 

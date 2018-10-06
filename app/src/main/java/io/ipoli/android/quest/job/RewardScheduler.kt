@@ -12,7 +12,8 @@ import io.ipoli.android.pet.AndroidPetAvatar
 import io.ipoli.android.quest.Quest
 import io.ipoli.android.quest.view.RewardPopup
 import kotlinx.coroutines.experimental.CommonPool
-import kotlinx.coroutines.experimental.android.UI
+import kotlinx.coroutines.experimental.Dispatchers
+import kotlinx.coroutines.experimental.GlobalScope
 import kotlinx.coroutines.experimental.launch
 import space.traversal.kapsule.Kapsule
 
@@ -48,7 +49,7 @@ class AndroidJobRewardScheduler(private val context: Context) : RewardScheduler 
 
         val petAvatar = playerRepository.find()!!.pet.avatar
         val petHeadImage = AndroidPetAvatar.valueOf(petAvatar.name).headImage
-        launch(UI) {
+        GlobalScope.launch(Dispatchers.Main) {
             RewardPopup(
                 petHeadImage = petHeadImage,
                 earnedXP = reward.experience,
@@ -60,7 +61,7 @@ class AndroidJobRewardScheduler(private val context: Context) : RewardScheduler 
                     null
                 },
                 undoListener = {
-                    launch(CommonPool) {
+                    GlobalScope.launch(Dispatchers.IO) {
                         when (type) {
                             RewardScheduler.Type.QUEST -> {
                                 undoCompletedQuestUseCase.execute(entityId)

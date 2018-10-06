@@ -25,6 +25,7 @@ import io.ipoli.android.common.redux.Action
 import io.ipoli.android.common.redux.StateStore
 import io.ipoli.android.common.redux.ViewState
 import io.ipoli.android.common.redux.ViewStateReducer
+import kotlinx.coroutines.experimental.Dispatchers
 import kotlinx.coroutines.experimental.android.UI
 import kotlinx.coroutines.experimental.withContext
 import space.traversal.kapsule.Injects
@@ -279,7 +280,7 @@ abstract class ReduxPopup<A : Action, VS : ViewState, out VSR : ViewStateReducer
             val viewState = newState.stateFor<VS>(reducer.stateKey)
             if (viewState != currentState) {
                 currentState = viewState
-                withContext(UI) {
+                withContext(Dispatchers.Main) {
                     onRenderViewState(viewState)
                 }
             }

@@ -1,13 +1,14 @@
 package io.ipoli.android.achievement.job
 
+import io.ipoli.android.MyPoliApp
 import io.ipoli.android.achievement.usecase.UpdateAchievementProgressUseCase
 import io.ipoli.android.common.datetime.Time
 import io.ipoli.android.common.di.BackgroundModule
 import io.ipoli.android.common.job.FixedDailyJob
 import io.ipoli.android.common.job.FixedDailyJobScheduler
 import io.ipoli.android.friends.usecase.SavePostsUseCase
-import io.ipoli.android.MyPoliApp
-import kotlinx.coroutines.experimental.CommonPool
+import kotlinx.coroutines.experimental.Dispatchers
+import kotlinx.coroutines.experimental.GlobalScope
 import kotlinx.coroutines.experimental.launch
 import space.traversal.kapsule.Kapsule
 
@@ -47,7 +48,7 @@ interface UpdateAchievementProgressScheduler {
 class AndroidUpdateAchievementProgressScheduler : UpdateAchievementProgressScheduler {
 
     override fun schedule() {
-        launch(CommonPool) {
+        GlobalScope.launch(Dispatchers.IO) {
             FixedDailyJobScheduler.schedule(UpdateAchievementProgressJob.TAG, Time.at(0, 1))
         }
     }

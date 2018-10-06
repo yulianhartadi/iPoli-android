@@ -43,6 +43,7 @@ import io.ipoli.android.player.data.Player
 import io.ipoli.android.quest.Color
 import io.ipoli.android.quest.Icon
 import kotlinx.coroutines.experimental.CoroutineStart
+import kotlinx.coroutines.experimental.Dispatchers
 import kotlinx.coroutines.experimental.android.UI
 import kotlinx.coroutines.experimental.channels.SendChannel
 import kotlinx.coroutines.experimental.channels.actor
@@ -229,7 +230,7 @@ abstract class BaseViewController<A : Action, VS : ViewState> protected construc
     }
 
     private suspend fun renderViewState(viewState: VS) {
-        withContext(UI) {
+        withContext(Dispatchers.Main) {
             onRenderViewState(viewState)
         }
     }

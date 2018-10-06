@@ -15,8 +15,8 @@ import io.ipoli.android.common.di.BackgroundModule
 import io.ipoli.android.habit.receiver.CompleteHabitReceiver
 import io.ipoli.android.habit.receiver.UndoCompleteHabitReceiver
 import io.ipoli.android.store.powerup.PowerUp
-import kotlinx.coroutines.experimental.CommonPool
-import kotlinx.coroutines.experimental.android.UI
+import kotlinx.coroutines.experimental.Dispatchers
+import kotlinx.coroutines.experimental.GlobalScope
 import kotlinx.coroutines.experimental.launch
 import kotlinx.coroutines.experimental.withContext
 import space.traversal.kapsule.Injects
@@ -75,10 +75,10 @@ class HabitWidgetProvider : AppWidgetProvider(), Injects<BackgroundModule> {
     ) {
         inject(MyPoliApp.backgroundModule(context))
         appWidgetIds.forEach {
-            launch(CommonPool) {
+            GlobalScope.launch(Dispatchers.IO) {
                 val player = playerRepository.find()
 
-                withContext(UI) {
+                withContext(Dispatchers.Main) {
                     val rv = RemoteViews(context.packageName, R.layout.widget_habits)
                     if (player == null) {
                         showEmptyView(rv)

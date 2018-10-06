@@ -28,7 +28,8 @@ import io.ipoli.android.pet.AndroidPetAvatar
 import io.ipoli.android.pet.PetAvatar
 import io.ipoli.android.player.data.Player
 import kotlinx.android.synthetic.main.popup_level_up.view.*
-import kotlinx.coroutines.experimental.android.UI
+import kotlinx.coroutines.experimental.Dispatchers
+import kotlinx.coroutines.experimental.GlobalScope
 import kotlinx.coroutines.experimental.launch
 import space.traversal.kapsule.required
 
@@ -64,7 +65,7 @@ object PlayerSideEffectHandler : AppSideEffectHandler() {
 
                 sharedPreferences.edit().putBoolean(Constants.KEY_PLAYER_DEAD, false).commit()
 
-                launch(UI) {
+                GlobalScope.launch(Dispatchers.Main) {
                     state.dataState.todayQuests?.let {
                         if (p.preferences.isQuickDoNotificationEnabled) {
                             QuickDoNotificationUtil.update(MyPoliApp.instance, it)

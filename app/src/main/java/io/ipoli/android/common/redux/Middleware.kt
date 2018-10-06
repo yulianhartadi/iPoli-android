@@ -2,7 +2,8 @@ package io.ipoli.android.common.redux
 
 import io.ipoli.android.common.redux.MiddleWare.Result.Continue
 import io.ipoli.android.common.redux.MiddleWare.Result.Stop
-import kotlinx.coroutines.experimental.CommonPool
+import kotlinx.coroutines.experimental.Dispatchers
+import kotlinx.coroutines.experimental.GlobalScope
 import kotlinx.coroutines.experimental.launch
 
 /**
@@ -33,7 +34,7 @@ interface SimpleMiddleware<in S : State> : MiddleWare<S> {
 
 interface AsyncMiddleware<in S : State> : MiddleWare<S> {
     override fun execute(state: S, dispatcher: Dispatcher, action: Action): MiddleWare.Result {
-        launch(CommonPool) {
+        GlobalScope.launch(Dispatchers.IO) {
             onExecute(state, dispatcher, action)
         }
         return Continue

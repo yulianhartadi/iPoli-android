@@ -37,8 +37,8 @@ import io.ipoli.android.store.powerup.PowerUp
 import io.ipoli.android.store.powerup.buy.BuyPowerUpDialogController
 import io.ipoli.android.store.powerup.middleware.ShowBuyPowerUpAction
 import io.ipoli.android.tag.show.TagAction
-import kotlinx.coroutines.experimental.CommonPool
-import kotlinx.coroutines.experimental.android.UI
+import kotlinx.coroutines.experimental.Dispatchers
+import kotlinx.coroutines.experimental.GlobalScope
 import kotlinx.coroutines.experimental.launch
 import kotlinx.coroutines.experimental.withContext
 import org.threeten.bp.LocalDate
@@ -238,9 +238,9 @@ class MainActivity : AppCompatActivity(), Injects<UIModule>, SideEffectHandler<A
     fun showHome(navigator: Navigator) {
         navigator.setHome()
 
-        launch(CommonPool) {
+        GlobalScope.launch(Dispatchers.IO) {
             val p = playerRepository.find()!!
-            launch(UI) {
+            GlobalScope.launch(Dispatchers.Main) {
                 if (p.isLoggedIn() && p.username.isNullOrEmpty()) {
                     Navigator(router).setAuth()
                 } else if (p.isDead) {
@@ -316,7 +316,7 @@ class MainActivity : AppCompatActivity(), Injects<UIModule>, SideEffectHandler<A
     }
 
     override suspend fun execute(action: Action, state: AppState, dispatcher: Dispatcher) {
-        withContext(UI) {
+        withContext(Dispatchers.Main) {
             when (action) {
                 is ShowBuyPowerUpAction ->
                     showPowerUpDialog(action.powerUp)

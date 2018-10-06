@@ -8,8 +8,9 @@ import android.arch.persistence.room.OnConflictStrategy
 import android.arch.persistence.room.Transaction
 import io.ipoli.android.quest.Entity
 import io.ipoli.android.tag.Tag
-import kotlinx.coroutines.experimental.CommonPool
 import kotlinx.coroutines.experimental.CoroutineStart
+import kotlinx.coroutines.experimental.Dispatchers
+import kotlinx.coroutines.experimental.GlobalScope
 import kotlinx.coroutines.experimental.android.UI
 import kotlinx.coroutines.experimental.channels.Channel
 import kotlinx.coroutines.experimental.channels.ConflatedChannel
@@ -71,7 +72,7 @@ abstract class BaseRoomRepository<E : io.ipoli.android.quest.Entity, RE, D : Bas
         var channel: SubscriptionChannel<E?>? = null
 
         val obs = Observer<RE> {
-            launch(CommonPool) {
+            GlobalScope.launch(Dispatchers.IO) {
 
                 it?.let {
                     channel!!.offer(toEntityObject(it))
@@ -95,7 +96,7 @@ abstract class BaseRoomRepository<E : io.ipoli.android.quest.Entity, RE, D : Bas
         var channel: SubscriptionChannel<List<E>>? = null
 
         val obs = Observer<List<RE>> {
-            launch(CommonPool) {
+            GlobalScope.launch(Dispatchers.IO) {
                 it?.let {
                     channel!!.offer(it.map { toEntityObject(it) })
                 }

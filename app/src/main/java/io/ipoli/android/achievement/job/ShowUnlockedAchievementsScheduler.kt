@@ -11,7 +11,8 @@ import io.ipoli.android.achievement.view.AchievementUnlocked
 import io.ipoli.android.common.datetime.seconds
 import io.ipoli.android.common.view.asThemedWrapper
 import io.ipoli.android.common.view.attrData
-import kotlinx.coroutines.experimental.android.UI
+import kotlinx.coroutines.experimental.Dispatchers
+import kotlinx.coroutines.experimental.GlobalScope
 import kotlinx.coroutines.experimental.launch
 
 /**
@@ -42,7 +43,7 @@ class AndroidShowUnlockedAchievementsScheduler(private val context: Context) :
                 )
             }
 
-        launch(UI) {
+        GlobalScope.launch(Dispatchers.Main) {
             AchievementUnlocked(c)
                 .setRounded(true)
                 .setLarge(true)

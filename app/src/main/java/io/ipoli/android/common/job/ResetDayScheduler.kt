@@ -10,7 +10,8 @@ import io.ipoli.android.common.view.AppWidgetUtil
 import io.ipoli.android.habit.usecase.UpdateHabitStreaksUseCase
 import io.ipoli.android.pet.usecase.LowerPlayerStatsUseCase
 import kotlinx.coroutines.experimental.CommonPool
-import kotlinx.coroutines.experimental.android.UI
+import kotlinx.coroutines.experimental.Dispatchers
+import kotlinx.coroutines.experimental.GlobalScope
 import kotlinx.coroutines.experimental.launch
 import org.threeten.bp.LocalDateTime
 import space.traversal.kapsule.Kapsule
@@ -54,7 +55,7 @@ class ResetDayJob : FixedDailyJob(ResetDayJob.TAG) {
             sharedPreferences.edit().putBoolean(Constants.KEY_PLAYER_DEAD, true).commit()
         }
 
-        launch(UI) {
+        GlobalScope.launch(Dispatchers.Main) {
 
             if (newPlayer.isDead) {
                 QuickDoNotificationUtil.showDefeated(context)
@@ -79,7 +80,7 @@ interface ResetDayScheduler {
 class AndroidResetDayScheduler(private val context: Context) : ResetDayScheduler {
 
     override fun schedule() {
-        launch(CommonPool) {
+        GlobalScope.launch(Dispatchers.IO) {
 
             val kap = Kapsule<BackgroundModule>()
             val playerRepository by kap.required { playerRepository }

@@ -5,7 +5,8 @@ import com.evernote.android.job.Job
 import com.evernote.android.job.JobRequest
 import io.ipoli.android.Constants
 import io.ipoli.android.common.view.asThemedWrapper
-import kotlinx.coroutines.experimental.android.UI
+import kotlinx.coroutines.experimental.Dispatchers
+import kotlinx.coroutines.experimental.GlobalScope
 import kotlinx.coroutines.experimental.launch
 import java.util.*
 
@@ -26,7 +27,7 @@ class RatePopupJob : Job() {
         }
 
         val c = context.asThemedWrapper()
-        launch(UI) {
+        GlobalScope.launch(Dispatchers.Main) {
             RatePopup().show(c)
         }
 

@@ -3,7 +3,8 @@ package io.ipoli.android.player.job
 import io.ipoli.android.MyPoliApp
 import io.ipoli.android.common.view.asThemedWrapper
 import io.ipoli.android.player.view.SecretSocietyPopup
-import kotlinx.coroutines.experimental.android.UI
+import kotlinx.coroutines.experimental.Dispatchers
+import kotlinx.coroutines.experimental.GlobalScope
 import kotlinx.coroutines.experimental.launch
 
 interface SecretSocietyInviteScheduler {
@@ -14,7 +15,7 @@ class AndroidSecretSocietyInviteScheduler : SecretSocietyInviteScheduler {
 
     override fun schedule() {
         val c = MyPoliApp.instance.asThemedWrapper()
-        launch(UI) {
+        GlobalScope.launch(Dispatchers.Main) {
             SecretSocietyPopup().show(c)
         }
     }

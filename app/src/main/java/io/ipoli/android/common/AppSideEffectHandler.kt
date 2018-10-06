@@ -1,15 +1,16 @@
 package io.ipoli.android.common
 
+import io.ipoli.android.MyPoliApp
 import io.ipoli.android.challenge.predefined.category.list.ChallengeListForCategoryAction
 import io.ipoli.android.challenge.usecase.BuyChallengeUseCase
 import io.ipoli.android.common.di.BackgroundModule
 import io.ipoli.android.common.redux.Action
 import io.ipoli.android.common.redux.Dispatcher
 import io.ipoli.android.common.redux.SideEffectHandler
-import io.ipoli.android.MyPoliApp
 import io.ipoli.android.pet.store.PetStoreAction
 import io.ipoli.android.pet.usecase.BuyPetUseCase
-import kotlinx.coroutines.experimental.CommonPool
+import kotlinx.coroutines.experimental.Dispatchers
+import kotlinx.coroutines.experimental.GlobalScope
 import kotlinx.coroutines.experimental.channels.Channel
 import kotlinx.coroutines.experimental.launch
 import space.traversal.kapsule.Injects
@@ -52,7 +53,7 @@ abstract class AppSideEffectHandler : SideEffectHandler<AppState>,
         oldChannel?.close()
         val newChannel = channelCreator()
 
-        launch(CommonPool) {
+        GlobalScope.launch(Dispatchers.IO) {
             for (d in newChannel) {
                 onResult(d)
             }
