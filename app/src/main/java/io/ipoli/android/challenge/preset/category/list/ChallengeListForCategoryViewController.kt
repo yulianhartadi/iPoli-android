@@ -55,8 +55,8 @@ class ChallengeListForCategoryViewController :
     constructor(args: Bundle? = null) : super(args)
 
     companion object {
-        val IMAGE_WIDTH = 1000
-        val IMAGE_HEIGHT = 500
+        const val IMAGE_WIDTH = 800
+        const val IMAGE_HEIGHT = 400
     }
 
     private lateinit var preLoader: RecyclerViewPreloader<ChallengeViewModel>
