@@ -1207,4 +1207,6 @@ These are your physical and mental characteristics.\n\n
     <string name="busyness_per_week">Busyness\n(per week)</string>
     <string name="duration_in_days">Duration\n(days)</string>
     <string name="difficulty">Difficulty</string>
+    <string name="rank">Rank</string>
+    <string name="joined">Joined</string>
 </resources>
