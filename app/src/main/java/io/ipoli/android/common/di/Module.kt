@@ -19,7 +19,10 @@ import io.ipoli.android.achievement.usecase.UpdateAchievementProgressUseCase
 import io.ipoli.android.achievement.usecase.UpdatePlayerStatsUseCase
 import io.ipoli.android.challenge.persistence.ChallengeRepository
 import io.ipoli.android.challenge.persistence.RoomChallengeRepository
-import io.ipoli.android.challenge.predefined.usecase.SchedulePredefinedChallengeUseCase
+import io.ipoli.android.challenge.preset.usecase.UnlockPresetChallengeUseCase
+import io.ipoli.android.challenge.preset.persistence.FirestorePresetChallengeRepository
+import io.ipoli.android.challenge.preset.persistence.PresetChallengeRepository
+import io.ipoli.android.challenge.preset.sideeffect.PresetChallengeSideEffectHandler
 import io.ipoli.android.challenge.sideeffect.ChallengeSideEffectHandler
 import io.ipoli.android.challenge.usecase.*
 import io.ipoli.android.common.*
@@ -284,6 +287,7 @@ interface UseCaseModule {
     val entityReminderRepository: EntityReminderRepository
     val postRepository: PostRepository
     val friendRepository: FriendRepository
+    val presetChallengeRepository: PresetChallengeRepository
 
     val reminderScheduler: ReminderScheduler
     val timerCompleteScheduler: TimerCompleteScheduler
@@ -327,8 +331,7 @@ interface UseCaseModule {
     val equipPetItemUseCase: EquipPetItemUseCase
     val takeOffPetItemUseCase: TakeOffPetItemUseCase
     val purchaseGemPackUseCase: PurchaseGemPackUseCase
-    val schedulePredefinedChallengeUseCase: SchedulePredefinedChallengeUseCase
-    val buyChallengeUseCase: BuyChallengeUseCase
+    val unlockPresetChallengeUseCase: UnlockPresetChallengeUseCase
     val splitDurationForPomodoroTimerUseCase: SplitDurationForPomodoroTimerUseCase
     val findPlayerLevelUseCase: FindPlayerLevelUseCase
     val lowerPlayerStatsUseCase: LowerPlayerStatsUseCase
@@ -418,6 +421,7 @@ interface UseCaseModule {
     val checkForOneTimeBoostUseCase: CheckForOneTimeBoostUseCase
     val addTagToAttributeUseCase: AddTagToAttributeUseCase
     val removeTagFromAttributeUseCase: RemoveTagFromAttributeUseCase
+    val createChallengeFromPresetUseCase: CreateChallengeFromPresetUseCase
 }
 
 class MainUseCaseModule(private val context: Context) : UseCaseModule {
@@ -503,6 +507,8 @@ class MainUseCaseModule(private val context: Context) : UseCaseModule {
         AndroidPostRepository(remoteDatabase, localDatabase.postDao(), executorService)
 
     override val friendRepository = FirestoreFriendRepository(remoteDatabase)
+
+    override val presetChallengeRepository = FirestorePresetChallengeRepository(remoteDatabase)
 
     override val reminderScheduler get() = AndroidJobReminderScheduler(context)
 
@@ -610,8 +616,7 @@ class MainUseCaseModule(private val context: Context) : UseCaseModule {
     override val equipPetItemUseCase get() = EquipPetItemUseCase(playerRepository)
     override val takeOffPetItemUseCase get() = TakeOffPetItemUseCase(playerRepository)
     override val purchaseGemPackUseCase get() = PurchaseGemPackUseCase(playerRepository)
-    override val schedulePredefinedChallengeUseCase get() = SchedulePredefinedChallengeUseCase()
-    override val buyChallengeUseCase get() = BuyChallengeUseCase(playerRepository)
+    override val unlockPresetChallengeUseCase get() = UnlockPresetChallengeUseCase(playerRepository)
     override val splitDurationForPomodoroTimerUseCase get() = SplitDurationForPomodoroTimerUseCase()
     override val completeTimeRangeUseCase
         get() = CompleteTimeRangeUseCase(
@@ -710,7 +715,11 @@ class MainUseCaseModule(private val context: Context) : UseCaseModule {
         get() = RemoveHabitFromChallengeUseCase(habitRepository)
 
     override val saveChallengeUseCase
-        get() = SaveChallengeUseCase(challengeRepository, saveQuestsForChallengeUseCase)
+        get() = SaveChallengeUseCase(
+            challengeRepository,
+            saveQuestsForChallengeUseCase,
+            habitRepository
+        )
 
     override val removeChallengeUseCase
         get() = RemoveChallengeUseCase(
@@ -971,6 +980,9 @@ class MainUseCaseModule(private val context: Context) : UseCaseModule {
 
     override val removeTagFromAttributeUseCase
         get() = RemoveTagFromAttributeUseCase(playerRepository)
+
+    override val createChallengeFromPresetUseCase
+        get() = CreateChallengeFromPresetUseCase(saveChallengeUseCase)
 }
 
 interface StateStoreModule {
@@ -993,7 +1005,6 @@ class AndroidStateStoreModule : StateStoreModule, Injects<UIModule> {
                 LoadAllDataSideEffectHandler,
                 AuthSideEffectHandler,
                 AgendaSideEffectHandler,
-                BuyPredefinedChallengeSideEffectHandler,
                 ChangePetSideEffectHandler,
                 BuyPetSideEffectHandler,
                 DayViewSideEffectHandler,
@@ -1026,7 +1037,8 @@ class AndroidStateStoreModule : StateStoreModule, Injects<UIModule> {
                 ScheduleSummarySideEffectHandler,
                 InviteFriendsSideEffectHandler,
                 AcceptFriendshipSideEffectHandler,
-                FeedSideEffectHandler
+                FeedSideEffectHandler,
+                PresetChallengeSideEffectHandler
             ),
             sideEffectHandlerExecutor = CoroutineSideEffectHandlerExecutor(),
             middleware = listOf(

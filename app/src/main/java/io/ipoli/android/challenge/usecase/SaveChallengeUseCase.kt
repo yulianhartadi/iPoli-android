@@ -3,9 +3,9 @@ package io.ipoli.android.challenge.usecase
 import io.ipoli.android.challenge.entity.Challenge
 import io.ipoli.android.challenge.persistence.ChallengeRepository
 import io.ipoli.android.common.UseCase
-import io.ipoli.android.quest.BaseQuest
-import io.ipoli.android.quest.Color
-import io.ipoli.android.quest.Icon
+import io.ipoli.android.habit.data.Habit
+import io.ipoli.android.habit.persistence.HabitRepository
+import io.ipoli.android.quest.*
 import io.ipoli.android.tag.Tag
 import org.threeten.bp.LocalDate
 
@@ -15,9 +15,9 @@ import org.threeten.bp.LocalDate
  */
 class SaveChallengeUseCase(
     private val challengeRepository: ChallengeRepository,
-    private val saveQuestsForChallengeUseCase: SaveQuestsForChallengeUseCase
-) :
-    UseCase<SaveChallengeUseCase.Params, Challenge> {
+    private val saveQuestsForChallengeUseCase: SaveQuestsForChallengeUseCase,
+    private val habitRepository: HabitRepository
+) : UseCase<SaveChallengeUseCase.Params, Challenge> {
 
     override fun execute(parameters: Params): Challenge {
 
@@ -61,13 +61,19 @@ class SaveChallengeUseCase(
                 endDate = parameters.end,
                 trackedValues = parameters.trackedValues,
                 motivations = transformMotivations(parameters.motivations),
-                note = parameters.note
+                note = parameters.note,
+                presetChallengeId = (parameters as? Params.WithNewQuestsAndHabits)?.presetChallengeId
             )
         )
 
-        saveQuestsForChallengeUseCase.execute(
+        val baseQuests = saveQuestsForChallengeUseCase.execute(
             when (parameters) {
                 is Params.WithNewQuests ->
+                    SaveQuestsForChallengeUseCase.Params.WithNewQuests(
+                        c.id,
+                        parameters.quests
+                    )
+                is Params.WithNewQuestsAndHabits ->
                     SaveQuestsForChallengeUseCase.Params.WithNewQuests(
                         c.id,
                         parameters.quests
@@ -79,10 +85,25 @@ class SaveChallengeUseCase(
                         parameters.selectedQuestIds
                     )
             }
-
         )
 
-        return c
+        val habits =
+            if (parameters is Params.WithNewQuestsAndHabits) {
+                val hs = parameters.habits.map {
+                    it.copy(
+                        challengeId = c.id
+                    )
+                }
+                habitRepository.save(hs)
+            } else
+                emptyList()
+
+        return c.copy(
+            baseQuests = baseQuests,
+            quests = baseQuests.filterIsInstance<Quest>(),
+            repeatingQuests = baseQuests.filterIsInstance<RepeatingQuest>(),
+            habits = habits
+        )
     }
 
     sealed class Params(
@@ -97,6 +118,23 @@ class SaveChallengeUseCase(
         open val end: LocalDate,
         open val note: String
     ) {
+
+        data class WithNewQuestsAndHabits(
+            val quests: List<BaseQuest>,
+            val habits: List<Habit>,
+            override val id: String = "",
+            override val name: String,
+            override val tags: List<Tag>,
+            override val color: Color,
+            override val icon: Icon?,
+            override val difficulty: Challenge.Difficulty,
+            override val trackedValues: List<Challenge.TrackedValue>,
+            override val motivations: List<String>,
+            override val end: LocalDate,
+            override val note: String = "",
+            val presetChallengeId: String? = null
+        ) : Params(id, name, tags, color, icon, difficulty, trackedValues, motivations, end, note)
+
         data class WithNewQuests(
             val quests: List<BaseQuest>,
             override val id: String = "",

@@ -1,20 +1,18 @@
 package io.ipoli.android.common
 
 import io.ipoli.android.MyPoliApp
-import io.ipoli.android.challenge.predefined.category.list.ChallengeListForCategoryAction
-import io.ipoli.android.challenge.usecase.BuyChallengeUseCase
 import io.ipoli.android.common.di.BackgroundModule
-import io.ipoli.android.common.redux.Action
-import io.ipoli.android.common.redux.Dispatcher
 import io.ipoli.android.common.redux.SideEffectHandler
 import io.ipoli.android.pet.store.PetStoreAction
 import io.ipoli.android.pet.usecase.BuyPetUseCase
 import kotlinx.coroutines.experimental.Dispatchers
 import kotlinx.coroutines.experimental.GlobalScope
-import kotlinx.coroutines.experimental.channels.Channel
 import kotlinx.coroutines.experimental.launch
 import space.traversal.kapsule.Injects
 import space.traversal.kapsule.inject
+import io.ipoli.android.common.redux.Action
+import io.ipoli.android.common.redux.Dispatcher
+import kotlinx.coroutines.experimental.channels.Channel
 import space.traversal.kapsule.required
 
 /**
@@ -59,31 +57,6 @@ abstract class AppSideEffectHandler : SideEffectHandler<AppState>,
             }
         }
     }
-}
-
-object BuyPredefinedChallengeSideEffectHandler : AppSideEffectHandler() {
-
-    override suspend fun doExecute(action: Action, state: AppState) {
-        val challenge = (action as ChallengeListForCategoryAction.BuyChallenge).challenge
-        val result = buyChallengeUseCase.execute(BuyChallengeUseCase.Params(challenge))
-        when (result) {
-            is BuyChallengeUseCase.Result.ChallengeBought -> {
-                dispatch(ChallengeListForCategoryAction.ChallengeBought(challenge))
-            }
-
-            BuyChallengeUseCase.Result.TooExpensive -> {
-                dispatch(
-                    ChallengeListForCategoryAction.ChallengeTooExpensive(
-                        challenge
-                    )
-                )
-            }
-        }
-    }
-
-    private val buyChallengeUseCase by required { buyChallengeUseCase }
-
-    override fun canHandle(action: Action) = action is ChallengeListForCategoryAction.BuyChallenge
 }
 
 object ChangePetSideEffectHandler : AppSideEffectHandler() {

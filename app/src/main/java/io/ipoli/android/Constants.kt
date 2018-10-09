@@ -316,8 +316,8 @@ interface Constants {
 
         const val PLAYER_REVIVE_HEALTH_PERCENTAGE = 0.8f
 
-        val DEFAULT_REMINDER_NOTIFICATION_STYLE = NotificationStyle.POPUP
-        val DEFAULT_PLAN_DAY_NOTIFICATION_STYLE = NotificationStyle.POPUP
+        val DEFAULT_REMINDER_NOTIFICATION_STYLE = NotificationStyle.ALL
+        val DEFAULT_PLAN_DAY_NOTIFICATION_STYLE = NotificationStyle.ALL
         val DEFAULT_START_VIEW = StartView.CALENDAR
     }
 }

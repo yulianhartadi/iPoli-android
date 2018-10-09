@@ -11,7 +11,6 @@ import io.ipoli.android.habit.usecase.UndoCompleteHabitUseCase
 import io.ipoli.android.pet.AndroidPetAvatar
 import io.ipoli.android.quest.Quest
 import io.ipoli.android.quest.view.RewardPopup
-import kotlinx.coroutines.experimental.CommonPool
 import kotlinx.coroutines.experimental.Dispatchers
 import kotlinx.coroutines.experimental.GlobalScope
 import kotlinx.coroutines.experimental.launch

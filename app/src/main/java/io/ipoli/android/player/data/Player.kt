@@ -7,7 +7,7 @@ import android.support.annotation.StringRes
 import io.ipoli.android.Constants
 import io.ipoli.android.R
 import io.ipoli.android.achievement.Achievement
-import io.ipoli.android.challenge.predefined.entity.PredefinedChallenge
+import io.ipoli.android.challenge.preset.PresetChallenge
 import io.ipoli.android.common.Reward
 import io.ipoli.android.common.datetime.Time
 import io.ipoli.android.common.datetime.TimeOfDay
@@ -355,7 +355,7 @@ data class Player(
     fun hasColorPack(colorPack: ColorPack) =
         inventory.hasColorPack(colorPack)
 
-    fun hasChallenge(challenge: PredefinedChallenge) = inventory.hasChallenge(challenge)
+    fun hasChallenge(challenge: PresetChallenge) = inventory.hasChallenge(challenge)
 
     fun isPowerUpEnabled(powerUp: PowerUp.Type) = inventory.isPowerUpEnabled(powerUp)
 
@@ -514,7 +514,7 @@ data class Inventory(
     val themes: Set<Theme> = setOf(),
     val colorPacks: Set<ColorPack> = setOf(),
     val iconPacks: Set<IconPack> = setOf(),
-    val challenges: Set<PredefinedChallenge> = setOf(),
+    val presetChallengeIds: Set<String> = setOf(),
     val powerUps: List<PowerUp> = listOf()
 ) {
     fun addFood(food: Food, quantity: Int = 1): Inventory {
@@ -598,11 +598,11 @@ data class Inventory(
         )
     }
 
-    fun hasChallenge(challengeType: PredefinedChallenge) =
-        challenges.contains(challengeType)
+    fun hasChallenge(presetChallenge: PresetChallenge) =
+        presetChallengeIds.contains(presetChallenge.id)
 
-    fun addChallenge(challenge: PredefinedChallenge) =
-        copy(challenges = this.challenges + challenge)
+    fun addChallenge(presetChallenge: PresetChallenge) =
+        copy(presetChallengeIds = this.presetChallengeIds + presetChallenge.id)
 
     fun addPowerUp(powerUp: PowerUp): Inventory {
         require(!isPowerUpEnabled(powerUp.type))

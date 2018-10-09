@@ -78,7 +78,7 @@ data class DbInventory(val map: MutableMap<String, Any?> = mutableMapOf()) {
     var themes: List<String> by map
     var colorPacks: List<String> by map
     var iconPacks: List<String> by map
-    var challenges: List<String> by map
+    var presetChallengeIds: List<String> by map
     var powerUps: MutableMap<String, Long> by map
 }
 

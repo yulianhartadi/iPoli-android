@@ -16,6 +16,7 @@ import io.ipoli.android.common.persistence.getSync
 import io.ipoli.android.friends.feed.data.Post
 import io.ipoli.android.player.data.Avatar
 import io.ipoli.android.player.persistence.model.DbPlayer
+import kotlinx.coroutines.experimental.GlobalScope
 import kotlinx.coroutines.experimental.asCoroutineDispatcher
 import kotlinx.coroutines.experimental.async
 import kotlinx.coroutines.experimental.channels.Channel
@@ -139,13 +140,13 @@ class AndroidPostRepository(
         val playerIds = dbRefs.map { it.playerId }.toSet()
 
         val dbPlayerJobs = playerIds.map {
-            async(coroutineDispatcher) {
+            GlobalScope.async(coroutineDispatcher) {
                 it to DbPlayer(playerRef(it).getSync().data!!)
             }
         }
 
         val dbPostJobs = dbRefs.map {
-            async(coroutineDispatcher) {
+            GlobalScope.async(coroutineDispatcher) {
                 playerRef(it.playerId)
                     .collection("posts")
                     .document(it.postId)
@@ -185,13 +186,13 @@ class AndroidPostRepository(
         val playerIds = dbRefs.map { it.playerId }.toSet()
 
         val dbPlayerJobs = playerIds.map {
-            async(coroutineDispatcher) {
+            GlobalScope.async(coroutineDispatcher) {
                 it to DbPlayer(playerRef(it).getSync().data!!)
             }
         }
 
         val dbPostJobs = dbRefs.map {
-            async(coroutineDispatcher) {
+            GlobalScope.async(coroutineDispatcher) {
                 playerRef(it.playerId)
                     .collection("posts")
                     .document(it.postId)
@@ -654,7 +655,7 @@ class AndroidPostRepository(
         val coroutineDispatcher = executorService.asCoroutineDispatcher()
 
         val postJobs = unknownStatusQuestIds.map {
-            async(coroutineDispatcher) {
+            GlobalScope.async(coroutineDispatcher) {
                 playerRef(playerId)
                     .collection("posts")
                     .whereEqualTo("questId", it)

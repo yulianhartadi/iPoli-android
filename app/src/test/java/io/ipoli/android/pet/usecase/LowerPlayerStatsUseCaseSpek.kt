@@ -70,7 +70,7 @@ class LowerPlayerStatsUseCaseSpek : Spek({
                 }
 
                 val newPlayer = executeUseCase(questRepo)
-                newPlayer.pet.healthPoints.`should be equal to`(12)
+                newPlayer.pet.healthPoints.`should be equal to`(4)
                 newPlayer.pet.moodPoints.`should be equal to`(34)
                 newPlayer.health.current.`should be equal to`(player.health.current - 27)
             }
@@ -88,8 +88,8 @@ class LowerPlayerStatsUseCaseSpek : Spek({
                 }
 
                 val newPlayer = executeUseCase(questRepo)
-                newPlayer.pet.healthPoints.`should be equal to`(37)
-                newPlayer.pet.moodPoints.`should be equal to`(86)
+                newPlayer.pet.healthPoints.`should be equal to`(34)
+                newPlayer.pet.moodPoints.`should be equal to`(83)
                 newPlayer.health.current.`should be equal to`(player.health.current - 5)
             }
 
@@ -106,8 +106,8 @@ class LowerPlayerStatsUseCaseSpek : Spek({
                 }
 
                 val newPlayer = executeUseCase(questRepo)
-                newPlayer.pet.healthPoints.`should be equal to`(33)
-                newPlayer.pet.moodPoints.`should be equal to`(82)
+                newPlayer.pet.healthPoints.`should be equal to`(26)
+                newPlayer.pet.moodPoints.`should be equal to`(75)
                 newPlayer.health.current.`should be equal to`(player.health.current - 8)
             }
 
@@ -124,8 +124,8 @@ class LowerPlayerStatsUseCaseSpek : Spek({
                 }
 
                 val newPlayer = executeUseCase(questRepo)
-                newPlayer.pet.healthPoints.`should be equal to`(29)
-                newPlayer.pet.moodPoints.`should be equal to`(78)
+                newPlayer.pet.healthPoints.`should be equal to`(19)
+                newPlayer.pet.moodPoints.`should be equal to`(34)
                 newPlayer.health.current.`should be equal to`(player.health.current - 10)
             }
 
@@ -142,7 +142,7 @@ class LowerPlayerStatsUseCaseSpek : Spek({
                 }
 
                 val newPlayer = executeUseCase(questRepo)
-                newPlayer.pet.healthPoints.`should be equal to`(19)
+                newPlayer.pet.healthPoints.`should be equal to`(9)
                 newPlayer.pet.moodPoints.`should be equal to`(34)
                 newPlayer.health.current.`should be equal to`(player.health.current - 21)
             }
@@ -170,7 +170,7 @@ class LowerPlayerStatsUseCaseSpek : Spek({
                 )
 
                 val newPlayer = executeUseCase(questRepo, playerRepository)
-                newPlayer.pet.healthPoints.`should be equal to`(12)
+                newPlayer.pet.healthPoints.`should be equal to`(4)
                 newPlayer.pet.moodPoints.`should be equal to`(34)
                 newPlayer.health.current.`should be equal to`(player.health.current - 35)
             }
@@ -198,7 +198,7 @@ class LowerPlayerStatsUseCaseSpek : Spek({
                 )
 
                 val newPlayer = executeUseCase(questRepo, playerRepository)
-                newPlayer.pet.healthPoints.`should be equal to`(12)
+                newPlayer.pet.healthPoints.`should be equal to`(4)
                 newPlayer.pet.moodPoints.`should be equal to`(34)
                 newPlayer.health.current.`should be equal to`(player.health.current - 35)
             }

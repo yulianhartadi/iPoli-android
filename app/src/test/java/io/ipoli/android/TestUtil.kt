@@ -61,10 +61,18 @@ object TestUtil {
         on { save(any<Quest>()) } doAnswer { invocation ->
             invocation.getArgument(0)
         }
+
+        on { save(any<List<Quest>>()) } doAnswer { invocation ->
+            invocation.getArgument(0)
+        }
     }
 
     fun repeatingQuestRepoMock() = mock<RepeatingQuestRepository> {
         on { save(any<RepeatingQuest>()) } doAnswer { invocation ->
+            invocation.getArgument(0)
+        }
+
+        on { save(any<List<RepeatingQuest>>()) } doAnswer { invocation ->
             invocation.getArgument(0)
         }
     }
@@ -79,6 +87,10 @@ object TestUtil {
     fun habitRepoMock(habit: Habit?) = mock<HabitRepository> {
         on { findById(habit?.id ?: "") } doReturn habit
         on { save(any<Habit>()) } doAnswer { invocation ->
+            invocation.getArgument(0)
+        }
+
+        on { save(any<List<Habit>>()) } doAnswer { invocation ->
             invocation.getArgument(0)
         }
     }

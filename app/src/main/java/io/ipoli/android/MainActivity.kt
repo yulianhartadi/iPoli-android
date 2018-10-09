@@ -243,8 +243,6 @@ class MainActivity : AppCompatActivity(), Injects<UIModule>, SideEffectHandler<A
             GlobalScope.launch(Dispatchers.Main) {
                 if (p.isLoggedIn() && p.username.isNullOrEmpty()) {
                     Navigator(router).setAuth()
-                } else if (p.isDead) {
-                    RevivePopup().show(this@MainActivity)
                 } else if (Random().nextInt(10) == 1 && p.membership == Membership.NONE) {
                     showPremiumSnackbar()
                 }
@@ -272,6 +270,9 @@ class MainActivity : AppCompatActivity(), Injects<UIModule>, SideEffectHandler<A
     override fun onResume() {
         super.onResume()
         stateStore.addSideEffectHandler(this)
+        if (sharedPreferences.getBoolean(Constants.KEY_PLAYER_DEAD, false)) {
+            RevivePopup().show(this)
+        }
     }
 
     override fun onPause() {

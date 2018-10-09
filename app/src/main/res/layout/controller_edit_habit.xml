@@ -25,8 +25,8 @@
             android:descendantFocusability="beforeDescendants"
             android:focusableInTouchMode="true"
             android:orientation="vertical"
-            android:paddingEnd="16dp"
-            android:paddingStart="16dp">
+            android:paddingStart="16dp"
+            android:paddingEnd="16dp">
 
             <ImageView
                 android:id="@+id/habitSelectedIcon"
@@ -43,8 +43,8 @@
                 style="@style/TextAppearance.myPoli.EditName.TextInputLayout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginEnd="16dp"
                 android:layout_marginStart="16dp"
+                android:layout_marginEnd="16dp"
                 android:textColorHint="@color/md_light_text_50">
 
                 <android.support.design.widget.TextInputEditText
@@ -56,22 +56,22 @@
             <android.support.constraint.ConstraintLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="16dp"
-                android:layout_marginTop="16dp">
+                android:layout_marginTop="16dp"
+                android:layout_marginBottom="16dp">
 
                 <ImageView
                     android:id="@+id/goodHabit"
                     android:layout_width="48dp"
                     android:layout_height="48dp"
+                    android:layout_marginEnd="16dp"
                     android:background="@drawable/circle_white"
                     android:scaleType="fitCenter"
-                    android:layout_marginEnd="16dp"
-                    app:layout_goneMarginEnd="0dp"
                     app:layout_constraintBottom_toTopOf="@+id/habitTypeLabel"
                     app:layout_constraintEnd_toStartOf="@+id/badHabit"
                     app:layout_constraintHorizontal_chainStyle="packed"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent" />
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_goneMarginEnd="0dp" />
 
                 <ImageView
                     android:id="@+id/badHabit"
@@ -115,8 +115,8 @@
                 style="@style/EditSimpleTextViewRow"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="8dp"
                 android:layout_marginTop="16dp"
+                android:layout_marginBottom="8dp"
                 android:clickable="false"
                 android:drawableStart="@drawable/ic_repeat_white_24dp"
                 android:focusable="false"
@@ -259,9 +259,9 @@
                 android:id="@+id/habitTagContainer"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="16dp"
-                android:layout_marginEnd="16dp"
                 android:layout_marginStart="56dp"
+                android:layout_marginEnd="16dp"
+                android:layout_marginBottom="16dp"
                 android:orientation="vertical">
 
                 <android.support.v7.widget.RecyclerView
@@ -289,8 +289,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="60dp"
                 android:gravity="center_vertical"
-                android:paddingEnd="16dp"
-                android:paddingStart="16dp">
+                android:paddingStart="16dp"
+                android:paddingEnd="16dp">
 
                 <ImageView
                     android:layout_width="24dp"

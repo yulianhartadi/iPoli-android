@@ -39,7 +39,11 @@ sealed class ChallengeAction : Action {
         override fun toMap() = mapOf("challengeId" to challengeId)
     }
 
-    class LogValue(val challengeId: String, val trackValueId: String, val log: Challenge.TrackedValue.Log) :
+    class LogValue(
+        val challengeId: String,
+        val trackValueId: String,
+        val log: Challenge.TrackedValue.Log
+    ) :
         ChallengeAction()
 }
 
@@ -73,8 +77,8 @@ object ChallengeReducer : BaseViewStateReducer<ChallengeViewState>() {
     private fun createChangedState(
         challenge: Challenge,
         state: ChallengeViewState
-    ): ChallengeViewState {
-        return state.copy(
+    ) =
+        state.copy(
             id = challenge.id,
             type = ChallengeViewState.StateType.DATA_CHANGED,
             name = challenge.name,
@@ -87,36 +91,38 @@ object ChallengeReducer : BaseViewStateReducer<ChallengeViewState>() {
             xAxisLabelCount = 5,
             quests = challenge.baseQuests,
             habits = challenge.habits,
-            canComplete = !challenge.isCompleted,
-            canEdit = !challenge.isCompleted,
+            canComplete = !challenge.isCompleted && !challenge.isFromPreset,
+            canEdit = !challenge.isCompleted && !challenge.isFromPreset,
+            canAdd = !challenge.isCompleted && !challenge.isFromPreset,
             motivations = challenge.motivations,
             note = challenge.note
         )
-    }
 
-    override fun defaultState() = ChallengeViewState(
-        type = ChallengeViewState.StateType.LOADING,
-        id = "",
-        name = "",
-        tags = listOf(),
-        color = Color.PINK,
-        difficulty = "",
-        endDate = LocalDate.now(),
-        nextDate = null,
-        trackedValues = emptyList(),
-        completedCount = -1,
-        totalCount = -1,
-        progressPercent = -1,
-        xAxisLabelCount = -1,
-        yAxisMax = -1,
-        chartData = sortedMapOf(),
-        quests = emptyList(),
-        habits = emptyList(),
-        canEdit = false,
-        canComplete = false,
-        motivations = emptyList(),
-        note = null
-    )
+    override fun defaultState() =
+        ChallengeViewState(
+            type = ChallengeViewState.StateType.LOADING,
+            id = "",
+            name = "",
+            tags = listOf(),
+            color = Color.PINK,
+            difficulty = "",
+            endDate = LocalDate.now(),
+            nextDate = null,
+            trackedValues = emptyList(),
+            completedCount = -1,
+            totalCount = -1,
+            progressPercent = -1,
+            xAxisLabelCount = -1,
+            yAxisMax = -1,
+            chartData = sortedMapOf(),
+            quests = emptyList(),
+            habits = emptyList(),
+            canEdit = false,
+            canComplete = false,
+            canAdd = false,
+            motivations = emptyList(),
+            note = null
+        )
 
     override val stateKey = key<ChallengeViewState>()
 }
@@ -141,6 +147,7 @@ data class ChallengeViewState(
     val habits: List<Habit>,
     val canEdit: Boolean,
     val canComplete: Boolean,
+    val canAdd: Boolean,
     val motivations: List<String>,
     val note: String?
 ) : BaseViewState() {

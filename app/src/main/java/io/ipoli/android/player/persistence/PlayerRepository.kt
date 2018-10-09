@@ -15,7 +15,6 @@ import com.google.firebase.firestore.ListenerRegistration
 import com.google.firebase.firestore.MetadataChanges
 import io.ipoli.android.Constants
 import io.ipoli.android.achievement.Achievement
-import io.ipoli.android.challenge.predefined.entity.PredefinedChallenge
 import io.ipoli.android.common.ErrorLogger
 import io.ipoli.android.common.datetime.*
 import io.ipoli.android.common.distinct
@@ -222,7 +221,12 @@ class AndroidPlayerRepository(
             itemDropBonus = cPet.itemDropBonus
         )
 
-        val ci = DbInventory(dbObject.inventory)
+        val iData = dbObject.inventory
+        if(!iData.containsKey("presetChallengeIds")) {
+            iData["presetChallengeIds"] = emptyList<String>()
+        }
+
+        val ci = DbInventory(iData)
         val inventory = Inventory(
             food = ci.food.entries.associate { Food.valueOf(it.key) to it.value.toInt() },
             avatars = ci.avatars.map { Avatar.valueOf(it) }.toSet(),
@@ -243,7 +247,7 @@ class AndroidPlayerRepository(
             themes = ci.themes.map { Theme.valueOf(it) }.toSet(),
             colorPacks = ci.colorPacks.map { ColorPack.valueOf(it) }.toSet(),
             iconPacks = ci.iconPacks.map { IconPack.valueOf(it) }.toSet(),
-            challenges = ci.challenges.map { PredefinedChallenge.valueOf(it) }.toSet()
+            presetChallengeIds = ci.presetChallengeIds.toSet()
         )
 
         if (!dbObject.preferences.containsKey("resetDayStartMinute")) {
@@ -547,7 +551,7 @@ class AndroidPlayerRepository(
             it.themes = inventory.themes.map { it.name }
             it.colorPacks = inventory.colorPacks.map { it.name }
             it.iconPacks = inventory.iconPacks.map { it.name }
-            it.challenges = inventory.challenges.map { it.name }
+            it.presetChallengeIds = inventory.presetChallengeIds.toList()
         }
 
     private fun createDbInventoryPet(inventoryPet: InventoryPet) =
@@ -801,7 +805,12 @@ class FirestorePlayerRepository(
             itemDropBonus = cPet.itemDropBonus
         )
 
-        val ci = DbInventory(cp.inventory)
+        val iData = cp.inventory
+        if(!iData.containsKey("presetChallengeIds")) {
+            iData["presetChallengeIds"] = emptyList<String>()
+        }
+
+        val ci = DbInventory(iData)
         val inventory = Inventory(
             food = ci.food.entries.associate { Food.valueOf(it.key) to it.value.toInt() },
             avatars = ci.avatars.map { Avatar.valueOf(it) }.toSet(),
@@ -822,7 +831,7 @@ class FirestorePlayerRepository(
             themes = ci.themes.map { Theme.valueOf(it) }.toSet(),
             colorPacks = ci.colorPacks.map { ColorPack.valueOf(it) }.toSet(),
             iconPacks = ci.iconPacks.map { IconPack.valueOf(it) }.toSet(),
-            challenges = ci.challenges.map { PredefinedChallenge.valueOf(it) }.toSet()
+            presetChallengeIds = ci.presetChallengeIds.toSet()
         )
 
         if (!cp.preferences.containsKey("resetDayStartMinute")) {
@@ -1130,7 +1139,7 @@ class FirestorePlayerRepository(
             it.themes = inventory.themes.map { it.name }
             it.colorPacks = inventory.colorPacks.map { it.name }
             it.iconPacks = inventory.iconPacks.map { it.name }
-            it.challenges = inventory.challenges.map { it.name }
+            it.presetChallengeIds = inventory.presetChallengeIds.toList()
         }
 
     private fun createDbInventoryPet(inventoryPet: InventoryPet) =

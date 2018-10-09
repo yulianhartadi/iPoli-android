@@ -142,14 +142,14 @@ class ReminderPickerDialogController :
         dialogBuilder
             .setPositiveButton(R.string.dialog_ok, null)
             .setNegativeButton(R.string.cancel, { _, _ -> ViewUtils.hideKeyboard(contentView) })
-            .setNeutralButton(R.string.do_not_remind, { _, _ ->
+            .setNeutralButton(R.string.do_not_remind) { _, _ ->
                 listener?.onReminderPicked(null)
-            })
+            }
             .create()
 
     override fun onDialogCreated(dialog: AlertDialog, contentView: View) {
         dialog.setOnShowListener {
-            dialog.getButton(DialogInterface.BUTTON_POSITIVE).onDebounceClick {
+            dialog.getButton(DialogInterface.BUTTON_POSITIVE).onDebounceClick { _ ->
                 dispatch(ReminderPickerAction.PickReminder)
             }
         }

@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.content.res.ColorStateList
 import android.graphics.drawable.GradientDrawable
+import android.support.annotation.AttrRes
 import android.support.annotation.DrawableRes
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
@@ -11,6 +12,7 @@ import android.text.Spannable
 import android.text.SpannableString
 import android.text.format.DateUtils
 import android.text.style.ForegroundColorSpan
+import android.util.TypedValue
 import android.view.MotionEvent
 import android.view.View
 import com.bumptech.glide.Glide
@@ -714,21 +716,28 @@ private fun Context.lightenText(
     firstPart: String,
     lastPart: String? = null
 ): SpannableString {
+    val color = colorRes(attrResourceId(this, android.R.attr.textColorSecondary))
     val textSpan = SpannableString.valueOf(text)
     textSpan.setSpan(
         ForegroundColorSpan(
-            colorRes(R.color.md_dark_text_54)
+            color
         ), 0, firstPart.length, Spannable.SPAN_INCLUSIVE_INCLUSIVE
     )
     lastPart?.let {
         textSpan.setSpan(
             ForegroundColorSpan(
-                colorRes(R.color.md_dark_text_54)
+                color
             ), text.length - it.length, text.length, Spannable.SPAN_INCLUSIVE_INCLUSIVE
         )
     }
     return textSpan
 }
+
+private fun attrResourceId(context: Context, @AttrRes attributeRes: Int) =
+    TypedValue().let {
+        context.theme.resolveAttribute(attributeRes, it, true)
+        it.resourceId
+    }
 
 private fun createPostForChallengeViewModel(
     it: Post,

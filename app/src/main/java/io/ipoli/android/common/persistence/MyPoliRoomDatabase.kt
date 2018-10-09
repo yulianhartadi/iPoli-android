@@ -472,6 +472,13 @@ object Migration4To5 : Migration(4, 5) {
     }
 }
 
+object Migration5To6 : Migration(5, 6) {
+    override fun migrate(database: SupportSQLiteDatabase) {
+        database.execSQL("ALTER TABLE challenges ADD COLUMN `presetChallengeId` TEXT DEFAULT NULL")
+    }
+
+}
+
 @Database(
     entities = [
         RoomPlayer::class,
@@ -488,7 +495,7 @@ object Migration4To5 : Migration(4, 5) {
         RoomEntityReminder::class,
         RoomPost::class
     ],
-    version = 5,
+    version = 6,
     exportSchema = false
 )
 @TypeConverters(Converters::class)
@@ -532,7 +539,8 @@ abstract class MyPoliRoomDatabase : RoomDatabase() {
                     Migration1To2,
                     Migration2To3,
                     Migration3To4,
-                    Migration4To5
+                    Migration4To5,
+                    Migration5To6
                 )
                 .addCallback(CALLBACK)
                 .build()

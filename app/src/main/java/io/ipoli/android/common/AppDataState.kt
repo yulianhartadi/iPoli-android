@@ -3,6 +3,7 @@ package io.ipoli.android.common
 import android.arch.paging.PagedList
 import io.ipoli.android.achievement.usecase.CreateAchievementItemsUseCase
 import io.ipoli.android.challenge.entity.Challenge
+import io.ipoli.android.challenge.preset.PresetChallenge
 import io.ipoli.android.common.datetime.Duration
 import io.ipoli.android.common.datetime.Minute
 import io.ipoli.android.common.redux.Action
@@ -143,6 +144,12 @@ sealed class DataLoadedAction : Action {
         val focusDuration: Duration<Minute>,
         val dailyChallengeProgress: CheckDailyChallengeProgressUseCase.Result
     ) : DataLoadedAction()
+
+    data class PresetChallengeListForCategoryChanged(
+        val category : PresetChallenge.Category,
+        val challenges: List<PresetChallenge>
+    ) : DataLoadedAction()
+
 }
 
 data class AppDataState(

@@ -79,6 +79,9 @@ val Controller.colorSurfaceResource
 val Controller.colorBackgroundResource
     get() = attrResourceId(android.R.attr.colorBackground)
 
+val Controller.colorAccent
+    get() = attrData(R.attr.colorAccent)
+
 var Controller.toolbarTitle: String
     set(value) {
         (activity!! as MainActivity).supportActionBar!!.title = value

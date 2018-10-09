@@ -1,6 +1,7 @@
 package io.ipoli.android.common.redux
 
 import io.ipoli.android.common.UiAction
+import kotlinx.coroutines.experimental.Dispatchers
 import kotlinx.coroutines.experimental.asCoroutineDispatcher
 import kotlinx.coroutines.experimental.launch
 import org.amshove.kluent.`should be equal to`
@@ -89,7 +90,8 @@ object StateStoreSpek : Spek({
                 reducers = setOf(testReducer),
                 sideEffectHandlers = sideEffectHandlers,
                 sideEffectHandlerExecutor = TestSideEffectHandlerExecutor(),
-                middleware = middleware
+                middleware = middleware,
+                coroutineDispatcher = Dispatchers.Unconfined
             )
 
         it("should call the reducer with no middleware") {

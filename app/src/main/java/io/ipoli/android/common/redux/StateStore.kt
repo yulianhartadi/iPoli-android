@@ -1,6 +1,7 @@
 package io.ipoli.android.common.redux
 
 import io.ipoli.android.common.UiAction
+import kotlinx.coroutines.experimental.CoroutineDispatcher
 import kotlinx.coroutines.experimental.Dispatchers
 import kotlinx.coroutines.experimental.GlobalScope
 import kotlinx.coroutines.experimental.channels.Channel
@@ -109,7 +110,8 @@ class StateStore<S : CompositeState<S>>(
     reducers: Set<Reducer<S, *>>,
     sideEffectHandlers: Set<SideEffectHandler<S>> = setOf(),
     private val sideEffectHandlerExecutor: SideEffectHandlerExecutor<S>,
-    middleware: List<MiddleWare<S>> = emptyList()
+    middleware: List<MiddleWare<S>> = emptyList(),
+    private val coroutineDispatcher: CoroutineDispatcher = Dispatchers.IO
 ) : Dispatcher {
 
     interface StateChangeSubscriber<in S> {
@@ -139,7 +141,7 @@ class StateStore<S : CompositeState<S>>(
     }
 
     private fun createStateActor() =
-        GlobalScope.actor<Action>(Dispatchers.IO, capacity = Channel.UNLIMITED) {
+        GlobalScope.actor<Action>(coroutineDispatcher, capacity = Channel.UNLIMITED) {
 
             for (action in channel) {
                 val res = executeMiddleware(state, action)

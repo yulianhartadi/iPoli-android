@@ -38,6 +38,7 @@ data class Challenge(
     val trackedValues: List<TrackedValue> = emptyList(),
     val note: String = "",
     val sharingPreference: SharingPreference = SharingPreference.PRIVATE,
+    val presetChallengeId: String? = null,
     override val createdAt: Instant = Instant.now(),
     override val updatedAt: Instant = Instant.now(),
     val removedAt: Instant? = null
@@ -104,6 +105,9 @@ data class Challenge(
 
     val isCompleted: Boolean
         get() = completedAtDate != null
+
+    val isFromPreset: Boolean
+        get() = presetChallengeId != null
 }
 
 enum class SharingPreference {

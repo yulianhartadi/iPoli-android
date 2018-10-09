@@ -6,11 +6,6 @@ import io.ipoli.android.challenge.QuestPickerViewState
 import io.ipoli.android.challenge.add.EditChallengeAction
 import io.ipoli.android.challenge.add.EditChallengeViewState
 import io.ipoli.android.challenge.complete.CompleteChallengePopup
-import io.ipoli.android.challenge.entity.Challenge
-import io.ipoli.android.challenge.predefined.PersonalizeChallengeAction
-import io.ipoli.android.challenge.predefined.PersonalizeChallengeViewState
-import io.ipoli.android.challenge.predefined.entity.PredefinedChallengeData
-import io.ipoli.android.challenge.predefined.usecase.SchedulePredefinedChallengeUseCase
 import io.ipoli.android.challenge.show.ChallengeAction
 import io.ipoli.android.challenge.show.ChallengeViewState
 import io.ipoli.android.challenge.usecase.*
@@ -23,9 +18,7 @@ import io.ipoli.android.quest.RepeatingQuest
 import kotlinx.coroutines.experimental.Dispatchers
 import kotlinx.coroutines.experimental.GlobalScope
 import kotlinx.coroutines.experimental.launch
-import org.threeten.bp.LocalDate
 import space.traversal.kapsule.required
-import java.util.*
 
 /**
  * Created by Polina Zhelyazkova <polina@mypoli.fun>
@@ -41,7 +34,6 @@ object ChallengeSideEffectHandler : AppSideEffectHandler() {
     private val logDataUseCase by required { logDataUseCase }
     private val loadQuestPickerQuestsUseCase by required { loadQuestPickerQuestsUseCase }
     private val completeChallengeUseCase by required { completeChallengeUseCase }
-    private val schedulePredefinedChallengeUseCase by required { schedulePredefinedChallengeUseCase }
 
     override suspend fun doExecute(action: Action, state: AppState) {
         when (action) {
@@ -157,40 +149,6 @@ object ChallengeSideEffectHandler : AppSideEffectHandler() {
                     CompleteChallengePopup(c).show(MyPoliApp.instance.asThemedWrapper())
                 }
             }
-
-            is PersonalizeChallengeAction.AcceptChallenge -> {
-                val s = state.stateFor(PersonalizeChallengeViewState::class.java)
-                val predefinedChallenge = s.challenge!!
-
-                val challenge =
-                    PredefinedChallengeData(
-                        predefinedChallenge.category,
-                        predefinedChallenge.quests.filter { s.selectedQuests.contains(it) },
-                        predefinedChallenge.durationDays
-                    )
-                val baseQuests = schedulePredefinedChallengeUseCase.execute(
-                    SchedulePredefinedChallengeUseCase.Params(challenge)
-                )
-                saveChallengeUseCase.execute(
-                    SaveChallengeUseCase.Params.WithNewQuests(
-                        id = "",
-                        tags = emptyList(),
-                        name = predefinedChallenge.title,
-                        color = predefinedChallenge.color,
-                        icon = predefinedChallenge.icon,
-                        difficulty = predefinedChallenge.difficulty,
-                        trackedValues = listOf(
-                            Challenge.TrackedValue.Progress(
-                                id = UUID.randomUUID().toString(),
-                                history = emptyMap<LocalDate, Challenge.TrackedValue.Log>().toSortedMap()
-                            )
-                        ),
-                        motivations = predefinedChallenge.motivations,
-                        end = LocalDate.now().plusDays((predefinedChallenge.durationDays - 1).toLong()),
-                        quests = baseQuests
-                    )
-                )
-            }
         }
 
     }
@@ -199,6 +157,4 @@ object ChallengeSideEffectHandler : AppSideEffectHandler() {
         action is QuestPickerAction
             || action is EditChallengeAction
             || action is ChallengeAction
-            || action is PersonalizeChallengeAction
-
 }

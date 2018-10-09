@@ -34,9 +34,9 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_horizontal"
-                    android:layout_marginEnd="16dp"
                     android:layout_marginStart="16dp"
                     android:layout_marginTop="16dp"
+                    android:layout_marginEnd="16dp"
                     android:ellipsize="marquee"
                     android:gravity="center_horizontal"
                     android:maxLines="3"
@@ -45,8 +45,8 @@
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginBottom="24dp"
                     android:layout_marginTop="24dp"
+                    android:layout_marginBottom="24dp"
                     android:weightSum="3">
 
                     <LinearLayout
@@ -167,8 +167,8 @@
                 android:id="@+id/tagList"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginEnd="16dp"
                 android:layout_marginStart="16dp"
+                android:layout_marginEnd="16dp"
                 android:gravity="center_horizontal" />
 
             <android.support.v7.widget.RecyclerView
@@ -180,10 +180,10 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="16dp"
-                android:layout_marginEnd="8dp"
                 android:layout_marginStart="8dp"
                 android:layout_marginTop="8dp"
+                android:layout_marginEnd="8dp"
+                android:layout_marginBottom="16dp"
                 android:background="@drawable/rounded_rectangle_surface_background"
                 android:orientation="vertical"
                 android:paddingBottom="40dp">
@@ -224,6 +224,20 @@
 
                 <TextView
                     style="@style/SectionTitle"
+                    android:text="@string/note" />
+
+                <TextView
+                    android:id="@+id/note"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="16dp"
+                    android:layout_marginEnd="16dp"
+                    android:background="?attr/selectableItemBackground"
+                    android:gravity="center_vertical"
+                    android:textAppearance="@style/TextAppearance.AppCompat.Body1" />
+
+                <TextView
+                    style="@style/SectionTitle"
                     android:text="@string/quests" />
 
                 <android.support.v7.widget.RecyclerView
@@ -236,8 +250,8 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:gravity="center"
-                    android:paddingBottom="8dp"
                     android:paddingTop="8dp"
+                    android:paddingBottom="8dp"
                     android:text="@string/challenge_empty_quest_list"
                     android:textAlignment="center"
                     android:textAppearance="@style/TextAppearance.AppCompat.Caption"
@@ -257,26 +271,12 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:gravity="center"
-                    android:paddingBottom="8dp"
                     android:paddingTop="8dp"
+                    android:paddingBottom="8dp"
                     android:text="@string/challenge_empty_habit_list"
                     android:textAlignment="center"
                     android:textAppearance="@style/TextAppearance.AppCompat.Caption"
                     android:textColor="?android:textColorSecondary" />
-
-                <TextView
-                    style="@style/SectionTitle"
-                    android:text="@string/note" />
-
-                <TextView
-                    android:id="@+id/note"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginEnd="16dp"
-                    android:layout_marginStart="16dp"
-                    android:background="?attr/selectableItemBackground"
-                    android:gravity="center_vertical"
-                    android:textAppearance="@style/TextAppearance.AppCompat.Body1" />
 
             </LinearLayout>
 

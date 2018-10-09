@@ -323,7 +323,7 @@ class PredefinedHabitListViewController(args: Bundle? = null) :
             vms.add(ItemViewModel.SectionItem("Good habits"))
             vms.addAll(good.map {
                 ItemViewModel.HabitItem(
-                    id = "",
+                    id = it.name,
                     name = it.name,
                     icon = it.icon.androidIcon.icon,
                     color = it.color.androidColor.color500,
@@ -333,7 +333,7 @@ class PredefinedHabitListViewController(args: Bundle? = null) :
             vms.add(ItemViewModel.SectionItem("Bad habits"))
             vms.addAll(bad.map {
                 ItemViewModel.HabitItem(
-                    id = "",
+                    id = it.name,
                     name = it.name,
                     icon = it.icon.androidIcon.icon,
                     color = it.color.androidColor.color500,

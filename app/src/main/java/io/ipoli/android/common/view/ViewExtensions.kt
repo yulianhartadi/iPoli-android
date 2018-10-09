@@ -22,6 +22,7 @@ import org.commonmark.node.Heading
 import ru.noties.markwon.Markwon
 import ru.noties.markwon.SpannableBuilder
 import ru.noties.markwon.SpannableConfiguration
+import ru.noties.markwon.il.AsyncDrawableLoader
 import ru.noties.markwon.renderer.SpannableMarkdownVisitor
 import ru.noties.markwon.spans.SpannableTheme
 
@@ -137,6 +138,7 @@ fun TextView.setMarkdown(markdown: String) {
         .codeTextSize(ViewUtils.spToPx(14, context))
         .build()
     val configuration = SpannableConfiguration.builder(context)
+        .asyncDrawableLoader(AsyncDrawableLoader.create())
         .theme(theme)
         .build()
 
@@ -169,14 +171,14 @@ class HeadlineColorVisitor(
 
     override fun visit(heading: Heading) {
 
-        val startLength = builder.length()
+        val startLength = builder.length
 
         super.visit(heading)
 
         builder.setSpan(
             ForegroundColorSpan(context.attrData(R.attr.colorAccent)),
             startLength,
-            builder.length()
+            builder.length
         )
     }
 }

@@ -217,6 +217,7 @@ class RoomChallengeRepository(
             },
             note = dbObject.note,
             sharingPreference = SharingPreference.valueOf(dbObject.sharingPreference),
+            presetChallengeId = dbObject.presetChallengeId,
             createdAt = dbObject.createdAt.instant,
             updatedAt = dbObject.updatedAt.instant,
             removedAt = dbObject.removedAt?.instant
@@ -290,6 +291,7 @@ class RoomChallengeRepository(
             },
             note = entity.note,
             sharingPreference = entity.sharingPreference.name,
+            presetChallengeId = entity.presetChallengeId,
             updatedAt = System.currentTimeMillis(),
             createdAt = entity.createdAt.toEpochMilli(),
             removedAt = entity.removedAt?.toEpochMilli()
@@ -346,6 +348,7 @@ data class RoomChallenge(
     val trackedValues: List<Map<String, Any?>>,
     val note: String,
     val sharingPreference: String,
+    val presetChallengeId: String?,
     val createdAt: Long,
     val updatedAt: Long,
     val removedAt: Long?
@@ -465,6 +468,7 @@ class FirestoreChallengeRepository(
             },
             note = c.note,
             sharingPreference = SharingPreference.valueOf(c.sharingPreference),
+            presetChallengeId = c.presetChallengeId,
             trackedValues = c.trackedValues.map { data ->
                 val valueData = data.toMutableMap()
 
@@ -550,6 +554,7 @@ class FirestoreChallengeRepository(
         c.completedAtMinute = entity.completedAtTime?.toMinuteOfDay()?.toLong()
         c.note = entity.note
         c.sharingPreference = entity.sharingPreference.name
+        c.presetChallengeId = entity.presetChallengeId
         c.trackedValues = entity.trackedValues.map {
             val dbVal = DbTrackedValue()
             dbVal.id = it.id
@@ -645,6 +650,7 @@ data class FirestoreChallenge(override val map: MutableMap<String, Any?> = mutab
     var completedAtMinute: Long? by map
     var note: String by map
     var sharingPreference: String by map
+    var presetChallengeId: String? by map
     var trackedValues: List<MutableMap<String, Any?>> by map
     override var createdAt: Long by map
     override var updatedAt: Long by map

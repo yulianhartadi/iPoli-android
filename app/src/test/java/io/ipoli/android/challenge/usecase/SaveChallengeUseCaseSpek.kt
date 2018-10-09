@@ -24,7 +24,8 @@ class SaveChallengeUseCaseSpek : Spek({
                 {
                     SaveChallengeUseCase(
                         TestUtil.challengeRepoMock(),
-                        mock()
+                        mock(),
+                        TestUtil.habitRepoMock(null)
                     ).execute(
                         SaveChallengeUseCase.Params.WithExistingQuests(
                             name = "",

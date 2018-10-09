@@ -4,9 +4,11 @@ import android.os.Bundle
 import android.support.v7.widget.LinearLayoutManager
 import android.view.*
 import io.ipoli.android.R
-import io.ipoli.android.challenge.predefined.category.ChallengeCategoryListViewController
 import io.ipoli.android.common.redux.android.ReduxViewController
-import io.ipoli.android.common.view.*
+import io.ipoli.android.common.view.invisible
+import io.ipoli.android.common.view.stringRes
+import io.ipoli.android.common.view.toolbarTitle
+import io.ipoli.android.common.view.visible
 import kotlinx.android.synthetic.main.controller_challenge_list.view.*
 import kotlinx.android.synthetic.main.view_empty_list.view.*
 import kotlinx.android.synthetic.main.view_loader.view.*
@@ -60,9 +62,7 @@ class ChallengeListViewController(args: Bundle? = null) :
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         if (item.itemId == R.id.actionPredefinedChallenges) {
-            rootRouter.pushController(
-                ChallengeCategoryListViewController.routerTransaction
-            )
+            navigateFromRoot().toPresetChallengeCategory()
             return true
         }
         return super.onOptionsItemSelected(item)

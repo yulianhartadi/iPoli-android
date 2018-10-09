@@ -20,7 +20,13 @@ import io.ipoli.android.challenge.edit.EditChallengeViewController
 import io.ipoli.android.challenge.edit.LogValueDialogController
 import io.ipoli.android.challenge.entity.Challenge
 import io.ipoli.android.challenge.picker.ChallengePickerDialogController
+import io.ipoli.android.challenge.preset.PresetChallenge
+import io.ipoli.android.challenge.preset.PresetChallengeViewController
+import io.ipoli.android.challenge.preset.category.ChallengeCategoryListViewController
+import io.ipoli.android.challenge.preset.category.list.ChallengeListForCategoryViewController
+import io.ipoli.android.challenge.preset.picker.PhysicalCharacteristicsPickerDialogController
 import io.ipoli.android.challenge.show.ChallengeViewController
+import io.ipoli.android.challenge.usecase.CreateChallengeFromPresetUseCase
 import io.ipoli.android.common.ConfirmationDialogViewController
 import io.ipoli.android.common.HelpDialogViewController
 import io.ipoli.android.common.ShareAppDialogController
@@ -242,6 +248,16 @@ class Navigator(private val router: Router) {
         pushController({ EditChallengeViewController(challengeId) }, HorizontalChangeHandler())
     }
 
+    fun toPhysicalCharacteristicsPicker(
+        listener: (CreateChallengeFromPresetUseCase.PhysicalCharacteristics?) -> Unit
+    ) {
+        pushDialog {
+            PhysicalCharacteristicsPickerDialogController(
+                listener
+            )
+        }
+    }
+
     fun toTargetValuePicker(
         targetValueSelectedListener: (Challenge.TrackedValue.Target) -> Unit,
         cancelListener: () -> Unit = {},
@@ -422,6 +438,27 @@ class Navigator(private val router: Router) {
         )
     }
 
+    fun toPresetChallengeCategory() {
+        pushController(
+            { ChallengeCategoryListViewController() },
+            VerticalChangeHandler()
+        )
+    }
+
+    fun toPresetChallenge(challenge: PresetChallenge) {
+        pushController(
+            { PresetChallengeViewController(challenge) },
+            SimpleSwapChangeHandler()
+        )
+    }
+
+    fun toChallengeListForCategory(category: PresetChallenge.Category) {
+        pushController(
+            { ChallengeListForCategoryViewController(category) },
+            HorizontalChangeHandler()
+        )
+    }
+
     fun toFeedback(listener: FeedbackDialogController.FeedbackListener) {
         pushDialog { FeedbackDialogController(listener) }
     }
@@ -546,12 +583,27 @@ class Navigator(private val router: Router) {
         createController: () -> C,
         changeHandler: ControllerChangeHandler?
     ) {
+        pushController(createController, changeHandler, changeHandler)
+    }
+
+    private inline fun <reified C : Controller> pushController(
+        createController: () -> C,
+        pushChangeHandler: ControllerChangeHandler?,
+        popChangeHandler: ControllerChangeHandler?
+    ) {
         val tag = tag<C>()
         val c = router.getControllerWithTag(tag)
         if (c == null || c.isBeingDestroyed || c.isDestroyed) {
-            router.pushController(createTransaction(createController(), changeHandler, tag))
+            router.pushController(
+                createTransaction(
+                    createController(),
+                    pushChangeHandler,
+                    popChangeHandler,
+                    tag
+                )
+            )
         } else {
-            router.pushController(createTransaction(c, changeHandler, tag))
+            router.pushController(createTransaction(c, pushChangeHandler, popChangeHandler, tag))
         }
     }
 
@@ -570,15 +622,22 @@ class Navigator(private val router: Router) {
         controller: Controller,
         changeHandler: ControllerChangeHandler?,
         tag: String
+    ) = createTransaction(controller, changeHandler, changeHandler, tag)
+
+    private fun createTransaction(
+        controller: Controller,
+        pushChangeHandler: ControllerChangeHandler?,
+        popChangeHandler: ControllerChangeHandler?,
+        tag: String
     ) =
-        if (changeHandler != null) {
-            RouterTransaction.with(controller)
-                .pushChangeHandler(changeHandler)
-                .popChangeHandler(changeHandler)
-                .tag(tag)
-        } else {
-            RouterTransaction.with(controller)
-                .tag(tag)
+        RouterTransaction.with(controller).apply {
+            pushChangeHandler?.let {
+                pushChangeHandler(it)
+            }
+            popChangeHandler?.let {
+                popChangeHandler(it)
+            }
+            tag(tag)
         }
 
     fun replaceWithCompletedQuest(questId: String, changeHandler: ControllerChangeHandler? = null) {

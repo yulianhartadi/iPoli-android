@@ -159,8 +159,4 @@ data class ReminderPickerViewState(
         TIME_VALUE_VALIDATION_ERROR,
         FINISHED
     }
-
-    companion object {
-        val Loading = ReminderPickerViewState(LOADING)
-    }
 }

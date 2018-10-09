@@ -22,7 +22,7 @@ class ResetDayJob : FixedDailyJob(ResetDayJob.TAG) {
         val kap = Kapsule<BackgroundModule>()
         val playerRepository by kap.required { playerRepository }
         val updateHabitStreaksUseCase by kap.required { updateHabitStreaksUseCase }
-        val lowerPetStatsUseCase by kap.required { lowerPlayerStatsUseCase }
+        val lowerPlayerStatsUseCase by kap.required { lowerPlayerStatsUseCase }
         val updatePlayerStatsUseCase by kap.required { updatePlayerStatsUseCase }
         val sharedPreferences by kap.required { sharedPreferences }
         kap.inject(MyPoliApp.backgroundModule(context))
@@ -38,7 +38,7 @@ class ResetDayJob : FixedDailyJob(ResetDayJob.TAG) {
 
         val oldPet = player.pet
 
-        val newPlayer = lowerPetStatsUseCase.execute(LowerPlayerStatsUseCase.Params())
+        val newPlayer = lowerPlayerStatsUseCase.execute(LowerPlayerStatsUseCase.Params())
         val newPet = newPlayer.pet
 
         if (oldPet.isDead != newPet.isDead) {

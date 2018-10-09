@@ -163,9 +163,9 @@ abstract class BaseRoomRepositoryWithTags<E : EntityWithTags, RE : RoomEntity, D
         val res = entities.map { toDatabaseObject(it) }
         dao.saveAll(res)
 
-        val joins = entities.map { e ->
+        val joins = entities.mapIndexed { i, e ->
             e.tags.map { t ->
-                createTagJoin(e.id, t.id)
+                createTagJoin(res[i].id, t.id)
             }
         }.flatten()
 

@@ -13,6 +13,7 @@ import io.ipoli.android.common.redux.Action
 import io.ipoli.android.common.redux.BaseViewState
 import io.ipoli.android.common.redux.android.ReduxViewController
 import io.ipoli.android.common.view.gone
+import io.ipoli.android.common.view.inflate
 import kotlinx.android.synthetic.main.controller_inventory.view.*
 import java.util.*
 
@@ -98,7 +99,8 @@ class InventoryViewController :
         container: ViewGroup,
         savedViewState: Bundle?
     ): View {
-        val view = inflater.inflate(R.layout.controller_inventory, container, false)
+        applyStatusBarColors = false
+        val view = container.inflate(R.layout.controller_inventory)
 
         if (!showGems) {
             view.inventoryGems.gone()

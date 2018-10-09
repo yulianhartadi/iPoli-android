@@ -2,15 +2,16 @@
 <android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/rootCoordinator"
     android:layout_width="match_parent"
-    android:background="?android:colorBackground"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:background="?android:colorBackground">
 
     <include layout="@layout/view_default_toolbar" />
 
     <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
         android:layout_width="match_parent"
+        android:layout_height="match_parent"
         android:layout_marginTop="?attr/actionBarSize"
-        android:layout_height="match_parent">
+        android:scrollbars="none">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -18,24 +19,25 @@
             android:orientation="vertical">
 
             <include
-                android:id="@+id/healthAndFitness"
-                layout="@layout/view_challenge_health_and_fitness" />
+                android:id="@+id/health"
+                layout="@layout/view_challenge_health" />
 
             <include
-                android:id="@+id/buildSkill"
-                layout="@layout/view_challenge_build_skill" />
+                android:id="@+id/fitness"
+                layout="@layout/view_challenge_fitness" />
 
             <include
-                android:id="@+id/deepWork"
-                layout="@layout/view_challenge_deep_work" />
-
-            <include
-                android:id="@+id/meTime"
-                layout="@layout/view_challenge_me_time" />
+                android:id="@+id/learning"
+                layout="@layout/view_challenge_learning" />
 
             <include
                 android:id="@+id/organizeLife"
-                layout="@layout/view_challenge_organize_my_life" />
+                layout="@layout/view_challenge_organize" />
+
+            <include
+                android:id="@+id/adventure"
+                layout="@layout/view_challenge_adventure" />
+
         </LinearLayout>
 
     </ScrollView>

@@ -58,6 +58,7 @@ class ChallengeViewController(args: Bundle? = null) :
     private var challengeId = ""
     private var showEdit = true
     private var showComplete = true
+    private var canAdd = true
 
     constructor(
         challengeId: String
@@ -161,7 +162,7 @@ class ChallengeViewController(args: Bundle? = null) :
             axisRight.granularity = 1f
             axisRight.setDrawAxisLine(false)
             axisRight.textSize = ViewUtils.spToPx(4, activity!!).toFloat()
-            axisRight.textColor = colorRes(R.color.md_dark_text_54)
+            axisRight.textColor = colorRes(colorTextSecondaryResource)
             axisRight.setValueFormatter { value, _ -> "    ${value.toInt()}" }
 
             axisLeft.isEnabled = false
@@ -170,7 +171,7 @@ class ChallengeViewController(args: Bundle? = null) :
             xAxis.isGranularityEnabled = true
             xAxis.granularity = 1f
             xAxis.textSize = ViewUtils.spToPx(4, activity!!).toFloat()
-            xAxis.textColor = colorRes(R.color.md_dark_text_54)
+            xAxis.textColor = colorRes(colorTextSecondaryResource)
             xAxis.setDrawGridLines(false)
             xAxis.position = XAxis.XAxisPosition.BOTTOM
             xAxis.setAvoidFirstLastClipping(true)
@@ -178,7 +179,7 @@ class ChallengeViewController(args: Bundle? = null) :
 
             xAxis.labelRotationAngle = 335f
 
-            legend.textColor = colorRes(R.color.md_dark_text_54)
+            legend.textColor = colorRes(colorTextSecondaryResource)
             legend.textSize = ViewUtils.spToPx(5, activity!!).toFloat()
             legend.form = Legend.LegendForm.CIRCLE
             legend.xEntrySpace = ViewUtils.dpToPx(4f, activity!!)
@@ -206,7 +207,7 @@ class ChallengeViewController(args: Bundle? = null) :
             axisRight.granularity = 1f
             axisRight.setDrawAxisLine(false)
             axisRight.textSize = ViewUtils.spToPx(4, activity!!).toFloat()
-            axisRight.textColor = colorRes(R.color.md_dark_text_54)
+            axisRight.textColor = colorRes(colorTextSecondaryResource)
             axisRight.setValueFormatter { value, _ -> "    ${value.toInt()}" }
 
             axisLeft.isEnabled = false
@@ -215,7 +216,7 @@ class ChallengeViewController(args: Bundle? = null) :
             xAxis.isGranularityEnabled = true
             xAxis.granularity = 1f
             xAxis.textSize = ViewUtils.spToPx(4f, activity!!).toFloat()
-            xAxis.textColor = colorRes(R.color.md_dark_text_54)
+            xAxis.textColor = colorRes(colorTextSecondaryResource)
             xAxis.setDrawGridLines(false)
             xAxis.position = XAxis.XAxisPosition.BOTTOM
             xAxis.setAvoidFirstLastClipping(true)
@@ -223,7 +224,7 @@ class ChallengeViewController(args: Bundle? = null) :
 
             xAxis.labelRotationAngle = 335f
 
-            legend.textColor = colorRes(R.color.md_dark_text_54)
+            legend.textColor = colorRes(colorTextSecondaryResource)
             legend.textSize = ViewUtils.spToPx(5, activity!!).toFloat()
             legend.form = Legend.LegendForm.CIRCLE
             legend.xEntrySpace = ViewUtils.dpToPx(4f, activity!!)
@@ -317,6 +318,11 @@ class ChallengeViewController(args: Bundle? = null) :
                 showComplete = state.canComplete
                 showEdit = state.canEdit
                 activity!!.invalidateOptionsMenu()
+                if(state.canAdd) {
+                    view.addQuests.visible()
+                } else {
+                    view.addQuests.gone()
+                }
 
                 colorLayout(state, view)
 
@@ -556,7 +562,7 @@ class ChallengeViewController(args: Bundle? = null) :
         barDataSet.axisDependency = YAxis.AxisDependency.RIGHT
         val data = BarData(barDataSet)
         data.setValueTextSize(ViewUtils.spToPx(4f, activity!!).toFloat())
-        data.setValueTextColor(colorRes(R.color.md_dark_text_87))
+        data.setValueTextColor(colorRes(colorTextPrimaryResource))
         data.setValueFormatter { value, _, _, _ ->
             DECIMAL_FORMATTER.format(value)
         }

@@ -16,9 +16,11 @@ open class SaveQuestsForChallengeUseCase(
     private val questRepository: QuestRepository,
     private val repeatingQuestRepository: RepeatingQuestRepository,
     private val saveRepeatingQuestUseCase: SaveRepeatingQuestUseCase
-) : UseCase<SaveQuestsForChallengeUseCase.Params, Unit> {
+) : UseCase<SaveQuestsForChallengeUseCase.Params, List<BaseQuest>> {
 
-    override fun execute(parameters: SaveQuestsForChallengeUseCase.Params) {
+    override fun execute(parameters: SaveQuestsForChallengeUseCase.Params): List<BaseQuest> {
+
+        val result = mutableListOf<BaseQuest>()
 
         val challengeId = parameters.challengeId
 
@@ -46,23 +48,25 @@ open class SaveQuestsForChallengeUseCase(
 
         quests
             .map { (it as Quest).copy(challengeId = challengeId) }
-            .let { questRepository.save(it) }
+            .let { result.addAll(questRepository.save(it)) }
 
         when (parameters) {
             is Params.WithNewQuests -> {
                 repeatingQuests.forEach {
                     val rq = it as RepeatingQuest
-                    saveRepeatingQuestUseCase.execute(
-                        SaveRepeatingQuestUseCase.Params(
-                            name = rq.name,
-                            subQuestNames = rq.subQuests.map { it.name },
-                            color = rq.color,
-                            icon = rq.icon,
-                            startTime = rq.startTime,
-                            duration = rq.duration,
-                            reminders = rq.reminders,
-                            challengeId = challengeId,
-                            repeatPattern = rq.repeatPattern
+                    result.add(
+                        saveRepeatingQuestUseCase.execute(
+                            SaveRepeatingQuestUseCase.Params(
+                                name = rq.name,
+                                subQuestNames = rq.subQuests.map { sq -> sq.name },
+                                color = rq.color,
+                                icon = rq.icon,
+                                startTime = rq.startTime,
+                                duration = rq.duration,
+                                reminders = rq.reminders,
+                                challengeId = challengeId,
+                                repeatPattern = rq.repeatPattern
+                            )
                         )
                     )
                 }
@@ -71,7 +75,7 @@ open class SaveQuestsForChallengeUseCase(
 
                 repeatingQuests
                     .map { (it as RepeatingQuest).copy(challengeId = challengeId) }
-                    .let { repeatingQuestRepository.save(it) }
+                    .let { result.addAll(repeatingQuestRepository.save(it)) }
 
                 val rqIds = repeatingQuests.map { it.id }
 
@@ -79,9 +83,11 @@ open class SaveQuestsForChallengeUseCase(
                     .map { questRepository.findAllForRepeatingQuestAfterDate(it, true) }
                     .flatten()
                     .map { it.copy(challengeId = challengeId) }
-                    .let { questRepository.save(it) }
+                    .let { result.addAll(questRepository.save(it)) }
             }
         }
+
+        return result
     }
 
     sealed class Params(
