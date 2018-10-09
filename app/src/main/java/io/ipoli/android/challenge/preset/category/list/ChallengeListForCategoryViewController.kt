@@ -1,5 +1,6 @@
 package io.ipoli.android.challenge.preset.category.list
 
+import android.graphics.drawable.Drawable
 import android.net.Uri
 import android.os.Bundle
 import android.support.annotation.ColorRes
@@ -11,9 +12,13 @@ import android.view.LayoutInflater
 import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
-import com.bumptech.glide.Glide
+import com.bumptech.glide.ListPreloader
+import com.bumptech.glide.integration.recyclerview.RecyclerViewPreloader
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.bumptech.glide.request.RequestOptions
+import com.bumptech.glide.util.FixedPreloadSizeProvider
+import io.ipoli.android.GlideApp
+import io.ipoli.android.GlideRequest
 import io.ipoli.android.R
 import io.ipoli.android.challenge.preset.PresetChallenge
 import io.ipoli.android.challenge.preset.category.list.ChallengeListForCategoryViewState.StateType.DATA_CHANGED
@@ -49,6 +54,13 @@ class ChallengeListForCategoryViewController :
 
     constructor(args: Bundle? = null) : super(args)
 
+    companion object {
+        val IMAGE_WIDTH = 1000
+        val IMAGE_HEIGHT = 500
+    }
+
+    private lateinit var preLoader: RecyclerViewPreloader<ChallengeViewModel>
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup,
@@ -62,11 +74,25 @@ class ChallengeListForCategoryViewController :
         view.toolbarTitle.text = category.name.toLowerCase().capitalize()
 
         view.challengeList.layoutManager = LinearLayoutManager(container.context)
-        view.challengeList.adapter = ChallengeAdapter()
+        val adapter = ChallengeAdapter()
+        view.challengeList.adapter = adapter
+
+        preLoader = RecyclerViewPreloader<ChallengeViewModel>(
+            GlideApp.with(activity!!),
+            adapter,
+            FixedPreloadSizeProvider(IMAGE_WIDTH, IMAGE_HEIGHT),
+            2
+        )
+        view.challengeList.addOnScrollListener(preLoader)
 
         setChildController(view.playerGems, InventoryViewController())
 
         return view
+    }
+
+    override fun onDestroyView(view: View) {
+        view.challengeList.removeOnScrollListener(preLoader)
+        super.onDestroyView(view)
     }
 
     override fun onCreateLoadAction() =
@@ -98,7 +124,9 @@ class ChallengeListForCategoryViewController :
     override fun render(state: ChallengeListForCategoryViewState, view: View) {
         when (state.type) {
             DATA_CHANGED -> {
-                (view.challengeList.adapter as ChallengeAdapter).updateAll(state.viewModels)
+                val viewModels = state.viewModels
+
+                (view.challengeList.adapter as ChallengeAdapter).updateAll(viewModels)
                 view.loader.gone()
                 view.emptyContainer.gone()
                 view.challengeList.visible()
@@ -132,21 +160,30 @@ class ChallengeListForCategoryViewController :
     ) : RecyclerViewViewModel
 
     inner class ChallengeAdapter :
-        BaseRecyclerViewAdapter<ChallengeViewModel>(R.layout.item_preset_challenge) {
-        override fun onBindViewModel(vm: ChallengeViewModel, view: View, holder: SimpleViewHolder) {
+        BaseRecyclerViewAdapter<ChallengeViewModel>(R.layout.item_preset_challenge),
+        ListPreloader.PreloadModelProvider<ChallengeViewModel> {
 
-            Glide.with(view.context).load(vm.image)
+        override fun getPreloadItems(position: Int) = mutableListOf(items[position])
+
+        override fun getPreloadRequestBuilder(item: ChallengeViewModel) = glideRequest(item)
+
+        private fun glideRequest(item: ChallengeViewModel): GlideRequest<Drawable> {
+            return GlideApp.with(activity!!).load(item.image)
+                .override(IMAGE_WIDTH, IMAGE_HEIGHT)
                 .apply(
                     RequestOptions().transform(
                         RoundedCorners(
                             ViewUtils.dpToPx(
                                 8f,
-                                view.context
+                                activity!!
                             ).toInt()
                         )
                     )
                 )
-                .into(view.challengeBackgroundImage)
+        }
+
+        override fun onBindViewModel(vm: ChallengeViewModel, view: View, holder: SimpleViewHolder) {
+            glideRequest(vm).into(view.challengeBackgroundImage)
 
             view.challengeName.text = vm.name
             view.challengeDescription.text = vm.description

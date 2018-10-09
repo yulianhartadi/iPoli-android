@@ -124,6 +124,9 @@ dependencies {
 
     implementation 'com.github.bumptech.glide:glide:4.8.0'
     kapt 'com.github.bumptech.glide:compiler:4.8.0'
+    implementation ("com.github.bumptech.glide:recyclerview-integration:4.8.0") {
+        transitive = false
+    }
 
     implementation 'com.airbnb.android:lottie:2.6.1'
     implementation 'ru.noties:markwon:2.0.0'
