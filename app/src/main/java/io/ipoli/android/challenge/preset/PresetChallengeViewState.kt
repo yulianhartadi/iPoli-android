@@ -16,7 +16,15 @@ import io.ipoli.android.tag.Tag
  * on 9/29/18.
  */
 sealed class PresetChallengeAction : Action {
-    data class Load(val challenge: PresetChallenge) : PresetChallengeAction()
+    data class Load(val challenge: PresetChallenge) : PresetChallengeAction() {
+        override fun toMap() = mapOf(
+            "id" to challenge.id,
+            "name" to challenge.name,
+            "isPaid" to (challenge.gemPrice > 0),
+            "gemPrice" to challenge.gemPrice
+        )
+    }
+
     data class Accept(
         val challenge: PresetChallenge,
         val tags: List<Tag>,
