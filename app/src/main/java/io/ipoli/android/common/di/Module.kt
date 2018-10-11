@@ -89,7 +89,6 @@ import io.ipoli.android.habit.persistence.RoomHabitRepository
 import io.ipoli.android.habit.sideeffect.HabitSideEffectHandler
 import io.ipoli.android.habit.usecase.*
 import io.ipoli.android.note.usecase.SaveQuestNoteUseCase
-import io.ipoli.android.onboarding.sideeffecthandler.OnboardingSideEffectHandler
 import io.ipoli.android.pet.PetDialogSideEffectHandler
 import io.ipoli.android.pet.sideeffect.PetSideEffectHandler
 import io.ipoli.android.pet.usecase.*
@@ -1022,7 +1021,6 @@ class AndroidStateStoreModule : StateStoreModule, Injects<UIModule> {
                 GemPackSideEffectHandler,
                 StoreSideEffectHandler,
                 PetSideEffectHandler,
-                OnboardingSideEffectHandler,
                 PlanDaySideEffectHandler,
                 SettingsSideEffectHandler,
                 MigrationSideEffectHandler,

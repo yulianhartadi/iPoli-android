@@ -48,6 +48,7 @@ import io.ipoli.android.habit.predefined.PredefinedHabitListViewController
 import io.ipoli.android.note.NotePickerDialogController
 import io.ipoli.android.onboarding.OnboardData
 import io.ipoli.android.onboarding.OnboardViewController
+import io.ipoli.android.onboarding.scenes.PickOnboardItemsViewController
 import io.ipoli.android.pet.PetViewController
 import io.ipoli.android.pet.store.PetStoreViewController
 import io.ipoli.android.planday.PlanDayViewController
@@ -470,6 +471,12 @@ class Navigator(private val router: Router) {
         )
     }
 
+    fun toPickOnboardItems() {
+        pushController(
+            { PickOnboardItemsViewController() },
+            HorizontalChangeHandler()
+        )
+    }
 
     fun toShareApp() {
         pushDialog { ShareAppDialogController() }

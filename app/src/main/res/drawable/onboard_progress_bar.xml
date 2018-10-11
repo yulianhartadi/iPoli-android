@@ -2,14 +2,14 @@
 <layer-list xmlns:android="http://schemas.android.com/apk/res/android">
     <item android:id="@android:id/secondaryProgress">
         <shape>
-            <solid android:color="@color/md_red_400"/>
+            <solid android:color="@color/md_light_text_38"/>
             <corners android:radius="8dp"/>
         </shape>
     </item>
     <item android:id="@android:id/progress">
         <scale android:scaleWidth="100%">
             <shape>
-                <solid android:color="@color/md_red_900"/>
+                <solid android:color="@color/md_red_A400"/>
                 <corners android:radius="8dp"/>
             </shape>
         </scale>

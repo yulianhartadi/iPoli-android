@@ -4,36 +4,164 @@ import android.content.res.ColorStateList
 import android.os.Bundle
 import android.support.v7.widget.LinearLayoutManager
 import android.view.*
+import com.bluelinelabs.conductor.changehandler.HorizontalChangeHandler
 import com.mikepenz.google_material_typeface_library.GoogleMaterial
 import com.mikepenz.iconics.IconicsDrawable
 import io.ipoli.android.R
-import io.ipoli.android.common.redux.android.BaseViewController
+import io.ipoli.android.common.AppState
+import io.ipoli.android.common.BaseViewStateReducer
+import io.ipoli.android.common.redux.Action
+import io.ipoli.android.common.redux.BaseViewState
+import io.ipoli.android.common.redux.android.ReduxViewController
 import io.ipoli.android.common.view.*
 import io.ipoli.android.common.view.recyclerview.MultiViewRecyclerViewAdapter
 import io.ipoli.android.common.view.recyclerview.RecyclerViewViewModel
 import io.ipoli.android.habit.predefined.PredefinedHabit
-import io.ipoli.android.onboarding.OnboardAction
-import io.ipoli.android.onboarding.OnboardReducer
-import io.ipoli.android.onboarding.OnboardViewController
-import io.ipoli.android.onboarding.OnboardViewState
+import io.ipoli.android.onboarding.OnboardData
+import io.ipoli.android.onboarding.OnboardData.Tag
+import io.ipoli.android.onboarding.scenes.PickOnboardItemsViewState.StateType.*
 import io.ipoli.android.quest.Color
 import io.ipoli.android.quest.Icon
 import io.ipoli.android.quest.Reminder
 import io.ipoli.android.quest.RepeatingQuest
 import io.ipoli.android.repeatingquest.entity.RepeatPattern
-import kotlinx.android.synthetic.main.controller_onboard_pick_repeating_quests.view.*
+import kotlinx.android.synthetic.main.controller_onboard_pick_start_items.view.*
 import kotlinx.android.synthetic.main.item_onboard_repeating_quest.view.*
 import kotlinx.android.synthetic.main.view_default_toolbar.view.*
 import org.threeten.bp.DayOfWeek
 
-class PickPresetItemsViewController(args: Bundle? = null) :
-    BaseViewController<OnboardAction, OnboardViewState>(
+sealed class PickOnboardItemsAction : Action {
+
+    object Done : PickOnboardItemsAction()
+    object Skip : PickOnboardItemsAction()
+
+    data class Load(
+        val repeatingQuests: Set<Pair<RepeatingQuest, OnboardData.Tag?>>,
+        val habits: Set<Pair<PredefinedHabit, OnboardData.Tag?>>
+    ) : PickOnboardItemsAction()
+
+    data class SelectRepeatingQuest(
+        val repeatingQuest: RepeatingQuest,
+        val tag: OnboardData.Tag?
+    ) :
+        PickOnboardItemsAction() {
+        override fun toMap() = mapOf(
+            "repeatingQuest" to repeatingQuest,
+            "tag" to tag
+        )
+    }
+
+    data class DeselectRepeatingQuest(val repeatingQuest: RepeatingQuest) :
+        PickOnboardItemsAction() {
+        override fun toMap() = mapOf("repeatingQuest" to repeatingQuest)
+    }
+
+    data class SelectHabit(
+        val habit: PredefinedHabit,
+        val tag: OnboardData.Tag?
+    ) : PickOnboardItemsAction() {
+
+        override fun toMap() = mapOf(
+            "habit" to habit,
+            "tag" to tag
+        )
+    }
+
+    data class DeselectHabit(val habit: PredefinedHabit) : PickOnboardItemsAction() {
+        override fun toMap() = mapOf("habit" to habit)
+    }
+}
+
+object PickOnboardItemsReducer : BaseViewStateReducer<PickOnboardItemsViewState>() {
+
+    override fun reduce(
+        state: AppState,
+        subState: PickOnboardItemsViewState,
+        action: Action
+    ) =
+        when (action) {
+
+            is PickOnboardItemsAction.Load ->
+                subState.copy(
+                    type = PRESET_ITEMS_LOADED,
+                    repeatingQuests = action.repeatingQuests,
+                    habits = action.habits
+                )
+
+            is PickOnboardItemsAction.SelectRepeatingQuest ->
+                subState.copy(
+                    type = PRESET_ITEMS_LOADED,
+                    repeatingQuests = subState.repeatingQuests +
+                        Pair(action.repeatingQuest, action.tag)
+                )
+
+            is PickOnboardItemsAction.DeselectRepeatingQuest -> {
+                val pair = subState.repeatingQuests.find { it.first == action.repeatingQuest }
+
+                subState.copy(
+                    type = PRESET_ITEMS_LOADED,
+                    repeatingQuests = subState.repeatingQuests - pair!!
+                )
+            }
+
+            is PickOnboardItemsAction.SelectHabit ->
+                subState.copy(
+                    type = PRESET_ITEMS_LOADED,
+                    habits = subState.habits +
+                        Pair(action.habit, action.tag)
+                )
+
+            is PickOnboardItemsAction.DeselectHabit -> {
+                val pair = subState.habits.find { it.first == action.habit }
+
+                subState.copy(
+                    type = PRESET_ITEMS_LOADED,
+                    habits = subState.habits - pair!!
+                )
+            }
+
+            is PickOnboardItemsAction.Done ->
+                subState.copy(
+                    type = DONE
+                )
+
+            is PickOnboardItemsAction.Skip ->
+                subState.copy(
+                    type = DONE
+                )
+
+            else -> subState
+        }
+
+    override fun defaultState() =
+        PickOnboardItemsViewState(
+            INITIAL,
+            repeatingQuests = emptySet(),
+            habits = emptySet()
+        )
+
+    override val stateKey = key<PickOnboardItemsViewState>()
+}
+
+data class PickOnboardItemsViewState(
+    val type: StateType,
+    val repeatingQuests: Set<Pair<RepeatingQuest, OnboardData.Tag?>>,
+    val habits: Set<Pair<PredefinedHabit, OnboardData.Tag?>>
+) : BaseViewState() {
+    enum class StateType {
+        INITIAL,
+        DONE,
+        PRESET_ITEMS_LOADED
+    }
+}
+
+class PickOnboardItemsViewController(args: Bundle? = null) :
+    ReduxViewController<PickOnboardItemsAction, PickOnboardItemsViewState, PickOnboardItemsReducer>(
         args
     ) {
+    override val reducer = PickOnboardItemsReducer
 
-    override val stateKey = OnboardReducer.stateKey
-
-    private val presetItemViewModels = mutableListOf<OnboardItemViewModel>()
+    private val presetItemViewModels = mutableListOf<PresetItemViewModel>()
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -42,7 +170,7 @@ class PickPresetItemsViewController(args: Bundle? = null) :
     ): View {
 
         setHasOptionsMenu(true)
-        val view = container.inflate(R.layout.controller_onboard_pick_repeating_quests)
+        val view = container.inflate(R.layout.controller_onboard_pick_start_items)
 
         setToolbar(view.toolbar)
         toolbarTitle = stringRes(R.string.onboard_pick_repeating_quests_title)
@@ -63,7 +191,7 @@ class PickPresetItemsViewController(args: Bundle? = null) :
     }
 
     private fun createViewModels() = listOf(
-        OnboardItemViewModel.HabitItem(
+        PresetItemViewModel.HabitItem(
             habit = PredefinedHabit(
                 name = "Floss",
                 color = Color.GREEN,
@@ -73,9 +201,9 @@ class PickPresetItemsViewController(args: Bundle? = null) :
                 days = DayOfWeek.values().toSet()
             ),
             isSelected = true,
-            tag = OnboardViewController.OnboardTag.WELLNESS
+            tag = Tag.WELLNESS
         ),
-        OnboardItemViewModel.HabitItem(
+        PresetItemViewModel.HabitItem(
             habit = PredefinedHabit(
                 name = "Drink a glass of water",
                 color = Color.BLUE,
@@ -85,9 +213,9 @@ class PickPresetItemsViewController(args: Bundle? = null) :
                 days = DayOfWeek.values().toSet()
             ),
             isSelected = true,
-            tag = OnboardViewController.OnboardTag.WELLNESS
+            tag = Tag.WELLNESS
         ),
-        OnboardItemViewModel.RepeatingQuestItem(
+        PresetItemViewModel.RepeatingQuestItem(
             name = stringRes(R.string.predefined_rq_workout),
             repeatingQuest = RepeatingQuest(
                 name = stringRes(R.string.predefined_rq_workout),
@@ -100,9 +228,9 @@ class PickPresetItemsViewController(args: Bundle? = null) :
                 )
             ),
             isSelected = true,
-            tag = OnboardViewController.OnboardTag.WELLNESS
+            tag = Tag.WELLNESS
         ),
-        OnboardItemViewModel.RepeatingQuestItem(
+        PresetItemViewModel.RepeatingQuestItem(
             name = stringRes(R.string.predefined_rq_meditate),
             repeatingQuest = RepeatingQuest(
                 name = stringRes(R.string.predefined_rq_meditate),
@@ -114,9 +242,9 @@ class PickPresetItemsViewController(args: Bundle? = null) :
                     3
                 )
             ),
-            tag = OnboardViewController.OnboardTag.WELLNESS
+            tag = Tag.WELLNESS
         ),
-        OnboardItemViewModel.RepeatingQuestItem(
+        PresetItemViewModel.RepeatingQuestItem(
             name = stringRes(R.string.predefined_rq_email),
             repeatingQuest = RepeatingQuest(
                 name = stringRes(R.string.predefined_rq_email),
@@ -128,9 +256,9 @@ class PickPresetItemsViewController(args: Bundle? = null) :
                     5
                 )
             ),
-            tag = OnboardViewController.OnboardTag.WORK
+            tag = Tag.WORK
         ),
-        OnboardItemViewModel.RepeatingQuestItem(
+        PresetItemViewModel.RepeatingQuestItem(
             name = stringRes(R.string.predefined_rq_read),
             repeatingQuest = RepeatingQuest(
                 name = stringRes(R.string.predefined_rq_read),
@@ -144,7 +272,7 @@ class PickPresetItemsViewController(args: Bundle? = null) :
             ),
             isSelected = true
         ),
-        OnboardItemViewModel.RepeatingQuestItem(
+        PresetItemViewModel.RepeatingQuestItem(
             name = stringRes(R.string.predefined_rq_bike),
             repeatingQuest = RepeatingQuest(
                 name = stringRes(R.string.predefined_rq_bike),
@@ -156,9 +284,9 @@ class PickPresetItemsViewController(args: Bundle? = null) :
                     3
                 )
             ),
-            tag = OnboardViewController.OnboardTag.WELLNESS
+            tag = Tag.WELLNESS
         ),
-        OnboardItemViewModel.RepeatingQuestItem(
+        PresetItemViewModel.RepeatingQuestItem(
             name = stringRes(R.string.predefined_rq_family_dinner),
             repeatingQuest = RepeatingQuest(
                 name = stringRes(R.string.predefined_rq_family_dinner),
@@ -170,9 +298,9 @@ class PickPresetItemsViewController(args: Bundle? = null) :
                     3
                 )
             ),
-            tag = OnboardViewController.OnboardTag.PERSONAL
+            tag = Tag.PERSONAL
         ),
-        OnboardItemViewModel.RepeatingQuestItem(
+        PresetItemViewModel.RepeatingQuestItem(
             name = stringRes(R.string.predefined_rq_call_friend),
             repeatingQuest = RepeatingQuest(
                 name = stringRes(R.string.predefined_rq_call_friend),
@@ -185,9 +313,9 @@ class PickPresetItemsViewController(args: Bundle? = null) :
                 )
             ),
             isSelected = true,
-            tag = OnboardViewController.OnboardTag.PERSONAL
+            tag = Tag.PERSONAL
         ),
-        OnboardItemViewModel.RepeatingQuestItem(
+        PresetItemViewModel.RepeatingQuestItem(
             name = stringRes(R.string.predefined_rq_date_night),
             repeatingQuest = RepeatingQuest(
                 name = stringRes(R.string.predefined_rq_date_night),
@@ -199,9 +327,9 @@ class PickPresetItemsViewController(args: Bundle? = null) :
                     1
                 )
             ),
-            tag = OnboardViewController.OnboardTag.PERSONAL
+            tag = Tag.PERSONAL
         ),
-        OnboardItemViewModel.RepeatingQuestItem(
+        PresetItemViewModel.RepeatingQuestItem(
             name = stringRes(R.string.predefined_rq_learn_new_language),
             repeatingQuest = RepeatingQuest(
                 name = stringRes(R.string.predefined_rq_learn_new_language),
@@ -214,7 +342,7 @@ class PickPresetItemsViewController(args: Bundle? = null) :
                 )
             )
         ),
-        OnboardItemViewModel.RepeatingQuestItem(
+        PresetItemViewModel.RepeatingQuestItem(
             name = stringRes(R.string.predefined_rq_call_parent),
             repeatingQuest = RepeatingQuest(
                 name = stringRes(R.string.predefined_rq_call_parent),
@@ -226,9 +354,9 @@ class PickPresetItemsViewController(args: Bundle? = null) :
                     2
                 )
             ),
-            tag = OnboardViewController.OnboardTag.PERSONAL
+            tag = Tag.PERSONAL
         ),
-        OnboardItemViewModel.RepeatingQuestItem(
+        PresetItemViewModel.RepeatingQuestItem(
             name = stringRes(R.string.predefined_rq_walk_the_dog),
             repeatingQuest = RepeatingQuest(
                 name = stringRes(R.string.predefined_rq_walk_the_dog),
@@ -239,7 +367,7 @@ class PickPresetItemsViewController(args: Bundle? = null) :
                 repeatPattern = RepeatPattern.Daily()
             )
         ),
-        OnboardItemViewModel.RepeatingQuestItem(
+        PresetItemViewModel.RepeatingQuestItem(
             name = stringRes(R.string.predefined_rq_take_walk),
             repeatingQuest = RepeatingQuest(
                 name = stringRes(R.string.predefined_rq_take_walk),
@@ -251,9 +379,9 @@ class PickPresetItemsViewController(args: Bundle? = null) :
                     3
                 )
             ),
-            tag = OnboardViewController.OnboardTag.WELLNESS
+            tag = Tag.WELLNESS
         ),
-        OnboardItemViewModel.RepeatingQuestItem(
+        PresetItemViewModel.RepeatingQuestItem(
             name = stringRes(R.string.predefined_rq_run),
             repeatingQuest = RepeatingQuest(
                 name = stringRes(R.string.predefined_rq_run),
@@ -265,9 +393,9 @@ class PickPresetItemsViewController(args: Bundle? = null) :
                     2
                 )
             ),
-            tag = OnboardViewController.OnboardTag.WELLNESS
+            tag = Tag.WELLNESS
         ),
-        OnboardItemViewModel.RepeatingQuestItem(
+        PresetItemViewModel.RepeatingQuestItem(
             name = stringRes(R.string.predefined_rq_play_with_cat),
             repeatingQuest = RepeatingQuest(
                 name = stringRes(R.string.predefined_rq_play_with_cat),
@@ -278,7 +406,7 @@ class PickPresetItemsViewController(args: Bundle? = null) :
                 repeatPattern = RepeatPattern.Daily()
             )
         ),
-        OnboardItemViewModel.RepeatingQuestItem(
+        PresetItemViewModel.RepeatingQuestItem(
             name = stringRes(R.string.predefined_rq_stretch),
             repeatingQuest = RepeatingQuest(
                 name = stringRes(R.string.predefined_rq_stretch),
@@ -290,7 +418,7 @@ class PickPresetItemsViewController(args: Bundle? = null) :
                     2
                 )
             ),
-            tag = OnboardViewController.OnboardTag.WELLNESS
+            tag = Tag.WELLNESS
         )
     )
 
@@ -301,24 +429,24 @@ class PickPresetItemsViewController(args: Bundle? = null) :
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         if (item.itemId == R.id.actionDone) {
-            dispatch(OnboardAction.Done)
+            dispatch(PickOnboardItemsAction.Done)
             return true
         }
         return super.onOptionsItemSelected(item)
     }
 
-    override fun onCreateLoadAction(): OnboardAction? {
-        val rqs = mutableSetOf<Pair<RepeatingQuest, OnboardViewController.OnboardTag?>>()
-        val hs = mutableSetOf<Pair<PredefinedHabit, OnboardViewController.OnboardTag?>>()
+    override fun onCreateLoadAction(): PickOnboardItemsAction? {
+        val rqs = mutableSetOf<Pair<RepeatingQuest, OnboardData.Tag?>>()
+        val hs = mutableSetOf<Pair<PredefinedHabit, OnboardData.Tag?>>()
         presetItemViewModels.forEach { vm ->
             when (vm) {
-                is OnboardItemViewModel.RepeatingQuestItem -> {
+                is PresetItemViewModel.RepeatingQuestItem -> {
                     if (vm.isSelected) {
                         rqs.add(vm.repeatingQuest to vm.tag)
                     }
                 }
 
-                is OnboardItemViewModel.HabitItem -> {
+                is PresetItemViewModel.HabitItem -> {
                     if (vm.isSelected) {
                         hs.add(vm.habit to vm.tag)
                     }
@@ -326,30 +454,36 @@ class PickPresetItemsViewController(args: Bundle? = null) :
             }
         }
 
-        return OnboardAction.LoadPresetItems(rqs, hs)
+        return PickOnboardItemsAction.Load(rqs, hs)
     }
 
-
-    override fun render(state: OnboardViewState, view: View) {
-        if (state.type == OnboardViewState.StateType.PRESET_ITEMS_LOADED) {
+    override fun render(state: PickOnboardItemsViewState, view: View) {
+        if (state.type == PRESET_ITEMS_LOADED) {
             (view.onboardRepeatingQuests.adapter as PresetItemAdapter).updateAll(state.itemViewModels)
+        } else if (state.type == DONE) {
+            val onboardData = OnboardData(
+                repeatingQuests = state.repeatingQuests,
+                habits = state.habits
+            )
+
+            navigate().setAuth(onboardData = onboardData, changeHandler = HorizontalChangeHandler())
         }
     }
 
-    sealed class OnboardItemViewModel(override val id: String) : RecyclerViewViewModel {
+    sealed class PresetItemViewModel(override val id: String) : RecyclerViewViewModel {
 
         data class RepeatingQuestItem(
             val name: String,
             val repeatingQuest: RepeatingQuest,
             val isSelected: Boolean = false,
-            val tag: OnboardViewController.OnboardTag? = null
-        ) : OnboardItemViewModel(name)
+            val tag: OnboardData.Tag? = null
+        ) : PresetItemViewModel(name)
 
         data class HabitItem(
             val habit: PredefinedHabit,
             val isSelected: Boolean = false,
-            val tag: OnboardViewController.OnboardTag? = null
-        ) : OnboardItemViewModel(habit.name)
+            val tag: OnboardData.Tag? = null
+        ) : PresetItemViewModel(habit.name)
     }
 
     enum class ViewType(val value: Int) {
@@ -357,11 +491,11 @@ class PickPresetItemsViewController(args: Bundle? = null) :
         HABIT(1)
     }
 
-    inner class PresetItemAdapter : MultiViewRecyclerViewAdapter<OnboardItemViewModel>() {
+    inner class PresetItemAdapter : MultiViewRecyclerViewAdapter<PresetItemViewModel>() {
 
         override fun onRegisterItemBinders() {
 
-            registerBinder<OnboardItemViewModel.RepeatingQuestItem>(
+            registerBinder<PresetItemViewModel.RepeatingQuestItem>(
                 ViewType.REPEATING_QUEST.value,
                 R.layout.item_onboard_repeating_quest
             ) { vm, view, _ ->
@@ -390,18 +524,18 @@ class PickPresetItemsViewController(args: Bundle? = null) :
                 view.rqCheck.setOnCheckedChangeListener { _, isChecked ->
                     if (isChecked) {
                         dispatch(
-                            OnboardAction.SelectRepeatingQuest(
+                            PickOnboardItemsAction.SelectRepeatingQuest(
                                 vm.repeatingQuest,
                                 vm.tag
                             )
                         )
                     } else {
-                        dispatch(OnboardAction.DeselectRepeatingQuest(vm.repeatingQuest))
+                        dispatch(PickOnboardItemsAction.DeselectRepeatingQuest(vm.repeatingQuest))
                     }
                 }
             }
 
-            registerBinder<OnboardItemViewModel.HabitItem>(
+            registerBinder<PresetItemViewModel.HabitItem>(
                 ViewType.HABIT.value,
                 R.layout.item_onboard_repeating_quest
             ) { vm, view, _ ->
@@ -435,30 +569,31 @@ class PickPresetItemsViewController(args: Bundle? = null) :
                 view.rqCheck.setOnCheckedChangeListener { _, isChecked ->
                     if (isChecked) {
                         dispatch(
-                            OnboardAction.SelectHabit(
+                            PickOnboardItemsAction.SelectHabit(
                                 h,
                                 vm.tag
                             )
                         )
                     } else {
-                        dispatch(OnboardAction.DeselectHabit(h))
+                        dispatch(PickOnboardItemsAction.DeselectHabit(h))
                     }
                 }
             }
         }
-
     }
 
-    val OnboardViewState.itemViewModels
+    private val PickOnboardItemsViewState.itemViewModels
         get() = presetItemViewModels.map {
             when (it) {
-                is OnboardItemViewModel.HabitItem -> {
-                    it.copy(isSelected = habits.map { it.first }.contains(it.habit))
+                is PresetItemViewModel.HabitItem -> {
+                    it.copy(isSelected = habits.map { p -> p.first }.contains(it.habit))
                 }
 
-                is OnboardItemViewModel.RepeatingQuestItem -> {
-                    it.copy(isSelected = repeatingQuests.map { it.first }.contains(it.repeatingQuest))
+                is PresetItemViewModel.RepeatingQuestItem -> {
+                    it.copy(isSelected = repeatingQuests.map { p -> p.first }.contains(it.repeatingQuest))
                 }
             }
         }
+
+
 }

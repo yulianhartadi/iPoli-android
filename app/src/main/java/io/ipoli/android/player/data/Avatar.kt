@@ -48,7 +48,7 @@ enum class AndroidAvatar(
     @DrawableRes val image: Int,
     @ColorRes val backgroundColor: Int
 ) {
-    AVATAR_00(R.string.avatar_name_00, R.drawable.avatar_00, R.color.md_green_500),
+    AVATAR_00(R.string.avatar_name_00, R.drawable.avatar_00, R.color.md_purple_300),
     AVATAR_01(R.string.avatar_name_01, R.drawable.avatar_01, R.color.md_red_300),
     AVATAR_02(R.string.avatar_name_02, R.drawable.avatar_02, R.color.md_blue_300),
     AVATAR_03(R.string.avatar_name_03, R.drawable.avatar_03, R.color.md_red_300),

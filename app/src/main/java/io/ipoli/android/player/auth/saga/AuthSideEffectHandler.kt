@@ -10,7 +10,7 @@ import io.ipoli.android.common.LoadDataAction
 import io.ipoli.android.common.redux.Action
 import io.ipoli.android.habit.data.Habit
 import io.ipoli.android.habit.predefined.PredefinedHabit
-import io.ipoli.android.onboarding.OnboardViewController
+import io.ipoli.android.onboarding.OnboardData
 import io.ipoli.android.pet.Pet
 import io.ipoli.android.pet.PetAvatar
 import io.ipoli.android.player.auth.AuthAction
@@ -298,7 +298,7 @@ object AuthSideEffectHandler : AppSideEffectHandler() {
     }
 
     private fun saveRepeatingQuests(
-        repeatingQuests: Set<Pair<RepeatingQuest, OnboardViewController.OnboardTag?>>,
+        repeatingQuests: Set<Pair<RepeatingQuest, OnboardData.Tag?>>,
         tags: List<Tag>
     ) {
         repeatingQuests.forEach {
@@ -323,7 +323,7 @@ object AuthSideEffectHandler : AppSideEffectHandler() {
     }
 
     private fun saveHabits(
-        habits: Set<Pair<PredefinedHabit, OnboardViewController.OnboardTag?>>,
+        habits: Set<Pair<PredefinedHabit, OnboardData.Tag?>>,
         tags: List<Tag>
     ) {
         habits.forEach {

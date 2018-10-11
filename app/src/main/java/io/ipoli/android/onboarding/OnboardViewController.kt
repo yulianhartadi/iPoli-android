@@ -1,420 +1,195 @@
 package io.ipoli.android.onboarding
 
+import android.animation.ObjectAnimator
 import android.content.Context
-import android.graphics.drawable.GradientDrawable
 import android.os.Bundle
+import android.support.annotation.DrawableRes
+import android.support.v4.view.ViewPager
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import com.bluelinelabs.conductor.Controller
-import com.bluelinelabs.conductor.RouterTransaction
-import com.bluelinelabs.conductor.changehandler.HorizontalChangeHandler
+import android.view.animation.AccelerateDecelerateInterpolator
+import android.widget.ProgressBar
+import com.bluelinelabs.conductor.RestoreViewOnCreateController
 import com.bluelinelabs.conductor.changehandler.VerticalChangeHandler
-import io.ipoli.android.Constants
+import io.ipoli.android.MyPoliApp
 import io.ipoli.android.R
-import io.ipoli.android.common.AppState
-import io.ipoli.android.common.BaseViewStateReducer
-import io.ipoli.android.common.redux.Action
-import io.ipoli.android.common.redux.BaseViewState
-import io.ipoli.android.common.redux.android.ReduxViewController
-import io.ipoli.android.common.view.*
-import io.ipoli.android.habit.predefined.PredefinedHabit
-import io.ipoli.android.onboarding.OnboardViewState.StateType.*
-import io.ipoli.android.onboarding.scenes.*
-import io.ipoli.android.pet.PetAvatar
-import io.ipoli.android.player.auth.UsernameValidator
-import io.ipoli.android.player.auth.UsernameValidator.ValidationError
-import io.ipoli.android.player.auth.UsernameValidator.ValidationError.*
-import io.ipoli.android.player.data.Avatar
-import io.ipoli.android.quest.RepeatingQuest
+import io.ipoli.android.common.di.UIModule
+import io.ipoli.android.common.navigation.Navigator
+import io.ipoli.android.common.view.Debounce
+import io.ipoli.android.common.view.inflate
+import io.ipoli.android.common.view.intRes
+import io.ipoli.android.common.view.pager.BasePagerAdapter
+import io.ipoli.android.common.view.rootRouter
 import kotlinx.android.synthetic.main.controller_onboard.view.*
+import kotlinx.android.synthetic.main.item_onboard_page.view.*
+import space.traversal.kapsule.Injects
+import space.traversal.kapsule.inject
+import space.traversal.kapsule.required
 
-sealed class OnboardAction : Action {
-    data class SelectAvatar(val index: Int) : OnboardAction() {
-        override fun toMap() = mapOf("index" to index)
+class OnboardViewController(args: Bundle? = null) : RestoreViewOnCreateController(
+    args
+), Injects<UIModule> {
+
+    private val eventLogger by required { eventLogger }
+
+    companion object {
+        const val PAGE_COUNT = 5
     }
 
-    data class ValidatePetName(val name: String) : OnboardAction() {
-        override fun toMap() = mapOf("name" to name)
-    }
+    private val onPageChangeListener = object : ViewPager.OnPageChangeListener {
+        override fun onPageScrollStateChanged(state: Int) {}
 
-    data class ValidateUsername(val name: String) : OnboardAction() {
-        override fun toMap() = mapOf("name" to name)
-    }
-
-    data class UsernameValidationFailed(val error: UsernameValidator.ValidationError) :
-        OnboardAction() {
-        override fun toMap() = mapOf("error" to error.name)
-    }
-
-    object SelectPet1 : OnboardAction()
-    object SelectPet2 : OnboardAction()
-
-    object ShowNext : OnboardAction()
-    object LoadAvatars : OnboardAction()
-    object LoadPets : OnboardAction()
-    object Done : OnboardAction()
-    object LoadFirstQuest : OnboardAction()
-    object Skip : OnboardAction()
-
-    data class UsernameValid(val username: String) : OnboardAction() {
-        override fun toMap() = mapOf("username" to username)
-    }
-
-    data class LoadPresetItems(
-        val repeatingQuests: Set<Pair<RepeatingQuest, OnboardViewController.OnboardTag?>>,
-        val habits: Set<Pair<PredefinedHabit, OnboardViewController.OnboardTag?>>
-    ) : OnboardAction()
-
-    data class SelectRepeatingQuest(
-        val repeatingQuest: RepeatingQuest,
-        val tag: OnboardViewController.OnboardTag?
-    ) :
-        OnboardAction() {
-        override fun toMap() = mapOf(
-            "repeatingQuest" to repeatingQuest,
-            "tag" to tag
-        )
-    }
-
-    data class DeselectRepeatingQuest(val repeatingQuest: RepeatingQuest) : OnboardAction() {
-        override fun toMap() = mapOf("repeatingQuest" to repeatingQuest)
-    }
-
-    data class SelectHabit(
-        val habit: PredefinedHabit,
-        val tag: OnboardViewController.OnboardTag?
-    ) : OnboardAction() {
-
-        override fun toMap() = mapOf(
-            "habit" to habit,
-            "tag" to tag
-        )
-    }
-
-    data class DeselectHabit(val habit: PredefinedHabit) : OnboardAction() {
-        override fun toMap() = mapOf("habit" to habit)
-    }
-}
-
-object OnboardReducer : BaseViewStateReducer<OnboardViewState>() {
-
-    override fun reduce(
-        state: AppState,
-        subState: OnboardViewState,
-        action: Action
-    ) =
-        when (action) {
-            OnboardAction.ShowNext ->
-                if (subState.adapterPosition + 1 > OnboardViewController.PICK_PRESET_ITEMS_INDEX)
-                    subState
-                else
-                    subState.copy(
-                        type = NEXT_PAGE,
-                        adapterPosition = subState.adapterPosition + 1
-                    )
-
-            is OnboardAction.LoadAvatars ->
-                subState.copy(
-                    type = AVATARS_LOADED
-                )
-
-            is OnboardAction.SelectAvatar ->
-                subState.copy(
-                    type = AVATAR_SELECTED,
-                    avatar = subState.avatars[action.index]
-                )
-
-            is OnboardAction.LoadPets ->
-                subState.copy(
-                    type = PETS_LOADED
-                )
-
-            is OnboardAction.SelectPet1 ->
-                subState.copy(
-                    type = PET_SELECTED,
-                    pet = subState.pet1,
-                    pet1 = subState.pet
-                )
-
-            is OnboardAction.SelectPet2 ->
-                subState.copy(
-                    type = PET_SELECTED,
-                    pet = subState.pet2,
-                    pet2 = subState.pet
-                )
-
-            is OnboardAction.ValidatePetName ->
-                subState.copy(
-                    type = if (action.name.isBlank()) PET_NAME_EMPTY
-                    else PET_NAME_VALID,
-                    petName = action.name
-                )
-
-            is OnboardAction.UsernameValidationFailed ->
-                subState.copy(
-                    type = USERNAME_VALIDATION_ERROR,
-                    usernameValidationError = action.error
-                )
-
-            is OnboardAction.UsernameValid ->
-                subState.copy(
-                    type = USERNAME_VALID,
-                    usernameValidationError = null,
-                    username = action.username
-                )
-
-            is OnboardAction.LoadFirstQuest ->
-                subState.copy(
-                    type = FIRST_QUEST_DATA_LOADED
-                )
-
-            is OnboardAction.LoadPresetItems ->
-                subState.copy(
-                    type = PRESET_ITEMS_LOADED,
-                    repeatingQuests = action.repeatingQuests,
-                    habits = action.habits
-                )
-
-            is OnboardAction.SelectRepeatingQuest ->
-                subState.copy(
-                    type = PRESET_ITEMS_LOADED,
-                    repeatingQuests = subState.repeatingQuests +
-                        Pair(action.repeatingQuest, action.tag)
-                )
-
-            is OnboardAction.DeselectRepeatingQuest -> {
-                val pair = subState.repeatingQuests.find { it.first == action.repeatingQuest }
-
-                subState.copy(
-                    type = PRESET_ITEMS_LOADED,
-                    repeatingQuests = subState.repeatingQuests - pair!!
-                )
-            }
-
-            is OnboardAction.SelectHabit ->
-                subState.copy(
-                    type = PRESET_ITEMS_LOADED,
-                    habits = subState.habits +
-                        Pair(action.habit, action.tag)
-                )
-
-            is OnboardAction.DeselectHabit -> {
-                val pair = subState.habits.find { it.first == action.habit }
-
-                subState.copy(
-                    type = PRESET_ITEMS_LOADED,
-                    habits = subState.habits - pair!!
-                )
-            }
-
-            is OnboardAction.Done ->
-                subState.copy(
-                    type = DONE
-                )
-
-            is OnboardAction.Skip ->
-                subState.copy(
-                    type = DONE
-                )
-
-            else -> subState
+        override fun onPageScrolled(
+            position: Int,
+            positionOffset: Float,
+            positionOffsetPixels: Int
+        ) {
         }
 
-    override fun defaultState() =
-        OnboardViewState(
-            INITIAL,
-            adapterPosition = 0,
-            username = "",
-            avatar = Avatar.AVATAR_03,
-            avatars = listOf(
-                Avatar.AVATAR_03,
-                Avatar.AVATAR_02,
-                Avatar.AVATAR_01,
-                Avatar.AVATAR_04,
-                Avatar.AVATAR_05,
-                Avatar.AVATAR_06,
-                Avatar.AVATAR_07,
-                Avatar.AVATAR_11
-            ),
-            usernameValidationError = null,
-            petName = "",
-            pet = PetAvatar.ELEPHANT,
-            pet1 = PetAvatar.PIG,
-            pet2 = PetAvatar.MONKEY,
-            repeatingQuests = emptySet(),
-            habits = emptySet()
-        )
-
-    override val stateKey = key<OnboardViewState>()
-}
-
-data class OnboardViewState(
-    val type: StateType,
-    val adapterPosition: Int,
-    val username: String,
-    val avatar: Avatar,
-    val avatars: List<Avatar>,
-    val usernameValidationError: ValidationError?,
-    val petName: String,
-    val pet: PetAvatar,
-    val pet1: PetAvatar,
-    val pet2: PetAvatar,
-    val repeatingQuests: Set<Pair<RepeatingQuest, OnboardViewController.OnboardTag?>>,
-    val habits: Set<Pair<PredefinedHabit, OnboardViewController.OnboardTag?>>
-) : BaseViewState() {
-    enum class StateType {
-        INITIAL,
-        NEXT_PAGE,
-        AVATARS_LOADED,
-        AVATAR_SELECTED,
-        USERNAME_VALIDATION_ERROR,
-        USERNAME_VALID,
-        PETS_LOADED,
-        PET_SELECTED,
-        PET_NAME_EMPTY,
-        PET_NAME_VALID,
-        DONE,
-        PRESET_ITEMS_LOADED,
-        FIRST_QUEST_DATA_LOADED
-    }
-}
-
-fun OnboardViewState.usernameErrorMessage(context: Context) =
-    usernameValidationError?.let {
-        when (it) {
-            EMPTY_USERNAME -> context.getString(R.string.username_is_empty)
-            EXISTING_USERNAME -> context.getString(R.string.username_is_taken)
-            INVALID_FORMAT -> context.getString(R.string.username_wrong_format)
-            INVALID_LENGTH -> context.getString(
-                R.string.username_wrong_length,
-                Constants.USERNAME_MIN_LENGTH,
-                Constants.USERNAME_MAX_LENGTH
+        override fun onPageSelected(position: Int) {
+            eventLogger.logEvent("onboard_change_page", mapOf("position" to position))
+            view!!.onboardProgress.animateProgress((position + 1) * 20)
+            view!!.onboardNext.setText(
+                if (position + 1 == PAGE_COUNT) R.string.done
+                else R.string.next
             )
         }
     }
 
-
-data class OnboardData(
-    val username: String,
-    val avatar: Avatar,
-    val petName: String,
-    val petAvatar: PetAvatar,
-    val repeatingQuests: Set<Pair<RepeatingQuest, OnboardViewController.OnboardTag?>>,
-    val habits: Set<Pair<PredefinedHabit, OnboardViewController.OnboardTag?>>
-)
-
-class OnboardViewController(args: Bundle? = null) :
-    ReduxViewController<OnboardAction, OnboardViewState, OnboardReducer>(
-        args
-    ) {
-
-    override val reducer = OnboardReducer
+    override fun onContextAvailable(context: Context) {
+        inject(MyPoliApp.uiModule(context))
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup,
         savedViewState: Bundle?
     ): View {
-        enterFullScreen()
-        return container.inflate(R.layout.controller_onboard)
-    }
-
-    override fun handleBack(): Boolean {
-        dispatch(OnboardAction.Skip)
-        return true
-    }
-
-    override fun render(state: OnboardViewState, view: View) {
-        when (state.type) {
-
-            NEXT_PAGE,
-            INITIAL -> {
-                changeChildController(
-                    view = view,
-                    adapterPosition = state.adapterPosition,
-                    animate = false
+        val view = container.inflate(R.layout.controller_onboard)
+        val adapter = OnboardPageAdapter()
+        view.onboardPager.adapter = adapter
+        adapter.updateAll(
+            listOf(
+                OnboardPageViewModel(
+                    title = "Why myPoli?",
+                    message = "Focus on your Goals by combining your ToDos, Events & Habits in one place! Organize your life to find time for friends, family, working out and taking care of yourself.",
+                    image = R.drawable.onboard_screen_1
+                ),
+                OnboardPageViewModel(
+                    title = "Turn your life into a game",
+                    message = "myPoli motivates you to complete your Tasks and fight procrastination by turning your life into an RPG-style game! Track your progress on Habits & Goals to achieve anything!",
+                    image = R.drawable.onboard_screen_2
+                ),
+                OnboardPageViewModel(
+                    title = "Level Up",
+                    message = "Complete your Quests (Tasks) to unlock features & get rewarded! Stay productive to Level up your avatar, boost your intelligence, strength, focus, well-being & willpower.",
+                    image = R.drawable.onboard_screen_3
+                ),
+                OnboardPageViewModel(
+                    title = "Faithful Companion",
+                    message = "Always get reminded on time by your new pet. Take good care of it to get additional rewards & bonuses! Customize your pet with awesome items & make it unique!",
+                    image = R.drawable.onboard_screen_4
+                ),
+                OnboardPageViewModel(
+                    title = "Challenge Yourself",
+                    message = "Complete step-by-step challenges for workout routines, nutrition plans, destressing your life, learning new skills or just having fun!",
+                    image = R.drawable.onboard_screen_5
                 )
-
-                renderBottomNavigation(state, view)
-            }
-
-            DONE -> {
-                val onboardData = OnboardData(
-                    username = state.username,
-                    avatar = state.avatar,
-                    petName = state.petName,
-                    petAvatar = state.pet,
-                    repeatingQuests = state.repeatingQuests,
-                    habits = state.habits
-                )
-
-                navigate().setAuth(onboardData = onboardData, changeHandler = VerticalChangeHandler())
-            }
-
-            else -> {
-            }
-        }
-    }
-
-    private fun renderBottomNavigation(
-        state: OnboardViewState,
-        view: View
-    ) {
-        if (state.adapterPosition == TIME_BEFORE || state.adapterPosition == PICK_PRESET_ITEMS_INDEX) {
-            view.onboardNavigation.gone()
-        } else {
-            view.onboardNavigation.visible()
-            val selectedPosition =
-                if (state.adapterPosition < TIME_BEFORE) STORY_INDEX
-                else state.adapterPosition - 1
-
-            view.onboardNavigation.children.forEachIndexed { index, child ->
-                val background = child.background as GradientDrawable
-                if (index == selectedPosition) background.setColor(colorRes(R.color.md_white))
-                else background.setColor(colorRes(R.color.md_light_text_50))
-            }
-        }
-    }
-
-    private fun changeChildController(
-        view: View,
-        adapterPosition: Int,
-        animate: Boolean = true
-    ) {
-        val childRouter = getChildRouter(view.onboardPager)
-
-        val changeHandler = if (animate) HorizontalChangeHandler() else null
-
-        val transaction = RouterTransaction.with(
-            createControllerForPosition(adapterPosition)
+            )
         )
-            .popChangeHandler(changeHandler)
-            .pushChangeHandler(changeHandler)
-        childRouter.pushController(transaction)
-    }
 
-    private fun createControllerForPosition(position: Int): Controller =
-        when (position) {
-            STORY_INDEX -> StoryViewController()
-            TIME_BEFORE -> TimeBeforeViewController()
-            AVATAR_INDEX -> AvatarViewController()
-            PET_INDEX -> PetViewController()
-            ADD_QUEST_INDEX -> FirstQuestViewController()
-            PICK_PRESET_ITEMS_INDEX -> PickPresetItemsViewController()
-            else -> throw IllegalArgumentException("Unknown controller position $position")
+        view.onboardPager.addOnPageChangeListener(onPageChangeListener)
+
+        view.onboardProgress.max = PAGE_COUNT * 20
+        view.onboardProgress.progress = 20
+
+        view.onboardPager.setPageTransformer(
+            true
+        ) { page, position ->
+            val pageWidth = page.width
+
+            if (0 <= position && position < 1) {
+                page.translationX = pageWidth * -position
+            }
+            if (-1 < position && position < 0) {
+                page.translationX = pageWidth * -position
+            }
+
+            if (position > -1.0f && position < 1.0f && position != 0.0f) {
+                val translateX = pageWidth / 2 * position
+                page.onboardImage.translationX = translateX
+                page.onboardTitle.translationX = translateX
+                page.onboardMessage.translationX = translateX
+                val alpha = 1.0f - Math.abs(position)
+                page.onboardImage.alpha = alpha
+                page.onboardImage.scaleX = Math.max(alpha, 0.85f)
+                page.onboardImage.scaleY = Math.max(alpha, 0.85f)
+                page.onboardTitle.alpha = alpha
+                page.onboardMessage.alpha = alpha
+            }
         }
 
-    companion object {
-        const val STORY_INDEX = 0
-        const val TIME_BEFORE = 1
-        const val AVATAR_INDEX = 2
-        const val PET_INDEX = 3
-        const val ADD_QUEST_INDEX = 4
-        const val PICK_PRESET_ITEMS_INDEX = 5
+        view.onboardExistingPlayer.setOnClickListener(Debounce.clickListener {
+            eventLogger.logEvent("onboard_existing_player")
+            Navigator(rootRouter).toAuth(
+                onboardData = null,
+                changeHandler = VerticalChangeHandler()
+            )
+        })
 
-        const val TYPE_SPEED = 50
+        view.onboardSkip.setOnClickListener(Debounce.clickListener {
+            eventLogger.logEvent("onboard_skip")
+            Navigator(rootRouter).toPickOnboardItems()
+        })
+
+        view.onboardNext.setOnClickListener(Debounce.clickListener {
+            val currentItem = view.onboardPager.currentItem
+            if (currentItem + 1 == PAGE_COUNT) {
+                eventLogger.logEvent("onboard_done")
+                Navigator(rootRouter).toPickOnboardItems()
+            } else {
+                view.onboardPager.setCurrentItem(currentItem + 1, true)
+            }
+        })
+
+        return view
     }
 
-    enum class OnboardTag { WELLNESS, PERSONAL, WORK }
+    override fun onAttach(view: View) {
+        super.onAttach(view)
+        activity?.let {
+            eventLogger.logCurrentScreen(it, "Onboard")
+        }
+    }
+
+    override fun onDestroyView(view: View) {
+        view.onboardPager.removeOnPageChangeListener(onPageChangeListener)
+        super.onDestroyView(view)
+    }
+
+    data class OnboardPageViewModel(
+        val title: String,
+        val message: String,
+        @DrawableRes val image: Int
+    )
+
+    inner class OnboardPageAdapter : BasePagerAdapter<OnboardPageViewModel>() {
+
+        override fun layoutResourceFor(item: OnboardPageViewModel) = R.layout.item_onboard_page
+
+        override fun bindItem(item: OnboardPageViewModel, view: View) {
+            view.onboardTitle.text = item.title
+            view.onboardMessage.text = item.message
+            view.onboardImage.setImageResource(item.image)
+        }
+
+    }
+
+    private fun ProgressBar.animateProgress(to: Int) {
+        val animator = ObjectAnimator.ofInt(this, "progress", progress, to)
+        animator.duration = intRes(android.R.integer.config_shortAnimTime).toLong()
+        animator.interpolator = AccelerateDecelerateInterpolator()
+        animator.start()
+    }
 }

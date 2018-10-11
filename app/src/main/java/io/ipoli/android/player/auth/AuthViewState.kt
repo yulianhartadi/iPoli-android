@@ -6,12 +6,10 @@ import io.ipoli.android.Constants
 import io.ipoli.android.R
 import io.ipoli.android.common.AppState
 import io.ipoli.android.common.BaseViewStateReducer
-
 import io.ipoli.android.common.redux.Action
 import io.ipoli.android.common.redux.BaseViewState
 import io.ipoli.android.habit.predefined.PredefinedHabit
 import io.ipoli.android.onboarding.OnboardData
-import io.ipoli.android.onboarding.OnboardViewController
 import io.ipoli.android.pet.PetAvatar
 import io.ipoli.android.player.auth.AuthViewState.StateType.*
 import io.ipoli.android.player.auth.UsernameValidator.ValidationError
@@ -26,13 +24,10 @@ import io.ipoli.android.quest.RepeatingQuest
 sealed class AuthAction : Action {
     data class Load(val onboardData: OnboardData?) : AuthAction() {
         override fun toMap() = mapOf(
-            "username" to onboardData?.username,
-            "avatar" to onboardData?.avatar?.name,
-            "petName" to onboardData?.petName,
-            "petAvatar" to onboardData?.petAvatar?.name,
             "repeatingQuests" to onboardData?.repeatingQuests
         )
     }
+
     data class Loaded(
         val hasPlayer: Boolean,
         val isGuest: Boolean,
@@ -43,10 +38,6 @@ sealed class AuthAction : Action {
             "hasPlayer" to hasPlayer,
             "isGuest" to isGuest,
             "hasUsername" to hasUsername,
-            "username" to onboardData?.username,
-            "avatar" to onboardData?.avatar?.name,
-            "petName" to onboardData?.petName,
-            "petAvatar" to onboardData?.petAvatar?.name,
             "repeatingQuests" to onboardData?.repeatingQuests
         )
     }
@@ -58,6 +49,7 @@ sealed class AuthAction : Action {
     data class UsernameValidationFailed(val error: ValidationError) : AuthAction() {
         override fun toMap() = mapOf("error" to error.name)
     }
+
     data class CompleteSetup(
         val username: String,
         val avatar: Avatar
@@ -105,10 +97,6 @@ object AuthReducer : BaseViewStateReducer<AuthViewState>() {
                         throw  IllegalStateException("Player is already authenticated and has username")
                     },
                     isGuest = action.isGuest,
-                    username = onboardData?.username ?: subState.username,
-                    playerAvatar = onboardData?.avatar ?: subState.playerAvatar,
-                    petName = onboardData?.petName ?: subState.petName,
-                    petAvatar = onboardData?.petAvatar ?: subState.petAvatar,
                     repeatingQuests = onboardData?.repeatingQuests ?: subState.repeatingQuests,
                     habits = onboardData?.habits ?: subState.habits
                 )
@@ -197,7 +185,6 @@ object AuthReducer : BaseViewStateReducer<AuthViewState>() {
             repeatingQuests = emptySet(),
             habits = emptySet()
         )
-
 }
 
 data class AuthViewState(
@@ -209,8 +196,8 @@ data class AuthViewState(
     val avatars: List<Avatar>,
     val petName: String?,
     val petAvatar: PetAvatar?,
-    val repeatingQuests: Set<Pair<RepeatingQuest, OnboardViewController.OnboardTag?>>,
-    val habits: Set<Pair<PredefinedHabit, OnboardViewController.OnboardTag?>>
+    val repeatingQuests: Set<Pair<RepeatingQuest, OnboardData.Tag?>>,
+    val habits: Set<Pair<PredefinedHabit, OnboardData.Tag?>>
 ) : BaseViewState() {
     enum class StateType {
         IDLE,

@@ -1209,4 +1209,6 @@ These are your physical and mental characteristics.\n\n
     <string name="difficulty">Difficulty</string>
     <string name="rank">Rank</string>
     <string name="joined">Joined</string>
+    <string name="skip">Skip</string>
+    <string name="onboard_existing_player">Returning Player?</string>
 </resources>
