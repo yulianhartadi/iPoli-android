@@ -270,8 +270,10 @@ class IntelligenceBooster : BaseAttributeBonusBooster(INTELLIGENCE) {
                     Booster()
 
             override fun apprenticeBooster() =
-                if (!quest.isScheduled || !quest.completedAtTime!!.isBetween(
-                        quest.startTime!!,
+                if (quest.completedAtTime == null || quest.startTime == null || quest.endTime == null) {
+                    Booster()
+                } else if (!quest.isScheduled || !quest.completedAtTime.isBetween(
+                        quest.startTime,
                         quest.endTime!!.plus(120)
                     )
                 ) {
