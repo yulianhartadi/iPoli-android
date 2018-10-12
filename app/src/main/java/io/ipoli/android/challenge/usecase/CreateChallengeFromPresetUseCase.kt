@@ -6,6 +6,7 @@ import io.ipoli.android.common.UseCase
 import io.ipoli.android.common.datetime.Time
 import io.ipoli.android.habit.data.Habit
 import io.ipoli.android.quest.Quest
+import io.ipoli.android.quest.Reminder
 import io.ipoli.android.quest.subquest.SubQuest
 import io.ipoli.android.tag.Tag
 import org.threeten.bp.DayOfWeek
@@ -37,7 +38,8 @@ class CreateChallengeFromPresetUseCase(private val saveChallengeUseCase: SaveCha
                     SubQuest(sq, null, null)
                 },
                 duration = it.duration.intValue,
-                note = it.note
+                note = it.note,
+                reminders = listOf(Reminder.Relative("", 0))
             )
         }
 
