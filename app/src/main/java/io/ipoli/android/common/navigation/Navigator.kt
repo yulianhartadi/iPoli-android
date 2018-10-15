@@ -45,6 +45,7 @@ import io.ipoli.android.friends.invite.AcceptFriendshipDialogController
 import io.ipoli.android.friends.invite.InviteFriendsDialogController
 import io.ipoli.android.habit.edit.EditHabitViewController
 import io.ipoli.android.habit.predefined.PredefinedHabitListViewController
+import io.ipoli.android.habit.show.HabitViewController
 import io.ipoli.android.note.NotePickerDialogController
 import io.ipoli.android.onboarding.OnboardData
 import io.ipoli.android.onboarding.OnboardViewController
@@ -307,6 +308,10 @@ class Navigator(private val router: Router) {
 
     fun toChallenge(challengeId: String) {
         pushController({ ChallengeViewController(challengeId) }, VerticalChangeHandler())
+    }
+
+    fun toHabit(habitId: String) {
+        pushController({ HabitViewController(habitId) }, VerticalChangeHandler())
     }
 
     fun setQuest(questId: String) {

@@ -255,7 +255,6 @@ class MainActivity : AppCompatActivity(), Injects<UIModule>, SideEffectHandler<A
                     ErrorLogger.log(e)
                 }
             }
-
         }
     }
 

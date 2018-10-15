@@ -11,6 +11,7 @@ import io.ipoli.android.common.distinct
 import io.ipoli.android.common.persistence.*
 import io.ipoli.android.habit.data.CompletedEntry
 import io.ipoli.android.habit.data.Habit
+import io.ipoli.android.habit.usecase.CalculateHabitStreakUseCase
 import io.ipoli.android.pet.Food
 import io.ipoli.android.player.data.Player
 import io.ipoli.android.quest.Color
@@ -50,6 +51,7 @@ data class DbHabit(override val map: MutableMap<String, Any?> = mutableMapOf()) 
     var timesADay: Long by map
     var challengeId: String? by map
     var note: String by map
+    var preferenceHistory: Map<String, MutableMap<String, Any?>> by map
     var history: Map<String, MutableMap<String, Any?>> by map
     var currentStreak: Long by map
     var prevStreak: Long by map
@@ -57,6 +59,11 @@ data class DbHabit(override val map: MutableMap<String, Any?> = mutableMapOf()) 
     override var createdAt: Long by map
     override var updatedAt: Long by map
     override var removedAt: Long? by map
+
+    data class PreferenceHistory(val map: MutableMap<String, Any?> = mutableMapOf()) {
+        var days: MutableMap<String, List<String>> by map
+        var timesADay: MutableMap<String, Long> by map
+    }
 }
 
 data class DbCompletedEntry(val map: MutableMap<String, Any?> = mutableMapOf()) {
@@ -181,8 +188,8 @@ class RoomHabitMapper(private val tagDao: TagDao) {
 
     private val tagMapper = RoomTagMapper()
 
-    fun toEntityObject(dbObject: RoomHabit) =
-        Habit(
+    fun toEntityObject(dbObject: RoomHabit): Habit {
+        val h = Habit(
             id = dbObject.id,
             name = dbObject.name,
             color = Color.valueOf(dbObject.color),
@@ -193,16 +200,45 @@ class RoomHabitMapper(private val tagDao: TagDao) {
             timesADay = dbObject.timesADay.toInt(),
             challengeId = dbObject.challengeId,
             note = dbObject.note,
+            preferenceHistory = dbObject.preferenceHistory.let {
+
+                val dp = if (it.isEmpty()) {
+                    DbHabit.PreferenceHistory(
+                        mutableMapOf(
+                            "days" to mapOf(
+                                dbObject.createdAt.toString() to dbObject.days
+                            ),
+                            "timesADay" to mapOf(
+                                dbObject.createdAt.toString() to dbObject.timesADay
+                            )
+                        )
+                    )
+                } else {
+                    DbHabit.PreferenceHistory(it.toMutableMap())
+                }
+
+                Habit.PreferenceHistory(
+                    days = dp.days.map { d ->
+                        d.key.toLong().startOfDayUTC to d.value.map { dow -> DayOfWeek.valueOf(dow) }.toSet()
+                    }.toMap().toSortedMap(),
+                    timesADay = dp.timesADay.map { td ->
+                        td.key.toLong().startOfDayUTC to td.value.toInt()
+                    }.toMap().toSortedMap()
+                )
+            },
             history = dbObject.history.map {
                 it.key.toLong().startOfDayUTC to createCompletedEntry(it.value)
             }.toMap(),
-            currentStreak = dbObject.currentStreak.toInt(),
-            prevStreak = dbObject.prevStreak.toInt(),
-            bestStreak = dbObject.bestStreak.toInt(),
+            streak = Habit.Streak(0, 0),
             updatedAt = dbObject.updatedAt.instant,
             createdAt = dbObject.createdAt.instant,
             removedAt = dbObject.removedAt?.instant
         )
+
+        return h.copy(
+            streak = CalculateHabitStreakUseCase().execute(CalculateHabitStreakUseCase.Params(habit = h))
+        )
+    }
 
     fun toDatabaseObject(entity: Habit) =
         RoomHabit(
@@ -215,12 +251,22 @@ class RoomHabitMapper(private val tagDao: TagDao) {
             timesADay = entity.timesADay.toLong(),
             challengeId = entity.challengeId,
             note = entity.note,
+            preferenceHistory = entity.preferenceHistory.let {
+                mapOf(
+                    "days" to it.days.map { d ->
+                        d.key.startOfDayUTC().toString() to d.value.map { dow -> dow.name }
+                    }.toMap().toMutableMap<String, Any?>(),
+                    "timesADay" to it.timesADay.map { td ->
+                        td.key.startOfDayUTC().toString() to td.value.toLong()
+                    }.toMap().toMutableMap<String, Any?>()
+                )
+            },
             history = entity.history.map {
                 it.key.startOfDayUTC().toString() to createDbCompletedEntry(it.value).map
             }.toMap(),
-            currentStreak = entity.currentStreak.toLong(),
-            prevStreak = entity.prevStreak.toLong(),
-            bestStreak = entity.bestStreak.toLong(),
+            currentStreak = 0,
+            prevStreak = 0,
+            bestStreak = 0,
             updatedAt = System.currentTimeMillis(),
             createdAt = entity.createdAt.toEpochMilli(),
             removedAt = entity.removedAt?.toEpochMilli()
@@ -316,6 +362,7 @@ data class RoomHabit(
     val timesADay: Long,
     val challengeId: String?,
     val note: String,
+    val preferenceHistory: Map<String, MutableMap<String, Any?>>,
     val history: Map<String, MutableMap<String, Any?>>,
     val currentStreak: Long,
     val prevStreak: Long,
@@ -362,6 +409,18 @@ class FirestoreHabitRepository(
         get() = database.collection("players").document(playerId).collection("habits")
 
     override fun toEntityObject(dataMap: MutableMap<String, Any?>): Habit {
+
+        if (!dataMap.containsKey("preferenceHistory")) {
+            dataMap["preferenceHistory"] = mapOf(
+                "days" to mapOf(
+                    dataMap["createdAt"].toString() to dataMap["days"]
+                ),
+                "timesADay" to mapOf(
+                    dataMap["createdAt"].toString() to dataMap["timesADay"]
+                )
+            )
+        }
+
         val h = DbHabit(dataMap.withDefault {
             null
         })
@@ -379,12 +438,21 @@ class FirestoreHabitRepository(
             timesADay = h.timesADay.toInt(),
             challengeId = h.challengeId,
             note = h.note,
+            preferenceHistory = h.preferenceHistory.let {
+                val dp = DbHabit.PreferenceHistory(it.toMutableMap())
+                Habit.PreferenceHistory(
+                    days = dp.days.map { d ->
+                        d.key.toLong().startOfDayUTC to d.value.map { dow -> DayOfWeek.valueOf(dow) }.toSet()
+                    }.toMap().toSortedMap(),
+                    timesADay = dp.timesADay.map { td ->
+                        td.key.toLong().startOfDayUTC to td.value.toInt()
+                    }.toMap().toSortedMap()
+                )
+            },
             history = h.history.map {
                 it.key.toLong().startOfDayUTC to createCompletedEntry(it.value)
             }.toMap(),
-            currentStreak = h.currentStreak.toInt(),
-            prevStreak = h.prevStreak.toInt(),
-            bestStreak = h.bestStreak.toInt(),
+            streak = Habit.Streak(0, 0),
             createdAt = h.createdAt.instant,
             updatedAt = h.updatedAt.instant,
             removedAt = h.removedAt?.instant
@@ -403,12 +471,22 @@ class FirestoreHabitRepository(
         h.timesADay = entity.timesADay.toLong()
         h.challengeId = entity.challengeId
         h.note = entity.note
+        h.preferenceHistory = entity.preferenceHistory.let {
+            mapOf(
+                "days" to it.days.map { d ->
+                    d.key.startOfDayUTC().toString() to d.value.map { dow -> dow.name }
+                }.toMap().toMutableMap<String, Any?>(),
+                "timesADay" to it.timesADay.map { td ->
+                    td.key.startOfDayUTC().toString() to td.value.toLong()
+                }.toMap().toMutableMap<String, Any?>()
+            )
+        }
         h.history = entity.history.map {
             it.key.startOfDayUTC().toString() to createDbCompletedEntry(it.value).map
         }.toMap()
-        h.currentStreak = entity.currentStreak.toLong()
-        h.prevStreak = entity.prevStreak.toLong()
-        h.bestStreak = entity.bestStreak.toLong()
+        h.currentStreak = 0
+        h.prevStreak = 0
+        h.bestStreak = 0
         h.updatedAt = entity.updatedAt.toEpochMilli()
         h.createdAt = entity.createdAt.toEpochMilli()
         h.removedAt = entity.removedAt?.toEpochMilli()

@@ -1211,4 +1211,5 @@ These are your physical and mental characteristics.\n\n
     <string name="joined">Joined</string>
     <string name="skip">Skip</string>
     <string name="onboard_existing_player">Returning Player?</string>
+    <string name="habit_toggle_future_error">Unable to change the future</string>
 </resources>

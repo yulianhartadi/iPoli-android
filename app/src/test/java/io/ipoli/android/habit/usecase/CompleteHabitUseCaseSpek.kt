@@ -15,8 +15,6 @@ import org.jetbrains.spek.api.dsl.describe
 import org.jetbrains.spek.api.dsl.it
 import org.threeten.bp.DayOfWeek
 import org.threeten.bp.LocalDate
-import org.threeten.bp.LocalDateTime
-import org.threeten.bp.LocalTime
 
 /**
  * Created by Polina Zhelyazkova <polina@mypoli.fun>
@@ -30,7 +28,7 @@ class CompleteHabitUseCaseSpek : Spek({
 
         fun executeUseCase(
             habit: Habit,
-            date: LocalDateTime = LocalDateTime.now(),
+            date: LocalDate = LocalDate.now(),
             player: Player = TestUtil.player
         ): Habit {
 
@@ -64,18 +62,6 @@ class CompleteHabitUseCaseSpek : Spek({
             habit.history.keys.`should contain`(LocalDate.now())
         }
 
-        it("should check if should be done today") {
-            val exec = {
-                executeUseCase(
-                    TestUtil.habit.copy(
-                        days = setOf(DayOfWeek.SUNDAY)
-                    ),
-                    LocalDateTime.now().with(DayOfWeek.MONDAY)
-                )
-            }
-            exec shouldThrow IllegalArgumentException::class
-        }
-
         it("should check if already complete today") {
             val exec = {
                 executeUseCase(
@@ -86,7 +72,7 @@ class CompleteHabitUseCaseSpek : Spek({
                                 completedEntry.copy(completedAtTimes = listOf(Time.now()))
                         )
                     ),
-                    LocalDateTime.now()
+                    LocalDate.now()
                 )
             }
             exec shouldThrow IllegalArgumentException::class
@@ -100,7 +86,7 @@ class CompleteHabitUseCaseSpek : Spek({
                         today.minusDays(1) to completedEntry
                     )
                 ),
-                LocalDateTime.now()
+                LocalDate.now()
             )
             habit.history.size.`should be`(2)
             habit.history.keys.`should contain all`(listOf(today.minusDays(1), today))
@@ -116,7 +102,7 @@ class CompleteHabitUseCaseSpek : Spek({
                         today to completedEntry.copy(completedAtTimes = listOf(Time.now()))
                     )
                 ),
-                LocalDateTime.now()
+                LocalDate.now()
             )
             habit.history[today]!!.completedCount.`should be`(2)
         }
@@ -130,77 +116,9 @@ class CompleteHabitUseCaseSpek : Spek({
                         today to completedEntry
                     )
                 ),
-                LocalDateTime.now()
+                LocalDate.now()
             )
             habit.history[today]!!.completedCount.`should be`(1)
-        }
-
-        it("should increase current streak") {
-            val habit = executeUseCase(
-                TestUtil.habit.copy(
-                    currentStreak = 0
-                )
-            )
-            habit.currentStreak.`should be`(1)
-        }
-
-        it("should restart current streak for negative") {
-            val habit = executeUseCase(
-                TestUtil.habit.copy(
-                    isGood = false,
-                    currentStreak = 3,
-                    prevStreak = 2
-                )
-            )
-            habit.currentStreak.`should be`(0)
-            habit.prevStreak.`should be`(3)
-        }
-
-        it("should not increase current streak with 2 times a day") {
-            val habit = executeUseCase(
-                TestUtil.habit.copy(
-                    timesADay = 2,
-                    currentStreak = 0
-                )
-            )
-            habit.currentStreak.`should be`(0)
-        }
-
-        it("should increase current streak with 2 times a day") {
-            val today = LocalDate.now()
-            val habit = executeUseCase(
-                TestUtil.habit.copy(
-                    timesADay = 2,
-                    history = mapOf(
-                        today to completedEntry.copy(completedAtTimes = listOf(Time.now()))
-                    ),
-                    prevStreak = 1,
-                    currentStreak = 2
-                ),
-                LocalDateTime.now()
-            )
-            habit.currentStreak.`should be`(3)
-            habit.prevStreak.`should be`(2)
-        }
-
-        it("should not increase best streak") {
-            val habit = executeUseCase(
-                TestUtil.habit.copy(
-                    currentStreak = 0,
-                    bestStreak = 2
-                )
-            )
-            habit.bestStreak.`should be`(2)
-        }
-
-        it("should increase best streak") {
-            val habit = executeUseCase(
-                TestUtil.habit.copy(
-                    currentStreak = 2,
-                    bestStreak = 2
-                )
-            )
-            habit.bestStreak.`should be`(3)
         }
 
         describe("Rewards") {
@@ -211,7 +129,7 @@ class CompleteHabitUseCaseSpek : Spek({
                     TestUtil.habit.copy(
                         isGood = true
                     ),
-                    LocalDateTime.now()
+                    LocalDate.now()
                 )
                 val ce = habit.history[today]!!
                 val r = ce.reward!!
@@ -226,7 +144,7 @@ class CompleteHabitUseCaseSpek : Spek({
                         isGood = true,
                         timesADay = 2
                     ),
-                    LocalDateTime.now()
+                    LocalDate.now()
                 )
                 val ce = habit.history[today]!!
                 ce.reward.`should be null`()
@@ -238,75 +156,12 @@ class CompleteHabitUseCaseSpek : Spek({
                     TestUtil.habit.copy(
                         isGood = false
                     ),
-                    LocalDateTime.now()
+                    LocalDate.now()
                 )
                 val ce = habit.history[today]!!
                 val r = ce.reward!!
                 r.coins.`should be greater than`(0)
                 r.experience.`should be greater than`(0)
-            }
-
-            it("should not give reward when completed before reset day time") {
-                val habit = TestUtil.habit.copy(
-                    timesADay = 2,
-                    isGood = true,
-                    history = mapOf(
-                        LocalDate.now() to CompletedEntry(
-                            completedAtTimes = listOf(
-                                Time.at(12, 15)
-                            )
-                        )
-                    )
-                )
-
-                val p = TestUtil.player.copy(
-                    preferences = TestUtil.player.preferences.copy(
-                        resetDayTime = Time.at(12, 30)
-                    )
-                )
-
-                val newHabit = executeUseCase(
-                    habit = habit,
-                    date = LocalDateTime.of(LocalDate.now(), LocalTime.of(12, 46)),
-                    player = p
-                )
-
-                newHabit.history.size.`should be`(1)
-                val ce = newHabit.history.values.first()
-                ce.completedAtTimes.size.`should be`(2)
-                ce.reward.`should be null`()
-            }
-
-            it("should give reward when completed before and after reset day time") {
-                val habit = TestUtil.habit.copy(
-                    timesADay = 2,
-                    isGood = true,
-                    history = mapOf(
-                        LocalDate.now() to CompletedEntry(
-                            completedAtTimes = listOf(
-                                Time.at(12, 15),
-                                Time.at(12, 40)
-                            )
-                        )
-                    )
-                )
-
-                val p = TestUtil.player.copy(
-                    preferences = TestUtil.player.preferences.copy(
-                        resetDayTime = Time.at(12, 30)
-                    )
-                )
-
-                val newHabit = executeUseCase(
-                    habit = habit,
-                    date = LocalDateTime.of(LocalDate.now(), LocalTime.of(12, 45)),
-                    player = p
-                )
-
-                newHabit.history.size.`should be`(2)
-                val ce = newHabit.history.values.last()
-                ce.completedAtTimes.size.`should be`(0)
-                ce.reward.`should not be null`()
             }
         }
     }

@@ -4,9 +4,8 @@ import io.ipoli.android.common.ErrorLogger
 import io.ipoli.android.common.UseCase
 import io.ipoli.android.habit.data.Habit
 import io.ipoli.android.habit.persistence.HabitRepository
-import io.ipoli.android.player.persistence.PlayerRepository
 import io.ipoli.android.player.usecase.RemoveRewardFromPlayerUseCase
-import org.threeten.bp.LocalDateTime
+import org.threeten.bp.LocalDate
 
 /**
  * Created by Polina Zhelyazkova <polina@mypoli.fun>
@@ -14,7 +13,6 @@ import org.threeten.bp.LocalDateTime
  */
 class UndoCompleteHabitUseCase(
     private val habitRepository: HabitRepository,
-    private val playerRepository: PlayerRepository,
     private val removeRewardFromPlayerUseCase: RemoveRewardFromPlayerUseCase
 ) : UseCase<UndoCompleteHabitUseCase.Params, Habit> {
 
@@ -22,69 +20,29 @@ class UndoCompleteHabitUseCase(
         val habit = habitRepository.findById(parameters.habitId)
         requireNotNull(habit)
 
-        val player = playerRepository.find()!!
-
-        val dateTime = parameters.dateTime
-        val resetDayTime = player.preferences.resetDayTime
+        val date = parameters.date
 
         val history = habit!!.history.toMutableMap()
 
-        if (habit.completedCountForDate(dateTime, resetDayTime) == 0) {
+        if (habit.completedCountForDate(date) == 0) {
             return habit
         }
 
-        val wasCompleted = habit.isCompletedFor(dateTime, resetDayTime)
+        val wasCompleted = habit.isCompletedForDate(date)
 
-        val (startDate, endDate) = player.datesSpan(dateTime)
-
-        val ced = if (endDate != null && history[endDate] != null) endDate else startDate
-
-        if (history[ced]!!.completedAtTimes.isNotEmpty()) {
-            history[ced] = history[ced]!!.undoLastComplete()
-        } else {
-            history[startDate] = history[startDate]!!.undoLastComplete()
-        }
+        history[date] = history[date]!!.undoLastComplete()
 
         if (wasCompleted && habit.isGood) {
 
-            if (history[ced]!!.reward == null) {
-                ErrorLogger.log(IllegalStateException("Illegal undo habit: ${habit.history}, $ced, $resetDayTime, $dateTime"))
+            if (history[date]!!.reward == null) {
+                ErrorLogger.log(IllegalStateException("Illegal undo habit: ${habit.history}, $date"))
             } else {
-                removeRewardFromPlayerUseCase.execute(RemoveRewardFromPlayerUseCase.Params(history[ced]!!.reward!!))
+                removeRewardFromPlayerUseCase.execute(RemoveRewardFromPlayerUseCase.Params(history[date]!!.reward!!))
             }
         }
 
-        val currentStreak = habit.currentStreak
-        val bestStreak = habit.bestStreak
-
-        val newStreak = Math.max(
-            if (wasCompleted && habit.isGood) currentStreak - 1
-            else if (!habit.isGood) habit.prevStreak
-            else currentStreak,
-            0
-        )
-
-        return habitRepository.save(
-            habit.copy(
-                history = history,
-                currentStreak = newStreak,
-                prevStreak = if (newStreak != currentStreak && currentStreak != 0) currentStreak else habit.prevStreak,
-                bestStreak = if (habit.isGood) {
-                    if (wasCompleted && bestStreak == currentStreak) Math.max(
-                        bestStreak - 1,
-                        0
-                    ) else bestStreak
-                } else {
-                    if (habit.prevStreak > bestStreak) {
-                        habit.prevStreak
-                    } else {
-                        bestStreak
-                    }
-                }
-
-            )
-        )
+        return habitRepository.save(habit.copy(history = history))
     }
 
-    data class Params(val habitId: String, val dateTime: LocalDateTime = LocalDateTime.now())
+    data class Params(val habitId: String, val date: LocalDate = LocalDate.now())
 }

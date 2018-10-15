@@ -97,11 +97,6 @@ class EditHabitViewController(args: Bundle? = null) :
         inflater.inflate(R.menu.edit_habit_menu, menu)
     }
 
-    override fun onPrepareOptionsMenu(menu: Menu) {
-        menu.findItem(R.id.actionRemove).isVisible = habitId.isNotBlank()
-        super.onPrepareOptionsMenu(menu)
-    }
-
     override fun onOptionsItemSelected(item: MenuItem) =
         when (item.itemId) {
             android.R.id.home ->
@@ -114,18 +109,6 @@ class EditHabitViewController(args: Bundle? = null) :
                         view!!.habitTimesADay.selectedItemPosition
                     )
                 )
-                true
-            }
-
-            R.id.actionRemove -> {
-                navigate().toConfirmation(
-                    stringRes(R.string.dialog_confirmation_title),
-                    stringRes(R.string.dialog_remove_habit_message)
-                ) {
-                    showShortToast(R.string.habit_removed)
-                    dispatch(EditHabitAction.Remove(habitId))
-                    router.handleBack()
-                }
                 true
             }
 

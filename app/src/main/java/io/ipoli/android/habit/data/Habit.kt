@@ -3,14 +3,13 @@ package io.ipoli.android.habit.data
 import io.ipoli.android.common.Reward
 import io.ipoli.android.common.datetime.Time
 import io.ipoli.android.common.persistence.EntityWithTags
-import io.ipoli.android.player.data.Player
 import io.ipoli.android.quest.Color
 import io.ipoli.android.quest.Icon
 import io.ipoli.android.tag.Tag
 import org.threeten.bp.DayOfWeek
 import org.threeten.bp.Instant
 import org.threeten.bp.LocalDate
-import org.threeten.bp.LocalDateTime
+import java.util.*
 
 /**
  * Created by Polina Zhelyazkova <polina@mypoli.fun>
@@ -27,48 +26,59 @@ data class Habit(
     val timesADay: Int = 1,
     val challengeId: String? = null,
     val note: String = "",
+    val streak: Streak,
     val history: Map<LocalDate, CompletedEntry> = emptyMap(),
-    val currentStreak: Int = 0,
-    val prevStreak: Int = 0,
-    val bestStreak: Int = 0,
+    val preferenceHistory: PreferenceHistory,
     val isRemoved: Boolean = false,
     override val createdAt: Instant = Instant.now(),
     override val updatedAt: Instant = Instant.now(),
     val removedAt: Instant? = null
 ) : EntityWithTags {
 
-    fun isCompletedFor(date: LocalDateTime = LocalDateTime.now(), resetDayTime: Time): Boolean {
-        if (!shouldBeDoneOn(date, resetDayTime)) return true
-        return completedCountForDate(date, resetDayTime) >= timesADay
-    }
+    data class PreferenceHistory(
+        val days: SortedMap<LocalDate, Set<DayOfWeek>>,
+        val timesADay: SortedMap<LocalDate, Int>
+    )
 
-    fun completedCountForDate(date: LocalDateTime = LocalDateTime.now(), resetDayTime: Time): Int {
+    fun completedCountForDate(date: LocalDate) =
+        if (history.containsKey(date)) history[date]!!.completedCount else 0
 
-        val (startDate, endDate) = Player.datesSpan(date, resetDayTime)
+    fun isCompletedForDate(date: LocalDate) =
+        completedCountForDate(date) >= requiredTimesToComplete(date)
 
-        var completedCount = 0
-
-        history[startDate]?.let {
-            completedCount += it.completedAtTimes.count { t -> t >= resetDayTime }
-        }
-
-        endDate?.let {
-            history[it]?.let { ce ->
-                completedCount += ce.completedAtTimes.count { t -> t < resetDayTime }
+    private fun requiredTimesToComplete(date: LocalDate) =
+        if (preferenceHistory.timesADay.size == 1) {
+            timesADay
+        } else if (preferenceHistory.timesADay.contains(date)) {
+            preferenceHistory.timesADay[date]!!
+        } else {
+            val hm = preferenceHistory.timesADay.headMap(date)
+            if (hm.isEmpty()) {
+                val tm = preferenceHistory.timesADay.tailMap(date)
+                preferenceHistory.timesADay[tm.firstKey()]!!
+            } else {
+                preferenceHistory.timesADay[hm.lastKey()]!!
             }
         }
 
-
-        return completedCount
-    }
-
-    fun shouldBeDoneOn(date: LocalDateTime = LocalDateTime.now(), resetDayTime: Time): Boolean {
-        val currentDate = Player.currentDate(date, resetDayTime)
-        return days.contains(currentDate.dayOfWeek)
-    }
+    fun shouldBeDoneOn(date: LocalDate) =
+        if (preferenceHistory.days.size == 1) {
+            days.contains(date.dayOfWeek)
+        } else if (preferenceHistory.days.contains(date)) {
+            preferenceHistory.days[date]!!.contains(date.dayOfWeek)
+        } else {
+            val hm = preferenceHistory.days.headMap(date)
+            if (hm.isEmpty()) {
+                val tm = preferenceHistory.days.tailMap(date)
+                preferenceHistory.days[tm.firstKey()]!!.contains(date.dayOfWeek)
+            } else {
+                preferenceHistory.days[hm.lastKey()]!!.contains(date.dayOfWeek)
+            }
+        }
 
     val isFromChallenge get() = challengeId != null
 
+    data class Streak(val current: Int, val best: Int)
 }
 
 data class CompletedEntry(

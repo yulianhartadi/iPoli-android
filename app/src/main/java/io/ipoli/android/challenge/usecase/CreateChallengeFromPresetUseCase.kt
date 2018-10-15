@@ -53,7 +53,12 @@ class CreateChallengeFromPresetUseCase(private val saveChallengeUseCase: SaveCha
                     tags = parameters.tags,
                     isGood = it.isGood,
                     timesADay = it.timesADay,
-                    days = DayOfWeek.values().toSet()
+                    streak = Habit.Streak(0, 0),
+                    days = DayOfWeek.values().toSet(),
+                    preferenceHistory = Habit.PreferenceHistory(
+                        days = sortedMapOf(LocalDate.now() to DayOfWeek.values().toSet()),
+                        timesADay = sortedMapOf(LocalDate.now() to it.timesADay)
+                    )
                 )
             }
 

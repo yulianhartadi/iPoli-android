@@ -80,7 +80,7 @@ class ScheduleSummaryViewController(args: Bundle? = null) :
             else -> view.calendarView.setWeekStarWithMon()
         }
 
-        view.calendarView.setOnDateSelectedListener(SkipFirstChangeDateListener { calendar, _ ->
+        view.calendarView.setOnCalendarSelectListener(SkipFirstChangeDateListener { calendar, _ ->
             val newDate = LocalDate.of(calendar.year, calendar.month, calendar.day)
             dispatch(ScheduleSummaryAction.ChangeDate(newDate))
         })
@@ -208,7 +208,7 @@ class ScheduleSummaryViewController(args: Bundle? = null) :
             }
 
             SCHEDULE_SUMMARY_DATA_CHANGED -> {
-                view.calendarView.setSchemeDate(state.calendars)
+                view.calendarView.setSchemeDate(state.calendars.map { it.toString() to it }.toMap())
             }
 
             SCHEDULE_DATA_CHANGED ->
@@ -625,11 +625,8 @@ class ScheduleSummaryViewController(args: Bundle? = null) :
         }
 
     class SkipFirstChangeDateListener(private inline val onChange: (Calendar, Boolean) -> Unit) :
-        CalendarView.OnDateSelectedListener {
-
-        private var isFirstChange = true
-
-        override fun onDateSelected(calendar: Calendar, isClick: Boolean) {
+        CalendarView.OnCalendarSelectListener {
+        override fun onCalendarSelect(calendar: Calendar, isClick: Boolean) {
             if (isFirstChange) {
                 isFirstChange = false
                 return
@@ -638,5 +635,10 @@ class ScheduleSummaryViewController(args: Bundle? = null) :
             onChange(calendar, isClick)
         }
 
+        override fun onCalendarOutOfRange(calendar: Calendar) {
+
+        }
+
+        private var isFirstChange = true
     }
 }

@@ -19,10 +19,10 @@ import io.ipoli.android.achievement.usecase.UpdateAchievementProgressUseCase
 import io.ipoli.android.achievement.usecase.UpdatePlayerStatsUseCase
 import io.ipoli.android.challenge.persistence.ChallengeRepository
 import io.ipoli.android.challenge.persistence.RoomChallengeRepository
-import io.ipoli.android.challenge.preset.usecase.UnlockPresetChallengeUseCase
 import io.ipoli.android.challenge.preset.persistence.FirestorePresetChallengeRepository
 import io.ipoli.android.challenge.preset.persistence.PresetChallengeRepository
 import io.ipoli.android.challenge.preset.sideeffect.PresetChallengeSideEffectHandler
+import io.ipoli.android.challenge.preset.usecase.UnlockPresetChallengeUseCase
 import io.ipoli.android.challenge.sideeffect.ChallengeSideEffectHandler
 import io.ipoli.android.challenge.usecase.*
 import io.ipoli.android.common.*
@@ -407,7 +407,6 @@ interface UseCaseModule {
     val completeHabitUseCase: CompleteHabitUseCase
     val undoCompleteHabitUseCase: UndoCompleteHabitUseCase
     val removeHabitUseCase: RemoveHabitUseCase
-    val updateHabitStreaksUseCase: UpdateHabitStreaksUseCase
     val createHabitItemsUseCase: CreateHabitItemsUseCase
     val createScheduleSummaryUseCase: CreateScheduleSummaryUseCase
     val savePostsUseCase: SavePostsUseCase
@@ -421,6 +420,7 @@ interface UseCaseModule {
     val addTagToAttributeUseCase: AddTagToAttributeUseCase
     val removeTagFromAttributeUseCase: RemoveTagFromAttributeUseCase
     val createChallengeFromPresetUseCase: CreateChallengeFromPresetUseCase
+    val createHabitHistoryItemsUseCase: CreateHabitHistoryItemsUseCase
 }
 
 class MainUseCaseModule(private val context: Context) : UseCaseModule {
@@ -937,18 +937,14 @@ class MainUseCaseModule(private val context: Context) : UseCaseModule {
     override val undoCompleteHabitUseCase
         get() = UndoCompleteHabitUseCase(
             habitRepository,
-            playerRepository,
             removeRewardFromPlayerUseCase
         )
 
     override val removeHabitUseCase
         get() = RemoveHabitUseCase(habitRepository)
 
-    override val updateHabitStreaksUseCase
-        get() = UpdateHabitStreaksUseCase(habitRepository)
-
     override val createHabitItemsUseCase
-        get() = CreateHabitItemsUseCase(playerRepository)
+        get() = CreateHabitItemsUseCase()
 
     override val createScheduleSummaryUseCase
         get() = CreateScheduleSummaryUseCase(eventRepository, playerRepository, permissionChecker)
@@ -982,6 +978,9 @@ class MainUseCaseModule(private val context: Context) : UseCaseModule {
 
     override val createChallengeFromPresetUseCase
         get() = CreateChallengeFromPresetUseCase(saveChallengeUseCase)
+
+    override val createHabitHistoryItemsUseCase
+        get() = CreateHabitHistoryItemsUseCase()
 }
 
 interface StateStoreModule {

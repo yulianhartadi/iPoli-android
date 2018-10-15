@@ -369,7 +369,7 @@ class WillpowerBooster : BaseAttributeBonusBooster(WILLPOWER) {
     override fun createHabitBoostStrategy(habit: Habit) =
         object : NoBoostStrategy() {
             override fun specialistBooster() =
-                Booster(Math.min(habit.currentStreak, 20), Math.min(habit.currentStreak, 20))
+                Booster(Math.min(habit.streak.current, 20), Math.min(habit.streak.current, 20))
 
             override fun apprenticeBooster() =
                 if (habit.isFromChallenge)

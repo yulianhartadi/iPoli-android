@@ -9,7 +9,6 @@ import android.support.v7.widget.GridLayoutManager
 import android.view.*
 import android.view.animation.AccelerateDecelerateInterpolator
 import android.widget.TextView
-import com.bluelinelabs.conductor.changehandler.VerticalChangeHandler
 import com.mikepenz.google_material_typeface_library.GoogleMaterial
 import com.mikepenz.iconics.IconicsDrawable
 import com.mikepenz.iconics.typeface.IIcon
@@ -18,6 +17,7 @@ import io.ipoli.android.common.redux.android.ReduxViewController
 import io.ipoli.android.common.view.*
 import io.ipoli.android.common.view.recyclerview.MultiViewRecyclerViewAdapter
 import io.ipoli.android.common.view.recyclerview.RecyclerViewViewModel
+import io.ipoli.android.habit.data.Habit
 import io.ipoli.android.habit.list.HabitListViewState.StateType.*
 import io.ipoli.android.habit.usecase.CreateHabitItemsUseCase
 import kotlinx.android.synthetic.main.controller_habit_list.view.*
@@ -133,7 +133,8 @@ class HabitListViewController(args: Bundle? = null) :
             val progress: Int,
             val maxProgress: Int,
             val isCompleted: Boolean,
-            val isGood: Boolean
+            val isGood: Boolean,
+            val habit: Habit
         ) : ItemViewModel(id)
 
         data class OtherDayItem(
@@ -143,7 +144,8 @@ class HabitListViewController(args: Bundle? = null) :
             @ColorRes val color: Int,
             val streak: Int,
             val isBestStreak: Boolean,
-            val isGood: Boolean
+            val isGood: Boolean,
+            val habit: Habit
         ) : ItemViewModel(id)
     }
 
@@ -202,7 +204,7 @@ class HabitListViewController(args: Bundle? = null) :
                     view.habitProgress.invisible()
                     habitCompleteBackground.visible()
                     view.habitCompletedBackground.setOnLongClickListener {
-                        navigateFromRoot().toEditHabit(vm.id, VerticalChangeHandler())
+                        navigateFromRoot().toHabit(vm.habit.id)
                         return@setOnLongClickListener true
                     }
                     view.habitProgress.setOnLongClickListener(null)
@@ -210,7 +212,7 @@ class HabitListViewController(args: Bundle? = null) :
                     view.habitProgress.visible()
                     habitCompleteBackground.invisible()
                     view.habitProgress.setOnLongClickListener {
-                        navigateFromRoot().toEditHabit(vm.id, VerticalChangeHandler())
+                        navigateFromRoot().toHabit(vm.habit.id)
                         return@setOnLongClickListener true
                     }
                     view.habitCompletedBackground.setOnLongClickListener(null)
@@ -244,7 +246,7 @@ class HabitListViewController(args: Bundle? = null) :
                 renderCompletedBackground(view, vm.color)
 
                 view.habitCompletedBackground.setOnLongClickListener {
-                    navigateFromRoot().toEditHabit(vm.id, VerticalChangeHandler())
+                    navigateFromRoot().toHabit(vm.habit.id)
                     return@setOnLongClickListener true
                 }
             }
@@ -411,10 +413,11 @@ class HabitListViewController(args: Bundle? = null) :
                             timesADay = habit.timesADay,
                             isCompleted = it.isCompleted,
                             isGood = habit.isGood,
-                            streak = habit.currentStreak,
+                            streak = habit.streak.current,
                             isBestStreak = it.isBestStreak,
                             progress = it.completedCount,
-                            maxProgress = habit.timesADay
+                            maxProgress = habit.timesADay,
+                            habit = habit
                         )
                     }
 
@@ -426,8 +429,9 @@ class HabitListViewController(args: Bundle? = null) :
                             color = habit.color.androidColor.color500,
                             icon = habit.icon.androidIcon.icon,
                             isGood = habit.isGood,
-                            streak = habit.currentStreak,
-                            isBestStreak = it.isBestStreak
+                            streak = habit.streak.current,
+                            isBestStreak = it.isBestStreak,
+                            habit = habit
                         )
                     }
                 }

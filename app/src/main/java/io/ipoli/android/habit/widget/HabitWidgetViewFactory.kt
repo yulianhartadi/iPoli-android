@@ -14,12 +14,11 @@ import com.mikepenz.iconics.IconicsDrawable
 import io.ipoli.android.Constants
 import io.ipoli.android.MyPoliApp
 import io.ipoli.android.R
-import io.ipoli.android.common.datetime.Time
 import io.ipoli.android.common.di.BackgroundModule
 import io.ipoli.android.common.view.*
 import io.ipoli.android.common.view.widget.CircleProgressBar
 import io.ipoli.android.habit.data.Habit
-import org.threeten.bp.LocalDateTime
+import org.threeten.bp.LocalDate
 import space.traversal.kapsule.Injects
 import space.traversal.kapsule.inject
 import space.traversal.kapsule.required
@@ -34,12 +33,8 @@ class HabitWidgetViewsFactory(private val context: Context) :
     RemoteViewsService.RemoteViewsFactory, Injects<BackgroundModule> {
 
     private val habitRepository by required { habitRepository }
-    private val playerRepository by required { playerRepository }
 
     private var items = CopyOnWriteArrayList<Habit>()
-
-
-    private var resetDayTime : Time = Constants.RESET_DAY_TIME
 
     override fun onCreate() {
         inject(MyPoliApp.backgroundModule(context))
@@ -51,13 +46,12 @@ class HabitWidgetViewsFactory(private val context: Context) :
     override fun getItemId(position: Int): Long = position.toLong()
 
     override fun onDataSetChanged() {
-        resetDayTime = playerRepository.find()!!.preferences.resetDayTime
         items.clear()
-        val now = LocalDateTime.now()
+        val today = LocalDate.now()
         items.addAll(habitRepository.findAllNotRemoved()
-            .filter { it.shouldBeDoneOn(now, resetDayTime) }
+            .filter { it.shouldBeDoneOn(today) }
             .sortedWith(
-                compareBy<Habit> { it.isCompletedFor(now, resetDayTime) }
+                compareBy<Habit> { it.isCompletedForDate(today) }
                     .thenByDescending { it.timesADay }
                     .thenByDescending { it.isGood }
             ))
@@ -66,17 +60,17 @@ class HabitWidgetViewsFactory(private val context: Context) :
     override fun hasStableIds() = true
 
     override fun getViewAt(position: Int): RemoteViews {
-
+        val today = LocalDate.now()
         return items[position].let {
             RemoteViews(context.packageName, R.layout.item_widget_habit).apply {
-                val progress = it.completedCountForDate(LocalDateTime.now(), resetDayTime)
+                val progress = it.completedCountForDate(today)
                 val maxProgress = it.timesADay
-                val isCompletedFor = it.isCompletedFor(LocalDateTime.now(), resetDayTime)
+                val isCompletedFor = it.isCompletedForDate(today)
                 val isCompleted = if (it.isGood) isCompletedFor else !isCompletedFor
 
                 val px = context.resources.getDimensionPixelSize(R.dimen.habit_widget_item_size)
 
-                val icon = it.icon.let {i -> AndroidIcon.valueOf(i.name).icon }
+                val icon = it.icon.let { i -> AndroidIcon.valueOf(i.name).icon }
                 val iconColor =
                     if (isCompleted) R.color.md_white else AndroidColor.valueOf(it.color.name).color500
                 val iconDrawable =
@@ -92,7 +86,8 @@ class HabitWidgetViewsFactory(private val context: Context) :
                     R.color.md_white
                 )
 
-                val myView = LayoutInflater.from(context).inflate(R.layout.item_widget_habit_progress, null)
+                val myView =
+                    LayoutInflater.from(context).inflate(R.layout.item_widget_habit_progress, null)
                 myView.measure(px, px)
                 myView.layout(0, 0, px, px)
 

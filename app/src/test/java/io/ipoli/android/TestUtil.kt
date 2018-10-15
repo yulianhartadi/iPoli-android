@@ -6,6 +6,7 @@ import com.nhaarman.mockito_kotlin.doReturn
 import com.nhaarman.mockito_kotlin.mock
 import io.ipoli.android.challenge.entity.Challenge
 import io.ipoli.android.challenge.persistence.ChallengeRepository
+import io.ipoli.android.common.Reward
 import io.ipoli.android.habit.data.Habit
 import io.ipoli.android.habit.persistence.HabitRepository
 import io.ipoli.android.pet.Pet
@@ -129,7 +130,12 @@ object TestUtil {
         icon = Icon.FLOWER,
         days = DayOfWeek.values().toSet(),
         isGood = true,
-        timesADay = 1
+        timesADay = 1,
+        streak = Habit.Streak(0, 0),
+        preferenceHistory = Habit.PreferenceHistory(
+            days = sortedMapOf(LocalDate.now() to DayOfWeek.values().toSet()),
+            timesADay = sortedMapOf(LocalDate.now() to 1)
+        )
     )
 
     val tag = Tag(
@@ -137,5 +143,13 @@ object TestUtil {
         color = Color.GREEN,
         icon = Icon.FLOWER,
         isFavorite = true
+    )
+
+    val reward = Reward(
+        attributePoints = emptyMap(),
+        healthPoints = 1,
+        experience = 1,
+        coins = 1,
+        bounty = Quest.Bounty.None
     )
 }

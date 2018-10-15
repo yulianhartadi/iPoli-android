@@ -17,6 +17,7 @@ import io.ipoli.android.friends.persistence.Friend
 import io.ipoli.android.friends.usecase.CreateReactionHistoryItemsUseCase
 import io.ipoli.android.growth.usecase.CalculateGrowthStatsUseCase
 import io.ipoli.android.habit.data.Habit
+import io.ipoli.android.habit.usecase.CreateHabitHistoryItemsUseCase
 import io.ipoli.android.habit.usecase.CreateHabitItemsUseCase
 import io.ipoli.android.planday.data.Weather
 import io.ipoli.android.planday.persistence.MotivationalImage
@@ -112,6 +113,13 @@ sealed class DataLoadedAction : Action {
         DataLoadedAction()
 
     data class HabitItemsChanged(val habitItems: List<CreateHabitItemsUseCase.HabitItem>) :
+        DataLoadedAction()
+
+    data class HabitChanged(
+        val habit: Habit,
+        val currentDate : LocalDate,
+        val habitHistory: List<CreateHabitHistoryItemsUseCase.HabitHistoryItem>
+    ) :
         DataLoadedAction()
 
     data class ScheduleSummaryChanged(

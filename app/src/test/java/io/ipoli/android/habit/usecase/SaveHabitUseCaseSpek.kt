@@ -18,8 +18,6 @@ import org.jetbrains.spek.api.dsl.describe
 import org.jetbrains.spek.api.dsl.it
 import org.threeten.bp.DayOfWeek
 import org.threeten.bp.LocalDate
-import org.threeten.bp.LocalDateTime
-import org.threeten.bp.LocalTime
 
 /**
  * Created by Polina Zhelyazkova <polina@mypoli.fun>
@@ -64,8 +62,7 @@ class SaveHabitUseCaseSpek : Spek({
                     color = Color.LIME,
                     icon = Icon.DROP,
                     days = DayOfWeek.values().toSet(),
-                    isGood = true,
-                    dateTime = LocalDateTime.of(LocalDate.now(), LocalTime.of(12, 46))
+                    isGood = true
                 ),
                 habit = TestUtil.habit.copy(
                     id = "AAA",
@@ -74,10 +71,9 @@ class SaveHabitUseCaseSpek : Spek({
                     history = mapOf(
                         LocalDate.now() to
                             CompletedEntry().copy(
-                                completedAtTimes = listOf(Time.at(12, 45))
-                            ),
-                        LocalDate.now().plusDays(1) to
-                            CompletedEntry().copy(reward = r)
+                                completedAtTimes = listOf(Time.at(12, 45)),
+                                reward = r
+                            )
                     )
                 ),
                 player = TestUtil.player.copy(
@@ -103,8 +99,7 @@ class SaveHabitUseCaseSpek : Spek({
                     color = Color.LIME,
                     icon = Icon.DROP,
                     days = DayOfWeek.values().toSet(),
-                    isGood = true,
-                    dateTime = LocalDateTime.of(LocalDate.now(), LocalTime.of(12, 46))
+                    isGood = true
                 ),
                 habit = TestUtil.habit.copy(
                     id = "AAA",
@@ -138,8 +133,7 @@ class SaveHabitUseCaseSpek : Spek({
                     color = Color.LIME,
                     icon = Icon.DROP,
                     days = DayOfWeek.values().toSet(),
-                    isGood = true,
-                    dateTime = LocalDateTime.of(LocalDate.now(), LocalTime.of(12, 46))
+                    isGood = true
                 ),
                 habit = TestUtil.habit.copy(
                     id = "AAA",
@@ -166,6 +160,65 @@ class SaveHabitUseCaseSpek : Spek({
 //            `Verify not called` on rewardPlayerUseCaseMock that rewardPlayerUseCaseMock.execute(
 //                expectedReward
 //            )
+        }
+
+        it("should update preferenceHistory when timesADay changes") {
+            val newTimesADay = 2
+            val h = executeUseCase(
+                params = SaveHabitUseCase.Params(
+                    id = "AAA",
+                    timesADay = newTimesADay,
+                    name = "",
+                    color = Color.LIME,
+                    icon = Icon.DROP,
+                    days = DayOfWeek.values().toSet(),
+                    isGood = true
+                ),
+                habit = TestUtil.habit.copy(
+                    id = "AAA",
+                    days = DayOfWeek.values().toSet(),
+                    timesADay = 3,
+                    preferenceHistory = TestUtil.habit.preferenceHistory.copy(
+                        timesADay = sortedMapOf(LocalDate.now().minusDays(1) to 3)
+                    )
+                )
+            )
+
+            h.preferenceHistory.timesADay.size.`should be equal to`(2)
+            val expectedTimesADayHistory = sortedMapOf(
+                LocalDate.now().minusDays(1) to 3,
+                LocalDate.now() to newTimesADay
+            )
+            h.preferenceHistory.timesADay.`should equal`(expectedTimesADayHistory)
+        }
+
+        it("should update preferenceHistory when days changes") {
+            val newDays = setOf(DayOfWeek.MONDAY, DayOfWeek.TUESDAY)
+            val h = executeUseCase(
+                params = SaveHabitUseCase.Params(
+                    id = "AAA",
+                    timesADay = 2,
+                    name = "",
+                    color = Color.LIME,
+                    icon = Icon.DROP,
+                    days = newDays,
+                    isGood = true
+                ),
+                habit = TestUtil.habit.copy(
+                    id = "AAA",
+                    days = DayOfWeek.values().toSet(),
+                    preferenceHistory = TestUtil.habit.preferenceHistory.copy(
+                        days = sortedMapOf(LocalDate.now().minusDays(1) to DayOfWeek.values().toSet())
+                    )
+                )
+            )
+
+            h.preferenceHistory.days.size.`should be equal to`(2)
+            val expectedDayHistory = sortedMapOf(
+                LocalDate.now().minusDays(1) to DayOfWeek.values().toSet(),
+                LocalDate.now() to newDays
+            )
+            h.preferenceHistory.days.`should equal`(expectedDayHistory)
         }
     }
 

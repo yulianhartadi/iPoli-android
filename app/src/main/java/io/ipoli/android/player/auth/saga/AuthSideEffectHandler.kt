@@ -25,6 +25,7 @@ import io.ipoli.android.quest.Icon
 import io.ipoli.android.quest.RepeatingQuest
 import io.ipoli.android.repeatingquest.usecase.SaveRepeatingQuestUseCase
 import io.ipoli.android.tag.Tag
+import org.threeten.bp.LocalDate
 import space.traversal.kapsule.required
 import java.util.*
 
@@ -340,7 +341,12 @@ object AuthSideEffectHandler : AppSideEffectHandler() {
                     tags = ts,
                     isGood = h.isGood,
                     timesADay = h.timesADay,
-                    days = h.days
+                    days = h.days,
+                    streak = Habit.Streak(0, 0),
+                    preferenceHistory = Habit.PreferenceHistory(
+                        days = sortedMapOf(LocalDate.now() to h.days),
+                        timesADay = sortedMapOf(LocalDate.now() to h.timesADay)
+                    )
                 )
             )
         }

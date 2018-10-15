@@ -11,7 +11,7 @@ import io.ipoli.android.quest.Color
 import io.ipoli.android.quest.Icon
 import io.ipoli.android.tag.Tag
 import org.threeten.bp.DayOfWeek
-import org.threeten.bp.LocalDateTime
+import org.threeten.bp.LocalDate
 
 /**
  * Created by Polina Zhelyazkova <polina@mypoli.fun>
@@ -35,6 +35,11 @@ class SaveHabitUseCase(
                 timesADay = parameters.timesADay,
                 isGood = parameters.isGood,
                 challengeId = parameters.challengeId,
+                streak = Habit.Streak(0, 0),
+                preferenceHistory = Habit.PreferenceHistory(
+                    days = sortedMapOf(LocalDate.now() to parameters.days),
+                    timesADay = sortedMapOf(LocalDate.now() to parameters.timesADay)
+                ),
                 note = parameters.note
             )
         } else {
@@ -44,8 +49,29 @@ class SaveHabitUseCase(
                 h = handleRewardIfTimesADayUpdated(
                     h,
                     parameters.timesADay,
-                    parameters.dateTime,
                     parameters.player
+                )
+
+                val ph = h.preferenceHistory
+                h = h.copy(
+                    preferenceHistory = ph.copy(
+                        timesADay = (ph.timesADay + Pair(
+                            LocalDate.now(),
+                            parameters.timesADay
+                        )).toSortedMap()
+                    )
+                )
+            }
+
+            if (h.days != parameters.days) {
+                val ph = h.preferenceHistory
+                h = h.copy(
+                    preferenceHistory = ph.copy(
+                        days = (ph.days + Pair(
+                            LocalDate.now(),
+                            parameters.days
+                        )).toSortedMap()
+                    )
                 )
             }
 
@@ -68,18 +94,15 @@ class SaveHabitUseCase(
     private fun handleRewardIfTimesADayUpdated(
         habit: Habit,
         timesADay: Int,
-        dateTime: LocalDateTime,
         player: Player?
     ): Habit {
         val p = player ?: playerRepository.find()!!
-        val date = p.currentDate(dateTime)
-        val resetTime = p.preferences.resetDayTime
-
-        if (!habit.shouldBeDoneOn(dateTime, resetTime)) {
+        val date = LocalDate.now()
+        if (!habit.shouldBeDoneOn(date)) {
             return habit
         }
 
-        val completedCountForDate = habit.completedCountForDate(dateTime, resetTime)
+        val completedCountForDate = habit.completedCountForDate(date)
 
         if (completedCountForDate >= timesADay) {
 
@@ -96,9 +119,10 @@ class SaveHabitUseCase(
             )
         }
 
-        if (habit.isCompletedFor(dateTime, resetTime)) {
+        if (habit.isCompletedForDate(date)) {
             val history = habit.history
-            removeRewardFromPlayerUseCase.execute(RemoveRewardFromPlayerUseCase.Params(history[date]!!.reward!!))
+            val reward = history[date]!!.reward!!
+            removeRewardFromPlayerUseCase.execute(RemoveRewardFromPlayerUseCase.Params(reward))
         }
 
         return habit
@@ -115,7 +139,6 @@ class SaveHabitUseCase(
         val isGood: Boolean,
         val challengeId: String? = null,
         val note: String = "",
-        val player: Player? = null,
-        val dateTime: LocalDateTime = LocalDateTime.now()
+        val player: Player? = null
     )
 }

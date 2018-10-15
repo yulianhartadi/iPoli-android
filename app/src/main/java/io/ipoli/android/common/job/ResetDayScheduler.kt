@@ -7,12 +7,10 @@ import io.ipoli.android.achievement.usecase.UpdatePlayerStatsUseCase
 import io.ipoli.android.common.di.BackgroundModule
 import io.ipoli.android.common.notification.QuickDoNotificationUtil
 import io.ipoli.android.common.view.AppWidgetUtil
-import io.ipoli.android.habit.usecase.UpdateHabitStreaksUseCase
 import io.ipoli.android.pet.usecase.LowerPlayerStatsUseCase
 import kotlinx.coroutines.experimental.Dispatchers
 import kotlinx.coroutines.experimental.GlobalScope
 import kotlinx.coroutines.experimental.launch
-import org.threeten.bp.LocalDateTime
 import space.traversal.kapsule.Kapsule
 
 class ResetDayJob : FixedDailyJob(ResetDayJob.TAG) {
@@ -21,20 +19,12 @@ class ResetDayJob : FixedDailyJob(ResetDayJob.TAG) {
 
         val kap = Kapsule<BackgroundModule>()
         val playerRepository by kap.required { playerRepository }
-        val updateHabitStreaksUseCase by kap.required { updateHabitStreaksUseCase }
         val lowerPlayerStatsUseCase by kap.required { lowerPlayerStatsUseCase }
         val updatePlayerStatsUseCase by kap.required { updatePlayerStatsUseCase }
         val sharedPreferences by kap.required { sharedPreferences }
         kap.inject(MyPoliApp.backgroundModule(context))
 
         val player = playerRepository.find()!!
-
-        updateHabitStreaksUseCase.execute(
-            UpdateHabitStreaksUseCase.Params(
-                today = LocalDateTime.now(),
-                resetDayTime = player.preferences.resetDayTime
-            )
-        )
 
         val oldPet = player.pet
 
