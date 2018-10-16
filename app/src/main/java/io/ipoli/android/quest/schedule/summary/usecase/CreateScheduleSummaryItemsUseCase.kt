@@ -37,10 +37,15 @@ class CreateScheduleSummaryItemsUseCase(
             val dailyEvents = eventsByDate[d] ?: emptyList()
 
             val qs = dailyQuests.map {
-                Schedule.Item.Quest(it.name, it.color, it.startTime)
+                Schedule.Item.Quest(
+                    name = it.name,
+                    color = it.color,
+                    isCompleted = it.isCompleted,
+                    startTime = it.startTime
+                )
             }
             val es = dailyEvents.map {
-                Schedule.Item.Event(it.name, it.color, it.startTime)
+                Schedule.Item.Event(name = it.name, color = it.color, startTime = it.startTime)
             }
 
             val items = (qs + es).sortedBy { it.startTime?.toMinuteOfDay() }
@@ -109,7 +114,12 @@ class CreateScheduleSummaryItemsUseCase(
 
             abstract val startTime: Time?
 
-            data class Quest(val name: String, val color: Color, override val startTime: Time?) :
+            data class Quest(
+                val name: String,
+                val color: Color,
+                val isCompleted: Boolean,
+                override val startTime: Time?
+            ) :
                 Item()
 
             data class Event(val name: String, val color: Int, override val startTime: Time?) :

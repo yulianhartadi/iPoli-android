@@ -618,6 +618,7 @@ class ScheduleSummaryViewController(args: Bundle? = null) :
                     is CreateScheduleSummaryItemsUseCase.Schedule.Item.Quest -> {
                         json.put("type", "quest")
                         json.put("name", sc.name)
+                        json.put("isCompleted", sc.isCompleted)
                         json.put("color", sc.color.name)
                     }
                     is CreateScheduleSummaryItemsUseCase.Schedule.Item.Event -> {

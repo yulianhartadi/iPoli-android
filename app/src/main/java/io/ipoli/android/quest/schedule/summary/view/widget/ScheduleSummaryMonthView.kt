@@ -45,13 +45,25 @@ data class ScheduleItem(val name: String, @ColorInt val color: Int) {
                 val t = o.getString("type")
                 when (t) {
                     "quest" -> {
-                        val c = AndroidColor.valueOf(o.getString("color"))
-                        val androidColor = ContextCompat.getColor(context, c.color500)
-                        ScheduleItem(o.getString("name"), androidColor)
+                        val bc = if (o.getBoolean("isCompleted")) {
+                            R.color.md_grey_500
+                        } else {
+                            val c = AndroidColor.valueOf(o.getString("color"))
+                            c.color500
+                        }
+
+                        val androidColor = ContextCompat.getColor(context, bc)
+                        ScheduleItem(
+                            name = o.getString("name"),
+                            color = androidColor
+                        )
                     }
                     "event" -> {
                         val c = o.getInt("color")
-                        ScheduleItem(o.getString("name"), c)
+                        ScheduleItem(
+                            name = o.getString("name"),
+                            color = c
+                        )
                     }
                     else -> throw IllegalStateException("Unknown schedule summary item type $t")
                 }
