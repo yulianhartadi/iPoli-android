@@ -232,7 +232,7 @@ class ScheduleSummaryMonthView(context: Context) : MonthView(context) {
         canvas.drawText(
             drawnText.toString(),
             textStart,
-            topOffset + questHeight / 2 + b.height() / 2 + (questHeight * index) + (padding * index),
+            topOffset + questHeight / 2 + b.height() / 2.5f + (questHeight * index) + (padding * index),
             whiteTextPaint
         )
     }
