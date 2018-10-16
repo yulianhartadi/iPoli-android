@@ -37,6 +37,7 @@ class HabitProgressMonthView(context: Context) : MonthView(context) {
     init {
 
         failedPaint.color = context.colorRes(R.color.md_red_100)
+        failedPaint.isAntiAlias = true
 
         failedProgressPaint.color = context.colorRes(R.color.md_red_700)
         failedProgressPaint.style = Paint.Style.STROKE
