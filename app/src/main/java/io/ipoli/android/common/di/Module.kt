@@ -133,7 +133,7 @@ import io.ipoli.android.quest.schedule.agenda.usecase.CreateAgendaItemsUseCase
 import io.ipoli.android.quest.schedule.agenda.usecase.FindAgendaDatesUseCase
 import io.ipoli.android.quest.schedule.calendar.sideeffect.DayViewSideEffectHandler
 import io.ipoli.android.quest.schedule.summary.sideeffect.ScheduleSummarySideEffectHandler
-import io.ipoli.android.quest.schedule.summary.usecase.CreateScheduleSummaryUseCase
+import io.ipoli.android.quest.schedule.summary.usecase.CreateScheduleSummaryItemsUseCase
 import io.ipoli.android.quest.schedule.today.usecase.CreateTodayItemsUseCase
 import io.ipoli.android.quest.show.job.AndroidJobTimerCompleteScheduler
 import io.ipoli.android.quest.show.job.TimerCompleteScheduler
@@ -408,7 +408,7 @@ interface UseCaseModule {
     val undoCompleteHabitUseCase: UndoCompleteHabitUseCase
     val removeHabitUseCase: RemoveHabitUseCase
     val createHabitItemsUseCase: CreateHabitItemsUseCase
-    val createScheduleSummaryUseCase: CreateScheduleSummaryUseCase
+    val createScheduleSummaryItemsUseCase: CreateScheduleSummaryItemsUseCase
     val savePostsUseCase: SavePostsUseCase
     val savePostReactionUseCase: SavePostReactionUseCase
     val createReactionHistoryItemsUseCase: CreateReactionHistoryItemsUseCase
@@ -946,8 +946,8 @@ class MainUseCaseModule(private val context: Context) : UseCaseModule {
     override val createHabitItemsUseCase
         get() = CreateHabitItemsUseCase()
 
-    override val createScheduleSummaryUseCase
-        get() = CreateScheduleSummaryUseCase(eventRepository, playerRepository, permissionChecker)
+    override val createScheduleSummaryItemsUseCase
+        get() = CreateScheduleSummaryItemsUseCase(eventRepository, playerRepository, permissionChecker)
 
     override val savePostsUseCase
         get() = SavePostsUseCase(postRepository, playerRepository, challengeRepository)

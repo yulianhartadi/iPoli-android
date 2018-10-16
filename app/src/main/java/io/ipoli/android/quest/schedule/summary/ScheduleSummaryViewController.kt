@@ -28,9 +28,12 @@ import io.ipoli.android.common.view.recyclerview.MultiViewRecyclerViewAdapter
 import io.ipoli.android.common.view.recyclerview.RecyclerViewViewModel
 import io.ipoli.android.common.view.recyclerview.SimpleSwipeCallback
 import io.ipoli.android.quest.schedule.summary.ScheduleSummaryViewState.StateType.*
+import io.ipoli.android.quest.schedule.summary.usecase.CreateScheduleSummaryItemsUseCase
 import kotlinx.android.synthetic.main.controller_schedule_summary.view.*
 import kotlinx.android.synthetic.main.item_monthly_preview_scheduled_quest.view.*
 import kotlinx.android.synthetic.main.item_monthly_preview_unscheduled_quest.view.*
+import org.json.JSONArray
+import org.json.JSONObject
 import org.threeten.bp.DayOfWeek
 import org.threeten.bp.LocalDate
 import org.threeten.bp.Month
@@ -608,6 +611,24 @@ class ScheduleSummaryViewController(args: Bundle? = null) :
     private val ScheduleSummaryViewState.calendars: List<Calendar>
         get() = items.map {
             val itemDate = it.date
+
+            val items = it.items.map { sc ->
+                val json = JSONObject()
+                when(sc) {
+                    is CreateScheduleSummaryItemsUseCase.Schedule.Item.Quest -> {
+                        json.put("type", "quest")
+                        json.put("name", sc.name)
+                        json.put("color", sc.color.name)
+                    }
+                    is CreateScheduleSummaryItemsUseCase.Schedule.Item.Event -> {
+                        json.put("type", "event")
+                        json.put("name", sc.name)
+                        json.put("color", sc.color)
+                    }
+                }
+                json
+            }
+
             Calendar().apply {
                 day = itemDate.dayOfMonth
                 month = itemDate.monthValue
@@ -615,12 +636,7 @@ class ScheduleSummaryViewController(args: Bundle? = null) :
                 isCurrentDay = itemDate == currentDate
                 isCurrentMonth = itemDate.month == currentDate.month
                 isLeapYear = itemDate.isLeapYear
-                val tagColors =
-                    if (it.tagColors.isEmpty()) "" else "," + it.tagColors.joinToString(
-                        ","
-                    ) { it.name }
-                scheme =
-                    "${it.morningFullness.name},${it.afternoonFullness.name},${it.eveningFullness.name}$tagColors"
+                scheme = JSONArray(items).toString()
             }
         }
 

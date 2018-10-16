@@ -5,7 +5,7 @@ import io.ipoli.android.common.BaseViewStateReducer
 import io.ipoli.android.common.DataLoadedAction
 import io.ipoli.android.common.redux.Action
 import io.ipoli.android.common.redux.BaseViewState
-import io.ipoli.android.quest.schedule.summary.usecase.CreateScheduleSummaryUseCase
+import io.ipoli.android.quest.schedule.summary.usecase.CreateScheduleSummaryItemsUseCase
 import io.ipoli.android.quest.usecase.Schedule
 import org.threeten.bp.LocalDate
 
@@ -52,7 +52,7 @@ object ScheduleSummaryReducer : BaseViewStateReducer<ScheduleSummaryViewState>()
                 if (subState.currentDate == action.currentDate) {
                     subState.copy(
                         type = ScheduleSummaryViewState.StateType.SCHEDULE_SUMMARY_DATA_CHANGED,
-                        items = action.scheduleSummaryItems
+                        items = action.schedules
                     )
                 } else subState
             }
@@ -85,7 +85,7 @@ data class ScheduleSummaryViewState(
     val type: StateType,
     val currentDate: LocalDate,
     val previousDate: LocalDate,
-    val items: List<CreateScheduleSummaryUseCase.ScheduleSummaryItem>,
+    val items: List<CreateScheduleSummaryItemsUseCase.Schedule>,
     val schedule: Schedule?
 ) : BaseViewState() {
     enum class StateType {

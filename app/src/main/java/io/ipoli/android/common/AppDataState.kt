@@ -27,7 +27,7 @@ import io.ipoli.android.player.data.Player
 import io.ipoli.android.quest.Quest
 import io.ipoli.android.quest.RepeatingQuest
 import io.ipoli.android.quest.schedule.agenda.usecase.CreateAgendaItemsUseCase
-import io.ipoli.android.quest.schedule.summary.usecase.CreateScheduleSummaryUseCase
+import io.ipoli.android.quest.schedule.summary.usecase.CreateScheduleSummaryItemsUseCase
 import io.ipoli.android.quest.schedule.today.usecase.CreateTodayItemsUseCase
 import io.ipoli.android.quest.usecase.Schedule
 import io.ipoli.android.repeatingquest.usecase.CreateRepeatingQuestHistoryUseCase
@@ -124,7 +124,7 @@ sealed class DataLoadedAction : Action {
 
     data class ScheduleSummaryChanged(
         val currentDate: LocalDate,
-        val scheduleSummaryItems: List<CreateScheduleSummaryUseCase.ScheduleSummaryItem>
+        val schedules: List<CreateScheduleSummaryItemsUseCase.Schedule>
     ) : DataLoadedAction()
 
     data class AcceptFriendshipDataChanged(

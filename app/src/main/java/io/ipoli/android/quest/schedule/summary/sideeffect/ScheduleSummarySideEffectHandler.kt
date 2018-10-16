@@ -11,7 +11,7 @@ import io.ipoli.android.player.data.Player
 import io.ipoli.android.quest.Quest
 import io.ipoli.android.quest.schedule.summary.ScheduleSummaryAction
 import io.ipoli.android.quest.schedule.summary.ScheduleSummaryViewState
-import io.ipoli.android.quest.schedule.summary.usecase.CreateScheduleSummaryUseCase
+import io.ipoli.android.quest.schedule.summary.usecase.CreateScheduleSummaryItemsUseCase
 import io.ipoli.android.quest.usecase.LoadScheduleForDateUseCase
 import io.ipoli.android.repeatingquest.usecase.CreatePlaceholderQuestsForRepeatingQuestsUseCase
 import kotlinx.coroutines.experimental.channels.Channel
@@ -21,7 +21,7 @@ import space.traversal.kapsule.required
 
 object ScheduleSummarySideEffectHandler : AppSideEffectHandler() {
 
-    private val createScheduleSummaryUseCase by required { createScheduleSummaryUseCase }
+    private val createScheduleSummaryUseCase by required { createScheduleSummaryItemsUseCase }
     private val questRepository by required { questRepository }
     private val createPlaceholderQuestsForRepeatingQuestsUseCase by required { createPlaceholderQuestsForRepeatingQuestsUseCase }
     private val loadScheduleForDateUseCase by required { loadScheduleForDateUseCase }
@@ -81,7 +81,7 @@ object ScheduleSummarySideEffectHandler : AppSideEffectHandler() {
                     )
 
                 val items = createScheduleSummaryUseCase.execute(
-                    CreateScheduleSummaryUseCase.Params(
+                    CreateScheduleSummaryItemsUseCase.Params(
                         quests = qs + placeholderQuests,
                         startDate = startDate,
                         endDate = endDate,
