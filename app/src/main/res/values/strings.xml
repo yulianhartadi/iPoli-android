@@ -197,7 +197,7 @@
     <string name="nothing_scheduled">Nothing scheduled</string>
 
     <string name="times_a_day">%d times a day</string>
-    <string name="time_a_day">%d time a day</string>
+    <string name="time_a_day">Once a day</string>
     <string name="yesterday">Yesterday</string>
     <string name="repeating_quest_next">Next: %s</string>
     <string name="for_time">for %s</string>
@@ -1212,4 +1212,6 @@ These are your physical and mental characteristics.\n\n
     <string name="skip">Skip</string>
     <string name="onboard_existing_player">Returning Player?</string>
     <string name="habit_toggle_future_error">Unable to change the future</string>
+    <string name="best_streak">Best streak</string>
+    <string name="current_streak">Current streak</string>
 </resources>

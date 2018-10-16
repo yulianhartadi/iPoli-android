@@ -158,9 +158,10 @@ class HabitViewController(args: Bundle? = null) :
                 renderNote(state, view)
                 renderTags(state.tags, view)
 
+                view.timesADay.text = state.timesADayText
                 view.currentStreak.text = state.currentStreak.toString()
                 view.bestStreak.text = state.bestStreak.toString()
-                view.timesADay.text = state.timesADay.toString()
+                view.successRate.text = "${state.successRate}%"
 
                 val inflater = LayoutInflater.from(view.context)
                 view.progressContainer.removeAllViews()
@@ -291,6 +292,11 @@ class HabitViewController(args: Bundle? = null) :
                 }
             }
         }
+
+    private val HabitViewState.timesADayText
+        get() =
+            if (timesADay == 1) stringRes(R.string.time_a_day)
+            else stringRes(R.string.times_a_day, timesADay!!)
 
 
 }

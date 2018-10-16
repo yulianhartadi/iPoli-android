@@ -12,6 +12,7 @@ import io.ipoli.android.common.persistence.*
 import io.ipoli.android.habit.data.CompletedEntry
 import io.ipoli.android.habit.data.Habit
 import io.ipoli.android.habit.usecase.CalculateHabitStreakUseCase
+import io.ipoli.android.habit.usecase.CalculateHabitSuccessRateUseCase
 import io.ipoli.android.pet.Food
 import io.ipoli.android.player.data.Player
 import io.ipoli.android.quest.Color
@@ -230,13 +231,15 @@ class RoomHabitMapper(private val tagDao: TagDao) {
                 it.key.toLong().startOfDayUTC to createCompletedEntry(it.value)
             }.toMap(),
             streak = Habit.Streak(0, 0),
+            successRate = 0,
             updatedAt = dbObject.updatedAt.instant,
             createdAt = dbObject.createdAt.instant,
             removedAt = dbObject.removedAt?.instant
         )
 
         return h.copy(
-            streak = CalculateHabitStreakUseCase().execute(CalculateHabitStreakUseCase.Params(habit = h))
+            streak = CalculateHabitStreakUseCase().execute(CalculateHabitStreakUseCase.Params(habit = h)),
+            successRate = CalculateHabitSuccessRateUseCase().execute(CalculateHabitSuccessRateUseCase.Params(habit = h))
         )
     }
 
@@ -453,6 +456,7 @@ class FirestoreHabitRepository(
                 it.key.toLong().startOfDayUTC to createCompletedEntry(it.value)
             }.toMap(),
             streak = Habit.Streak(0, 0),
+            successRate = 0,
             createdAt = h.createdAt.instant,
             updatedAt = h.updatedAt.instant,
             removedAt = h.removedAt?.instant

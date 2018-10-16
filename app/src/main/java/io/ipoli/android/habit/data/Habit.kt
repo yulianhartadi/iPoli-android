@@ -27,6 +27,7 @@ data class Habit(
     val challengeId: String? = null,
     val note: String = "",
     val streak: Streak,
+    val successRate: Int = 0,
     val history: Map<LocalDate, CompletedEntry> = emptyMap(),
     val preferenceHistory: PreferenceHistory,
     val isRemoved: Boolean = false,
