@@ -11,6 +11,8 @@ import io.ipoli.android.common.persistence.documents
 import io.ipoli.android.common.persistence.getSync
 import io.ipoli.android.quest.Color
 import io.ipoli.android.quest.Icon
+import org.threeten.bp.LocalDate
+import java.util.*
 
 interface PresetChallengeRepository {
     fun findForCategory(category: PresetChallenge.Category): List<PresetChallenge>
@@ -102,6 +104,45 @@ class FirestorePresetChallengeRepository(private val database: FirebaseFirestore
             defaultStartTime = defaultStartTime,
             nutritionMacros = nutritionMacros
         )
+
+        val trackedValues = c.trackedValues.map {
+            val id = UUID.randomUUID().toString()
+
+            DbPresetChallenge.TrackedValue(it).let { tv ->
+                when (DbPresetChallenge.TrackedValue.Type.valueOf(tv.type)) {
+                    DbPresetChallenge.TrackedValue.Type.PROGRESS ->
+                        Challenge.TrackedValue.Progress(
+                            id = id,
+                            history = emptyMap<LocalDate, Challenge.TrackedValue.Log>().toSortedMap()
+                        )
+
+                    DbPresetChallenge.TrackedValue.Type.TARGET ->
+                        Challenge.TrackedValue.Target(
+                            id = id,
+                            name = tv.name!!,
+                            units = tv.units!!,
+                            startValue = tv.startValue!!.toDouble(),
+                            targetValue = tv.targetValue!!.toDouble(),
+                            currentValue = 0.0,
+                            remainingValue = 0.0,
+                            isCumulative = tv.isCumulative!!,
+                            history = emptyMap<LocalDate, Challenge.TrackedValue.Log>().toSortedMap()
+                        )
+
+                    DbPresetChallenge.TrackedValue.Type.AVERAGE ->
+                        Challenge.TrackedValue.Average(
+                            id = id,
+                            name = tv.name!!,
+                            units = tv.units!!,
+                            targetValue = tv.targetValue!!.toDouble(),
+                            lowerBound = tv.lowerBound!!.toDouble(),
+                            upperBound = tv.upperBound!!.toDouble(),
+                            history = emptyMap<LocalDate, Challenge.TrackedValue.Log>().toSortedMap()
+                        )
+                }
+            }
+        }
+
         return PresetChallenge(
             id = c.id,
             name = c.name,
@@ -119,7 +160,7 @@ class FirestorePresetChallengeRepository(private val database: FirebaseFirestore
             gemPrice = c.gemPrice.toInt(),
             expectedResults = c.expectedResults,
             note = c.note,
-            trackedValues = emptyList(),
+            trackedValues = trackedValues,
             config = config,
             schedule = schedule
         )
@@ -145,6 +186,23 @@ class FirestorePresetChallengeRepository(private val database: FirebaseFirestore
         var note: String by map
         var config: MutableMap<String, Any?> by map
         var schedule: MutableMap<String, Any?> by map
+
+        data class TrackedValue(val map: MutableMap<String, Any?> = mutableMapOf()) {
+            var id: String by map
+            var type: String by map
+            var name: String? by map
+            var units: String? by map
+            var targetValue: Float? by map
+            var startValue: Float? by map
+            var isCumulative: Boolean? by map
+            var lowerBound: Float? by map
+            var upperBound: Float? by map
+            var logs: List<Map<String, Any?>>? by map
+
+            enum class Type {
+                PROGRESS, TARGET, AVERAGE
+            }
+        }
 
         data class Config(val map: MutableMap<String, Any?> = mutableMapOf()) {
             var defaultStartMinute: Long? by map
