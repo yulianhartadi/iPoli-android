@@ -33,7 +33,7 @@ class SelectionRectangle(
     }
 }
 
-data class ScheduleItem(val name: String, @ColorInt val color: Int) {
+data class ScheduleItem(val name: String, val isCompleted: Boolean, @ColorInt val color: Int) {
     companion object {
 
         fun createItemsFromJson(data: JSONArray, context: Context): List<ScheduleItem> {
@@ -45,7 +45,8 @@ data class ScheduleItem(val name: String, @ColorInt val color: Int) {
                 val t = o.getString("type")
                 when (t) {
                     "quest" -> {
-                        val bc = if (o.getBoolean("isCompleted")) {
+                        val isCompleted = o.getBoolean("isCompleted")
+                        val bc = if (isCompleted) {
                             R.color.md_grey_500
                         } else {
                             val c = AndroidColor.valueOf(o.getString("color"))
@@ -55,6 +56,7 @@ data class ScheduleItem(val name: String, @ColorInt val color: Int) {
                         val androidColor = ContextCompat.getColor(context, bc)
                         ScheduleItem(
                             name = o.getString("name"),
+                            isCompleted = isCompleted,
                             color = androidColor
                         )
                     }
@@ -62,6 +64,7 @@ data class ScheduleItem(val name: String, @ColorInt val color: Int) {
                         val c = o.getInt("color")
                         ScheduleItem(
                             name = o.getString("name"),
+                            isCompleted = false,
                             color = c
                         )
                     }
@@ -170,7 +173,7 @@ class ScheduleSummaryMonthView(context: Context) : MonthView(context) {
 
                 drawQuestName(
                     index,
-                    scheduleItem.name,
+                    scheduleItem,
                     cellStart,
                     cellEnd,
                     topOffset,
@@ -206,7 +209,7 @@ class ScheduleSummaryMonthView(context: Context) : MonthView(context) {
 
     private fun drawQuestName(
         index: Int,
-        name: String,
+        scheduleItem: ScheduleItem,
         cellStart: Float,
         cellEnd: Float,
         topOffset: Float,
@@ -214,14 +217,17 @@ class ScheduleSummaryMonthView(context: Context) : MonthView(context) {
         canvas: Canvas,
         padding: Float = 1f
     ) {
-        val b = Rect()
-        whiteTextPaint.getTextBounds(name, 0, name.length, b)
 
         val textStart = cellStart + ViewUtils.dpToPx(2f, context)
         val textEnd = cellEnd - ViewUtils.dpToPx(2f, context)
 
         val drawnText =
-            TextUtils.ellipsize(name, whiteTextPaint, textEnd - textStart, TextUtils.TruncateAt.END)
+            TextUtils.ellipsize(scheduleItem.name, whiteTextPaint, textEnd - textStart, TextUtils.TruncateAt.END)
+
+        val b = Rect()
+        whiteTextPaint.getTextBounds(drawnText.toString(), 0, drawnText.length, b)
+
+        whiteTextPaint.isStrikeThruText = scheduleItem.isCompleted
 
         canvas.drawText(
             drawnText.toString(),

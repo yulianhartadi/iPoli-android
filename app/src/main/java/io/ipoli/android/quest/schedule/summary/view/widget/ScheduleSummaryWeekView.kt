@@ -111,7 +111,7 @@ class ScheduleSummaryWeekView(context: Context) : WeekView(context) {
             if (index < 3) {
                 drawQuestName(
                     index,
-                    scheduleItem.name,
+                    scheduleItem,
                     cellStart,
                     cellEnd,
                     topOffset,
@@ -147,7 +147,7 @@ class ScheduleSummaryWeekView(context: Context) : WeekView(context) {
 
     private fun drawQuestName(
         index: Int,
-        name: String,
+        scheduleItem: ScheduleItem,
         cellStart: Float,
         cellEnd: Float,
         topOffset: Float,
@@ -155,14 +155,17 @@ class ScheduleSummaryWeekView(context: Context) : WeekView(context) {
         canvas: Canvas,
         padding: Float = 1f
     ) {
-        val b = Rect()
-        whiteTextPaint.getTextBounds(name, 0, name.length, b)
 
         val textStart = cellStart + ViewUtils.dpToPx(2f, context)
         val textEnd = cellEnd - ViewUtils.dpToPx(2f, context)
 
         val drawnText =
-            TextUtils.ellipsize(name, whiteTextPaint, textEnd - textStart, TextUtils.TruncateAt.END)
+            TextUtils.ellipsize(scheduleItem.name, whiteTextPaint, textEnd - textStart, TextUtils.TruncateAt.END)
+
+        val b = Rect()
+        whiteTextPaint.getTextBounds(drawnText.toString(), 0, drawnText.length, b)
+
+        whiteTextPaint.isStrikeThruText = scheduleItem.isCompleted
 
         canvas.drawText(
             drawnText.toString(),
