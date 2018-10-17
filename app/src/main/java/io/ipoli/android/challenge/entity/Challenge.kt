@@ -58,8 +58,25 @@ data class Challenge(
             override val id: String,
             val completedCount: Int = 0,
             val allCount: Int = 0,
-            override val history: SortedMap<LocalDate, Log>
-        ) : TrackedValue()
+            override val history: SortedMap<LocalDate, Log>,
+            val items : List<DayProgress> = emptyList()
+        ) : TrackedValue() {
+            data class DayProgress(
+                val date: LocalDate,
+                val state: State,
+                val progress: Int,
+                val color: Color,
+                val shouldDoNothing: Boolean,
+                val isPreviousCompleted: Boolean = false,
+                val isNextCompleted: Boolean = false,
+                val isFirstDay : Boolean = false,
+                val isEndDay : Boolean = false
+            ) {
+                enum class State {
+                    FAILED, EMPTY, COMPLETED, NOT_COMPLETED_TODAY, CONNECTED
+                }
+            }
+        }
 
         data class Target(
             override val id: String,
@@ -108,6 +125,9 @@ data class Challenge(
 
     val isFromPreset: Boolean
         get() = presetChallengeId != null
+
+    val hasProgress : Boolean
+        get() = trackedValues.any { it is TrackedValue.Progress }
 }
 
 enum class SharingPreference {

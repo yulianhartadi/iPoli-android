@@ -29,8 +29,8 @@ class CalculateHabitSuccessRateUseCase :
         var completedDays = 0
         firstDate.datesBetween(parameters.today).forEach {
             val isCompleted = habit.isCompletedForDate(it)
-            if(isCompleted) completedDays ++
-            if(habit.shouldBeDoneOn(it) || isCompleted) allDays ++
+            if ((isCompleted && habit.isGood) || (!isCompleted && !habit.isGood)) completedDays++
+            if (habit.shouldBeDoneOn(it) || isCompleted) allDays++
         }
 
         return (completedDays.toFloat() / allDays * 100).toInt()

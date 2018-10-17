@@ -11,6 +11,7 @@ import io.ipoli.android.quest.BaseQuest
 import io.ipoli.android.quest.Color
 import io.ipoli.android.tag.Tag
 import org.threeten.bp.LocalDate
+import org.threeten.bp.YearMonth
 import java.util.*
 
 /**
@@ -45,6 +46,9 @@ sealed class ChallengeAction : Action {
         val log: Challenge.TrackedValue.Log
     ) :
         ChallengeAction()
+
+    data class ChangeProgressMonth(val challengeId: String, val yearMonth: YearMonth) :
+        ChallengeAction()
 }
 
 object ChallengeReducer : BaseViewStateReducer<ChallengeViewState>() {
@@ -54,23 +58,18 @@ object ChallengeReducer : BaseViewStateReducer<ChallengeViewState>() {
         action: Action
     ) =
         when (action) {
-            is ChallengeAction.Load -> {
-                val dataState = state.dataState
-                val c =
-                    dataState.challenges!!.firstOrNull { it.id == action.challengeId }
-
-                c?.let {
-                    createChangedState(it, subState)
-                } ?: subState.copy(type = ChallengeViewState.StateType.LOADING)
+            is DataLoadedAction.ChallengeChanged -> {
+                val challenge = action.challenge
+                createChangedState(challenge, subState).copy(
+                    currentDate = action.currentDate,
+                    progressItems = if (challenge.hasProgress) {
+                        val progress =
+                            challenge.trackedValues.first { it is Challenge.TrackedValue.Progress }
+                        (progress as Challenge.TrackedValue.Progress).items
+                    } else subState.progressItems
+                )
             }
 
-            is DataLoadedAction.ChallengesChanged -> {
-                val c = action.challenges.firstOrNull { it.id == subState.id }
-
-                c?.let {
-                    createChangedState(it, subState)
-                } ?: subState.copy(type = ChallengeViewState.StateType.REMOVED)
-            }
             else -> subState
         }
 
@@ -121,7 +120,9 @@ object ChallengeReducer : BaseViewStateReducer<ChallengeViewState>() {
             canComplete = false,
             canAdd = false,
             motivations = emptyList(),
-            note = null
+            note = null,
+            currentDate = LocalDate.now(),
+            progressItems = null
         )
 
     override val stateKey = key<ChallengeViewState>()
@@ -149,7 +150,9 @@ data class ChallengeViewState(
     val canComplete: Boolean,
     val canAdd: Boolean,
     val motivations: List<String>,
-    val note: String?
+    val note: String?,
+    val currentDate: LocalDate,
+    val progressItems: List<Challenge.TrackedValue.Progress.DayProgress>?
 ) : BaseViewState() {
 
     enum class StateType { LOADING, DATA_CHANGED, REMOVED }

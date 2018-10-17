@@ -35,37 +35,84 @@ class CalculateHabitSuccessRateUseCaseSpek : Spek({
                 )
             )
 
-        it("should be 0 when empty") {
-            val res = executeUseCase(habit())
-            res.`should be equal to`(0)
-        }
+        describe("Good") {
+            it("should be 0 when empty") {
+                val res = executeUseCase(habit())
+                res.`should be equal to`(0)
+            }
 
-        it("should be 100 for today") {
-            val res = executeUseCase(habit().copy(
-                history = mapOf(LocalDate.now() to CompletedEntry(listOf(Time.now())))
-            ))
-            res.`should be equal to`(100)
-        }
-
-        it("should not count should not be done days") {
-            val today = LocalDate.now().with(DayOfWeek.MONDAY)
-            val res = executeUseCase(habit().copy(
-                days = DayOfWeek.values().toSet() - DayOfWeek.MONDAY,
-                history = mapOf(today.minusDays(1) to CompletedEntry(listOf(Time.now())))
-            ), today)
-            res.`should be equal to`(100)
-        }
-
-        it("should count should not be done completed days") {
-            val today = LocalDate.now().with(DayOfWeek.MONDAY)
-            val res = executeUseCase(habit().copy(
-                days = DayOfWeek.values().toSet() - DayOfWeek.MONDAY,
-                history = mapOf(
-                    today.minusDays(1) to CompletedEntry(listOf(Time.now())),
-                    today to CompletedEntry(listOf(Time.now()))
+            it("should be 100 for today") {
+                val res = executeUseCase(
+                    habit().copy(
+                        history = mapOf(LocalDate.now() to CompletedEntry(listOf(Time.now())))
+                    )
                 )
-            ), today)
-            res.`should be equal to`(100)
+                res.`should be equal to`(100)
+            }
+
+            it("should not count should not be done days") {
+                val today = LocalDate.now().with(DayOfWeek.MONDAY)
+                val res = executeUseCase(
+                    habit().copy(
+                        days = DayOfWeek.values().toSet() - DayOfWeek.MONDAY,
+                        history = mapOf(today.minusDays(1) to CompletedEntry(listOf(Time.now())))
+                    ), today
+                )
+                res.`should be equal to`(100)
+            }
+
+            it("should count should not be done completed days") {
+                val today = LocalDate.now().with(DayOfWeek.MONDAY)
+                val res = executeUseCase(
+                    habit().copy(
+                        days = DayOfWeek.values().toSet() - DayOfWeek.MONDAY,
+                        history = mapOf(
+                            today.minusDays(1) to CompletedEntry(listOf(Time.now())),
+                            today to CompletedEntry(listOf(Time.now()))
+                        )
+                    ), today
+                )
+                res.`should be equal to`(100)
+            }
+        }
+
+        describe("Bad") {
+            it("should be 100 when empty") {
+                val res = executeUseCase(habit().copy(
+                    isGood = false
+                ))
+                res.`should be equal to`(100)
+            }
+
+            it("should count should not be done completed days") {
+                val today = LocalDate.now().with(DayOfWeek.MONDAY)
+                val res = executeUseCase(
+                    habit().copy(
+                        isGood = false,
+                        days = DayOfWeek.values().toSet() - DayOfWeek.MONDAY,
+                        history = mapOf(
+                            today to CompletedEntry(listOf(Time.now()))
+                        )
+                    ), today
+                )
+                res.`should be equal to`(0)
+            }
+
+
+            it("should not count should not be done not completed days") {
+                val today = LocalDate.now().with(DayOfWeek.MONDAY)
+                val res = executeUseCase(
+                    habit().copy(
+                        isGood = false,
+                        days = DayOfWeek.values().toSet() - DayOfWeek.MONDAY - DayOfWeek.SUNDAY,
+                        history = mapOf(
+                            today to CompletedEntry(listOf(Time.now()))
+                        )
+                    ), today
+                )
+                res.`should be equal to`(0)
+            }
+
         }
     }
 })

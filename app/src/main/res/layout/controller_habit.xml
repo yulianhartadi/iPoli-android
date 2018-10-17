@@ -131,7 +131,7 @@
                             android:drawablePadding="8dp"
                             android:gravity="center_vertical"
                             android:includeFontPadding="false"
-                            android:text="Success rate"
+                            android:text="@string/success_rate"
                             android:textAppearance="@style/TextAppearance.AppCompat.Body1"
                             android:textColor="@color/md_light_text_70" />
 
@@ -141,7 +141,6 @@
                             android:layout_height="wrap_content"
                             android:layout_gravity="center_horizontal"
                             android:paddingBottom="4dp"
-                            android:text="88%"
                             android:textAppearance="@style/TextAppearance.AppCompat.Subhead" />
                     </LinearLayout>
 

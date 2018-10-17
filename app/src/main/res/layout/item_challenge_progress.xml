@@ -66,9 +66,47 @@
         android:layout_marginTop="8dp"
         android:textAppearance="@style/TextAppearance.AppCompat.Body1"
         android:textColor="?android:textColorSecondary"
-        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/progressCompleteProgress" />
+
+    <TextView
+        android:id="@+id/calendarMonth"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:textAlignment="center"
+        android:textAppearance="@style/TextAppearance.AppCompat.Subhead"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/progressCompleteRemaining" />
+
+    <com.haibin.calendarview.CalendarView
+        android:id="@+id/calendarView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:layout_marginBottom="8dp"
+        app:calendar_height="42dp"
+        app:current_day_text_color="?android:textColorPrimary"
+        app:current_month_lunar_text_color="#CFCFCF"
+        app:current_month_text_color="?android:textColorPrimary"
+        app:day_text_size="14sp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/calendarMonth"
+        app:min_year="2004"
+        app:month_view="io.ipoli.android.challenge.show.ChallengeProgressMonthView"
+        app:month_view_show_mode="mode_all"
+        app:other_month_text_color="?android:textColorHint"
+        app:scheme_text=""
+        app:scheme_text_color="?android:textColorPrimary"
+        app:scheme_theme_color="?android:textColorPrimary"
+        app:select_mode="single_mode"
+        app:week_background="?android:colorBackground"
+        app:week_bar_view="io.ipoli.android.quest.schedule.summary.view.widget.SimpleWeekBar"
+        app:week_text_color="?android:textColorSecondary"
+        app:week_view="io.ipoli.android.challenge.show.ChallengeProgressWeekView" />
 
 </android.support.constraint.ConstraintLayout>

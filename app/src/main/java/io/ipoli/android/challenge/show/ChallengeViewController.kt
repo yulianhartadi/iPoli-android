@@ -18,6 +18,8 @@ import com.github.mikephil.charting.components.XAxis
 import com.github.mikephil.charting.components.YAxis
 import com.github.mikephil.charting.data.*
 import com.github.mikephil.charting.formatter.IndexAxisValueFormatter
+import com.haibin.calendarview.Calendar
+import com.haibin.calendarview.CalendarView
 import com.mikepenz.google_material_typeface_library.GoogleMaterial
 import com.mikepenz.iconics.IconicsDrawable
 import com.mikepenz.iconics.typeface.IIcon
@@ -44,6 +46,9 @@ import kotlinx.android.synthetic.main.item_challenge_quest.view.*
 import kotlinx.android.synthetic.main.item_challenge_target_value.view.*
 import kotlinx.android.synthetic.main.item_quest_tag_list.view.*
 import org.threeten.bp.LocalDate
+import org.threeten.bp.YearMonth
+import org.threeten.bp.format.TextStyle
+import java.util.*
 
 
 /**
@@ -443,7 +448,10 @@ class ChallengeViewController(args: Bundle? = null) :
         data class Progress(
             override val id: String,
             val progressPercent: Int,
-            val progressText: String
+            val progressText: String,
+            val currentDate: LocalDate,
+            val calendars: List<Calendar>,
+            val monthTitle: String
         ) : TrackedValueViewModel(id)
 
         data class Target(
@@ -490,6 +498,27 @@ class ChallengeViewController(args: Bundle? = null) :
                 view.progressCompleteCurrent.text = "${vm.progressPercent}%"
                 view.progressCompleteProgress.progress = vm.progressPercent
                 view.progressCompleteRemaining.text = vm.progressText
+
+                view.calendarView.clearSchemeDate()
+                view.calendarView.setOnMonthChangeListener(null)
+                view.calendarView.post {
+
+                    view.calendarView.setSchemeDate(vm.calendars.map { it.toString() to it }.toMap())
+                    view.calendarMonth.text = vm.monthTitle
+                    view.calendarView.scrollToCalendar(
+                        vm.currentDate.year,
+                        vm.currentDate.monthValue,
+                        vm.currentDate.dayOfMonth
+                    )
+                    view.calendarView.setOnMonthChangeListener(SkipFirstChangeMonthListener { year, month ->
+                        dispatch(
+                            ChallengeAction.ChangeProgressMonth(
+                                challengeId,
+                                YearMonth.of(year, month)
+                            )
+                        )
+                    })
+                }
             }
 
             registerBinder<TrackedValueViewModel.Target>(
@@ -546,6 +575,21 @@ class ChallengeViewController(args: Bundle? = null) :
                 setupBarChart(view.averageValueChart)
                 renderAverageValueChart(vm, view.averageValueChart)
             }
+        }
+
+        inner class SkipFirstChangeMonthListener(private inline val onChange: (Int, Int) -> Unit) :
+            CalendarView.OnMonthChangeListener {
+
+            override fun onMonthChange(year: Int, month: Int) {
+                if (isFirstChange) {
+                    isFirstChange = false
+                    return
+                }
+
+                onChange(year, month)
+            }
+
+            private var isFirstChange = true
         }
     }
 
@@ -760,15 +804,39 @@ class ChallengeViewController(args: Bundle? = null) :
             }
         }).map {
             when (it) {
-                is Challenge.TrackedValue.Progress ->
+                is Challenge.TrackedValue.Progress -> {
+                    val today = LocalDate.now()
                     TrackedValueViewModel.Progress(
-                        it.id,
-                        ((it.completedCount.toFloat() / it.allCount.toFloat()) * 100).toInt(),
-                        if (it.allCount == 0)
+                        id = it.id,
+                        progressPercent = ((it.completedCount.toFloat() / it.allCount.toFloat()) * 100).toInt(),
+                        progressText = if (it.allCount == 0)
                             "No Quests added"
                         else
-                            "${it.completedCount}/${it.allCount} Quests done"
+                            "${it.completedCount}/${it.allCount} Quests done",
+                        currentDate = currentDate,
+                        calendars = progressItems!!.map { c ->
+                            val itemDate = c.date
+
+                            Calendar().apply {
+                                day = itemDate.dayOfMonth
+                                month = itemDate.monthValue
+                                year = itemDate.year
+                                isCurrentDay = itemDate == today
+                                isCurrentMonth = itemDate.month == today.month
+                                isLeapYear = itemDate.isLeapYear
+                                scheme = "${c.state.name},${c.color.name},${c.progress}," +
+                                    "${c.shouldDoNothing}," +
+                                    "${c.isPreviousCompleted},${c.isNextCompleted}," +
+                                    "${c.isFirstDay},${c.isEndDay}"
+                            }
+                        },
+                        monthTitle = "${
+                        currentDate.month.getDisplayName(
+                            TextStyle.FULL,
+                            Locale.getDefault()
+                        )}, ${currentDate.year}"
                     )
+                }
 
                 is Challenge.TrackedValue.Target -> {
 

@@ -421,6 +421,7 @@ interface UseCaseModule {
     val removeTagFromAttributeUseCase: RemoveTagFromAttributeUseCase
     val createChallengeFromPresetUseCase: CreateChallengeFromPresetUseCase
     val createHabitHistoryItemsUseCase: CreateHabitHistoryItemsUseCase
+    val createChallengeProgressItemsUseCase: CreateChallengeProgressItemsUseCase
 }
 
 class MainUseCaseModule(private val context: Context) : UseCaseModule {
@@ -981,6 +982,9 @@ class MainUseCaseModule(private val context: Context) : UseCaseModule {
 
     override val createHabitHistoryItemsUseCase
         get() = CreateHabitHistoryItemsUseCase()
+
+    override val createChallengeProgressItemsUseCase
+        get() = CreateChallengeProgressItemsUseCase()
 }
 
 interface StateStoreModule {

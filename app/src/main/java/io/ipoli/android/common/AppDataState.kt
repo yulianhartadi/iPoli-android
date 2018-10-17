@@ -158,6 +158,11 @@ sealed class DataLoadedAction : Action {
         val challenges: List<PresetChallenge>
     ) : DataLoadedAction()
 
+    class ChallengeChanged(
+        val challenge: Challenge,
+        val currentDate: LocalDate
+    ) : DataLoadedAction()
+
 }
 
 data class AppDataState(

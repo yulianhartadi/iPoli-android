@@ -1,4 +1,4 @@
-package io.ipoli.android.habit.show
+package io.ipoli.android.challenge.show
 
 import android.content.Context
 import android.graphics.Canvas
@@ -9,16 +9,16 @@ import android.support.v4.content.ContextCompat
 import com.haibin.calendarview.Calendar
 import com.haibin.calendarview.MonthView
 import io.ipoli.android.R
+import io.ipoli.android.challenge.entity.Challenge.TrackedValue.Progress.DayProgress.State
 import io.ipoli.android.common.ViewUtils
 import io.ipoli.android.common.view.AndroidColor
 import io.ipoli.android.common.view.attrData
 import io.ipoli.android.common.view.colorRes
-import io.ipoli.android.habit.usecase.CreateHabitHistoryItemsUseCase.HabitHistoryItem.State
 import io.ipoli.android.quest.Color
 
 
 @Suppress("unused")
-class HabitProgressMonthView(context: Context) : MonthView(context) {
+class ChallengeProgressMonthView(context: Context) : MonthView(context) {
 
 
     private val failedPaint = Paint()
@@ -114,11 +114,12 @@ class HabitProgressMonthView(context: Context) : MonthView(context) {
         val parts = data.split(",")
         val state = State.valueOf(parts[0])
         val color = Color.valueOf(parts[1])
-        val shouldBeDone = parts[2].toBoolean()
-        val isPreviousCompleted = parts[3].toBoolean()
-        val isNextCompleted = parts[4].toBoolean()
-        val timesADay = parts[5].toInt()
-        val completedCount = parts[6].toInt()
+        val progress = parts[2].toInt()
+        val shouldDoNothing = parts[3].toBoolean()
+        val isPreviousCompleted = parts[4].toBoolean()
+        val isNextCompleted = parts[5].toBoolean()
+        val isFirstDay = parts[6].toBoolean()
+        val isEndDay = parts[7].toBoolean()
 
         val strokePaint = colorStrokePaints[color]
 
@@ -129,7 +130,7 @@ class HabitProgressMonthView(context: Context) : MonthView(context) {
         val centerX = x.toFloat() + halfFullWidth
         val centerY = y.toFloat() + halfFullHeight
 
-        when (state) {
+        when(state) {
             State.COMPLETED -> {
                 if (isPreviousCompleted) {
                     canvas.drawLine(
@@ -158,46 +159,19 @@ class HabitProgressMonthView(context: Context) : MonthView(context) {
                 )
             }
             State.NOT_COMPLETED_TODAY -> {
-
-                if (timesADay > 1) {
-
-                    val gap = 15f
-                    val ark = 360 / timesADay - gap
-
-                    val borderOffset = ViewUtils.dpToPx(2.5f, context) / 2
-                    val r = RectF(
-                        centerX - radius - borderOffset,
-                        centerY - radius - borderOffset,
-                        centerX + radius + borderOffset,
-                        centerY + radius + borderOffset
-                    )
-
-                    val offset = gap / 2f - 90f
-
-                    (0..completedCount).forEach {
-                        canvas.drawArc(r, offset + (it * (ark + gap)), ark, false, strokePaint)
-                    }
-
-                    (completedCount until timesADay).forEach {
-                        canvas.drawArc(
-                            r,
-                            offset + (it * (ark + gap)),
-                            ark,
-                            false,
-                            lightColorStrokePaints[color]
-                        )
-                    }
-
-                } else {
-                    canvas.drawCircle(
-                        centerX,
-                        centerY,
-                        radius,
-                        strokePaint
-                    )
-                }
+                val borderOffset = ViewUtils.dpToPx(2.5f, context) / 2
+                val r = RectF(
+                    centerX - radius - borderOffset,
+                    centerY - radius - borderOffset,
+                    centerX + radius + borderOffset,
+                    centerY + radius + borderOffset
+                )
 
 
+                val offset = -90f
+                val progressArk = progress * 360 / 100
+
+                canvas.drawArc(r, offset, progressArk.toFloat(), false, strokePaint)
             }
             State.FAILED -> {
                 canvas.drawCircle(
@@ -207,42 +181,19 @@ class HabitProgressMonthView(context: Context) : MonthView(context) {
                     failedPaint
                 )
 
-                if (timesADay > 1) {
+                val borderOffset = ViewUtils.dpToPx(2.5f, context) / 2
+                val r = RectF(
+                    centerX - radius - borderOffset,
+                    centerY - radius - borderOffset,
+                    centerX + radius + borderOffset,
+                    centerY + radius + borderOffset
+                )
 
-                    val gap = 15f
-                    val ark = 360 / timesADay - gap
 
-                    val borderOffset = ViewUtils.dpToPx(2.5f, context) / 2
-                    val r = RectF(
-                        centerX - radius - borderOffset,
-                        centerY - radius - borderOffset,
-                        centerX + radius + borderOffset,
-                        centerY + radius + borderOffset
-                    )
+                val offset = -90f
+                val progressArk = progress * 360 / 100
 
-                    val offset = gap / 2f - 90f
-
-                    (0..completedCount).forEach {
-                        canvas.drawArc(
-                            r,
-                            offset + (it * (ark + gap)),
-                            ark,
-                            false,
-                            failedProgressPaint
-                        )
-                    }
-
-                    (completedCount until timesADay).forEach {
-                        canvas.drawArc(
-                            r,
-                            offset + (it * (ark + gap)),
-                            ark,
-                            false,
-                            failedRemainingPaint
-                        )
-                    }
-
-                }
+                canvas.drawArc(r, offset, progressArk.toFloat(), false, strokePaint)
             }
 
             State.CONNECTED -> {
@@ -281,10 +232,10 @@ class HabitProgressMonthView(context: Context) : MonthView(context) {
             (x + halfFullWidth).toFloat(),
             mTextBaseLine + y,
             when {
-                calendar.isCurrentDay && (state == State.NOT_COMPLETED_TODAY || state == State.FAILED) -> currentDayTextPaint
+                calendar.isCurrentDay && (state != State.COMPLETED) -> currentDayTextPaint
                 calendar.isCurrentDay && state == State.COMPLETED -> blackTextPaint
                 state == State.FAILED -> darkTextPaint
-                shouldBeDone ->
+                !shouldDoNothing ->
                     when {
                         state == State.COMPLETED -> whiteTextPaint
                         calendar.isCurrentMonth -> mCurDayTextPaint
@@ -293,6 +244,54 @@ class HabitProgressMonthView(context: Context) : MonthView(context) {
                 else -> if (state == State.COMPLETED) lightTextPaint else mOtherMonthTextPaint
             }
         )
+
+        if(isFirstDay) {
+            canvas.drawLine(
+                x.toFloat(),
+                y.toFloat(),
+                x.toFloat() + halfFullWidth,
+                y.toFloat(),
+                strokePaint
+            )
+            canvas.drawLine(
+                x.toFloat(),
+                y.toFloat(),
+                x.toFloat(),
+                y.toFloat() + mItemHeight,
+                strokePaint
+            )
+            canvas.drawLine(
+                x.toFloat(),
+                y.toFloat() + +mItemHeight,
+                x.toFloat() + halfFullWidth,
+                y.toFloat() + mItemHeight,
+                strokePaint
+            )
+        }
+
+        if(isEndDay) {
+            canvas.drawLine(
+                x.toFloat() + halfFullWidth,
+                y.toFloat(),
+                x.toFloat() + mItemWidth,
+                y.toFloat(),
+                strokePaint
+            )
+            canvas.drawLine(
+                x.toFloat() + mItemWidth,
+                y.toFloat(),
+                x.toFloat() + mItemWidth,
+                y.toFloat() + mItemHeight,
+                strokePaint
+            )
+            canvas.drawLine(
+                x.toFloat() + halfFullWidth,
+                y.toFloat() + +mItemHeight,
+                x.toFloat() + mItemWidth,
+                y.toFloat() + mItemHeight,
+                strokePaint
+            )
+        }
     }
 
     override fun onDrawText(

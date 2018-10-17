@@ -1214,4 +1214,6 @@ These are your physical and mental characteristics.\n\n
     <string name="habit_toggle_future_error">Unable to change the future</string>
     <string name="best_streak">Best streak</string>
     <string name="current_streak">Current streak</string>
+    <string name="success_rate">Success rate</string>
+    <string name="progress">Progress</string>
 </resources>
