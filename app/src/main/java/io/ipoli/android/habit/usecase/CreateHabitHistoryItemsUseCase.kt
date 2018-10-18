@@ -18,7 +18,7 @@ class CreateHabitHistoryItemsUseCase :
     override fun execute(parameters: Params): List<HabitHistoryItem> {
         val habit = parameters.habit
         val today = parameters.today
-        val createdAt = DateUtils.fromMillis(habit.createdAt.toEpochMilli())
+        val createdAt = DateUtils.fromMillisLocalZone(habit.createdAt.toEpochMilli())
 
         val firstCompletedDate = habit.history.toSortedMap().entries.firstOrNull {
             it.value.completedCount > 0

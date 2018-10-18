@@ -89,4 +89,4 @@ val Instant.milliseconds get() = toEpochMilli().milliseconds
 
 val Long.instant: Instant get() = Instant.ofEpochMilli(this)
 
-val Long.startOfDayUTC: LocalDate get() = DateUtils.fromMillis(this)
+val Long.startOfDayUTC: LocalDate get() = DateUtils.fromMillisUTC(this)

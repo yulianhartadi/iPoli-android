@@ -94,7 +94,7 @@ class DayViewController :
     }
 
     override fun onRestoreViewState(view: View, savedViewState: Bundle) {
-        currentDate = DateUtils.fromMillis(savedViewState.getLong("current_date"))
+        currentDate = DateUtils.fromMillisUTC(savedViewState.getLong("current_date"))
     }
 
     override fun onCreateView(

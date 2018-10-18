@@ -21,8 +21,12 @@ object DateUtils {
      * @param dateMillis in UTC timezone
      * @return LocalDate
      */
-    fun fromMillis(dateMillis: Long): LocalDate {
-        return Instant.ofEpochMilli(dateMillis).atZone(DateUtils.ZONE_UTC).toLocalDate()
+    fun fromMillisUTC(dateMillis: Long): LocalDate {
+        return fromMillis(dateMillis, ZONE_UTC)
+    }
+
+    fun fromMillisLocalZone(dateMillis: Long): LocalDate {
+        return fromMillis(dateMillis, ZoneId.systemDefault())
     }
 
     fun fromMillis(dateMillis: Long, zoneId: ZoneId): LocalDate {

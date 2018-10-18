@@ -19,7 +19,7 @@ class CreateChallengeProgressItemsUseCase :
     override fun execute(parameters: Params): List<Progress.DayProgress> {
         val challenge = parameters.challenge
         val today = parameters.today
-        val firstDate = DateUtils.fromMillis(challenge.createdAt.toEpochMilli())
+        val firstDate = DateUtils.fromMillisLocalZone(challenge.createdAt.toEpochMilli())
 
         val completedIndexes = mutableListOf<Int>()
         var index = 0
@@ -43,11 +43,10 @@ class CreateChallengeProgressItemsUseCase :
             }
 
             val state = when {
-                it < firstDate -> State.EMPTY
+                it < firstDate || it > today || all == 0 -> State.EMPTY
                 all > 0 && all == completed -> State.COMPLETED
                 it == today && all > 0 -> State.NOT_COMPLETED_TODAY
-                all == 0 -> State.EMPTY
-                completed < all && it < today-> State.FAILED
+                completed < all && it < today -> State.FAILED
                 else -> State.EMPTY
             }
 

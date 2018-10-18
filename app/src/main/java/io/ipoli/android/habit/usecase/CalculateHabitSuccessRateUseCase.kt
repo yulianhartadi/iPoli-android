@@ -15,7 +15,7 @@ class CalculateHabitSuccessRateUseCase :
 
     override fun execute(parameters: Params): Int {
         val habit = parameters.habit
-        val createdAt = DateUtils.fromMillis(habit.createdAt.toEpochMilli())
+        val createdAt = DateUtils.fromMillisLocalZone(habit.createdAt.toEpochMilli())
 
         val firstCompletedDate = habit.history.toSortedMap().entries.firstOrNull {
             it.value.completedCount > 0
