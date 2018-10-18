@@ -47,17 +47,6 @@ class CalculateHabitStreakUseCaseSpek : Spek({
                 streakFor(h).`should equal`(streakOf(1, 1))
             }
 
-            it("should have no current streak & best of 1") {
-
-                val h = TestUtil.habit.copy(
-                    timesADay = 1,
-                    history = mapOf(
-                        LocalDate.now().minusDays(1) to CompletedEntry(listOf(Time.now()))
-                    )
-                )
-                streakFor(h).`should equal`(streakOf(0, 1))
-            }
-
             it("should have current of 2 & best of 3") {
 
                 val today = LocalDate.now()
@@ -72,6 +61,17 @@ class CalculateHabitStreakUseCaseSpek : Spek({
                     )
                 )
                 streakFor(h).`should equal`(streakOf(2, 3))
+            }
+
+            it("should have current of 1 when only yesterday was complete") {
+                val today = LocalDate.now()
+                val h = TestUtil.habit.copy(
+                    timesADay = 1,
+                    history = mapOf(
+                        today.minusDays(1) to CompletedEntry(listOf(Time.now()))
+                    )
+                )
+                streakFor(h).`should equal`(streakOf(1, 1))
             }
         }
 
@@ -102,7 +102,6 @@ class CalculateHabitStreakUseCaseSpek : Spek({
                 val today = LocalDate.now()
                 val h = TestUtil.habit.copy(
                     isGood = false,
-                    timesADay = 1,
                     createdAt = today.minusDays(1).startOfDayUTC().instant,
                     history = mapOf(
                         today to CompletedEntry(completedAtTimes = listOf(Time.now()))

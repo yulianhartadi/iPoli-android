@@ -29,16 +29,18 @@ class CalculateHabitStreakUseCase :
         val ds = hs.datesBetween(today).reversed()
 
         return Habit.Streak(
-            current = findCurrentStreak(h, ds),
+            current = findCurrentStreak(h, ds, today),
             best = findBestStreak(h, ds)
         )
     }
 
-    private fun findCurrentStreak(habit: Habit, dates: List<LocalDate>): Int {
+    private fun findCurrentStreak(habit: Habit, dates: List<LocalDate>, today: LocalDate): Int {
         var streak = 0
         dates.forEach {
             val s = streakStatusForDate(habit, it)
-            if (s == DateStatus.FAILED) {
+            if (!habit.isGood && s == DateStatus.FAILED) {
+                return streak
+            } else if (habit.isGood && it != today && s == DateStatus.FAILED) {
                 return streak
             } else if (s == DateStatus.COMPLETE) {
                 streak++
