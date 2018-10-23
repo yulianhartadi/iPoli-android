@@ -197,8 +197,12 @@ class ProfilePlayerListViewController(args: Bundle? = null) :
                 ProfileAction.Unfollow(vm.id)
             }
 
-            view.onDebounceClick {
-                navigateFromRoot().toProfile(vm.id)
+            if (vm.friendshipStatus == YOU) {
+                view.setOnClickListener(null)
+            } else {
+                view.onDebounceClick {
+                    navigateFromRoot().toProfile(vm.id)
+                }
             }
         }
     }

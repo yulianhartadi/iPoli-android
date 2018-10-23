@@ -183,7 +183,6 @@ class ReactionHistoryDialogViewController(args: Bundle? = null) :
             view.playerUsername.text = vm.username
             view.reactionTime.text = vm.time
 
-
             view.setBackgroundResource(attrResourceId(android.R.attr.selectableItemBackground))
             view.isClickable = true
             view.onDebounceClick {

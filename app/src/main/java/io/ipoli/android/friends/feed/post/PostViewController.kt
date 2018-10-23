@@ -282,7 +282,9 @@ class PostViewController(args: Bundle? = null) :
                 navigate().toSharePost(m)
             },
             avatarClickListener = { postPlayerId ->
-                navigateFromRoot().toProfile(postPlayerId)
+                if(!post.isFromCurrentPlayer) {
+                    navigateFromRoot().toProfile(postPlayerId)
+                }
             }
         )
 

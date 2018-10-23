@@ -149,7 +149,7 @@ class FeedViewController(args: Bundle? = null) :
                     isGuest = !it
                     activity?.invalidateOptionsMenu()
                 }
-                if(isGuest) {
+                if (isGuest) {
                     view.shareItem.gone()
                 } else {
                     view.shareItem.visible()
