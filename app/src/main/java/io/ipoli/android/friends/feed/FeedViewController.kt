@@ -149,6 +149,11 @@ class FeedViewController(args: Bundle? = null) :
                     isGuest = !it
                     activity?.invalidateOptionsMenu()
                 }
+                if(isGuest) {
+                    view.shareItem.gone()
+                } else {
+                    view.shareItem.visible()
+                }
                 val posts = state.posts!!
 
                 if (posts.isNotEmpty()) {
