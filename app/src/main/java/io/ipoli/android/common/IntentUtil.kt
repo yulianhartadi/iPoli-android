@@ -42,6 +42,35 @@ object IntentUtil {
             }
         }
 
+    fun showAddQuestPost(questId: String, challengeId: String, context: Context) =
+        Intent(context, MainActivity::class.java).apply {
+            action = MainActivity.ACTION_ADD_POST
+            putExtra(Constants.QUEST_ID_EXTRA_KEY, questId)
+            putExtra(Constants.CHALLENGE_ID_EXTRA_KEY, challengeId)
+            if (Build.VERSION.SDK_INT < MIN_NO_NEW_TASK_VERSION) {
+                flags = Intent.FLAG_ACTIVITY_NEW_TASK
+            }
+        }
+
+    fun showAddHabitPost(habitId: String, challengeId: String, context: Context) =
+        Intent(context, MainActivity::class.java).apply {
+            action = MainActivity.ACTION_ADD_POST
+            putExtra(Constants.HABIT_ID_EXTRA_KEY, habitId)
+            putExtra(Constants.CHALLENGE_ID_EXTRA_KEY, challengeId)
+            if (Build.VERSION.SDK_INT < MIN_NO_NEW_TASK_VERSION) {
+                flags = Intent.FLAG_ACTIVITY_NEW_TASK
+            }
+        }
+
+    fun showAddChallengePost(challengeId: String, context: Context) =
+        Intent(context, MainActivity::class.java).apply {
+            action = MainActivity.ACTION_ADD_POST
+            putExtra(Constants.CHALLENGE_ID_EXTRA_KEY, challengeId)
+            if (Build.VERSION.SDK_INT < MIN_NO_NEW_TASK_VERSION) {
+                flags = Intent.FLAG_ACTIVITY_NEW_TASK
+            }
+        }
+
     fun startPlanDay(context: Context) =
         Intent(context, MainActivity::class.java).apply {
             action = MainActivity.ACTION_PLAN_DAY

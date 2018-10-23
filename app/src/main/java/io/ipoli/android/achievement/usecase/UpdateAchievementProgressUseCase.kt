@@ -75,7 +75,7 @@ class UpdateAchievementProgressUseCase(
             }
 
         val friendCount = try {
-            friendRepository.findAll().size.toLong()
+            friendRepository.count().toLong()
         } catch (e: Throwable) {
             stats.friendInvitedCount
         }

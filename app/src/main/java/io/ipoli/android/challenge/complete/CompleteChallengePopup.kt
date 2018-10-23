@@ -2,11 +2,14 @@ package io.ipoli.android.challenge.complete
 
 import android.animation.Animator
 import android.animation.AnimatorListenerAdapter
+import android.annotation.SuppressLint
 import android.support.transition.TransitionManager
 import android.view.LayoutInflater
 import android.view.View
 import io.ipoli.android.R
 import io.ipoli.android.challenge.entity.Challenge
+import io.ipoli.android.challenge.entity.SharingPreference
+import io.ipoli.android.common.IntentUtil
 import io.ipoli.android.common.view.Popup
 import io.ipoli.android.common.view.visible
 import kotlinx.android.synthetic.main.popup_challenge_complete.view.*
@@ -17,6 +20,7 @@ import kotlinx.android.synthetic.main.popup_challenge_complete.view.*
  */
 class CompleteChallengePopup(private val challenge: Challenge) : Popup(position = Position.TOP) {
 
+    @SuppressLint("InflateParams")
     override fun createView(inflater: LayoutInflater): View =
         inflater.inflate(R.layout.popup_challenge_complete, null)
 
@@ -33,6 +37,17 @@ class CompleteChallengePopup(private val challenge: Challenge) : Popup(position 
             }
         })
         contentView.trophyAnimation.playAnimation()
-        contentView.sweet.setOnClickListener { hide() }
+        contentView.sweet.setOnClickListener {
+            if (challenge.sharingPreference == SharingPreference.FRIENDS) {
+                val ctx = contentView.context
+                ctx.startActivity(
+                    IntentUtil.showAddChallengePost(
+                        challengeId = challenge.id,
+                        context = ctx
+                    )
+                )
+            }
+            hide()
+        }
     }
 }

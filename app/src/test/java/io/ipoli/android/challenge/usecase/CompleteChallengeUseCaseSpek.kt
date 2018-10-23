@@ -28,8 +28,7 @@ class CompleteChallengeUseCaseSpek : Spek({
                     CheckForOneTimeBoostUseCase(mock()),
                     mock()
                 ),
-                TestUtil.playerRepoMock(TestUtil.player),
-                mock()
+                TestUtil.playerRepoMock(TestUtil.player)
             ).execute(
                 CompleteChallengeUseCase.Params(
                     challengeId

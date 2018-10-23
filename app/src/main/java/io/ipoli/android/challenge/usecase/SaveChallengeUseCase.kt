@@ -133,7 +133,18 @@ class SaveChallengeUseCase(
             override val end: LocalDate,
             override val note: String = "",
             val presetChallengeId: String? = null
-        ) : Params(id, name, tags, color, icon, difficulty, trackedValues, motivations, end, note)
+        ) : Params(
+            id,
+            name,
+            tags,
+            color,
+            icon,
+            difficulty,
+            trackedValues,
+            motivations,
+            end,
+            note
+        )
 
         data class WithNewQuests(
             val quests: List<BaseQuest>,
@@ -147,8 +158,19 @@ class SaveChallengeUseCase(
             override val motivations: List<String>,
             override val end: LocalDate,
             override val note: String = ""
-
-        ) : Params(id, name, tags, color, icon, difficulty, trackedValues, motivations, end, note)
+        ) :
+            Params(
+                id,
+                name,
+                tags,
+                color,
+                icon,
+                difficulty,
+                trackedValues,
+                motivations,
+                end,
+                note
+            )
 
         data class WithExistingQuests(
             val allQuests: List<BaseQuest> = listOf(),
@@ -163,8 +185,19 @@ class SaveChallengeUseCase(
             override val motivations: List<String>,
             override val end: LocalDate,
             override val note: String = ""
-
-        ) : Params(id, name, tags, color, icon, difficulty, trackedValues, motivations, end, note)
+        ) :
+            Params(
+                id,
+                name,
+                tags,
+                color,
+                icon,
+                difficulty,
+                trackedValues,
+                motivations,
+                end,
+                note
+            )
     }
 
     private fun transformMotivations(motivations: List<String>) =

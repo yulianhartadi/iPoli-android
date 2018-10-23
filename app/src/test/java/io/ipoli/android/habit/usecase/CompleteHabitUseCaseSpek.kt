@@ -48,6 +48,9 @@ class CompleteHabitUseCaseSpek : Spek({
                 ),
                 TestUtil.playerRepoMock(player),
                 rewardPlayerUseCase,
+                mock(),
+                mock(),
+                mock(),
                 mock()
             ).execute(
                 CompleteHabitUseCase.Params(habit.id, date)

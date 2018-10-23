@@ -1,6 +1,5 @@
 package io.ipoli.android.common
 
-import android.arch.paging.PagedList
 import io.ipoli.android.achievement.usecase.CreateAchievementItemsUseCase
 import io.ipoli.android.challenge.entity.Challenge
 import io.ipoli.android.challenge.preset.PresetChallenge
@@ -12,7 +11,7 @@ import io.ipoli.android.common.redux.State
 import io.ipoli.android.dailychallenge.usecase.CheckDailyChallengeProgressUseCase
 import io.ipoli.android.event.Calendar
 import io.ipoli.android.event.Event
-import io.ipoli.android.friends.feed.PostViewModel
+import io.ipoli.android.friends.feed.data.Post
 import io.ipoli.android.friends.persistence.Friend
 import io.ipoli.android.friends.usecase.CreateReactionHistoryItemsUseCase
 import io.ipoli.android.growth.usecase.CalculateGrowthStatsUseCase
@@ -109,6 +108,16 @@ sealed class DataLoadedAction : Action {
         val averageProductiveDuration: Duration<Minute>
     ) : DataLoadedAction()
 
+    data class FriendDataChanged(
+        val player: Player,
+        val unlockedAchievements: List<CreateAchievementItemsUseCase.AchievementItem>,
+        val streak: Int,
+        val averageProductiveDuration: Duration<Minute>,
+        val isCurrentPlayerGuest: Boolean,
+        val isFollowing: Boolean,
+        val isFollower: Boolean
+    ) : DataLoadedAction()
+
     data class AchievementItemsChanged(val achievementListItems: List<CreateAchievementItemsUseCase.AchievementListItem>) :
         DataLoadedAction()
 
@@ -117,7 +126,7 @@ sealed class DataLoadedAction : Action {
 
     data class HabitChanged(
         val habit: Habit,
-        val currentDate : LocalDate,
+        val currentDate: LocalDate,
         val habitHistory: List<CreateHabitHistoryItemsUseCase.HabitHistoryItem>
     ) :
         DataLoadedAction()
@@ -133,14 +142,18 @@ sealed class DataLoadedAction : Action {
         val username: String
     ) : DataLoadedAction()
 
-    data class PostsChanged(val posts: PagedList<PostViewModel>) : DataLoadedAction()
+    data class PostsChanged(val posts: List<Post>) : DataLoadedAction()
 
     data class ReactionHistoryItemsChanged(val items: List<CreateReactionHistoryItemsUseCase.ReactionHistoryItem>) :
         DataLoadedAction()
 
-    data class FriendsChanged(val friends: List<Friend>) : DataLoadedAction()
+    data class FollowersChanged(val friends: List<Friend>) : DataLoadedAction()
+
+    data class FollowingChanged(val friends: List<Friend>) : DataLoadedAction()
+
     data class PostItemPickerItemsChanged(
         val quests: List<Quest>?,
+        val habits: List<Habit>?,
         val challenges: List<Challenge>?
     ) : DataLoadedAction()
 
@@ -154,15 +167,23 @@ sealed class DataLoadedAction : Action {
     ) : DataLoadedAction()
 
     data class PresetChallengeListForCategoryChanged(
-        val category : PresetChallenge.Category,
+        val category: PresetChallenge.Category,
         val challenges: List<PresetChallenge>
     ) : DataLoadedAction()
 
-    class ChallengeChanged(
+    data class ChallengeChanged(
         val challenge: Challenge,
         val currentDate: LocalDate
     ) : DataLoadedAction()
 
+    data class PostChanged(val post: Post) : DataLoadedAction()
+
+    data class AddPostDataChanged(
+        val player: Player,
+        val quest: Quest?,
+        val habit: Habit?,
+        val challenge: Challenge?
+    ) : DataLoadedAction()
 }
 
 data class AppDataState(

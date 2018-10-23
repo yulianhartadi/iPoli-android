@@ -92,10 +92,18 @@ open class RewardPlayerUseCase(
 
             is Params.ForPlanDay ->
                 createRewardForPlanDay()
+
+            is Params.ForAddPost ->
+                createRewardForAddPost()
         }
 
-        if(parameters is Params.ForBadHabit) {
-            val newPlayer = removeRewardFromPlayerUseCase.execute(RemoveRewardFromPlayerUseCase.Params(reward, player))
+        if (parameters is Params.ForBadHabit) {
+            val newPlayer = removeRewardFromPlayerUseCase.execute(
+                RemoveRewardFromPlayerUseCase.Params(
+                    reward,
+                    player
+                )
+            )
             return Result(newPlayer, reward)
         }
 
@@ -128,6 +136,20 @@ open class RewardPlayerUseCase(
             healthPoints = 0,
             experience = experience(100, QUEST_XP_BASE_REWARDS),
             coins = coins(100, QUEST_COINS_BASE_REWARDS),
+            bounty = Quest.Bounty.None
+        )
+
+    private fun createRewardForAddPost() =
+        Reward(
+            attributePoints = mapOf(
+                Player.AttributeType.CHARISMA to
+                    QUEST_ATTRIBUTE_BASE_REWARDS[createRandom().nextInt(
+                        QUEST_ATTRIBUTE_BASE_REWARDS.size
+                    )]
+            ),
+            healthPoints = 0,
+            experience = 0,
+            coins = 0,
             bounty = Quest.Bounty.None
         )
 
@@ -320,6 +342,8 @@ open class RewardPlayerUseCase(
         ) : Params()
 
         data class ForPlanDay(override val player: Player? = null) : Params()
+
+        data class ForAddPost(override val player: Player? = null) : Params()
     }
 
     data class Result(val player: Player, val reward: Reward)

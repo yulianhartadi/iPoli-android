@@ -14,14 +14,12 @@ class SavePostReactionUseCase(
 
     override fun execute(parameters: Params) {
         postRepository.react(
-            parameters.postPlayerId,
             parameters.postId,
             parameters.reactionType
         )
     }
 
     data class Params(
-        val postPlayerId: String,
         val postId: String,
         val reactionType: Post.ReactionType
     )

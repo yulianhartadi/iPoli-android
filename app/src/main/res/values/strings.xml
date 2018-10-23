@@ -844,7 +844,7 @@
     <string name="import_data_error_message">Importing your data failed. Make sure you have Internet connection :)</string>
     <string name="quest_rescheduled">Quest rescheduled</string>
     <string name="duration_error_message">Duration should be between 10 minutes and 4 hours</string>
-    <string name="drawer_feed">Friends Feed</string>
+    <string name="drawer_feed">Heroes Feed</string>
     <string name="invite_friends_error_no_internet">Internet connection is required to invite friends</string>
     <string name="invite_friends_error_unknown">Some wrong happened. Check your Internet connection.</string>
     <string name="invite_friends_message">Let\'s help each other achieve Goals and stick to good Habits with this app %s</string>
@@ -873,14 +873,15 @@
     <string name="friend_accepted">You and %s are now friends</string>
     <string name="error_already_friends">You are already friends</string>
 
-    <string name="feed_completed_habit">Completed Habit</string>
+    <string name="feed_completed_habit">Completed</string>
+    <string name="feed_completed_challenge">Completed</string>
     <string name="feed_times_in_a_row">times in a row</string>
     <string name="feed_best_streak_habit">New best streak for Habit</string>
     <string name="feed_failed_quest">Failed to complete Quest</string>
-    <string name="feed_completed_quest">Completed Quest</string>
+    <string name="feed_completed_quest">Completed</string>
     <string name="feed_pomodoro_count">(for %d pomodoros)</string>
     <string name="feed_timer">(in %s)</string>
-    <string name="feed_accepted_challenge">Accepted new Challenge</string>
+    <string name="feed_accepted_challenge">Accepted</string>
 
     <string name="posts_sign_in">Sign in to create posts</string>
     <string name="friends_sign_in">Sign in to share with friends</string>
@@ -1063,14 +1064,14 @@ These are your physical and mental characteristics.\n\n
         When you tag your quests and habits and complete them, you win **points** for the attributes.
     </string>
 
-    <string name="help_dialog_friends_feed_title">Friends Feed</string>
-    <string name="help_dialog_friends_feed_message">
-        Let your friends help you with your challenges and quests.\n\n
-        **Share** your **challenges** and let them **track your progress** and **motivate** you to complete your goal.\n\n
-        Make your challenge shared or post a completed quest from the big **Add button**(bottom right)\n\n
+    <string name="help_dialog_heroes_feed_title">Heroes Feed</string>
+    <string name="help_dialog_heroes_feed_message">
+        Inspire &amp; be inspired by your friends and the myPoli community!\n\n
+        **Share** your **Challenges** and let them **track your progress** and **motivate** you to complete them.\n\n
+        Make your Challenge shared or post a completed quest from the big **Add button**(bottom right)\n\n
         **Invite** your friends by sending them a **link** from the top **Add friend** button.\n\n
         When they open the link and **accept** your invitation, you\'ll become friends in myPoli. \n\n
-        You can also track their progress, react to their posts and encourage them in their quests.
+        You can also track their progress, react to their posts, comment and encourage them in their Quests.
     </string>
     <string name="track_challenge_values">More Track Values</string>
     <string name="faq">FAQ</string>
@@ -1216,4 +1217,22 @@ These are your physical and mental characteristics.\n\n
     <string name="current_streak">Current streak</string>
     <string name="success_rate">Success rate</string>
     <string name="progress">Progress</string>
+    <string name="comment">Comment</string>
+    <string name="comments">Comments</string>
+    <string name="comment_hint">Add comment</string>
+    <string name="add_post_title">Post your achievement</string>
+    <string name="post_player_message_hint">Describe what you did and how you feel</string>
+    <string name="settings_auto_posting_text"><![CDATA[Automatically post my progress on Achievements, Leveling up & Daily Challenge streak on the Heroes Feed]]></string>
+    <string name="settings_auto_posting_title">Share my progress</string>
+    <string name="dialog_remove_post_title">Remove your Post?</string>
+    <string name="dialog_remove_post_message">Do you really want to remove your Post? All reactions &amp; comments will be lost along with it.</string>
+    <string name="post">Post</string>
+    <string name="follow">Follow</string>
+    <string name="following">Following</string>
+    <string name="player_is_follower">%s is following you</string>
+    <string name="error_need_registration">You need to sign in to do this</string>
+    <string name="posts">Posts</string>
+    <string name="followers">Followers</string>
+    <string name="share_post">Share Post</string>
+    <string name="empty_post_comments_message">No comments yet. Be the first to add one!</string>
 </resources>

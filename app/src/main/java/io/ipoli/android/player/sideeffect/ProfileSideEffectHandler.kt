@@ -1,18 +1,13 @@
 package io.ipoli.android.player.sideeffect
 
-import android.arch.paging.ItemKeyedDataSource
-import android.arch.paging.PagedList
 import com.google.firebase.auth.FirebaseAuth
 import io.ipoli.android.achievement.usecase.CreateAchievementItemsUseCase
 import io.ipoli.android.common.AppSideEffectHandler
 import io.ipoli.android.common.AppState
 import io.ipoli.android.common.DataLoadedAction
 import io.ipoli.android.common.ErrorLogger
-import io.ipoli.android.common.datetime.instant
 import io.ipoli.android.common.redux.Action
-import io.ipoli.android.friends.feed.PostViewModel
 import io.ipoli.android.friends.feed.data.Post
-import io.ipoli.android.friends.feed.persistence.PostRepository
 import io.ipoli.android.friends.usecase.SavePostReactionUseCase
 import io.ipoli.android.player.attribute.AttributeListAction
 import io.ipoli.android.player.attribute.usecase.AddTagToAttributeUseCase
@@ -26,7 +21,6 @@ import io.ipoli.android.player.usecase.FindAverageFocusedDurationForPeriodUseCas
 import io.ipoli.android.player.usecase.SaveProfileUseCase
 import kotlinx.coroutines.experimental.channels.Channel
 import space.traversal.kapsule.required
-import java.util.concurrent.Executor
 
 object ProfileSideEffectHandler : AppSideEffectHandler() {
 
@@ -37,13 +31,12 @@ object ProfileSideEffectHandler : AppSideEffectHandler() {
     private val playerRepository by required { playerRepository }
     private val postRepository by required { postRepository }
     private val challengeRepository by required { challengeRepository }
-    private val executor by required { executorService }
     private val savePostReactionUseCase by required { savePostReactionUseCase }
     private val addTagToAttributeUseCase by required { addTagToAttributeUseCase }
     private val removeTagFromAttributeUseCase by required { removeTagFromAttributeUseCase }
     private val internetConnectionChecker by required { internetConnectionChecker }
 
-    private var postsChangedChannel: Channel<Unit>? = null
+    private var postsChangedChannel: Channel<List<Post>>? = null
 
     override suspend fun doExecute(action: Action, state: AppState) {
         when (action) {
@@ -68,19 +61,42 @@ object ProfileSideEffectHandler : AppSideEffectHandler() {
                     )
                 )
 
-            is ProfileAction.LoadFriends -> {
+            is ProfileAction.LoadFollowers -> {
                 val currentUser = FirebaseAuth.getInstance().currentUser
-                if (currentUser == null) {
+                if (currentUser == null && action.playerId == null) {
                     dispatch(ProfileAction.ShowRequireLogin)
                     return
                 }
+
                 if (!internetConnectionChecker.isConnected()) {
                     dispatch(ProfileAction.NoInternetConnection)
                     return
                 }
                 try {
-                    val friends = friendRepository.findAll()
-                    dispatch(DataLoadedAction.FriendsChanged(friends))
+                    val followers =
+                        friendRepository.findFollowers(action.playerId ?: currentUser!!.uid)
+                    dispatch(DataLoadedAction.FollowersChanged(followers))
+                } catch (e: Throwable) {
+                    ErrorLogger.log(e)
+                    dispatch(ProfileAction.ErrorLoadingFriends)
+                }
+            }
+
+            is ProfileAction.LoadFollowing -> {
+                val currentUser = FirebaseAuth.getInstance().currentUser
+                if (currentUser == null && action.playerId == null) {
+                    dispatch(ProfileAction.ShowRequireLogin)
+                    return
+                }
+
+                if (!internetConnectionChecker.isConnected()) {
+                    dispatch(ProfileAction.NoInternetConnection)
+                    return
+                }
+                try {
+                    val followers =
+                        friendRepository.findFollowing(action.playerId ?: currentUser!!.uid)
+                    dispatch(DataLoadedAction.FollowingChanged(followers))
                 } catch (e: Throwable) {
                     ErrorLogger.log(e)
                     dispatch(ProfileAction.ErrorLoadingFriends)
@@ -89,7 +105,7 @@ object ProfileSideEffectHandler : AppSideEffectHandler() {
 
             is ProfileAction.LoadPosts -> {
                 val currentUser = FirebaseAuth.getInstance().currentUser
-                if (currentUser == null) {
+                if (currentUser == null && action.playerId == null) {
                     dispatch(ProfileAction.ShowRequireLogin)
                     return
                 }
@@ -99,41 +115,23 @@ object ProfileSideEffectHandler : AppSideEffectHandler() {
                     return
                 }
 
-                val playerId = action.friendId ?: FirebaseAuth.getInstance().currentUser!!.uid
+                val playerId = action.playerId ?: FirebaseAuth.getInstance().currentUser!!.uid
 
                 listenForChanges(
                     oldChannel = postsChangedChannel,
                     channelCreator = {
-                        postsChangedChannel = postRepository.listenForPlayerChange(playerId)
+                        postsChangedChannel = postRepository.listenForPlayer(playerId, limit = 50)
                         postsChangedChannel!!
                     },
-                    onResult = { _ ->
-                        val dataSource =
-                            PostDataSource(
-                                playerId,
-                                postRepository,
-                                action.mapToViewModel
-                            )
-                        val pagedList = PagedList.Builder(
-                            dataSource,
-                            PagedList.Config.Builder()
-                                .setPageSize(10)
-                                .setPrefetchDistance(10)
-                                .setEnablePlaceholders(false)
-                                .build()
-                        )
-                            .setFetchExecutor(executor)
-                            .setNotifyExecutor(CurrentThreadExecutor())
-                            .build()
-                        dispatch(DataLoadedAction.PostsChanged(pagedList))
+                    onResult = { posts ->
+                        dispatch(DataLoadedAction.PostsChanged(posts))
                     }
                 )
 
             }
 
-            is ProfileAction.UnloadPosts -> {
+            is ProfileAction.UnloadPosts ->
                 postsChangedChannel?.close()
-            }
 
             is ProfileAction.SaveDescription -> {
                 postRepository.saveDescription(action.postId, action.description)
@@ -147,8 +145,6 @@ object ProfileSideEffectHandler : AppSideEffectHandler() {
 
                 savePostReactionUseCase.execute(
                     SavePostReactionUseCase.Params(
-                        postPlayerId = action.friendId
-                            ?: FirebaseAuth.getInstance().currentUser!!.uid,
                         postId = s.currentPostId!!,
                         reactionType = action.reaction
                     )
@@ -180,13 +176,12 @@ object ProfileSideEffectHandler : AppSideEffectHandler() {
                         action.tag
                     )
                 )
-        }
-    }
 
-    private class CurrentThreadExecutor : Executor {
+            is ProfileAction.Follow ->
+                friendRepository.follow(action.friendId)
 
-        override fun execute(command: Runnable) {
-            command.run()
+            is ProfileAction.Unfollow ->
+                friendRepository.unfollow(action.friendId)
         }
     }
 
@@ -224,6 +219,7 @@ object ProfileSideEffectHandler : AppSideEffectHandler() {
 
     private fun updateFriendData(friendId: String) {
         val friend = playerRepository.findFriend(friendId)
+        val isCurrentPlayerGuest = FirebaseAuth.getInstance().currentUser == null
 
         val ai = createAchievementItemsUseCase.execute(
             CreateAchievementItemsUseCase.Params(friend)
@@ -246,86 +242,35 @@ object ProfileSideEffectHandler : AppSideEffectHandler() {
             }
 
         dispatch(
-            DataLoadedAction.ProfileDataChanged(
-                friend,
-                ai,
-                friend.statistics.dailyChallengeCompleteStreak.count.toInt(),
-                findAverageFocusedDurationForPeriodUseCase.execute(
+            DataLoadedAction.FriendDataChanged(
+                player = friend,
+                unlockedAchievements = ai,
+                streak = friend.statistics.dailyChallengeCompleteStreak.count.toInt(),
+                averageProductiveDuration = findAverageFocusedDurationForPeriodUseCase.execute(
                     FindAverageFocusedDurationForPeriodUseCase.Params(
                         dayPeriod = 7,
                         friendId = friendId
                     )
+                ),
+                isCurrentPlayerGuest = isCurrentPlayerGuest,
+                isFollowing = if (isCurrentPlayerGuest) false else friendRepository.isFollowing(
+                    friendId
+                ),
+                isFollower = if (isCurrentPlayerGuest) false else friendRepository.isFollower(
+                    friendId
                 )
             )
         )
     }
 
     private fun hasUnlockedAtLeast1Level(it: CreateAchievementItemsUseCase.AchievementListItem) =
-        it is CreateAchievementItemsUseCase.AchievementListItem.LockedItem && it.achievementItem.isMultiLevel && it.achievementItem.currentLevel >= 1
+        it is CreateAchievementItemsUseCase.AchievementListItem.LockedItem
+            && it.achievementItem.isMultiLevel
+            && it.achievementItem.currentLevel >= 1
 
     override fun canHandle(action: Action) =
         action is ProfileAction
             || action is DataLoadedAction.PlayerChanged
             || action is EditProfileAction
             || action is AttributeListAction
-
-    private class PostDataSource(
-        private val playerId: String,
-        private val postRepository: PostRepository,
-        private val mapToViewModel: (Post) -> PostViewModel
-    ) :
-        ItemKeyedDataSource<Long, PostViewModel>() {
-        override fun loadBefore(
-            params: LoadParams<Long>,
-            callback: LoadCallback<PostViewModel>
-        ) {
-//            TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-        }
-
-        override fun loadInitial(
-            params: LoadInitialParams<Long>,
-            callback: LoadInitialCallback<PostViewModel>
-        ) {
-            try {
-                loadInitialPosts(params, callback)
-            } catch (e: Throwable) {
-                ErrorLogger.log(e)
-                dispatch(ProfileAction.ErrorLoadingInitialPosts)
-            }
-        }
-
-        private fun loadInitialPosts(
-            params: LoadInitialParams<Long>,
-            callback: LoadInitialCallback<PostViewModel>
-        ) {
-            val posts = postRepository.findForPlayer(playerId, params.requestedLoadSize)
-            callback.onResult(posts.map(mapToViewModel), 0, posts.size)
-
-            if (posts.isEmpty()) {
-                dispatch(ProfileAction.EmptyPosts)
-            } else {
-                dispatch(ProfileAction.PostsLoaded)
-            }
-        }
-
-        override fun loadAfter(
-            params: LoadParams<Long>,
-            callback: LoadCallback<PostViewModel>
-        ) {
-            try {
-                val posts = postRepository.findForPlayer(
-                    playerId,
-                    params.requestedLoadSize,
-                    params.key.instant
-                )
-                callback.onResult(posts.map(mapToViewModel))
-            } catch (e: Throwable) {
-                ErrorLogger.log(e)
-                dispatch(ProfileAction.ErrorLoadingPosts)
-            }
-        }
-
-        override fun getKey(item: PostViewModel) = item.createdAt
-
-    }
 }

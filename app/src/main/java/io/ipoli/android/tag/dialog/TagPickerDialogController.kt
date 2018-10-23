@@ -172,7 +172,6 @@ class TagPickerDialogController(args: Bundle? = null) :
         return view
     }
 
-
     override fun onCreateLoadAction() = TagPickerAction.Load(selectedTags)
 
     override fun onHeaderViewCreated(headerView: View) {

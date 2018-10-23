@@ -7,6 +7,7 @@ import android.support.v7.widget.GridLayoutManager
 import android.support.v7.widget.LinearLayoutManager
 import android.view.*
 import android.view.animation.OvershootInterpolator
+import com.google.firebase.auth.FirebaseAuth
 import io.ipoli.android.R
 import io.ipoli.android.common.redux.android.ReduxViewController
 import io.ipoli.android.common.view.*
@@ -17,7 +18,6 @@ import kotlinx.android.synthetic.main.controller_feed.view.*
 import kotlinx.android.synthetic.main.item_popup_reaction.view.*
 import kotlinx.android.synthetic.main.view_empty_list.view.*
 import kotlinx.android.synthetic.main.view_loader.view.*
-import kotlinx.android.synthetic.main.view_require_login.view.*
 
 /**
  * Created by Polina Zhelyazkova <polina@mypoli.fun>
@@ -32,8 +32,8 @@ class FeedViewController(args: Bundle? = null) :
 
     init {
         helpConfig = HelpConfig(
-            R.string.help_dialog_friends_feed_title,
-            R.string.help_dialog_friends_feed_message
+            R.string.help_dialog_heroes_feed_title,
+            R.string.help_dialog_heroes_feed_message
         )
 
     }
@@ -60,7 +60,13 @@ class FeedViewController(args: Bundle? = null) :
                     it.animation,
                     title,
                     Post.ReactionType.valueOf(it.name)
-                ) { dispatch(FeedAction.React(it)) }
+                ) {
+                    if (FirebaseAuth.getInstance().currentUser == null) {
+                        showShortToast(R.string.error_need_registration)
+                    } else {
+                        dispatch(FeedAction.React(it))
+                    }
+                }
             }
         )
 
@@ -74,7 +80,7 @@ class FeedViewController(args: Bundle? = null) :
         }
 
         view.feedList.layoutManager = LinearLayoutManager(view.context)
-        view.feedList.adapter = PostAdapter(this)
+        view.feedList.adapter = PostAdapter(this, activity!!)
 
         view.emptyAnimation.setAnimation("empty_posts.json")
 
@@ -83,20 +89,7 @@ class FeedViewController(args: Bundle? = null) :
 
     override fun isPopupShown() = view?.let { it.reactionPopup.alpha > 0 } ?: false
 
-    override fun onCreateLoadAction() = FeedAction.Load { it ->
-        toPostViewModel(context = activity!!, post = it,
-            reactListener = { postId, playerId ->
-                dispatch(FeedAction.ShowReactionPopupForPost(postId, playerId))
-            },
-            reactListListener = {
-                navigate().toReactionHistory(it)
-            },
-            postClickListener = {
-                navigateFromRoot().toProfile(it)
-            }
-        )
-
-    }
+    override fun onCreateLoadAction() = FeedAction.Load
 
     override fun onAttach(view: View) {
         super.onAttach(view)
@@ -148,50 +141,21 @@ class FeedViewController(args: Bundle? = null) :
                 view.emptyContainer.gone()
                 view.feedList.gone()
                 view.reactionPopup.gone()
-                view.loginMessageContainer.gone()
-            }
-
-            SHOW_REQUIRE_LOGIN -> {
-                isGuest = true
-                activity!!.invalidateOptionsMenu()
-                view.loader.gone()
-                view.emptyContainer.gone()
-                view.emptyAnimation.pauseAnimation()
-                view.feedList.gone()
-                view.shareItem.gone()
-
-                view.loginMessageContainer.visible()
-                view.loginMessage.setText(R.string.posts_sign_in)
-                view.loginButton.onDebounceClick {
-                    navigateFromRoot().toAuth(null)
-                }
             }
 
             POSTS_CHANGED -> {
-                (view.feedList.adapter as PostAdapter).updateAll(state.posts!!)
-            }
 
-            NON_EMPTY_FEED -> {
-                view.loader.gone()
-                view.emptyContainer.gone()
-                view.emptyAnimation.pauseAnimation()
-                view.feedList.visible()
-                view.shareItem.visible()
-                view.loginMessageContainer.gone()
-            }
+                state.isPlayerSignedIn?.let {
+                    isGuest = !it
+                    activity?.invalidateOptionsMenu()
+                }
+                val posts = state.posts!!
 
-            EMPTY_FEED -> {
-                view.loader.gone()
-                view.emptyContainer.visible()
-                view.feedList.gone()
-                view.reactionPopup.gone()
-                view.shareItem.visible()
-                view.loginMessageContainer.gone()
-
-                view.emptyAnimation.playAnimation()
-                view.emptyAnimation.visible()
-                view.emptyTitle.text = stringRes(R.string.feed_empty_title)
-                view.emptyText.text = stringRes(R.string.feed_empty_text)
+                if (posts.isNotEmpty()) {
+                    renderPosts(view, state)
+                } else {
+                    renderEmptyPosts(view)
+                }
             }
 
             NO_INTERNET_CONNECTION -> {
@@ -200,7 +164,6 @@ class FeedViewController(args: Bundle? = null) :
                 view.feedList.gone()
                 view.shareItem.gone()
                 view.reactionPopup.gone()
-                view.loginMessageContainer.gone()
 
                 view.emptyAnimation.pauseAnimation()
                 view.emptyAnimation.gone()
@@ -218,6 +181,67 @@ class FeedViewController(args: Bundle? = null) :
 
             }
         }
+    }
+
+    private fun renderEmptyPosts(view: View) {
+        view.loader.gone()
+        view.emptyContainer.visible()
+        view.feedList.gone()
+        view.reactionPopup.gone()
+        view.shareItem.visible()
+
+        view.emptyAnimation.playAnimation()
+        view.emptyAnimation.visible()
+        view.emptyTitle.text = stringRes(R.string.feed_empty_title)
+        view.emptyText.text = stringRes(R.string.feed_empty_text)
+    }
+
+    private fun renderPosts(
+        view: View,
+        state: FeedViewState
+    ) {
+        view.loader.gone()
+        view.emptyContainer.gone()
+        view.emptyAnimation.pauseAnimation()
+        view.feedList.visible()
+        view.shareItem.visible()
+
+        val postVMs = state.posts!!.map { p ->
+            toPostViewModel(context = activity!!, post = p,
+                reactListener = { postId, _ ->
+                    dispatch(FeedAction.ShowReactionPopupForPost(postId))
+                },
+                reactListListener = {
+                    if (FirebaseAuth.getInstance().currentUser == null) {
+                        showShortToast(R.string.error_need_registration)
+                    } else {
+                        navigate().toReactionHistory(it)
+                    }
+                },
+                commentsListener = {
+                    if (FirebaseAuth.getInstance().currentUser == null) {
+                        showShortToast(R.string.error_need_registration)
+                    } else {
+                        navigateFromRoot().toPost(it)
+                    }
+                },
+                shareListener = { m ->
+                    navigate().toSharePost(m)
+                },
+                postClickListener = { postId ->
+                    if (FirebaseAuth.getInstance().currentUser == null) {
+                        showShortToast(R.string.error_need_registration)
+                    } else {
+                        navigateFromRoot().toPost(postId)
+                    }
+                },
+                avatarClickListener = { postPlayerId ->
+                    navigateFromRoot().toProfile(postPlayerId)
+                }
+            )
+        }
+
+        (view.feedList.adapter as PostAdapter).updateAll(postVMs)
     }
 
     override fun containerCoordinates() =
@@ -251,8 +275,8 @@ class FeedViewController(args: Bundle? = null) :
                 createPopupAnimator(reactionPopup),
                 onStart = { reactionPopup.visible() },
                 onEnd = {
-                    it.reactionPopup.children.forEach {
-                        it.reactionAnimation.playAnimation()
+                    it.reactionPopup.children.forEach { v ->
+                        v.reactionAnimation.playAnimation()
                     }
                 })
         }

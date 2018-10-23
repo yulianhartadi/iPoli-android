@@ -10,8 +10,6 @@ import android.support.annotation.DrawableRes
 import android.support.constraint.ConstraintSet
 import android.support.design.widget.TabLayout
 import android.support.v4.graphics.drawable.DrawableCompat
-import android.support.v4.view.PagerAdapter
-import android.support.v4.view.ViewPager
 import android.support.v7.widget.GridLayoutManager
 import android.view.LayoutInflater
 import android.view.MenuItem
@@ -19,9 +17,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import com.bluelinelabs.conductor.Controller
-import com.bluelinelabs.conductor.Router
 import com.bluelinelabs.conductor.RouterTransaction
-import com.bluelinelabs.conductor.support.RouterPagerAdapter
 import com.bumptech.glide.Glide
 import com.bumptech.glide.request.RequestOptions
 import io.ipoli.android.R
@@ -37,38 +33,21 @@ import io.ipoli.android.pet.PetItem
 import io.ipoli.android.player.data.AndroidAttribute
 import io.ipoli.android.player.data.AndroidAvatar
 import io.ipoli.android.player.data.AndroidRank
-import io.ipoli.android.player.profile.ProfileViewState.StateType.LOADING
+import io.ipoli.android.player.profile.ProfileViewState.StateType.*
 import kotlinx.android.synthetic.main.controller_profile_friend.view.*
 import kotlinx.android.synthetic.main.item_friend_profile_attribute.view.*
 import kotlinx.android.synthetic.main.view_loader.view.*
 import kotlinx.android.synthetic.main.view_profile_pet.view.*
 import org.threeten.bp.LocalDate
 import org.threeten.bp.Period
+import java.util.*
 
 class FriendProfileViewController(args: Bundle? = null) :
     ReduxViewController<ProfileAction, ProfileViewState, ProfileReducer>(args) {
 
-    override var reducer = ProfileReducer(ProfileReducer.PROFILE_KEY)
+    override val reducer = ProfileReducer(ProfileReducer.FRIEND_KEY + UUID.randomUUID().toString())
 
-    private var friendId: String? = null
-
-    private val pageChangeListener = object : ViewPager.OnPageChangeListener {
-        override fun onPageScrollStateChanged(state: Int) {
-
-        }
-
-        override fun onPageScrolled(
-            position: Int,
-            positionOffset: Float,
-            positionOffsetPixels: Int
-        ) {
-
-        }
-
-        override fun onPageSelected(position: Int) {
-            view?.tabLayout?.getTabAt(position)?.select()
-        }
-    }
+    private var friendId: String = ""
 
     private val tabListener = object : TabLayout.OnTabSelectedListener {
         override fun onTabReselected(tab: TabLayout.Tab?) {
@@ -77,14 +56,20 @@ class FriendProfileViewController(args: Bundle? = null) :
         override fun onTabUnselected(tab: TabLayout.Tab?) {
         }
 
-        override fun onTabSelected(tab: TabLayout.Tab?) {
-            view?.pager?.currentItem = tab?.position ?: 0
+        override fun onTabSelected(tab: TabLayout.Tab) {
+            showPageAtPosition(view, tab.position)
+        }
+    }
+
+    private fun showPageAtPosition(view: View?, position: Int) {
+        view?.let {
+            val childRouter = getChildRouter(it.profileTabContainer)
+            childRouter.setRoot(RouterTransaction.with(getViewControllerForPage(position)))
         }
     }
 
     constructor(friendId: String) : this() {
         this.friendId = friendId
-        reducer = ProfileReducer(ProfileReducer.FRIEND_KEY)
     }
 
     override fun onCreateView(
@@ -117,25 +102,27 @@ class FriendProfileViewController(args: Bundle? = null) :
             view.requestFocus()
         }
 
+        view.follow.dispatchOnClick {
+            ProfileAction.Follow(friendId)
+        }
+
+        view.unfollow.dispatchOnClick {
+            ProfileAction.Unfollow(friendId)
+        }
+
         return view
     }
 
     override fun onAttach(view: View) {
         super.onAttach(view)
         showBackButton()
-        view.pager.adapter = ProfileFriendPagerAdapter(this)
         view.tabLayout.getTabAt(0)!!.select()
         view.tabLayout.addOnTabSelectedListener(tabListener)
-        view.pager.addOnPageChangeListener(pageChangeListener)
+        showPageAtPosition(view, 0)
     }
 
     override fun onDetach(view: View) {
         view.tabLayout.removeOnTabSelectedListener(tabListener)
-        view.pager.removeOnPageChangeListener(pageChangeListener)
-        view.pager.adapter = object : PagerAdapter() {
-            override fun isViewFromObject(view: View, `object`: Any) = false
-            override fun getCount() = 0
-        }
         resetDecorView()
         super.onDetach(view)
     }
@@ -155,10 +142,6 @@ class FriendProfileViewController(args: Bundle? = null) :
         return super.onOptionsItemSelected(item)
     }
 
-    override fun handleBack(): Boolean {
-        return super.handleBack()
-    }
-
     override fun onCreateLoadAction() = ProfileAction.Load(friendId)
 
     override fun render(state: ProfileViewState, view: View) {
@@ -169,7 +152,7 @@ class FriendProfileViewController(args: Bundle? = null) :
                 view.loader.visible()
             }
 
-            ProfileViewState.StateType.PROFILE_DATA_LOADED -> {
+            PROFILE_DATA_LOADED -> {
                 activity!!.invalidateOptionsMenu()
                 view.loader.gone()
                 view.profileContainer.visible()
@@ -178,10 +161,44 @@ class FriendProfileViewController(args: Bundle? = null) :
                 renderAvatar(state, view)
                 renderInfo(state, view)
 
-
-
                 renderPet(state, view)
                 renderAttributes(state, view)
+
+                if (state.isCurrentPlayerGuest!!) {
+                    view.follow.visible()
+                    view.follow.setOnClickListener {
+                        showShortToast(R.string.error_need_registration)
+                    }
+                    view.unfollow.gone()
+                    view.isFollower.gone()
+                    return
+                }
+
+                if (state.isFollower!!) {
+                    view.isFollower.visible()
+                    view.isFollower.text =
+                        stringRes(R.string.player_is_follower, state.displayNameText!!)
+                } else {
+                    view.isFollower.gone()
+                }
+
+                if (state.isFollowing!!) {
+                    view.unfollow.visible()
+                    view.follow.gone()
+                } else {
+                    view.unfollow.gone()
+                    view.follow.visible()
+                }
+            }
+
+            FOLLOWING_STATUS_CHANGED -> {
+                if (state.isFollowing!!) {
+                    view.unfollow.visible()
+                    view.follow.gone()
+                } else {
+                    view.unfollow.gone()
+                    view.follow.visible()
+                }
             }
 
             else -> {
@@ -226,7 +243,7 @@ class FriendProfileViewController(args: Bundle? = null) :
     }
 
     private fun renderMembershipStatus(state: ProfileViewState, view: View) {
-        if(state.isMember!!) {
+        if (state.isMember!!) {
             view.friendMembershipStatus.visible()
             view.friendMembershipStatusIcon.visible()
             val background = view.friendMembershipStatus.background as GradientDrawable
@@ -294,30 +311,32 @@ class FriendProfileViewController(args: Bundle? = null) :
     private val ProfileViewState.rankText
         get() = stringRes(AndroidRank.valueOf(rank!!.name).title)
 
-    inner class ProfileFriendPagerAdapter(controller: Controller) :
-        RouterPagerAdapter(controller) {
-
-        override fun configureRouter(router: Router, position: Int) {
-            val page = when (position) {
-                0 -> ProfileInfoViewController(reducer.stateKey, friendId)
-                1 -> ProfilePostListViewController(reducer.stateKey, friendId)
-                2 -> ProfileChallengeListViewController(reducer.stateKey, friendId)
-                else -> throw IllegalArgumentException("Unknown controller position $position")
-            }
-            router.setRoot(RouterTransaction.with(page))
+    private fun getViewControllerForPage(position: Int): Controller {
+        return when (position) {
+            0 -> ProfileInfoViewController(reducer.stateKey, friendId)
+            1 -> ProfilePostListViewController(reducer.stateKey, friendId)
+            2 -> ProfilePlayerListViewController(
+                reducerKey = reducer.stateKey,
+                showFollowers = false,
+                playerId = friendId
+            )
+            3 -> ProfilePlayerListViewController(
+                reducerKey = reducer.stateKey,
+                showFollowers = true,
+                playerId = friendId
+            )
+            4 -> ProfileChallengeListViewController(reducer.stateKey, friendId)
+            else -> throw IllegalArgumentException("Unknown controller position $position")
         }
-
-        override fun getItemPosition(`object`: Any): Int = PagerAdapter.POSITION_NONE
-
-        override fun getCount() = 3
     }
+
 
     data class AttributeViewModel(
         override val id: String,
-        val level : String,
+        val level: String,
         @DrawableRes val background: Int,
-        @DrawableRes val icon : Int,
-        @ColorInt val levelColor : Int
+        @DrawableRes val icon: Int,
+        @ColorInt val levelColor: Int
 
     ) : RecyclerViewViewModel
 

@@ -9,10 +9,13 @@ import io.ipoli.android.common.datetime.days
 import io.ipoli.android.common.datetime.daysBetween
 import io.ipoli.android.common.datetime.minutes
 import io.ipoli.android.friends.feed.data.Post
+import io.ipoli.android.friends.feed.persistence.ImageRepository
 import io.ipoli.android.friends.feed.persistence.PostRepository
+import io.ipoli.android.habit.data.Habit
 import io.ipoli.android.player.data.Player
 import io.ipoli.android.player.persistence.PlayerRepository
 import io.ipoli.android.quest.Quest
+import org.threeten.bp.LocalDate
 
 /**
  * Created by Venelin Valkov <venelin@mypoli.fun>
@@ -21,7 +24,8 @@ import io.ipoli.android.quest.Quest
 open class SavePostsUseCase(
     private val postRepository: PostRepository,
     private val playerRepository: PlayerRepository,
-    private val challengeRepository: ChallengeRepository
+    private val challengeRepository: ChallengeRepository,
+    private val imageRepository: ImageRepository
 ) : UseCase<SavePostsUseCase.Params, Unit> {
 
     override fun execute(parameters: Params) {
@@ -31,9 +35,11 @@ open class SavePostsUseCase(
             return
         }
 
+        val isAutoPostingEnabled = player.preferences.isAutoPostingEnabled
+
         when (parameters) {
             is Params.LevelUp -> {
-                if (parameters.newLevel % 5 == 0) {
+                if (isAutoPostingEnabled && parameters.newLevel % 5 == 0) {
                     postRepository.save(
                         Post(
                             playerId = player.id,
@@ -43,7 +49,10 @@ open class SavePostsUseCase(
                             playerLevel = parameters.newLevel,
                             data = Post.Data.LevelUp(parameters.newLevel),
                             description = null,
-                            reactions = emptyList()
+                            reactions = emptyList(),
+                            comments = emptyList(),
+                            status = Post.Status.APPROVED,
+                            isFromCurrentPlayer = true
                         )
                     )
                 }
@@ -51,51 +60,54 @@ open class SavePostsUseCase(
 
             is Params.DailyChallengeComplete -> {
                 val stats = player.statistics
-                savePost(
-                    player = player,
-                    data = Post.Data.DailyChallengeCompleted(
-                        streak = stats.dailyChallengeCompleteStreak.count.toInt(),
-                        bestStreak = stats.dailyChallengeBestStreak.toInt()
+                if (isAutoPostingEnabled && stats.dailyChallengeCompleteStreak.count > 1 && stats.dailyChallengeCompleteStreak.count % 5 == 0L) {
+                    savePost(
+                        player = player,
+                        data = Post.Data.DailyChallengeCompleted(
+                            streak = stats.dailyChallengeCompleteStreak.count.toInt(),
+                            bestStreak = stats.dailyChallengeBestStreak.toInt()
+                        )
                     )
-                )
-            }
-
-            is Params.DailyChallengeFailed -> {
-                savePost(
-                    player = player,
-                    data = Post.Data.DailyChallengeFailed
-                )
+                }
             }
 
             is Params.AchievementUnlocked -> {
-                savePost(
-                    player = player,
-                    data = Post.Data.AchievementUnlocked(parameters.achievement)
-                )
-            }
-
-            is Params.QuestsComplete -> {
-                parameters.quests.forEach {
+                if (isAutoPostingEnabled && parameters.achievement.level > 1) {
                     savePost(
                         player = player,
-                        data = if (it.hasPomodoroTimer) {
-                            Post.Data.QuestWithPomodoroShared(it.id, it.name, it.totalPomodoros!!)
-                        } else {
-                            Post.Data.QuestShared(
-                                it.id,
-                                it.name,
-                                if (it.hasTimer) it.actualDuration.asMinutes else 0.minutes
-                            )
-                        }
+                        data = Post.Data.AchievementUnlocked(parameters.achievement)
                     )
                 }
+            }
+
+            is Params.QuestComplete -> {
+                val quest = parameters.quest
+                savePost(
+                    player = player,
+                    data = if (quest.hasPomodoroTimer) {
+                        Post.Data.QuestWithPomodoroShared(
+                            quest.id,
+                            quest.name,
+                            quest.totalPomodoros!!
+                        )
+                    } else {
+                        Post.Data.QuestShared(
+                            quest.id,
+                            quest.name,
+                            if (quest.hasTimer) quest.actualDuration.asMinutes else 0.minutes
+                        )
+                    },
+                    imageUrl = saveImageIfAdded(parameters.imageData),
+                    description = parameters.description
+                )
             }
 
             is Params.QuestFromChallengeComplete -> {
                 val q = parameters.quest
                 val challenge = parameters.challenge
                 savePost(
-                    player = player, data = if (q.hasPomodoroTimer) {
+                    player = player,
+                    data = if (q.hasPomodoroTimer) {
                         Post.Data.QuestWithPomodoroFromChallengeCompleted(
                             questId = q.id,
                             challengeId = challenge.id,
@@ -111,19 +123,21 @@ open class SavePostsUseCase(
                             challengeName = challenge.name,
                             durationTracked = if (q.hasTimer) q.actualDuration.asMinutes else 0.minutes
                         )
-                    }
+                    },
+                    imageUrl = saveImageIfAdded(parameters.imageData),
+                    description = parameters.description
                 )
             }
 
-            is Params.ChallengesShared -> {
-                challengeRepository.save(parameters.challenges.map { it.copy(sharingPreference = SharingPreference.FRIENDS) })
-                parameters.challenges.forEach {
-
-                    savePost(
-                        player = player,
-                        data = Post.Data.ChallengeShared(it.id, it.name)
-                    )
-                }
+            is Params.ChallengeShared -> {
+                val challenge = parameters.challenge
+                challengeRepository.save(challenge.copy(sharingPreference = SharingPreference.FRIENDS))
+                savePost(
+                    player = player,
+                    data = Post.Data.ChallengeShared(challenge.id, challenge.name),
+                    imageUrl = saveImageIfAdded(parameters.imageData),
+                    description = parameters.description
+                )
             }
 
             is Params.ChallengeComplete -> {
@@ -134,14 +148,46 @@ open class SavePostsUseCase(
                         c.id,
                         c.name,
                         c.startDate.daysBetween(c.completedAtDate!!).days
-                    )
+                    ),
+                    imageUrl = saveImageIfAdded(parameters.imageData),
+                    description = parameters.description
+                )
+            }
+
+            is Params.HabitCompleted -> {
+                val habit = parameters.habit
+                val challenge = parameters.challenge
+                savePost(
+                    player = player,
+                    data = Post.Data.HabitCompleted(
+                        habitId = habit.id,
+                        habitName = habit.name,
+                        habitDate = LocalDate.now(),
+                        challengeId = challenge?.id,
+                        challengeName = challenge?.name,
+                        isGood = habit.isGood,
+                        streak = habit.streak.current,
+                        bestStreak = habit.streak.best
+                    ),
+                    imageUrl = saveImageIfAdded(parameters.imageData),
+                    description = parameters.description
                 )
             }
 
         }
     }
 
-    private fun savePost(player: Player, data: Post.Data) {
+    private fun saveImageIfAdded(imageData: ByteArray?) =
+        imageData?.let {
+            imageRepository.savePostImage(it)
+        }
+
+    private fun savePost(
+        player: Player,
+        data: Post.Data,
+        imageUrl: String? = null,
+        description: String? = null
+    ) {
         postRepository.save(
             Post(
                 playerId = player.id,
@@ -150,8 +196,12 @@ open class SavePostsUseCase(
                 playerUsername = player.username!!,
                 playerLevel = player.level,
                 data = data,
-                description = null,
-                reactions = emptyList()
+                imageUrl = imageUrl,
+                description = description,
+                reactions = emptyList(),
+                comments = emptyList(),
+                status = imageUrl?.let { Post.Status.PENDING } ?: Post.Status.APPROVED,
+                isFromCurrentPlayer = true
             )
         )
     }
@@ -163,24 +213,43 @@ open class SavePostsUseCase(
 
         data class DailyChallengeComplete(override val player: Player? = null) : Params()
 
-        data class DailyChallengeFailed(override val player: Player? = null) : Params()
-
         data class AchievementUnlocked(val achievement: Achievement, override val player: Player?) :
             Params()
 
-        data class QuestsComplete(val quests: List<Quest>, override val player: Player?) : Params()
+        data class QuestComplete(
+            val quest: Quest,
+            val description: String?,
+            val imageData: ByteArray?,
+            override val player: Player?
+        ) : Params()
 
         data class QuestFromChallengeComplete(
             val quest: Quest,
             val challenge: Challenge,
+            val description: String?,
+            val imageData: ByteArray?,
             override val player: Player?
         ) : Params()
 
-        data class ChallengesShared(val challenges: List<Challenge>, override val player: Player?) :
-            Params()
+        data class ChallengeShared(
+            val challenge: Challenge,
+            val description: String?,
+            val imageData: ByteArray?,
+            override val player: Player?
+        ) : Params()
+
+        data class HabitCompleted(
+            val habit: Habit,
+            val challenge: Challenge?,
+            val description: String?,
+            val imageData: ByteArray?,
+            override val player: Player?
+        ) : Params()
 
         data class ChallengeComplete(
             val challenge: Challenge,
+            val description: String?,
+            val imageData: ByteArray?,
             override val player: Player? = null
         ) : Params()
     }

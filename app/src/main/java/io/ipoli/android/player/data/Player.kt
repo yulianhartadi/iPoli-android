@@ -103,7 +103,7 @@ data class Player(
     ),
     val preferences: Preferences = Preferences(),
     val achievements: List<UnlockedAchievement> = listOf(),
-    val statistics: Statistics = Statistics(),
+    val statistics: Statistics = Statistics(inviteForFriendCount = 3L),
     val rank: Rank,
     val nextRank: Rank?,
     override val updatedAt: Instant = Instant.now(),
@@ -180,7 +180,8 @@ data class Player(
         val resetDayTime: Time = Constants.RESET_DAY_TIME,
         val startView: StartView = Constants.DEFAULT_START_VIEW,
         val reminderNotificationStyle: NotificationStyle = Constants.DEFAULT_REMINDER_NOTIFICATION_STYLE,
-        val planDayNotificationStyle: NotificationStyle = Constants.DEFAULT_PLAN_DAY_NOTIFICATION_STYLE
+        val planDayNotificationStyle: NotificationStyle = Constants.DEFAULT_PLAN_DAY_NOTIFICATION_STYLE,
+        val isAutoPostingEnabled: Boolean = Constants.DEFAULT_AUTO_POSTING_ENABLED
     ) {
         val nonWorkDays: Set<DayOfWeek>
             get() = DayOfWeek.values().toSet() - workDays

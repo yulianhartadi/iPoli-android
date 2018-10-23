@@ -49,7 +49,7 @@ interface Constants {
 
         val QUEST_ID_EXTRA_KEY = "quest_id"
 
-        val HABIT_ID_EXTRA_KEY = "quest_id"
+        val HABIT_ID_EXTRA_KEY = "habit_id"
 
         val REPEATING_QUEST_ID_EXTRA_KEY = "repeating_quest_id"
 
@@ -319,5 +319,6 @@ interface Constants {
         val DEFAULT_REMINDER_NOTIFICATION_STYLE = NotificationStyle.ALL
         val DEFAULT_PLAN_DAY_NOTIFICATION_STYLE = NotificationStyle.ALL
         val DEFAULT_START_VIEW = StartView.CALENDAR
+        const val DEFAULT_AUTO_POSTING_ENABLED = true
     }
 }

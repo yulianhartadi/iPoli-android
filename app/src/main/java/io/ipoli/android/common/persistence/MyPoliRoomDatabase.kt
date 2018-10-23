@@ -11,8 +11,6 @@ import io.ipoli.android.challenge.persistence.DbTrackedValue
 import io.ipoli.android.challenge.persistence.RoomChallenge
 import io.ipoli.android.dailychallenge.data.persistence.DailyChallengeDao
 import io.ipoli.android.dailychallenge.data.persistence.RoomDailyChallenge
-import io.ipoli.android.friends.feed.persistence.PostDao
-import io.ipoli.android.friends.feed.persistence.RoomPost
 import io.ipoli.android.habit.persistence.HabitDao
 import io.ipoli.android.habit.persistence.RoomHabit
 import io.ipoli.android.player.AttributePointsForLevelGenerator
@@ -485,6 +483,13 @@ object Migration6To7 : Migration(6, 7) {
     }
 }
 
+object Migration7To8 : Migration(7, 8) {
+
+    override fun migrate(database: SupportSQLiteDatabase) {
+        database.execSQL("DROP TABLE posts")
+    }
+}
+
 @Database(
     entities = [
         RoomPlayer::class,
@@ -498,10 +503,9 @@ object Migration6To7 : Migration(6, 7) {
         RoomHabit::class,
         RoomDailyChallenge::class,
         RoomHabit.Companion.RoomTagJoin::class,
-        RoomEntityReminder::class,
-        RoomPost::class
+        RoomEntityReminder::class
     ],
-    version = 7,
+    version = 8,
     exportSchema = false
 )
 @TypeConverters(Converters::class)
@@ -522,8 +526,6 @@ abstract class MyPoliRoomDatabase : RoomDatabase() {
     abstract fun dailyChallengeDao(): DailyChallengeDao
 
     abstract fun entityReminderDao(): EntityReminderDao
-
-    abstract fun postDao(): PostDao
 
     companion object {
 
@@ -547,7 +549,8 @@ abstract class MyPoliRoomDatabase : RoomDatabase() {
                     Migration3To4,
                     Migration4To5,
                     Migration5To6,
-                    Migration6To7
+                    Migration6To7,
+                    Migration7To8
                 )
                 .addCallback(CALLBACK)
                 .build()

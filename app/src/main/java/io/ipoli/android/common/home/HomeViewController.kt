@@ -198,7 +198,10 @@ class HomeViewController(args: Bundle? = null) :
     }
 
     private fun showShareApp() {
-        navigate().toShareApp()
+        navigate().toShareApp(
+            dialogTitle = stringRes(R.string.share_app),
+            message = stringRes(R.string.invite_message) + " " + Constants.SHARE_URL
+        )
     }
 
     override fun onNavigationItemSelected(item: MenuItem): Boolean {

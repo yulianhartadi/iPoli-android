@@ -1,0 +1,168 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="?android:colorBackground">
+
+    <include
+        android:id="@+id/postToolbar"
+        layout="@layout/view_default_toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <include layout="@layout/view_loader"
+        android:layout_height="wrap_content"
+        android:layout_width="wrap_content"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/postToolbar"
+        app:layout_constraintBottom_toBottomOf="parent"/>
+
+
+    <android.support.v4.widget.NestedScrollView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:visibility="gone"
+        android:id="@+id/postContainerScroll"
+        app:layout_constraintBottom_toTopOf="@+id/postCommentTextLayout"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/postToolbar">
+
+        <android.support.constraint.ConstraintLayout
+            android:layout_width="match_parent"
+            android:id="@+id/postContainer"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:orientation="vertical"
+            android:paddingBottom="16dp">
+
+            <android.support.v7.widget.RecyclerView
+                android:id="@+id/post"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <android.support.v7.widget.RecyclerView
+                android:id="@+id/reactionPopup"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:alpha="0"
+                android:background="@drawable/rounded_rectangle_surface_background"
+                android:elevation="6dp"
+                android:visibility="gone" />
+
+            <View
+                android:id="@+id/commentsBackground"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_marginStart="8dp"
+                android:layout_marginTop="8dp"
+                android:layout_marginEnd="8dp"
+                android:layout_marginBottom="8dp"
+                android:background="@drawable/rounded_rectangle_surface_background"
+                android:elevation="2dp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/post" />
+
+            <TextView
+                android:id="@+id/commentTitle"
+                style="@style/SectionTitle"
+                android:layout_width="0dp"
+                android:layout_height="48dp"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="8dp"
+                android:elevation="2dp"
+                android:text="@string/comments"
+                app:layout_constraintEnd_toEndOf="@id/commentsBackground"
+                app:layout_constraintStart_toStartOf="@id/commentsBackground"
+                app:layout_constraintTop_toTopOf="@id/commentsBackground" />
+
+            <TextView xmlns:android="http://schemas.android.com/apk/res/android"
+                android:id="@+id/emptyComments"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:layout_marginEnd="16dp"
+                android:elevation="2dp"
+                android:paddingTop="16dp"
+                android:paddingBottom="16dp"
+                android:text="@string/empty_post_comments_message"
+                android:textAlignment="center"
+                android:textAppearance="@style/TextAppearance.AppCompat.Body1"
+                app:layout_constraintBottom_toBottomOf="@id/commentsBackground"
+                app:layout_constraintEnd_toEndOf="@id/commentsBackground"
+                app:layout_constraintStart_toStartOf="@id/commentsBackground"
+                app:layout_constraintTop_toBottomOf="@+id/commentTitle" />
+
+            <android.support.v7.widget.RecyclerView
+                android:id="@+id/postCommentList"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:elevation="2dp"
+                android:paddingStart="16dp"
+                android:paddingEnd="16dp"
+                app:layout_constraintBottom_toBottomOf="@id/commentsBackground"
+                app:layout_constraintEnd_toEndOf="@id/commentsBackground"
+                app:layout_constraintStart_toStartOf="@id/commentsBackground"
+                app:layout_constraintTop_toBottomOf="@+id/commentTitle" />
+
+        </android.support.constraint.ConstraintLayout>
+    </android.support.v4.widget.NestedScrollView>
+
+    <View
+        android:id="@+id/postCommentBackground"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:background="?colorSurface"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/postCommentTextLayout" />
+
+    <android.support.design.widget.TextInputLayout
+        android:id="@+id/postCommentTextLayout"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:paddingStart="8dp"
+        android:paddingTop="8dp"
+        android:paddingEnd="8dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/postCommentAdd"
+        app:layout_constraintStart_toStartOf="parent">
+
+        <android.support.design.widget.TextInputEditText
+            android:id="@+id/postCommentText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="@string/comment_hint"
+            android:inputType="textMultiLine" />
+    </android.support.design.widget.TextInputLayout>
+
+    <Button
+        android:id="@+id/postCommentAdd"
+        style="@style/Widget.AppCompat.Button.Colored"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="8dp"
+        android:text="@string/send"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/postCommentTextLayout" />
+
+    <android.support.constraint.Group
+        android:id="@+id/addCommentGroup"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:visibility="gone"
+        app:constraint_referenced_ids="postCommentTextLayout,postCommentAdd,postCommentBackground" />
+
+</android.support.constraint.ConstraintLayout>

@@ -27,6 +27,7 @@
         android:layout_marginEnd="8dp"
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
+        android:textColor="@color/md_dark_text_87"
         android:textAppearance="@style/TextAppearance.AppCompat.Title"
         app:layout_constraintEnd_toEndOf="@+id/monthImage"
         app:layout_constraintStart_toStartOf="@+id/monthImage"

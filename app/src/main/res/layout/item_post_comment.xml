@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <ImageView
+        android:id="@+id/commentPlayerAvatar"
+        android:layout_width="42dp"
+        android:layout_height="42dp"
+        android:layout_marginTop="16dp"
+        android:background="@drawable/white_circular_background"
+        android:scaleType="fitCenter"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toTopOf="@+id/commentText"
+        tools:src="@drawable/avatar_07" />
+
+    <TextView
+        android:id="@+id/commentPlayerName"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="16dp"
+        android:layout_marginEnd="8dp"
+        android:ellipsize="end"
+        android:fontFamily="sans-serif-medium"
+        android:maxLines="1"
+        android:textAppearance="@style/TextAppearance.AppCompat.Subhead"
+        android:textColor="?attr/colorPrimary"
+        app:layout_constraintEnd_toStartOf="@+id/commentPostedTime"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toEndOf="@+id/commentPlayerAvatar"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:text="Gorgonzola Marinatovaaaaa" />
+
+    <TextView
+        android:id="@+id/commentPlayerLevel"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="8dp"
+        android:gravity="end"
+        android:textAppearance="@style/TextAppearance.AppCompat.Body1"
+        android:textColor="?android:textColorSecondary"
+        app:layout_constraintBottom_toBottomOf="@+id/commentPlayerUsername"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/commentPlayerUsername"
+        tools:text="Newbie | Lvl 3" />
+
+    <TextView
+        android:id="@+id/commentPlayerUsername"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="4dp"
+        android:layout_marginEnd="8dp"
+        android:textAppearance="@style/TextAppearance.AppCompat.Caption"
+        android:textColor="?android:textColorSecondary"
+        app:layout_constraintEnd_toStartOf="@+id/commentPlayerLevel"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="@+id/commentPlayerName"
+        app:layout_constraintTop_toBottomOf="@+id/commentPlayerName"
+        tools:text="\@gorgonzolata" />
+
+    <TextView
+        android:id="@+id/commentPostedTime"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="8dp"
+        android:gravity="end"
+        android:textAppearance="@style/TextAppearance.AppCompat.Caption"
+        android:textColor="?android:textColorSecondary"
+        app:layout_constraintBottom_toBottomOf="@+id/commentPlayerName"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/commentPlayerName"
+        tools:text="3 hours ago" />
+
+    <TextView
+        android:id="@+id/commentText"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:layout_marginBottom="8dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/commentPlayerAvatar"
+        tools:text="This is my comment!" />
+
+</android.support.constraint.ConstraintLayout>

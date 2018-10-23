@@ -1,9 +1,11 @@
 package io.ipoli.android.friends.feed
 
 import android.annotation.SuppressLint
+import android.app.Activity
 import android.content.Context
 import android.content.res.ColorStateList
 import android.graphics.drawable.GradientDrawable
+import android.net.Uri
 import android.support.annotation.AttrRes
 import android.support.annotation.DrawableRes
 import android.support.v7.widget.LinearLayoutManager
@@ -16,7 +18,9 @@ import android.util.TypedValue
 import android.view.MotionEvent
 import android.view.View
 import com.bumptech.glide.Glide
+import com.bumptech.glide.ListPreloader
 import com.bumptech.glide.request.RequestOptions
+import io.ipoli.android.GlideApp
 import io.ipoli.android.R
 import io.ipoli.android.achievement.Achievement
 import io.ipoli.android.achievement.androidAchievement
@@ -24,7 +28,7 @@ import io.ipoli.android.common.ViewUtils
 import io.ipoli.android.common.text.DurationFormatter
 import io.ipoli.android.common.view.*
 import io.ipoli.android.common.view.recyclerview.BaseRecyclerViewAdapter
-import io.ipoli.android.common.view.recyclerview.MultiViewPagedRecyclerViewAdapter
+import io.ipoli.android.common.view.recyclerview.MultiViewRecyclerViewAdapter
 import io.ipoli.android.common.view.recyclerview.RecyclerViewViewModel
 import io.ipoli.android.common.view.recyclerview.SimpleViewHolder
 import io.ipoli.android.friends.feed.data.AndroidReactionType
@@ -53,10 +57,14 @@ sealed class PostViewModel(
     abstract val reactions: List<ReactionViewModel>
     abstract val createdAt: Long
     abstract val post: Post
+    abstract val shareMessage: String
     abstract val reactListener: (postId: String, playerId: String) -> Unit
     abstract val reactListListener: (reactions: List<Post.Reaction>) -> Unit
     abstract val saveListener: ((postId: String, playerMessage: String?) -> Unit)?
-    abstract val postClickListener: ((postPlayerId: String) -> Unit)?
+    abstract val commentsListener: ((postId: String) -> Unit)?
+    abstract val shareListener: ((message: String) -> Unit)?
+    abstract val postClickListener: ((postId: String) -> Unit)?
+    abstract val avatarClickListener: ((postPlayerId: String) -> Unit)?
 
     data class SimpleViewModel(
         override val id: String,
@@ -72,11 +80,17 @@ sealed class PostViewModel(
         override val playerMessage: String,
         override val reactions: List<ReactionViewModel>,
         override val createdAt: Long,
+        override val shareMessage: String,
+        val imageUrl: String?,
+        val showImage: Boolean,
         override val post: Post,
         override val reactListener: (postId: String, playerId: String) -> Unit,
         override val reactListListener: (reactions: List<Post.Reaction>) -> Unit,
+        override val commentsListener: ((postId: String) -> Unit)?,
+        override val shareListener: ((message: String) -> Unit)?,
         override val saveListener: ((postId: String, playerMessage: String?) -> Unit)?,
-        override val postClickListener: ((postPlayerId: String) -> Unit)?
+        override val postClickListener: ((postPlayerId: String) -> Unit)?,
+        override val avatarClickListener: ((postPlayerId: String) -> Unit)?
     ) : PostViewModel(id)
 
     data class ComplexViewModel(
@@ -87,6 +101,7 @@ sealed class PostViewModel(
         override val playerUsername: String,
         override val playerLevel: String,
         override val postedTime: String,
+        override val shareMessage: String,
         @DrawableRes val image: Int,
         val title: String,
         val message: SpannableString,
@@ -98,7 +113,10 @@ sealed class PostViewModel(
         override val reactListener: (postId: String, playerId: String) -> Unit,
         override val reactListListener: (reactions: List<Post.Reaction>) -> Unit,
         override val saveListener: ((postId: String, playerMessage: String?) -> Unit)?,
-        override val postClickListener: ((postPlayerId: String) -> Unit)?
+        override val commentsListener: ((postId: String) -> Unit)?,
+        override val shareListener: ((message: String) -> Unit)?,
+        override val postClickListener: ((postPlayerId: String) -> Unit)?,
+        override val avatarClickListener: ((postPlayerId: String) -> Unit)?
     ) : PostViewModel(id)
 
     data class AchievementViewModel(
@@ -117,6 +135,7 @@ sealed class PostViewModel(
         val title: String,
         val message: SpannableString,
         val color: Int,
+        override val shareMessage: String,
         override val canEdit: Boolean = false,
         override val playerMessage: String,
         override val reactions: List<ReactionViewModel>,
@@ -125,7 +144,10 @@ sealed class PostViewModel(
         override val reactListener: (postId: String, playerId: String) -> Unit,
         override val reactListListener: (reactions: List<Post.Reaction>) -> Unit,
         override val saveListener: ((postId: String, playerMessage: String?) -> Unit)?,
-        override val postClickListener: ((postPlayerId: String) -> Unit)?
+        override val commentsListener: ((postId: String) -> Unit)?,
+        override val shareListener: ((message: String) -> Unit)?,
+        override val postClickListener: ((postPlayerId: String) -> Unit)?,
+        override val avatarClickListener: ((postPlayerId: String) -> Unit)?
     ) : PostViewModel(id)
 
     data class ForChallengeViewModel(
@@ -143,11 +165,16 @@ sealed class PostViewModel(
         val messageIcon: Int,
         override val reactions: List<ReactionViewModel>,
         override val createdAt: Long,
+        override val shareMessage: String,
+        val imageUrl: String?,
         override val post: Post,
         override val reactListener: (postId: String, playerId: String) -> Unit,
         override val reactListListener: (reactions: List<Post.Reaction>) -> Unit,
         override val saveListener: ((postId: String, playerMessage: String?) -> Unit)?,
-        override val postClickListener: ((postPlayerId: String) -> Unit)?
+        override val commentsListener: ((postId: String) -> Unit)?,
+        override val shareListener: ((message: String) -> Unit)?,
+        override val postClickListener: ((postPlayerId: String) -> Unit)?,
+        override val avatarClickListener: ((postPlayerId: String) -> Unit)?
     ) : PostViewModel(id)
 }
 
@@ -155,8 +182,31 @@ enum class PostType {
     SIMPLE, COMPLEX, FOR_CHALLENGE, ACHIEVEMENT
 }
 
-class PostAdapter(private val reactionPopupHandler: ReactionPopupHandler) :
-    MultiViewPagedRecyclerViewAdapter<PostViewModel>() {
+class PostAdapter(
+    private val reactionPopupHandler: ReactionPopupHandler,
+    private val activity: Activity
+) :
+    MultiViewRecyclerViewAdapter<PostViewModel>(),
+    ListPreloader.PreloadModelProvider<PostViewModel.SimpleViewModel> {
+
+    override fun getPreloadItems(position: Int): MutableList<PostViewModel.SimpleViewModel> {
+        if (getItemViewType(position) != PostType.SIMPLE.ordinal) {
+            return mutableListOf()
+        }
+        val vm = getItemAt<PostViewModel.SimpleViewModel>(position)
+        if (!vm.showImage) {
+            return mutableListOf()
+        }
+        return mutableListOf(vm)
+    }
+
+    override fun getPreloadRequestBuilder(item: PostViewModel.SimpleViewModel) = glideRequest(item)
+
+    private fun glideRequest(item: PostViewModel.SimpleViewModel) =
+        GlideApp.with(activity)
+            .load(item.imageUrl)
+            .apply(RequestOptions.centerCropTransform())
+
     override fun onRegisterItemBinders() {
 
         registerBinder<PostViewModel.SimpleViewModel>(
@@ -173,6 +223,17 @@ class PostAdapter(private val reactionPopupHandler: ReactionPopupHandler) :
 
             view.feedMessage.text = vm.message
             view.feedMessageIcon.setImageResource(vm.messageIcon)
+
+            view.share.setOnClickListener(Debounce.clickListener {
+                vm.shareListener?.invoke(vm.shareMessage)
+            })
+
+            if (vm.showImage) {
+                glideRequest(vm).into(view.postImage)
+                view.postImage.visible()
+            } else {
+                view.postImage.gone()
+            }
         }
 
         registerBinder<PostViewModel.ComplexViewModel>(
@@ -192,6 +253,10 @@ class PostAdapter(private val reactionPopupHandler: ReactionPopupHandler) :
             view.feedBigPicture.setImageResource(vm.image)
             view.feedComplexTitle.text = vm.title
             view.feedComplexMessage.text = vm.message
+
+            view.share.setOnClickListener(Debounce.clickListener {
+                vm.shareListener?.invoke(vm.message.toString())
+            })
         }
 
         registerBinder<PostViewModel.AchievementViewModel>(
@@ -222,6 +287,10 @@ class PostAdapter(private val reactionPopupHandler: ReactionPopupHandler) :
             }
             view.feedComplexTitle.text = vm.title
             view.feedComplexMessage.text = vm.message
+
+            view.share.setOnClickListener(Debounce.clickListener {
+                vm.shareListener?.invoke(vm.message.toString())
+            })
         }
 
         registerBinder<PostViewModel.ForChallengeViewModel>(
@@ -245,13 +314,27 @@ class PostAdapter(private val reactionPopupHandler: ReactionPopupHandler) :
             view.feedMessage.text = vm.message
             view.feedMessageIcon.setImageResource(vm.messageIcon)
 
+            view.share.setOnClickListener(Debounce.clickListener {
+                vm.shareListener?.invoke(vm.message.toString())
+            })
+
+            if (vm.imageUrl.isNullOrBlank()) {
+                view.postImage.gone()
+            } else {
+                view.postImage.loadFromFile(Uri.parse(vm.imageUrl!!))
+                view.postImage.visible()
+            }
         }
     }
 
     private fun bindHeader(vm: PostViewModel, view: View) {
-        view.openProfile.setOnClickListener(Debounce.clickListener {
+        view.playerAvatar.setOnClickListener(Debounce.clickListener {
+            vm.avatarClickListener?.invoke(vm.playerId)
+        })
+
+        view.openPost.setOnClickListener(Debounce.clickListener {
             if (reactionPopupHandler.isPopupShown()) reactionPopupHandler.hideReactionPopup()
-            else vm.postClickListener?.invoke(vm.playerId)
+            else vm.postClickListener?.invoke(vm.post.id)
         })
 
         Glide.with(view.context).load(vm.playerAvatar.image)
@@ -271,6 +354,22 @@ class PostAdapter(private val reactionPopupHandler: ReactionPopupHandler) :
     }
 
     private fun bindFooter(vm: PostViewModel, view: View) {
+        val commentCount = vm.post.commentCount
+        view.comment.text = when (commentCount) {
+            0 -> view.context.stringRes(R.string.comment)
+            1 -> "$commentCount ${view.context.stringRes(R.string.comment)}"
+            else -> "$commentCount ${view.context.stringRes(R.string.comments)}"
+        }
+
+        if(vm.commentsListener == null) {
+            view.comment.isEnabled = false
+        } else {
+            view.comment.isEnabled = true
+            view.comment.setOnClickListener(Debounce.clickListener {
+                vm.commentsListener?.invoke(vm.post.id)
+            })
+        }
+
         view.reactionList.layoutManager =
             LinearLayoutManager(view.context, RecyclerView.HORIZONTAL, false)
         view.reactionList.adapter = ReactionAdapter()
@@ -289,8 +388,6 @@ class PostAdapter(private val reactionPopupHandler: ReactionPopupHandler) :
         }
 
         val popupHeight = ViewUtils.dpToPx(128f, view.context)
-
-
 
         view.react.setOnClickListener(
             Debounce.clickListener {
@@ -412,7 +509,10 @@ fun toPostViewModel(
     reactListener: (postId: String, playerId: String) -> Unit,
     reactListListener: (reactions: List<Post.Reaction>) -> Unit,
     saveListener: ((postId: String, playerMessage: String?) -> Unit)? = null,
-    postClickListener: ((postPlayerId: String) -> Unit)? = null,
+    commentsListener: ((postId: String) -> Unit)? = null,
+    shareListener: ((postId: String) -> Unit)? = null,
+    postClickListener: ((postId: String) -> Unit)? = null,
+    avatarClickListener: ((postPlayerId: String) -> Unit)? = null,
     canEdit: Boolean = false
 ): PostViewModel {
     val reactions = post.reactions.groupBy { it.reactionType }.map {
@@ -433,27 +533,18 @@ fun toPostViewModel(
                 post,
                 SpannableString.valueOf(message),
                 R.drawable.ic_post_dailychallenge,
+                shareMessageStartFor(post) + message,
                 reactions,
                 reactListener,
                 reactListListener,
                 saveListener,
+                commentsListener,
+                shareListener,
                 postClickListener,
+                avatarClickListener,
                 canEdit
             )
         }
-
-        is Post.Data.DailyChallengeFailed ->
-            createSimpleViewModel(
-                post,
-                SpannableString.valueOf("Failed to complete the Daily Challenge"),
-                R.drawable.ic_post_failed,
-                reactions,
-                reactListener,
-                reactListListener,
-                saveListener,
-                postClickListener,
-                canEdit
-            )
 
         is Post.Data.QuestShared -> {
             val completedQuest = context.stringRes(R.string.feed_completed_quest)
@@ -469,14 +560,26 @@ fun toPostViewModel(
                 context.lightenText(message + duration, completedQuest, duration)
             } else
                 context.lightenText(message, completedQuest)
+
+            val shareMessage = if (post.isFromCurrentPlayer) {
+                "I completed my Quest - ${post.data.questName}"
+            } else {
+                "${post.playerDisplayName} completed a Quest - ${post.data.questName}"
+            }
+
             createSimpleViewModel(
                 post,
                 finalMessage,
-                R.drawable.ic_post_done, reactions,
+                R.drawable.ic_post_done,
+                shareMessage,
+                reactions,
                 reactListener,
                 reactListListener,
                 saveListener,
+                commentsListener,
+                shareListener,
                 postClickListener,
+                avatarClickListener,
                 canEdit
             )
         }
@@ -485,31 +588,52 @@ fun toPostViewModel(
             val completedQuest = context.stringRes(R.string.feed_completed_quest)
             val pomodoros = context.stringRes(R.string.feed_pomodoro_count, post.data.pomodoroCount)
             val m = "$completedQuest ${post.data.questName} $pomodoros"
+
+            val shareMessage = if (post.isFromCurrentPlayer) {
+                "I completed my Quest - ${post.data.questName} $pomodoros"
+            } else {
+                "${post.playerDisplayName} completed a Quest - ${post.data.questName} $pomodoros"
+            }
+
             createSimpleViewModel(
                 post,
                 context.lightenText(m, completedQuest, pomodoros),
                 R.drawable.ic_post_done,
+                shareMessage,
                 reactions,
                 reactListener,
                 reactListListener,
                 saveListener,
+                commentsListener,
+                shareListener,
                 postClickListener,
+                avatarClickListener,
                 canEdit
             )
         }
 
-        is Post.Data.LevelUp ->
+        is Post.Data.LevelUp -> {
+            val shareMessage = if (post.isFromCurrentPlayer) {
+                "I gained new level - Level ${post.data.level}"
+            } else {
+                "${post.playerDisplayName} gained new level - Level ${post.data.level}"
+            }
             createSimpleViewModel(
                 post,
                 SpannableString.valueOf("Raised to Level ${post.data.level}"),
                 R.drawable.ic_post_level,
+                shareMessage,
                 reactions,
                 reactListener,
                 reactListListener,
                 saveListener,
+                commentsListener,
+                shareListener,
                 postClickListener,
+                avatarClickListener,
                 canEdit
             )
+        }
 
         is Post.Data.AchievementUnlocked -> {
             val achievement = Achievement.valueOf(post.data.achievement.name)
@@ -527,6 +651,12 @@ fun toPostViewModel(
             val name = context.stringRes(aa.title)
             val message = if (starsToShow > 0) "$name (Level $starsToShow)" else name
 
+            val shareMessage = if (post.isFromCurrentPlayer) {
+                "I unlocked an Achievement - $message"
+            } else {
+                "${post.playerDisplayName} unlocked an Achievement - $message"
+            }
+
             return PostViewModel.AchievementViewModel(
                 id = post.id,
                 playerId = post.playerId,
@@ -541,6 +671,7 @@ fun toPostViewModel(
                     DateUtils.FORMAT_ABBREV_ALL
                 ).toString(),
                 playerMessage = post.description ?: "",
+                shareMessage = shareMessage,
                 reactions = reactions,
                 title = "Unlocked achievement",
                 message = SpannableString.valueOf(message),
@@ -555,7 +686,10 @@ fun toPostViewModel(
                 reactListener = reactListener,
                 reactListListener = reactListListener,
                 saveListener = saveListener,
+                commentsListener = commentsListener,
+                shareListener = shareListener,
                 postClickListener = postClickListener,
+                avatarClickListener = avatarClickListener,
                 canEdit = canEdit
             )
         }
@@ -563,32 +697,53 @@ fun toPostViewModel(
         is Post.Data.ChallengeShared -> {
             val accepted = context.stringRes(R.string.feed_accepted_challenge)
             val m = "$accepted ${post.data.name}"
+
+            val shareMessage = if (post.isFromCurrentPlayer) {
+                "I accepted new Challenge - ${post.data.name}"
+            } else {
+                "${post.playerDisplayName} accepted new Challenge - ${post.data.name}"
+            }
+
             createSimpleViewModel(
                 post,
                 context.lightenText(m, accepted),
                 R.drawable.ic_post_challenge,
+                shareMessage,
                 reactions,
                 reactListener,
                 reactListListener,
                 saveListener,
+                commentsListener,
+                shareListener,
                 postClickListener,
+                avatarClickListener,
                 canEdit
             )
         }
 
-        is Post.Data.ChallengeCompleted ->
+        is Post.Data.ChallengeCompleted -> {
+            val shareMessage = if (post.isFromCurrentPlayer) {
+                "I completed my Challenge - ${post.data.name} in ${post.data.duration.intValue} days"
+            } else {
+                "${post.playerDisplayName} completed Challenge - ${post.data.name} in ${post.data.duration.intValue} days"
+            }
             createComplexViewModel(
                 post,
                 "Completed Challenge",
                 SpannableString.valueOf("${post.data.name} achieved in ${post.data.duration.intValue} days"),
+                shareMessage,
                 R.drawable.drawer_achievement_trophy,
                 reactions,
                 reactListener,
                 reactListListener,
                 saveListener,
+                commentsListener,
+                shareListener,
                 postClickListener,
+                avatarClickListener,
                 canEdit
             )
+        }
 
         is Post.Data.QuestFromChallengeCompleted -> {
             val completedQuest = context.stringRes(R.string.feed_completed_quest)
@@ -604,16 +759,27 @@ fun toPostViewModel(
                 context.lightenText(message + duration, completedQuest, duration)
             } else
                 context.lightenText(message, completedQuest)
+
+            val shareMessage = if (post.isFromCurrentPlayer) {
+                "I completed my Quest - ${post.data.questName}"
+            } else {
+                "${post.playerDisplayName} completed a Quest - ${post.data.questName}"
+            }
+
             createPostForChallengeViewModel(
                 post,
                 post.data.challengeName,
                 finalMessage,
                 R.drawable.ic_post_done,
+                shareMessage,
                 reactions,
                 reactListener,
                 reactListListener,
                 saveListener,
+                commentsListener,
+                shareListener,
                 postClickListener,
+                avatarClickListener,
                 canEdit
             )
         }
@@ -622,38 +788,32 @@ fun toPostViewModel(
             val completedQuest = context.stringRes(R.string.feed_completed_quest)
             val pomodoros = context.stringRes(R.string.feed_pomodoro_count, post.data.pomodoroCount)
             val m = "$completedQuest ${post.data.questName} $pomodoros"
+
+            val shareMessage = if (post.isFromCurrentPlayer) {
+                "I completed my Quest - ${post.data.questName} $pomodoros"
+            } else {
+                "${post.playerDisplayName} completed a Quest - ${post.data.questName} $pomodoros"
+            }
+
             createPostForChallengeViewModel(
                 post,
                 post.data.challengeName,
                 context.lightenText(m, completedQuest, pomodoros),
                 R.drawable.ic_post_done,
+                shareMessage,
                 reactions,
                 reactListener,
                 reactListListener,
                 saveListener,
+                commentsListener,
+                shareListener,
                 postClickListener,
+                avatarClickListener,
                 canEdit
             )
         }
 
-        is Post.Data.QuestFromChallengeFailed -> {
-            val failed = context.stringRes(R.string.feed_failed_quest)
-            val m = "$failed ${post.data.questName}"
-            createPostForChallengeViewModel(
-                post,
-                post.data.challengeName,
-                context.lightenText(m, failed),
-                R.drawable.ic_post_failed,
-                reactions,
-                reactListener,
-                reactListListener,
-                saveListener,
-                postClickListener,
-                canEdit
-            )
-        }
-
-        is Post.Data.HabitFromChallengeCompleted -> {
+        is Post.Data.HabitCompleted -> {
             val message = when {
                 post.data.streak == 1 -> {
                     val completedHabit = context.stringRes(R.string.feed_completed_habit)
@@ -675,43 +835,73 @@ fun toPostViewModel(
                     context.lightenText(m, newBestStreak, timesInARow)
                 }
             }
-            createPostForChallengeViewModel(
-                post,
-                post.data.challengeName,
-                message,
-                R.drawable.ic_post_habit,
-                reactions,
-                reactListener,
-                reactListListener,
-                saveListener,
-                postClickListener,
-                canEdit
-            )
-        }
 
-        is Post.Data.HabitFromChallengeFailed -> {
-            val message = if (post.data.isGood) {
-                "Failed to complete Habit ${post.data.habitName}"
-            } else {
-                "Failed Habit ${post.data.habitName}"
+            val shareMessageStreak = when {
+                post.data.streak == 1 -> {
+                    post.data.habitName
+                }
+                post.data.streak < post.data.bestStreak -> {
+                    val timesInARow = context.stringRes(R.string.feed_times_in_a_row)
+                    "${post.data.habitName} ${post.data.streak} $timesInARow"
+                }
+                else -> {
+                    val newBestStreak = context.stringRes(R.string.feed_best_streak_habit)
+                    val timesInARow = context.stringRes(R.string.feed_times_in_a_row)
+                    "$newBestStreak ${post.data.habitName}: ${post.data.bestStreak} $timesInARow"
+                }
             }
-            createPostForChallengeViewModel(
-                post,
-                post.data.challengeName,
-                SpannableString.valueOf(message),
-                R.drawable.ic_post_failed,
-                reactions,
-                reactListener,
-                reactListListener,
-                saveListener,
-                postClickListener,
-                canEdit
-            )
+
+            val shareMessage = if (post.isFromCurrentPlayer) {
+                "I completed my Habit - $shareMessageStreak"
+            } else {
+                "${post.playerDisplayName} completed Habit - $shareMessageStreak"
+            }
+
+            if (post.data.challengeId != null) {
+                createPostForChallengeViewModel(
+                    post,
+                    post.data.challengeName!!,
+                    message,
+                    R.drawable.ic_post_habit,
+                    shareMessage,
+                    reactions,
+                    reactListener,
+                    reactListListener,
+                    saveListener,
+                    commentsListener,
+                    shareListener,
+                    postClickListener,
+                    avatarClickListener,
+                    canEdit
+                )
+            } else {
+                createSimpleViewModel(
+                    post,
+                    message,
+                    R.drawable.ic_post_habit,
+                    shareMessage,
+                    reactions,
+                    reactListener,
+                    reactListListener,
+                    saveListener,
+                    commentsListener,
+                    shareListener,
+                    postClickListener,
+                    avatarClickListener,
+                    canEdit
+                )
+            }
         }
     }
 }
 
-private fun Context.lightenText(
+private fun shareMessageStartFor(post: Post): String {
+    val shareMessageStart =
+        if (post.isFromCurrentPlayer) "I " else "${post.playerDisplayName} "
+    return shareMessageStart
+}
+
+fun Context.lightenText(
     text: String,
     firstPart: String,
     lastPart: String? = null
@@ -744,11 +934,15 @@ private fun createPostForChallengeViewModel(
     challengeName: String,
     message: SpannableString,
     messageIcon: Int,
+    shareMessage: String,
     reactions: List<ReactionViewModel>,
     reactListener: (postId: String, playerId: String) -> Unit,
     reactListListener: (reactions: List<Post.Reaction>) -> Unit,
     saveListener: ((postId: String, playerMessage: String?) -> Unit)?,
-    postClickListener: ((postPlayerId: String) -> Unit)? = null,
+    commentsListener: ((postId: String) -> Unit)? = null,
+    shareListener: ((postId: String) -> Unit)? = null,
+    postClickListener: ((postId: String) -> Unit)? = null,
+    avatarClickListener: ((postPlayerId: String) -> Unit)? = null,
     canEdit: Boolean = false
 ): PostViewModel.ForChallengeViewModel {
     return PostViewModel.ForChallengeViewModel(
@@ -765,6 +959,8 @@ private fun createPostForChallengeViewModel(
             DateUtils.FORMAT_ABBREV_ALL
         ).toString(),
         playerMessage = it.description ?: "",
+        shareMessage = shareMessage,
+        imageUrl = it.imageUrl,
         reactions = reactions,
         challengeName = challengeName,
         message = message,
@@ -774,7 +970,10 @@ private fun createPostForChallengeViewModel(
         reactListener = reactListener,
         reactListListener = reactListListener,
         saveListener = saveListener,
+        commentsListener = commentsListener,
+        shareListener = shareListener,
         postClickListener = postClickListener,
+        avatarClickListener = avatarClickListener,
         canEdit = canEdit
     )
 }
@@ -783,12 +982,16 @@ private fun createComplexViewModel(
     it: Post,
     title: String,
     message: SpannableString,
+    shareMessage: String,
     image: Int,
     reactions: List<ReactionViewModel>,
     reactListener: (postId: String, playerId: String) -> Unit,
     reactListListener: (reactions: List<Post.Reaction>) -> Unit,
     saveListener: ((postId: String, playerMessage: String?) -> Unit)?,
-    postClickListener: ((postPlayerId: String) -> Unit)? = null,
+    commentsListener: ((postId: String) -> Unit)? = null,
+    shareListener: ((postId: String) -> Unit)? = null,
+    postClickListener: ((postId: String) -> Unit)? = null,
+    avatarClickListener: ((postPlayerId: String) -> Unit)? = null,
     canEdit: Boolean = false
 ): PostViewModel.ComplexViewModel {
     return PostViewModel.ComplexViewModel(
@@ -805,6 +1008,7 @@ private fun createComplexViewModel(
             DateUtils.FORMAT_ABBREV_ALL
         ).toString(),
         playerMessage = it.description ?: "",
+        shareMessage = shareMessage,
         reactions = reactions,
         title = title,
         message = message,
@@ -814,7 +1018,10 @@ private fun createComplexViewModel(
         reactListener = reactListener,
         reactListListener = reactListListener,
         saveListener = saveListener,
+        commentsListener = commentsListener,
+        shareListener = shareListener,
         postClickListener = postClickListener,
+        avatarClickListener = avatarClickListener,
         canEdit = canEdit
     )
 }
@@ -823,11 +1030,15 @@ private fun createSimpleViewModel(
     it: Post,
     message: SpannableString,
     messageIcon: Int,
+    shareMessage: String,
     reactions: List<ReactionViewModel>,
     reactListener: (postId: String, playerId: String) -> Unit,
     reactListListener: (reactions: List<Post.Reaction>) -> Unit,
     saveListener: ((postId: String, playerMessage: String?) -> Unit)?,
-    postClickListener: ((postPlayerId: String) -> Unit)? = null,
+    commentsListener: ((postId: String) -> Unit)? = null,
+    shareListener: ((postId: String) -> Unit)? = null,
+    postClickListener: ((postId: String) -> Unit)? = null,
+    avatarClickListener: ((postPlayerId: String) -> Unit)? = null,
     canEdit: Boolean = false
 ): PostViewModel.SimpleViewModel {
     return PostViewModel.SimpleViewModel(
@@ -845,14 +1056,20 @@ private fun createSimpleViewModel(
         ).toString(),
         message = message,
         messageIcon = messageIcon,
+        shareMessage = shareMessage,
         playerMessage = it.description ?: "",
         reactions = reactions,
         createdAt = it.createdAt.toEpochMilli(),
+        imageUrl = it.imageUrl,
+        showImage = it.status == Post.Status.APPROVED && it.imageUrl != null,
         post = it,
         reactListener = reactListener,
         reactListListener = reactListListener,
         saveListener = saveListener,
+        commentsListener = commentsListener,
+        shareListener = shareListener,
         postClickListener = postClickListener,
+        avatarClickListener = avatarClickListener,
         canEdit = canEdit
     )
 }

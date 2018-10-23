@@ -148,7 +148,6 @@ class AndroidPlayerRepository(
     override fun findAll(playerIds: List<String>) =
         FirestorePlayerRepository(database).findAll(playerIds)
 
-
     override fun save(entity: Player): Player {
         val rp = toDatabaseObject(entity)
         dao.save(rp)
@@ -250,6 +249,10 @@ class AndroidPlayerRepository(
             presetChallengeIds = ci.presetChallengeIds.toSet()
         )
 
+        if (!dbObject.preferences.containsKey("isAutoPostingEnabled")) {
+            dbObject.preferences["isAutoPostingEnabled"] = Constants.DEFAULT_AUTO_POSTING_ENABLED
+        }
+
         if (!dbObject.preferences.containsKey("resetDayStartMinute")) {
             dbObject.preferences["resetDayStartMinute"] = Constants.RESET_DAY_MINUTE
         }
@@ -289,7 +292,8 @@ class AndroidPlayerRepository(
             resetDayTime = Time.of(cPref.resetDayStartMinute.toInt()),
             startView = Player.Preferences.StartView.valueOf(cPref.startView),
             reminderNotificationStyle = Player.Preferences.NotificationStyle.valueOf(cPref.reminderNotificationStyle),
-            planDayNotificationStyle = Player.Preferences.NotificationStyle.valueOf(cPref.planDayNotificationStyle)
+            planDayNotificationStyle = Player.Preferences.NotificationStyle.valueOf(cPref.planDayNotificationStyle),
+            isAutoPostingEnabled = cPref.isAutoPostingEnabled
         )
 
         val ca = dbObject.achievements.map { DbUnlockedAchievement(it) }
@@ -585,6 +589,7 @@ class AndroidPlayerRepository(
             it.startView = preferences.startView.name
             it.reminderNotificationStyle = preferences.reminderNotificationStyle.name
             it.planDayNotificationStyle = preferences.planDayNotificationStyle.name
+            it.isAutoPostingEnabled = preferences.isAutoPostingEnabled
         }
 
     private fun createDbAchievements(achievements: List<Player.UnlockedAchievement>) =
@@ -834,6 +839,10 @@ class FirestorePlayerRepository(
             presetChallengeIds = ci.presetChallengeIds.toSet()
         )
 
+        if (!cp.preferences.containsKey("isAutoPostingEnabled")) {
+            cp.preferences["isAutoPostingEnabled"] = Constants.DEFAULT_AUTO_POSTING_ENABLED
+        }
+
         if (!cp.preferences.containsKey("resetDayStartMinute")) {
             cp.preferences["resetDayStartMinute"] = Constants.RESET_DAY_MINUTE
         }
@@ -873,7 +882,8 @@ class FirestorePlayerRepository(
             resetDayTime = Time.of(cPref.resetDayStartMinute.toInt()),
             startView = Player.Preferences.StartView.valueOf(cPref.startView),
             reminderNotificationStyle = Player.Preferences.NotificationStyle.valueOf(cPref.reminderNotificationStyle),
-            planDayNotificationStyle = Player.Preferences.NotificationStyle.valueOf(cPref.planDayNotificationStyle)
+            planDayNotificationStyle = Player.Preferences.NotificationStyle.valueOf(cPref.planDayNotificationStyle),
+            isAutoPostingEnabled = cPref.isAutoPostingEnabled
         )
 
         val ca = cp.achievements.map { DbUnlockedAchievement(it) }
@@ -1173,6 +1183,7 @@ class FirestorePlayerRepository(
             it.startView = preferences.startView.name
             it.reminderNotificationStyle = preferences.reminderNotificationStyle.name
             it.planDayNotificationStyle = preferences.planDayNotificationStyle.name
+            it.isAutoPostingEnabled = preferences.isAutoPostingEnabled
         }
 
     private fun createDbAchievements(achievements: List<Player.UnlockedAchievement>) =

@@ -9,6 +9,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.animation.OvershootInterpolator
+import com.google.firebase.auth.FirebaseAuth
 import io.ipoli.android.R
 import io.ipoli.android.common.redux.android.BaseViewController
 import io.ipoli.android.common.view.*
@@ -56,15 +57,19 @@ class ProfilePostListViewController(args: Bundle? = null) :
         view.reactionPopup.layoutManager = GridLayoutManager(view.context, 3)
         view.reactionPopup.adapter = ReactionPopupAdapter(this)
         (view.reactionPopup.adapter as ReactionPopupAdapter).updateAll(
-            AndroidReactionType.values().map {
-                val title = stringRes(it.title)
+            AndroidReactionType.values().map { rt ->
+                val title = stringRes(rt.title)
                 ReactionPopupViewModel(
                     title,
-                    it.animation,
+                    rt.animation,
                     title,
-                    Post.ReactionType.valueOf(it.name)
+                    Post.ReactionType.valueOf(rt.name)
                 ) {
-                    dispatch(ProfileAction.ReactToPost(it, friendId))
+                    if (FirebaseAuth.getInstance().currentUser == null) {
+                        showShortToast(R.string.error_need_registration)
+                    } else {
+                        dispatch(ProfileAction.ReactToPost(it, friendId))
+                    }
                 }
             }
         )
@@ -79,7 +84,7 @@ class ProfilePostListViewController(args: Bundle? = null) :
         }
 
         view.feedList.layoutManager = LinearLayoutManager(view.context)
-        view.feedList.adapter = PostAdapter(this)
+        view.feedList.adapter = PostAdapter(this, activity!!)
 
         view.emptyAnimation.setAnimation("empty_posts.json")
 
@@ -87,25 +92,7 @@ class ProfilePostListViewController(args: Bundle? = null) :
     }
 
     override fun onCreateLoadAction() =
-        ProfileAction.LoadPosts(
-            { it ->
-                toPostViewModel(
-                    context = activity!!,
-                    post = it,
-                    reactListener = { postId, _ ->
-                        dispatch(ProfileAction.ShowReactionPopupForPost(postId))
-                    },
-                    reactListListener = {
-                        navigate().toReactionHistory(it)
-                    },
-                    saveListener = { postId, message ->
-                        dispatch(ProfileAction.SaveDescription(postId, message))
-                    },
-                    canEdit = friendId == null
-                )
-            },
-            friendId = friendId
-        )
+        ProfileAction.LoadPosts(playerId = friendId)
 
     override fun colorStatusBars() {
 
@@ -151,35 +138,78 @@ class ProfilePostListViewController(args: Bundle? = null) :
                 view.emptyText.text = stringRes(R.string.posts_no_internet_text)
             }
 
-            NON_EMPTY_POSTS -> {
-                view.loader.gone()
-                view.emptyContainer.gone()
-                view.reactionPopup.gone()
-                view.loginMessageContainer.gone()
-                view.feedList.visible()
-                showShareItemIfNotFriend(view)
-            }
-
-            EMPTY_POSTS -> {
-                view.loader.gone()
-                view.emptyContainer.visible()
-                view.feedList.gone()
-                view.reactionPopup.gone()
-                showShareItemIfNotFriend(view)
-
-                view.emptyAnimation.playAnimation()
-                view.emptyAnimation.visible()
-                view.emptyTitle.text = stringRes(R.string.feed_empty_title)
-                view.emptyText.text = stringRes(R.string.feed_empty_text)
-            }
-
             POSTS_CHANGED -> {
-                (view.feedList.adapter as PostAdapter).updateAll(state.posts!!)
+
+                if (state.posts!!.isNotEmpty()) {
+                    renderPosts(state, view)
+                } else {
+                    renderEmptyPosts(view)
+                }
             }
 
             else -> {
             }
         }
+    }
+
+    private fun renderEmptyPosts(view: View) {
+        view.loader.gone()
+        view.emptyContainer.visible()
+        view.feedList.gone()
+        view.reactionPopup.gone()
+        showShareItemIfNotFriend(view)
+
+        view.emptyAnimation.playAnimation()
+        view.emptyAnimation.visible()
+        view.emptyTitle.text = stringRes(R.string.feed_empty_title)
+        view.emptyText.text = stringRes(R.string.feed_empty_text)
+    }
+
+    private fun renderPosts(
+        state: ProfileViewState,
+        view: View
+    ) {
+
+        view.loader.gone()
+        view.emptyContainer.gone()
+        view.reactionPopup.gone()
+        view.loginMessageContainer.gone()
+        view.feedList.visible()
+        showShareItemIfNotFriend(view)
+
+        val postVMs = state.posts!!.map { p ->
+            toPostViewModel(context = activity!!, post = p,
+                reactListener = { postId, _ ->
+                    dispatch(ProfileAction.ShowReactionPopupForPost(postId))
+                },
+                reactListListener = {
+                    if (FirebaseAuth.getInstance().currentUser == null) {
+                        showShortToast(R.string.error_need_registration)
+                    } else {
+                        navigate().toReactionHistory(it)
+                    }
+                },
+                commentsListener = {
+                    if (FirebaseAuth.getInstance().currentUser == null) {
+                        showShortToast(R.string.error_need_registration)
+                    } else {
+                        navigateFromRoot().toPost(it)
+                    }
+                },
+                shareListener = { m ->
+                    navigate().toSharePost(m)
+                },
+                postClickListener = {
+                    if (FirebaseAuth.getInstance().currentUser == null) {
+                        showShortToast(R.string.error_need_registration)
+                    } else {
+                        navigateFromRoot().toPost(it)
+                    }
+                }
+            )
+        }
+
+        (view.feedList.adapter as PostAdapter).updateAll(postVMs)
     }
 
     private fun showShareItemIfNotFriend(view: View) {
@@ -221,8 +251,8 @@ class ProfilePostListViewController(args: Bundle? = null) :
                 createPopupAnimator(reactionPopup),
                 onStart = { reactionPopup.visible() },
                 onEnd = {
-                    it.reactionPopup.children.forEach {
-                        it.reactionAnimation.playAnimation()
+                    it.reactionPopup.children.forEach { v ->
+                        v.reactionAnimation.playAnimation()
                     }
                 })
         }

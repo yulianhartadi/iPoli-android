@@ -159,9 +159,7 @@ class ReactionHistoryDialogViewController(args: Bundle? = null) :
         val name: String,
         val username: String,
         val time: String,
-        @DrawableRes val reactionImage: Int,
-        val isCurrentPlayer: Boolean,
-        val isFriend: Boolean
+        @DrawableRes val reactionImage: Int
     ) : RecyclerViewViewModel
 
     inner class ReactionHistoryAdapter :
@@ -185,16 +183,11 @@ class ReactionHistoryDialogViewController(args: Bundle? = null) :
             view.playerUsername.text = vm.username
             view.reactionTime.text = vm.time
 
-            if (vm.isCurrentPlayer || !vm.isFriend) {
-                view.isClickable = false
-                view.background = null
-                view.setOnClickListener(null)
-            } else {
-                view.setBackgroundResource(attrResourceId(android.R.attr.selectableItemBackground))
-                view.isClickable = true
-                view.onDebounceClick {
-                    navigateFromRoot().toProfile(vm.id)
-                }
+
+            view.setBackgroundResource(attrResourceId(android.R.attr.selectableItemBackground))
+            view.isClickable = true
+            view.onDebounceClick {
+                navigateFromRoot().toProfile(vm.id)
             }
         }
     }
@@ -212,9 +205,7 @@ class ReactionHistoryDialogViewController(args: Bundle? = null) :
                     DateUtils.MINUTE_IN_MILLIS,
                     DateUtils.FORMAT_ABBREV_ALL
                 ).toString(),
-                reactionImage = it.reaction.reactionType.androidType.image,
-                isCurrentPlayer = it.player.id == playerId,
-                isFriend = it.isFriend
+                reactionImage = it.reaction.reactionType.androidType.image
             )
         }
 }

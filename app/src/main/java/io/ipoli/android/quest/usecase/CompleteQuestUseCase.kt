@@ -6,7 +6,8 @@ import io.ipoli.android.common.UseCase
 import io.ipoli.android.common.datetime.Time
 import io.ipoli.android.common.rate.RatePopupScheduler
 import io.ipoli.android.dailychallenge.usecase.CheckForDailyChallengeCompletionUseCase
-import io.ipoli.android.friends.usecase.SavePostsUseCase
+import io.ipoli.android.friends.feed.persistence.PostRepository
+import io.ipoli.android.friends.job.AddPostScheduler
 import io.ipoli.android.player.persistence.PlayerRepository
 import io.ipoli.android.player.usecase.RewardPlayerUseCase
 import io.ipoli.android.quest.Quest
@@ -22,13 +23,14 @@ import org.threeten.bp.LocalDate
 open class CompleteQuestUseCase(
     private val questRepository: QuestRepository,
     private val playerRepository: PlayerRepository,
-    private val challengeRepository: ChallengeRepository,
     private val reminderScheduler: ReminderScheduler,
     private val rewardScheduler: RewardScheduler,
     private val ratePopupScheduler: RatePopupScheduler,
     private val rewardPlayerUseCase: RewardPlayerUseCase,
     private val checkForDailyChallengeCompletionUseCase: CheckForDailyChallengeCompletionUseCase,
-    private val savePostsUseCase: SavePostsUseCase
+    private val challengeRepository: ChallengeRepository,
+    private val addPostScheduler: AddPostScheduler,
+    private val postRepository: PostRepository
 ) : UseCase<CompleteQuestUseCase.Params, Quest> {
     override fun execute(parameters: Params): Quest {
 
@@ -61,26 +63,31 @@ open class CompleteQuestUseCase(
             type = RewardScheduler.Type.QUEST,
             entityId = quest.id
         )
+
+        addPostIfQuestIsPublic(newQuest)
+
         ratePopupScheduler.schedule()
 
         checkForDailyChallengeCompletionUseCase.execute(
             CheckForDailyChallengeCompletionUseCase.Params(r.player)
         )
 
-        if (newQuest.isFromChallenge) {
-            val challenge = challengeRepository.findById(newQuest.challengeId!!)!!
-            if (!challenge.isCompleted && challenge.sharingPreference == SharingPreference.FRIENDS) {
-                savePostsUseCase.execute(
-                    SavePostsUseCase.Params.QuestFromChallengeComplete(
-                        quest = newQuest,
-                        challenge = challenge,
-                        player = r.player
-                    )
-                )
+        return newQuest
+    }
+
+    private fun addPostIfQuestIsPublic(quest: Quest) {
+        if (quest.isFromChallenge) {
+            if (challengeRepository.findById(quest.challengeId!!)!!.sharingPreference == SharingPreference.FRIENDS) {
+                val hasPostForQuest = try {
+                    postRepository.hasPostForQuest(quest.id)
+                } catch (e: Exception) {
+                    true
+                }
+                if (!hasPostForQuest) {
+                    addPostScheduler.scheduleForQuest(quest.id, quest.challengeId)
+                }
             }
         }
-
-        return newQuest
     }
 
     sealed class Params(open val completedDate: LocalDate, open val completedTime: Time) {

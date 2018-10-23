@@ -20,13 +20,10 @@ class CreateReactionHistoryItemsUseCase(
         val players = playerRepository.findAll(parameters.reactions.map { it.playerId })
         val playerIdToPlayer = players.map { it.id to it }.toMap()
 
-        val friendIds = friendsRepository.findAll().map { it.id }
-
         return parameters.reactions.sortedByDescending { it.createdAt }.map {
             ReactionHistoryItem(
                 reaction = playerIdToReaction[it.playerId]!!,
-                player = playerIdToPlayer[it.playerId]!!,
-                isFriend = friendIds.contains(it.playerId)
+                player = playerIdToPlayer[it.playerId]!!
             )
         }
     }
@@ -35,7 +32,6 @@ class CreateReactionHistoryItemsUseCase(
 
     data class ReactionHistoryItem(
         val reaction: Post.Reaction,
-        val player: Player,
-        val isFriend: Boolean
+        val player: Player
     )
 }

@@ -6,7 +6,6 @@ import io.ipoli.android.common.datetime.Time
 import io.ipoli.android.common.di.BackgroundModule
 import io.ipoli.android.common.job.FixedDailyJob
 import io.ipoli.android.common.job.FixedDailyJobScheduler
-import io.ipoli.android.friends.usecase.SavePostsUseCase
 import kotlinx.coroutines.experimental.Dispatchers
 import kotlinx.coroutines.experimental.GlobalScope
 import kotlinx.coroutines.experimental.launch
@@ -21,17 +20,10 @@ class UpdateAchievementProgressJob : FixedDailyJob(UpdateAchievementProgressJob.
 
     override fun doRunJob(params: Params): Result {
         val kap = Kapsule<BackgroundModule>()
-        val playerRepository by kap.required { playerRepository }
         val updateAchievementProgressUseCase by kap.required { updateAchievementProgressUseCase }
-        val savePostsUseCase by kap.required { savePostsUseCase }
         kap.inject(MyPoliApp.backgroundModule(context))
 
-        val stats = playerRepository.find()!!.statistics
-        val newStats =
-            updateAchievementProgressUseCase.execute(UpdateAchievementProgressUseCase.Params())
-        if (stats.dailyChallengeCompleteStreak.count > 0 && newStats.dailyChallengeCompleteStreak.count == 0L) {
-            savePostsUseCase.execute(SavePostsUseCase.Params.DailyChallengeFailed())
-        }
+        updateAchievementProgressUseCase.execute(UpdateAchievementProgressUseCase.Params())
 
         return Result.SUCCESS
     }

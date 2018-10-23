@@ -1,6 +1,5 @@
 package io.ipoli.android.player.profile
 
-import android.arch.paging.PagedList
 import io.ipoli.android.achievement.usecase.CreateAchievementItemsUseCase
 import io.ipoli.android.challenge.entity.Challenge
 import io.ipoli.android.challenge.entity.SharingPreference
@@ -11,7 +10,6 @@ import io.ipoli.android.common.datetime.Duration
 import io.ipoli.android.common.datetime.Minute
 import io.ipoli.android.common.redux.Action
 import io.ipoli.android.common.redux.BaseViewState
-import io.ipoli.android.friends.feed.PostViewModel
 import io.ipoli.android.friends.feed.data.Post
 import io.ipoli.android.friends.persistence.Friend
 import io.ipoli.android.pet.Pet
@@ -26,16 +24,17 @@ sealed class ProfileAction : Action {
     }
 
     data class Load(val friendId: String?) : ProfileAction() {
-        override fun toMap() = mapOf("friendId" to friendId)
+        override fun toMap() = mapOf("playerId" to friendId)
     }
 
     data class LoadFriendChallenges(val friendId: String) : ProfileAction() {
-        override fun toMap() = mapOf("friendId" to friendId)
+        override fun toMap() = mapOf("playerId" to friendId)
     }
 
     object LoadPlayerChallenges : ProfileAction()
-    object LoadFriends : ProfileAction()
-    data class LoadPosts(val mapToViewModel: (Post) -> PostViewModel, val friendId: String?) :
+    data class LoadFollowers(val playerId: String?) : ProfileAction()
+    data class LoadFollowing(val playerId: String?) : ProfileAction()
+    data class LoadPosts(val playerId: String?) :
         ProfileAction()
 
     data class SaveDescription(val postId: String, val description: String?) : ProfileAction() {
@@ -50,18 +49,17 @@ sealed class ProfileAction : Action {
     ) : ProfileAction() {
         override fun toMap() = mapOf(
             "reaction" to reaction.name,
-            "friendId" to friendId
+            "playerId" to friendId
         )
     }
+
+    data class Follow(val friendId: String) : ProfileAction()
+    data class Unfollow(val friendId: String) : ProfileAction()
 
     object ShowRequireLogin : ProfileAction()
     object UnloadPosts : ProfileAction()
     object LoadInfo : ProfileAction()
     object NoInternetConnection : ProfileAction()
-    object ErrorLoadingInitialPosts : ProfileAction()
-    object EmptyPosts : ProfileAction()
-    object PostsLoaded : ProfileAction()
-    object ErrorLoadingPosts : ProfileAction()
     object ErrorLoadingFriends : ProfileAction()
 }
 
@@ -112,6 +110,26 @@ class ProfileReducer(reducerKey: String) : BaseViewStateReducer<ProfileViewState
                 }
             }
 
+            is DataLoadedAction.FriendDataChanged -> {
+                val ns = createStateFromPlayer(action.player, subState)
+
+                val newState = ns.copy(
+                    dailyChallengeStreak = action.streak,
+                    last7DaysAverageProductiveDuration = action.averageProductiveDuration,
+                    unlockedAchievements = action.unlockedAchievements,
+                    isCurrentPlayerGuest = action.isCurrentPlayerGuest,
+                    isFollowing = action.isFollowing,
+                    isFollower = action.isFollower
+                )
+                if (hasProfileDataLoaded(newState)) {
+                    newState.copy(
+                        type = ProfileViewState.StateType.PROFILE_DATA_LOADED
+                    )
+                } else {
+                    newState
+                }
+            }
+
             is ProfileAction.LoadInfo ->
                 if (subState.username != null)
                     subState.copy(
@@ -146,10 +164,16 @@ class ProfileReducer(reducerKey: String) : BaseViewStateReducer<ProfileViewState
                     challenges = action.challenges
                 )
 
-            is DataLoadedAction.FriendsChanged ->
+            is DataLoadedAction.FollowersChanged ->
                 subState.copy(
-                    type = FRIENDS_LIST_CHANGED,
-                    friends = action.friends
+                    type = FOLLOWER_LIST_CHANGED,
+                    followers = action.friends
+                )
+
+            is DataLoadedAction.FollowingChanged ->
+                subState.copy(
+                    type = FOLLOWING_LIST_CHANGED,
+                    following = action.friends
                 )
 
             is ProfileAction.ShowRequireLogin ->
@@ -169,8 +193,6 @@ class ProfileReducer(reducerKey: String) : BaseViewStateReducer<ProfileViewState
                     currentPostId = action.postId
                 )
 
-            is ProfileAction.ErrorLoadingInitialPosts,
-            is ProfileAction.ErrorLoadingPosts,
             is ProfileAction.ErrorLoadingFriends,
             is ProfileAction.NoInternetConnection -> {
                 subState.copy(
@@ -178,14 +200,16 @@ class ProfileReducer(reducerKey: String) : BaseViewStateReducer<ProfileViewState
                 )
             }
 
-            is ProfileAction.PostsLoaded ->
+            is ProfileAction.Follow ->
                 subState.copy(
-                    type = NON_EMPTY_POSTS
+                    type = FOLLOWING_STATUS_CHANGED,
+                    isFollowing = true
                 )
 
-            is ProfileAction.EmptyPosts ->
+            is ProfileAction.Unfollow ->
                 subState.copy(
-                    type = EMPTY_POSTS
+                    type = FOLLOWING_STATUS_CHANGED,
+                    isFollowing = false
                 )
 
             else -> subState
@@ -218,7 +242,8 @@ class ProfileReducer(reducerKey: String) : BaseViewStateReducer<ProfileViewState
             health = player.health.current,
             maxHealth = player.health.max,
             rank = player.rank,
-            nextRank = player.nextRank
+            nextRank = player.nextRank,
+            isCurrentPlayerGuest = !player.isLoggedIn()
         )
         return if (hasProfileDataLoaded(newState)) {
             newState.copy(
@@ -251,13 +276,17 @@ class ProfileReducer(reducerKey: String) : BaseViewStateReducer<ProfileViewState
             last7DaysAverageProductiveDuration = null,
             unlockedAchievements = emptyList(),
             challenges = null,
-            friends = null,
+            followers = null,
+            following = null,
             posts = null,
             currentPostId = null,
             friendId = null,
             isMember = null,
             rank = null,
-            nextRank = null
+            nextRank = null,
+            isFollowing = null,
+            isFollower = null,
+            isCurrentPlayerGuest = null
         )
 
     override val stateKey = reducerKey
@@ -280,22 +309,26 @@ data class ProfileViewState(
     val level: Int,
     val levelXpProgress: Int,
     val levelXpMaxProgress: Int,
-    val rank : Player.Rank?,
-    val nextRank : Player.Rank?,
+    val rank: Player.Rank?,
+    val nextRank: Player.Rank?,
     val coins: Int,
     val gems: Int,
     val health: Int,
     val maxHealth: Int,
-    val attributes : List<Player.Attribute>?,
+    val attributes: List<Player.Attribute>?,
     val dailyChallengeStreak: Int,
     val last7DaysAverageProductiveDuration: Duration<Minute>?,
     val unlockedAchievements: List<CreateAchievementItemsUseCase.AchievementItem>,
     val challenges: List<Challenge>?,
-    val friends: List<Friend>?,
-    val posts: PagedList<PostViewModel>?,
+    val followers: List<Friend>?,
+    val following: List<Friend>?,
+    val posts: List<Post>?,
     val currentPostId: String?,
     val friendId: String?,
-    val isMember: Boolean?
+    val isMember: Boolean?,
+    val isFollowing: Boolean?,
+    val isFollower: Boolean?,
+    val isCurrentPlayerGuest: Boolean?
 ) : BaseViewState() {
 
     enum class StateType {
@@ -303,13 +336,13 @@ data class ProfileViewState(
         PROFILE_DATA_LOADED,
         CHALLENGE_LIST_DATA_CHANGED,
         CHALLENGE_LIST_LOADING,
-        FRIENDS_LIST_CHANGED,
+        FOLLOWER_LIST_CHANGED,
+        FOLLOWING_LIST_CHANGED,
         SHOW_REQUIRE_LOGIN,
         POSTS_CHANGED,
         REACTION_POPUP_SHOWN,
         PROFILE_INFO_LOADED,
         NO_INTERNET_CONNECTION,
-        NON_EMPTY_POSTS,
-        EMPTY_POSTS
+        FOLLOWING_STATUS_CHANGED
     }
 }

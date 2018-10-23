@@ -53,9 +53,11 @@ open class UnlockAchievementsUseCase(
                 )
             )
             showUnlockedAchievementsScheduler.schedule(newAchievements)
-            newAchievements.forEach {
-                savePostsUseCase.execute(SavePostsUseCase.Params.AchievementUnlocked(it, p))
-            }
+            try {
+                newAchievements.forEach {
+                    savePostsUseCase.execute(SavePostsUseCase.Params.AchievementUnlocked(it, p))
+                }
+            } catch (e: Throwable) {}
         }
 
         return newAchievements

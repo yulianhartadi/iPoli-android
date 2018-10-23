@@ -10,6 +10,7 @@ import io.ipoli.android.common.datetime.Minute
 import io.ipoli.android.player.data.Avatar
 import io.ipoli.android.quest.Entity
 import org.threeten.bp.Instant
+import org.threeten.bp.LocalDate
 
 data class Post(
     override val id: String = "",
@@ -21,14 +22,32 @@ data class Post(
     val description: String?,
     val data: Data,
     val reactions: List<Reaction>,
+    val comments: List<Comment>,
+    val commentCount: Int = 0,
+    val imageUrl: String? = null,
+    val status: Status,
+    val isFromCurrentPlayer: Boolean,
     override val createdAt: Instant = Instant.now(),
     override val updatedAt: Instant = Instant.now()
 ) : Entity {
 
+    enum class Status {
+        PENDING, APPROVED, REJECTED
+    }
+
+    data class Comment(
+        val id: String,
+        val playerId: String,
+        val playerAvatar: Avatar,
+        val playerDisplayName: String,
+        val playerUsername: String,
+        val playerLevel: Int,
+        val text: String,
+        val createdAt: Instant = Instant.now()
+    )
+
     sealed class Data {
         data class DailyChallengeCompleted(val streak: Int, val bestStreak: Int) : Data()
-
-        object DailyChallengeFailed : Data()
 
         data class LevelUp(val level: Int) : Data()
 
@@ -70,29 +89,15 @@ data class Post(
             val pomodoroCount: Int
         ) : Data()
 
-        data class QuestFromChallengeFailed(
-            val questId: String,
-            val challengeId: String,
-            val questName: String,
-            val challengeName: String
-        ) : Data()
-
-        data class HabitFromChallengeCompleted(
+        data class HabitCompleted(
             val habitId: String,
-            val challengeId: String,
             val habitName: String,
-            val challengeName: String,
+            val habitDate : LocalDate,
+            val challengeId: String?,
+            val challengeName: String?,
             val isGood: Boolean,
             val streak: Int,
             val bestStreak: Int
-        ) : Data()
-
-        data class HabitFromChallengeFailed(
-            val habitId: String,
-            val challengeId: String,
-            val habitName: String,
-            val challengeName: String,
-            val isGood: Boolean
         ) : Data()
     }
 

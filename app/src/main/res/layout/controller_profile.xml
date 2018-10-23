@@ -404,7 +404,12 @@
                     <android.support.design.widget.TabItem
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:icon="@drawable/tab_profile_friends" />
+                        android:icon="@drawable/tab_profile_following" />
+
+                    <android.support.design.widget.TabItem
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:icon="@drawable/tab_profile_followers" />
 
                     <android.support.design.widget.TabItem
                         android:layout_width="wrap_content"
@@ -435,8 +440,8 @@
                 android:paddingEnd="8dp"
                 android:paddingBottom="8dp">
 
-                <android.support.v4.view.ViewPager
-                    android:id="@+id/pager"
+                <com.bluelinelabs.conductor.ChangeHandlerFrameLayout
+                    android:id="@+id/profileTabContainer"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:layout_marginStart="8dp"
@@ -444,6 +449,7 @@
                     android:layout_marginBottom="8dp"
                     android:background="@drawable/rounded_rectangle_background"
                     android:elevation="4dp" />
+
             </LinearLayout>
         </android.support.v4.widget.NestedScrollView>
 

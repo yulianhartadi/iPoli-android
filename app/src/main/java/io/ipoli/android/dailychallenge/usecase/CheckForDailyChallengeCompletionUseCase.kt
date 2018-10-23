@@ -40,7 +40,10 @@ open class CheckForDailyChallengeCompletionUseCase(
                     .reward
             dailyChallengeRepository.save(dc.copy(isCompleted = true, reward = reward))
             dailyChallengeCompleteScheduler.schedule(reward.experience, reward.coins)
-            savePostsUseCase.execute(SavePostsUseCase.Params.DailyChallengeComplete())
+            try {
+                savePostsUseCase.execute(SavePostsUseCase.Params.DailyChallengeComplete())
+            } catch (e: Throwable) {
+            }
 
             Result.Complete
         } else

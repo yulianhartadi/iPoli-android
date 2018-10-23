@@ -17,6 +17,7 @@ import android.widget.TextView
 import io.ipoli.android.R
 import io.ipoli.android.common.ViewUtils
 import io.ipoli.android.common.view.anim.TypewriterTextAnimator
+import io.ipoli.android.common.view.gone
 import io.ipoli.android.common.view.recyclerview.BaseRecyclerViewAdapter
 import io.ipoli.android.common.view.recyclerview.RecyclerViewViewModel
 import io.ipoli.android.common.view.recyclerview.SimpleViewHolder
@@ -34,7 +35,8 @@ class RewardPopup(
     private val attributes: Map<Player.AttributeType, Int> = emptyMap(),
     private val bounty: Food? = null,
     private val undoListener: () -> Unit = {},
-    private val isPositive: Boolean = true
+    private val isPositive: Boolean = true,
+    private val showUndoAction: Boolean = true
 ) : ToastOverlay() {
 
 
@@ -49,6 +51,10 @@ class RewardPopup(
             val attr = AndroidAttribute.valueOf(it.key.name)
             AttributeRewardViewModel(it.key.name, it.value.toString(), attr.whiteIcon)
         })
+
+        if (!showUndoAction) {
+            view.petAction.gone()
+        }
         return view
     }
 
@@ -82,6 +88,7 @@ class RewardPopup(
         startTypingAnimation(contentView)
 
         contentView.petAction.setOnClickListener {
+            contentView.petAction.gone()
             undoListener()
             hide()
         }
@@ -101,7 +108,19 @@ class RewardPopup(
         )
         typewriterAnim.addListener(object : AnimatorListenerAdapter() {
             override fun onAnimationEnd(animation: Animator) {
-                startEarnedRewardAnimation(contentView)
+                if (earnedXP <= 0 && earnedCoins <= 0) {
+                    val messageAnim = ObjectAnimator.ofFloat(contentView.message, "alpha", 1f, 0f)
+                    messageAnim.addListener(object : AnimatorListenerAdapter() {
+                        override fun onAnimationEnd(animation: Animator?) {
+                            playAttributesAnimation(contentView)
+                        }
+                    })
+                    messageAnim.startDelay = 500
+                    messageAnim.duration = 300
+                    messageAnim.start()
+                } else {
+                    startEarnedRewardAnimation(contentView)
+                }
             }
         })
         typewriterAnim.start()

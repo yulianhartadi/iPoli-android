@@ -22,9 +22,9 @@ import space.traversal.kapsule.Kapsule
  */
 
 interface RewardScheduler {
-    fun schedule(reward: Reward, isPositive: Boolean = true, type: Type, entityId: String)
+    fun schedule(reward: Reward, isPositive: Boolean = true, type: Type, entityId: String?)
 
-    enum class Type { QUEST, HABIT }
+    enum class Type { QUEST, HABIT, ADD_POST }
 }
 
 class AndroidJobRewardScheduler(private val context: Context) : RewardScheduler {
@@ -32,7 +32,7 @@ class AndroidJobRewardScheduler(private val context: Context) : RewardScheduler 
         reward: Reward,
         isPositive: Boolean,
         type: RewardScheduler.Type,
-        entityId: String
+        entityId: String?
     ) {
 
         val c = context.asThemedWrapper()
@@ -63,7 +63,7 @@ class AndroidJobRewardScheduler(private val context: Context) : RewardScheduler 
                     GlobalScope.launch(Dispatchers.IO) {
                         when (type) {
                             RewardScheduler.Type.QUEST -> {
-                                undoCompletedQuestUseCase.execute(entityId)
+                                undoCompletedQuestUseCase.execute(entityId!!)
                                 unlockAchievementsUseCase.execute(
                                     UnlockAchievementsUseCase.Params(
                                         player = playerRepository.find()!!,
@@ -74,13 +74,17 @@ class AndroidJobRewardScheduler(private val context: Context) : RewardScheduler 
                             RewardScheduler.Type.HABIT ->
                                 undoCompleteHabitUseCase.execute(
                                     UndoCompleteHabitUseCase.Params(
-                                        entityId
+                                        entityId!!
                                     )
                                 )
+
+                            else -> {
+                            }
                         }
                     }
                 },
-                isPositive = isPositive
+                isPositive = isPositive,
+                showUndoAction = type != RewardScheduler.Type.ADD_POST
             ).show(c)
         }
     }

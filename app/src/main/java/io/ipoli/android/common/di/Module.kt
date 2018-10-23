@@ -68,12 +68,17 @@ import io.ipoli.android.event.sideeffect.CalendarSideEffectHandler
 import io.ipoli.android.event.usecase.FindEventsBetweenDatesUseCase
 import io.ipoli.android.event.usecase.SaveSyncCalendarsUseCase
 import io.ipoli.android.friends.feed.persistence.AndroidPostRepository
+import io.ipoli.android.friends.feed.persistence.FirebaseStorageImageRepository
+import io.ipoli.android.friends.feed.persistence.ImageRepository
 import io.ipoli.android.friends.feed.persistence.PostRepository
 import io.ipoli.android.friends.feed.sideeffect.FeedSideEffectHandler
+import io.ipoli.android.friends.feed.sideeffect.PostSideEffectHandler
 import io.ipoli.android.friends.invite.FirebaseInviteLinkBuilder
 import io.ipoli.android.friends.invite.InviteLinkBuilder
 import io.ipoli.android.friends.invite.sideeffect.AcceptFriendshipSideEffectHandler
 import io.ipoli.android.friends.invite.sideeffect.InviteFriendsSideEffectHandler
+import io.ipoli.android.friends.job.AddPostScheduler
+import io.ipoli.android.friends.job.AndroidAddPostScheduler
 import io.ipoli.android.friends.middleware.CreatePostsMiddleware
 import io.ipoli.android.friends.persistence.FirestoreFriendRepository
 import io.ipoli.android.friends.persistence.FriendRepository
@@ -287,6 +292,7 @@ interface UseCaseModule {
     val postRepository: PostRepository
     val friendRepository: FriendRepository
     val presetChallengeRepository: PresetChallengeRepository
+    val imageRepository: ImageRepository
 
     val reminderScheduler: ReminderScheduler
     val timerCompleteScheduler: TimerCompleteScheduler
@@ -303,6 +309,7 @@ interface UseCaseModule {
     val showUnlockedAchievementsScheduler: ShowUnlockedAchievementsScheduler
     val resetDayScheduler: ResetDayScheduler
     val secretSocietyInviteScheduler: SecretSocietyInviteScheduler
+    val addPostScheduler: AddPostScheduler
 
     val loadScheduleForDateUseCase: LoadScheduleForDateUseCase
     val saveQuestUseCase: SaveQuestUseCase
@@ -399,6 +406,7 @@ interface UseCaseModule {
     val calculateGrowthStatsUseCase: CalculateGrowthStatsUseCase
     val findAverageFocusedDurationForPeriodUseCase: FindAverageFocusedDurationForPeriodUseCase
     val saveQuickDoNotificationSettingUseCase: SaveQuickDoNotificationSettingUseCase
+    val saveAutoPostingSettingUseCase: SaveAutoPostSettingUseCase
     val saveProfileUseCase: SaveProfileUseCase
     val unlockAchievementsUseCase: UnlockAchievementsUseCase
     val updateAchievementProgressUseCase: UpdateAchievementProgressUseCase
@@ -504,11 +512,13 @@ class MainUseCaseModule(private val context: Context) : UseCaseModule {
         )
 
     override val postRepository =
-        AndroidPostRepository(remoteDatabase, localDatabase.postDao(), executorService)
+        AndroidPostRepository(remoteDatabase, executorService)
 
     override val friendRepository = FirestoreFriendRepository(remoteDatabase)
 
     override val presetChallengeRepository = FirestorePresetChallengeRepository(remoteDatabase)
+
+    override val imageRepository = FirebaseStorageImageRepository()
 
     override val reminderScheduler get() = AndroidJobReminderScheduler(context)
 
@@ -550,6 +560,9 @@ class MainUseCaseModule(private val context: Context) : UseCaseModule {
     override val secretSocietyInviteScheduler
         get() = AndroidSecretSocietyInviteScheduler()
 
+    override val addPostScheduler
+        get() = AndroidAddPostScheduler()
+
     override val saveQuestUseCase
         get() = SaveQuestUseCase(
             questRepository,
@@ -572,13 +585,14 @@ class MainUseCaseModule(private val context: Context) : UseCaseModule {
         get() = CompleteQuestUseCase(
             questRepository,
             playerRepository,
-            challengeRepository,
             reminderScheduler,
             rewardScheduler,
             ratePopupScheduler,
             rewardPlayerUseCase,
             checkForDailyChallengeCompletionUseCase,
-            savePostsUseCase
+            challengeRepository,
+            addPostScheduler,
+            postRepository
         )
     override val undoCompletedQuestUseCase
         get() = UndoCompletedQuestUseCase(
@@ -755,8 +769,7 @@ class MainUseCaseModule(private val context: Context) : UseCaseModule {
         get() = CompleteChallengeUseCase(
             challengeRepository,
             rewardPlayerUseCase,
-            playerRepository,
-            savePostsUseCase
+            playerRepository
         )
 
     override val buyPowerUpUseCase
@@ -894,6 +907,9 @@ class MainUseCaseModule(private val context: Context) : UseCaseModule {
     override val saveQuickDoNotificationSettingUseCase
         get() = SaveQuickDoNotificationSettingUseCase(playerRepository)
 
+    override val saveAutoPostingSettingUseCase
+        get() = SaveAutoPostSettingUseCase(playerRepository)
+
     override val saveProfileUseCase
         get() = SaveProfileUseCase(playerRepository)
 
@@ -932,7 +948,10 @@ class MainUseCaseModule(private val context: Context) : UseCaseModule {
             habitRepository,
             playerRepository,
             rewardPlayerUseCase,
-            rewardScheduler
+            rewardScheduler,
+            challengeRepository,
+            addPostScheduler,
+            postRepository
         )
 
     override val undoCompleteHabitUseCase
@@ -948,10 +967,19 @@ class MainUseCaseModule(private val context: Context) : UseCaseModule {
         get() = CreateHabitItemsUseCase()
 
     override val createScheduleSummaryItemsUseCase
-        get() = CreateScheduleSummaryItemsUseCase(eventRepository, playerRepository, permissionChecker)
+        get() = CreateScheduleSummaryItemsUseCase(
+            eventRepository,
+            playerRepository,
+            permissionChecker
+        )
 
     override val savePostsUseCase
-        get() = SavePostsUseCase(postRepository, playerRepository, challengeRepository)
+        get() = SavePostsUseCase(
+            postRepository,
+            playerRepository,
+            challengeRepository,
+            imageRepository
+        )
 
     override val savePostReactionUseCase
         get() = SavePostReactionUseCase(postRepository)
@@ -1039,7 +1067,8 @@ class AndroidStateStoreModule : StateStoreModule, Injects<UIModule> {
                 InviteFriendsSideEffectHandler,
                 AcceptFriendshipSideEffectHandler,
                 FeedSideEffectHandler,
-                PresetChallengeSideEffectHandler
+                PresetChallengeSideEffectHandler,
+                PostSideEffectHandler
             ),
             sideEffectHandlerExecutor = CoroutineSideEffectHandlerExecutor(),
             middleware = listOf(

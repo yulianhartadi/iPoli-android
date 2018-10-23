@@ -24,6 +24,7 @@ object SettingsSideEffectHandler : AppSideEffectHandler() {
     private val saveReminderNotificationStyleUseCase by required { saveReminderNotificationStyleUseCase }
     private val savePlanDayNotificationStyleUseCase by required { savePlanDayNotificationStyleUseCase }
     private val saveQuickDoNotificationSettingUseCase by required { saveQuickDoNotificationSettingUseCase }
+    private val saveAutoPostingSettingUseCase by required { saveAutoPostingSettingUseCase }
     private val sharedPreferences by required { sharedPreferences }
 
     override suspend fun doExecute(action: Action, state: AppState) {
@@ -53,6 +54,14 @@ object SettingsSideEffectHandler : AppSideEffectHandler() {
                         action.style
                     )
                 )
+
+            is SettingsAction.ToggleAutoPosting -> {
+                saveAutoPostingSettingUseCase.execute(
+                    SaveAutoPostSettingUseCase.Params(
+                        action.isEnabled
+                    )
+                )
+            }
 
             is SettingsAction.ToggleQuickDoNotification -> {
                 saveQuickDoNotificationSettingUseCase.execute(

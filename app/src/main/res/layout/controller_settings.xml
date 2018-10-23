@@ -34,11 +34,11 @@
                     android:id="@+id/timeFormatContainer"
                     android:layout_width="match_parent"
                     android:layout_height="72dp"
-                    android:paddingStart="72dp"
-                    android:paddingEnd="16dp"
                     android:background="?android:attr/selectableItemBackground"
                     android:clickable="true"
                     android:orientation="vertical"
+                    android:paddingStart="72dp"
+                    android:paddingEnd="16dp"
                     android:weightSum="2">
 
                     <TextView
@@ -64,11 +64,11 @@
                     android:id="@+id/temperatureUnitContainer"
                     android:layout_width="match_parent"
                     android:layout_height="72dp"
-                    android:paddingStart="72dp"
-                    android:paddingEnd="16dp"
                     android:background="?android:attr/selectableItemBackground"
                     android:clickable="true"
                     android:orientation="vertical"
+                    android:paddingStart="72dp"
+                    android:paddingEnd="16dp"
                     android:weightSum="2">
 
                     <TextView
@@ -124,10 +124,10 @@
                     android:id="@+id/ongoingNotificationContainer"
                     android:layout_width="match_parent"
                     android:layout_height="48dp"
-                    android:paddingStart="72dp"
-                    android:paddingEnd="16dp"
                     android:background="?android:attr/selectableItemBackground"
-                    android:clickable="true">
+                    android:clickable="true"
+                    android:paddingStart="72dp"
+                    android:paddingEnd="16dp">
 
                     <TextView
                         android:layout_width="match_parent"
@@ -147,15 +147,57 @@
 
                 </RelativeLayout>
 
+                <RelativeLayout
+                    android:id="@+id/autoPostingContainer"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="?android:attr/selectableItemBackground"
+                    android:clickable="true"
+                    android:paddingStart="72dp"
+                    android:paddingTop="16dp"
+                    android:paddingEnd="16dp"
+                    android:paddingBottom="16dp">
+
+                    <TextView
+                        android:id="@+id/autoPostingTitle"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentStart="true"
+                        android:layout_alignParentTop="true"
+                        android:text="@string/settings_auto_posting_title"
+                        android:textColor="?android:textColorPrimary"
+                        android:textSize="16sp" />
+
+                    <Switch
+                        android:id="@+id/enableAutoPosting"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentTop="true"
+                        android:layout_alignParentEnd="true" />
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_below="@+id/autoPostingTitle"
+                        android:layout_alignParentStart="true"
+                        android:layout_alignParentBottom="true"
+                        android:layout_marginTop="4dp"
+                        android:layout_toStartOf="@+id/enableAutoPosting"
+                        android:text="@string/settings_auto_posting_text"
+                        android:textColor="?android:textColorSecondary"
+                        android:textSize="14sp" />
+
+                </RelativeLayout>
+
                 <LinearLayout
                     android:id="@+id/resetDayTimeContainer"
                     android:layout_width="match_parent"
                     android:layout_height="72dp"
-                    android:paddingStart="72dp"
-                    android:paddingEnd="16dp"
                     android:background="?android:attr/selectableItemBackground"
                     android:clickable="true"
                     android:orientation="vertical"
+                    android:paddingStart="72dp"
+                    android:paddingEnd="16dp"
                     android:weightSum="2">
 
                     <TextView
@@ -201,11 +243,11 @@
                     android:id="@+id/planMyDayTimeContainer"
                     android:layout_width="match_parent"
                     android:layout_height="72dp"
-                    android:paddingStart="72dp"
-                    android:paddingEnd="16dp"
                     android:background="?android:attr/selectableItemBackground"
                     android:clickable="true"
                     android:orientation="vertical"
+                    android:paddingStart="72dp"
+                    android:paddingEnd="16dp"
                     android:weightSum="2">
 
                     <TextView
@@ -233,11 +275,11 @@
                     android:id="@+id/planDaysContainer"
                     android:layout_width="match_parent"
                     android:layout_height="72dp"
-                    android:paddingStart="72dp"
-                    android:paddingEnd="16dp"
                     android:background="?android:attr/selectableItemBackground"
                     android:clickable="true"
                     android:orientation="vertical"
+                    android:paddingStart="72dp"
+                    android:paddingEnd="16dp"
                     android:weightSum="2">
 
                     <TextView
@@ -294,11 +336,11 @@
                     android:id="@+id/planNowContainer"
                     android:layout_width="match_parent"
                     android:layout_height="72dp"
-                    android:paddingStart="72dp"
-                    android:paddingEnd="16dp"
                     android:background="?android:attr/selectableItemBackground"
                     android:clickable="true"
                     android:orientation="vertical"
+                    android:paddingStart="72dp"
+                    android:paddingEnd="16dp"
                     android:weightSum="2">
 
                     <TextView
@@ -342,10 +384,10 @@
                     android:id="@+id/syncCalendarsContainer"
                     android:layout_width="match_parent"
                     android:layout_height="48dp"
-                    android:paddingStart="72dp"
-                    android:paddingEnd="16dp"
                     android:background="?android:attr/selectableItemBackground"
-                    android:clickable="true">
+                    android:clickable="true"
+                    android:paddingStart="72dp"
+                    android:paddingEnd="16dp">
 
                     <TextView
                         android:layout_width="match_parent"
@@ -369,10 +411,10 @@
                     android:id="@+id/selectSyncCalendarsContainer"
                     android:layout_width="match_parent"
                     android:layout_height="72dp"
-                    android:paddingStart="72dp"
-                    android:paddingEnd="16dp"
                     android:background="?android:attr/selectableItemBackground"
                     android:orientation="vertical"
+                    android:paddingStart="72dp"
+                    android:paddingEnd="16dp"
                     android:weightSum="2">
 
                     <TextView
@@ -418,11 +460,11 @@
                     android:id="@+id/contactContainer"
                     android:layout_width="match_parent"
                     android:layout_height="72dp"
-                    android:paddingStart="72dp"
-                    android:paddingEnd="16dp"
                     android:background="?android:attr/selectableItemBackground"
                     android:clickable="true"
                     android:orientation="vertical"
+                    android:paddingStart="72dp"
+                    android:paddingEnd="16dp"
                     android:weightSum="2">
 
                     <TextView
@@ -448,12 +490,12 @@
                     android:id="@+id/rateContainer"
                     android:layout_width="match_parent"
                     android:layout_height="72dp"
-                    android:paddingStart="72dp"
-                    android:paddingEnd="16dp"
                     android:background="?android:attr/selectableItemBackground"
                     android:clickable="true"
                     android:focusable="true"
                     android:orientation="vertical"
+                    android:paddingStart="72dp"
+                    android:paddingEnd="16dp"
                     android:weightSum="2">
 
                     <TextView
@@ -479,12 +521,12 @@
                     android:id="@+id/privacyPolicyContainer"
                     android:layout_width="match_parent"
                     android:layout_height="72dp"
-                    android:paddingStart="72dp"
-                    android:paddingEnd="16dp"
                     android:background="?android:attr/selectableItemBackground"
                     android:clickable="true"
                     android:focusable="true"
                     android:orientation="vertical"
+                    android:paddingStart="72dp"
+                    android:paddingEnd="16dp"
                     android:weightSum="2">
 
                     <TextView
@@ -510,9 +552,9 @@
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="72dp"
+                    android:orientation="vertical"
                     android:paddingStart="72dp"
                     android:paddingEnd="16dp"
-                    android:orientation="vertical"
                     android:weightSum="2">
 
                     <TextView

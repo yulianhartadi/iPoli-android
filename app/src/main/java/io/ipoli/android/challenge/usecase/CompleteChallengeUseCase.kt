@@ -1,11 +1,9 @@
 package io.ipoli.android.challenge.usecase
 
 import io.ipoli.android.challenge.entity.Challenge
-import io.ipoli.android.challenge.entity.SharingPreference
 import io.ipoli.android.challenge.persistence.ChallengeRepository
 import io.ipoli.android.common.UseCase
 import io.ipoli.android.common.datetime.Time
-import io.ipoli.android.friends.usecase.SavePostsUseCase
 import io.ipoli.android.player.persistence.PlayerRepository
 import io.ipoli.android.player.usecase.RewardPlayerUseCase
 import org.threeten.bp.LocalDate
@@ -17,8 +15,7 @@ import org.threeten.bp.LocalDate
 class CompleteChallengeUseCase(
     private val challengeRepository: ChallengeRepository,
     private val rewardPlayerUseCase: RewardPlayerUseCase,
-    private val playerRepository: PlayerRepository,
-    private val savePostsUseCase: SavePostsUseCase
+    private val playerRepository: PlayerRepository
 ) :
     UseCase<CompleteChallengeUseCase.Params, Challenge> {
 
@@ -40,13 +37,7 @@ class CompleteChallengeUseCase(
             )
         ).reward
 
-        val c = challengeRepository.save(completeChallenge.copy(reward = reward))
-
-        if (c.sharingPreference == SharingPreference.FRIENDS) {
-            savePostsUseCase.execute(SavePostsUseCase.Params.ChallengeComplete(c, player))
-        }
-
-        return c
+        return challengeRepository.save(completeChallenge.copy(reward = reward))
     }
 
     data class Params(val challengeId: String, val randomSeed: Long? = null)

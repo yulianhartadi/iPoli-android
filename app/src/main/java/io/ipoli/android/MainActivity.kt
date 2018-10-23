@@ -63,6 +63,7 @@ class MainActivity : AppCompatActivity(), Injects<UIModule>, SideEffectHandler<A
     private val stateStore by required { stateStore }
     private val dataExporter by required { dataExporter }
     private val eventLogger by required { eventLogger }
+    private val savePostsUseCase by required { savePostsUseCase }
 
     val rootRouter get() = router
 
@@ -174,6 +175,14 @@ class MainActivity : AppCompatActivity(), Injects<UIModule>, SideEffectHandler<A
                 )
             }
 
+            ACTION_ADD_POST -> {
+                navigator.toAddPost(
+                    questId = intent.getStringExtra(Constants.QUEST_ID_EXTRA_KEY),
+                    habitId = intent.getStringExtra(Constants.HABIT_ID_EXTRA_KEY),
+                    challengeId = intent.getStringExtra(Constants.CHALLENGE_ID_EXTRA_KEY)
+                ) {}
+            }
+
             else -> navigator.setHome()
         }
 
@@ -228,6 +237,12 @@ class MainActivity : AppCompatActivity(), Injects<UIModule>, SideEffectHandler<A
             showPowerUpDialog(powerUp) {
                 AppWidgetUtil.updateHabitWidget(this)
             }
+        } else if (intent.action == ACTION_ADD_POST) {
+            navigator.toAddPost(
+                questId = intent.getStringExtra(Constants.QUEST_ID_EXTRA_KEY),
+                habitId = intent.getStringExtra(Constants.HABIT_ID_EXTRA_KEY),
+                challengeId = intent.getStringExtra(Constants.CHALLENGE_ID_EXTRA_KEY)
+            ) {}
         } else if (!router.hasRootController()) {
             showHome(navigator)
         }
@@ -381,6 +396,7 @@ class MainActivity : AppCompatActivity(), Injects<UIModule>, SideEffectHandler<A
 
     companion object {
         const val ACTION_SHOW_TIMER = "io.ipoli.android.intent.action.SHOW_TIMER"
+        const val ACTION_ADD_POST = "io.ipoli.android.intent.action.ADD_POST"
         const val ACTION_SHOW_QUICK_ADD = "io.ipoli.android.intent.action.SHOW_QUICK_ADD"
         const val ACTION_SHOW_PET = "io.ipoli.android.intent.action.SHOW_PET"
         const val ACTION_PLAN_DAY = "io.ipoli.android.intent.action.PLAN_DAY"

@@ -41,8 +41,11 @@ import io.ipoli.android.event.calendar.picker.CalendarPickerDialogController
 import io.ipoli.android.friends.ReactionHistoryDialogViewController
 import io.ipoli.android.friends.feed.data.Post
 import io.ipoli.android.friends.feed.picker.PostItemPickerViewController
+import io.ipoli.android.friends.feed.post.AddPostDialogController
+import io.ipoli.android.friends.feed.post.PostViewController
 import io.ipoli.android.friends.invite.AcceptFriendshipDialogController
 import io.ipoli.android.friends.invite.InviteFriendsDialogController
+import io.ipoli.android.friends.share.SharePostDialogController
 import io.ipoli.android.habit.edit.EditHabitViewController
 import io.ipoli.android.habit.predefined.PredefinedHabitListViewController
 import io.ipoli.android.habit.show.HabitViewController
@@ -350,6 +353,10 @@ class Navigator(private val router: Router) {
         pushController({ ThemeStoreViewController() }, changeHandler)
     }
 
+    fun toPost(postId: String) {
+        pushController({ PostViewController(postId) }, HorizontalChangeHandler())
+    }
+
     fun toCurrencyConverted() {
         pushDialog { CurrencyConverterDialogController() }
     }
@@ -483,8 +490,12 @@ class Navigator(private val router: Router) {
         )
     }
 
-    fun toShareApp() {
-        pushDialog { ShareAppDialogController() }
+    fun toShareApp(dialogTitle: String, message: String) {
+        pushDialog { ShareAppDialogController(dialogTitle, message) }
+    }
+
+    fun toSharePost(message: String) {
+        pushDialog { SharePostDialogController(message) }
     }
 
     fun toInviteFriends() {
@@ -567,6 +578,15 @@ class Navigator(private val router: Router) {
         resultListener: (String) -> Unit
     ) {
         pushDialog { NotePickerDialogController(note, resultListener) }
+    }
+
+    fun toAddPost(
+        questId: String?,
+        habitId: String?,
+        challengeId: String?,
+        postListener: (() -> Unit)? = null
+    ) {
+        pushDialog { AddPostDialogController(questId, habitId, challengeId, postListener) }
     }
 
     private inline fun <reified C : Controller> pushDialog(createDialogController: () -> C) {

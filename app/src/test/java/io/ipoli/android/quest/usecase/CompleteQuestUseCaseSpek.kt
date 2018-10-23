@@ -51,11 +51,12 @@ class CompleteQuestUseCaseSpek : Spek({
         val useCase = CompleteQuestUseCase(
             questRepo,
             TestUtil.playerRepoMock(TestUtil.player),
-            mock(),
             reminderScheduler,
             rewardScheduler,
             ratePopupScheduler,
             rewardPlayerUseCase,
+            mock(),
+            mock(),
             mock(),
             mock()
         )
@@ -116,11 +117,12 @@ class CompleteQuestUseCaseSpek : Spek({
             val foodUseCase = CompleteQuestUseCase(
                 questRepo,
                 TestUtil.playerRepoMock(p),
-                mock(),
                 reminderScheduler,
                 rewardScheduler,
                 ratePopupScheduler,
                 rewardPlayerUseCase,
+                mock(),
+                mock(),
                 mock(),
                 mock()
             )
@@ -140,11 +142,12 @@ class CompleteQuestUseCaseSpek : Spek({
                     )
                 ),
                 TestUtil.playerRepoMock(TestUtil.player),
-                mock(),
                 reminderScheduler,
                 rewardScheduler,
                 ratePopupScheduler,
                 rewardPlayerUseCase,
+                mock(),
+                mock(),
                 mock(),
                 mock()
             )

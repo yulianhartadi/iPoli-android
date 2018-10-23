@@ -20,7 +20,6 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:background="@android:color/transparent"
-            android:theme="?android:toolbarStyle"
             app:elevation="0dp">
 
             <android.support.design.widget.CollapsingToolbarLayout
@@ -35,8 +34,8 @@
                 <android.support.constraint.ConstraintLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginBottom="?attr/actionBarSize"
-                    android:layout_marginTop="?attr/actionBarSize">
+                    android:layout_marginTop="?attr/actionBarSize"
+                    android:layout_marginBottom="?attr/actionBarSize">
 
                     <ImageView
                         android:id="@+id/friendPlayerAvatar"
@@ -56,14 +55,14 @@
                         android:id="@+id/friendDisplayName"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
-                        android:layout_marginEnd="16dp"
                         android:layout_marginStart="16dp"
                         android:layout_marginTop="16dp"
+                        android:layout_marginEnd="16dp"
                         android:ellipsize="end"
                         android:maxLines="2"
                         android:textAlignment="center"
-                        android:textColor="?android:textColorPrimary"
                         android:textAppearance="@style/TextAppearance.AppCompat.Title"
+                        android:textColor="?android:textColorPrimary"
                         app:layout_constraintEnd_toStartOf="@+id/friendMembershipStatus"
                         app:layout_constraintHorizontal_bias="0.5"
                         app:layout_constraintHorizontal_chainStyle="spread"
@@ -99,15 +98,15 @@
                         android:id="@+id/friendUsername"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
-                        android:layout_marginEnd="8dp"
                         android:layout_marginTop="8dp"
+                        android:layout_marginEnd="8dp"
                         android:textAlignment="center"
-                        android:textColor="?android:textColorSecondary"
                         android:textAppearance="@style/TextAppearance.AppCompat.Caption"
+                        android:textColor="?android:textColorSecondary"
                         app:layout_constraintEnd_toEndOf="@+id/friendDisplayName"
                         app:layout_constraintStart_toStartOf="@id/friendDisplayName"
                         app:layout_constraintTop_toBottomOf="@id/friendDisplayName"
-                        tools:text="@Tumba Lumba" />
+                        tools:text="\@Tumba Lumba" />
 
                     <View
                         android:id="@+id/friendMembershipStatus"
@@ -140,8 +139,8 @@
                         android:layout_marginStart="16dp"
                         android:layout_marginTop="16dp"
                         android:text="@string/level"
-                        android:textColor="?android:textColorSecondary"
                         android:textAppearance="@style/TextAppearance.AppCompat.Caption"
+                        android:textColor="?android:textColorSecondary"
                         app:layout_constraintEnd_toStartOf="@+id/divider1"
                         app:layout_constraintHorizontal_chainStyle="spread"
                         app:layout_constraintStart_toStartOf="parent"
@@ -165,8 +164,8 @@
                         android:layout_height="wrap_content"
                         android:layout_marginStart="8dp"
                         android:text="|"
-                        android:textColor="?android:textColorPrimary"
                         android:textAppearance="@style/TextAppearance.AppCompat.Body2"
+                        android:textColor="?android:textColorPrimary"
                         app:layout_constraintBottom_toBottomOf="@id/levelTitle"
                         app:layout_constraintEnd_toStartOf="@+id/rankTitle"
                         app:layout_constraintHorizontal_chainStyle="spread"
@@ -179,8 +178,8 @@
                         android:layout_height="wrap_content"
                         android:layout_marginStart="8dp"
                         android:text="@string/rank"
-                        android:textColor="?android:textColorSecondary"
                         android:textAppearance="@style/TextAppearance.AppCompat.Caption"
+                        android:textColor="?android:textColorSecondary"
                         app:layout_constraintBottom_toBottomOf="@id/levelTitle"
                         app:layout_constraintEnd_toStartOf="@+id/divider2"
                         app:layout_constraintHorizontal_chainStyle="spread"
@@ -205,8 +204,8 @@
                         android:layout_height="wrap_content"
                         android:layout_marginStart="8dp"
                         android:text="|"
-                        android:textColor="?android:textColorPrimary"
                         android:textAppearance="@style/TextAppearance.AppCompat.Body2"
+                        android:textColor="?android:textColorPrimary"
                         app:layout_constraintBottom_toBottomOf="@id/levelTitle"
                         app:layout_constraintEnd_toStartOf="@+id/joinedTitle"
                         app:layout_constraintHorizontal_chainStyle="spread"
@@ -217,11 +216,11 @@
                         android:id="@+id/joinedTitle"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginEnd="16dp"
                         android:layout_marginStart="8dp"
+                        android:layout_marginEnd="16dp"
                         android:text="@string/joined"
-                        android:textColor="?android:textColorSecondary"
                         android:textAppearance="@style/TextAppearance.AppCompat.Caption"
+                        android:textColor="?android:textColorSecondary"
                         app:layout_constraintBottom_toBottomOf="@id/levelTitle"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintHorizontal_chainStyle="spread"
@@ -245,11 +244,11 @@
                         android:id="@+id/description"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
-                        android:layout_marginEnd="16dp"
                         android:layout_marginStart="16dp"
                         android:layout_marginTop="24dp"
-                        android:textColor="?android:textColorPrimary"
+                        android:layout_marginEnd="16dp"
                         android:textAppearance="@style/TextAppearance.AppCompat.Body1"
+                        android:textColor="?android:textColorPrimary"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toBottomOf="@id/level"
@@ -259,15 +258,55 @@
                         android:id="@+id/attributes"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginBottom="16dp"
-                        android:layout_marginEnd="16dp"
                         android:layout_marginStart="16dp"
                         android:layout_marginTop="24dp"
-                        app:layout_constraintBottom_toBottomOf="parent"
+                        android:layout_marginEnd="16dp"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toBottomOf="@+id/description" />
 
+
+                    <Button
+                        android:id="@+id/follow"
+                        style="@style/Widget.AppCompat.Button.Colored"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="16dp"
+                        android:text="@string/follow"
+                        app:layout_constraintBottom_toTopOf="@+id/isFollower"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@+id/attributes"
+                        app:layout_constraintWidth_percent="0.5"
+                        android:layout_marginBottom="16dp" />
+
+                    <Button
+                        android:id="@+id/unfollow"
+                        style="@style/Widget.AppCompat.Button.Borderless.Colored"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="16dp"
+                        android:background="@drawable/bordered_rectangle_accent_background"
+                        android:text="@string/following"
+                        android:textColor="?attr/colorAccent"
+                        app:layout_constraintBottom_toTopOf="@+id/isFollower"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@+id/attributes"
+                        app:layout_constraintWidth_percent="0.5"
+                        android:layout_marginBottom="16dp" />
+
+                    <TextView
+                        android:id="@+id/isFollower"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="16dp"
+                        android:textAlignment="center"
+                        android:textAppearance="@style/TextAppearance.AppCompat.Caption"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintVertical_bias="1.0"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent" />
 
                     <android.support.constraint.Guideline
                         android:id="@+id/middle"
@@ -289,9 +328,9 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_gravity="bottom"
-                    android:layout_marginEnd="32dp"
                     android:layout_marginStart="32dp"
                     android:layout_marginTop="?attr/actionBarSize"
+                    android:layout_marginEnd="32dp"
                     android:background="@drawable/rounded_top_corners_rectangle">
 
                     <android.support.design.widget.TabItem
@@ -303,6 +342,16 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:icon="@drawable/tab_profile_posts" />
+
+                    <android.support.design.widget.TabItem
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:icon="@drawable/tab_profile_following" />
+
+                    <android.support.design.widget.TabItem
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:icon="@drawable/tab_profile_followers" />
 
                     <android.support.design.widget.TabItem
                         android:layout_width="wrap_content"
@@ -329,19 +378,20 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:paddingBottom="8dp"
+                android:paddingStart="8dp"
                 android:paddingEnd="8dp"
-                android:paddingStart="8dp">
+                android:paddingBottom="8dp">
 
-                <android.support.v4.view.ViewPager
-                    android:id="@+id/pager"
+                <com.bluelinelabs.conductor.ChangeHandlerFrameLayout
+                    android:id="@+id/profileTabContainer"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:layout_marginBottom="8dp"
-                    android:layout_marginEnd="8dp"
                     android:layout_marginStart="8dp"
+                    android:layout_marginEnd="8dp"
+                    android:layout_marginBottom="8dp"
                     android:background="@drawable/rounded_rectangle_background"
                     android:elevation="4dp" />
+
             </LinearLayout>
         </android.support.v4.widget.NestedScrollView>
 
@@ -349,6 +399,5 @@
     </android.support.design.widget.CoordinatorLayout>
 
     <include layout="@layout/view_loader" />
-
 
 </FrameLayout>

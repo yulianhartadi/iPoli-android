@@ -1,6 +1,10 @@
 package io.ipoli.android.habit.usecase
 
+import io.ipoli.android.challenge.entity.SharingPreference
+import io.ipoli.android.challenge.persistence.ChallengeRepository
 import io.ipoli.android.common.UseCase
+import io.ipoli.android.friends.feed.persistence.PostRepository
+import io.ipoli.android.friends.job.AddPostScheduler
 import io.ipoli.android.habit.data.CompletedEntry
 import io.ipoli.android.habit.data.Habit
 import io.ipoli.android.habit.persistence.HabitRepository
@@ -17,7 +21,10 @@ class CompleteHabitUseCase(
     private val habitRepository: HabitRepository,
     private val playerRepository: PlayerRepository,
     private val rewardPlayerUseCase: RewardPlayerUseCase,
-    private val rewardScheduler: RewardScheduler
+    private val rewardScheduler: RewardScheduler,
+    private val challengeRepository: ChallengeRepository,
+    private val addPostScheduler: AddPostScheduler,
+    private val postRepository: PostRepository
 ) : UseCase<CompleteHabitUseCase.Params, Habit> {
 
     override fun execute(parameters: Params): Habit {
@@ -59,11 +66,15 @@ class CompleteHabitUseCase(
                     reward = reward
                 )
                 val h = saveHabit(habit, history)
+
                 rewardScheduler.schedule(
                     reward = reward,
                     type = RewardScheduler.Type.HABIT,
                     entityId = habit.id
                 )
+
+                addPostIfHabitIsPublic(h, date)
+
                 h
 
             } else {
@@ -94,6 +105,24 @@ class CompleteHabitUseCase(
             }
         } else {
             saveHabit(habit, history)
+        }
+    }
+
+    private fun addPostIfHabitIsPublic(
+        habit: Habit,
+        date: LocalDate
+    ) {
+        if (habit.isFromChallenge) {
+            if (challengeRepository.findById(habit.challengeId!!)!!.sharingPreference == SharingPreference.FRIENDS) {
+                val hasPostForHabit = try {
+                    postRepository.hasPostForHabit(habit.id, date)
+                } catch (e: Exception) {
+                    true
+                }
+                if (!hasPostForHabit) {
+                    addPostScheduler.scheduleForHabit(habit.id, habit.challengeId)
+                }
+            }
         }
     }
 

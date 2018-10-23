@@ -48,6 +48,10 @@ sealed class SettingsAction : Action {
         override fun toMap() = mapOf("isEnabled" to isEnabled)
     }
 
+    data class ToggleAutoPosting(val isEnabled: Boolean) : SettingsAction() {
+        override fun toMap() = mapOf("isEnabled" to isEnabled)
+    }
+
     data class ResetDayTimeChanged(val time: Time) : SettingsAction()
 
     data class ReminderNotificationStyleChanged(val style: Player.Preferences.NotificationStyle) :
@@ -119,7 +123,8 @@ object SettingsReducer : BaseViewStateReducer<SettingsViewState>() {
             resetDayTime = player.preferences.resetDayTime,
             selectedCalendars = selectedCalendars,
             isCalendarSyncEnabled = selectedCalendars > 0,
-            isQuickDoNotificationEnabled = player.preferences.isQuickDoNotificationEnabled
+            isQuickDoNotificationEnabled = player.preferences.isQuickDoNotificationEnabled,
+            isAutoPostingEnabled = player.preferences.isAutoPostingEnabled
         )
 
     override fun defaultState() = SettingsViewState(
@@ -133,7 +138,8 @@ object SettingsReducer : BaseViewStateReducer<SettingsViewState>() {
         resetDayTime = Constants.RESET_DAY_TIME,
         planDayNotificationStyle = Constants.DEFAULT_PLAN_DAY_NOTIFICATION_STYLE,
         isCalendarSyncEnabled = false,
-        isQuickDoNotificationEnabled = true,
+        isQuickDoNotificationEnabled = Constants.DEFAULT_QUICK_DO_NOTIFICATION_ENABLED,
+        isAutoPostingEnabled = Constants.DEFAULT_AUTO_POSTING_ENABLED,
         selectedCalendars = 0
     )
 
@@ -153,6 +159,7 @@ data class SettingsViewState(
     val planDayNotificationStyle: Player.Preferences.NotificationStyle,
     val isCalendarSyncEnabled: Boolean,
     val isQuickDoNotificationEnabled: Boolean,
+    val isAutoPostingEnabled: Boolean,
     val selectedCalendars: Int
 ) : BaseViewState() {
 

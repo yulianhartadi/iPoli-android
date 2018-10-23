@@ -90,13 +90,35 @@ class SettingsViewController(args: Bundle? = null) :
         renderReminderNotificationStyle(state, view)
         renderResetDay(state, view)
 
+        renderQuickDoNotification(view, state)
+        renderAutoPosting(view, state)
+    }
+
+    private fun renderQuickDoNotification(
+        view: View,
+        state: SettingsViewState
+    ) {
         view.enableOngoingNotification.setOnCheckedChangeListener(null)
         view.enableOngoingNotification.isChecked = state.isQuickDoNotificationEnabled
-        view.ongoingNotificationContainer.setOnClickListener {
-            dispatch(SettingsAction.ToggleQuickDoNotification(!state.isQuickDoNotificationEnabled))
+        view.ongoingNotificationContainer.dispatchOnClick {
+            SettingsAction.ToggleQuickDoNotification(!state.isQuickDoNotificationEnabled)
         }
         view.enableOngoingNotification.setOnCheckedChangeListener { _, isChecked ->
             dispatch(SettingsAction.ToggleQuickDoNotification(isChecked))
+        }
+    }
+
+    private fun renderAutoPosting(
+        view: View,
+        state: SettingsViewState
+    ) {
+        view.enableAutoPosting.setOnCheckedChangeListener(null)
+        view.enableAutoPosting.isChecked = state.isAutoPostingEnabled
+        view.autoPostingContainer.dispatchOnClick {
+            SettingsAction.ToggleAutoPosting(!state.isAutoPostingEnabled)
+        }
+        view.enableAutoPosting.setOnCheckedChangeListener { _, isChecked ->
+            dispatch(SettingsAction.ToggleAutoPosting(isChecked))
         }
     }
 

@@ -8,16 +8,12 @@ import android.os.Bundle
 import android.support.annotation.ColorInt
 import android.support.design.widget.TabLayout
 import android.support.v4.graphics.drawable.DrawableCompat
-import android.support.v4.view.PagerAdapter
-import android.support.v4.view.ViewPager
 import android.view.*
 import android.widget.ProgressBar
 import android.widget.TextView
 import com.bluelinelabs.conductor.Controller
-import com.bluelinelabs.conductor.Router
 import com.bluelinelabs.conductor.RouterTransaction
 import com.bluelinelabs.conductor.changehandler.HorizontalChangeHandler
-import com.bluelinelabs.conductor.support.RouterPagerAdapter
 import com.bumptech.glide.Glide
 import com.bumptech.glide.request.RequestOptions
 import io.ipoli.android.R
@@ -43,7 +39,7 @@ import kotlinx.android.synthetic.main.view_loader.view.*
 class ProfileViewController(args: Bundle? = null) :
     ReduxViewController<ProfileAction, ProfileViewState, ProfileReducer>(args) {
 
-    override var reducer = ProfileReducer(ProfileReducer.PROFILE_KEY)
+    override val reducer = ProfileReducer(ProfileReducer.PROFILE_KEY)
 
     override var helpConfig: HelpConfig? =
         HelpConfig(
@@ -53,24 +49,6 @@ class ProfileViewController(args: Bundle? = null) :
 
     private var isEdit: Boolean = false
 
-    private val pageChangeListener = object : ViewPager.OnPageChangeListener {
-        override fun onPageScrollStateChanged(state: Int) {
-
-        }
-
-        override fun onPageScrolled(
-            position: Int,
-            positionOffset: Float,
-            positionOffsetPixels: Int
-        ) {
-
-        }
-
-        override fun onPageSelected(position: Int) {
-            view?.tabLayout?.getTabAt(position)?.select()
-        }
-    }
-
     private val tabListener = object : TabLayout.OnTabSelectedListener {
         override fun onTabReselected(tab: TabLayout.Tab?) {
         }
@@ -78,8 +56,15 @@ class ProfileViewController(args: Bundle? = null) :
         override fun onTabUnselected(tab: TabLayout.Tab?) {
         }
 
-        override fun onTabSelected(tab: TabLayout.Tab?) {
-            view?.pager?.currentItem = tab?.position ?: 0
+        override fun onTabSelected(tab: TabLayout.Tab) {
+            showPageAtPosition(view, tab.position)
+        }
+    }
+
+    private fun showPageAtPosition(view: View?, position: Int) {
+        view?.let {
+            val childRouter = getChildRouter(it.profileTabContainer)
+            childRouter.setRoot(RouterTransaction.with(getViewControllerForPage(position)))
         }
     }
 
@@ -114,19 +99,13 @@ class ProfileViewController(args: Bundle? = null) :
     override fun onAttach(view: View) {
         super.onAttach(view)
         showBackButton()
-        view.pager.adapter = ProfilePagerAdapter(this)
-        view.tabLayout.getTabAt(0)!!.select()
         view.tabLayout.addOnTabSelectedListener(tabListener)
-        view.pager.addOnPageChangeListener(pageChangeListener)
+        view.tabLayout.getTabAt(0)!!.select()
+        showPageAtPosition(view, 0)
     }
 
     override fun onDetach(view: View) {
         view.tabLayout.removeOnTabSelectedListener(tabListener)
-        view.pager.removeOnPageChangeListener(pageChangeListener)
-        view.pager.adapter = object : PagerAdapter() {
-            override fun isViewFromObject(view: View, `object`: Any) = false
-            override fun getCount() = 0
-        }
         resetDecorView()
         super.onDetach(view)
     }
@@ -158,10 +137,6 @@ class ProfileViewController(args: Bundle? = null) :
                 navigate().toEditProfile()
         }
         return super.onOptionsItemSelected(item)
-    }
-
-    override fun handleBack(): Boolean {
-        return super.handleBack()
     }
 
     override fun onCreateLoadAction() = ProfileAction.Load(null)
@@ -376,23 +351,21 @@ class ProfileViewController(args: Bundle? = null) :
             stringRes(AndroidRank.valueOf(nextRank!!.name).title)
         )
 
-    inner class ProfilePagerAdapter(controller: Controller) :
-        RouterPagerAdapter(controller) {
-
-        override fun configureRouter(router: Router, position: Int) {
-            val page = when (position) {
-                0 -> ProfileInfoViewController(reducer.stateKey)
-                1 -> ProfilePostListViewController(reducer.stateKey, null)
-                2 -> ProfileFriendListViewController(reducer.stateKey)
-                3 -> ProfileChallengeListViewController(reducer.stateKey, null)
-                else -> throw IllegalArgumentException("Unknown controller position $position")
-            }
-            router.setRoot(RouterTransaction.with(page))
+    private fun getViewControllerForPage(position: Int): Controller {
+        return when (position) {
+            0 -> ProfileInfoViewController(reducer.stateKey)
+            1 -> ProfilePostListViewController(reducer.stateKey, null)
+            2 -> ProfilePlayerListViewController(
+                reducerKey = reducer.stateKey,
+                showFollowers = false
+            )
+            3 -> ProfilePlayerListViewController(
+                reducerKey = reducer.stateKey,
+                showFollowers = true
+            )
+            4 -> ProfileChallengeListViewController(reducer.stateKey, null)
+            else -> throw IllegalArgumentException("Unknown controller position $position")
         }
-
-        override fun getItemPosition(`object`: Any): Int = PagerAdapter.POSITION_NONE
-
-        override fun getCount() = 4
     }
 
     data class AttributeViewModel(

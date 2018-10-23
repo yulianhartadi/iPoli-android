@@ -54,8 +54,6 @@ class HabitViewController(args: Bundle? = null) :
         this.habitId = habitId
     }
 
-    override fun onCreateLoadAction() = HabitAction.Load(habitId)
-
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup,
@@ -63,7 +61,7 @@ class HabitViewController(args: Bundle? = null) :
     ): View {
         setHasOptionsMenu(true)
         applyStatusBarColors = false
-        val view = inflater.inflate(R.layout.controller_habit, container, false)
+        val view = container.inflate(R.layout.controller_habit)
 
         setToolbar(view.toolbar)
         view.collapsingToolbarContainer.isTitleEnabled = false
@@ -88,6 +86,8 @@ class HabitViewController(args: Bundle? = null) :
 
         return view
     }
+
+    override fun onCreateLoadAction() = HabitAction.Load(habitId)
 
     class SkipFirstChangeMonthListener(private inline val onChange: (Int, Int) -> Unit) :
         CalendarView.OnMonthChangeListener {

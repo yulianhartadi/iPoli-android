@@ -21,12 +21,12 @@ import com.google.android.gms.appinvite.AppInviteInvitation
 import io.ipoli.android.Constants
 import io.ipoli.android.Constants.Companion.FACEBOOK_PACKAGE
 import io.ipoli.android.Constants.Companion.TWITTER_PACKAGE
+import io.ipoli.android.MyPoliApp
 import io.ipoli.android.R
 import io.ipoli.android.common.di.UIModule
 import io.ipoli.android.common.view.BaseDialogController
 import io.ipoli.android.common.view.showLongToast
 import io.ipoli.android.common.view.stringRes
-import io.ipoli.android.MyPoliApp
 import kotlinx.android.synthetic.main.item_share.view.*
 import kotlinx.android.synthetic.main.view_dialog_header.view.*
 import space.traversal.kapsule.Injects
@@ -47,15 +47,26 @@ class ShareAppDialogController(args: Bundle? = null) : BaseDialogController(args
         const val SHARE_APP_REQUEST_CODE = 876
     }
 
+    private var dialogTitle: String = ""
+    private var message: String = ""
+
+    constructor(dialogTitle: String, message: String) : this() {
+        this.dialogTitle = dialogTitle
+        this.message = message
+    }
+
     @SuppressLint("InflateParams")
     override fun onCreateContentView(inflater: LayoutInflater, savedViewState: Bundle?): View {
         inject(MyPoliApp.uiModule(MyPoliApp.instance))
         registerForActivityResult(SHARE_APP_REQUEST_CODE)
+        activity?.let {
+            eventLogger.logCurrentScreen(it, "ShareApp")
+        }
         return inflater.inflate(R.layout.dialog_share_app, null)
     }
 
     override fun onHeaderViewCreated(headerView: View?) {
-        headerView!!.dialogHeaderTitle.setText(R.string.share_app)
+        headerView!!.dialogHeaderTitle.text = dialogTitle
         val v = ViewUtils.dpToPx(8f, headerView.context).toInt()
         headerView.dialogHeaderIcon.setPadding(v, v, v, v)
         headerView.dialogHeaderIcon.setImageResource(R.drawable.ic_person_add_white_24dp)
@@ -77,17 +88,24 @@ class ShareAppDialogController(args: Bundle? = null) : BaseDialogController(args
                 filterInviteProviders(contentView.context, inviteIntent)
             )
         dialogBuilder.setAdapter(adapter) { _, item ->
-            val message = stringRes(R.string.invite_message)
-            val packageName = adapter.getItem(item).packageName
+            val sa = adapter.getItem(item)
+            val packageName = sa.packageName
 
             when {
-                packageName == null -> onInviteWithFirebase(message)
-                isFacebook(packageName) -> onInviteWithFacebook()
+                packageName == null -> {
+                    eventLogger.logEvent("share_app", mapOf("provider" to "Firebase"))
+                    onInviteWithFirebase(message)
+                }
+                isFacebook(packageName) -> {
+                    eventLogger.logEvent("share_app", mapOf("provider" to "Facebook"))
+                    onInviteWithFacebook()
+                }
                 else -> {
-                    var text = message + " " + Constants.SHARE_URL
+                    var text = message
                     if (isTwitter(packageName)) {
                         text += " via " + Constants.TWITTER_USERNAME
                     }
+                    eventLogger.logEvent("share_app", mapOf("provider" to sa.name))
 
                     inviteIntent.putExtra(Intent.EXTRA_TEXT, text)
                     inviteIntent.`package` = packageName

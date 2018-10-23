@@ -19,8 +19,6 @@
 
         <include layout="@layout/view_empty_list" />
 
-        <include layout="@layout/view_require_login" />
-
         <android.support.v7.widget.RecyclerView
             android:id="@+id/reactionPopup"
             android:layout_width="wrap_content"

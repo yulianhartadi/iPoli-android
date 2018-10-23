@@ -1,5 +1,6 @@
 package io.ipoli.android.challenge.preset.sideeffect
 
+import io.ipoli.android.MyPoliApp
 import io.ipoli.android.challenge.preset.PresetChallengeAction
 import io.ipoli.android.challenge.preset.category.list.ChallengeListForCategoryAction
 import io.ipoli.android.challenge.preset.usecase.UnlockPresetChallengeUseCase
@@ -7,6 +8,7 @@ import io.ipoli.android.challenge.usecase.CreateChallengeFromPresetUseCase
 import io.ipoli.android.common.AppSideEffectHandler
 import io.ipoli.android.common.AppState
 import io.ipoli.android.common.DataLoadedAction
+import io.ipoli.android.common.IntentUtil
 import io.ipoli.android.common.redux.Action
 import org.threeten.bp.LocalDate
 import space.traversal.kapsule.required
@@ -37,7 +39,7 @@ object PresetChallengeSideEffectHandler : AppSideEffectHandler() {
             }
 
             is PresetChallengeAction.Accept -> {
-                createChallengeFromPresetUseCase.execute(
+                val c = createChallengeFromPresetUseCase.execute(
                     CreateChallengeFromPresetUseCase.Params(
                         preset = action.challenge,
                         schedule = action.schedule,
@@ -45,6 +47,12 @@ object PresetChallengeSideEffectHandler : AppSideEffectHandler() {
                         startDate = LocalDate.now(),
                         questsStartTime = action.startTime,
                         playerPhysicalCharacteristics = action.physicalCharacteristics
+                    )
+                )
+                MyPoliApp.instance.startActivity(
+                    IntentUtil.showAddChallengePost(
+                        c.id,
+                        MyPoliApp.instance
                     )
                 )
             }
