@@ -9,42 +9,6 @@
     android:focusable="true"
     android:foreground="?attr/selectableItemBackground">
 
-    <TextView
-        android:id="@+id/questName"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center_vertical"
-        android:layout_marginEnd="16dp"
-        android:layout_marginStart="16dp"
-        android:ellipsize="end"
-        android:maxLines="1"
-        android:textAppearance="@style/TextAppearance.AppCompat.Body2"
-        android:textColor="?android:textColorPrimary"
-        app:layout_constraintBottom_toTopOf="@+id/questTagName"
-        app:layout_constraintEnd_toStartOf="@+id/questStartTime"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toEndOf="@+id/questIcon"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_chainStyle="packed"
-        tools:text="Name" />
-
-    <TextView
-        android:id="@+id/questTagName"
-        android:layout_width="0dp"
-        android:layout_height="16dp"
-        android:layout_marginStart="16dp"
-        android:layout_gravity="center_vertical"
-        android:drawablePadding="4dp"
-        android:drawableStart="@drawable/tag_indicator"
-        android:ellipsize="end"
-        android:includeFontPadding="false"
-        android:maxLines="1"
-        android:textAppearance="@style/TextAppearance.AppCompat.Caption"
-        android:textColor="?android:textColorSecondary"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/questIcon"
-        app:layout_constraintTop_toBottomOf="@+id/questName"
-        tools:text="texty " />
 
     <ImageView
         android:id="@+id/questIcon"
@@ -59,6 +23,64 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
+        android:id="@+id/questName"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_vertical"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp"
+        android:ellipsize="end"
+        android:maxLines="1"
+        android:textAppearance="@style/TextAppearance.AppCompat.Body2"
+        android:textColor="?android:textColorPrimary"
+        app:layout_constraintBottom_toTopOf="@+id/questInfoContainer"
+        app:layout_constraintEnd_toStartOf="@+id/questStartTime"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toEndOf="@+id/questIcon"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_chainStyle="packed"
+        tools:text="Name" />
+
+    <LinearLayout
+        android:id="@+id/questInfoContainer"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="@+id/questName"
+        app:layout_constraintTop_toBottomOf="@+id/questName">
+
+        <TextView
+            android:id="@+id/questTagName"
+            android:layout_width="wrap_content"
+            android:layout_height="16dp"
+            android:layout_gravity="center_vertical"
+            android:layout_marginEnd="8dp"
+            android:drawableStart="@drawable/tag_indicator"
+            android:drawablePadding="4dp"
+            android:ellipsize="end"
+            android:includeFontPadding="false"
+            android:maxLines="1"
+            android:textAppearance="@style/TextAppearance.AppCompat.Caption"
+            android:textColor="?android:textColorSecondary"
+            tools:text="texty " />
+
+        <ImageView
+            android:id="@+id/questRepeatIndicator"
+            android:layout_width="16dp"
+            android:layout_height="16dp"
+            android:layout_marginEnd="8dp"
+            app:srcCompat="@drawable/ic_repeat_primary_text_24dp" />
+
+        <ImageView
+            android:id="@+id/questChallengeIndicator"
+            android:layout_width="16dp"
+            android:layout_height="16dp"
+            app:srcCompat="@drawable/ic_sword_primary_text_24dp" />
+    </LinearLayout>
+
+
+    <TextView
         android:id="@+id/questStartTime"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -69,27 +91,4 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         tools:text="12:00 - 13:00" />
-
-    <ImageView
-        android:id="@+id/questRepeatIndicator"
-        android:layout_width="16dp"
-        android:layout_height="16dp"
-        android:layout_marginStart="8dp"
-        app:layout_constraintBottom_toBottomOf="@+id/questTagName"
-        app:layout_constraintStart_toEndOf="@+id/questTagName"
-        app:layout_constraintTop_toTopOf="@+id/questTagName"
-        app:srcCompat="@drawable/ic_repeat_primary_text_24dp" />
-
-    <ImageView
-        android:id="@+id/questChallengeIndicator"
-        android:layout_width="16dp"
-        android:layout_height="16dp"
-        android:layout_marginEnd="16dp"
-        android:layout_marginStart="8dp"
-        app:layout_constraintBottom_toBottomOf="@+id/questTagName"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toEndOf="@+id/questRepeatIndicator"
-        app:layout_constraintTop_toTopOf="@+id/questTagName"
-        app:srcCompat="@drawable/ic_sword_primary_text_24dp" />
 </android.support.constraint.ConstraintLayout>
