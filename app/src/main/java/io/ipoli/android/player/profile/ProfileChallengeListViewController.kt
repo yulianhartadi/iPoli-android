@@ -188,7 +188,7 @@ class ProfileChallengeListViewController(args: Bundle? = null) :
                         id = it.id,
                         name = it.name,
                         icon = it.icon?.let { AndroidIcon.valueOf(it.name).icon }
-                            ?: Ionicons.Icon.ion_android_clipboard,
+                            ?: Ionicons.Icon.ion_checkmark,
                         color = it.color.androidColor.color500,
                         end = when {
                             daysUntilComplete < 0L -> stringRes(
@@ -222,7 +222,7 @@ class ProfileChallengeListViewController(args: Bundle? = null) :
                         id = it.id,
                         name = it.name,
                         icon = it.icon?.let { AndroidIcon.valueOf(it.name).icon }
-                            ?: Ionicons.Icon.ion_android_clipboard,
+                            ?: Ionicons.Icon.ion_checkmark,
                         color = it.color.androidColor.color500,
                         end = stringRes(
                             R.string.completed_at_date,

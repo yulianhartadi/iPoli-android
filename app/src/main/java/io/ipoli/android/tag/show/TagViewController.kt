@@ -392,7 +392,7 @@ class TagViewController(args: Bundle? = null) :
                             ),
                             color = color,
                             icon = q.icon?.androidIcon?.icon
-                                ?: Ionicons.Icon.ion_android_clipboard,
+                                ?: Ionicons.Icon.ion_checkmark,
                             isRepeating = q.isFromRepeatingQuest,
                             isFromChallenge = q.isFromChallenge
                         )
@@ -408,7 +408,7 @@ class TagViewController(args: Bundle? = null) :
                             ),
                             color = color,
                             icon = q.icon?.androidIcon?.icon
-                                ?: Ionicons.Icon.ion_android_clipboard,
+                                ?: Ionicons.Icon.ion_checkmark,
                             isRepeating = q.isFromRepeatingQuest,
                             isFromChallenge = q.isFromChallenge
                         )

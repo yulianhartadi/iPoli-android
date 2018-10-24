@@ -44,7 +44,7 @@ class FeedViewController(args: Bundle? = null) :
         savedViewState: Bundle?
     ): View {
         setHasOptionsMenu(true)
-        val view = inflater.inflate(R.layout.controller_feed, container, false)
+        val view = container.inflate(R.layout.controller_feed)
 
         view.shareItem.onDebounceClick {
             navigateFromRoot().toPostItemPicker()
@@ -93,6 +93,7 @@ class FeedViewController(args: Bundle? = null) :
 
     override fun onAttach(view: View) {
         super.onAttach(view)
+        enableToolbarTitle()
         toolbarTitle = stringRes(R.string.drawer_feed)
     }
 

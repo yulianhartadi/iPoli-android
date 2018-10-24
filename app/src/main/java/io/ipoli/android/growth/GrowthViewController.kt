@@ -128,6 +128,7 @@ class GrowthViewController(args: Bundle? = null) :
         view.tabs.getTabAt(0)!!.select()
         view.tabs.addOnTabSelectedListener(tabListener)
         super.onAttach(view)
+        enableToolbarTitle()
         toolbarTitle = stringRes(R.string.drawer_growth)
     }
 

@@ -117,6 +117,11 @@ class HabitViewController(args: Bundle? = null) :
         super.onDetach(view)
     }
 
+    override fun onDestroyView(view: View) {
+        view.appbar.removeOnOffsetChangedListener(appBarOffsetListener)
+        super.onDestroyView(view)
+    }
+
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         super.onCreateOptionsMenu(menu, inflater)
         inflater.inflate(R.menu.habit_menu, menu)

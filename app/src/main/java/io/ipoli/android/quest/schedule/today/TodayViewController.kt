@@ -7,13 +7,16 @@ import android.graphics.drawable.GradientDrawable
 import android.os.Bundle
 import android.support.annotation.ColorInt
 import android.support.annotation.ColorRes
-import android.support.design.widget.AppBarLayout
+import android.support.design.widget.FloatingActionButton
 import android.support.v4.widget.TextViewCompat
 import android.support.v7.widget.GridLayoutManager
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
 import android.support.v7.widget.helper.ItemTouchHelper
-import android.view.*
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewAnimationUtils
+import android.view.ViewGroup
 import android.view.animation.AccelerateDecelerateInterpolator
 import android.view.animation.Animation
 import android.view.animation.AnimationUtils
@@ -24,7 +27,6 @@ import com.mikepenz.iconics.IconicsDrawable
 import com.mikepenz.iconics.typeface.IIcon
 import com.mikepenz.ionicons_typeface_library.Ionicons
 import io.ipoli.android.Constants
-import io.ipoli.android.MainActivity
 import io.ipoli.android.R
 import io.ipoli.android.common.ViewUtils
 import io.ipoli.android.common.redux.android.ReduxViewController
@@ -36,11 +38,15 @@ import io.ipoli.android.common.view.recyclerview.*
 import io.ipoli.android.dailychallenge.usecase.CheckDailyChallengeProgressUseCase
 import io.ipoli.android.event.Event
 import io.ipoli.android.quest.schedule.addquest.AddQuestAnimationHelper
+import io.ipoli.android.quest.schedule.today.TodayViewState.StateType.*
 import io.ipoli.android.quest.schedule.today.usecase.CreateTodayItemsUseCase
+import kotlinx.android.synthetic.main.controller_home.view.*
 import kotlinx.android.synthetic.main.controller_today.view.*
 import kotlinx.android.synthetic.main.item_agenda_event.view.*
 import kotlinx.android.synthetic.main.item_agenda_quest.view.*
 import kotlinx.android.synthetic.main.item_habit_list.view.*
+import kotlinx.android.synthetic.main.view_fab.view.*
+import kotlinx.android.synthetic.main.view_today_stats.view.*
 import org.threeten.bp.LocalDate
 import org.threeten.bp.format.TextStyle
 import space.traversal.kapsule.required
@@ -51,25 +57,15 @@ class TodayViewController(args: Bundle? = null) :
 
     override val reducer = TodayReducer
 
+    private lateinit var addQuestAnimationHelper: AddQuestAnimationHelper
+
     private val imageLoader by required { imageLoader }
 
-    private val appBarOffsetListener = object :
-        AppBarStateChangeListener() {
-        override fun onStateChanged(appBarLayout: AppBarLayout, state: State) {
+    private var showDataAfterStats = false
 
-            appBarLayout.post {
-                if (state == State.EXPANDED) {
-                    (activity as MainActivity).supportActionBar?.setDisplayShowTitleEnabled(
-                        false
-                    )
-                } else if (state == State.COLLAPSED) {
-                    (activity as MainActivity).supportActionBar?.setDisplayShowTitleEnabled(true)
-                }
-            }
-        }
+    constructor(showDataAfterStats: Boolean) : this() {
+        this.showDataAfterStats = showDataAfterStats
     }
-
-    private lateinit var addQuestAnimationHelper: AddQuestAnimationHelper
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -79,24 +75,14 @@ class TodayViewController(args: Bundle? = null) :
         setHasOptionsMenu(true)
         val view = container.inflate(R.layout.controller_today)
 
-        setToolbar(view.toolbar)
-        val collapsingToolbar = view.collapsingToolbarContainer
-        collapsingToolbar.isTitleEnabled = false
-
-        view.appbar.addOnOffsetChangedListener(appBarOffsetListener)
-
         val today = LocalDate.now()
-        view.todayDate.text = today.dayOfMonth.toString()
-        view.todayDayOfWeek.text =
-            today.dayOfWeek.getDisplayName(TextStyle.FULL, Locale.getDefault())
-
         toolbarTitle = CalendarFormatter(view.context).dateWithoutYear(today)
 
         view.questItems.layoutManager = LinearLayoutManager(view.context)
         view.questItems.isNestedScrollingEnabled = false
         view.questItems.adapter = TodayItemAdapter()
 
-        val gridLayoutManager = GridLayoutManager(view.context, 2)
+        val gridLayoutManager = GridLayoutManager(view.context, 3)
         view.habitItems.layoutManager = gridLayoutManager
 
         val adapter = HabitListAdapter()
@@ -109,9 +95,11 @@ class TodayViewController(args: Bundle? = null) :
         initIncompleteSwipeHandler(view)
         initCompletedSwipeHandler(view)
 
-        view.backdropContainer.setBackgroundColor(attrData(android.R.attr.colorBackground))
-
-        initAddQuest(view, today)
+        if (showDataAfterStats) {
+            view.dataContainer.gone()
+        } else {
+            view.dataContainer.visible()
+        }
 
         return view
     }
@@ -201,11 +189,11 @@ class TodayViewController(args: Bundle? = null) :
         itemTouchHelper.attachToRecyclerView(view.questItems)
     }
 
-    private fun initAddQuest(view: View, currentDate: LocalDate) {
+    private fun initAddQuest(view: View, addQuest: FloatingActionButton, currentDate: LocalDate) {
         addQuestAnimationHelper = AddQuestAnimationHelper(
             controller = this,
             addContainer = view.addContainer,
-            fab = view.addQuest,
+            fab = addQuest,
             background = view.addContainerBackground
         )
 
@@ -215,55 +203,61 @@ class TodayViewController(args: Bundle? = null) :
             addQuestAnimationHelper.closeAddContainer()
         }
 
-        view.addQuest.setOnClickListener {
+        addQuest.setOnClickListener {
             addQuestAnimationHelper.openAddContainer(currentDate)
         }
     }
 
+    private var statsContainer: View? = null
+
     private fun addContainerRouter(view: View) =
         getChildRouter(view.addContainer, "add-quest")
 
-    override fun onCreateLoadAction() = TodayAction.Load(LocalDate.now())
+    override fun onCreateLoadAction() = TodayAction.Load(LocalDate.now(), showDataAfterStats)
 
     override fun onAttach(view: View) {
-        showBackButton()
         super.onAttach(view)
-        colorStatusBar(android.R.color.transparent)
+        val fab = (view as ViewGroup).inflate(R.layout.view_fab)
+        (parentController!!.view!!.rootCoordinator as ViewGroup).addView(fab)
+        initAddQuest(view, fab as FloatingActionButton, LocalDate.now())
 
-        val showTitle =
-            appBarOffsetListener.currentState != AppBarStateChangeListener.State.EXPANDED
-        (activity as MainActivity).supportActionBar?.setDisplayShowTitleEnabled(showTitle)
+        statsContainer = view.inflate(R.layout.view_today_stats)
+        (parentController!!.view!!.todayCollapsingToolbarContainer as ViewGroup).addView(
+            statsContainer,
+            0
+        )
     }
 
-    override fun onDestroyView(view: View) {
-        view.appbar.removeOnOffsetChangedListener(appBarOffsetListener)
-        super.onDestroyView(view)
-    }
-
-    override fun onOptionsItemSelected(item: MenuItem) =
-        when (item.itemId) {
-
-            android.R.id.home ->
-                router.handleBack()
-
-            else -> super.onOptionsItemSelected(item)
+    override fun onDetach(view: View) {
+        parentController?.view?.let {
+            val fabView = it.rootCoordinator.addQuest
+            it.rootCoordinator.removeView(fabView)
+            it.todayCollapsingToolbarContainer.removeView(statsContainer)
         }
 
-    private fun loadImage(view: View) {
-        imageLoader.loadTodayImage(
-            imageUrl = TodayImageUrlProvider.getRandomImageUrl(),
-            view = view.backdrop,
-            onReady = {
-                view.backdrop.fadeIn(mediumAnimTime, onComplete = {
-                    dispatch(TodayAction.ImageLoaded)
-                })
-            },
-            onError = { _ ->
-                view.backdrop.fadeIn(mediumAnimTime, onComplete = {
-                    dispatch(TodayAction.ImageLoaded)
-                })
-            }
-        )
+        statsContainer = null
+
+        super.onDetach(view)
+    }
+
+    private fun loadImage(view: View, state: TodayViewState) {
+        state.todayImageUrl?.let {
+            imageLoader.loadTodayImage(
+                imageUrl = it,
+                view = view.todayBackdrop,
+                onReady = {
+                    view.todayBackdrop.fadeIn(mediumAnimTime, onComplete = {
+                        dispatch(TodayAction.ImageLoaded)
+                    })
+                },
+                onError = { _ ->
+                    view.todayBackdrop.fadeIn(mediumAnimTime, onComplete = {
+                        dispatch(TodayAction.ImageLoaded)
+                    })
+                }
+            )
+        }
+
     }
 
     private fun animateStats(view: View) {
@@ -316,40 +310,34 @@ class TodayViewController(args: Bundle? = null) :
             })
     }
 
-    private fun colorStatusBar(@ColorRes color: Int) {
-        activity?.window?.let {
-            it.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS)
-            it.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS)
-            it.statusBarColor = colorRes(color)
-        }
-    }
-
     override fun render(state: TodayViewState, view: View) {
 
         when (state.type) {
 
-            TodayViewState.StateType.SHOW_IMAGE ->
-                loadImage(view)
+            SHOW_IMAGE ->
+                loadImage(statsContainer!!, state)
 
-            TodayViewState.StateType.SHOW_STATS -> {
-                updateStats(state, view)
-                animateStats(view)
+            SHOW_SUMMARY_STATS -> {
+                updateStats(state, statsContainer!!)
+                animateStats(statsContainer!!)
             }
 
-            TodayViewState.StateType.SHOW_DATA -> {
-                updateStats(state, view)
+            SUMMARY_STATS_CHANGED ->
+                updateStats(state, statsContainer!!)
+
+            SHOW_DATA ->
+                view.dataContainer.visible()
+
+            DATA_CHANGED -> {
                 renderHabits(view, state)
                 renderQuests(state, view)
             }
 
-            TodayViewState.StateType.HABITS_CHANGED -> {
+            HABITS_CHANGED ->
                 renderHabits(view, state)
-            }
 
-            TodayViewState.StateType.QUESTS_CHANGED -> {
-                updateStats(state, view)
+            QUESTS_CHANGED ->
                 renderQuests(state, view)
-            }
 
             else -> {
             }
@@ -357,6 +345,12 @@ class TodayViewController(args: Bundle? = null) :
     }
 
     private fun updateStats(state: TodayViewState, view: View) {
+
+        val today = LocalDate.now()
+        view.todayDate.text = today.dayOfMonth.toString()
+        view.todayDayOfWeek.text =
+            today.dayOfWeek.getDisplayName(TextStyle.FULL, Locale.getDefault())
+
         val awesomenessScore = Constants.DECIMAL_FORMATTER.format(state.awesomenessScore!!)
         view.todayAwesomenessScore.text = "$awesomenessScore/${Constants.MAX_AWESOMENESS_SCORE}"
 
@@ -452,8 +446,7 @@ class TodayViewController(args: Bundle? = null) :
             override val id: String,
             val name: String,
             val startTime: String,
-            @ColorInt val color: Int,
-            val icon: IIcon
+            @ColorInt val color: Int
         ) : TodayItemViewModel(id)
     }
 
@@ -469,7 +462,7 @@ class TodayViewController(args: Bundle? = null) :
 
             registerBinder<TodayItemViewModel.Section>(
                 QuestViewType.SECTION.ordinal,
-                R.layout.item_list_section
+                R.layout.item_agenda_list_section
             ) { vm, view, _ ->
                 (view as TextView).text = vm.text
                 view.setOnClickListener(null)
@@ -483,7 +476,7 @@ class TodayViewController(args: Bundle? = null) :
 
                 view.questIcon.backgroundTintList =
                     ColorStateList.valueOf(colorRes(vm.color))
-                view.questIcon.setImageDrawable(listItemIcon(vm.icon))
+                view.questIcon.setImageDrawable(smallListItemIcon(vm.icon))
 
                 if (vm.tags.isNotEmpty()) {
                     view.questTagName.visible()
@@ -513,7 +506,6 @@ class TodayViewController(args: Bundle? = null) :
 
                 view.eventIcon.backgroundTintList =
                     ColorStateList.valueOf(vm.color)
-                view.eventIcon.setImageDrawable(listItemIcon(vm.icon))
                 view.setOnClickListener(null)
             }
         }
@@ -658,7 +650,7 @@ class TodayViewController(args: Bundle? = null) :
             color: Int
         ) {
             view.habitIcon.setImageDrawable(
-                IconicsDrawable(view.context).normalIcon(icon, color)
+                IconicsDrawable(view.context).listItemIcon(icon, color)
             )
         }
 
@@ -782,7 +774,7 @@ class TodayViewController(args: Bundle? = null) :
 
             view.questIcon.backgroundTintList =
                 ColorStateList.valueOf(colorRes(vm.color))
-            view.questIcon.setImageDrawable(listItemIcon(vm.icon))
+            view.questIcon.setImageDrawable(smallListItemIcon(vm.icon))
 
             if (vm.tags.isNotEmpty()) {
                 view.questTagName.visible()
@@ -858,7 +850,7 @@ class TodayViewController(args: Bundle? = null) :
                             ),
                             color = quest.color.androidColor.color500,
                             icon = quest.icon?.let { ic -> AndroidIcon.valueOf(ic.name).icon }
-                                ?: Ionicons.Icon.ion_android_clipboard,
+                                ?: Ionicons.Icon.ion_checkmark,
                             isRepeating = quest.isFromRepeatingQuest,
                             isFromChallenge = quest.isFromChallenge
                         )
@@ -870,8 +862,7 @@ class TodayViewController(args: Bundle? = null) :
                             id = event.name,
                             name = event.name,
                             startTime = formatStartTime(event),
-                            color = event.color,
-                            icon = GoogleMaterial.Icon.gmd_event_available
+                            color = event.color
                         )
                     }
                 }
@@ -922,7 +913,7 @@ class TodayViewController(args: Bundle? = null) :
                     ),
                     color = R.color.md_grey_500,
                     icon = it.icon?.let { ic -> AndroidIcon.valueOf(ic.name).icon }
-                        ?: Ionicons.Icon.ion_android_clipboard,
+                        ?: Ionicons.Icon.ion_checkmark,
                     isRepeating = it.isFromRepeatingQuest,
                     isFromChallenge = it.isFromChallenge
                 )

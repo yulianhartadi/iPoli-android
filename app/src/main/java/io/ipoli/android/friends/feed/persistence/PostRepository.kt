@@ -531,7 +531,7 @@ class AndroidPostRepository(
                     id = it.key,
                     playerId = dbComment.playerId,
                     playerAvatar = Avatar.valueOf(dbCommentPlayer.avatar),
-                    playerDisplayName = dbCommentPlayer.displayName ?: "Unknown Hero",
+                    playerDisplayName = if (dbCommentPlayer.displayName.isNullOrBlank()) "Unknown Hero" else dbCommentPlayer.displayName!!,
                     playerUsername = dbCommentPlayer.username!!,
                     playerLevel = dbPost.playerLevel.toInt(),
                     text = dbComment.text,

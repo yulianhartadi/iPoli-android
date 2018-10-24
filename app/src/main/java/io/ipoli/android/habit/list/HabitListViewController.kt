@@ -47,9 +47,7 @@ class HabitListViewController(args: Bundle? = null) :
         savedViewState: Bundle?
     ): View {
         setHasOptionsMenu(true)
-        val view = inflater.inflate(R.layout.controller_habit_list, container, false)
-
-        toolbarTitle = stringRes(R.string.habits)
+        val view = container.inflate(R.layout.controller_habit_list)
 
         val gridLayoutManager = GridLayoutManager(view.context, 2)
         view.habitList.layoutManager = gridLayoutManager
@@ -72,6 +70,12 @@ class HabitListViewController(args: Bundle? = null) :
     }
 
     override fun onCreateLoadAction() = HabitListAction.Load
+
+    override fun onAttach(view: View) {
+        super.onAttach(view)
+        enableToolbarTitle()
+        toolbarTitle = stringRes(R.string.habits)
+    }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         super.onCreateOptionsMenu(menu, inflater)

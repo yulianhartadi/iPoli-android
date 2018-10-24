@@ -266,7 +266,7 @@ fun QuestPickerViewState.toViewModels() =
                     name = quest.name,
                     color = AndroidColor.valueOf(quest.color.name).color500,
                     icon = quest.icon?.let { AndroidIcon.valueOf(it.name).icon }
-                        ?: Ionicons.Icon.ion_android_clipboard,
+                        ?: Ionicons.Icon.ion_checkmark,
                     isRepeating = false,
                     isSelected = selectedQuests.contains(it.id)
                 )
@@ -278,7 +278,7 @@ fun QuestPickerViewState.toViewModels() =
                     name = rq.name,
                     color = AndroidColor.valueOf(rq.color.name).color500,
                     icon = rq.icon?.let { AndroidIcon.valueOf(it.name).icon }
-                        ?: Ionicons.Icon.ion_android_clipboard,
+                        ?: Ionicons.Icon.ion_checkmark,
                     isRepeating = true,
                     isSelected = selectedQuests.contains(it.id)
                 )

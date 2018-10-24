@@ -449,7 +449,7 @@ class PlanDayTodayViewController(args: Bundle? = null) :
                         GoogleMaterial.Icon.gmd_timer,
                     color = it.color.androidColor.color500,
                     icon = it.icon?.androidIcon?.icon
-                        ?: Ionicons.Icon.ion_android_clipboard,
+                        ?: Ionicons.Icon.ion_checkmark,
                     isRepeating = it.isFromRepeatingQuest,
                     isFromChallenge = it.isFromChallenge
                 )
@@ -472,7 +472,7 @@ class PlanDayTodayViewController(args: Bundle? = null) :
                     duration = DurationFormatter.formatShort(it.duration),
                     color = it.color.androidColor.color500,
                     icon = it.icon?.androidIcon?.icon
-                        ?: Ionicons.Icon.ion_android_clipboard,
+                        ?: Ionicons.Icon.ion_checkmark,
                     isRepeating = it.isFromRepeatingQuest,
                     isFromChallenge = it.isFromChallenge,
                     isForDailyChallenge = dailyChallengeQuestIds!!.contains(it.id),

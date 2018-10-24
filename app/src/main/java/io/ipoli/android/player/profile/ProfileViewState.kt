@@ -79,6 +79,7 @@ class ProfileReducer(reducerKey: String) : BaseViewStateReducer<ProfileViewState
                         friendId = action.friendId
                     )
                 } else {
+
                     val p = state.dataState.player
                     if (p != null)
                         createStateFromPlayer(p, subState)
@@ -131,7 +132,7 @@ class ProfileReducer(reducerKey: String) : BaseViewStateReducer<ProfileViewState
             }
 
             is ProfileAction.LoadInfo ->
-                if (subState.username != null)
+                if (subState.username != null && subState.last7DaysAverageProductiveDuration != null)
                     subState.copy(
                         type = PROFILE_INFO_LOADED
                     )
@@ -250,7 +251,7 @@ class ProfileReducer(reducerKey: String) : BaseViewStateReducer<ProfileViewState
                 type = PROFILE_DATA_LOADED
             )
         } else {
-            newState
+            newState.copy(type = LOADING)
         }
     }
 

@@ -3,7 +3,7 @@
     android:layout_width="match_parent"
     android:layout_height="48dp"
     android:gravity="center_vertical"
-    android:paddingEnd="16dp"
     android:paddingStart="72dp"
-    android:textColor="?android:textColorSecondary"
-    android:textSize="18sp" />
+    android:paddingEnd="16dp"
+    android:textAppearance="@style/TextAppearance.AppCompat.Subhead"
+    android:textColor="?android:textColorSecondary" />

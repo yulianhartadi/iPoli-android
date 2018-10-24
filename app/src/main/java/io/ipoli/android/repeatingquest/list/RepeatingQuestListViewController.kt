@@ -53,8 +53,8 @@ class RepeatingQuestListViewController(args: Bundle? = null) :
         savedViewState: Bundle?
     ): View {
         setHasOptionsMenu(true)
-        val view = inflater.inflate(
-            R.layout.controller_repeating_quest_list, container, false
+        val view = container.inflate(
+            R.layout.controller_repeating_quest_list
         )
         view.repeatingQuestList.layoutManager =
             LinearLayoutManager(container.context, LinearLayoutManager.VERTICAL, false)
@@ -72,6 +72,7 @@ class RepeatingQuestListViewController(args: Bundle? = null) :
 
     override fun onAttach(view: View) {
         super.onAttach(view)
+        enableToolbarTitle()
         toolbarTitle = stringRes(R.string.drawer_repeating_quests)
     }
 
@@ -273,7 +274,7 @@ class RepeatingQuestListViewController(args: Bundle? = null) :
                     name = it.name,
                     tags = it.tags.map { TagViewModel(it.name, it.color.androidColor.color500) },
                     icon = it.icon?.let { AndroidIcon.valueOf(it.name).icon }
-                        ?: Ionicons.Icon.ion_android_clipboard,
+                        ?: Ionicons.Icon.ion_checkmark,
                     color = AndroidColor.valueOf(it.color.name).color500,
                     next = next,
                     completedCount = it.periodProgress!!.completedCount,
@@ -293,7 +294,7 @@ class RepeatingQuestListViewController(args: Bundle? = null) :
                     name = it.name,
                     tags = it.tags.map { TagViewModel(it.name, it.color.androidColor.color500) },
                     icon = it.icon?.let { AndroidIcon.valueOf(it.name).icon }
-                        ?: Ionicons.Icon.ion_android_clipboard,
+                        ?: Ionicons.Icon.ion_checkmark,
                     color = AndroidColor.valueOf(it.color.name).color500,
                     frequency = frequencies[it.repeatPattern.repeatType.ordinal]
                 )

@@ -7,8 +7,6 @@ import io.ipoli.android.common.DataLoadedAction
 import io.ipoli.android.common.redux.Action
 import io.ipoli.android.event.usecase.FindEventsBetweenDatesUseCase
 import io.ipoli.android.note.usecase.SaveQuestNoteUseCase
-import io.ipoli.android.planday.usecase.CalculateAwesomenessScoreUseCase
-import io.ipoli.android.planday.usecase.CalculateFocusDurationUseCase
 import io.ipoli.android.quest.CompletedQuestAction
 import io.ipoli.android.quest.Quest
 import io.ipoli.android.quest.schedule.agenda.AgendaAction
@@ -53,9 +51,6 @@ object QuestSideEffectHandler : AppSideEffectHandler() {
     private val notificationManager by required { notificationManager }
     private val createTodayItemsUseCase by required { createTodayItemsUseCase }
     private val findEventsBetweenDatesUseCase by required { findEventsBetweenDatesUseCase }
-    private val calculateAwesomenessScoreUseCase by required { calculateAwesomenessScoreUseCase }
-    private val calculateFocusDurationUseCase by required { calculateFocusDurationUseCase }
-    private val checkDailyChallengeProgressUseCase by required { checkDailyChallengeProgressUseCase }
 
     private var questChannel: Channel<Quest?>? = null
     private var completedQuestChannel: Channel<Quest?>? = null
@@ -209,14 +204,7 @@ object QuestSideEffectHandler : AppSideEffectHandler() {
                         DataLoadedAction.TodayQuestItemsChanged(
                             questItems = createTodayItemsUseCase.execute(
                                 CreateTodayItemsUseCase.Params(quests = it, events = events)
-                            ),
-                            awesomenessScore = calculateAwesomenessScoreUseCase.execute(
-                                CalculateAwesomenessScoreUseCase.Params.WithQuests(it)
-                            ),
-                            focusDuration = calculateFocusDurationUseCase.execute(
-                                CalculateFocusDurationUseCase.Params.WithQuests(it)
-                            ),
-                            dailyChallengeProgress = checkDailyChallengeProgressUseCase.execute(Unit)
+                            )
                         )
                     )
                 }
@@ -235,14 +223,7 @@ object QuestSideEffectHandler : AppSideEffectHandler() {
                     DataLoadedAction.TodayQuestItemsChanged(
                         questItems = createTodayItemsUseCase.execute(
                             CreateTodayItemsUseCase.Params(quests = quests, events = events)
-                        ),
-                        awesomenessScore = calculateAwesomenessScoreUseCase.execute(
-                            CalculateAwesomenessScoreUseCase.Params.WithQuests(quests)
-                        ),
-                        focusDuration = calculateFocusDurationUseCase.execute(
-                            CalculateFocusDurationUseCase.Params.WithQuests(quests)
-                        ),
-                        dailyChallengeProgress = checkDailyChallengeProgressUseCase.execute(Unit)
+                        )
                     )
                 )
             }

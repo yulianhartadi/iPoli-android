@@ -232,7 +232,7 @@ class PostItemPickerViewController(args: Bundle? = null) :
                         id = it.id,
                         name = it.name,
                         color = it.color.androidColor.color500,
-                        icon = it.icon?.androidIcon?.icon ?: Ionicons.Icon.ion_android_clipboard,
+                        icon = it.icon?.androidIcon?.icon ?: Ionicons.Icon.ion_checkmark,
                         challengeId = it.challengeId
                     )
                 })
@@ -280,7 +280,7 @@ class PostItemPickerViewController(args: Bundle? = null) :
                         id = it.id,
                         name = it.name,
                         color = it.color.androidColor.color500,
-                        icon = it.icon?.androidIcon?.icon ?: Ionicons.Icon.ion_android_clipboard
+                        icon = it.icon?.androidIcon?.icon ?: Ionicons.Icon.ion_checkmark
                     )
                 })
             }

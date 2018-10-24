@@ -139,6 +139,8 @@ import io.ipoli.android.quest.schedule.agenda.usecase.FindAgendaDatesUseCase
 import io.ipoli.android.quest.schedule.calendar.sideeffect.DayViewSideEffectHandler
 import io.ipoli.android.quest.schedule.summary.sideeffect.ScheduleSummarySideEffectHandler
 import io.ipoli.android.quest.schedule.summary.usecase.CreateScheduleSummaryItemsUseCase
+import io.ipoli.android.quest.schedule.today.persistence.AndroidTodayImageRepository
+import io.ipoli.android.quest.schedule.today.persistence.TodayImageRepository
 import io.ipoli.android.quest.schedule.today.usecase.CreateTodayItemsUseCase
 import io.ipoli.android.quest.show.job.AndroidJobTimerCompleteScheduler
 import io.ipoli.android.quest.show.job.TimerCompleteScheduler
@@ -293,6 +295,7 @@ interface UseCaseModule {
     val friendRepository: FriendRepository
     val presetChallengeRepository: PresetChallengeRepository
     val imageRepository: ImageRepository
+    val todayImageRepository: TodayImageRepository
 
     val reminderScheduler: ReminderScheduler
     val timerCompleteScheduler: TimerCompleteScheduler
@@ -519,6 +522,13 @@ class MainUseCaseModule(private val context: Context) : UseCaseModule {
     override val presetChallengeRepository = FirestorePresetChallengeRepository(remoteDatabase)
 
     override val imageRepository = FirebaseStorageImageRepository()
+
+    override val todayImageRepository
+        get() = AndroidTodayImageRepository(
+            PreferenceManager.getDefaultSharedPreferences(
+                context
+            )
+        )
 
     override val reminderScheduler get() = AndroidJobReminderScheduler(context)
 

@@ -63,7 +63,22 @@ class ChallengeViewController(args: Bundle? = null) :
     private var challengeId = ""
     private var showEdit = true
     private var showComplete = true
-    private var canAdd = true
+
+    private val appBarOffsetListener = object :
+        AppBarStateChangeListener() {
+        override fun onStateChanged(appBarLayout: AppBarLayout, state: State) {
+
+            appBarLayout.post {
+                if (state == State.EXPANDED) {
+                    val supportActionBar = (activity as MainActivity).supportActionBar
+                    supportActionBar?.setDisplayShowTitleEnabled(false)
+                } else if (state == State.COLLAPSED) {
+                    val supportActionBar = (activity as MainActivity).supportActionBar
+                    supportActionBar?.setDisplayShowTitleEnabled(true)
+                }
+            }
+        }
+    }
 
     constructor(
         challengeId: String
@@ -81,8 +96,6 @@ class ChallengeViewController(args: Bundle? = null) :
         val view = inflater.inflate(R.layout.controller_challenge, container, false)
         setToolbar(view.toolbar)
         view.collapsingToolbarContainer.isTitleEnabled = false
-
-        setupAppBar(view)
 
         view.questList.layoutManager = LinearLayoutManager(container.context)
         view.questList.adapter = QuestAdapter()
@@ -144,6 +157,8 @@ class ChallengeViewController(args: Bundle? = null) :
         view.trackedValueList.isNestedScrollingEnabled = false
         view.trackedValueList.addItemDecoration(TopMarginDecoration(8))
         view.trackedValueList.adapter = TrackedValueAdapter()
+
+        view.appbar.addOnOffsetChangedListener(appBarOffsetListener)
 
         return view
     }
@@ -238,24 +253,6 @@ class ChallengeViewController(args: Bundle? = null) :
         }
     }
 
-    private fun setupAppBar(view: View) {
-        view.appbar.addOnOffsetChangedListener(object :
-            AppBarStateChangeListener() {
-            override fun onStateChanged(appBarLayout: AppBarLayout, state: State) {
-
-                appBarLayout.post {
-                    if (state == State.EXPANDED) {
-                        val supportActionBar = (activity as MainActivity).supportActionBar
-                        supportActionBar?.setDisplayShowTitleEnabled(false)
-                    } else if (state == State.COLLAPSED) {
-                        val supportActionBar = (activity as MainActivity).supportActionBar
-                        supportActionBar?.setDisplayShowTitleEnabled(true)
-                    }
-                }
-            }
-        })
-    }
-
     override fun onCreateLoadAction() = ChallengeAction.Load(challengeId)
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
@@ -310,11 +307,19 @@ class ChallengeViewController(args: Bundle? = null) :
     override fun onAttach(view: View) {
         super.onAttach(view)
         showBackButton()
+        val showTitle =
+            appBarOffsetListener.currentState != AppBarStateChangeListener.State.EXPANDED
+        (activity as MainActivity).supportActionBar?.setDisplayShowTitleEnabled(showTitle)
     }
 
     override fun onDetach(view: View) {
         (activity as MainActivity).supportActionBar?.setDisplayShowTitleEnabled(true)
         super.onDetach(view)
+    }
+
+    override fun onDestroyView(view: View) {
+        view.appbar.removeOnOffsetChangedListener(appBarOffsetListener)
+        super.onDestroyView(view)
     }
 
     override fun render(state: ChallengeViewState, view: View) {
@@ -323,7 +328,7 @@ class ChallengeViewController(args: Bundle? = null) :
                 showComplete = state.canComplete
                 showEdit = state.canEdit
                 activity!!.invalidateOptionsMenu()
-                if(state.canAdd) {
+                if (state.canAdd) {
                     view.addQuests.visible()
                 } else {
                     view.addQuests.gone()

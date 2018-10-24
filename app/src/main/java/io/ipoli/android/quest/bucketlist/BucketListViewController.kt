@@ -190,6 +190,7 @@ class BucketListViewController(args: Bundle? = null) :
 
     override fun onAttach(view: View) {
         super.onAttach(view)
+        enableToolbarTitle()
         toolbarTitle = stringRes(R.string.title_bucket_list)
     }
 
@@ -387,7 +388,7 @@ class BucketListViewController(args: Bundle? = null) :
                             ),
                             color = color,
                             icon = q.icon?.androidIcon?.icon
-                                ?: Ionicons.Icon.ion_android_clipboard,
+                                ?: Ionicons.Icon.ion_checkmark,
                             tags = q.tags.map { t ->
                                 ItemViewModel.TagViewModel(
                                     t.name,
@@ -405,7 +406,7 @@ class BucketListViewController(args: Bundle? = null) :
                             dueDate = formatDueDate(q),
                             color = color,
                             icon = q.icon?.androidIcon?.icon
-                                ?: Ionicons.Icon.ion_android_clipboard,
+                                ?: Ionicons.Icon.ion_checkmark,
                             tags = q.tags.map { t ->
                                 ItemViewModel.TagViewModel(
                                     t.name,

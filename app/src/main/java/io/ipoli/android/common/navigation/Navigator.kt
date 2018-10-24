@@ -143,10 +143,6 @@ class Navigator(private val router: Router) {
         pushController({ PlanDayViewController() }, VerticalChangeHandler())
     }
 
-    fun toToday() {
-        pushController({ TodayViewController() }, SimpleSwapChangeHandler())
-    }
-
     fun toScheduleSummary(currentDate: LocalDate) {
         pushController({ ScheduleSummaryViewController(currentDate) }, VerticalChangeHandler())
     }

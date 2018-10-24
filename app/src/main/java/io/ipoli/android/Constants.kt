@@ -107,6 +107,9 @@ interface Constants {
 
         val KEY_SHOULD_SHOW_TUTORIAL = "SHOULD_SHOW_TUTORIAL"
 
+        val KEY_TODAY_IMAGE_URL = "TODAY_IMAGE_URL"
+        val KEY_TODAY_IMAGE_DATE = "TODAY_IMAGE_DATE"
+
         val MYPOLI_EMAIL = "hi@mypoli.fun"
 
         val API_RESOURCE_SOURCE = "io.ipoli-android"
@@ -255,7 +258,7 @@ interface Constants {
         const val DEFAULT_RELATIVE_REMINDER_MINUTES_FROM_START = 0L
         const val DAILY_FOCUS_HOURS_GOAL = 5
 
-        val LEVEL_UP_REWARDS = listOf<String>(
+        val LEVEL_UP_REWARDS = listOf(
             "https://media2.giphy.com/media/l0MYt5jPR6QX5pnqM/giphy.gif",
             "https://i.imgur.com/vlU5ROS.jpg",
             "https://media2.giphy.com/media/epnHmbfUFaBkk/giphy.gif",

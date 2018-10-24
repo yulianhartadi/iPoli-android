@@ -131,7 +131,7 @@ class FirestoreFriendRepository(
     private fun toEntityObject(dbFriend: DbFriend) =
         Friend(
             id = dbFriend.id,
-            displayName = dbFriend.displayName,
+            displayName = if (dbFriend.displayName.isNullOrBlank()) "Unknown Hero" else dbFriend.displayName!!,
             username = dbFriend.username,
             avatar = Avatar.valueOf(dbFriend.avatar),
             level = dbFriend.level.toInt(),
@@ -219,7 +219,7 @@ class FirestoreFriendRepository(
 
 class DbFriend(val map: MutableMap<String, Any?> = mutableMapOf()) {
     var id: String by map
-    var displayName: String by map
+    var displayName: String? by map
     var username: String by map
     var avatar: String by map
     var level: Long by map

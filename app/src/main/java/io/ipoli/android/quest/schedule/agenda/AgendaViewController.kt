@@ -17,7 +17,6 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import com.bluelinelabs.conductor.RouterTransaction
-import com.mikepenz.google_material_typeface_library.GoogleMaterial
 import com.mikepenz.iconics.typeface.IIcon
 import com.mikepenz.ionicons_typeface_library.Ionicons
 import io.ipoli.android.R
@@ -328,7 +327,6 @@ class AgendaViewController(args: Bundle? = null) :
             val name: String,
             val startTime: String,
             @ColorInt val color: Int,
-            val icon: IIcon,
             val showDivider: Boolean
         ) :
             AgendaViewModel(id)
@@ -386,7 +384,7 @@ class AgendaViewController(args: Bundle? = null) :
 
             registerBinder<AgendaViewModel.DateHeaderViewModel>(
                 ItemType.DATE_HEADER.ordinal,
-                R.layout.item_agenda_date_header
+                R.layout.item_agenda_list_section
             ) { vm, view, _ ->
                 bindDateHeaderViewModel(view, vm)
             }
@@ -417,14 +415,11 @@ class AgendaViewController(args: Bundle? = null) :
 
         private fun bindEventViewModel(view: View, viewModel: AgendaViewModel.EventViewModel) {
 
-            view.eventDivider.visible = viewModel.showDivider
-
             view.eventName.text = viewModel.name
             view.eventStartTime.text = viewModel.startTime
 
             view.eventIcon.backgroundTintList =
                 ColorStateList.valueOf(viewModel.color)
-            view.eventIcon.setImageDrawable(listItemIcon(viewModel.icon))
         }
 
         private fun bindWeekHeaderViewModel(
@@ -485,7 +480,7 @@ class AgendaViewController(args: Bundle? = null) :
         ) {
             view.questIcon.backgroundTintList =
                 ColorStateList.valueOf(colorRes(vm.color))
-            view.questIcon.setImageDrawable(listItemIcon(vm.icon))
+            view.questIcon.setImageDrawable(smallListItemIcon(vm.icon))
 
             if (vm.tags.isNotEmpty()) {
                 view.questTagName.visible()
@@ -495,7 +490,6 @@ class AgendaViewController(args: Bundle? = null) :
             }
 
             view.questStartTime.text = vm.startTime
-            view.divider.visible = vm.showDivider
 
             view.questRepeatIndicator.visibility = if (vm.isRepeating) View.VISIBLE else View.GONE
             view.questChallengeIndicator.visibility =
@@ -561,7 +555,7 @@ class AgendaViewController(args: Bundle? = null) :
                         ),
                         color = color,
                         icon = quest.icon?.let { AndroidIcon.valueOf(it.name).icon }
-                            ?: Ionicons.Icon.ion_android_clipboard,
+                            ?: Ionicons.Icon.ion_checkmark,
                         showDivider = shouldShowDivider(nextAgendaItem),
                         isRepeating = quest.isFromRepeatingQuest,
                         isFromChallenge = quest.isFromChallenge
@@ -582,7 +576,7 @@ class AgendaViewController(args: Bundle? = null) :
                         ),
                         color = color,
                         icon = quest.icon?.let { AndroidIcon.valueOf(it.name).icon }
-                            ?: Ionicons.Icon.ion_android_clipboard,
+                            ?: Ionicons.Icon.ion_checkmark,
                         showDivider = shouldShowDivider(nextAgendaItem),
                         isRepeating = quest.isFromRepeatingQuest,
                         isFromChallenge = quest.isFromChallenge
@@ -603,7 +597,7 @@ class AgendaViewController(args: Bundle? = null) :
                         ),
                         color = color,
                         icon = quest.icon?.let { AndroidIcon.valueOf(it.name).icon }
-                            ?: Ionicons.Icon.ion_android_clipboard,
+                            ?: Ionicons.Icon.ion_checkmark,
                         showDivider = shouldShowDivider(nextAgendaItem),
                         isRepeating = quest.isFromRepeatingQuest,
                         isFromChallenge = quest.isFromChallenge,
@@ -620,7 +614,6 @@ class AgendaViewController(args: Bundle? = null) :
                     name = event.name,
                     startTime = formatStartTime(event),
                     color = event.color,
-                    icon = GoogleMaterial.Icon.gmd_event_available,
                     showDivider = shouldShowDivider(nextAgendaItem)
                 )
             }

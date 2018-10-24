@@ -82,6 +82,10 @@ val Controller.colorBackgroundResource
 val Controller.colorAccent
     get() = attrData(R.attr.colorAccent)
 
+fun Controller.enableToolbarTitle() {
+    (activity as MainActivity).supportActionBar?.setDisplayShowTitleEnabled(true)
+}
+
 var Controller.toolbarTitle: String
     set(value) {
         (activity!! as MainActivity).supportActionBar!!.title = value

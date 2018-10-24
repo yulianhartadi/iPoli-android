@@ -251,7 +251,7 @@ fun toChallengeViewModels(
                     },
                     color = AndroidColor.valueOf(c.color.name).color500,
                     icon = c.icon?.let { i -> AndroidIcon.valueOf(i.name).icon }
-                        ?: Ionicons.Icon.ion_android_clipboard,
+                        ?: Ionicons.Icon.ion_checkmark,
                     next = next,
                     end = end,
                     progress = c.progress.completedCount,
@@ -278,7 +278,7 @@ fun toChallengeViewModels(
                         },
                         color = AndroidColor.valueOf(color.name).color500,
                         icon = icon?.let { ic -> AndroidIcon.valueOf(ic.name).icon }
-                            ?: Ionicons.Icon.ion_android_clipboard,
+                            ?: Ionicons.Icon.ion_checkmark,
                         start = context.stringRes(
                             R.string.started_at_date,
                             DateFormatter.format(context, startDate)

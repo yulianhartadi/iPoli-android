@@ -160,7 +160,10 @@ sealed class DataLoadedAction : Action {
     data class FriendChallengesChanged(val challenges: List<Challenge>) : DataLoadedAction()
 
     data class TodayQuestItemsChanged(
-        val questItems: CreateTodayItemsUseCase.Result,
+        val questItems: CreateTodayItemsUseCase.Result
+    ) : DataLoadedAction()
+
+    data class TodaySummaryStatsChanged(
         val awesomenessScore: Double,
         val focusDuration: Duration<Minute>,
         val dailyChallengeProgress: CheckDailyChallengeProgressUseCase.Result
@@ -184,6 +187,8 @@ sealed class DataLoadedAction : Action {
         val habit: Habit?,
         val challenge: Challenge?
     ) : DataLoadedAction()
+
+    data class TodayImageChanged(val imageUrl: String) : DataLoadedAction()
 }
 
 data class AppDataState(
@@ -195,7 +200,11 @@ data class AppDataState(
     val habits: List<Habit>?,
     val challenges: List<Challenge>?,
     val events: List<Event>,
-    val tags: List<Tag>
+    val tags: List<Tag>,
+    val todayImage: String?,
+    val awesomenessScore: Double?,
+    val focusDuration: Duration<Minute>?,
+    val dailyChallengeProgress: CheckDailyChallengeProgressUseCase.Result?
 ) : State
 
 object AppDataReducer : Reducer<AppState, AppDataState> {
@@ -210,6 +219,18 @@ object AppDataReducer : Reducer<AppState, AppDataState> {
                     player = action.player
                 )
             }
+
+            is DataLoadedAction.TodayImageChanged ->
+                subState.copy(
+                    todayImage = action.imageUrl
+                )
+
+            is DataLoadedAction.TodaySummaryStatsChanged ->
+                subState.copy(
+                    awesomenessScore = action.awesomenessScore,
+                    focusDuration = action.focusDuration,
+                    dailyChallengeProgress = action.dailyChallengeProgress
+                )
 
             is DataLoadedAction.CalendarScheduleChanged ->
                 subState.copy(
@@ -264,6 +285,10 @@ object AppDataReducer : Reducer<AppState, AppDataState> {
             habits = null,
             challenges = null,
             events = listOf(),
-            tags = listOf()
+            tags = listOf(),
+            todayImage = null,
+            awesomenessScore = null,
+            focusDuration = null,
+            dailyChallengeProgress = null
         )
 }

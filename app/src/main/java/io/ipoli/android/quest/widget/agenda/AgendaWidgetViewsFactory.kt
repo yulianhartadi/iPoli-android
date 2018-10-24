@@ -12,10 +12,12 @@ import android.text.format.DateFormat
 import android.view.View
 import android.widget.RemoteViews
 import android.widget.RemoteViewsService
+import com.mikepenz.entypo_typeface_library.Entypo
 import com.mikepenz.google_material_typeface_library.GoogleMaterial
 import com.mikepenz.iconics.IconicsDrawable
 import com.mikepenz.ionicons_typeface_library.Ionicons
 import io.ipoli.android.Constants
+import io.ipoli.android.MyPoliApp
 import io.ipoli.android.R
 import io.ipoli.android.common.di.BackgroundModule
 import io.ipoli.android.common.text.QuestStartTimeFormatter
@@ -24,7 +26,6 @@ import io.ipoli.android.common.view.AndroidIcon
 import io.ipoli.android.common.view.listItemIcon
 import io.ipoli.android.event.Event
 import io.ipoli.android.event.usecase.FindEventsBetweenDatesUseCase
-import io.ipoli.android.MyPoliApp
 import io.ipoli.android.player.data.Player
 import io.ipoli.android.quest.Quest
 import org.threeten.bp.LocalDate
@@ -133,7 +134,7 @@ class AgendaWidgetViewsFactory(private val context: Context) :
                         }
 
                         val icon = q.icon?.let { AndroidIcon.valueOf(it.name).icon }
-                            ?: Ionicons.Icon.ion_android_clipboard
+                            ?: Ionicons.Icon.ion_checkmark
 
                         val iconDrawable =
                             IconicsDrawable(context).listItemIcon(icon)
@@ -174,7 +175,7 @@ class AgendaWidgetViewsFactory(private val context: Context) :
                         setTextViewText(R.id.widgetQuestStartTime, formatStartTime(e))
 
                         val iconDrawable =
-                            IconicsDrawable(context).listItemIcon(GoogleMaterial.Icon.gmd_event_available)
+                            IconicsDrawable(context).listItemIcon(Entypo.Icon.ent_calendar)
 
                         setImageViewBitmap(R.id.widgetQuestIcon, iconDrawable.toBitmap())
 

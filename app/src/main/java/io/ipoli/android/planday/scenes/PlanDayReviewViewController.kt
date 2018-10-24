@@ -399,7 +399,7 @@ class PlanDayReviewViewController(args: Bundle? = null) :
                     ),
                     color = it.color.androidColor.color500,
                     icon = it.icon?.androidIcon?.icon
-                        ?: Ionicons.Icon.ion_android_clipboard,
+                        ?: Ionicons.Icon.ion_checkmark,
                     isRepeating = it.isFromRepeatingQuest,
                     isFromChallenge = it.isFromChallenge
                 )
@@ -423,7 +423,7 @@ class PlanDayReviewViewController(args: Bundle? = null) :
                     ),
                     color = R.color.md_grey_500,
                     icon = it.icon?.androidIcon?.icon
-                        ?: Ionicons.Icon.ion_android_clipboard,
+                        ?: Ionicons.Icon.ion_checkmark,
                     isRepeating = it.isFromRepeatingQuest,
                     isFromChallenge = it.isFromChallenge
                 )

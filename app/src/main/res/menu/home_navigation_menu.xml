@@ -4,9 +4,17 @@
     <group
         android:id="@+id/drawerMainGroup"
         android:checkableBehavior="single">
+
+        <item
+            android:id="@+id/today"
+            android:checked="true"
+            android:icon="@drawable/ic_wb_sunny_white_24dp"
+            android:orderInCategory="0"
+            android:title="@string/today" />
+
         <item
             android:id="@+id/calendar"
-            android:checked="true"
+            android:checked="false"
             android:icon="@drawable/ic_event_white_24dp"
             android:orderInCategory="0"
             android:title="@string/calendar" />

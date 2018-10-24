@@ -46,6 +46,13 @@ android {
 
     testOptions {
         junitPlatform {
+
+            tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinCompile).all {
+                kotlinOptions {
+                    jvmTarget = "1.8"
+                }
+            }
+
             filters {
                 engines {
                     include 'spek'
@@ -98,7 +105,7 @@ dependencies {
     implementation 'com.bluelinelabs:conductor:2.1.5'
     implementation 'com.bluelinelabs:conductor-support:2.1.5'
     implementation 'com.jakewharton.timber:timber:4.7.1'
-    implementation 'com.jakewharton.threetenabp:threetenabp:1.1.0'
+    implementation 'com.jakewharton.threetenabp:threetenabp:1.1.1'
     implementation('com.crashlytics.sdk.android:crashlytics:2.9.5@aar') {
         transitive = true
     }
@@ -137,13 +144,15 @@ dependencies {
         exclude group: 'com.android.support', module: 'support-annotations'
     })
 
-    testImplementation 'org.threeten:threetenbp:1.3.6'
+    testImplementation 'org.threeten:threetenbp:1.3.7'
     testImplementation "com.android.support:support-annotations:$support_version"
     testImplementation 'com.android.support.test:runner:1.0.2'
     testImplementation 'com.android.support.test:rules:1.0.2'
-    testImplementation 'junit:junit:4.12'
-    testImplementation junit5.unitTests()
-    testCompileOnly junit5.unitTestsRuntime()
+    testImplementation "org.junit.jupiter:junit-jupiter-api:5.2.0"
+    testRuntimeOnly "org.junit.jupiter:junit-jupiter-engine:5.2.0"
+
+    testImplementation "junit:junit:4.12"
+    testRuntimeOnly "org.junit.vintage:junit-vintage-engine:5.2.0"
 
     testImplementation('org.jetbrains.spek:spek-api:1.1.5') {
         exclude group: "org.jetbrains.kotlin"
@@ -152,8 +161,8 @@ dependencies {
         exclude group: "org.junit.platform"
         exclude group: "org.jetbrains.kotlin"
     }
-    testImplementation 'com.nhaarman:mockito-kotlin-kt1.1:1.5.0'
-    testImplementation 'org.amshove.kluent:kluent:1.38'
+    testImplementation 'com.nhaarman:mockito-kotlin-kt1.1:1.6.0'
+    testImplementation 'org.amshove.kluent:kluent:1.42'
     testImplementation "org.jetbrains.kotlin:kotlin-reflect:$kotlin_version"
 }
 

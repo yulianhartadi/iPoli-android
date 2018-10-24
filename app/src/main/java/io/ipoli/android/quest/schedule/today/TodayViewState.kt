@@ -9,11 +9,12 @@ import io.ipoli.android.common.redux.Action
 import io.ipoli.android.common.redux.BaseViewState
 import io.ipoli.android.dailychallenge.usecase.CheckDailyChallengeProgressUseCase
 import io.ipoli.android.habit.usecase.CreateHabitItemsUseCase
+import io.ipoli.android.quest.schedule.today.TodayViewState.StateType.*
 import io.ipoli.android.quest.schedule.today.usecase.CreateTodayItemsUseCase
 import org.threeten.bp.LocalDate
 
 sealed class TodayAction : Action {
-    data class Load(val today: LocalDate) : TodayAction()
+    data class Load(val today: LocalDate, val showDataAfterStats: Boolean) : TodayAction()
 
     object ImageLoaded : TodayAction()
     object StatsShown : TodayAction()
@@ -54,50 +55,49 @@ object TodayReducer : BaseViewStateReducer<TodayViewState>() {
     override fun reduce(state: AppState, subState: TodayViewState, action: Action) =
         when (action) {
 
-            is TodayAction.Load ->
-                if (subState.type == TodayViewState.StateType.LOADING) {
-                    subState.copy(type = TodayViewState.StateType.SHOW_IMAGE)
-                } else subState
+            is TodayAction.Load -> {
+                val dataState = state.dataState
 
-            is TodayAction.ImageLoaded ->
+                val type = if (dataState.todayImage != null) SHOW_IMAGE else LOADING
+
                 subState.copy(
-                    type = if (subState.quests != null) TodayViewState.StateType.SHOW_STATS else TodayViewState.StateType.LOADING,
-                    isImageAnimated = true
+                    type = type,
+                    showDataAfterStats = action.showDataAfterStats,
+                    todayImageUrl = dataState.todayImage,
+                    awesomenessScore = dataState.awesomenessScore,
+                    focusDuration = dataState.focusDuration,
+                    dailyChallengeProgress = dataState.dailyChallengeProgress
                 )
+            }
 
-            is TodayAction.StatsShown -> {
-                val type =
-                    if (subState.quests != null && subState.todayHabitItems != null)
-                        TodayViewState.StateType.SHOW_DATA
-                    else
-                        TodayViewState.StateType.LOADING
-                subState.copy(type = type, areStatsAnimated = true)
+            is DataLoadedAction.TodayImageChanged -> {
+                subState.copy(
+                    type = SHOW_IMAGE,
+                    todayImageUrl = action.imageUrl
+                )
             }
 
             is DataLoadedAction.TodayQuestItemsChanged -> {
-                val type = if (!subState.areStatsAnimated || subState.todayHabitItems == null)
-                    TodayViewState.StateType.LOADING
-                else if (subState.quests == null)
-                    TodayViewState.StateType.SHOW_DATA
-                else
-                    TodayViewState.StateType.QUESTS_CHANGED
+                val type =
+                    when {
+                        subState.todayHabitItems == null -> LOADING
+                        subState.quests == null -> DATA_CHANGED
+                        else -> QUESTS_CHANGED
+                    }
                 subState.copy(
                     type = type,
-                    quests = action.questItems,
-                    awesomenessScore = action.awesomenessScore,
-                    focusDuration = action.focusDuration,
-                    dailyChallengeProgress = action.dailyChallengeProgress
+                    quests = action.questItems
                 )
             }
 
             is DataLoadedAction.HabitItemsChanged -> {
 
-                val type = if (!subState.areStatsAnimated || subState.quests == null)
-                    TodayViewState.StateType.LOADING
-                else if (subState.todayHabitItems == null)
-                    TodayViewState.StateType.SHOW_DATA
-                else
-                    TodayViewState.StateType.HABITS_CHANGED
+                val type =
+                    when {
+                        subState.quests == null -> LOADING
+                        subState.todayHabitItems == null -> DATA_CHANGED
+                        else -> HABITS_CHANGED
+                    }
 
                 subState.copy(
                     type = type,
@@ -106,19 +106,41 @@ object TodayReducer : BaseViewStateReducer<TodayViewState>() {
                 )
             }
 
+            is TodayAction.ImageLoaded ->
+                if (subState.awesomenessScore == null)
+                    subState
+                else
+                    subState.copy(
+                        type = SHOW_SUMMARY_STATS
+                    )
+
+            is TodayAction.StatsShown ->
+                if (subState.showDataAfterStats)
+                    subState.copy(
+                    type = SHOW_DATA
+                ) else subState
+
+            is DataLoadedAction.TodaySummaryStatsChanged ->
+                subState.copy(
+                    type = SUMMARY_STATS_CHANGED,
+                    awesomenessScore = action.awesomenessScore,
+                    focusDuration = action.focusDuration,
+                    dailyChallengeProgress = action.dailyChallengeProgress
+                )
+
             else -> subState
         }
 
     override fun defaultState() =
         TodayViewState(
-            type = TodayViewState.StateType.LOADING,
+            type = LOADING,
             quests = null,
             todayHabitItems = null,
+            todayImageUrl = null,
             awesomenessScore = null,
             focusDuration = null,
             dailyChallengeProgress = null,
-            isImageAnimated = false,
-            areStatsAnimated = false
+            showDataAfterStats = false
         )
 }
 
@@ -126,20 +148,22 @@ data class TodayViewState(
     val type: StateType,
     val quests: CreateTodayItemsUseCase.Result?,
     val todayHabitItems: List<CreateHabitItemsUseCase.HabitItem.Today>?,
+    val todayImageUrl: String?,
     val awesomenessScore: Double?,
     val focusDuration: Duration<Minute>?,
     val dailyChallengeProgress: CheckDailyChallengeProgressUseCase.Result?,
-    val isImageAnimated: Boolean,
-    val areStatsAnimated: Boolean
+    val showDataAfterStats: Boolean
 ) :
     BaseViewState() {
 
     enum class StateType {
         LOADING,
+        SUMMARY_STATS_CHANGED,
+        SHOW_SUMMARY_STATS,
+        SHOW_DATA,
         HABITS_CHANGED,
         QUESTS_CHANGED,
         SHOW_IMAGE,
-        SHOW_STATS,
-        SHOW_DATA
+        DATA_CHANGED
     }
 }

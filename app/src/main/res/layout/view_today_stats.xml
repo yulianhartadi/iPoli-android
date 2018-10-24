@@ -1,0 +1,138 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/todayBackdropContainer"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:minHeight="220dp"
+    app:layout_collapseMode="parallax">
+
+    <ImageView
+        android:id="@+id/todayBackdrop"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:scaleType="fitXY"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <View
+        android:id="@+id/backdropTransparentColor"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:background="?attr/colorPrimary"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="@+id/todayBackdrop"
+        app:layout_constraintEnd_toEndOf="@+id/todayBackdrop"
+        app:layout_constraintStart_toStartOf="@+id/todayBackdrop"
+        app:layout_constraintTop_toTopOf="@+id/todayBackdrop" />
+
+    <TextView
+        android:id="@+id/todayDate"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="@style/TextAppearance.AppCompat.Display3"
+        android:textColor="@color/md_white"
+        android:visibility="gone"
+        app:layout_constraintBottom_toTopOf="@+id/todayDayOfWeek"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.66"
+        app:layout_constraintVertical_chainStyle="packed" />
+
+    <TextView
+        android:id="@+id/todayDayOfWeek"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="@style/TextAppearance.AppCompat.Headline"
+        android:textColor="@color/md_light_text_70"
+        android:visibility="gone"
+        app:layout_constraintBottom_toTopOf="@+id/todayAwesomenessScore"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/todayDate" />
+
+    <TextView
+        android:id="@+id/todayAwesomenessScore"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="32dp"
+        android:textAlignment="center"
+        android:textAppearance="@style/TextAppearance.AppCompat.Title"
+        android:textColor="@color/md_white"
+        android:visibility="gone"
+        app:layout_constraintBottom_toTopOf="@+id/todayAwesomenessScoreLabel"
+        app:layout_constraintEnd_toStartOf="@+id/todayFocusDuration"
+        app:layout_constraintHorizontal_chainStyle="spread"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/todayDayOfWeek" />
+
+    <TextView
+        android:id="@+id/todayAwesomenessScoreLabel"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:text="Awesomeness"
+        android:textAppearance="@style/TextAppearance.AppCompat.Body1"
+        android:textColor="@color/md_light_text_70"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="@+id/todayAwesomenessScore"
+        app:layout_constraintStart_toStartOf="@+id/todayAwesomenessScore"
+        app:layout_constraintTop_toBottomOf="@+id/todayAwesomenessScore" />
+
+    <TextView
+        android:id="@+id/todayFocusDuration"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:textAlignment="center"
+        android:textAppearance="@style/TextAppearance.AppCompat.Title"
+        android:textColor="@color/md_white"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="@+id/todayAwesomenessScore"
+        app:layout_constraintEnd_toStartOf="@+id/todayDailyChallengeProgress"
+        app:layout_constraintStart_toEndOf="@+id/todayAwesomenessScore"
+        app:layout_constraintTop_toTopOf="@+id/todayAwesomenessScore" />
+
+    <TextView
+        android:id="@+id/todayFocusDurationLabel"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Focus Time"
+        android:textAppearance="@style/TextAppearance.AppCompat.Body1"
+        android:textColor="@color/md_light_text_70"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="@+id/todayAwesomenessScoreLabel"
+        app:layout_constraintEnd_toEndOf="@+id/todayFocusDuration"
+        app:layout_constraintStart_toStartOf="@+id/todayFocusDuration"
+        app:layout_constraintTop_toTopOf="@+id/todayAwesomenessScoreLabel" />
+
+    <TextView
+        android:id="@+id/todayDailyChallengeProgress"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:textAlignment="center"
+        android:textAppearance="@style/TextAppearance.AppCompat.Title"
+        android:textColor="@color/md_white"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="@+id/todayAwesomenessScore"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/todayFocusDuration"
+        app:layout_constraintTop_toTopOf="@+id/todayAwesomenessScore" />
+
+    <TextView
+        android:id="@+id/todayDailyChallengeProgressLabel"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Daily Challenge"
+        android:textAppearance="@style/TextAppearance.AppCompat.Body1"
+        android:textColor="@color/md_light_text_70"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="@+id/todayAwesomenessScoreLabel"
+        app:layout_constraintEnd_toEndOf="@+id/todayDailyChallengeProgress"
+        app:layout_constraintStart_toStartOf="@+id/todayDailyChallengeProgress"
+        app:layout_constraintTop_toTopOf="@+id/todayAwesomenessScoreLabel" />
+
+</android.support.constraint.ConstraintLayout>

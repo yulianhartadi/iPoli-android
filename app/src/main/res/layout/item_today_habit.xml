@@ -9,11 +9,9 @@
 
     <io.ipoli.android.common.view.widget.CircleProgressBar
         android:id="@+id/habitProgress"
-        android:layout_width="100dp"
-        android:layout_height="100dp"
-        android:layout_marginBottom="16dp"
+        android:layout_width="64dp"
+        android:layout_height="64dp"
         android:layout_marginTop="16dp"
-        app:layout_constraintBottom_toTopOf="@+id/habitName"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
@@ -21,13 +19,13 @@
         app:progress_end_color="@color/md_green_500"
         app:progress_start_color="@color/md_green_500"
         app:progress_stroke_cap="round"
-        app:progress_stroke_width="8dp"
+        app:progress_stroke_width="4dp"
         app:style="solid_line" />
 
     <io.ipoli.android.common.view.widget.CircleProgressBar
         android:id="@+id/habitTimesADayProgress"
-        android:layout_width="108dp"
-        android:layout_height="108dp"
+        android:layout_width="72dp"
+        android:layout_height="72dp"
         app:layout_constraintBottom_toBottomOf="@+id/habitProgress"
         app:layout_constraintEnd_toEndOf="@+id/habitProgress"
         app:layout_constraintStart_toStartOf="@+id/habitProgress"
@@ -38,7 +36,7 @@
         app:progress_end_color="@color/md_green_500"
         app:progress_start_color="@color/md_green_500"
         app:progress_stroke_cap="square"
-        app:progress_stroke_width="8dp" />
+        app:progress_stroke_width="4dp" />
 
     <View
         android:id="@+id/habitCompletedBackground"
@@ -54,13 +52,13 @@
 
     <ImageView
         android:id="@+id/habitIcon"
-        android:layout_width="32dp"
-        android:layout_height="32dp"
+        android:layout_width="24dp"
+        android:layout_height="24dp"
         app:layout_constraintBottom_toBottomOf="@+id/habitProgress"
         app:layout_constraintEnd_toEndOf="@+id/habitProgress"
         app:layout_constraintStart_toStartOf="@+id/habitProgress"
         app:layout_constraintTop_toTopOf="@+id/habitProgress"
-        app:layout_constraintVertical_bias="0.43"
+        app:layout_constraintVertical_bias="0.35"
         tools:src="@drawable/drawer_achievement_trophy" />
 
     <TextView
@@ -68,7 +66,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginBottom="8dp"
-        android:textAppearance="@style/TextAppearance.AppCompat.Subhead"
+        android:textAppearance="@style/TextAppearance.AppCompat.Caption"
         android:textColor="?android:textColorSecondary"
         app:layout_constraintBottom_toBottomOf="@+id/habitProgress"
         app:layout_constraintEnd_toStartOf="@+id/habitBestProgressIndicator"
@@ -92,15 +90,18 @@
         android:id="@+id/habitName"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="16dp"
-        android:layout_marginEnd="8dp"
         android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginBottom="16dp"
         android:textAlignment="center"
-        android:textAppearance="@style/TextAppearance.AppCompat.Subhead"
+        android:textAppearance="@style/TextAppearance.AppCompat.Body2"
         android:textColor="?android:textColorPrimary"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/habitProgress"
+        app:layout_constraintVertical_bias="0.0"
         tools:text="Run 2.3 km" />
 
 </android.support.constraint.ConstraintLayout>

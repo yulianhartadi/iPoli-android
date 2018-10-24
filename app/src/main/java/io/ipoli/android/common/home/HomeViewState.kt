@@ -4,7 +4,6 @@ import io.ipoli.android.common.AppState
 import io.ipoli.android.common.BaseViewStateReducer
 import io.ipoli.android.common.DataLoadedAction
 import io.ipoli.android.common.home.HomeViewState.StateType.*
-
 import io.ipoli.android.common.redux.Action
 import io.ipoli.android.common.redux.BaseViewState
 import io.ipoli.android.pet.PetAvatar
@@ -32,9 +31,10 @@ object HomeReducer : BaseViewStateReducer<HomeViewState>() {
     override fun reduce(state: AppState, subState: HomeViewState, action: Action) =
         when (action) {
             is HomeAction.Load -> {
-                val player = state.dataState.player
-                val tags = state.dataState.tags
-                val bq = state.dataState.unscheduledQuests
+                val dataState = state.dataState
+                val player = dataState.player
+                val tags = dataState.tags
+                val bq = dataState.unscheduledQuests
 
                 val s = player?.let {
                     createStateFromPlayer(subState, it)
@@ -46,6 +46,7 @@ object HomeReducer : BaseViewStateReducer<HomeViewState>() {
                     bucketListQuestCount = bq.count { !it.isCompleted }
                 )
             }
+
 
             is DataLoadedAction.PlayerChanged ->
                 createStateFromPlayer(subState, action.player).copy(
@@ -75,6 +76,7 @@ object HomeReducer : BaseViewStateReducer<HomeViewState>() {
                     type = TAGS_SHOWN,
                     showTags = true
                 )
+
             else -> subState
         }
 

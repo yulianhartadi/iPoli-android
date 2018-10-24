@@ -5,10 +5,7 @@ import android.support.v7.widget.LinearLayoutManager
 import android.view.*
 import io.ipoli.android.R
 import io.ipoli.android.common.redux.android.ReduxViewController
-import io.ipoli.android.common.view.invisible
-import io.ipoli.android.common.view.stringRes
-import io.ipoli.android.common.view.toolbarTitle
-import io.ipoli.android.common.view.visible
+import io.ipoli.android.common.view.*
 import kotlinx.android.synthetic.main.controller_challenge_list.view.*
 import kotlinx.android.synthetic.main.view_empty_list.view.*
 import kotlinx.android.synthetic.main.view_loader.view.*
@@ -52,6 +49,7 @@ class ChallengeListViewController(args: Bundle? = null) :
 
     override fun onAttach(view: View) {
         super.onAttach(view)
+        enableToolbarTitle()
         toolbarTitle = stringRes(R.string.drawer_challenges)
     }
 

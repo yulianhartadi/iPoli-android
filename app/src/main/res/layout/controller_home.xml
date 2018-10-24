@@ -24,16 +24,28 @@
         android:background="?android:colorBackground">
 
         <android.support.design.widget.AppBarLayout
-            android:id="@+id/appbar"
+            android:id="@+id/todayAppBar"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:fitsSystemWindows="true"
             android:theme="?android:toolbarStyle">
 
-            <android.support.v7.widget.Toolbar
-                android:id="@+id/toolbar"
+            <android.support.design.widget.CollapsingToolbarLayout
+                android:id="@+id/todayCollapsingToolbarContainer"
                 android:layout_width="match_parent"
-                android:layout_height="?android:attr/actionBarSize"
-                android:theme="?android:toolbarStyle" />
+                android:layout_height="wrap_content"
+                android:fitsSystemWindows="true"
+                android:minHeight="?attr/actionBarSize"
+                app:contentScrim="?attr/colorPrimary"
+                app:layout_scrollFlags="scroll|exitUntilCollapsed|snap">
+
+                <android.support.v7.widget.Toolbar
+                    android:id="@+id/toolbar"
+                    android:layout_width="match_parent"
+                    android:layout_height="?attr/actionBarSize"
+                    android:theme="?android:toolbarStyle"
+                    app:layout_collapseMode="pin" />
+            </android.support.design.widget.CollapsingToolbarLayout>
 
         </android.support.design.widget.AppBarLayout>
 

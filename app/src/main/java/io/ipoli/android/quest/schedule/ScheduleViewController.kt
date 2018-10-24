@@ -2,7 +2,6 @@ package io.ipoli.android.quest.schedule
 
 import android.os.Bundle
 import android.view.*
-import com.mikepenz.entypo_typeface_library.Entypo
 import com.mikepenz.google_material_typeface_library.GoogleMaterial
 import com.mikepenz.iconics.IconicsDrawable
 import com.mikepenz.iconics.typeface.IIcon
@@ -10,10 +9,7 @@ import io.ipoli.android.R
 import io.ipoli.android.common.ViewUtils
 import io.ipoli.android.common.navigation.Navigator
 import io.ipoli.android.common.redux.android.ReduxViewController
-import io.ipoli.android.common.view.addToolbarView
-import io.ipoli.android.common.view.removeToolbarView
-import io.ipoli.android.common.view.setChildController
-import io.ipoli.android.common.view.visible
+import io.ipoli.android.common.view.*
 import io.ipoli.android.quest.schedule.ScheduleViewState.StateType.*
 import io.ipoli.android.quest.schedule.addquest.AddQuestAnimationHelper
 import io.ipoli.android.quest.schedule.calendar.CalendarViewController
@@ -30,7 +26,7 @@ class ScheduleViewController(args: Bundle? = null) :
 
     private lateinit var addQuestAnimationHelper: AddQuestAnimationHelper
 
-    private var viewModeIcon: IIcon = Entypo.Icon.ent_sweden
+    private var viewModeIcon: IIcon = GoogleMaterial.Icon.gmd_format_list_bulleted
 
     private var viewModeTitle = "Agenda"
 
@@ -45,7 +41,7 @@ class ScheduleViewController(args: Bundle? = null) :
     ): View {
 
         setHasOptionsMenu(true)
-        val view = inflater.inflate(R.layout.controller_schedule, container, false)
+        val view = container.inflate(R.layout.controller_schedule)
 
         addQuestAnimationHelper = AddQuestAnimationHelper(
             controller = this,
@@ -112,11 +108,6 @@ class ScheduleViewController(args: Bundle? = null) :
                 closeAddIfShown {
                     navigateFromRoot().toDailyChallenge()
                 }
-                true
-            }
-
-            R.id.actionToday -> {
-                navigateFromRoot().toToday()
                 true
             }
 
@@ -211,7 +202,7 @@ class ScheduleViewController(args: Bundle? = null) :
 
     private val ScheduleViewState.viewModeIcon: IIcon
         get() = if (viewMode == ScheduleViewState.ViewMode.CALENDAR)
-            Entypo.Icon.ent_sweden
+            GoogleMaterial.Icon.gmd_format_list_bulleted
         else
             GoogleMaterial.Icon.gmd_event
 }

@@ -24,8 +24,11 @@ fun IconicsDrawable.normalIcon(icon: IIcon, @ColorRes color: Int): IconicsDrawab
         .sizeDp(24)
 
 fun IconicsDrawable.listItemIcon(icon: IIcon): IconicsDrawable =
+    listItemIcon(icon, R.color.md_white)
+
+fun IconicsDrawable.listItemIcon(icon: IIcon, @ColorRes color: Int): IconicsDrawable =
     icon(icon)
-        .colorRes(R.color.md_white)
+        .colorRes(color)
         .paddingDp(3)
         .sizeDp(24)
 

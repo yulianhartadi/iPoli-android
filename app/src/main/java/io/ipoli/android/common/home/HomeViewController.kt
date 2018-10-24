@@ -11,6 +11,7 @@ import android.os.Bundle
 import android.support.annotation.ColorRes
 import android.support.annotation.IdRes
 import android.support.design.internal.NavigationMenuView
+import android.support.design.widget.AppBarLayout
 import android.support.design.widget.NavigationView
 import android.support.v4.view.GravityCompat
 import android.support.v7.app.ActionBarDrawerToggle
@@ -45,6 +46,7 @@ import io.ipoli.android.player.data.AndroidAvatar
 import io.ipoli.android.player.data.AndroidRank
 import io.ipoli.android.quest.bucketlist.BucketListViewController
 import io.ipoli.android.quest.schedule.ScheduleViewController
+import io.ipoli.android.quest.schedule.today.TodayViewController
 import io.ipoli.android.repeatingquest.list.RepeatingQuestListViewController
 import io.ipoli.android.settings.SettingsViewController
 import io.ipoli.android.store.StoreViewController
@@ -71,6 +73,22 @@ class HomeViewController(args: Bundle? = null) :
 
     override val reducer = HomeReducer
 
+    private val appBarOffsetListener = object :
+        AppBarStateChangeListener() {
+        override fun onStateChanged(appBarLayout: AppBarLayout, state: State) {
+
+            appBarLayout.post {
+                if (state == State.EXPANDED) {
+                    (activity as MainActivity).supportActionBar!!.setDisplayShowTitleEnabled(
+                        false
+                    )
+                } else if (state == State.COLLAPSED) {
+                    (activity as MainActivity).supportActionBar!!.setDisplayShowTitleEnabled(true)
+                }
+            }
+        }
+    }
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup,
@@ -79,7 +97,7 @@ class HomeViewController(args: Bundle? = null) :
 
         setHasOptionsMenu(true)
 
-        val contentView = inflater.inflate(R.layout.controller_home, container, false)
+        val contentView = container.inflate(R.layout.controller_home)
 
         contentView.navigationView.setNavigationItemSelectedListener(this)
         val mv = contentView.navigationView.getChildAt(0) as NavigationMenuView
@@ -99,6 +117,10 @@ class HomeViewController(args: Bundle? = null) :
         toolbarTitle = ""
         val actionBar = (activity as MainActivity).supportActionBar
         actionBar?.setDisplayHomeAsUpEnabled(true)
+
+        contentView.todayCollapsingToolbarContainer.isTitleEnabled = false
+
+        contentView.todayAppBar.addOnOffsetChangedListener(appBarOffsetListener)
         actionBarDrawerToggle.syncState()
 
         return contentView
@@ -109,29 +131,29 @@ class HomeViewController(args: Bundle? = null) :
     private fun onItemSelectedFromDrawer(item: MenuItem) {
 
         when (item.itemId) {
+
+            R.id.today -> {
+                (activity as MainActivity).supportActionBar?.setDisplayShowTitleEnabled(false)
+                view?.todayCollapsingToolbarContainer?.isTitleEnabled = false
+                changeChildController(TodayViewController(false))
+            }
+
             R.id.calendar ->
                 changeChildController(ScheduleViewController())
 
-            R.id.bucketList ->
-                changeChildController(BucketListViewController())
+            R.id.bucketList -> changeChildController(BucketListViewController())
 
-            R.id.habits ->
-                changeChildController(HabitListViewController())
+            R.id.habits -> changeChildController(HabitListViewController())
 
-            R.id.repeatingQuests ->
-                changeChildController(RepeatingQuestListViewController())
+            R.id.repeatingQuests -> changeChildController(RepeatingQuestListViewController())
 
-            R.id.challenges ->
-                changeChildController(ChallengeListViewController())
+            R.id.challenges -> changeChildController(ChallengeListViewController())
 
-            R.id.feed ->
-                changeChildController(FeedViewController())
+            R.id.feed -> changeChildController(FeedViewController())
 
-            R.id.tags ->
-                changeChildController(TagListViewController())
+            R.id.tags -> changeChildController(TagListViewController())
 
-            R.id.growth ->
-                changeChildController(GrowthViewController())
+            R.id.growth -> changeChildController(GrowthViewController())
 
             R.id.store ->
                 pushWithRootRouter(
@@ -217,15 +239,30 @@ class HomeViewController(args: Bundle? = null) :
     override fun onAttach(view: View) {
         super.onAttach(view)
         view.navigationView.bringToFront()
+
+
         val childRouter = getChildRouter(view.childControllerContainer, null)
         if (!childRouter.hasRootController()) {
-            childRouter.setRoot(RouterTransaction.with(ScheduleViewController()))
+            childRouter.setRoot(
+                RouterTransaction.with(TodayViewController())
+            )
         }
+
+        val showTitle =
+            appBarOffsetListener.currentState != AppBarStateChangeListener.State.EXPANDED
+        (activity as MainActivity).supportActionBar?.setDisplayShowTitleEnabled(showTitle)
+
     }
 
     override fun onDetach(view: View) {
         view.rootCoordinator.bringToFront()
+
         super.onDetach(view)
+    }
+
+    override fun onDestroyView(view: View) {
+        view.todayAppBar.removeOnOffsetChangedListener(appBarOffsetListener)
+        super.onDestroyView(view)
     }
 
     private fun changeChildController(controller: Controller) {
@@ -281,6 +318,7 @@ class HomeViewController(args: Bundle? = null) :
 
             UNSCHEDULED_QUESTS_CHANGED ->
                 renderBucketList(state.bucketListQuestCount, view)
+
             else -> {
             }
         }

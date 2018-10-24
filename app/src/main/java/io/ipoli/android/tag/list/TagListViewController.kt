@@ -42,7 +42,7 @@ class TagListViewController(args: Bundle? = null) :
         savedViewState: Bundle?
     ): View {
         setHasOptionsMenu(true)
-        val view = inflater.inflate(R.layout.controller_tag_list, container, false)
+        val view = container.inflate(R.layout.controller_tag_list)
 
         view.tagAdd.dispatchOnClick { TagListAction.AddTag }
 
@@ -58,6 +58,7 @@ class TagListViewController(args: Bundle? = null) :
 
     override fun onAttach(view: View) {
         super.onAttach(view)
+        enableToolbarTitle()
         toolbarTitle = stringRes(R.string.tags)
     }
 
