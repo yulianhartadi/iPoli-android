@@ -28,7 +28,7 @@ class FeedViewController(args: Bundle? = null) :
 
     override val reducer = FeedReducer
 
-    private var isGuest = false
+    private var isGuest = true
 
     init {
         helpConfig = HelpConfig(
@@ -149,17 +149,19 @@ class FeedViewController(args: Bundle? = null) :
                     isGuest = !it
                     activity?.invalidateOptionsMenu()
                 }
-                if (isGuest) {
-                    view.shareItem.gone()
-                } else {
-                    view.shareItem.visible()
-                }
+
                 val posts = state.posts!!
 
                 if (posts.isNotEmpty()) {
                     renderPosts(view, state)
                 } else {
                     renderEmptyPosts(view)
+                }
+
+                if (isGuest) {
+                    view.shareItem.gone()
+                } else {
+                    view.shareItem.visible()
                 }
             }
 
