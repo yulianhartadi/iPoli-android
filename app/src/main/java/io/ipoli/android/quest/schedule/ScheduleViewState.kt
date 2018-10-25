@@ -47,7 +47,7 @@ object ScheduleReducer : BaseViewStateReducer<ScheduleViewState>() {
             showDailyChallenge = false,
             currentMonth = YearMonth.now(),
             currentDate = LocalDate.now(),
-            viewMode = ScheduleViewState.ViewMode.CALENDAR,
+            viewMode = ScheduleViewState.ViewMode.AGENDA,
             datePickerState = ScheduleViewState.DatePickerState.INVISIBLE
         )
 

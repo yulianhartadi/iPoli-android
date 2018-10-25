@@ -26,9 +26,9 @@ class ScheduleViewController(args: Bundle? = null) :
 
     private lateinit var addQuestAnimationHelper: AddQuestAnimationHelper
 
-    private var viewModeIcon: IIcon = GoogleMaterial.Icon.gmd_format_list_bulleted
+    private var viewModeIcon: IIcon = GoogleMaterial.Icon.gmd_event
 
-    private var viewModeTitle = "Agenda"
+    private var viewModeTitle = "Calendar"
 
     private var showDailyChallenge = false
 
