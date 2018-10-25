@@ -251,7 +251,7 @@ class PostViewController(args: Bundle? = null) :
             if(!vm.isCurrentPlayer) {
                 view.isClickable = true
                 view.onDebounceClick {
-                    navigateFromRoot().toProfile(vm.id)
+                    navigateFromRoot().toProfile(vm.playerId)
                 }
             } else {
                 view.isClickable = false
