@@ -13,7 +13,7 @@ import io.ipoli.android.quest.edit.EditQuestAction
 import io.ipoli.android.quest.edit.EditQuestViewState
 import io.ipoli.android.quest.schedule.addquest.AddQuestAction
 import io.ipoli.android.quest.schedule.addquest.AddQuestViewState
-import io.ipoli.android.quest.schedule.agenda.AgendaAction
+import io.ipoli.android.quest.schedule.agenda.view.AgendaAction
 import io.ipoli.android.quest.schedule.summary.ScheduleSummaryAction
 import io.ipoli.android.quest.schedule.today.TodayAction
 import io.ipoli.android.quest.subquest.SubQuest

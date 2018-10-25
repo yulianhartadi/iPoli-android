@@ -9,8 +9,8 @@ import io.ipoli.android.common.DataLoadedAction
 import io.ipoli.android.common.redux.Action
 import io.ipoli.android.common.redux.BaseViewState
 import io.ipoli.android.common.text.CalendarFormatter
-import io.ipoli.android.quest.schedule.agenda.AgendaAction
-import io.ipoli.android.quest.schedule.agenda.AgendaViewState
+import io.ipoli.android.quest.schedule.agenda.view.AgendaAction
+import io.ipoli.android.quest.schedule.agenda.view.AgendaViewState
 import io.ipoli.android.quest.schedule.calendar.CalendarAction
 import org.threeten.bp.LocalDate
 import org.threeten.bp.YearMonth

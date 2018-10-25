@@ -1,4 +1,4 @@
-package io.ipoli.android.quest.schedule.agenda
+package io.ipoli.android.quest.schedule.agenda.view
 
 import io.ipoli.android.common.AppState
 import io.ipoli.android.common.BaseViewStateReducer
@@ -125,7 +125,7 @@ object AgendaReducer : BaseViewStateReducer<AgendaViewState>() {
 }
 
 data class AgendaViewState(
-    val type: AgendaViewState.StateType,
+    val type: StateType,
     val scrollToPosition: Int?,
     val agendaItems: List<AgendaItem>
 ) : BaseViewState() {

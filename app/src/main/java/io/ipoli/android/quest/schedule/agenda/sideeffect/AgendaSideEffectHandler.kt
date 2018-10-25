@@ -7,9 +7,9 @@ import io.ipoli.android.common.LoadDataAction
 import io.ipoli.android.common.redux.Action
 import io.ipoli.android.event.usecase.FindEventsBetweenDatesUseCase
 import io.ipoli.android.quest.Quest
-import io.ipoli.android.quest.schedule.agenda.AgendaAction
-import io.ipoli.android.quest.schedule.agenda.AgendaReducer
-import io.ipoli.android.quest.schedule.agenda.AgendaViewState
+import io.ipoli.android.quest.schedule.agenda.view.AgendaAction
+import io.ipoli.android.quest.schedule.agenda.view.AgendaReducer
+import io.ipoli.android.quest.schedule.agenda.view.AgendaViewState
 import io.ipoli.android.quest.schedule.agenda.usecase.CreateAgendaItemsUseCase
 import io.ipoli.android.quest.schedule.agenda.usecase.FindAgendaDatesUseCase
 import io.ipoli.android.repeatingquest.usecase.CreatePlaceholderQuestsForRepeatingQuestsUseCase

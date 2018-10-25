@@ -1,4 +1,4 @@
-package io.ipoli.android.quest.schedule.agenda
+package io.ipoli.android.quest.schedule.agenda.view
 
 import android.content.res.ColorStateList
 import android.graphics.drawable.GradientDrawable
@@ -114,7 +114,11 @@ class AgendaViewController(args: Bundle? = null) :
                 when (viewHolder.itemViewType) {
                     ItemType.QUEST.ordinal -> {
                         if (direction == ItemTouchHelper.END) {
-                            dispatch(AgendaAction.CompleteQuest(questId))
+                            dispatch(
+                                AgendaAction.CompleteQuest(
+                                    questId
+                                )
+                            )
                         } else if (direction == ItemTouchHelper.START) {
                             val a = view.agendaList.adapter as AgendaAdapter
                             val vm =
@@ -123,7 +127,12 @@ class AgendaViewController(args: Bundle? = null) :
                                 .toReschedule(
                                     includeToday = !vm.isScheduledForToday,
                                     listener = { date ->
-                                        dispatch(AgendaAction.RescheduleQuest(questId, date))
+                                        dispatch(
+                                            AgendaAction.RescheduleQuest(
+                                                questId,
+                                                date
+                                            )
+                                        )
                                     },
                                     cancelListener = {
                                         view.agendaList.adapter.notifyItemChanged(viewHolder.adapterPosition)
@@ -134,13 +143,25 @@ class AgendaViewController(args: Bundle? = null) :
 
                     ItemType.COMPLETED_QUEST.ordinal -> {
                         if (direction == ItemTouchHelper.END) {
-                            dispatch(AgendaAction.UndoCompleteQuest(questId))
+                            dispatch(
+                                AgendaAction.UndoCompleteQuest(
+                                    questId
+                                )
+                            )
                         } else if (direction == ItemTouchHelper.START) {
-                            dispatch(AgendaAction.RemoveQuest(questId))
+                            dispatch(
+                                AgendaAction.RemoveQuest(
+                                    questId
+                                )
+                            )
                             PetMessagePopup(
                                 stringRes(R.string.remove_quest_undo_message),
                                 {
-                                    dispatch(AgendaAction.UndoRemoveQuest(questId))
+                                    dispatch(
+                                        AgendaAction.UndoRemoveQuest(
+                                            questId
+                                        )
+                                    )
                                     view.agendaList.adapter.notifyItemChanged(viewHolder.adapterPosition)
                                 },
                                 stringRes(R.string.undo)
@@ -186,7 +207,8 @@ class AgendaViewController(args: Bundle? = null) :
         return view
     }
 
-    override fun onCreateLoadAction() = AgendaAction.Load(startDate)
+    override fun onCreateLoadAction() =
+        AgendaAction.Load(startDate)
 
     override fun onDetach(view: View) {
         view.agendaList.clearOnScrollListeners()
@@ -229,9 +251,17 @@ class AgendaViewController(args: Bundle? = null) :
                 { side, position ->
                     agendaList.clearOnScrollListeners()
                     if (side == EndlessRecyclerViewScrollListener.Side.TOP) {
-                        dispatch(AgendaAction.LoadBefore(position))
+                        dispatch(
+                            AgendaAction.LoadBefore(
+                                position
+                            )
+                        )
                     } else {
-                        dispatch(AgendaAction.LoadAfter(position))
+                        dispatch(
+                            AgendaAction.LoadAfter(
+                                position
+                            )
+                        )
                     }
                 },
                 15
@@ -239,7 +269,11 @@ class AgendaViewController(args: Bundle? = null) :
         val changeItemScrollListener = ChangeItemScrollListener(
             agendaList.layoutManager as LinearLayoutManager
         ) { pos ->
-            dispatch(AgendaAction.FirstVisibleItemChanged(pos))
+            dispatch(
+                AgendaAction.FirstVisibleItemChanged(
+                    pos
+                )
+            )
         }
 
 
@@ -296,7 +330,8 @@ class AgendaViewController(args: Bundle? = null) :
             override val isRepeating: Boolean,
             override val isFromChallenge: Boolean,
             val isScheduledForToday: Boolean
-        ) : AgendaViewModel(id), QuestItemViewModel
+        ) : AgendaViewModel(id),
+            QuestItemViewModel
 
         data class QuestPlaceholderViewModel(
             override val id: String,
@@ -308,7 +343,8 @@ class AgendaViewController(args: Bundle? = null) :
             override val showDivider: Boolean,
             override val isRepeating: Boolean,
             override val isFromChallenge: Boolean
-        ) : AgendaViewModel(id), QuestItemViewModel
+        ) : AgendaViewModel(id),
+            QuestItemViewModel
 
         data class CompletedQuestViewModel(
             override val id: String,
@@ -320,7 +356,8 @@ class AgendaViewController(args: Bundle? = null) :
             override val showDivider: Boolean,
             override val isRepeating: Boolean,
             override val isFromChallenge: Boolean
-        ) : AgendaViewModel(id), QuestItemViewModel
+        ) : AgendaViewModel(id),
+            QuestItemViewModel
 
         data class EventViewModel(
             override val id: String,
@@ -528,7 +565,7 @@ class AgendaViewController(args: Bundle? = null) :
     private fun toAgendaViewModel(
         agendaItem: CreateAgendaItemsUseCase.AgendaItem,
         nextAgendaItem: CreateAgendaItemsUseCase.AgendaItem? = null
-    ): AgendaViewController.AgendaViewModel {
+    ): AgendaViewModel {
 
         return when (agendaItem) {
             is CreateAgendaItemsUseCase.AgendaItem.QuestItem -> {
@@ -539,11 +576,11 @@ class AgendaViewController(args: Bundle? = null) :
                     AndroidColor.valueOf(quest.color.name).color500
 
                 when {
-                    quest.isCompleted -> AgendaViewController.AgendaViewModel.CompletedQuestViewModel(
+                    quest.isCompleted -> AgendaViewModel.CompletedQuestViewModel(
                         id = quest.id,
                         name = quest.name,
                         tags = quest.tags.map {
-                            AgendaViewController.TagViewModel(
+                            TagViewModel(
                                 it.name,
                                 AndroidColor.valueOf(it.color.name).color500
                             )
@@ -560,11 +597,11 @@ class AgendaViewController(args: Bundle? = null) :
                         isRepeating = quest.isFromRepeatingQuest,
                         isFromChallenge = quest.isFromChallenge
                     )
-                    quest.id.isEmpty() -> AgendaViewController.AgendaViewModel.QuestPlaceholderViewModel(
+                    quest.id.isEmpty() -> AgendaViewModel.QuestPlaceholderViewModel(
                         id = quest.id,
                         name = quest.name,
                         tags = quest.tags.map {
-                            AgendaViewController.TagViewModel(
+                            TagViewModel(
                                 it.name,
                                 AndroidColor.valueOf(it.color.name).color500
                             )
@@ -581,11 +618,11 @@ class AgendaViewController(args: Bundle? = null) :
                         isRepeating = quest.isFromRepeatingQuest,
                         isFromChallenge = quest.isFromChallenge
                     )
-                    else -> AgendaViewController.AgendaViewModel.QuestViewModel(
+                    else -> AgendaViewModel.QuestViewModel(
                         id = quest.id,
                         name = quest.name,
                         tags = quest.tags.map {
-                            AgendaViewController.TagViewModel(
+                            TagViewModel(
                                 it.name,
                                 AndroidColor.valueOf(it.color.name).color500
                             )
@@ -609,7 +646,7 @@ class AgendaViewController(args: Bundle? = null) :
             is CreateAgendaItemsUseCase.AgendaItem.EventItem -> {
                 val event = agendaItem.event
 
-                AgendaViewController.AgendaViewModel.EventViewModel(
+                AgendaViewModel.EventViewModel(
                     id = event.name,
                     name = event.name,
                     startTime = formatStartTime(event),
@@ -623,7 +660,7 @@ class AgendaViewController(args: Bundle? = null) :
                 val dayOfMonth = date.dayOfMonth
                 val dayOfWeek = date.dayOfWeek.getDisplayName(TextStyle.SHORT, Locale.getDefault())
                     .toUpperCase()
-                AgendaViewController.AgendaViewModel.DateHeaderViewModel(
+                AgendaViewModel.DateHeaderViewModel(
                     date.toString(),
                     "$dayOfMonth $dayOfWeek"
                 )
@@ -639,13 +676,13 @@ class AgendaViewController(args: Bundle? = null) :
                     "${start.dayOfMonth} - ${DateFormatter.formatDayWithWeek(end)}"
                 }
 
-                AgendaViewController.AgendaViewModel.WeekHeaderViewModel(
+                AgendaViewModel.WeekHeaderViewModel(
                     start.weekOfYear.toString() + start.year.toString(),
                     label
                 )
             }
             is CreateAgendaItemsUseCase.AgendaItem.Month -> {
-                AgendaViewController.AgendaViewModel.MonthDividerViewModel(
+                AgendaViewModel.MonthDividerViewModel(
                     startDate.month.toString() + startDate.year.toString(),
                     monthToImage[agendaItem.month.month]!!,
                     agendaItem.month.format(

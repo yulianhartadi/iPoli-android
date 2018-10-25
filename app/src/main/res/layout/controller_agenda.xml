@@ -31,7 +31,7 @@
             app:current_month_text_color="?android:textColorPrimary"
             app:day_text_size="12sp"
             app:min_year="2004"
-            app:month_view="io.ipoli.android.quest.schedule.summary.view.widget.ScheduleSummaryMonthView"
+            app:month_view="io.ipoli.android.quest.schedule.agenda.view.widget.AgendaMonthView"
             app:month_view_show_mode="mode_all"
             app:other_month_text_color="?android:textColorHint"
             app:scheme_text=""
@@ -39,7 +39,7 @@
             app:scheme_theme_color="?android:textColorPrimary"
             app:week_bar_view="io.ipoli.android.quest.schedule.summary.view.widget.SimpleWeekBar"
             app:week_text_color="?android:textColorSecondary"
-            app:week_view="io.ipoli.android.quest.schedule.summary.view.widget.ScheduleSummaryWeekView" />
+            app:week_view="io.ipoli.android.quest.schedule.agenda.view.widget.AgendaWeekView" />
 
         <android.support.v7.widget.RecyclerView
             android:id="@+id/agendaList"

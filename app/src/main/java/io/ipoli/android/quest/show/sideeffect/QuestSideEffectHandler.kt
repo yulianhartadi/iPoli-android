@@ -9,7 +9,7 @@ import io.ipoli.android.event.usecase.FindEventsBetweenDatesUseCase
 import io.ipoli.android.note.usecase.SaveQuestNoteUseCase
 import io.ipoli.android.quest.CompletedQuestAction
 import io.ipoli.android.quest.Quest
-import io.ipoli.android.quest.schedule.agenda.AgendaAction
+import io.ipoli.android.quest.schedule.agenda.view.AgendaAction
 import io.ipoli.android.quest.schedule.summary.ScheduleSummaryAction
 import io.ipoli.android.quest.schedule.today.TodayAction
 import io.ipoli.android.quest.schedule.today.usecase.CreateTodayItemsUseCase

@@ -70,10 +70,9 @@ import io.ipoli.android.quest.edit.EditQuestViewController
 import io.ipoli.android.quest.reminder.picker.ReminderPickerDialogController
 import io.ipoli.android.quest.reminder.picker.ReminderViewModel
 import io.ipoli.android.quest.schedule.addquest.AddQuestViewController
-import io.ipoli.android.quest.schedule.agenda.AgendaViewController
+import io.ipoli.android.quest.schedule.agenda.view.AgendaViewController
 import io.ipoli.android.quest.schedule.calendar.CalendarViewController
 import io.ipoli.android.quest.schedule.summary.ScheduleSummaryViewController
-import io.ipoli.android.quest.schedule.today.TodayViewController
 import io.ipoli.android.quest.show.QuestViewController
 import io.ipoli.android.repeatingquest.add.AddRepeatingQuestViewController
 import io.ipoli.android.repeatingquest.edit.EditRepeatingQuestViewController
@@ -677,7 +676,11 @@ class Navigator(private val router: Router) {
     }
 
     fun replaceWithAgenda(currentDate: LocalDate) {
-        replaceTopController({ AgendaViewController(currentDate) }, FadeChangeHandler())
+        replaceTopController({
+            AgendaViewController(
+                currentDate
+            )
+        }, FadeChangeHandler())
     }
 
     fun replaceWithHome(changeHandler: ControllerChangeHandler? = null) {
