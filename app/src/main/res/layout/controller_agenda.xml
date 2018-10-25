@@ -10,11 +10,11 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_marginTop="8dp"
-        android:background="?android:colorBackground"
         android:orientation="vertical"
         app:calendar_content_view_id="@+id/agendaList"
         app:calendar_show_mode="both_month_week_view"
         app:default_status="shrink"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -25,6 +25,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             app:calendar_height="48dp"
+            android:background="?colorSurface"
             app:current_day_text_color="?android:textColorPrimary"
             app:current_month_lunar_text_color="#CFCFCF"
             app:current_month_text_color="?android:textColorPrimary"
@@ -36,16 +37,15 @@
             app:scheme_text=""
             app:scheme_text_color="?android:textColorPrimary"
             app:scheme_theme_color="?android:textColorPrimary"
-            app:week_background="?android:colorBackground"
             app:week_bar_view="io.ipoli.android.quest.schedule.summary.view.widget.SimpleWeekBar"
             app:week_text_color="?android:textColorSecondary"
             app:week_view="io.ipoli.android.quest.schedule.summary.view.widget.ScheduleSummaryWeekView" />
 
         <android.support.v7.widget.RecyclerView
             android:id="@+id/agendaList"
+            android:background="?android:colorBackground"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            app:layout_behavior="@string/appbar_scrolling_view_behavior" />
+            android:layout_height="match_parent" />
 
     </com.haibin.calendarview.CalendarLayout>
 
