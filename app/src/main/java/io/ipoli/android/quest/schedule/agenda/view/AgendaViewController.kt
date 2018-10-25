@@ -231,6 +231,7 @@ class AgendaViewController(args: Bundle? = null) :
                     lp.topMargin = calendarHeight
                     view.agendaListContainer.layoutParams = lp
                     view.calendarView.setCalendarItemHeight(calendarHeight)
+
                 }, 2000)
             }
 

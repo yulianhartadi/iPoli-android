@@ -11,12 +11,16 @@ import com.haibin.calendarview.Calendar
 import com.haibin.calendarview.WeekView
 import io.ipoli.android.R
 import io.ipoli.android.common.ViewUtils
+import io.ipoli.android.common.view.AndroidColor
 import io.ipoli.android.common.view.attrData
+import io.ipoli.android.quest.Color
 import io.ipoli.android.quest.schedule.summary.view.widget.ScheduleItem
 import org.json.JSONArray
 
 @Suppress("unused")
 class AgendaWeekView(context: Context) : WeekView(context) {
+
+    private var EVENT_HEIGHT_PX: Int = 0
 
     private val selectedBorderPaint = Paint()
     private val currentDayPaint = Paint()
@@ -26,6 +30,8 @@ class AgendaWeekView(context: Context) : WeekView(context) {
     private val dividerPaint = Paint()
 
     private val itemPaint = Paint()
+
+    private val colorStrokePaints: Map<Color, Paint>
 
     init {
 
@@ -48,6 +54,22 @@ class AgendaWeekView(context: Context) : WeekView(context) {
 
         itemPaint.isAntiAlias = true
         itemPaint.style = Paint.Style.FILL
+
+        EVENT_HEIGHT_PX = ViewUtils.dpToPx(4f, context).toInt()
+
+        colorStrokePaints = Color.values().map {
+            val p = Paint()
+            p.initWithColor(AndroidColor.valueOf(it.name).color500)
+            p.strokeWidth = EVENT_HEIGHT_PX.toFloat()
+            p.style = Paint.Style.STROKE
+            it to p
+        }.toMap()
+    }
+
+    private fun Paint.initWithColor(@ColorRes color: Int) {
+        isAntiAlias = true
+        style = Paint.Style.FILL
+        this.color = ContextCompat.getColor(context, color)
     }
 
     private fun createTextPaint(context: Context, @ColorRes color: Int, textSize: Int): Paint {
@@ -115,8 +137,6 @@ class AgendaWeekView(context: Context) : WeekView(context) {
         val cx = x + mItemWidth / 2
 
         if (calendar.isCurrentDay) {
-
-
             canvas.drawCircle(
                 cx.toFloat(),
                 baselineY - textBounds.height() / 2,
@@ -132,6 +152,9 @@ class AgendaWeekView(context: Context) : WeekView(context) {
             textPaint
         )
 
+
+
+
         canvas.drawLine(
             (x + mItemWidth).toFloat(),
             0f,
@@ -139,6 +162,61 @@ class AgendaWeekView(context: Context) : WeekView(context) {
             mItemHeight.toFloat(),
             dividerPaint
         )
+
+        val gap = ViewUtils.dpToPx(4f, context)
+        val questsTopY = radius * 2 + gap
+
+        if (calendar.isCurrentDay) {
+            canvas.drawLine(
+                x.toFloat(),
+                questsTopY,
+                (x + mItemWidth).toFloat(),
+                questsTopY,
+                colorStrokePaints[Color.GREEN]
+            )
+
+            canvas.drawLine(
+                x.toFloat() + mItemWidth / 8,
+                questsTopY + EVENT_HEIGHT_PX + gap,
+                x.toFloat() + mItemWidth / 8 + mItemWidth / 4,
+                questsTopY + EVENT_HEIGHT_PX + gap,
+                colorStrokePaints[Color.ORANGE]
+            )
+
+            canvas.drawLine(
+                x.toFloat() + mItemWidth / 4,
+                questsTopY + 2 * EVENT_HEIGHT_PX + 2 * gap,
+                x.toFloat() + mItemWidth / 6 + mItemWidth / 5,
+                questsTopY + 2 * EVENT_HEIGHT_PX + 2 * gap,
+                colorStrokePaints[Color.RED]
+            )
+
+            canvas.drawLine(
+                x.toFloat() + mItemWidth / 3,
+                questsTopY + 3 * EVENT_HEIGHT_PX + 3 * gap,
+                x.toFloat() + mItemWidth / 3 + mItemWidth / 4,
+                questsTopY + 3 * EVENT_HEIGHT_PX + 3 * gap,
+                colorStrokePaints[Color.PURPLE]
+            )
+
+            canvas.drawLine(
+                x.toFloat() + mItemWidth / 2,
+                questsTopY + 4 * EVENT_HEIGHT_PX + 4 * gap,
+                x.toFloat() + mItemWidth / 2 + mItemWidth / 3,
+                questsTopY + 4 * EVENT_HEIGHT_PX + 4 * gap,
+                colorStrokePaints[Color.BLUE]
+            )
+
+            canvas.drawLine(
+                x.toFloat() + mItemWidth / 1.5f,
+                questsTopY + 5 * EVENT_HEIGHT_PX + 5 * gap,
+                x.toFloat() + mItemWidth / 1.5f + mItemWidth / 3,
+                questsTopY + 5 * EVENT_HEIGHT_PX + 5 * gap,
+                colorStrokePaints[Color.GREEN]
+            )
+
+
+        }
 
     }
 
