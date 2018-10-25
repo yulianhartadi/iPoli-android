@@ -21,10 +21,7 @@ import com.mikepenz.iconics.typeface.IIcon
 import com.mikepenz.ionicons_typeface_library.Ionicons
 import io.ipoli.android.R
 import io.ipoli.android.common.ViewUtils
-import io.ipoli.android.common.datetime.isToday
-import io.ipoli.android.common.datetime.isTomorrow
-import io.ipoli.android.common.datetime.isYesterday
-import io.ipoli.android.common.datetime.weekOfYear
+import io.ipoli.android.common.datetime.*
 import io.ipoli.android.common.redux.android.ReduxViewController
 import io.ipoli.android.common.text.DateFormatter
 import io.ipoli.android.common.text.QuestStartTimeFormatter
@@ -34,12 +31,14 @@ import io.ipoli.android.common.view.recyclerview.MultiViewTypeSwipeCallback
 import io.ipoli.android.common.view.recyclerview.RecyclerViewViewModel
 import io.ipoli.android.common.view.recyclerview.SwipeResource
 import io.ipoli.android.event.Event
+import io.ipoli.android.quest.Color
 import io.ipoli.android.quest.CompletedQuestViewController
 import io.ipoli.android.quest.schedule.agenda.usecase.CreateAgendaItemsUseCase
 import kotlinx.android.synthetic.main.controller_agenda.view.*
 import kotlinx.android.synthetic.main.item_agenda_event.view.*
 import kotlinx.android.synthetic.main.item_agenda_month_divider.view.*
 import kotlinx.android.synthetic.main.item_agenda_quest.view.*
+import org.json.JSONArray
 import org.threeten.bp.LocalDate
 import org.threeten.bp.Month
 import org.threeten.bp.format.DateTimeFormatter
@@ -235,6 +234,8 @@ class AgendaViewController(args: Bundle? = null) :
 //                    view.calendarView.setCalendarItemHeight(calendarHeight)
 //
 //                }, 2000)
+
+                view.calendarView.setSchemeDate(state.calendars.map { it.toString() to it }.toMap())
             }
 
             AgendaViewState.StateType.SHOW_TOP_LOADER -> {
@@ -731,4 +732,23 @@ class AgendaViewController(args: Bundle? = null) :
         val end = start.plus(event.duration.intValue)
         return "${start.toString(shouldUse24HourFormat)} - ${end.toString(shouldUse24HourFormat)}"
     }
+
+    private val AgendaViewState.calendars: List<com.haibin.calendarview.Calendar>
+        get() = LocalDate.now().withDayOfMonth(1).datesAhead(31).map {
+            val itemDate = it
+
+            val currentDate = LocalDate.now()
+
+            val items = listOf(Color.RED.name, Color.GREEN.name, Color.INDIGO.name)
+
+            com.haibin.calendarview.Calendar().apply {
+                day = itemDate.dayOfMonth
+                month = itemDate.monthValue
+                year = itemDate.year
+                isCurrentDay = itemDate == currentDate
+                isCurrentMonth = itemDate.month == currentDate.month
+                isLeapYear = itemDate.isLeapYear
+                scheme = JSONArray(items).toString()
+            }
+        }
 }

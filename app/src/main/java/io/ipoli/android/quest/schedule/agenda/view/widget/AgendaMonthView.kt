@@ -3,6 +3,7 @@ package io.ipoli.android.quest.schedule.agenda.view.widget
 import android.content.Context
 import android.graphics.Canvas
 import android.graphics.Paint
+import android.support.annotation.ColorInt
 import android.support.annotation.ColorRes
 import android.support.v4.content.ContextCompat
 import com.haibin.calendarview.Calendar
@@ -11,7 +12,7 @@ import io.ipoli.android.R
 import io.ipoli.android.common.ViewUtils
 import io.ipoli.android.common.view.AndroidColor
 import io.ipoli.android.common.view.attrData
-import io.ipoli.android.quest.Color
+import org.json.JSONArray
 
 
 @Suppress("unused")
@@ -22,9 +23,12 @@ class AgendaMonthView(context: Context) : MonthView(context) {
 
     private val currentDayTextPaint: Paint
 
-    private val colorPaints: Map<Color, Paint>
+    private val itemPaint = Paint()
 
     private var radius = 0f
+    private var scheduleItemRadius = 0f
+    private var itemPadding = 0f
+    private var itemSpacing = 0f
 
     init {
 
@@ -36,11 +40,8 @@ class AgendaMonthView(context: Context) : MonthView(context) {
         currentDayTextPaint.color = context.attrData(R.attr.colorAccent)
         currentDayTextPaint.style = Paint.Style.FILL
 
-        colorPaints = Color.values().map {
-            val p = Paint()
-            p.initWithColor(AndroidColor.valueOf(it.name).color500)
-            it to p
-        }.toMap()
+        itemPaint.isAntiAlias = true
+        itemPaint.style = Paint.Style.FILL
     }
 
     private fun createTextPaint(context: Context, @ColorRes color: Int, textSize: Int): Paint {
@@ -56,6 +57,9 @@ class AgendaMonthView(context: Context) : MonthView(context) {
 
     override fun onPreviewHook() {
         radius = (Math.min(mItemWidth, mItemHeight) / 11 * 5.2).toFloat()
+        scheduleItemRadius = ViewUtils.dpToPx(2f, context)
+        itemPadding = ViewUtils.dpToPx(6f, context)
+        itemSpacing = ViewUtils.dpToPx(4f, context)
     }
 
     private fun Paint.initWithColor(@ColorRes color: Int) {
@@ -78,9 +82,25 @@ class AgendaMonthView(context: Context) : MonthView(context) {
     }
 
     override fun onDrawScheme(canvas: Canvas, calendar: Calendar, x: Int, y: Int) {
-        val data = calendar.scheme
+        val data = JSONArray(calendar.scheme)
 
-        val parts = data.split(",")
+        val items = AgendaMonthView.ScheduleItem.createItemsFromJson(data, context)
+
+        val cx = (x + mItemWidth / 2).toFloat()
+
+        val itemsWidth = scheduleItemRadius * items.size * 2 + (itemSpacing * (items.size - 1))
+        val itemsStart = cx - (itemsWidth / 2)
+
+        items.forEachIndexed { i, item ->
+            itemPaint.color = item.color
+            val itemStart = itemsStart + (i * scheduleItemRadius * 2) + (itemSpacing * i)
+            canvas.drawCircle(
+                itemStart + scheduleItemRadius,
+                y + mTextBaseLine + itemPadding,
+                scheduleItemRadius,
+                itemPaint
+            )
+        }
     }
 
     override fun onDrawText(
@@ -117,6 +137,22 @@ class AgendaMonthView(context: Context) : MonthView(context) {
                 else -> mOtherMonthTextPaint
             }
         )
+    }
+
+    data class ScheduleItem(@ColorInt val color: Int) {
+        companion object {
+
+            fun createItemsFromJson(data: JSONArray, context: Context): List<ScheduleItem> {
+                if (data.length() == 0) {
+                    return emptyList()
+                }
+                return (0 until data.length()).map {
+                    val c = AndroidColor.valueOf(data.getString(it))
+                    ScheduleItem(ContextCompat.getColor(context, c.color500))
+                }
+            }
+
+        }
     }
 
 }
