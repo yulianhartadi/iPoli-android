@@ -3,53 +3,81 @@ package io.ipoli.android.quest.schedule.agenda.view.widget
 import android.content.Context
 import android.graphics.Canvas
 import android.graphics.Paint
-import android.graphics.Rect
-import android.support.annotation.ColorInt
+import android.support.annotation.ColorRes
 import android.support.v4.content.ContextCompat
-import android.text.TextPaint
-import android.text.TextUtils
 import com.haibin.calendarview.Calendar
 import com.haibin.calendarview.MonthView
 import io.ipoli.android.R
 import io.ipoli.android.common.ViewUtils
+import io.ipoli.android.common.view.AndroidColor
 import io.ipoli.android.common.view.attrData
-import io.ipoli.android.quest.schedule.summary.view.widget.ScheduleItem
-import io.ipoli.android.quest.schedule.summary.view.widget.SelectionRectangle
-import org.json.JSONArray
+import io.ipoli.android.quest.Color
+
+
 
 @Suppress("unused")
 class AgendaMonthView(context: Context) : MonthView(context) {
 
-    private val selectedBorderPaint = Paint()
-    private val currentDayBorderPaint = Paint()
 
-    private val whiteTextPaint = TextPaint()
+    private val whiteTextPaint: Paint
+    private val blackTextPaint: Paint
+    private val darkTextPaint: Paint
+    private val lightTextPaint: Paint
+    private val currentDayTextPaint: Paint
 
-    private val dividerPaint = Paint()
-
-    private val itemPaint = Paint()
+    private val colorPaints: Map<Color, Paint>
+    private val colorStrokePaints: Map<Color, Paint>
+    private val lightColorStrokePaints: Map<Color, Paint>
 
     init {
 
-        whiteTextPaint.isFakeBoldText = true
-        whiteTextPaint.isAntiAlias = true
-        whiteTextPaint.color = ContextCompat.getColor(context, R.color.md_white)
-        whiteTextPaint.textSize = ViewUtils.spToPx(12, context).toFloat()
+        whiteTextPaint = createTextPaint(context, R.color.md_light_text_100, 14)
+        lightTextPaint = createTextPaint(context, R.color.md_light_text_50, 14)
+        blackTextPaint = createTextPaint(context, R.color.md_dark_text_100, 14)
+        darkTextPaint = createTextPaint(context, R.color.md_dark_text_38, 14)
 
-        selectedBorderPaint.style = Paint.Style.STROKE
-        selectedBorderPaint.strokeWidth = ViewUtils.dpToPx(1.5f, context)
-        selectedBorderPaint.color = context.attrData(R.attr.colorAccent)
+        currentDayTextPaint = createTextPaint(context, R.color.md_light_text_50, 14)
+        currentDayTextPaint.color = context.attrData(R.attr.colorAccent)
+        currentDayTextPaint.style = Paint.Style.FILL
 
-        currentDayBorderPaint.style = Paint.Style.STROKE
-        currentDayBorderPaint.strokeWidth = ViewUtils.dpToPx(1.5f, context)
-        currentDayBorderPaint.color = context.attrData(R.attr.colorPrimary)
+        colorPaints = Color.values().map {
+            val p = Paint()
+            p.initWithColor(AndroidColor.valueOf(it.name).color500)
+            it to p
+        }.toMap()
 
-        dividerPaint.style = Paint.Style.STROKE
-        dividerPaint.strokeWidth = ViewUtils.dpToPx(1f, context)
-        dividerPaint.color = context.attrData(android.R.attr.listDivider)
+        colorStrokePaints = Color.values().map {
+            val p = Paint()
+            p.initWithColor(AndroidColor.valueOf(it.name).color500)
+            p.strokeWidth = ViewUtils.dpToPx(2.5f, context)
+            p.style = Paint.Style.STROKE
+            it to p
+        }.toMap()
 
-        itemPaint.isAntiAlias = true
-        itemPaint.style = Paint.Style.FILL
+        lightColorStrokePaints = Color.values().map {
+            val p = Paint()
+            p.initWithColor(AndroidColor.valueOf(it.name).color100)
+            p.strokeWidth = ViewUtils.dpToPx(2.5f, context)
+            p.style = Paint.Style.STROKE
+            it to p
+        }.toMap()
+    }
+
+    private fun createTextPaint(context: Context, @ColorRes color: Int, textSize: Int): Paint {
+        val paint = Paint()
+        paint.color = ContextCompat.getColor(context, color)
+        paint.isAntiAlias = true
+        paint.textAlign = Paint.Align.CENTER
+        paint.textSize = ViewUtils.spToPx(textSize, context).toFloat()
+        paint.isFakeBoldText = true
+
+        return paint
+    }
+
+    private fun Paint.initWithColor(@ColorRes color: Int) {
+        isAntiAlias = true
+        style = Paint.Style.FILL
+        this.color = ContextCompat.getColor(context, color)
     }
 
     override fun onDrawSelected(
@@ -59,123 +87,13 @@ class AgendaMonthView(context: Context) : MonthView(context) {
         y: Int,
         hasScheme: Boolean
     ): Boolean {
-        val widthOffset = ViewUtils.dpToPx(1f, context)
-        val heightOffset = ViewUtils.dpToPx(0.5f, context)
-
-        SelectionRectangle(
-            left = x.toFloat() + widthOffset,
-            top = y + mItemHeight - heightOffset,
-            right = (x + mItemWidth).toFloat() - widthOffset,
-            bottom = y.toFloat() + heightOffset
-        ).draw(canvas, selectedBorderPaint)
-
         return true
     }
 
     override fun onDrawScheme(canvas: Canvas, calendar: Calendar, x: Int, y: Int) {
+        val data = calendar.scheme
 
-        val data = JSONArray(calendar.scheme)
-
-        val items = ScheduleItem.createItemsFromJson(data, context)
-
-        val cellStart = x + ViewUtils.dpToPx(1f, context)
-        val cellEnd = cellStart + mItemWidth - ViewUtils.dpToPx(2f, context)
-
-        canvas.drawLine(
-            x.toFloat(),
-            y.toFloat(),
-            (x + mItemWidth).toFloat(),
-            y.toFloat(),
-            dividerPaint
-        )
-
-        val topOffset = y.toFloat() + mItemHeight / 4f
-
-        val qHeight = mItemHeight / 4.5f
-
-        items.forEachIndexed { index, scheduleItem ->
-
-            if (index > 3) {
-                return@forEachIndexed
-            }
-
-            drawQuestBackground(
-                index,
-                scheduleItem.color,
-                cellStart,
-                cellEnd,
-                topOffset,
-                qHeight,
-                canvas,
-                y.toFloat()
-            )
-
-            if (index < 3) {
-
-                drawQuestName(
-                    index,
-                    scheduleItem,
-                    cellStart,
-                    cellEnd,
-                    topOffset,
-                    qHeight,
-                    canvas
-                )
-            }
-        }
-    }
-
-    private fun drawQuestBackground(
-        index: Int,
-        @ColorInt color: Int,
-        cellStart: Float,
-        cellEnd: Float,
-        topOffset: Float,
-        questHeight: Float,
-        canvas: Canvas,
-        y: Float,
-        padding: Float = 1f
-    ) {
-        itemPaint.color = color
-        val top = topOffset + questHeight * index + index * padding
-        val bottom = topOffset + questHeight * (index + 1) + index * padding
-        canvas.drawRect(
-            cellStart,
-            top,
-            cellEnd,
-            Math.min(bottom, y + mItemHeight - padding),
-            itemPaint
-        )
-    }
-
-    private fun drawQuestName(
-        index: Int,
-        scheduleItem: ScheduleItem,
-        cellStart: Float,
-        cellEnd: Float,
-        topOffset: Float,
-        questHeight: Float,
-        canvas: Canvas,
-        padding: Float = 1f
-    ) {
-
-        val textStart = cellStart + ViewUtils.dpToPx(2f, context)
-        val textEnd = cellEnd - ViewUtils.dpToPx(2f, context)
-
-        val drawnText =
-            TextUtils.ellipsize(scheduleItem.name, whiteTextPaint, textEnd - textStart, TextUtils.TruncateAt.END)
-
-        val b = Rect()
-        whiteTextPaint.getTextBounds(drawnText.toString(), 0, drawnText.length, b)
-
-        whiteTextPaint.isStrikeThruText = scheduleItem.isCompleted
-
-        canvas.drawText(
-            drawnText.toString(),
-            textStart,
-            topOffset + questHeight / 2 + b.height() / 2.5f + (questHeight * index) + (padding * index),
-            whiteTextPaint
-        )
+        val parts = data.split(",")
     }
 
     override fun onDrawText(
@@ -186,30 +104,34 @@ class AgendaMonthView(context: Context) : MonthView(context) {
         hasScheme: Boolean,
         isSelected: Boolean
     ) {
-        val baselineY = mTextBaseLine + y - (mItemHeight / 2.65f)
-        val cx = x + mItemWidth / 2
+        val baselineY = mTextBaseLine + y
+        val cx = (x + mItemWidth / 2).toFloat()
 
-        canvas.drawText(
-            calendar.day.toString(),
-            cx.toFloat(),
-            baselineY,
-            when {
-                calendar.isCurrentDay -> mCurDayTextPaint
-                calendar.isCurrentMonth -> mSchemeTextPaint
-                else -> mOtherMonthTextPaint
-            }
-        )
+        if (isSelected) {
+            canvas.drawText(
+                calendar.day.toString(),
+                cx,
+                baselineY,
+                mSelectTextPaint
+            )
+        } else if (hasScheme) {
+            canvas.drawText(
+                calendar.day.toString(),
+                cx,
+                baselineY,
+                if (calendar.isCurrentDay)
+                    mCurDayTextPaint
+                else if (calendar.isCurrentMonth) mSchemeTextPaint else mOtherMonthTextPaint
+            )
 
-        if (calendar.isCurrentDay) {
-            val widthOffset = ViewUtils.dpToPx(1f, context)
-            val heightOffset = ViewUtils.dpToPx(0.5f, context)
-
-            SelectionRectangle(
-                left = x.toFloat() + widthOffset,
-                top = y + mItemHeight - heightOffset,
-                right = (x + mItemWidth).toFloat() - widthOffset,
-                bottom = y.toFloat() + heightOffset
-            ).draw(canvas, currentDayBorderPaint)
+        } else {
+            canvas.drawText(
+                calendar.day.toString(), cx, baselineY,
+                if (calendar.isCurrentDay)
+                    mCurDayTextPaint
+                else if (calendar.isCurrentMonth) mCurMonthTextPaint else mOtherMonthTextPaint
+            )
         }
     }
+
 }
