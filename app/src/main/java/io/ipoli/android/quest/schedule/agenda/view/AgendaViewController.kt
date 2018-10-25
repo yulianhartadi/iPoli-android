@@ -22,6 +22,8 @@ import com.mikepenz.ionicons_typeface_library.Ionicons
 import io.ipoli.android.R
 import io.ipoli.android.common.ViewUtils
 import io.ipoli.android.common.datetime.isToday
+import io.ipoli.android.common.datetime.isTomorrow
+import io.ipoli.android.common.datetime.isYesterday
 import io.ipoli.android.common.datetime.weekOfYear
 import io.ipoli.android.common.redux.android.ReduxViewController
 import io.ipoli.android.common.text.DateFormatter
@@ -378,7 +380,8 @@ class AgendaViewController(args: Bundle? = null) :
 
         data class DateHeaderViewModel(
             override val id: String,
-            val text: String
+            val text: String,
+            @ColorInt val textColor: Int
         ) : AgendaViewModel(id)
 
         data class MonthDividerViewModel(
@@ -489,7 +492,9 @@ class AgendaViewController(args: Bundle? = null) :
             viewModel: AgendaViewModel.DateHeaderViewModel
         ) {
             view.setOnClickListener(null)
-            (view as TextView).text = viewModel.text
+            val tv = view as TextView
+            tv.text = viewModel.text
+            tv.setTextColor(viewModel.textColor)
         }
 
         private fun bindCompleteQuestViewModel(
@@ -665,13 +670,30 @@ class AgendaViewController(args: Bundle? = null) :
 
             is CreateAgendaItemsUseCase.AgendaItem.Date -> {
                 val date = agendaItem.date
-                val dayOfMonth = date.dayOfMonth
-                val dayOfWeek = date.dayOfWeek.getDisplayName(TextStyle.SHORT, Locale.getDefault())
+                val dayOfWeek = date.dayOfWeek.getDisplayName(TextStyle.FULL, Locale.getDefault())
                     .toUpperCase()
+                val month = date.month.getDisplayName(TextStyle.FULL, Locale.getDefault())
+                val dayOfMonth = date.dayOfMonth
+
+                val prefix = if (date.isToday) {
+                    "today - "
+                } else if (date.isTomorrow) {
+                    "tomorrow - "
+                } else if (date.isYesterday) {
+                    "yesterday - "
+                } else {
+                    ""
+                }
+
                 AgendaViewModel.DateHeaderViewModel(
                     date.toString(),
-                    "$dayOfMonth $dayOfWeek"
+                    "$prefix$dayOfWeek, $month $dayOfMonth",
+                    if (date.isToday)
+                        attrData(R.attr.colorAccent)
+                    else
+                        colorRes(colorTextSecondaryResource)
                 )
+
             }
             is CreateAgendaItemsUseCase.AgendaItem.Week -> {
                 val start = agendaItem.start
