@@ -24,12 +24,14 @@ object PostReducer : BaseViewStateReducer<PostViewState>() {
         when (action) {
 
             is DataLoadedAction.PostChanged -> {
+                val currentPlayerId = state.dataState.player!!.id
                 subState.copy(
                     type = DATA_CHANGED,
                     post = action.post,
                     comments = action.post.comments
                         .sortedByDescending { it.createdAt.toEpochMilli() },
-                    canDelete = action.post.playerId == state.dataState.player!!.id
+                    canDelete = action.post.playerId == currentPlayerId,
+                    currentPlayerId = currentPlayerId
                 )
             }
 
@@ -40,7 +42,8 @@ object PostReducer : BaseViewStateReducer<PostViewState>() {
         type = LOADING,
         post = null,
         comments = emptyList(),
-        canDelete = false
+        canDelete = false,
+        currentPlayerId = null
     )
 }
 
@@ -48,7 +51,8 @@ data class PostViewState(
     val type: StateType,
     val post: Post?,
     val comments: List<Post.Comment>,
-    val canDelete: Boolean
+    val canDelete: Boolean,
+    val currentPlayerId : String?
 ) : BaseViewState() {
     enum class StateType {
         LOADING, DATA_CHANGED
