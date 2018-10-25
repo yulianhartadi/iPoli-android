@@ -225,6 +225,13 @@ class AgendaViewController(args: Bundle? = null) :
                 agendaList.clearOnScrollListeners()
                 (agendaList.adapter as AgendaAdapter).updateAll(state.toAgendaItemViewModels())
                 addScrollListeners(agendaList, state)
+                view.calendarView.postDelayed({
+                    val calendarHeight = ViewUtils.dpToPx(88f, view.context).toInt()
+                    val lp = view.agendaListContainer.layoutParams as ViewGroup.MarginLayoutParams
+                    lp.topMargin = calendarHeight
+                    view.agendaListContainer.layoutParams = lp
+                    view.calendarView.setCalendarItemHeight(calendarHeight)
+                }, 2000)
             }
 
             AgendaViewState.StateType.SHOW_TOP_LOADER -> {
