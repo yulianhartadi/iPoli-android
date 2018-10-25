@@ -17,7 +17,7 @@
             android:checked="false"
             android:icon="@drawable/ic_event_white_24dp"
             android:orderInCategory="0"
-            android:title="@string/calendar" />
+            android:title="@string/agenda" />
 
         <item
             android:id="@+id/habits"
@@ -29,7 +29,7 @@
         <item
             android:id="@+id/feed"
             android:checked="false"
-            android:icon="@drawable/ic_following_white_24dp"
+            android:icon="@drawable/ic_helmet_white_24dp"
             android:orderInCategory="0"
             android:title="@string/drawer_feed" />
 
