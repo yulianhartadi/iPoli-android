@@ -17,7 +17,8 @@ import io.ipoli.android.common.view.AndroidColor
 import io.ipoli.android.common.view.attrData
 import org.json.JSONArray
 
-class SelectionRectangle(
+class SelectionRectangle
+    (
     private val left: Float,
     private val top: Float,
     private val right: Float,

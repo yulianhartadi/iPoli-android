@@ -14,27 +14,23 @@ import io.ipoli.android.common.view.attrData
 import io.ipoli.android.quest.Color
 
 
-
 @Suppress("unused")
 class AgendaMonthView(context: Context) : MonthView(context) {
 
+    private val selectedBackgroundPaint = Paint()
+    private val currentBackgroundPaint = Paint()
 
-    private val whiteTextPaint: Paint
-    private val blackTextPaint: Paint
-    private val darkTextPaint: Paint
-    private val lightTextPaint: Paint
     private val currentDayTextPaint: Paint
 
     private val colorPaints: Map<Color, Paint>
-    private val colorStrokePaints: Map<Color, Paint>
-    private val lightColorStrokePaints: Map<Color, Paint>
+
+    private var radius = 0f
 
     init {
 
-        whiteTextPaint = createTextPaint(context, R.color.md_light_text_100, 14)
-        lightTextPaint = createTextPaint(context, R.color.md_light_text_50, 14)
-        blackTextPaint = createTextPaint(context, R.color.md_dark_text_100, 14)
-        darkTextPaint = createTextPaint(context, R.color.md_dark_text_38, 14)
+        selectedBackgroundPaint.color = context.attrData(R.attr.colorAccent)
+
+        currentBackgroundPaint.color = context.attrData(R.attr.colorPrimary)
 
         currentDayTextPaint = createTextPaint(context, R.color.md_light_text_50, 14)
         currentDayTextPaint.color = context.attrData(R.attr.colorAccent)
@@ -43,22 +39,6 @@ class AgendaMonthView(context: Context) : MonthView(context) {
         colorPaints = Color.values().map {
             val p = Paint()
             p.initWithColor(AndroidColor.valueOf(it.name).color500)
-            it to p
-        }.toMap()
-
-        colorStrokePaints = Color.values().map {
-            val p = Paint()
-            p.initWithColor(AndroidColor.valueOf(it.name).color500)
-            p.strokeWidth = ViewUtils.dpToPx(2.5f, context)
-            p.style = Paint.Style.STROKE
-            it to p
-        }.toMap()
-
-        lightColorStrokePaints = Color.values().map {
-            val p = Paint()
-            p.initWithColor(AndroidColor.valueOf(it.name).color100)
-            p.strokeWidth = ViewUtils.dpToPx(2.5f, context)
-            p.style = Paint.Style.STROKE
             it to p
         }.toMap()
     }
@@ -74,6 +54,10 @@ class AgendaMonthView(context: Context) : MonthView(context) {
         return paint
     }
 
+    override fun onPreviewHook() {
+        radius = (Math.min(mItemWidth, mItemHeight) / 11 * 5.2).toFloat()
+    }
+
     private fun Paint.initWithColor(@ColorRes color: Int) {
         isAntiAlias = true
         style = Paint.Style.FILL
@@ -87,7 +71,10 @@ class AgendaMonthView(context: Context) : MonthView(context) {
         y: Int,
         hasScheme: Boolean
     ): Boolean {
-        return true
+        val cx = x + mItemWidth / 2
+        val cy = y + mItemHeight / 2
+        canvas.drawCircle(cx.toFloat(), cy.toFloat(), radius, selectedBackgroundPaint)
+        return false
     }
 
     override fun onDrawScheme(canvas: Canvas, calendar: Calendar, x: Int, y: Int) {
@@ -104,34 +91,32 @@ class AgendaMonthView(context: Context) : MonthView(context) {
         hasScheme: Boolean,
         isSelected: Boolean
     ) {
-        val baselineY = mTextBaseLine + y
+
         val cx = (x + mItemWidth / 2).toFloat()
 
-        if (isSelected) {
-            canvas.drawText(
-                calendar.day.toString(),
+        if (calendar.isCurrentDay) {
+            val cy = (y + mItemHeight / 2).toFloat()
+            canvas.drawCircle(
                 cx,
-                baselineY,
-                mSelectTextPaint
-            )
-        } else if (hasScheme) {
-            canvas.drawText(
-                calendar.day.toString(),
-                cx,
-                baselineY,
-                if (calendar.isCurrentDay)
-                    mCurDayTextPaint
-                else if (calendar.isCurrentMonth) mSchemeTextPaint else mOtherMonthTextPaint
-            )
-
-        } else {
-            canvas.drawText(
-                calendar.day.toString(), cx, baselineY,
-                if (calendar.isCurrentDay)
-                    mCurDayTextPaint
-                else if (calendar.isCurrentMonth) mCurMonthTextPaint else mOtherMonthTextPaint
+                cy,
+                radius,
+                currentBackgroundPaint
             )
         }
+
+        val baselineY = mTextBaseLine + y
+
+        canvas.drawText(
+            calendar.day.toString(),
+            cx,
+            baselineY,
+            when {
+                isSelected -> mCurDayTextPaint
+                calendar.isCurrentDay -> mCurDayTextPaint
+                calendar.isCurrentMonth -> mSchemeTextPaint
+                else -> mOtherMonthTextPaint
+            }
+        )
     }
 
 }

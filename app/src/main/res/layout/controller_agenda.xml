@@ -10,7 +10,7 @@
     android:orientation="vertical"
     app:calendar_content_view_id="@+id/agendaListContainer"
     app:calendar_show_mode="both_month_week_view"
-    app:default_status="shrink"
+    app:default_status="expand"
     app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
     <com.haibin.calendarview.CalendarView
@@ -18,7 +18,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="?colorSurface"
-        app:calendar_height="48dp"
+        app:calendar_height="42dp"
         app:current_day_text_color="@color/md_white"
         app:current_month_lunar_text_color="#CFCFCF"
         app:current_month_text_color="?android:textColorPrimary"
