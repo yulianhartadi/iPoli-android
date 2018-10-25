@@ -12,6 +12,8 @@ import io.ipoli.android.friends.usecase.SavePostReactionUseCase
 import io.ipoli.android.friends.usecase.SavePostsUseCase
 import io.ipoli.android.player.usecase.RewardPlayerUseCase
 import io.ipoli.android.quest.job.RewardScheduler
+import io.ipoli.android.quest.show.sideeffect.QuestSideEffectHandler
+import io.ipoli.android.quest.show.usecase.SplitDurationForPomodoroTimerUseCase
 import kotlinx.coroutines.experimental.channels.Channel
 import space.traversal.kapsule.required
 
@@ -20,6 +22,7 @@ object PostSideEffectHandler : AppSideEffectHandler() {
     private val postRepository by required { postRepository }
     private val savePostsUseCase by required { savePostsUseCase }
     private val savePostReactionUseCase by required { savePostReactionUseCase }
+    private val splitDurationForPomodoroTimerUseCase by required { splitDurationForPomodoroTimerUseCase }
 
     private val playerRepository by required { playerRepository }
     private val challengeRepository by required { challengeRepository }
@@ -61,7 +64,17 @@ object PostSideEffectHandler : AppSideEffectHandler() {
                     habitRepository.findById(it)!!
                 }
                 val q = action.questId?.let {
-                    questRepository.findById(it)!!
+                    val r = questRepository.findById(it)!!
+                    val splitResult = splitDurationForPomodoroTimerUseCase.execute(
+                        SplitDurationForPomodoroTimerUseCase.Params(r)
+                    )
+                    val totalPomodoros =
+                        if (splitResult == SplitDurationForPomodoroTimerUseCase.Result.DurationNotSplit) {
+                            r.timeRanges.size / 2
+                        } else {
+                            (splitResult as SplitDurationForPomodoroTimerUseCase.Result.DurationSplit).timeRanges.size / 2
+                        }
+                    r.copy(totalPomodoros = totalPomodoros)
                 }
                 dispatch(DataLoadedAction.AddPostDataChanged(p, q, h, c))
             }
