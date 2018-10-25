@@ -54,6 +54,7 @@ sealed class PostViewModel(
     abstract val postedTime: String
     abstract val canEdit: Boolean
     abstract val playerMessage: String
+    abstract var showShortPlayerMessage: Boolean
     abstract val reactions: List<ReactionViewModel>
     abstract val createdAt: Long
     abstract val post: Post
@@ -78,6 +79,7 @@ sealed class PostViewModel(
         val message: SpannableString,
         val messageIcon: Int,
         override val playerMessage: String,
+        override var showShortPlayerMessage: Boolean = true,
         override val reactions: List<ReactionViewModel>,
         override val createdAt: Long,
         override val shareMessage: String,
@@ -107,6 +109,7 @@ sealed class PostViewModel(
         val message: SpannableString,
         override val canEdit: Boolean = false,
         override val playerMessage: String,
+        override var showShortPlayerMessage: Boolean = true,
         override val reactions: List<ReactionViewModel>,
         override val createdAt: Long,
         override val post: Post,
@@ -138,6 +141,7 @@ sealed class PostViewModel(
         override val shareMessage: String,
         override val canEdit: Boolean = false,
         override val playerMessage: String,
+        override var showShortPlayerMessage: Boolean = true,
         override val reactions: List<ReactionViewModel>,
         override val createdAt: Long,
         override val post: Post,
@@ -161,6 +165,7 @@ sealed class PostViewModel(
         val challengeName: String,
         override val canEdit: Boolean = false,
         override val playerMessage: String,
+        override var showShortPlayerMessage: Boolean = true,
         val message: SpannableString,
         val messageIcon: Int,
         override val reactions: List<ReactionViewModel>,
@@ -454,6 +459,11 @@ class PostAdapter(
             view.playerMessageEdit.gone()
             view.editGroup.gone()
             view.playerMessage.text = vm.playerMessage
+            if(vm.showShortPlayerMessage) {
+                view.playerMessage.maxLines = 2
+            } else {
+                view.playerMessage.maxLines = Int.MAX_VALUE
+            }
             if (vm.playerMessage.isNotBlank()) view.playerMessage.visible()
             else view.playerMessage.gone()
         }
@@ -506,6 +516,7 @@ class ReactionPopupAdapter(private val popupHandler: ReactionPopupHandler) :
 fun toPostViewModel(
     context: Context,
     post: Post,
+    showShortPlayerMessage: Boolean = true,
     reactListener: (postId: String, playerId: String) -> Unit,
     reactListListener: (reactions: List<Post.Reaction>) -> Unit,
     saveListener: ((postId: String, playerMessage: String?) -> Unit)? = null,
@@ -522,7 +533,7 @@ fun toPostViewModel(
             it.value.size
         )
     }
-    return when (post.data) {
+    val postViewModel = when (post.data) {
         is Post.Data.DailyChallengeCompleted -> {
             val message = when {
                 post.data.streak == 1 -> "Completed Daily Challenge"
@@ -893,6 +904,10 @@ fun toPostViewModel(
             }
         }
     }
+
+    postViewModel.showShortPlayerMessage = showShortPlayerMessage
+
+    return postViewModel
 }
 
 private fun shareMessageStartFor(post: Post): String {

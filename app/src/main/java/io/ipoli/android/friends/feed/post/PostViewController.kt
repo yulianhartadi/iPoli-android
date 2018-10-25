@@ -273,7 +273,8 @@ class PostViewController(args: Bundle? = null) :
         get() = toPostViewModel(
             context = activity!!,
             post = post!!,
-            reactListener = { postId, _ ->
+            showShortPlayerMessage = false,
+            reactListener = { _, _ ->
             },
             reactListListener = {
                 navigate().toReactionHistory(it)
