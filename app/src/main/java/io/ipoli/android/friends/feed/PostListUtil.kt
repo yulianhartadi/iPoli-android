@@ -59,13 +59,13 @@ sealed class PostViewModel(
     abstract val createdAt: Long
     abstract val post: Post
     abstract val shareMessage: String
-    abstract val reactListener: (postId: String, playerId: String) -> Unit
-    abstract val reactListListener: (reactions: List<Post.Reaction>) -> Unit
-    abstract val saveListener: ((postId: String, playerMessage: String?) -> Unit)?
-    abstract val commentsListener: ((postId: String) -> Unit)?
-    abstract val shareListener: ((message: String) -> Unit)?
-    abstract val postClickListener: ((postId: String) -> Unit)?
-    abstract val avatarClickListener: ((postPlayerId: String) -> Unit)?
+    abstract var reactListener: ((postId: String, playerId: String) -> Unit)?
+    abstract var reactListListener: ((reactions: List<Post.Reaction>) -> Unit)?
+    abstract var saveListener: ((postId: String, playerMessage: String?) -> Unit)?
+    abstract var commentsListener: ((postId: String) -> Unit)?
+    abstract var shareListener: ((message: String) -> Unit)?
+    abstract var postClickListener: ((postId: String) -> Unit)?
+    abstract var avatarClickListener: ((postPlayerId: String) -> Unit)?
 
     data class SimpleViewModel(
         override val id: String,
@@ -86,13 +86,13 @@ sealed class PostViewModel(
         val imageUrl: String?,
         val showImage: Boolean,
         override val post: Post,
-        override val reactListener: (postId: String, playerId: String) -> Unit,
-        override val reactListListener: (reactions: List<Post.Reaction>) -> Unit,
-        override val commentsListener: ((postId: String) -> Unit)?,
-        override val shareListener: ((message: String) -> Unit)?,
-        override val saveListener: ((postId: String, playerMessage: String?) -> Unit)?,
-        override val postClickListener: ((postPlayerId: String) -> Unit)?,
-        override val avatarClickListener: ((postPlayerId: String) -> Unit)?
+        override var reactListener: ((postId: String, playerId: String) -> Unit)? = null,
+        override var reactListListener: ((reactions: List<Post.Reaction>) -> Unit)? = null,
+        override var commentsListener: ((postId: String) -> Unit)? = null,
+        override var shareListener: ((message: String) -> Unit)? = null,
+        override var saveListener: ((postId: String, playerMessage: String?) -> Unit)? = null,
+        override var postClickListener: ((postPlayerId: String) -> Unit)? = null,
+        override var avatarClickListener: ((postPlayerId: String) -> Unit)? = null
     ) : PostViewModel(id)
 
     data class ComplexViewModel(
@@ -113,13 +113,13 @@ sealed class PostViewModel(
         override val reactions: List<ReactionViewModel>,
         override val createdAt: Long,
         override val post: Post,
-        override val reactListener: (postId: String, playerId: String) -> Unit,
-        override val reactListListener: (reactions: List<Post.Reaction>) -> Unit,
-        override val saveListener: ((postId: String, playerMessage: String?) -> Unit)?,
-        override val commentsListener: ((postId: String) -> Unit)?,
-        override val shareListener: ((message: String) -> Unit)?,
-        override val postClickListener: ((postPlayerId: String) -> Unit)?,
-        override val avatarClickListener: ((postPlayerId: String) -> Unit)?
+        override var reactListener: ((postId: String, playerId: String) -> Unit)? = null,
+        override var reactListListener: ((reactions: List<Post.Reaction>) -> Unit)? = null,
+        override var commentsListener: ((postId: String) -> Unit)? = null,
+        override var shareListener: ((message: String) -> Unit)? = null,
+        override var saveListener: ((postId: String, playerMessage: String?) -> Unit)? = null,
+        override var postClickListener: ((postPlayerId: String) -> Unit)? = null,
+        override var avatarClickListener: ((postPlayerId: String) -> Unit)? = null
     ) : PostViewModel(id)
 
     data class AchievementViewModel(
@@ -145,13 +145,13 @@ sealed class PostViewModel(
         override val reactions: List<ReactionViewModel>,
         override val createdAt: Long,
         override val post: Post,
-        override val reactListener: (postId: String, playerId: String) -> Unit,
-        override val reactListListener: (reactions: List<Post.Reaction>) -> Unit,
-        override val saveListener: ((postId: String, playerMessage: String?) -> Unit)?,
-        override val commentsListener: ((postId: String) -> Unit)?,
-        override val shareListener: ((message: String) -> Unit)?,
-        override val postClickListener: ((postPlayerId: String) -> Unit)?,
-        override val avatarClickListener: ((postPlayerId: String) -> Unit)?
+        override var reactListener: ((postId: String, playerId: String) -> Unit)? = null,
+        override var reactListListener: ((reactions: List<Post.Reaction>) -> Unit)? = null,
+        override var commentsListener: ((postId: String) -> Unit)? = null,
+        override var shareListener: ((message: String) -> Unit)? = null,
+        override var saveListener: ((postId: String, playerMessage: String?) -> Unit)? = null,
+        override var postClickListener: ((postPlayerId: String) -> Unit)? = null,
+        override var avatarClickListener: ((postPlayerId: String) -> Unit)? = null
     ) : PostViewModel(id)
 
     data class ForChallengeViewModel(
@@ -173,13 +173,13 @@ sealed class PostViewModel(
         override val shareMessage: String,
         val imageUrl: String?,
         override val post: Post,
-        override val reactListener: (postId: String, playerId: String) -> Unit,
-        override val reactListListener: (reactions: List<Post.Reaction>) -> Unit,
-        override val saveListener: ((postId: String, playerMessage: String?) -> Unit)?,
-        override val commentsListener: ((postId: String) -> Unit)?,
-        override val shareListener: ((message: String) -> Unit)?,
-        override val postClickListener: ((postPlayerId: String) -> Unit)?,
-        override val avatarClickListener: ((postPlayerId: String) -> Unit)?
+        override var reactListener: ((postId: String, playerId: String) -> Unit)? = null,
+        override var reactListListener: ((reactions: List<Post.Reaction>) -> Unit)? = null,
+        override var commentsListener: ((postId: String) -> Unit)? = null,
+        override var shareListener: ((message: String) -> Unit)? = null,
+        override var saveListener: ((postId: String, playerMessage: String?) -> Unit)? = null,
+        override var postClickListener: ((postPlayerId: String) -> Unit)? = null,
+        override var avatarClickListener: ((postPlayerId: String) -> Unit)? = null
     ) : PostViewModel(id)
 }
 
@@ -386,7 +386,7 @@ class PostAdapter(
 
             view.reactionList.setOnTouchListener { _, event ->
                 if (event.action == MotionEvent.ACTION_DOWN) {
-                    vm.reactListListener(vm.post.reactions)
+                    vm.reactListListener?.invoke(vm.post.reactions)
                     true
                 } else false
             }
@@ -412,7 +412,7 @@ class PostAdapter(
                     (buttonY - containerY + it.height).toFloat()
                 }
 
-                vm.reactListener(vm.id, vm.playerId)
+                vm.reactListener?.invoke(vm.id, vm.playerId)
                 reactionPopupHandler.showReactionPopup(x, y)
             })
     }
@@ -546,13 +546,6 @@ fun toPostViewModel(
                 R.drawable.ic_post_dailychallenge,
                 shareMessageStartFor(post) + message,
                 reactions,
-                reactListener,
-                reactListListener,
-                saveListener,
-                commentsListener,
-                shareListener,
-                postClickListener,
-                avatarClickListener,
                 canEdit
             )
         }
@@ -584,13 +577,6 @@ fun toPostViewModel(
                 R.drawable.ic_post_done,
                 shareMessage,
                 reactions,
-                reactListener,
-                reactListListener,
-                saveListener,
-                commentsListener,
-                shareListener,
-                postClickListener,
-                avatarClickListener,
                 canEdit
             )
         }
@@ -612,13 +598,6 @@ fun toPostViewModel(
                 R.drawable.ic_post_done,
                 shareMessage,
                 reactions,
-                reactListener,
-                reactListListener,
-                saveListener,
-                commentsListener,
-                shareListener,
-                postClickListener,
-                avatarClickListener,
                 canEdit
             )
         }
@@ -635,13 +614,6 @@ fun toPostViewModel(
                 R.drawable.ic_post_level,
                 shareMessage,
                 reactions,
-                reactListener,
-                reactListListener,
-                saveListener,
-                commentsListener,
-                shareListener,
-                postClickListener,
-                avatarClickListener,
                 canEdit
             )
         }
@@ -694,13 +666,6 @@ fun toPostViewModel(
                 star2 = star2,
                 star3 = star3,
                 post = post,
-                reactListener = reactListener,
-                reactListListener = reactListListener,
-                saveListener = saveListener,
-                commentsListener = commentsListener,
-                shareListener = shareListener,
-                postClickListener = postClickListener,
-                avatarClickListener = avatarClickListener,
                 canEdit = canEdit
             )
         }
@@ -721,13 +686,6 @@ fun toPostViewModel(
                 R.drawable.ic_post_challenge,
                 shareMessage,
                 reactions,
-                reactListener,
-                reactListListener,
-                saveListener,
-                commentsListener,
-                shareListener,
-                postClickListener,
-                avatarClickListener,
                 canEdit
             )
         }
@@ -745,13 +703,6 @@ fun toPostViewModel(
                 shareMessage,
                 R.drawable.drawer_achievement_trophy,
                 reactions,
-                reactListener,
-                reactListListener,
-                saveListener,
-                commentsListener,
-                shareListener,
-                postClickListener,
-                avatarClickListener,
                 canEdit
             )
         }
@@ -784,13 +735,6 @@ fun toPostViewModel(
                 R.drawable.ic_post_done,
                 shareMessage,
                 reactions,
-                reactListener,
-                reactListListener,
-                saveListener,
-                commentsListener,
-                shareListener,
-                postClickListener,
-                avatarClickListener,
                 canEdit
             )
         }
@@ -813,13 +757,6 @@ fun toPostViewModel(
                 R.drawable.ic_post_done,
                 shareMessage,
                 reactions,
-                reactListener,
-                reactListListener,
-                saveListener,
-                commentsListener,
-                shareListener,
-                postClickListener,
-                avatarClickListener,
                 canEdit
             )
         }
@@ -876,13 +813,6 @@ fun toPostViewModel(
                     R.drawable.ic_post_habit,
                     shareMessage,
                     reactions,
-                    reactListener,
-                    reactListListener,
-                    saveListener,
-                    commentsListener,
-                    shareListener,
-                    postClickListener,
-                    avatarClickListener,
                     canEdit
                 )
             } else {
@@ -892,13 +822,6 @@ fun toPostViewModel(
                     R.drawable.ic_post_habit,
                     shareMessage,
                     reactions,
-                    reactListener,
-                    reactListListener,
-                    saveListener,
-                    commentsListener,
-                    shareListener,
-                    postClickListener,
-                    avatarClickListener,
                     canEdit
                 )
             }
@@ -906,6 +829,13 @@ fun toPostViewModel(
     }
 
     postViewModel.showShortPlayerMessage = showShortPlayerMessage
+    postViewModel.reactListener = reactListener
+    postViewModel.reactListListener = reactListListener
+    postViewModel.saveListener = saveListener
+    postViewModel.commentsListener = commentsListener
+    postViewModel.shareListener = shareListener
+    postViewModel.postClickListener = postClickListener
+    postViewModel.avatarClickListener = avatarClickListener
 
     return postViewModel
 }
@@ -951,13 +881,6 @@ private fun createPostForChallengeViewModel(
     messageIcon: Int,
     shareMessage: String,
     reactions: List<ReactionViewModel>,
-    reactListener: (postId: String, playerId: String) -> Unit,
-    reactListListener: (reactions: List<Post.Reaction>) -> Unit,
-    saveListener: ((postId: String, playerMessage: String?) -> Unit)?,
-    commentsListener: ((postId: String) -> Unit)? = null,
-    shareListener: ((postId: String) -> Unit)? = null,
-    postClickListener: ((postId: String) -> Unit)? = null,
-    avatarClickListener: ((postPlayerId: String) -> Unit)? = null,
     canEdit: Boolean = false
 ): PostViewModel.ForChallengeViewModel {
     return PostViewModel.ForChallengeViewModel(
@@ -982,13 +905,6 @@ private fun createPostForChallengeViewModel(
         messageIcon = messageIcon,
         createdAt = it.createdAt.toEpochMilli(),
         post = it,
-        reactListener = reactListener,
-        reactListListener = reactListListener,
-        saveListener = saveListener,
-        commentsListener = commentsListener,
-        shareListener = shareListener,
-        postClickListener = postClickListener,
-        avatarClickListener = avatarClickListener,
         canEdit = canEdit
     )
 }
@@ -1000,13 +916,6 @@ private fun createComplexViewModel(
     shareMessage: String,
     image: Int,
     reactions: List<ReactionViewModel>,
-    reactListener: (postId: String, playerId: String) -> Unit,
-    reactListListener: (reactions: List<Post.Reaction>) -> Unit,
-    saveListener: ((postId: String, playerMessage: String?) -> Unit)?,
-    commentsListener: ((postId: String) -> Unit)? = null,
-    shareListener: ((postId: String) -> Unit)? = null,
-    postClickListener: ((postId: String) -> Unit)? = null,
-    avatarClickListener: ((postPlayerId: String) -> Unit)? = null,
     canEdit: Boolean = false
 ): PostViewModel.ComplexViewModel {
     return PostViewModel.ComplexViewModel(
@@ -1030,13 +939,6 @@ private fun createComplexViewModel(
         image = image,
         createdAt = it.createdAt.toEpochMilli(),
         post = it,
-        reactListener = reactListener,
-        reactListListener = reactListListener,
-        saveListener = saveListener,
-        commentsListener = commentsListener,
-        shareListener = shareListener,
-        postClickListener = postClickListener,
-        avatarClickListener = avatarClickListener,
         canEdit = canEdit
     )
 }
@@ -1047,13 +949,6 @@ private fun createSimpleViewModel(
     messageIcon: Int,
     shareMessage: String,
     reactions: List<ReactionViewModel>,
-    reactListener: (postId: String, playerId: String) -> Unit,
-    reactListListener: (reactions: List<Post.Reaction>) -> Unit,
-    saveListener: ((postId: String, playerMessage: String?) -> Unit)?,
-    commentsListener: ((postId: String) -> Unit)? = null,
-    shareListener: ((postId: String) -> Unit)? = null,
-    postClickListener: ((postId: String) -> Unit)? = null,
-    avatarClickListener: ((postPlayerId: String) -> Unit)? = null,
     canEdit: Boolean = false
 ): PostViewModel.SimpleViewModel {
     return PostViewModel.SimpleViewModel(
@@ -1078,13 +973,6 @@ private fun createSimpleViewModel(
         imageUrl = it.imageUrl,
         showImage = it.status == Post.Status.APPROVED && it.imageUrl != null,
         post = it,
-        reactListener = reactListener,
-        reactListListener = reactListListener,
-        saveListener = saveListener,
-        commentsListener = commentsListener,
-        shareListener = shareListener,
-        postClickListener = postClickListener,
-        avatarClickListener = avatarClickListener,
         canEdit = canEdit
     )
 }
