@@ -93,7 +93,9 @@ class AndroidPostRepository(
                     toEntityObject(it, dbPlayer, currentPlayerId == it.playerId)
                 }
 
-                channel.offer(entities)
+                if (!channel.isClosedForSend) {
+                    channel.offer(entities)
+                }
             }
         }
 
@@ -137,7 +139,9 @@ class AndroidPostRepository(
                     toEntityObject(it, dbPlayer, currentPlayerId == it.playerId)
                 }
 
-                channel.offer(entities)
+                if (!channel.isClosedForSend) {
+                    channel.offer(entities)
+                }
             }
         }
 
@@ -191,7 +195,9 @@ class AndroidPostRepository(
                 val post =
                     toEntityObject(dbPost, dbPlayer, currentPlayerId == dbPost.playerId, dbPlayers)
 
-                channel.offer(post)
+                if (!channel.isClosedForSend) {
+                    channel.offer(post)
+                }
             }
         }
 
