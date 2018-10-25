@@ -18,7 +18,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="?colorSurface"
-        app:calendar_height="42dp"
+        app:calendar_height="36dp"
         app:current_day_text_color="@color/md_white"
         app:current_month_lunar_text_color="#CFCFCF"
         app:current_month_text_color="?android:textColorPrimary"
