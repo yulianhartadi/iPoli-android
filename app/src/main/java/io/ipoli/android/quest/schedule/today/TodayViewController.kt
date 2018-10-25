@@ -13,10 +13,7 @@ import android.support.v7.widget.GridLayoutManager
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
 import android.support.v7.widget.helper.ItemTouchHelper
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewAnimationUtils
-import android.view.ViewGroup
+import android.view.*
 import android.view.animation.AccelerateDecelerateInterpolator
 import android.view.animation.Animation
 import android.view.animation.AnimationUtils
@@ -198,13 +195,23 @@ class TodayViewController(args: Bundle? = null) :
         )
 
         view.addContainerBackground.setOnClickListener {
-            addContainerRouter(view).popCurrentController()
-            ViewUtils.hideKeyboard(view)
-            addQuestAnimationHelper.closeAddContainer()
+            closeAddIfShown()
         }
 
         addQuest.setOnClickListener {
             addQuestAnimationHelper.openAddContainer(currentDate)
+        }
+    }
+
+    private fun closeAddIfShown(endListener: (() -> Unit)? = null) {
+        if (view == null) return
+        val containerRouter = addContainerRouter(view!!)
+        if (containerRouter.hasRootController()) {
+            containerRouter.popCurrentController()
+            ViewUtils.hideKeyboard(view!!)
+            addQuestAnimationHelper.closeAddContainer(endListener)
+        } else {
+            endListener?.invoke()
         }
     }
 
@@ -239,6 +246,25 @@ class TodayViewController(args: Bundle? = null) :
 
         super.onDetach(view)
     }
+
+    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+        super.onCreateOptionsMenu(menu, inflater)
+        inflater.inflate(R.menu.today_menu, menu)
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem) =
+        when (item.itemId) {
+
+            R.id.actionDailyChallenge -> {
+                closeAddIfShown {
+                    navigateFromRoot().toDailyChallenge()
+                }
+                true
+            }
+
+            else -> super.onOptionsItemSelected(item)
+        }
+
 
     private fun loadImage(view: View, state: TodayViewState) {
         state.todayImageUrl?.let {

@@ -219,12 +219,14 @@ class PostViewController(args: Bundle? = null) :
 
     data class CommentViewModel(
         override val id: String,
+        val playerId: String,
         val playerAvatar: AndroidAvatar,
         val playerName: String,
         val playerUsername: String,
         val playerLevel: String,
         val postedTime: String,
-        val text: String
+        val text: String,
+        val isCurrentPlayer: Boolean
     ) : RecyclerViewViewModel
 
 
@@ -246,6 +248,15 @@ class PostViewController(args: Bundle? = null) :
             view.commentPlayerLevel.text = vm.playerLevel
             view.commentPostedTime.text = vm.postedTime
 
+            if(!vm.isCurrentPlayer) {
+                view.isClickable = true
+                view.onDebounceClick {
+                    navigateFromRoot().toProfile(vm.playerId)
+                }
+            } else {
+                view.isClickable = false
+            }
+
             view.commentText.text = vm.text
         }
     }
@@ -255,6 +266,7 @@ class PostViewController(args: Bundle? = null) :
             comments.map {
                 CommentViewModel(
                     id = it.id,
+                    playerId = it.playerId,
                     playerAvatar = AndroidAvatar.valueOf(it.playerAvatar.name),
                     playerName = it.playerDisplayName,
                     playerUsername = it.playerUsername,
@@ -265,7 +277,8 @@ class PostViewController(args: Bundle? = null) :
                         System.currentTimeMillis(),
                         DateUtils.MINUTE_IN_MILLIS,
                         DateUtils.FORMAT_ABBREV_ALL
-                    ).toString()
+                    ).toString(),
+                    isCurrentPlayer = it.playerId == currentPlayerId
                 )
             }
 
@@ -273,7 +286,8 @@ class PostViewController(args: Bundle? = null) :
         get() = toPostViewModel(
             context = activity!!,
             post = post!!,
-            reactListener = { postId, _ ->
+            showShortPlayerMessage = false,
+            reactListener = { _, _ ->
             },
             reactListListener = {
                 navigate().toReactionHistory(it)
