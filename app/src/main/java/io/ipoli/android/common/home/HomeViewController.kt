@@ -244,19 +244,17 @@ class HomeViewController(args: Bundle? = null) :
         val childRouter = getChildRouter(view.childControllerContainer, null)
         if (!childRouter.hasRootController()) {
             childRouter.setRoot(
-                RouterTransaction.with(TodayViewController())
+                RouterTransaction.with(ScheduleViewController())
             )
         }
 
         val showTitle =
             appBarOffsetListener.currentState != AppBarStateChangeListener.State.EXPANDED
         (activity as MainActivity).supportActionBar?.setDisplayShowTitleEnabled(showTitle)
-
     }
 
     override fun onDetach(view: View) {
         view.rootCoordinator.bringToFront()
-
         super.onDetach(view)
     }
 
