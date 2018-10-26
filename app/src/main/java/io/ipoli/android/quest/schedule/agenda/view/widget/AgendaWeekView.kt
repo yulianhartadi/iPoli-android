@@ -7,7 +7,6 @@ import android.graphics.Rect
 import android.support.annotation.ColorInt
 import android.support.annotation.ColorRes
 import android.support.v4.content.ContextCompat
-import android.text.TextPaint
 import com.haibin.calendarview.Calendar
 import com.haibin.calendarview.WeekView
 import io.ipoli.android.R
@@ -15,7 +14,6 @@ import io.ipoli.android.common.ViewUtils
 import io.ipoli.android.common.view.AndroidColor
 import io.ipoli.android.common.view.attrData
 import org.json.JSONArray
-import timber.log.Timber
 
 @Suppress("unused")
 class AgendaWeekView(context: Context) : WeekView(context) {
@@ -26,25 +24,16 @@ class AgendaWeekView(context: Context) : WeekView(context) {
         const val GAP_DP = 2
     }
 
-    private val selectedBorderPaint = Paint()
+    private val selectedDayPaint = Paint()
     private val currentDayPaint = Paint()
-
-    private val whiteTextPaint = TextPaint()
-
     private val dividerPaint = Paint()
-
     private val itemPaint = Paint()
 
     init {
 
-        whiteTextPaint.isFakeBoldText = true
-        whiteTextPaint.isAntiAlias = true
-        whiteTextPaint.color = ContextCompat.getColor(context, R.color.md_white)
-        whiteTextPaint.textSize = ViewUtils.spToPx(12, context).toFloat()
-
-        selectedBorderPaint.style = Paint.Style.STROKE
-        selectedBorderPaint.strokeWidth = ViewUtils.dpToPx(1.5f, context)
-        selectedBorderPaint.color = context.attrData(R.attr.colorAccent)
+        selectedDayPaint.style = Paint.Style.FILL
+        selectedDayPaint.isAntiAlias = true
+        selectedDayPaint.color = context.attrData(R.attr.colorAccent)
 
         currentDayPaint.style = Paint.Style.FILL
         currentDayPaint.isAntiAlias = true
@@ -100,9 +89,6 @@ class AgendaWeekView(context: Context) : WeekView(context) {
 
         val data = JSONArray(calendar.scheme)
         val items = WeekViewItem.createItemsFromJson(data, context)
-        if (items.isNotEmpty()) {
-            Timber.d("AAAA ${calendar.day} $items")
-        }
 
         canvas.drawLine(
             (x + mItemWidth).toFloat(),
@@ -164,6 +150,13 @@ class AgendaWeekView(context: Context) : WeekView(context) {
                 baselineY - dayBounds.height() / 2,
                 radius.toFloat(),
                 currentDayPaint
+            )
+        } else if(isSelected) {
+            canvas.drawCircle(
+                cx.toFloat(),
+                baselineY - dayBounds.height() / 2,
+                radius.toFloat(),
+                selectedDayPaint
             )
         }
 

@@ -35,18 +35,48 @@ class CreateAgendaPreviewItemsUseCase :
             dayEvents[date] = list + it
         }
 
+        val weekItems = createWeekItems(parameters, dayQuests, dayEvents)
+        Timber.d("AAA $weekItems")
+        return Result(weekItems = weekItems, monthItems = listOf())
+    }
+
+    private fun createWeekItems(
+        parameters: Params,
+        dayQuests: MutableMap<LocalDate, List<Quest>>,
+        dayEvents: MutableMap<LocalDate, List<Event>>
+    ): List<WeekPreviewItem> {
         val weekItems = parameters.startDate.datesBetween(parameters.endDate).map {
 
             val indicators = mutableListOf<WeekPreviewItem.Indicator>()
             dayQuests[it]?.forEach { q ->
-                if(q.startTime != null) {
-                    val startMinute = Math.max(0, q.startTime.toMinuteOfDay() - MINUTES_OFFSET)
+                val startTime: Time? = q.startTime
+
+                if (startTime == null) {
                     indicators.add(
                         WeekPreviewItem.Indicator.Quest(
-                            startMinute = startMinute,
-                            duration = if (startMinute + q.duration > MAX_TIME.toMinuteOfDay())
-                                MAX_TIME.toMinuteOfDay() - startMinute
-                            else q.duration,
+                            startMinute = 0,
+                            duration = MIN_TIME.minutesTo(MAX_TIME),
+                            color = q.color
+                        )
+                    )
+                } else if (!(startTime < MIN_TIME && q.endTime!! < MIN_TIME)) {
+
+                    val (startMinute, duration) =
+                        when {
+                            startTime < MIN_TIME -> Pair(
+                                MIN_TIME.toMinuteOfDay(),
+                                MIN_TIME.minutesTo(q.endTime!!)
+                            )
+                            q.endTime!! < MIN_TIME -> Pair(
+                                startTime.toMinuteOfDay(),
+                                startTime.minutesTo(MAX_TIME)
+                            )
+                            else -> Pair(startTime.toMinuteOfDay(), q.duration)
+                        }
+                    indicators.add(
+                        WeekPreviewItem.Indicator.Quest(
+                            startMinute = startMinute - MINUTES_OFFSET,
+                            duration = duration,
                             color = q.color
                         )
                     )
@@ -54,13 +84,33 @@ class CreateAgendaPreviewItemsUseCase :
             }
 
             dayEvents[it]?.forEach { e ->
-                indicators.add(
-                    WeekPreviewItem.Indicator.Event(
-                        startMinute = e.startTime.toMinuteOfDay(),//add offset
-                        duration = e.duration.intValue,
-                        color = e.color
+                val startTime: Time = e.startTime
+                if (!(startTime < MIN_TIME && e.endTime < MIN_TIME)) {
+
+                    val (startMinute, duration) =
+                        when {
+                            e.isAllDay -> Pair(
+                                MIN_TIME.toMinuteOfDay(),
+                                MIN_TIME.minutesTo(MAX_TIME)
+                            )
+                            startTime < MIN_TIME -> Pair(
+                                MIN_TIME.toMinuteOfDay(),
+                                MIN_TIME.minutesTo(e.endTime)
+                            )
+                            e.endTime < MIN_TIME -> Pair(
+                                startTime.toMinuteOfDay(),
+                                startTime.minutesTo(MAX_TIME)
+                            )
+                            else -> Pair(startTime.toMinuteOfDay(), e.duration.intValue)
+                        }
+                    indicators.add(
+                        WeekPreviewItem.Indicator.Event(
+                            startMinute = startMinute - MINUTES_OFFSET,
+                            duration = duration,
+                            color = e.color
+                        )
                     )
-                )
+                }
             }
 
 
@@ -72,8 +122,7 @@ class CreateAgendaPreviewItemsUseCase :
                 )
             )
         }
-        Timber.d("AAA $weekItems")
-        return Result(weekItems = weekItems, monthItems = listOf())
+        return weekItems
     }
 
     companion object {
