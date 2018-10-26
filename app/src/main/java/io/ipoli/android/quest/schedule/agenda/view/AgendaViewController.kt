@@ -1,6 +1,5 @@
 package io.ipoli.android.quest.schedule.agenda.view
 
-import android.content.Context
 import android.content.res.ColorStateList
 import android.graphics.drawable.GradientDrawable
 import android.os.Bundle
@@ -35,6 +34,8 @@ import io.ipoli.android.event.Event
 import io.ipoli.android.quest.Color
 import io.ipoli.android.quest.CompletedQuestViewController
 import io.ipoli.android.quest.schedule.agenda.usecase.CreateAgendaItemsUseCase
+import io.ipoli.android.quest.schedule.agenda.view.AgendaViewState.StateType.*
+import io.ipoli.android.quest.schedule.agenda.view.widget.AgendaWeekView
 import kotlinx.android.synthetic.main.controller_agenda.view.*
 import kotlinx.android.synthetic.main.item_agenda_event.view.*
 import kotlinx.android.synthetic.main.item_agenda_month_divider.view.*
@@ -222,7 +223,7 @@ class AgendaViewController(args: Bundle? = null) :
 
         when (state.type) {
 
-            AgendaViewState.StateType.DATA_CHANGED -> {
+            DATA_CHANGED -> {
                 ViewUtils.goneViews(view.topLoader, view.bottomLoader)
                 val agendaList = view.agendaList
                 agendaList.clearOnScrollListeners()
@@ -234,18 +235,22 @@ class AgendaViewController(args: Bundle? = null) :
                     lp.topMargin = calendarHeight
                     view.agendaListContainer.layoutParams = lp
                     view.calendarView.setCalendarItemHeight(calendarHeight)
-                    view.calendarView.setSchemeDate(state.weekCalendars.map { it.toString() to it }.toMap())
+//                    view.calendarView.setSchemeDate(state.weekCalendars.map { it.toString() to it }.toMap())
 
                 }, 2000)
 
 //                view.calendarView.setSchemeDate(state.calendars.map { it.toString() to it }.toMap())
             }
 
-            AgendaViewState.StateType.SHOW_TOP_LOADER -> {
+            CALENDAR_DATA_CHANGED ->{
+                view.calendarView.setSchemeDate(state.weekCalendars.map { it.toString() to it }.toMap())
+            }
+
+            SHOW_TOP_LOADER -> {
                 ViewUtils.showViews(view.topLoader)
             }
 
-            AgendaViewState.StateType.SHOW_BOTTOM_LOADER -> {
+            SHOW_BOTTOM_LOADER -> {
                 ViewUtils.showViews(view.bottomLoader)
             }
 
@@ -755,29 +760,6 @@ class AgendaViewController(args: Bundle? = null) :
             }
         }
 
-    data class WeekViewItem(
-        val color: Color,
-        val duration: Int,
-        val startMinute: Int
-    ) {
-        companion object {
-
-            fun createItemsFromJson(data: JSONArray, context: Context): List<WeekViewItem> {
-                if (data.length() == 0) {
-                    return emptyList()
-                }
-                return (0 until data.length()).map {
-                    val o = data.getJSONObject(it)
-                    WeekViewItem(
-                        color = Color.valueOf(o.getString("color")),
-                        duration = o.getInt("duration"),
-                        startMinute = o.getInt("start")
-                    )
-                }
-            }
-        }
-    }
-
     private val AgendaViewState.weekCalendars: List<com.haibin.calendarview.Calendar>
         get() {
             val currentDate = LocalDate.now()
@@ -785,14 +767,14 @@ class AgendaViewController(args: Bundle? = null) :
                 val itemDate = it
                 val items = (1..8)
                     .map { _ ->
-                        WeekViewItem(
+                        AgendaWeekView.WeekViewItem(
                             color = Color.values()[Random().nextInt(Color.values().size)],
                             duration = Random().nextInt(4 * 60 - 10) + 10,
                             startMinute = Random().nextInt(16 * 60)
                         )
                     }
                     .sortedWith(
-                        compareBy<WeekViewItem> { i -> i.startMinute }
+                        compareBy<AgendaWeekView.WeekViewItem> { i -> i.startMinute }
                             .thenByDescending { i -> i.duration }
                     )
                     .map { i ->

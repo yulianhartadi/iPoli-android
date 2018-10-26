@@ -14,13 +14,16 @@ import io.ipoli.android.common.ViewUtils
 import io.ipoli.android.common.view.AndroidColor
 import io.ipoli.android.common.view.attrData
 import io.ipoli.android.quest.Color
-import io.ipoli.android.quest.schedule.agenda.view.AgendaViewController
 import org.json.JSONArray
 
 @Suppress("unused")
 class AgendaWeekView(context: Context) : WeekView(context) {
 
-    private var EVENT_HEIGHT_PX: Int = 0
+    companion object {
+        const val MINUTES = 16 * 40
+        const val EVENT_HEIGHT_DP = 5
+        const val GAP_DP = 2
+    }
 
     private val selectedBorderPaint = Paint()
     private val currentDayPaint = Paint()
@@ -55,12 +58,10 @@ class AgendaWeekView(context: Context) : WeekView(context) {
         itemPaint.isAntiAlias = true
         itemPaint.style = Paint.Style.FILL
 
-        EVENT_HEIGHT_PX = ViewUtils.dpToPx(5f, context).toInt()
-
         colorStrokePaints = Color.values().map {
             val p = Paint()
             p.initWithColor(AndroidColor.valueOf(it.name).color500)
-            p.strokeWidth = EVENT_HEIGHT_PX.toFloat()
+            p.strokeWidth = ViewUtils.dpToPx(EVENT_HEIGHT_DP.toFloat(), context)
             p.style = Paint.Style.STROKE
             it to p
         }.toMap()
@@ -106,7 +107,7 @@ class AgendaWeekView(context: Context) : WeekView(context) {
     override fun onDrawScheme(canvas: Canvas, calendar: Calendar, x: Int) {
 
         val data = JSONArray(calendar.scheme)
-        val items = AgendaViewController.WeekViewItem.createItemsFromJson(data, context)
+        val items = WeekViewItem.createItemsFromJson(data, context)
 
         canvas.drawLine(
             (x + mItemWidth).toFloat(),
@@ -117,13 +118,14 @@ class AgendaWeekView(context: Context) : WeekView(context) {
         )
 
         val dayBounds = dayBounds(calendar)
-        val gap = ViewUtils.dpToPx(2f, context)
+        val gap = ViewUtils.dpToPx(GAP_DP.toFloat(), context)
         val topY = Math.max(dayBounds.height(), dayBounds.width()) * 2 + gap
 
-        val minuteWidth = mItemWidth / (16 * 60).toFloat()
+        val minuteWidth = mItemWidth / MINUTES.toFloat()
+        val eventHeight = ViewUtils.dpToPx(EVENT_HEIGHT_DP.toFloat(), context)
 
         items.forEachIndexed { index, item ->
-            val iy = topY + index * (EVENT_HEIGHT_PX + gap)
+            val iy = topY + index * (eventHeight + gap)
             val startX = x.toFloat() + item.startMinute * minuteWidth
 
             canvas.drawLine(
@@ -244,6 +246,29 @@ class AgendaWeekView(context: Context) : WeekView(context) {
         val day = calendar.day.toString()
         textPaint.getTextBounds(day, 0, day.length, textBounds)
         return textBounds
+    }
+
+    data class WeekViewItem(
+        val color: Color,
+        val duration: Int,
+        val startMinute: Int
+    ) {
+        companion object {
+
+            fun createItemsFromJson(data: JSONArray, context: Context): List<WeekViewItem> {
+                if (data.length() == 0) {
+                    return emptyList()
+                }
+                return (0 until data.length()).map {
+                    val o = data.getJSONObject(it)
+                    WeekViewItem(
+                        color = Color.valueOf(o.getString("color")),
+                        duration = o.getInt("duration"),
+                        startMinute = o.getInt("start")
+                    )
+                }
+            }
+        }
     }
 
 }

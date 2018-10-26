@@ -26,6 +26,7 @@ import io.ipoli.android.player.data.Player
 import io.ipoli.android.quest.Quest
 import io.ipoli.android.quest.RepeatingQuest
 import io.ipoli.android.quest.schedule.agenda.usecase.CreateAgendaItemsUseCase
+import io.ipoli.android.quest.schedule.agenda.usecase.CreateAgendaPreviewItemsUseCase
 import io.ipoli.android.quest.schedule.summary.usecase.CreateScheduleSummaryItemsUseCase
 import io.ipoli.android.quest.schedule.today.usecase.CreateTodayItemsUseCase
 import io.ipoli.android.quest.usecase.Schedule
@@ -58,6 +59,11 @@ sealed class DataLoadedAction : Action {
         val end: LocalDate,
         val agendaItems: List<CreateAgendaItemsUseCase.AgendaItem>,
         val currentAgendaItemDate: LocalDate?
+    ) : DataLoadedAction()
+
+    data class AgendaPreviewItemsChanged(
+        val weekPreviewItems: List<CreateAgendaPreviewItemsUseCase.WeekPreviewItem>,
+        val monthPreviewItems: List<CreateAgendaPreviewItemsUseCase.MonthPreviewItem>
     ) : DataLoadedAction()
 
     data class CalendarScheduleChanged(val schedule: Map<LocalDate, Schedule>) :
