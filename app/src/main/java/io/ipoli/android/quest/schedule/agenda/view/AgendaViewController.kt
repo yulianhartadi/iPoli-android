@@ -1,5 +1,6 @@
 package io.ipoli.android.quest.schedule.agenda.view
 
+import android.content.Context
 import android.content.res.ColorStateList
 import android.graphics.drawable.GradientDrawable
 import android.os.Bundle
@@ -39,6 +40,7 @@ import kotlinx.android.synthetic.main.item_agenda_event.view.*
 import kotlinx.android.synthetic.main.item_agenda_month_divider.view.*
 import kotlinx.android.synthetic.main.item_agenda_quest.view.*
 import org.json.JSONArray
+import org.json.JSONObject
 import org.threeten.bp.LocalDate
 import org.threeten.bp.Month
 import org.threeten.bp.format.DateTimeFormatter
@@ -226,16 +228,17 @@ class AgendaViewController(args: Bundle? = null) :
                 agendaList.clearOnScrollListeners()
                 (agendaList.adapter as AgendaAdapter).updateAll(state.toAgendaItemViewModels())
                 addScrollListeners(agendaList, state)
-//                view.calendarView.postDelayed({
-//                    val calendarHeight = ViewUtils.dpToPx(88f, view.context).toInt()
-//                    val lp = view.agendaListContainer.layoutParams as ViewGroup.MarginLayoutParams
-//                    lp.topMargin = calendarHeight
-//                    view.agendaListContainer.layoutParams = lp
-//                    view.calendarView.setCalendarItemHeight(calendarHeight)
-//
-//                }, 2000)
+                view.calendarView.postDelayed({
+                    val calendarHeight = ViewUtils.dpToPx(88f, view.context).toInt()
+                    val lp = view.agendaListContainer.layoutParams as ViewGroup.MarginLayoutParams
+                    lp.topMargin = calendarHeight
+                    view.agendaListContainer.layoutParams = lp
+                    view.calendarView.setCalendarItemHeight(calendarHeight)
+                    view.calendarView.setSchemeDate(state.weekCalendars.map { it.toString() to it }.toMap())
 
-                view.calendarView.setSchemeDate(state.calendars.map { it.toString() to it }.toMap())
+                }, 2000)
+
+//                view.calendarView.setSchemeDate(state.calendars.map { it.toString() to it }.toMap())
             }
 
             AgendaViewState.StateType.SHOW_TOP_LOADER -> {
@@ -749,6 +752,63 @@ class AgendaViewController(args: Bundle? = null) :
                 isCurrentMonth = itemDate.month == currentDate.month
                 isLeapYear = itemDate.isLeapYear
                 scheme = JSONArray(items).toString()
+            }
+        }
+
+    data class WeekViewItem(
+        val color: Color,
+        val duration: Int,
+        val startMinute: Int
+    ) {
+        companion object {
+
+            fun createItemsFromJson(data: JSONArray, context: Context): List<WeekViewItem> {
+                if (data.length() == 0) {
+                    return emptyList()
+                }
+                return (0 until data.length()).map {
+                    val o = data.getJSONObject(it)
+                    WeekViewItem(
+                        color = Color.valueOf(o.getString("color")),
+                        duration = o.getInt("duration"),
+                        startMinute = o.getInt("start")
+                    )
+                }
+            }
+        }
+    }
+
+    private val AgendaViewState.weekCalendars: List<com.haibin.calendarview.Calendar>
+        get() {
+            val currentDate = LocalDate.now()
+            return LocalDate.now().withDayOfMonth(1).datesAhead(31).map {
+                val itemDate = it
+                val items = (1..8)
+                    .map { _ ->
+                        WeekViewItem(
+                            color = Color.values()[Random().nextInt(Color.values().size)],
+                            duration = Random().nextInt(4 * 60 - 10) + 10,
+                            startMinute = Random().nextInt(16 * 60)
+                        )
+                    }
+                    .sortedBy { i -> i.startMinute }
+                    .sortedByDescending { i -> i.duration }
+                    .map { i ->
+                        val json = JSONObject()
+                        json.put("color", i.color.name)
+                        json.put("duration", i.duration)
+                        json.put("start", i.startMinute)
+                    }
+
+                com.haibin.calendarview.Calendar().apply {
+                    day = itemDate.dayOfMonth
+                    month = itemDate.monthValue
+                    year = itemDate.year
+                    isCurrentDay = itemDate == currentDate
+                    isCurrentMonth = itemDate.month == currentDate.month
+                    isLeapYear = itemDate.isLeapYear
+                    scheme = JSONArray(items).toString()
+                }
             }
         }
 }

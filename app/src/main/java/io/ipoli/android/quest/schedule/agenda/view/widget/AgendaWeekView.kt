@@ -14,7 +14,7 @@ import io.ipoli.android.common.ViewUtils
 import io.ipoli.android.common.view.AndroidColor
 import io.ipoli.android.common.view.attrData
 import io.ipoli.android.quest.Color
-import io.ipoli.android.quest.schedule.summary.view.widget.ScheduleItem
+import io.ipoli.android.quest.schedule.agenda.view.AgendaViewController
 import org.json.JSONArray
 
 @Suppress("unused")
@@ -107,8 +107,15 @@ class AgendaWeekView(context: Context) : WeekView(context) {
 
         val data = JSONArray(calendar.scheme)
 
-        val items = ScheduleItem.createItemsFromJson(data, context)
+        val items = AgendaViewController.WeekViewItem.createItemsFromJson(data, context)
 
+        canvas.drawLine(
+            (x + mItemWidth).toFloat(),
+            0f,
+            (x + mItemWidth).toFloat(),
+            mItemHeight.toFloat(),
+            dividerPaint
+        )
 
     }
 
@@ -152,16 +159,6 @@ class AgendaWeekView(context: Context) : WeekView(context) {
             textPaint
         )
 
-
-
-
-        canvas.drawLine(
-            (x + mItemWidth).toFloat(),
-            0f,
-            (x + mItemWidth).toFloat(),
-            mItemHeight.toFloat(),
-            dividerPaint
-        )
 
         val gap = ViewUtils.dpToPx(4f, context)
         val questsTopY = radius * 2 + gap
