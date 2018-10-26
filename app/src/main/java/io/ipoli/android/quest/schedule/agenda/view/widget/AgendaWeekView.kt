@@ -4,6 +4,7 @@ import android.content.Context
 import android.graphics.Canvas
 import android.graphics.Paint
 import android.graphics.Rect
+import android.support.annotation.ColorInt
 import android.support.annotation.ColorRes
 import android.support.v4.content.ContextCompat
 import android.text.TextPaint
@@ -13,7 +14,6 @@ import io.ipoli.android.R
 import io.ipoli.android.common.ViewUtils
 import io.ipoli.android.common.view.AndroidColor
 import io.ipoli.android.common.view.attrData
-import io.ipoli.android.quest.Color
 import org.json.JSONArray
 
 @Suppress("unused")
@@ -33,8 +33,6 @@ class AgendaWeekView(context: Context) : WeekView(context) {
     private val dividerPaint = Paint()
 
     private val itemPaint = Paint()
-
-    private val colorStrokePaints: Map<Color, Paint>
 
     init {
 
@@ -56,15 +54,8 @@ class AgendaWeekView(context: Context) : WeekView(context) {
         dividerPaint.color = context.attrData(android.R.attr.listDivider)
 
         itemPaint.isAntiAlias = true
-        itemPaint.style = Paint.Style.FILL
-
-        colorStrokePaints = Color.values().map {
-            val p = Paint()
-            p.initWithColor(AndroidColor.valueOf(it.name).color500)
-            p.strokeWidth = ViewUtils.dpToPx(EVENT_HEIGHT_DP.toFloat(), context)
-            p.style = Paint.Style.STROKE
-            it to p
-        }.toMap()
+        itemPaint.style = Paint.Style.STROKE
+        itemPaint.strokeWidth = ViewUtils.dpToPx(EVENT_HEIGHT_DP.toFloat(), context)
     }
 
     private fun Paint.initWithColor(@ColorRes color: Int) {
@@ -125,6 +116,7 @@ class AgendaWeekView(context: Context) : WeekView(context) {
         val eventHeight = ViewUtils.dpToPx(EVENT_HEIGHT_DP.toFloat(), context)
 
         items.forEachIndexed { index, item ->
+            itemPaint.color = item.color
             val iy = topY + index * (eventHeight + gap)
             val startX = x.toFloat() + item.startMinute * minuteWidth
 
@@ -133,7 +125,7 @@ class AgendaWeekView(context: Context) : WeekView(context) {
                 iy,
                 startX + item.duration * minuteWidth,
                 iy,
-                colorStrokePaints[item.color]
+                itemPaint
             )
 
         }
@@ -176,63 +168,6 @@ class AgendaWeekView(context: Context) : WeekView(context) {
             baselineY,
             textPaint
         )
-
-
-//        val gap = ViewUtils.dpToPx(4f, context)
-//        val questsTopY = radius * 2 + gap
-//
-//        if (calendar.isCurrentDay) {
-//            canvas.drawLine(
-//                x.toFloat(),
-//                questsTopY,
-//                (x + mItemWidth).toFloat(),
-//                questsTopY,
-//                colorStrokePaints[Color.GREEN]
-//            )
-
-//            canvas.drawLine(
-//                x.toFloat() + mItemWidth / 8,
-//                questsTopY + EVENT_HEIGHT_PX + gap,
-//                x.toFloat() + mItemWidth / 8 + mItemWidth / 4,
-//                questsTopY + EVENT_HEIGHT_PX + gap,
-//                colorStrokePaints[Color.ORANGE]
-//            )
-//
-//            canvas.drawLine(
-//                x.toFloat() + mItemWidth / 4,
-//                questsTopY + 2 * EVENT_HEIGHT_PX + 2 * gap,
-//                x.toFloat() + mItemWidth / 6 + mItemWidth / 5,
-//                questsTopY + 2 * EVENT_HEIGHT_PX + 2 * gap,
-//                colorStrokePaints[Color.RED]
-//            )
-//
-//            canvas.drawLine(
-//                x.toFloat() + mItemWidth / 3,
-//                questsTopY + 3 * EVENT_HEIGHT_PX + 3 * gap,
-//                x.toFloat() + mItemWidth / 3 + mItemWidth / 4,
-//                questsTopY + 3 * EVENT_HEIGHT_PX + 3 * gap,
-//                colorStrokePaints[Color.PURPLE]
-//            )
-//
-//            canvas.drawLine(
-//                x.toFloat() + mItemWidth / 2,
-//                questsTopY + 4 * EVENT_HEIGHT_PX + 4 * gap,
-//                x.toFloat() + mItemWidth / 2 + mItemWidth / 3,
-//                questsTopY + 4 * EVENT_HEIGHT_PX + 4 * gap,
-//                colorStrokePaints[Color.BLUE]
-//            )
-//
-//            canvas.drawLine(
-//                x.toFloat() + mItemWidth / 1.5f,
-//                questsTopY + 5 * EVENT_HEIGHT_PX + 5 * gap,
-//                x.toFloat() + mItemWidth / 1.5f + mItemWidth / 3,
-//                questsTopY + 5 * EVENT_HEIGHT_PX + 5 * gap,
-//                colorStrokePaints[Color.GREEN]
-//            )
-
-
-//        }
-
     }
 
     private fun dayBounds(calendar: Calendar): Rect {
@@ -249,7 +184,7 @@ class AgendaWeekView(context: Context) : WeekView(context) {
     }
 
     data class WeekViewItem(
-        val color: Color,
+        @ColorInt val color: Int,
         val duration: Int,
         val startMinute: Int
     ) {
@@ -261,8 +196,12 @@ class AgendaWeekView(context: Context) : WeekView(context) {
                 }
                 return (0 until data.length()).map {
                     val o = data.getJSONObject(it)
+                    val type = o.getString("type")
                     WeekViewItem(
-                        color = Color.valueOf(o.getString("color")),
+                        color = if (type == "quest") {
+                            val c = AndroidColor.valueOf(o.getString("color"))
+                            ContextCompat.getColor(context, c.color500)
+                        } else o.getString("color").toInt(),
                         duration = o.getInt("duration"),
                         startMinute = o.getInt("start")
                     )

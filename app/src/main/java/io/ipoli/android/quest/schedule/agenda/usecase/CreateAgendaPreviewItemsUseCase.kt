@@ -15,17 +15,38 @@ class CreateAgendaPreviewItemsUseCase :
     UseCase<CreateAgendaPreviewItemsUseCase.Params, CreateAgendaPreviewItemsUseCase.Result> {
 
     override fun execute(parameters: Params): Result {
-        parameters.startDate.datesBetween(parameters.endDate).map {
+//        val dateToQuests = parameters.quests.
 
+        val weekItems = parameters.startDate.datesBetween(parameters.endDate).map {
+            WeekPreviewItem(
+                date = it,
+                indicators = emptyList()
+            )
         }
-        return Result(listOf(), listOf())
+        return Result(weekItems = weekItems, monthItems = listOf())
     }
 
     data class WeekPreviewItem(
-        val color: Color,
-        val duration: Int,
-        val startMinute: Int
-    )
+        val date: LocalDate,
+        val indicators: List<Indicator>
+    ) {
+        sealed class Indicator() {
+            abstract val duration: Int
+            abstract val startMinute: Int
+
+            data class Quest(
+                val color: Color,
+                override val duration: Int,
+                override val startMinute: Int
+            ) : Indicator()
+
+            data class Event(
+                val color: Int,
+                override val duration: Int,
+                override val startMinute: Int
+            ) : Indicator()
+        }
+    }
 
     data class MonthPreviewItem(val date: LocalDate) {
         sealed class Indicator {

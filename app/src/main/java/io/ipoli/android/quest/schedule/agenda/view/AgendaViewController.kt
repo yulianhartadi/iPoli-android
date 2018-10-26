@@ -34,8 +34,8 @@ import io.ipoli.android.event.Event
 import io.ipoli.android.quest.Color
 import io.ipoli.android.quest.CompletedQuestViewController
 import io.ipoli.android.quest.schedule.agenda.usecase.CreateAgendaItemsUseCase
+import io.ipoli.android.quest.schedule.agenda.usecase.CreateAgendaPreviewItemsUseCase
 import io.ipoli.android.quest.schedule.agenda.view.AgendaViewState.StateType.*
-import io.ipoli.android.quest.schedule.agenda.view.widget.AgendaWeekView
 import kotlinx.android.synthetic.main.controller_agenda.view.*
 import kotlinx.android.synthetic.main.item_agenda_event.view.*
 import kotlinx.android.synthetic.main.item_agenda_month_divider.view.*
@@ -761,38 +761,33 @@ class AgendaViewController(args: Bundle? = null) :
         }
 
     private val AgendaViewState.weekCalendars: List<com.haibin.calendarview.Calendar>
-        get() {
-            val currentDate = LocalDate.now()
-            return LocalDate.now().withDayOfMonth(1).datesAhead(31).map {
-                val itemDate = it
-                val items = (1..8)
-                    .map { _ ->
-                        AgendaWeekView.WeekViewItem(
-                            color = Color.values()[Random().nextInt(Color.values().size)],
-                            duration = Random().nextInt(4 * 60 - 10) + 10,
-                            startMinute = Random().nextInt(16 * 60)
-                        )
-                    }
-                    .sortedWith(
-                        compareBy<AgendaWeekView.WeekViewItem> { i -> i.startMinute }
-                            .thenByDescending { i -> i.duration }
-                    )
-                    .map { i ->
-                        val json = JSONObject()
+        get() = weekPreviewItems!!.map {
+            val itemDate = it.date
+            val items = it.indicators.map { i ->
+                val json = JSONObject()
+                when (i) {
+                    is CreateAgendaPreviewItemsUseCase.WeekPreviewItem.Indicator.Quest -> {
+                        json.put("type", "quest")
                         json.put("color", i.color.name)
-                        json.put("duration", i.duration)
-                        json.put("start", i.startMinute)
                     }
-
-                com.haibin.calendarview.Calendar().apply {
-                    day = itemDate.dayOfMonth
-                    month = itemDate.monthValue
-                    year = itemDate.year
-                    isCurrentDay = itemDate == currentDate
-                    isCurrentMonth = itemDate.month == currentDate.month
-                    isLeapYear = itemDate.isLeapYear
-                    scheme = JSONArray(items).toString()
+                    is CreateAgendaPreviewItemsUseCase.WeekPreviewItem.Indicator.Event -> {
+                        json.put("type", "event")
+                        json.put("color", i.color.toString())
+                    }
                 }
+                json.put("duration", i.duration)
+                json.put("start", i.startMinute)
+            }
+
+            com.haibin.calendarview.Calendar().apply {
+                day = itemDate.dayOfMonth
+                month = itemDate.monthValue
+                year = itemDate.year
+                isCurrentDay = itemDate == currentDate
+                isCurrentMonth = itemDate.month == currentDate!!.month
+                isLeapYear = itemDate.isLeapYear
+                scheme = JSONArray(items).toString()
             }
         }
+
 }
