@@ -29,7 +29,7 @@ object PostReducer : BaseViewStateReducer<PostViewState>() {
                     type = DATA_CHANGED,
                     post = action.post,
                     comments = action.post.comments
-                        .sortedByDescending { it.createdAt.toEpochMilli() },
+                        .sortedBy { it.createdAt.toEpochMilli() },
                     canDelete = action.post.playerId == currentPlayerId,
                     currentPlayerId = currentPlayerId
                 )

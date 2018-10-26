@@ -5,7 +5,6 @@ import android.app.Activity
 import android.content.Context
 import android.content.res.ColorStateList
 import android.graphics.drawable.GradientDrawable
-import android.net.Uri
 import android.support.annotation.AttrRes
 import android.support.annotation.DrawableRes
 import android.support.v7.widget.LinearLayoutManager
@@ -172,6 +171,7 @@ sealed class PostViewModel(
         override val createdAt: Long,
         override val shareMessage: String,
         val imageUrl: String?,
+        val showImage: Boolean,
         override val post: Post,
         override var reactListener: ((postId: String, playerId: String) -> Unit)? = null,
         override var reactListListener: ((reactions: List<Post.Reaction>) -> Unit)? = null,
@@ -192,24 +192,33 @@ class PostAdapter(
     private val activity: Activity
 ) :
     MultiViewRecyclerViewAdapter<PostViewModel>(),
-    ListPreloader.PreloadModelProvider<PostViewModel.SimpleViewModel> {
+    ListPreloader.PreloadModelProvider<String> {
 
-    override fun getPreloadItems(position: Int): MutableList<PostViewModel.SimpleViewModel> {
-        if (getItemViewType(position) != PostType.SIMPLE.ordinal) {
-            return mutableListOf()
+    override fun getPreloadItems(position: Int): MutableList<String> {
+        val itemViewType = getItemViewType(position)
+        val vm = getItemAt<PostViewModel>(position)
+        return when (itemViewType) {
+            PostType.SIMPLE.ordinal -> {
+                if (!(vm as PostViewModel.SimpleViewModel).showImage) mutableListOf()
+                else
+                    mutableListOf(vm.imageUrl!!)
+            }
+            PostType.FOR_CHALLENGE.ordinal -> {
+                if (!(vm as PostViewModel.ForChallengeViewModel).showImage) mutableListOf()
+                else
+                    mutableListOf(vm.imageUrl!!)
+            }
+            else -> {
+                return mutableListOf()
+            }
         }
-        val vm = getItemAt<PostViewModel.SimpleViewModel>(position)
-        if (!vm.showImage) {
-            return mutableListOf()
-        }
-        return mutableListOf(vm)
     }
 
-    override fun getPreloadRequestBuilder(item: PostViewModel.SimpleViewModel) = glideRequest(item)
+    override fun getPreloadRequestBuilder(url: String) = glideRequest(url)
 
-    private fun glideRequest(item: PostViewModel.SimpleViewModel) =
+    private fun glideRequest(imageUrl: String) =
         GlideApp.with(activity)
-            .load(item.imageUrl)
+            .load(imageUrl)
             .apply(RequestOptions.centerCropTransform())
 
     override fun onRegisterItemBinders() {
@@ -234,7 +243,7 @@ class PostAdapter(
             })
 
             if (vm.showImage) {
-                glideRequest(vm).into(view.postImage)
+                glideRequest(vm.imageUrl!!).into(view.postImage)
                 view.postImage.visible()
             } else {
                 view.postImage.gone()
@@ -323,11 +332,11 @@ class PostAdapter(
                 vm.shareListener?.invoke(vm.message.toString())
             })
 
-            if (vm.imageUrl.isNullOrBlank()) {
-                view.postImage.gone()
-            } else {
-                view.postImage.loadFromFile(Uri.parse(vm.imageUrl!!))
+            if (vm.showImage) {
+                glideRequest(vm.imageUrl!!).into(view.postImage)
                 view.postImage.visible()
+            } else {
+                view.postImage.gone()
             }
         }
     }
@@ -904,6 +913,7 @@ private fun createPostForChallengeViewModel(
         message = message,
         messageIcon = messageIcon,
         createdAt = it.createdAt.toEpochMilli(),
+        showImage = it.status == Post.Status.APPROVED && it.imageUrl != null,
         post = it,
         canEdit = canEdit
     )
