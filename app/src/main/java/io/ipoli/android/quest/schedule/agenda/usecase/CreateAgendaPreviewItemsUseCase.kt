@@ -15,17 +15,55 @@ class CreateAgendaPreviewItemsUseCase :
     UseCase<CreateAgendaPreviewItemsUseCase.Params, CreateAgendaPreviewItemsUseCase.Result> {
 
     override fun execute(parameters: Params): Result {
-//        val dateToQuests = parameters.quests.
+        val dayQuests = mutableMapOf<LocalDate, List<Quest>>()
+        parameters.quests.forEach {
+            val date = it.scheduledDate!!
+            val list =
+                if (!dayQuests.containsKey(date)) listOf()
+                else dayQuests[date]!!
+            dayQuests[date] = list + it
+        }
+
+        val dayEvents = mutableMapOf<LocalDate, List<Event>>()
+        parameters.events.forEach {
+            val date = it.startDate
+            val list =
+                if (!dayEvents.containsKey(date)) listOf()
+                else dayEvents[date]!!
+            dayEvents[date] = list + it
+        }
 
         val weekItems = parameters.startDate.datesBetween(parameters.endDate).map {
+
+            val indicators = mutableListOf<WeekPreviewItem.Indicator>()
+            dayQuests[it]?.forEach { q ->
+                if(q.startTime != null) {
+                    indicators.add(
+                        WeekPreviewItem.Indicator.Quest(
+                            startMinute = q.startTime!!.toMinuteOfDay(),//add offset
+                            duration = q.duration,
+                            color = q.color
+                        )
+                    )
+                }
+            }
+
+            dayEvents[it]?.forEach { e ->
+                indicators.add(
+                    WeekPreviewItem.Indicator.Event(
+                        startMinute = e.startTime.toMinuteOfDay(),//add offset
+                        duration = e.duration.intValue,
+                        color = e.color
+                    )
+                )
+            }
+
+
             WeekPreviewItem(
                 date = it,
-                indicators = listOf(
-                    WeekPreviewItem.Indicator.Quest(
-                        startMinute = 20,
-                        duration = 240,
-                        color = Color.GREEN
-                    )
+                indicators = indicators.sortedWith(
+                    compareBy<WeekPreviewItem.Indicator> { i -> i.startMinute }
+                        .thenByDescending { i -> i.duration }
                 )
             )
         }
