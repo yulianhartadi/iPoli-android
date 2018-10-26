@@ -78,7 +78,7 @@ class AgendaMonthView(context: Context) : MonthView(context) {
         val cx = x + mItemWidth / 2
         val cy = y + mItemHeight / 2
         canvas.drawCircle(cx.toFloat(), cy.toFloat(), radius, selectedBackgroundPaint)
-        return false
+        return true
     }
 
     override fun onDrawScheme(canvas: Canvas, calendar: Calendar, x: Int, y: Int) {
@@ -90,6 +90,16 @@ class AgendaMonthView(context: Context) : MonthView(context) {
 
         val itemsWidth = scheduleItemRadius * items.size * 2 + (itemSpacing * (items.size - 1))
         val itemsStart = cx - (itemsWidth / 2)
+
+        if (calendar.isCurrentDay) {
+            val cy = (y + mItemHeight / 2).toFloat()
+            canvas.drawCircle(
+                cx,
+                cy,
+                radius,
+                currentBackgroundPaint
+            )
+        }
 
         items.forEachIndexed { i, item ->
             itemPaint.color = item.color
@@ -114,7 +124,7 @@ class AgendaMonthView(context: Context) : MonthView(context) {
 
         val cx = (x + mItemWidth / 2).toFloat()
 
-        if (calendar.isCurrentDay) {
+        if (calendar.isCurrentDay && !hasScheme) {
             val cy = (y + mItemHeight / 2).toFloat()
             canvas.drawCircle(
                 cx,
