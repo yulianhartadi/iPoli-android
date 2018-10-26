@@ -791,8 +791,10 @@ class AgendaViewController(args: Bundle? = null) :
                             startMinute = Random().nextInt(16 * 60)
                         )
                     }
-                    .sortedBy { i -> i.startMinute }
-                    .sortedByDescending { i -> i.duration }
+                    .sortedWith(
+                        compareBy<WeekViewItem> { i -> i.startMinute }
+                            .thenByDescending { i -> i.duration }
+                    )
                     .map { i ->
                         val json = JSONObject()
                         json.put("color", i.color.name)
