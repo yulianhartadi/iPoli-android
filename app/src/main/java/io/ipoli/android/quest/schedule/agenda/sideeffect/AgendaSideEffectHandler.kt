@@ -30,7 +30,8 @@ object AgendaSideEffectHandler : AppSideEffectHandler() {
     private val createPlaceholderQuestsForRepeatingQuestsUseCase by required { createPlaceholderQuestsForRepeatingQuestsUseCase }
     private val createAgendaPreviewItemsUseCase by required { createAgendaPreviewItemsUseCase }
 
-    private var agendaQuestsChannel: Channel<List<Quest>>? = null
+    private var agendaItemsChannel: Channel<List<Quest>>? = null
+    private var agendaPreviewItemsChannel: Channel<List<Quest>>? = null
 
     override suspend fun doExecute(action: Action, state: AppState) {
 
@@ -123,13 +124,13 @@ object AgendaSideEffectHandler : AppSideEffectHandler() {
     ) {
 
         listenForChanges(
-            oldChannel = agendaQuestsChannel,
+            oldChannel = agendaItemsChannel,
             channelCreator = {
-                agendaQuestsChannel = questRepository.listenForScheduledBetween(
+                agendaItemsChannel = questRepository.listenForScheduledBetween(
                     startDate = startDate,
                     endDate = endDate
                 )
-                agendaQuestsChannel!!
+                agendaItemsChannel!!
             },
             onResult = { quests ->
                 val placeholderQuests =
@@ -192,13 +193,13 @@ object AgendaSideEffectHandler : AppSideEffectHandler() {
     ) {
 
         listenForChanges(
-            oldChannel = agendaQuestsChannel,
+            oldChannel = agendaPreviewItemsChannel,
             channelCreator = {
-                agendaQuestsChannel = questRepository.listenForScheduledBetween(
+                agendaPreviewItemsChannel = questRepository.listenForScheduledBetween(
                     startDate = startDate,
                     endDate = endDate
                 )
-                agendaQuestsChannel!!
+                agendaPreviewItemsChannel!!
             },
             onResult = { quests ->
                 val placeholderQuests =

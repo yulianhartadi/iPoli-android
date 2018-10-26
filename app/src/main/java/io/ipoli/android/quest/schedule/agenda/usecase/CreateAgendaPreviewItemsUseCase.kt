@@ -20,7 +20,13 @@ class CreateAgendaPreviewItemsUseCase :
         val weekItems = parameters.startDate.datesBetween(parameters.endDate).map {
             WeekPreviewItem(
                 date = it,
-                indicators = emptyList()
+                indicators = listOf(
+                    WeekPreviewItem.Indicator.Quest(
+                        startMinute = 20,
+                        duration = 240,
+                        color = Color.GREEN
+                    )
+                )
             )
         }
         return Result(weekItems = weekItems, monthItems = listOf())

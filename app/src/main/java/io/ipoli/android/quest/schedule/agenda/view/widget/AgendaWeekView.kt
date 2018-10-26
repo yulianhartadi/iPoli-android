@@ -110,7 +110,7 @@ class AgendaWeekView(context: Context) : WeekView(context) {
 
         val dayBounds = dayBounds(calendar)
         val gap = ViewUtils.dpToPx(GAP_DP.toFloat(), context)
-        val topY = Math.max(dayBounds.height(), dayBounds.width()) * 2 + gap
+        val topY = Math.max(dayBounds.height(), dayBounds.width()) * 2 + 2*gap
 
         val minuteWidth = mItemWidth / MINUTES.toFloat()
         val eventHeight = ViewUtils.dpToPx(EVENT_HEIGHT_DP.toFloat(), context)

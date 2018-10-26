@@ -229,21 +229,20 @@ class AgendaViewController(args: Bundle? = null) :
                 agendaList.clearOnScrollListeners()
                 (agendaList.adapter as AgendaAdapter).updateAll(state.toAgendaItemViewModels())
                 addScrollListeners(agendaList, state)
+
+//                view.calendarView.setSchemeDate(state.calendars.map { it.toString() to it }.toMap())
+            }
+
+            CALENDAR_DATA_CHANGED ->{
                 view.calendarView.postDelayed({
                     val calendarHeight = ViewUtils.dpToPx(88f, view.context).toInt()
                     val lp = view.agendaListContainer.layoutParams as ViewGroup.MarginLayoutParams
                     lp.topMargin = calendarHeight
                     view.agendaListContainer.layoutParams = lp
                     view.calendarView.setCalendarItemHeight(calendarHeight)
-//                    view.calendarView.setSchemeDate(state.weekCalendars.map { it.toString() to it }.toMap())
+                    view.calendarView.setSchemeDate(state.weekCalendars.map { it.toString() to it }.toMap())
 
                 }, 2000)
-
-//                view.calendarView.setSchemeDate(state.calendars.map { it.toString() to it }.toMap())
-            }
-
-            CALENDAR_DATA_CHANGED ->{
-                view.calendarView.setSchemeDate(state.weekCalendars.map { it.toString() to it }.toMap())
             }
 
             SHOW_TOP_LOADER -> {
