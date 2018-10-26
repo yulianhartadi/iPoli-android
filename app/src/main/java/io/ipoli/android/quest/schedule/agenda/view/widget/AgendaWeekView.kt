@@ -15,12 +15,13 @@ import io.ipoli.android.common.ViewUtils
 import io.ipoli.android.common.view.AndroidColor
 import io.ipoli.android.common.view.attrData
 import org.json.JSONArray
+import timber.log.Timber
 
 @Suppress("unused")
 class AgendaWeekView(context: Context) : WeekView(context) {
 
     companion object {
-        const val MINUTES = 16 * 40
+        const val MINUTES = 16 * 60
         const val EVENT_HEIGHT_DP = 5
         const val GAP_DP = 2
     }
@@ -99,6 +100,9 @@ class AgendaWeekView(context: Context) : WeekView(context) {
 
         val data = JSONArray(calendar.scheme)
         val items = WeekViewItem.createItemsFromJson(data, context)
+        if (items.isNotEmpty()) {
+            Timber.d("AAAA ${calendar.day} $items")
+        }
 
         canvas.drawLine(
             (x + mItemWidth).toFloat(),
@@ -110,7 +114,8 @@ class AgendaWeekView(context: Context) : WeekView(context) {
 
         val dayBounds = dayBounds(calendar)
         val gap = ViewUtils.dpToPx(GAP_DP.toFloat(), context)
-        val topY = Math.max(dayBounds.height(), dayBounds.width()) * 2 + 2*gap
+        val topY =
+            2 * Math.max(dayBounds.height(), dayBounds.width()) + ViewUtils.dpToPx(8f, context)
 
         val minuteWidth = mItemWidth / MINUTES.toFloat()
         val eventHeight = ViewUtils.dpToPx(EVENT_HEIGHT_DP.toFloat(), context)

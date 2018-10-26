@@ -1,11 +1,13 @@
 package io.ipoli.android.quest.schedule.agenda.usecase
 
 import io.ipoli.android.common.UseCase
+import io.ipoli.android.common.datetime.Time
 import io.ipoli.android.common.datetime.datesBetween
 import io.ipoli.android.event.Event
 import io.ipoli.android.quest.Color
 import io.ipoli.android.quest.Quest
 import org.threeten.bp.LocalDate
+import timber.log.Timber
 
 /**
  * Created by Polina Zhelyazkova <polina@mypoli.fun>
@@ -38,10 +40,13 @@ class CreateAgendaPreviewItemsUseCase :
             val indicators = mutableListOf<WeekPreviewItem.Indicator>()
             dayQuests[it]?.forEach { q ->
                 if(q.startTime != null) {
+                    val startMinute = Math.max(0, q.startTime.toMinuteOfDay() - MINUTES_OFFSET)
                     indicators.add(
                         WeekPreviewItem.Indicator.Quest(
-                            startMinute = q.startTime!!.toMinuteOfDay(),//add offset
-                            duration = q.duration,
+                            startMinute = startMinute,
+                            duration = if (startMinute + q.duration > MAX_TIME.toMinuteOfDay())
+                                MAX_TIME.toMinuteOfDay() - startMinute
+                            else q.duration,
                             color = q.color
                         )
                     )
@@ -67,14 +72,21 @@ class CreateAgendaPreviewItemsUseCase :
                 )
             )
         }
+        Timber.d("AAA $weekItems")
         return Result(weekItems = weekItems, monthItems = listOf())
+    }
+
+    companion object {
+        const val MINUTES_OFFSET = 8 * 60
+        val MIN_TIME = Time.atHours(8)
+        val MAX_TIME = Time.at(23, 59)
     }
 
     data class WeekPreviewItem(
         val date: LocalDate,
         val indicators: List<Indicator>
     ) {
-        sealed class Indicator() {
+        sealed class Indicator {
             abstract val duration: Int
             abstract val startMinute: Int
 
