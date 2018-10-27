@@ -90,14 +90,6 @@ class AgendaWeekView(context: Context) : WeekView(context) {
         val data = JSONArray(calendar.scheme)
         val items = WeekViewItem.createItemsFromJson(data, context)
 
-        canvas.drawLine(
-            (x + mItemWidth).toFloat(),
-            0f,
-            (x + mItemWidth).toFloat(),
-            mItemHeight.toFloat(),
-            dividerPaint
-        )
-
         val dayBounds = dayBounds(calendar)
         val gap = ViewUtils.dpToPx(GAP_DP.toFloat(), context)
         val topY =
@@ -139,6 +131,13 @@ class AgendaWeekView(context: Context) : WeekView(context) {
         }
         val dayBounds = dayBounds(calendar)
 
+        canvas.drawLine(
+            (x + mItemWidth).toFloat(),
+            0f,
+            (x + mItemWidth).toFloat(),
+            mItemHeight.toFloat(),
+            dividerPaint
+        )
 
         val radius = Math.max(dayBounds.height(), dayBounds.width())
         val baselineY = mTextBaseLine - mItemHeight / 2 + radius
