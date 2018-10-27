@@ -58,9 +58,9 @@ class AgendaMonthView(context: Context) : MonthView(context) {
     }
 
     override fun onPreviewHook() {
-        backgroundRadius = (Math.min(mItemWidth, mItemHeight) / 11 * 5.2).toFloat()
+        backgroundRadius = (Math.min(mItemWidth, mItemHeight) / 11 * 4).toFloat()
         scheduleItemRadius = ViewUtils.dpToPx(2.5f, context)
-        itemPadding = ViewUtils.dpToPx(6f, context)
+        itemPadding = ViewUtils.dpToPx(8f, context)
         itemSpacing = ViewUtils.dpToPx(4f, context)
     }
 
@@ -78,7 +78,7 @@ class AgendaMonthView(context: Context) : MonthView(context) {
         hasScheme: Boolean
     ): Boolean {
         val cx = x + mItemWidth / 2
-        val cy = y + mItemHeight / 2
+        val cy = y + mItemHeight / 2 - itemPadding / 1.5f
         canvas.drawCircle(cx.toFloat(), cy.toFloat(), backgroundRadius, selectedBackgroundPaint)
         return true
     }
@@ -95,7 +95,7 @@ class AgendaMonthView(context: Context) : MonthView(context) {
         val itemsStart = cx - (itemsWidth / 2)
 
         if (calendar.isCurrentDay) {
-            val cy = (y + mItemHeight / 2).toFloat()
+            val cy = (y + mItemHeight / 2 - itemPadding / 1.5).toFloat()
             canvas.drawCircle(
                 cx,
                 cy,
@@ -128,7 +128,7 @@ class AgendaMonthView(context: Context) : MonthView(context) {
         val cx = (x + mItemWidth / 2).toFloat()
 
         if (calendar.isCurrentDay && !hasScheme) {
-            val cy = (y + mItemHeight / 2).toFloat()
+            val cy = (y + mItemHeight / 2 - itemPadding / 1.5).toFloat()
             canvas.drawCircle(
                 cx,
                 cy,
@@ -137,7 +137,7 @@ class AgendaMonthView(context: Context) : MonthView(context) {
             )
         }
 
-        val baselineY = mTextBaseLine + y
+        val baselineY = mTextBaseLine + y - itemPadding / 1.5f
 
         canvas.drawText(
             calendar.day.toString(),

@@ -249,8 +249,7 @@ class AgendaViewController(args: Bundle? = null) :
 
             PREVIEW_MODE_CHANGED -> {
                 if (state.previewMode == AgendaViewState.PreviewMode.MONTH) {
-//                    val calendarHeight = ViewUtils.dpToPx(32f, view.context).toInt()
-                    val calendarHeight = ViewUtils.dpToPx(42f, view.context).toInt()
+                    val calendarHeight = ViewUtils.dpToPx(36f, view.context).toInt()
                     view.calendarView.setCalendarItemHeight(calendarHeight)
                     view.calendarContainer.expand()
                     val lp = view.agendaListContainer.layoutParams as ViewGroup.MarginLayoutParams
