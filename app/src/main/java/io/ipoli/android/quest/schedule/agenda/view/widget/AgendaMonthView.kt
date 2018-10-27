@@ -25,7 +25,7 @@ class AgendaMonthView(context: Context) : MonthView(context) {
 
     private val itemPaint = Paint()
 
-    private var radius = 0f
+    private var backgroundRadius = 0f
     private var scheduleItemRadius = 0f
     private var itemPadding = 0f
     private var itemSpacing = 0f
@@ -58,8 +58,8 @@ class AgendaMonthView(context: Context) : MonthView(context) {
     }
 
     override fun onPreviewHook() {
-        radius = (Math.min(mItemWidth, mItemHeight) / 11 * 5.2).toFloat()
-        scheduleItemRadius = ViewUtils.dpToPx(2f, context)
+        backgroundRadius = (Math.min(mItemWidth, mItemHeight) / 11 * 5.2).toFloat()
+        scheduleItemRadius = ViewUtils.dpToPx(2.5f, context)
         itemPadding = ViewUtils.dpToPx(6f, context)
         itemSpacing = ViewUtils.dpToPx(4f, context)
     }
@@ -79,7 +79,7 @@ class AgendaMonthView(context: Context) : MonthView(context) {
     ): Boolean {
         val cx = x + mItemWidth / 2
         val cy = y + mItemHeight / 2
-        canvas.drawCircle(cx.toFloat(), cy.toFloat(), radius, selectedBackgroundPaint)
+        canvas.drawCircle(cx.toFloat(), cy.toFloat(), backgroundRadius, selectedBackgroundPaint)
         return true
     }
 
@@ -99,7 +99,7 @@ class AgendaMonthView(context: Context) : MonthView(context) {
             canvas.drawCircle(
                 cx,
                 cy,
-                radius,
+                backgroundRadius,
                 currentBackgroundPaint
             )
         }
@@ -132,7 +132,7 @@ class AgendaMonthView(context: Context) : MonthView(context) {
             canvas.drawCircle(
                 cx,
                 cy,
-                radius,
+                backgroundRadius,
                 currentBackgroundPaint
             )
         }
