@@ -34,11 +34,11 @@ class CreateAgendaPreviewItemsUseCaseSpek : Spek({
                         quests = quests,
                         events = events
                     )
-                ).monthItems
+                )
 
             it("should have empty list") {
                 val items = monthItemsFor(today, today, emptyList(), emptyList())
-                items.first().indicators.`should be empty`()
+                items.first().monthIndicators.`should be empty`()
             }
 
             it("should have single indicator") {
@@ -61,9 +61,9 @@ class CreateAgendaPreviewItemsUseCaseSpek : Spek({
                 )
                 val items = monthItemsFor(today, today, listOf(q), listOf(e))
                 val todayItems = items.first()
-                todayItems.indicators.size.`should be equal to`(2)
-                todayItems.indicators.first()
-                    .`should be instance of`(CreateAgendaPreviewItemsUseCase.MonthPreviewItem.Indicator.Event::class)
+                todayItems.monthIndicators.size.`should be equal to`(2)
+                todayItems.monthIndicators.first()
+                    .`should be instance of`(CreateAgendaPreviewItemsUseCase.PreviewItem.MonthIndicator.Event::class)
             }
 
             it("should sort Quests by duration") {
@@ -80,7 +80,7 @@ class CreateAgendaPreviewItemsUseCaseSpek : Spek({
                 val ids =
                     monthItemsFor(today, today, listOf(q1, q2), emptyList())
                         .first()
-                        .indicators
+                        .monthIndicators
                 ids.size.`should be equal to`(2)
                 ids.first().duration.`should be equal to`(60)
                 ids[1].duration.`should be equal to`(30)
