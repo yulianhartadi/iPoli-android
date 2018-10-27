@@ -34,6 +34,8 @@ sealed class ScheduleAction : Action {
     }
 
     object ToggleViewMode : ScheduleAction()
+    object ToggleAgendaPreviewMode : ScheduleAction()
+
     data class Load(val currentDate: LocalDate) : ScheduleAction()
 }
 
@@ -163,6 +165,8 @@ object ScheduleReducer : BaseViewStateReducer<ScheduleViewState>() {
                     viewMode = if (state.viewMode == ScheduleViewState.ViewMode.CALENDAR) ScheduleViewState.ViewMode.AGENDA else ScheduleViewState.ViewMode.CALENDAR
                 )
             }
+
+            else -> state
         }
 }
 

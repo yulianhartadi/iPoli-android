@@ -96,6 +96,11 @@ class ScheduleViewController(args: Bundle? = null) :
     override fun onOptionsItemSelected(item: MenuItem) =
         when (item.itemId) {
 
+            R.id.actionAgendaMode -> {
+                dispatch(ScheduleAction.ToggleAgendaPreviewMode)
+                true
+            }
+
             R.id.actionViewMode -> {
                 closeAddIfShown {
                     dispatch(ScheduleAction.ToggleViewMode)

@@ -233,16 +233,19 @@ class AgendaViewController(args: Bundle? = null) :
 //                view.calendarView.setSchemeDate(state.calendars.map { it.toString() to it }.toMap())
             }
 
-            CALENDAR_DATA_CHANGED ->{
-                view.calendarView.postDelayed({
-                    val calendarHeight = ViewUtils.dpToPx(88f, view.context).toInt()
-                    val lp = view.agendaListContainer.layoutParams as ViewGroup.MarginLayoutParams
-                    lp.topMargin = calendarHeight
-                    view.agendaListContainer.layoutParams = lp
-                    view.calendarView.setCalendarItemHeight(calendarHeight)
-                    view.calendarView.setSchemeDate(state.weekCalendars.map { it.toString() to it }.toMap())
-
-                }, 2000)
+            CALENDAR_DATA_CHANGED -> {
+//                                    view.calendarView.setSchemeDate(state.weekCalendars.map { it.toString() to it }.toMap())
+//                view.calendarView.postDelayed({
+//
+//                    val calendarHeight = ViewUtils.dpToPx(32f, view.context).toInt()
+////                    val lp = view.agendaListContainer.layoutParams as ViewGroup.MarginLayoutParams
+////                    lp.topMargin = calendarHeight
+////                    view.agendaListContainer.layoutParams = lp
+//                    view.calendarView.setCalendarItemHeight(calendarHeight)
+//                    view.calendarContainer.expand()
+////                    view.calendarView.setSchemeDate(state.weekCalendars.map { it.toString() to it }.toMap())
+//
+//                }, 2000)
             }
 
             SHOW_TOP_LOADER -> {
@@ -251,6 +254,24 @@ class AgendaViewController(args: Bundle? = null) :
 
             SHOW_BOTTOM_LOADER -> {
                 ViewUtils.showViews(view.bottomLoader)
+            }
+
+            PREVIEW_MODE_CHANGED -> {
+                if (state.previewMode == AgendaViewState.PreviewMode.MONTH) {
+                    val calendarHeight = ViewUtils.dpToPx(32f, view.context).toInt()
+                    view.calendarView.setCalendarItemHeight(calendarHeight)
+                    view.calendarContainer.expand()
+                    val lp = view.agendaListContainer.layoutParams as ViewGroup.MarginLayoutParams
+                    lp.topMargin = 0
+                    view.agendaListContainer.layoutParams = lp
+                } else {
+                    val calendarHeight = ViewUtils.dpToPx(88f, view.context).toInt()
+                    view.calendarView.setCalendarItemHeight(calendarHeight)
+                    view.calendarContainer.shrink()
+                    val lp = view.agendaListContainer.layoutParams as ViewGroup.MarginLayoutParams
+                    lp.topMargin = calendarHeight
+                    view.agendaListContainer.layoutParams = lp
+                }
             }
 
             else -> {

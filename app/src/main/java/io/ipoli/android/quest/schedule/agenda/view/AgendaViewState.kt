@@ -6,8 +6,11 @@ import io.ipoli.android.common.DataLoadedAction
 import io.ipoli.android.common.datetime.isBetween
 import io.ipoli.android.common.redux.Action
 import io.ipoli.android.common.redux.BaseViewState
+import io.ipoli.android.quest.schedule.ScheduleAction
 import io.ipoli.android.quest.schedule.agenda.usecase.CreateAgendaItemsUseCase.AgendaItem
 import io.ipoli.android.quest.schedule.agenda.usecase.CreateAgendaPreviewItemsUseCase
+import io.ipoli.android.quest.schedule.agenda.view.AgendaViewState.PreviewMode.MONTH
+import io.ipoli.android.quest.schedule.agenda.view.AgendaViewState.PreviewMode.WEEK
 import io.ipoli.android.quest.schedule.agenda.view.AgendaViewState.StateType.*
 import org.threeten.bp.LocalDate
 
@@ -99,6 +102,14 @@ object AgendaReducer : BaseViewStateReducer<AgendaViewState>() {
                     type = IDLE
                 )
             }
+
+            is ScheduleAction.ToggleAgendaPreviewMode -> {
+                subState.copy(
+                    type = PREVIEW_MODE_CHANGED,
+                    previewMode = if (subState.previewMode == WEEK) MONTH else WEEK
+                )
+            }
+
             else -> subState
 
         }
@@ -131,7 +142,8 @@ object AgendaReducer : BaseViewStateReducer<AgendaViewState>() {
         scrollToPosition = null,
         currentDate = LocalDate.now(),
         weekPreviewItems = null,
-        monthPreviewItems = null
+        monthPreviewItems = null,
+        previewMode = WEEK
     )
 
     const val ITEMS_BEFORE_COUNT = 25
@@ -140,11 +152,12 @@ object AgendaReducer : BaseViewStateReducer<AgendaViewState>() {
 
 data class AgendaViewState(
     val type: StateType,
-    val currentDate : LocalDate?,
+    val currentDate: LocalDate?,
     val scrollToPosition: Int?,
     val agendaItems: List<AgendaItem>,
-    val weekPreviewItems : List<CreateAgendaPreviewItemsUseCase.WeekPreviewItem>?,
-    val monthPreviewItems : List<CreateAgendaPreviewItemsUseCase.MonthPreviewItem>?
+    val weekPreviewItems: List<CreateAgendaPreviewItemsUseCase.WeekPreviewItem>?,
+    val monthPreviewItems: List<CreateAgendaPreviewItemsUseCase.MonthPreviewItem>?,
+    val previewMode: PreviewMode
 ) : BaseViewState() {
 
     enum class StateType {
@@ -153,7 +166,12 @@ data class AgendaViewState(
         SHOW_TOP_LOADER,
         SHOW_BOTTOM_LOADER,
         IDLE,
+        PREVIEW_MODE_CHANGED,
         CALENDAR_DATA_CHANGED
+    }
+
+    enum class PreviewMode {
+        WEEK, MONTH
     }
 
 }
