@@ -217,7 +217,7 @@ object AgendaSideEffectHandler : AppSideEffectHandler() {
                     )
                 )
 
-                val result = createAgendaPreviewItemsUseCase.execute(
+                val pItems = createAgendaPreviewItemsUseCase.execute(
                     CreateAgendaPreviewItemsUseCase.Params(
                         startDate = startDate,
                         endDate = endDate,
@@ -226,12 +226,7 @@ object AgendaSideEffectHandler : AppSideEffectHandler() {
                     )
                 )
 
-                dispatch(
-                    DataLoadedAction.AgendaPreviewItemsChanged(
-                        weekPreviewItems = result.weekItems,
-                        monthPreviewItems = result.monthItems
-                    )
-                )
+                dispatch(DataLoadedAction.AgendaPreviewItemsChanged(pItems))
             }
         )
     }

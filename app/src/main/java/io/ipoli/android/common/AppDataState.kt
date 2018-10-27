@@ -62,8 +62,7 @@ sealed class DataLoadedAction : Action {
     ) : DataLoadedAction()
 
     data class AgendaPreviewItemsChanged(
-        val weekPreviewItems: List<CreateAgendaPreviewItemsUseCase.WeekPreviewItem>,
-        val monthPreviewItems: List<CreateAgendaPreviewItemsUseCase.MonthPreviewItem>
+        val previewItems: List<CreateAgendaPreviewItemsUseCase.PreviewItem>
     ) : DataLoadedAction()
 
     data class CalendarScheduleChanged(val schedule: Map<LocalDate, Schedule>) :

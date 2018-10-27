@@ -21,7 +21,10 @@ import com.mikepenz.iconics.typeface.IIcon
 import com.mikepenz.ionicons_typeface_library.Ionicons
 import io.ipoli.android.R
 import io.ipoli.android.common.ViewUtils
-import io.ipoli.android.common.datetime.*
+import io.ipoli.android.common.datetime.isToday
+import io.ipoli.android.common.datetime.isTomorrow
+import io.ipoli.android.common.datetime.isYesterday
+import io.ipoli.android.common.datetime.weekOfYear
 import io.ipoli.android.common.redux.android.ReduxViewController
 import io.ipoli.android.common.text.DateFormatter
 import io.ipoli.android.common.text.QuestStartTimeFormatter
@@ -31,7 +34,6 @@ import io.ipoli.android.common.view.recyclerview.MultiViewTypeSwipeCallback
 import io.ipoli.android.common.view.recyclerview.RecyclerViewViewModel
 import io.ipoli.android.common.view.recyclerview.SwipeResource
 import io.ipoli.android.event.Event
-import io.ipoli.android.quest.Color
 import io.ipoli.android.quest.CompletedQuestViewController
 import io.ipoli.android.quest.schedule.agenda.usecase.CreateAgendaItemsUseCase
 import io.ipoli.android.quest.schedule.agenda.usecase.CreateAgendaPreviewItemsUseCase
@@ -234,18 +236,7 @@ class AgendaViewController(args: Bundle? = null) :
             }
 
             CALENDAR_DATA_CHANGED -> {
-//                                    view.calendarView.setSchemeDate(state.weekCalendars.map { it.toString() to it }.toMap())
-//                view.calendarView.postDelayed({
-//
-//                    val calendarHeight = ViewUtils.dpToPx(32f, view.context).toInt()
-////                    val lp = view.agendaListContainer.layoutParams as ViewGroup.MarginLayoutParams
-////                    lp.topMargin = calendarHeight
-////                    view.agendaListContainer.layoutParams = lp
-//                    view.calendarView.setCalendarItemHeight(calendarHeight)
-//                    view.calendarContainer.expand()
-////                    view.calendarView.setSchemeDate(state.weekCalendars.map { it.toString() to it }.toMap())
-//
-//                }, 2000)
+                view.calendarView.setSchemeDate(state.previewCalendars.map { it.toString() to it }.toMap())
             }
 
             SHOW_TOP_LOADER -> {
@@ -258,7 +249,8 @@ class AgendaViewController(args: Bundle? = null) :
 
             PREVIEW_MODE_CHANGED -> {
                 if (state.previewMode == AgendaViewState.PreviewMode.MONTH) {
-                    val calendarHeight = ViewUtils.dpToPx(32f, view.context).toInt()
+//                    val calendarHeight = ViewUtils.dpToPx(32f, view.context).toInt()
+                    val calendarHeight = ViewUtils.dpToPx(42f, view.context).toInt()
                     view.calendarView.setCalendarItemHeight(calendarHeight)
                     view.calendarContainer.expand()
                     val lp = view.agendaListContainer.layoutParams as ViewGroup.MarginLayoutParams
@@ -596,7 +588,7 @@ class AgendaViewController(args: Bundle? = null) :
         }
     }
 
-    fun AgendaViewState.toAgendaItemViewModels() =
+    private fun AgendaViewState.toAgendaItemViewModels() =
         agendaItems.mapIndexed { index, item ->
             toAgendaViewModel(
                 item,
@@ -761,36 +753,20 @@ class AgendaViewController(args: Bundle? = null) :
         return "${start.toString(shouldUse24HourFormat)} - ${end.toString(shouldUse24HourFormat)}"
     }
 
-    private val AgendaViewState.calendars: List<com.haibin.calendarview.Calendar>
-        get() = LocalDate.now().withDayOfMonth(1).datesAhead(31).map {
-            val itemDate = it
-
-            val currentDate = LocalDate.now()
-
-            val items = listOf(Color.RED.name, Color.GREEN.name, Color.INDIGO.name)
-
-            com.haibin.calendarview.Calendar().apply {
-                day = itemDate.dayOfMonth
-                month = itemDate.monthValue
-                year = itemDate.year
-                isCurrentDay = itemDate == currentDate
-                isCurrentMonth = itemDate.month == currentDate.month
-                isLeapYear = itemDate.isLeapYear
-                scheme = JSONArray(items).toString()
-            }
-        }
-
-    private val AgendaViewState.weekCalendars: List<com.haibin.calendarview.Calendar>
-        get() = weekPreviewItems!!.map {
+    private val AgendaViewState.previewCalendars: List<com.haibin.calendarview.Calendar>
+        get() = previewItems!!.map {
             val itemDate = it.date
-            val items = it.indicators.map { i ->
+
+            val schemeData = JSONObject()
+
+            val weekIndicators = it.weekIndicators.map { i ->
                 val json = JSONObject()
                 when (i) {
-                    is CreateAgendaPreviewItemsUseCase.WeekPreviewItem.Indicator.Quest -> {
+                    is CreateAgendaPreviewItemsUseCase.PreviewItem.WeekIndicator.Quest -> {
                         json.put("type", "quest")
                         json.put("color", i.color.name)
                     }
-                    is CreateAgendaPreviewItemsUseCase.WeekPreviewItem.Indicator.Event -> {
+                    is CreateAgendaPreviewItemsUseCase.PreviewItem.WeekIndicator.Event -> {
                         json.put("type", "event")
                         json.put("color", i.color.toString())
                     }
@@ -799,6 +775,21 @@ class AgendaViewController(args: Bundle? = null) :
                 json.put("start", i.startMinute)
             }
 
+            schemeData.put("weekIndicators", JSONArray(weekIndicators))
+
+            val monthIndicators = it.monthIndicators.map { i ->
+                when (i) {
+                    is CreateAgendaPreviewItemsUseCase.PreviewItem.MonthIndicator.Event -> {
+                        i.color
+                    }
+                    is CreateAgendaPreviewItemsUseCase.PreviewItem.MonthIndicator.Quest -> {
+                        colorRes(i.color.androidColor.color500)
+                    }
+                }
+            }
+
+            schemeData.put("monthIndicators", JSONArray(monthIndicators))
+
             com.haibin.calendarview.Calendar().apply {
                 day = itemDate.dayOfMonth
                 month = itemDate.monthValue
@@ -806,7 +797,7 @@ class AgendaViewController(args: Bundle? = null) :
                 isCurrentDay = itemDate == currentDate
                 isCurrentMonth = itemDate.month == currentDate!!.month
                 isLeapYear = itemDate.isLeapYear
-                scheme = JSONArray(items).toString()
+                scheme = schemeData.toString()
             }
         }
 

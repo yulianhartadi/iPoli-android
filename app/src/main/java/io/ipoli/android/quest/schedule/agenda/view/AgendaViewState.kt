@@ -82,8 +82,7 @@ object AgendaReducer : BaseViewStateReducer<AgendaViewState>() {
             is DataLoadedAction.AgendaPreviewItemsChanged -> {
                 subState.copy(
                     type = CALENDAR_DATA_CHANGED,
-                    weekPreviewItems = action.weekPreviewItems,
-                    monthPreviewItems = action.monthPreviewItems
+                    previewItems = action.previewItems
                 )
             }
 
@@ -141,8 +140,7 @@ object AgendaReducer : BaseViewStateReducer<AgendaViewState>() {
         agendaItems = listOf(),
         scrollToPosition = null,
         currentDate = LocalDate.now(),
-        weekPreviewItems = null,
-        monthPreviewItems = null,
+        previewItems = null,
         previewMode = WEEK
     )
 
@@ -155,8 +153,7 @@ data class AgendaViewState(
     val currentDate: LocalDate?,
     val scrollToPosition: Int?,
     val agendaItems: List<AgendaItem>,
-    val weekPreviewItems: List<CreateAgendaPreviewItemsUseCase.WeekPreviewItem>?,
-    val monthPreviewItems: List<CreateAgendaPreviewItemsUseCase.MonthPreviewItem>?,
+    val previewItems: List<CreateAgendaPreviewItemsUseCase.PreviewItem>?,
     val previewMode: PreviewMode
 ) : BaseViewState() {
 

@@ -13,16 +13,19 @@ import org.threeten.bp.LocalDate
  * on 10/26/18.
  */
 class CreateAgendaPreviewItemsUseCase :
-    UseCase<CreateAgendaPreviewItemsUseCase.Params, CreateAgendaPreviewItemsUseCase.Result> {
+    UseCase<CreateAgendaPreviewItemsUseCase.Params, List<CreateAgendaPreviewItemsUseCase.PreviewItem>> {
 
-    override fun execute(parameters: Params): Result {
+    override fun execute(parameters: Params): List<CreateAgendaPreviewItemsUseCase.PreviewItem> {
         val dayQuests = mapQuestsToDays(parameters.quests)
         val dayEvents = mapEventsToDays(parameters.events)
 
-        return Result(
-            weekItems = createWeekItems(parameters, dayQuests, dayEvents),
-            monthItems = createMonthItems(parameters, dayQuests, dayEvents)
-        )
+        return parameters.startDate.datesBetween(parameters.endDate).map {
+            PreviewItem(
+                date = it,
+                weekIndicators = createWeekIndicators(it, dayQuests, dayEvents),
+                monthIndicators = createMonthIndicators(it, dayQuests, dayEvents)
+            )
+        }
     }
 
     private fun mapEventsToDays(events: List<Event>): Map<LocalDate, List<Event>> {
@@ -49,105 +52,100 @@ class CreateAgendaPreviewItemsUseCase :
         return dayQuests
     }
 
-    private fun createMonthItems(
-        parameters: Params,
+    private fun createMonthIndicators(
+        date: LocalDate,
         quests: Map<LocalDate, List<Quest>>,
         events: Map<LocalDate, List<Event>>
-    ) =
-        parameters.startDate.datesBetween(parameters.endDate).map {
-            val indicators = mutableListOf<MonthPreviewItem.Indicator>()
-            events[it]?.forEach { e ->
-                val d = if (e.isAllDay) Time.MINUTES_IN_A_DAY else e.duration.intValue
-                indicators.add(MonthPreviewItem.Indicator.Event(d, e.color))
-            }
-            quests[it]?.forEach { q ->
-                indicators.add(MonthPreviewItem.Indicator.Quest(q.duration, q.color))
-            }
-            MonthPreviewItem(it, indicators.sortedByDescending { i -> i.duration })
+    ): List<PreviewItem.MonthIndicator> {
+        val indicators = mutableListOf<PreviewItem.MonthIndicator>()
+        events[date]?.forEach { e ->
+            val d = if (e.isAllDay) Time.MINUTES_IN_A_DAY else e.duration.intValue
+            indicators.add(PreviewItem.MonthIndicator.Event(d, e.color))
         }
+        quests[date]?.forEach { q ->
+            indicators.add(PreviewItem.MonthIndicator.Quest(q.duration, q.color))
+        }
+        return indicators.sortedByDescending { i -> i.duration }
+    }
 
-    private fun createWeekItems(
-        parameters: Params,
+    private fun createWeekIndicators(
+        date: LocalDate,
         quests: Map<LocalDate, List<Quest>>,
         events: Map<LocalDate, List<Event>>
-    ) =
-        parameters.startDate.datesBetween(parameters.endDate).map {
+    ): List<PreviewItem.WeekIndicator> {
 
-            val indicators = mutableListOf<WeekPreviewItem.Indicator>()
-            quests[it]?.forEach { q ->
-                val startTime: Time? = q.startTime
+        val indicators = mutableListOf<PreviewItem.WeekIndicator>()
+        quests[date]?.forEach { q ->
+            val startTime: Time? = q.startTime
 
-                if (startTime == null) {
-                    indicators.add(
-                        WeekPreviewItem.Indicator.Quest(
-                            startMinute = 0,
-                            duration = MIN_TIME.minutesTo(MAX_TIME),
-                            color = q.color
-                        )
+            if (startTime == null) {
+                indicators.add(
+                    PreviewItem.WeekIndicator.Quest(
+                        startMinute = 0,
+                        duration = MIN_TIME.minutesTo(MAX_TIME),
+                        color = q.color
                     )
-                } else if (!(startTime < MIN_TIME && q.endTime!! < MIN_TIME)) {
-
-                    val (startMinute, duration) =
-                        when {
-                            startTime < MIN_TIME -> Pair(
-                                MIN_TIME.toMinuteOfDay(),
-                                MIN_TIME.minutesTo(q.endTime!!)
-                            )
-                            q.endTime!! < MIN_TIME -> Pair(
-                                startTime.toMinuteOfDay(),
-                                startTime.minutesTo(MAX_TIME)
-                            )
-                            else -> Pair(startTime.toMinuteOfDay(), q.duration)
-                        }
-                    indicators.add(
-                        WeekPreviewItem.Indicator.Quest(
-                            startMinute = startMinute - MINUTES_OFFSET,
-                            duration = duration,
-                            color = q.color
-                        )
-                    )
-                }
-            }
-
-            events[it]?.forEach { e ->
-                val startTime: Time = e.startTime
-                if (!(startTime < MIN_TIME && e.endTime < MIN_TIME)) {
-
-                    val (startMinute, duration) =
-                        when {
-                            e.isAllDay -> Pair(
-                                MIN_TIME.toMinuteOfDay(),
-                                MIN_TIME.minutesTo(MAX_TIME)
-                            )
-                            startTime < MIN_TIME -> Pair(
-                                MIN_TIME.toMinuteOfDay(),
-                                MIN_TIME.minutesTo(e.endTime)
-                            )
-                            e.endTime < MIN_TIME -> Pair(
-                                startTime.toMinuteOfDay(),
-                                startTime.minutesTo(MAX_TIME)
-                            )
-                            else -> Pair(startTime.toMinuteOfDay(), e.duration.intValue)
-                        }
-                    indicators.add(
-                        WeekPreviewItem.Indicator.Event(
-                            startMinute = startMinute - MINUTES_OFFSET,
-                            duration = duration,
-                            color = e.color
-                        )
-                    )
-                }
-            }
-
-
-            WeekPreviewItem(
-                date = it,
-                indicators = indicators.sortedWith(
-                    compareBy<WeekPreviewItem.Indicator> { i -> i.startMinute }
-                        .thenByDescending { i -> i.duration }
                 )
-            )
+            } else if (!(startTime < MIN_TIME && q.endTime!! < MIN_TIME)) {
+
+                val (startMinute, duration) =
+                    when {
+                        startTime < MIN_TIME -> Pair(
+                            MIN_TIME.toMinuteOfDay(),
+                            MIN_TIME.minutesTo(q.endTime!!)
+                        )
+                        q.endTime!! < MIN_TIME -> Pair(
+                            startTime.toMinuteOfDay(),
+                            startTime.minutesTo(MAX_TIME)
+                        )
+                        else -> Pair(startTime.toMinuteOfDay(), q.duration)
+                    }
+                indicators.add(
+                    PreviewItem.WeekIndicator.Quest(
+                        startMinute = startMinute - MINUTES_OFFSET,
+                        duration = duration,
+                        color = q.color
+                    )
+                )
+            }
         }
+
+        events[date]?.forEach { e ->
+            val startTime: Time = e.startTime
+            if (!(startTime < MIN_TIME && e.endTime < MIN_TIME)) {
+
+                val (startMinute, duration) =
+                    when {
+                        e.isAllDay -> Pair(
+                            MIN_TIME.toMinuteOfDay(),
+                            MIN_TIME.minutesTo(MAX_TIME)
+                        )
+                        startTime < MIN_TIME -> Pair(
+                            MIN_TIME.toMinuteOfDay(),
+                            MIN_TIME.minutesTo(e.endTime)
+                        )
+                        e.endTime < MIN_TIME -> Pair(
+                            startTime.toMinuteOfDay(),
+                            startTime.minutesTo(MAX_TIME)
+                        )
+                        else -> Pair(startTime.toMinuteOfDay(), e.duration.intValue)
+                    }
+                indicators.add(
+                    PreviewItem.WeekIndicator.Event(
+                        startMinute = startMinute - MINUTES_OFFSET,
+                        duration = duration,
+                        color = e.color
+                    )
+                )
+            }
+        }
+
+        return indicators.sortedWith(
+            compareBy<PreviewItem.WeekIndicator> { i -> i.startMinute }
+                .thenByDescending { i -> i.duration }
+        )
+    }
+
 
     companion object {
         const val MINUTES_OFFSET = 8 * 60
@@ -155,11 +153,12 @@ class CreateAgendaPreviewItemsUseCase :
         val MAX_TIME = Time.at(23, 59)
     }
 
-    data class WeekPreviewItem(
+    data class PreviewItem(
         val date: LocalDate,
-        val indicators: List<Indicator>
+        val weekIndicators: List<WeekIndicator>,
+        val monthIndicators: List<MonthIndicator>
     ) {
-        sealed class Indicator {
+        sealed class WeekIndicator {
             abstract val duration: Int
             abstract val startMinute: Int
 
@@ -167,23 +166,21 @@ class CreateAgendaPreviewItemsUseCase :
                 val color: Color,
                 override val duration: Int,
                 override val startMinute: Int
-            ) : Indicator()
+            ) : WeekIndicator()
 
             data class Event(
                 val color: Int,
                 override val duration: Int,
                 override val startMinute: Int
-            ) : Indicator()
+            ) : WeekIndicator()
         }
-    }
 
-    data class MonthPreviewItem(val date: LocalDate, val indicators: List<Indicator>) {
-        sealed class Indicator {
+        sealed class MonthIndicator {
 
             abstract val duration: Int
 
-            data class Quest(override val duration: Int, val color: Color) : Indicator()
-            data class Event(override val duration: Int, val color: Int) : Indicator()
+            data class Quest(override val duration: Int, val color: Color) : MonthIndicator()
+            data class Event(override val duration: Int, val color: Int) : MonthIndicator()
         }
     }
 
@@ -193,6 +190,4 @@ class CreateAgendaPreviewItemsUseCase :
         val quests: List<Quest>,
         val events: List<Event>
     )
-
-    data class Result(val weekItems: List<WeekPreviewItem>, val monthItems: List<MonthPreviewItem>)
 }

@@ -10,9 +10,9 @@ import com.haibin.calendarview.Calendar
 import com.haibin.calendarview.MonthView
 import io.ipoli.android.R
 import io.ipoli.android.common.ViewUtils
-import io.ipoli.android.common.view.AndroidColor
 import io.ipoli.android.common.view.attrData
 import org.json.JSONArray
+import org.json.JSONObject
 
 
 @Suppress("unused")
@@ -82,9 +82,10 @@ class AgendaMonthView(context: Context) : MonthView(context) {
     }
 
     override fun onDrawScheme(canvas: Canvas, calendar: Calendar, x: Int, y: Int) {
-        val data = JSONArray(calendar.scheme)
+        val data = JSONObject(calendar.scheme)
+        val monthIndicators = data.getJSONArray("monthIndicators")
 
-        val items = AgendaMonthView.ScheduleItem.createItemsFromJson(data, context)
+        val items = AgendaMonthView.ScheduleItem.createItemsFromJson(monthIndicators)
 
         val cx = (x + mItemWidth / 2).toFloat()
 
@@ -152,13 +153,12 @@ class AgendaMonthView(context: Context) : MonthView(context) {
     data class ScheduleItem(@ColorInt val color: Int) {
         companion object {
 
-            fun createItemsFromJson(data: JSONArray, context: Context): List<ScheduleItem> {
+            fun createItemsFromJson(data: JSONArray): List<ScheduleItem> {
                 if (data.length() == 0) {
                     return emptyList()
                 }
                 return (0 until data.length()).map {
-                    val c = AndroidColor.valueOf(data.getString(it))
-                    ScheduleItem(ContextCompat.getColor(context, c.color500))
+                    ScheduleItem(data.getInt(it))
                 }
             }
 

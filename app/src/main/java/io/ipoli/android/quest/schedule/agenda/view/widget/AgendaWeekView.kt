@@ -14,6 +14,7 @@ import io.ipoli.android.common.ViewUtils
 import io.ipoli.android.common.view.AndroidColor
 import io.ipoli.android.common.view.attrData
 import org.json.JSONArray
+import org.json.JSONObject
 
 @Suppress("unused")
 class AgendaWeekView(context: Context) : WeekView(context) {
@@ -87,8 +88,12 @@ class AgendaWeekView(context: Context) : WeekView(context) {
 
     override fun onDrawScheme(canvas: Canvas, calendar: Calendar, x: Int) {
 
-        val data = JSONArray(calendar.scheme)
-        val items = WeekViewItem.createItemsFromJson(data, context)
+        val data = JSONObject(calendar.scheme)
+        val weekIndicators = data.getJSONArray("weekIndicators")
+        if(weekIndicators.length() == 0) {
+            return
+        }
+        val items = WeekViewItem.createItemsFromJson(weekIndicators, context)
 
         val dayBounds = dayBounds(calendar)
         val gap = ViewUtils.dpToPx(GAP_DP.toFloat(), context)
