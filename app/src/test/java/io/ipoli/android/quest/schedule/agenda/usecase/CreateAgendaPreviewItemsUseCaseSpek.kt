@@ -21,7 +21,7 @@ class CreateAgendaPreviewItemsUseCaseSpek : Spek({
 
         describe("month items") {
 
-            fun monthItemsFor(
+            fun previewItemsFor(
                 startDate: LocalDate,
                 endDate: LocalDate,
                 quests: List<Quest>,
@@ -37,7 +37,7 @@ class CreateAgendaPreviewItemsUseCaseSpek : Spek({
                 )
 
             it("should have empty list") {
-                val items = monthItemsFor(today, today, emptyList(), emptyList())
+                val items = previewItemsFor(today, today, emptyList(), emptyList())
                 items.first().monthIndicators.`should be empty`()
             }
 
@@ -46,7 +46,7 @@ class CreateAgendaPreviewItemsUseCaseSpek : Spek({
                     scheduledDate = today,
                     color = Color.GREEN
                 )
-                val items = monthItemsFor(today, today, listOf(q), emptyList())
+                val items = previewItemsFor(today, today, listOf(q), emptyList())
                 items.size.`should be equal to`(1)
                 items.first().date.`should be`(today)
             }
@@ -59,7 +59,7 @@ class CreateAgendaPreviewItemsUseCaseSpek : Spek({
                 val e = TestUtil.event.copy(
                     isAllDay = true
                 )
-                val items = monthItemsFor(today, today, listOf(q), listOf(e))
+                val items = previewItemsFor(today, today, listOf(q), listOf(e))
                 val todayItems = items.first()
                 todayItems.monthIndicators.size.`should be equal to`(2)
                 todayItems.monthIndicators.first()
@@ -78,7 +78,7 @@ class CreateAgendaPreviewItemsUseCaseSpek : Spek({
                     duration = 60
                 )
                 val ids =
-                    monthItemsFor(today, today, listOf(q1, q2), emptyList())
+                    previewItemsFor(today, today, listOf(q1, q2), emptyList())
                         .first()
                         .monthIndicators
                 ids.size.`should be equal to`(2)
