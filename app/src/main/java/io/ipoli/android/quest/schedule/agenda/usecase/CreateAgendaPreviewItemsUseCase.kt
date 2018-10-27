@@ -7,7 +7,6 @@ import io.ipoli.android.event.Event
 import io.ipoli.android.quest.Color
 import io.ipoli.android.quest.Quest
 import org.threeten.bp.LocalDate
-import timber.log.Timber
 
 /**
  * Created by Polina Zhelyazkova <polina@mypoli.fun>
@@ -17,38 +16,65 @@ class CreateAgendaPreviewItemsUseCase :
     UseCase<CreateAgendaPreviewItemsUseCase.Params, CreateAgendaPreviewItemsUseCase.Result> {
 
     override fun execute(parameters: Params): Result {
-        val dayQuests = mutableMapOf<LocalDate, List<Quest>>()
-        parameters.quests.forEach {
-            val date = it.scheduledDate!!
-            val list =
-                if (!dayQuests.containsKey(date)) listOf()
-                else dayQuests[date]!!
-            dayQuests[date] = list + it
-        }
+        val dayQuests = mapQuestsToDays(parameters.quests)
+        val dayEvents = mapEventsToDays(parameters.events)
 
+        return Result(
+            weekItems = createWeekItems(parameters, dayQuests, dayEvents),
+            monthItems = createMonthItems(parameters, dayQuests, dayEvents)
+        )
+    }
+
+    private fun mapEventsToDays(events: List<Event>): Map<LocalDate, List<Event>> {
         val dayEvents = mutableMapOf<LocalDate, List<Event>>()
-        parameters.events.forEach {
+        events.forEach {
             val date = it.startDate
             val list =
                 if (!dayEvents.containsKey(date)) listOf()
                 else dayEvents[date]!!
             dayEvents[date] = list + it
         }
-
-        val weekItems = createWeekItems(parameters, dayQuests, dayEvents)
-        Timber.d("AAA $weekItems")
-        return Result(weekItems = weekItems, monthItems = listOf())
+        return dayEvents
     }
+
+    private fun mapQuestsToDays(quests: List<Quest>): Map<LocalDate, List<Quest>> {
+        val dayQuests = mutableMapOf<LocalDate, List<Quest>>()
+        quests.forEach {
+            val date = it.scheduledDate!!
+            val list =
+                if (!dayQuests.containsKey(date)) listOf()
+                else dayQuests[date]!!
+            dayQuests[date] = list + it
+        }
+        return dayQuests
+    }
+
+    private fun createMonthItems(
+        parameters: Params,
+        quests: Map<LocalDate, List<Quest>>,
+        events: Map<LocalDate, List<Event>>
+    ) =
+        parameters.startDate.datesBetween(parameters.endDate).map {
+            val indicators = mutableListOf<MonthPreviewItem.Indicator>()
+            events[it]?.forEach { e ->
+                val d = if (e.isAllDay) Time.MINUTES_IN_A_DAY else e.duration.intValue
+                indicators.add(MonthPreviewItem.Indicator.Event(d, e.color))
+            }
+            quests[it]?.forEach { q ->
+                indicators.add(MonthPreviewItem.Indicator.Quest(q.duration, q.color))
+            }
+            MonthPreviewItem(it, indicators.sortedByDescending { i -> i.duration })
+        }
 
     private fun createWeekItems(
         parameters: Params,
-        dayQuests: MutableMap<LocalDate, List<Quest>>,
-        dayEvents: MutableMap<LocalDate, List<Event>>
-    ): List<WeekPreviewItem> {
-        val weekItems = parameters.startDate.datesBetween(parameters.endDate).map {
+        quests: Map<LocalDate, List<Quest>>,
+        events: Map<LocalDate, List<Event>>
+    ) =
+        parameters.startDate.datesBetween(parameters.endDate).map {
 
             val indicators = mutableListOf<WeekPreviewItem.Indicator>()
-            dayQuests[it]?.forEach { q ->
+            quests[it]?.forEach { q ->
                 val startTime: Time? = q.startTime
 
                 if (startTime == null) {
@@ -83,7 +109,7 @@ class CreateAgendaPreviewItemsUseCase :
                 }
             }
 
-            dayEvents[it]?.forEach { e ->
+            events[it]?.forEach { e ->
                 val startTime: Time = e.startTime
                 if (!(startTime < MIN_TIME && e.endTime < MIN_TIME)) {
 
@@ -122,8 +148,6 @@ class CreateAgendaPreviewItemsUseCase :
                 )
             )
         }
-        return weekItems
-    }
 
     companion object {
         const val MINUTES_OFFSET = 8 * 60
@@ -153,10 +177,13 @@ class CreateAgendaPreviewItemsUseCase :
         }
     }
 
-    data class MonthPreviewItem(val date: LocalDate) {
+    data class MonthPreviewItem(val date: LocalDate, val indicators: List<Indicator>) {
         sealed class Indicator {
-            data class Quest(val color: Color) : Indicator()
-            data class Event(val color: Int) : Indicator()
+
+            abstract val duration: Int
+
+            data class Quest(override val duration: Int, val color: Color) : Indicator()
+            data class Event(override val duration: Int, val color: Int) : Indicator()
         }
     }
 
