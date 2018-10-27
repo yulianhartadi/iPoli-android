@@ -20,8 +20,8 @@ android {
         applicationId "io.ipoli.android"
         minSdkVersion 21
         targetSdkVersion 27
-        versionCode 569
-        versionName "2.13.9"
+        versionCode 570
+        versionName "2.13.10"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
 
@@ -42,15 +42,6 @@ android {
 
     sourceSets {
         test.java.srcDirs += 'src/test/java'
-    }
-
-    compileOptions {
-        targetCompatibility JavaVersion.VERSION_1_8
-        sourceCompatibility JavaVersion.VERSION_1_8
-    }
-
-    tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinCompile).all {
-        kotlinOptions.jvmTarget = JavaVersion.VERSION_1_8
     }
 
     testOptions {
