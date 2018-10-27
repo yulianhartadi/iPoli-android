@@ -32,8 +32,10 @@ class AgendaMonthView(context: Context) : MonthView(context) {
 
     init {
 
+        selectedBackgroundPaint.isAntiAlias = true
         selectedBackgroundPaint.color = context.attrData(R.attr.colorAccent)
 
+        currentBackgroundPaint.isAntiAlias = true
         currentBackgroundPaint.color = context.attrData(R.attr.colorPrimary)
 
         currentDayTextPaint = createTextPaint(context, R.color.md_light_text_50, 14)

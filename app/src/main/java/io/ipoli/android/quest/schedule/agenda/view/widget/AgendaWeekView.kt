@@ -130,6 +130,7 @@ class AgendaWeekView(context: Context) : WeekView(context) {
     ) {
 
         val textPaint = when {
+            isSelected -> mCurDayTextPaint
             calendar.isCurrentDay -> mCurDayTextPaint
             calendar.isCurrentMonth -> mSchemeTextPaint
             else -> mOtherMonthTextPaint
