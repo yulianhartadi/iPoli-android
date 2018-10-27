@@ -341,15 +341,21 @@ class TodayViewController(args: Bundle? = null) :
         when (state.type) {
 
             SHOW_IMAGE ->
-                loadImage(statsContainer!!, state)
+                statsContainer?.let {
+                    loadImage(it, state)
+                }
 
-            SHOW_SUMMARY_STATS -> {
-                updateStats(state, statsContainer!!)
-                animateStats(statsContainer!!)
-            }
+
+            SHOW_SUMMARY_STATS ->
+                statsContainer?.let {
+                    updateStats(state, it)
+                    animateStats(it)
+                }
 
             SUMMARY_STATS_CHANGED ->
-                updateStats(state, statsContainer!!)
+                statsContainer?.let {
+                    updateStats(state, it)
+                }
 
             SHOW_DATA ->
                 view.dataContainer.visible()
@@ -607,7 +613,7 @@ class TodayViewController(args: Bundle? = null) :
                 view.habitProgress.invisible()
                 habitCompleteBackground.visible()
                 view.habitCompletedBackground.setOnLongClickListener {
-                    navigateFromRoot().toEditHabit(vm.id, VerticalChangeHandler())
+                    navigateFromRoot().toHabit(vm.id)
                     return@setOnLongClickListener true
                 }
                 view.habitProgress.setOnLongClickListener(null)
@@ -615,7 +621,7 @@ class TodayViewController(args: Bundle? = null) :
                 view.habitProgress.visible()
                 habitCompleteBackground.invisible()
                 view.habitProgress.setOnLongClickListener {
-                    navigateFromRoot().toEditHabit(vm.id, VerticalChangeHandler())
+                    navigateFromRoot().toHabit(vm.id)
                     return@setOnLongClickListener true
                 }
                 view.habitCompletedBackground.setOnLongClickListener(null)
