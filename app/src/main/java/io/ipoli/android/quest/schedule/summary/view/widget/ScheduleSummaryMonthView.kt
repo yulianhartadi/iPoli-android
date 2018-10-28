@@ -149,15 +149,11 @@ class ScheduleSummaryMonthView(context: Context) : MonthView(context) {
             dividerPaint
         )
 
-        val topOffset = y.toFloat() + mItemHeight / 4f
+        val topOffset = y.toFloat() + mItemHeight / 4.8f
 
-        val qHeight = mItemHeight / 4.5f
+        val qHeight = mItemHeight / 8f
 
         items.forEachIndexed { index, scheduleItem ->
-
-            if (index > 3) {
-                return@forEachIndexed
-            }
 
             drawQuestBackground(
                 index,
@@ -170,7 +166,7 @@ class ScheduleSummaryMonthView(context: Context) : MonthView(context) {
                 y.toFloat()
             )
 
-            if (index < 3) {
+//            if (index < 3) {
 
                 drawQuestName(
                     index,
@@ -181,7 +177,7 @@ class ScheduleSummaryMonthView(context: Context) : MonthView(context) {
                     qHeight,
                     canvas
                 )
-            }
+//            }
         }
     }
 
