@@ -13,6 +13,7 @@ import io.ipoli.android.quest.schedule.agenda.view.AgendaViewState.PreviewMode.M
 import io.ipoli.android.quest.schedule.agenda.view.AgendaViewState.PreviewMode.WEEK
 import io.ipoli.android.quest.schedule.agenda.view.AgendaViewState.StateType.*
 import org.threeten.bp.LocalDate
+import org.threeten.bp.YearMonth
 
 /**
  * Created by Venelin Valkov <venelin@mypoli.fun>
@@ -57,6 +58,7 @@ sealed class AgendaAction : Action {
     }
 
     data class VisibleDateChanged(val date: LocalDate) : AgendaAction()
+    data class ChangePreviewMonth(val yearMonth: YearMonth) : AgendaAction()
 }
 
 object AgendaReducer : BaseViewStateReducer<AgendaViewState>() {

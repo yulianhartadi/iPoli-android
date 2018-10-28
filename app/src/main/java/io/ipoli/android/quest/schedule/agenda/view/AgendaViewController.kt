@@ -34,6 +34,7 @@ import io.ipoli.android.common.view.recyclerview.MultiViewTypeSwipeCallback
 import io.ipoli.android.common.view.recyclerview.RecyclerViewViewModel
 import io.ipoli.android.common.view.recyclerview.SwipeResource
 import io.ipoli.android.event.Event
+import io.ipoli.android.habit.show.HabitViewController
 import io.ipoli.android.quest.CompletedQuestViewController
 import io.ipoli.android.quest.schedule.agenda.usecase.CreateAgendaItemsUseCase
 import io.ipoli.android.quest.schedule.agenda.usecase.CreateAgendaPreviewItemsUseCase
@@ -46,6 +47,7 @@ import org.json.JSONArray
 import org.json.JSONObject
 import org.threeten.bp.LocalDate
 import org.threeten.bp.Month
+import org.threeten.bp.YearMonth
 import org.threeten.bp.format.DateTimeFormatter
 import org.threeten.bp.format.TextStyle
 import java.util.*
@@ -210,6 +212,10 @@ class AgendaViewController(args: Bundle? = null) :
         val itemTouchHelper = ItemTouchHelper(swipeHandler)
         itemTouchHelper.attachToRecyclerView(view.agendaList)
 
+        view.calendarView.setOnMonthChangeListener(HabitViewController.SkipFirstChangeMonthListener { year, month ->
+            dispatch(AgendaAction.ChangePreviewMonth(YearMonth.of(year, month)))
+        })
+
         return view
     }
 
@@ -231,8 +237,6 @@ class AgendaViewController(args: Bundle? = null) :
                 agendaList.clearOnScrollListeners()
                 (agendaList.adapter as AgendaAdapter).updateAll(state.toAgendaItemViewModels())
                 addScrollListeners(agendaList, state)
-
-//                view.calendarView.setSchemeDate(state.calendars.map { it.toString() to it }.toMap())
             }
 
             CALENDAR_DATA_CHANGED -> {

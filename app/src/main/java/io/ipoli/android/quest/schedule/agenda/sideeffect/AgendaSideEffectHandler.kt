@@ -46,23 +46,7 @@ object AgendaSideEffectHandler : AppSideEffectHandler() {
                     changeCurrentAgendaItem = true
                 )
 
-                val currentDate = LocalDate.now()
-                val startDate = currentDate.with(TemporalAdjusters.firstDayOfMonth())
-                    .with(TemporalAdjusters.previousOrSame(DateUtils.firstDayOfWeek))
-
-                val lastWeekEndDate = currentDate.with(TemporalAdjusters.lastDayOfMonth())
-                    .with(TemporalAdjusters.nextOrSame(DateUtils.lastDayOfWeek))
-
-                val daysBetween = startDate.daysBetween(lastWeekEndDate).toInt()
-
-                val endDate =
-                    if (daysBetween / 7 == 6) lastWeekEndDate else lastWeekEndDate.plusWeeks(1)
-
-                listenForAgendaPreviewItems(
-                    startDate = startDate,
-                    endDate = endDate,
-                    currentDate = currentDate
-                )
+                listenForPreviewItems(action.startDate)
             }
 
             is AgendaAction.LoadBefore -> {
@@ -122,7 +106,34 @@ object AgendaSideEffectHandler : AppSideEffectHandler() {
                 dispatch(AgendaAction.VisibleDateChanged(date))
             }
 
+            is AgendaAction.ChangePreviewMonth ->
+                listenForPreviewItems(
+                    LocalDate.of(
+                        action.yearMonth.year,
+                        action.yearMonth.monthValue,
+                        1
+                    )
+                )
+
         }
+    }
+
+    private fun listenForPreviewItems(currentDate: LocalDate) {
+        val startDate = currentDate.with(TemporalAdjusters.firstDayOfMonth())
+            .with(TemporalAdjusters.previousOrSame(DateUtils.firstDayOfWeek))
+
+        val lastWeekEndDate = currentDate.with(TemporalAdjusters.lastDayOfMonth())
+            .with(TemporalAdjusters.nextOrSame(DateUtils.lastDayOfWeek))
+
+        val daysBetween = startDate.daysBetween(lastWeekEndDate).toInt()
+
+        val endDate =
+            if (daysBetween / 7 == 6) lastWeekEndDate else lastWeekEndDate.plusWeeks(1)
+
+        listenForAgendaPreviewItems(
+            startDate = startDate,
+            endDate = endDate
+        )
     }
 
     private fun listenForAgendaItems(
@@ -197,8 +208,7 @@ object AgendaSideEffectHandler : AppSideEffectHandler() {
 
     private fun listenForAgendaPreviewItems(
         startDate: LocalDate,
-        endDate: LocalDate,
-        currentDate: LocalDate
+        endDate: LocalDate
     ) {
 
         listenForChanges(
