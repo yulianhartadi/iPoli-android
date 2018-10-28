@@ -55,6 +55,8 @@ sealed class AgendaAction : Action {
     data class FirstVisibleItemChanged(val itemPosition: Int) : AgendaAction() {
         override fun toMap() = mapOf("itemPosition" to itemPosition)
     }
+
+    data class VisibleDateChanged(val date: LocalDate) : AgendaAction()
 }
 
 object AgendaReducer : BaseViewStateReducer<AgendaViewState>() {
@@ -96,16 +98,18 @@ object AgendaReducer : BaseViewStateReducer<AgendaViewState>() {
                     type = SHOW_BOTTOM_LOADER
                 )
             }
-            is AgendaAction.FirstVisibleItemChanged -> {
-                subState.copy(
-                    type = IDLE
-                )
-            }
 
             is ScheduleAction.ToggleAgendaPreviewMode -> {
                 subState.copy(
                     type = PREVIEW_MODE_CHANGED,
                     previewMode = if (subState.previewMode == WEEK) MONTH else WEEK
+                )
+            }
+
+            is AgendaAction.VisibleDateChanged -> {
+                subState.copy(
+                    type = VISIBLE_DATE_CHANGED,
+                    currentDate = action.date
                 )
             }
 
@@ -119,14 +123,14 @@ object AgendaReducer : BaseViewStateReducer<AgendaViewState>() {
         agendaItems: List<AgendaItem>
     ) = date?.let {
         val currentAgendaItemDate = it
-        val index = agendaItems.indexOfLast {
-            when (it) {
+        val index = agendaItems.indexOfLast { item ->
+            when (item) {
                 is AgendaItem.Date ->
-                    it.startDate() == currentAgendaItemDate
+                    item.startDate() == currentAgendaItemDate
                 is AgendaItem.Week ->
                     currentAgendaItemDate.isBetween(
-                        it.start,
-                        it.end
+                        item.start,
+                        item.end
                     )
                 else -> false
             }
@@ -164,7 +168,8 @@ data class AgendaViewState(
         SHOW_BOTTOM_LOADER,
         IDLE,
         PREVIEW_MODE_CHANGED,
-        CALENDAR_DATA_CHANGED
+        CALENDAR_DATA_CHANGED,
+        VISIBLE_DATE_CHANGED
     }
 
     enum class PreviewMode {

@@ -113,6 +113,15 @@ object AgendaSideEffectHandler : AppSideEffectHandler() {
                 )
             }
 
+            is AgendaAction.FirstVisibleItemChanged -> {
+                if (!state.hasState(AgendaViewState::class.java)) {
+                    return
+                }
+                val agendaItems = state.stateFor(AgendaViewState::class.java).agendaItems
+                val date = agendaItems[action.itemPosition].startDate()
+                dispatch(AgendaAction.VisibleDateChanged(date))
+            }
+
         }
     }
 

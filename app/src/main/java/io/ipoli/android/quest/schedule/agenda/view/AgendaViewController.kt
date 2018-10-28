@@ -265,6 +265,11 @@ class AgendaViewController(args: Bundle? = null) :
                 }
             }
 
+            VISIBLE_DATE_CHANGED -> {
+                val date = state.currentDate!!
+                view.calendarView.scrollToCalendar(date.year, date.monthValue, date.dayOfMonth)
+            }
+
             else -> {
             }
         }

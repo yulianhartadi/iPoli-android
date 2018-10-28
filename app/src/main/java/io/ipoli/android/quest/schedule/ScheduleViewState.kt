@@ -5,12 +5,10 @@ import io.ipoli.android.common.AppDataState
 import io.ipoli.android.common.AppState
 import io.ipoli.android.common.BaseViewStateReducer
 import io.ipoli.android.common.DataLoadedAction
-
 import io.ipoli.android.common.redux.Action
 import io.ipoli.android.common.redux.BaseViewState
 import io.ipoli.android.common.text.CalendarFormatter
 import io.ipoli.android.quest.schedule.agenda.view.AgendaAction
-import io.ipoli.android.quest.schedule.agenda.view.AgendaViewState
 import io.ipoli.android.quest.schedule.calendar.CalendarAction
 import org.threeten.bp.LocalDate
 import org.threeten.bp.YearMonth
@@ -77,21 +75,18 @@ object ScheduleReducer : BaseViewStateReducer<ScheduleViewState>() {
                     currentDate = action.date
                 )
             }
-            is AgendaAction.FirstVisibleItemChanged -> {
+            is AgendaAction.VisibleDateChanged -> {
 
-                val itemPos = action.itemPosition
-                val startDate =
-                    state.stateFor(AgendaViewState::class.java).agendaItems[itemPos].startDate()
-
-                if (subState.currentDate.isEqual(startDate)) {
+                val date = action.date
+                if (subState.currentDate.isEqual(date)) {
                     subState.copy(
                         type = ScheduleViewState.StateType.IDLE
                     )
                 } else {
                     subState.copy(
                         type = ScheduleViewState.StateType.DATE_AUTO_CHANGED,
-                        currentDate = startDate,
-                        currentMonth = YearMonth.of(startDate.year, startDate.month)
+                        currentDate = date,
+                        currentMonth = YearMonth.of(date.year, date.month)
                     )
                 }
 
