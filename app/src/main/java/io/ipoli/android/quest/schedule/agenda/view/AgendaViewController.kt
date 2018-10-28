@@ -17,6 +17,8 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import com.bluelinelabs.conductor.RouterTransaction
+import com.haibin.calendarview.Calendar
+import com.haibin.calendarview.CalendarView
 import com.mikepenz.iconics.typeface.IIcon
 import com.mikepenz.ionicons_typeface_library.Ionicons
 import io.ipoli.android.R
@@ -50,6 +52,7 @@ import org.threeten.bp.Month
 import org.threeten.bp.YearMonth
 import org.threeten.bp.format.DateTimeFormatter
 import org.threeten.bp.format.TextStyle
+import timber.log.Timber
 import java.util.*
 
 /**
@@ -213,7 +216,26 @@ class AgendaViewController(args: Bundle? = null) :
         itemTouchHelper.attachToRecyclerView(view.agendaList)
 
         view.calendarView.setOnMonthChangeListener(HabitViewController.SkipFirstChangeMonthListener { year, month ->
+            Timber.d("AAA month schange")
             dispatch(AgendaAction.ChangePreviewMonth(YearMonth.of(year, month)))
+        })
+
+//        view.calendarView.setOnViewChangeListener {
+//            Timber.d("AAA $it")
+//        }
+
+        view.calendarView.setOnCalendarSelectListener(object :
+            CalendarView.OnCalendarSelectListener {
+            override fun onCalendarSelect(calendar: Calendar, isClick: Boolean) {
+
+                if(isClick) {
+//                    dispatch(AgendaAction.DateChanged(LocalDate.of(calendar.year, calendar.month, calendar.day)))
+                }
+            }
+
+            override fun onCalendarOutOfRange(calendar: Calendar) {
+            }
+
         })
 
         return view
@@ -228,6 +250,8 @@ class AgendaViewController(args: Bundle? = null) :
     }
 
     override fun render(state: AgendaViewState, view: View) {
+
+        Timber.d("AAA ${state.type}")
 
         when (state.type) {
 

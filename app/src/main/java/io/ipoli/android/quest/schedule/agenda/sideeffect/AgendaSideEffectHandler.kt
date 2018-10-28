@@ -38,13 +38,7 @@ object AgendaSideEffectHandler : AppSideEffectHandler() {
         when (action) {
 
             is AgendaAction.Load -> {
-                val pair = findAllAgendaDates(action.startDate)
-                listenForAgendaItems(
-                    startDate = pair.first,
-                    endDate = pair.second,
-                    currentDate = action.startDate,
-                    changeCurrentAgendaItem = true
-                )
+                listenForAgendaItems(action.startDate)
 
                 listenForPreviewItems(action.startDate)
             }
@@ -115,7 +109,20 @@ object AgendaSideEffectHandler : AppSideEffectHandler() {
                     )
                 )
 
+            is AgendaAction.DateChanged ->
+                listenForAgendaItems(action.date)
+
         }
+    }
+
+    private fun listenForAgendaItems(date: LocalDate) {
+        val pair = findAllAgendaDates(date)
+        listenForAgendaItems(
+            startDate = pair.first,
+            endDate = pair.second,
+            currentDate = date,
+            changeCurrentAgendaItem = true
+        )
     }
 
     private fun listenForPreviewItems(currentDate: LocalDate) {

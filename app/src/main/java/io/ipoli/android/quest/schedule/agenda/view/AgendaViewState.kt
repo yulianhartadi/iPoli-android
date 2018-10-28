@@ -59,6 +59,7 @@ sealed class AgendaAction : Action {
 
     data class VisibleDateChanged(val date: LocalDate) : AgendaAction()
     data class ChangePreviewMonth(val yearMonth: YearMonth) : AgendaAction()
+    data class DateChanged(val date: LocalDate) : AgendaAction()
 }
 
 object AgendaReducer : BaseViewStateReducer<AgendaViewState>() {
